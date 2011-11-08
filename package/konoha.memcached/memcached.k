@@ -30,15 +30,18 @@
 //  imasahiro - Masahiro Ide, Yokohama National University, Japan
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 //  shinpei_NKT - Shinpei Nakata, Yokohama National University, Japan
+//  okachin - Okamoto Yuki, Yokohama National University, Japan
 // **************************************************************************
 
 include "lib:gluelink";
 
 /* low-level API */
 @Native class Memcache;
-@Native @Public Memcache Memcache.new (Path pth);
+@Native @Public Memcache Memcache.new(String host, int port);
 
 /* Incrementing and decrementing values */
+@Native @Public int Memcache.increment(String key, int offset);
+@Native @Public int Memcache.decrement(String key, int offset);
 
 /* Deleting data from a server */
 @Native @Public Boolean Memcache.delete(String key, int expiration_sec);
@@ -49,22 +52,26 @@ include "lib:gluelink";
 //@Native @Public Boolean Memcache.exist_by_key(String group_key, String key);
 
 /* Flushing client buffers */
-@Native @Public Boolean Memcache.flushBuffers();
+@Native @Public Boolean Memcache.flushBuffers(void);
 
 /* Wiping clean the contents of a server */
 @Native @Public Boolean Memcache.flush(int expiration_sec);
 
 /* Retrieving data from the server */
+@Native @Public String Memcache.get(String key);
+@Native @Public String[] Memcache.mGet(String[] keys);
+@Native @Public String Memcache.getByKey(String group_key, String key);
+@Native @Public String[] Memcache.mGetByKey(String group_key, String[] keys);
 
 /* working with result sets */
 
 /* Store, replace, add, or atoically add data to the server */
-@Native @Public void Memcache.set (String key, String value, int expiration_sec, int falgs);
-@Native @Public void Memcache.add (String key, String value, int expiration_sec, int flags);
-@Native @Public void Memcache.replace (String key, String value, int expiration_sec, int flags);
-@Native @Public void Memcache.set_by_key (String group_key, String key, String value, int expiration_sec, int flags);
-@Native @Public void Memcache.add_by_key (String group_key, String key, String value, int expiration_sec, int flags);
-@Native @Public void Memcache.replace_by_key (String group_key, String key, String value, int expiration_sec, int flags);
+@Native @Public void Memcache.set(String key, String value, int expiration_sec, int falgs);
+@Native @Public void Memcache.add(String key, String value, int expiration_sec, int flags);
+@Native @Public void Memcache.replace(String key, String value, int expiration_sec, int flags);
+@Native @Public void Memcache.set_by_key(String group_key, String key, String value, int expiration_sec, int flags);
+@Native @Public void Memcache.add_by_key(String group_key, String key, String value, int expiration_sec, int flags);
+@Native @Public void Memcache.replace_by_key(String group_key, String key, String value, int expiration_sec, int flags);
 
 /* appending or prepending to data on the server */
 @Native @Public Boolean Memcache.prepend(String key, String vlaue, int expiration_sec, int flags);

@@ -30,6 +30,7 @@
 //  imasahiro - Masahiro Ide, Yokohama National University, Japan
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 //  shinpei_NKT - Shinpei Nakata, Yokohama National University, Japan
+//  okachin - Okamoto Yuki, Yokohama National University, Japan
 // **************************************************************************
 
 #define K_INTERNAL
@@ -85,25 +86,12 @@ DEFAPI(void) constMemcache(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi
 	kapi->loadClassIntConst(ctx, cid, MemcacheConstInt);
 }
 
-//@Native @Public Memcache Memcache_new (String pth)
-KMETHOD Memcache_new (CTX ctx, knh_sfp_t *sfp _RIX)
+//@Native @Public Memcache Memcache_new (String host, int port)
+KMETHOD Memcache_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
-	char *path = String_to(char *, sfp[1]);
-	knh_bytes_t host, host_port = knh_bytes_next(B(path), ':');
-	knh_index_t idx = knh_bytes_index(host_port, ':');
-	if (idx == -1) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_END};
-		KNH_NTRACE(ctx, "Memcache_new", K_FAILED, ldata);
-		goto L_RETURN;
-	}
-	host = knh_bytes_first(host_port, idx);
-	knh_int_t port;
-	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_END};
-		KNH_NTRACE(ctx, "Memcache_new", K_FAILED, ldata);
-		goto L_RETURN;
-	}
+	const char* host = String_to(const char*, sfp[1]);
+	knh_int_t port = Int_to(knh_int_t, sfp[2]);
 	Memcache_init(ctx, (knh_RawPtr_t*)mcd);
 	// first, create structure
 	mcd->st = memcached_create(NULL);
@@ -118,11 +106,9 @@ KMETHOD Memcache_new (CTX ctx, knh_sfp_t *sfp _RIX)
 	// second, connect to server
 	memcached_server_list_st servers;
 	memcached_return_t rc;
-	char tmp = host.buf[host.len];
-	host.buf[host.len] = '\0';
-	servers = memcached_server_list_append(NULL, host.text, port, &rc);
+	servers = memcached_server_list_append(NULL, host, port, &rc);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("host", host.text), 
+		knh_ldata_t ldata[] = {LOG_s("host", host), 
 							   LOG_i("port", port), 
 							   LOG_i("return_t", rc),
 							   LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
@@ -130,10 +116,9 @@ KMETHOD Memcache_new (CTX ctx, knh_sfp_t *sfp _RIX)
 		KNH_NTRACE(ctx, "memcached_server_list_append", K_FAILED, ldata);
 		goto L_RETURN;
 	}
-	host.buf[host.len] = tmp;
 	rc = memcached_server_push(mcd->st, servers);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("host", host.text), 
+		knh_ldata_t ldata[] = {LOG_s("host", host), 
 							   LOG_i("port", port), 
 							   LOG_i("return_t", rc),
 							   LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
@@ -159,6 +144,67 @@ KMETHOD Memcache_new (CTX ctx, knh_sfp_t *sfp _RIX)
 //	}
 //	knh_int_t port;
 //}
+
+/* ======================================================================== */
+// [Incrementing and decrementing values]
+//@Native @Public int Memcache.increment(String key, int offset);
+KMETHOD Memcache_increment(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	const char *key = String_to(const char*, sfp[1]);
+	size_t key_length = ((sfp[1].s)->str.len);
+	unsigned int offset;
+	int i = Int_to(int, sfp[2]);
+	if(i >= 0) offset = (unsigned int)i;
+	else offset = (unsigned int)(-1)*i;
+	uint64_t value;
+	memcached_return_t rc = 
+		memcached_increment(mcd->st, key, key_length, offset, &value);
+	if(rc == MEMCACHED_SUCCESS) {
+		// key is
+		 knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTRACE(ctx, "memcached_increment", K_OK, ldata);
+		RETURNi_((int)value);
+	} else {
+		// its might be error
+		knh_ldata_t ldata[] = {
+			LOG_i("return_t", rc),
+			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
+			LOG_END};
+		KNH_NTRACE(ctx, "memcached_increment", K_FAILED, ldata);
+		RETURN_(KNH_NULL);
+	}
+}
+
+//@Native @Public int Memcache.decrement(String key, int offset);
+KMETHOD Memcache_decrement(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	const char *key = String_to(const char*, sfp[1]);
+	size_t key_length = ((sfp[1].s)->str.len);
+	unsigned int offset;
+	int i = Int_to(int, sfp[2]);
+	if(i >= 0) offset = (unsigned int)i;
+	else offset = (unsigned int)(-1)*i;
+	uint64_t value;
+	memcached_return_t rc = 
+		memcached_decrement(mcd->st, key, key_length, offset, &value);
+	if(rc == MEMCACHED_SUCCESS) {
+		// key is
+		 knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTRACE(ctx, "memcached_increment", K_OK, ldata);
+		RETURNi_((int)value);
+	} else {
+		// its might be error
+		knh_ldata_t ldata[] = {
+			LOG_i("return_t", rc),
+			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
+			LOG_END};
+		KNH_NTRACE(ctx, "memcached_increment", K_FAILED, ldata);
+		RETURN_(KNH_NULL);
+	}
+}
+
 
 /* ======================================================================== */
 // [Deleting data]
@@ -218,7 +264,7 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ======================================================================== */
 // [Determine if a keys exists]
 
-#if 0
+//#if 0
 //@Native @Public Boolean Memcache.exist(String key);
 KMETHOD Memcache_exist(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -238,14 +284,13 @@ KMETHOD Memcache_exist(CTX ctx, knh_sfp_t *sfp _RIX)
 			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
 			LOG_END};
 		KNH_NTRACE(ctx, "memcached_exist", K_FAILED, ldata);
-
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
-#endif
+//#endif
 
 //@Native @Public Boolean Memcache.exist_by_key(String key);
-#if 0
+//#if 0
 KMETHOD Memcache_existByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
@@ -258,20 +303,18 @@ KMETHOD Memcache_existByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 							   key, key_length);
 	if (rc == MEMCACHED_SUCCESS) {
 		// key is exists
-		
 	} else if (rc == MEMCACHED_NOTFOUND) {
 		// key is not found
 	} else {
 		// its might be error
-
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
-#endif
+//#endif
 /* ======================================================================== */
 // [Flushing client buffers]
 
-//@Native @Public void Memcache.flushBuffers();
+//@Native @Public Boolean Memcache.flushBuffers(void);
 KMETHOD Memcache_flushBuffers (CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
@@ -310,6 +353,151 @@ KMETHOD Memcache_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
+/* ======================================================================== */
+// [Retrieving data from the server]
+
+//@Native @Public String Memcache.get (String key);
+KMETHOD Memcache_get(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	const char *key = String_to(const char*, sfp[1]);
+	size_t key_length = (sfp[1].s)->str.len;
+	size_t value_length;
+	uint32_t flags;
+	memcached_return_t rc;
+	char *value = memcached_get(mcd->st, key, key_length, &value_length, &flags, &rc);
+	if(rc == MEMCACHED_SUCCESS) {
+		knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTRACE(ctx, "memcached_get", K_OK, ldata);
+		RETURN_(new_String(ctx, value));   //Ignore flags.
+	} else {
+		knh_ldata_t ldata[] = {
+			LOG_i("return_t", rc), 
+			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
+			LOG_END};
+		KNH_NTRACE(ctx, "memcached_get", K_FAILED, ldata);
+		RETURN_(KNH_NULL);
+	}
+}
+
+//@Native @Public String[] Memcache.mGet (String[] keys);
+KMETHOD Memcache_mGet(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	knh_Array_t *a = sfp[1].a;
+	int number_of_keys = knh_Array_size(a);
+	const char *keys[number_of_keys];
+	size_t key_length[number_of_keys];
+	int i;
+	for(i = 0; i < number_of_keys; i++) {
+		keys[i] = S_totext(a->strings[i]);
+		key_length[i] = S_size(a->strings[i]);
+	}
+	const char * const *keys_ptr = keys;
+	memcached_return_t rc;
+	rc = memcached_mget(mcd->st, keys_ptr, key_length, number_of_keys);
+	if (rc != MEMCACHED_SUCCESS) {
+		goto L_ERR;
+	}
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "memcached_mget", K_OK, ldata);
+	knh_Array_t *ret = new_Array(ctx, CLASS_String, number_of_keys);
+	memcached_result_st *result = &mcd->st->result;
+//	memcached_result_create(mcd->st, result);
+	while(1) {
+		result = memcached_fetch_result(mcd->st, result, &rc);
+		if(rc == MEMCACHED_END) break;
+		if (result == NULL) {
+			goto L_ERR;
+		}
+		knh_Array_add(ctx, ret, new_String(ctx, memcached_result_value(result)));
+	}
+	memcached_result_free(result);
+	RETURN_(ret);
+L_ERR:;
+	{
+		knh_ldata_t ldata[] = {
+			LOG_i("return_t", rc), 
+			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
+			LOG_END};
+		KNH_NTRACE(ctx, "memcached_mget", K_FAILED, ldata);
+		RETURN_(KNH_NULL);
+	}
+}
+
+//@Native @Public String Memcache.getByKey (String key);
+KMETHOD Memcache_getByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	const char *group_key = String_to(const char*, sfp[1]);
+	size_t group_key_length = (sfp[1].s)->str.len;
+	const char *key = String_to(const char*, sfp[2]);
+	size_t key_length = ((sfp[2].s)->str.len);
+	size_t value_length;
+	uint32_t flags;
+	memcached_return_t rc;
+	char *value = memcached_get_by_key(mcd->st, group_key, group_key_length, key, key_length, &value_length, &flags, &rc);
+	if(rc == MEMCACHED_SUCCESS) {
+		knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTRACE(ctx, "memcached_get_by_key", K_OK, ldata);
+		RETURN_(new_String(ctx, value));   //Ignore flags.
+	} else {
+		knh_ldata_t ldata[] = {
+			LOG_i("return_t", rc), 
+			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
+			LOG_END};
+		KNH_NTRACE(ctx, "memcached_get_by_key", K_FAILED, ldata);
+		RETURN_(KNH_NULL);
+	}
+}
+
+//@Native @Public String[] Memcache.mGetByKey (String group_key, String[] keys);
+KMETHOD Memcache_mGetByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	const char *group_key = String_to(const char*, sfp[1]);
+	size_t group_key_length = sfp[1].s->str.len;
+	knh_Array_t *a = sfp[2].a;
+	int number_of_keys = knh_Array_size(a);
+	const char *keys[number_of_keys];
+	size_t key_length[number_of_keys];
+	int i;
+	for(i = 0; i < number_of_keys; i++) {
+		keys[i] = S_totext(a->strings[i]);
+		key_length[i] = S_size(a->strings[i]);
+	}
+	const char * const *keys_ptr = keys;
+	memcached_return_t rc;
+	rc = memcached_mget_by_key(mcd->st, group_key, group_key_length, keys_ptr, key_length, number_of_keys);
+	if (rc != MEMCACHED_SUCCESS) {
+		goto L_ERR;
+	}
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "memcached_mgetByKey", K_OK, ldata);
+	knh_Array_t *ret = new_Array(ctx, CLASS_String, number_of_keys);
+	memcached_result_st *result = &mcd->st->result;
+	while(1) {
+		result = memcached_fetch_result(mcd->st, result, &rc);
+		if(rc == MEMCACHED_END) break;
+		if (result == NULL) {
+			goto L_ERR;
+		}
+		knh_Array_add(ctx, ret, new_String(ctx, memcached_result_value(result)));
+	}
+	memcached_result_free(result);
+	RETURN_(ret);
+L_ERR:;
+	{
+		knh_ldata_t ldata[] = {
+			LOG_i("return_t", rc), 
+			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
+			LOG_END};
+		KNH_NTRACE(ctx, "memcached_mgetByKey", K_FAILED, ldata);
+		RETURN_(KNH_NULL);
+	}
+}
+/* ======================================================================== */
+// [Working with result sets]
 
 /* ======================================================================== */
 // [Store, replace add, or atomically add data]
@@ -329,7 +517,7 @@ KMETHOD Memcache_set (CTX ctx, knh_sfp_t *sfp _RIX)
 					  expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
 		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_set", K_FAILED, ldata);
+		KNH_NTRACE(ctx, "memcached_set", K_OK, ldata);
 	} else {
 		knh_ldata_t ldata[] = {
 			LOG_i("return_t", rc), 
@@ -593,6 +781,8 @@ KMETHOD Memcache_appendByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
 
+/* ======================================================================== */
+// [Working with data on the server in an atomic fashion]
 
 /* ======================================================================== */
 // [private functions]
