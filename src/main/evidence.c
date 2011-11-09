@@ -234,9 +234,31 @@ static memcached_st *memc = NULL;
 static void memcached_vsyslog(int p, const char *fmt, va_list ap)
 {
 	if(memc != NULL) {
+		/* gettime */
+		char date[256];
+		time_t t;
+		struct tm tm;
+		time(&t);
+#if defined(K_USING_WINDOWS_)
+#if defined(K_USING_MINGW_)
+		tm = *localtime(&t);
+#else
+		localtime_s(&tm, &t);
+#endif /* defined(K_USING_MINGW_) */
+#else
+		localtime_r(&t, &tm);
+#endif /* defined(K_USING_WINDOWS_) */
+		strftime(date, 255, "%a %d %H:%M:%S", &tm);
+
+		/* gethostname */
+		char host[256];
+		gethostname(host, 255);
+
+		/* getpid */
+		pid_t pid = getpid();
+
 		char buf[K_LOG_msgSIZE];
 		vsnprintf(buf, sizeof(buf), fmt, ap);
-
 		const char *key = (const char *)buf;
 		char *ptr = strchr(key, ' ');
 		size_t key_len = ptr - key;
@@ -245,12 +267,14 @@ static void memcached_vsyslog(int p, const char *fmt, va_list ap)
 		ptr = strchr(gkey, ' ');
 		size_t gkey_len = ptr - gkey;
 
-		const char *val = ptr + 1;
-		size_t val_len = strlen(val);
+		/* format log */
+		char log[K_LOG_msgSIZE];
+		snprintf(log, K_LOG_msgSIZE, "%s %s konoha[%d]: %s", date, host, pid, buf);
+		//fprintf(stderr, "log=%s\n", log);
 
 		memcached_return rc;
 		time_t expire = 30 * 60; /* 30 minutes */
-		rc = memcached_set_by_key(memc, gkey, gkey_len, key, key_len, val, val_len, expire, 0);
+		rc = memcached_set_by_key(memc, gkey, gkey_len, key, key_len, log, strlen(log), expire, 0);
 		DBG_ASSERT(rc == MEMCACHED_SUCCESS);
 	}
 }
