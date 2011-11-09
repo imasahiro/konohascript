@@ -265,7 +265,7 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 // [Determine if a keys exists]
 
 //@Native @Public Boolean Memcache.exist(String key);
-# if LIBMEMCACHED_VERSION_HEX >= 0x00053000
+# if LIBMEMCACHED_VERSION_HEX == 0x00053000
 KMETHOD Memcache_exist(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
@@ -287,10 +287,10 @@ KMETHOD Memcache_exist(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
-#endif /* LIBMEMCACHED_VERSION_HEX >= 0x00053000 */
+#endif /* LIBMEMCACHED_VERSION_HEX == 0x00053000 */
 
 //@Native @Public Boolean Memcache.exist_by_key(String key);
-# if LIBMEMCACHED_VERSION_HEX >= 0x00053000
+# if LIBMEMCACHED_VERSION_HEX == 0x00053000
 KMETHOD Memcache_existByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
@@ -310,7 +310,7 @@ KMETHOD Memcache_existByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
-#endif /* LIBMEMCACHED_VERSION_HEX >= 0x00053000 */
+#endif /* LIBMEMCACHED_VERSION_HEX == 0x00053000 */
 
 /* ======================================================================== */
 // [Flushing client buffers]
@@ -978,7 +978,7 @@ static knh_bool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_
 		memcached_dump_fn callbacks[1];
 		callbacks[0] = &dumper;
 		if (memc->a == NULL) {
-			KNH_INITv(memc->a, new_Array0(ctx, memc_size(ctx, memc)));
+			memc->a = new_Array0(ctx, memc_size(ctx, memc));
 		}
 		rc = memcached_dump(memc->st, callbacks, memc, 1);
 		if (rc != MEMCACHED_SUCCESS) {
@@ -1007,6 +1007,7 @@ static knh_bool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_
 	}
 	mitr->index = knh_Array_size(memc->a);
 	knh_Array_clear(ctx, memc->a, 0);
+	memc->ctx = NULL;
 	return 0;
 }
 
