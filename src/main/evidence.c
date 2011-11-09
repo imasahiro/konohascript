@@ -236,15 +236,21 @@ static void memcached_vsyslog(int p, const char *fmt, va_list ap)
 	if(memc != NULL) {
 		char buf[K_LOG_msgSIZE];
 		vsnprintf(buf, sizeof(buf), fmt, ap);
+
 		const char *key = (const char *)buf;
 		char *ptr = strchr(key, ' ');
-		size_t key_length = ptr - key;
-		const char *value = ptr + 1;
-		size_t value_length = strlen(value);
+		size_t key_len = ptr - key;
+
+		const char *gkey = ptr + 1;
+		ptr = strchr(gkey, ' ');
+		size_t gkey_len = ptr - gkey;
+
+		const char *val = ptr + 1;
+		size_t val_len = strlen(val);
 
 		memcached_return rc;
 		time_t expire = 30 * 60; /* 30 minutes */
-		rc = memcached_add(memc, key, key_length, value, value_length, expire, 0);
+		rc = memcached_set_by_key(memc, gkey, gkey_len, key, key_len, val, val_len, expire, 0);
 		DBG_ASSERT(rc == MEMCACHED_SUCCESS);
 	}
 }

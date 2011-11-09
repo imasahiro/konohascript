@@ -3672,11 +3672,19 @@ static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 /* ------------------------------------------------------------------------ */
-//## @Static method String Context.getTrace();
+//## method String Context.getTrace();
 
 static KMETHOD Context_getTrace(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	RETURN_(new_String(ctx, ctx->trace));
+}
+
+/* ------------------------------------------------------------------------ */
+//## method Int Context.getSeq();
+
+static KMETHOD Context_getSeq(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	RETURNi_(ctx->seq);
 }
 
 /* ------------------------------------------------------------------------ */
