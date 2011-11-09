@@ -248,7 +248,7 @@ static void memcached_vsyslog(int p, const char *fmt, va_list ap)
 #else
 		localtime_r(&t, &tm);
 #endif /* defined(K_USING_WINDOWS_) */
-		strftime(date, 255, "%a %d %H:%M:%S", &tm);
+		knh_format_w3cdtf(date, 255, &tm);
 
 		/* gethostname */
 		char host[256];
