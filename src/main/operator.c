@@ -618,6 +618,18 @@ static KMETHOD Date_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
+//## @Const mapper Date String;
+static TYPEMAP Date_String(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Date_t *dt = (knh_Date_t*)sfp[0].o;
+	char buf[80];
+	knh_snprintf(buf, sizeof(buf), "%04d-%02d-%02dT%02d:%02d:%02d%+02d:%02d",
+		(int)(dt->dt.year), (int)(dt->dt.month), (int)dt->dt.day,
+		(int)(dt->dt.hour), (int)(dt->dt.min), (int)dt->dt.sec, (int)(dt->dt.gmtoff / 60), (int)(dt->dt.gmtoff % 60));
+	RETURN_(new_String(ctx, buf));
+}
+
+/* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method Path Path.opLINK(String path, NameSpace _);
 
 static KMETHOD Path_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
