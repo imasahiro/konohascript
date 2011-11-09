@@ -524,13 +524,22 @@ static knh_type_t json_read(CTX ctx, json_object *json, knh_sfp_t *sfp)
 
 static knh_type_t json_unpackTo(CTX ctx, const char *buf, size_t size, knh_sfp_t *sfp)
 {
+	knh_type_t type = CLASS_Tvoid;
 	if (size > 0) {
-		json_object *json = json_tokener_parse(buf);
-		knh_type_t type = json_read(ctx, json, sfp);
-		json_object_put(json);
-		return type;
+		json_tokener *tok = json_tokener_new();
+		json_object *json = json_tokener_parse_ex(tok, buf, size);
+		if (tok->err != json_tokener_success) {
+			knh_ldata_t ldata[] = {
+				LOG_i("json_tokener_error", tok->err), 
+				LOG_END};
+			KNH_NTRACE(ctx, "json_unpack", K_FAILED, ldata);
+		} else {
+			type = json_read(ctx, json, sfp);
+			json_object_put(json);
+		}
+		json_tokener_free(tok);
 	}
-	return CLASS_Tvoid;
+	return type;
 }
 //[{"hello" : "world"}, {"key0" : {"hello" : "world"}}]
 static void *json_init(CTX ctx, knh_packer_t *pk)
