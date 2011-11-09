@@ -40,7 +40,7 @@ extern "C" {
 #define K_INTERNAL
 #include <konoha1.h>
 
-//#define K_USING_MYSQL
+#define K_USING_MYSQL
 
 #ifdef K_USING_MYSQL
 #include <mysql.h>

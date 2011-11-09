@@ -1,20 +1,23 @@
 cmake_minimum_required(VERSION 2.6)
 
 project(sql)
-find_library(HAVE_LIBMYSQL NAMES mysqlclient)
-#check_include_files("mysql/mysql.h" HAVE_MYSQL_MYSQL_H)
+find_library(HAVE_LIBMYSQL NAMES mysqlclient PATHS "/usr/local/mysql/lib")
 
 if(HAVE_LIBMYSQL)
 
-find_program(MYSQL_CONFIG NAMES mysql_config DOC "mysql_config")
+find_program(MYSQL_CONFIG NAMES mysql_config PATHS "/usr/local/mysql/bin" DOC "mysql_config")
 
-execute_process(
-	COMMAND ${MYSQL_CONFIG} --include
-	OUTPUT_VARIABLE HAVE_MYSQL_H
-	OUTPUT_STRIP_TRAILING_WHITESPACE
+if (MYSQL_CONFIG)
+	execute_process(
+		COMMAND ${MYSQL_CONFIG} --include
+		OUTPUT_VARIABLE HAVE_MYSQL_H
+		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
+endif(MYSQL_CONFIG)
 
 if(HAVE_MYSQL_H)
+
+set(MessageLibs ${MessageLibs} mysql PARENT_SCOPE)
 
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
