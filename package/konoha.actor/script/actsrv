@@ -22,7 +22,7 @@ void evalMsg(String role, String task, String msg) {
 	ous << "Memcache ctxid_memcache = new Memcache(\"" << host << "\", " << port << ");" << EOL;
 	ous << "ctxid_memcache.add(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
 	ous << "ctxid_memcache.replace(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
-	ous << "ctxid_memcache.add(\"" + task + ":start\", (to String)new Date(), 0, 0), 0, 0);" << EOL;
+	ous << "ctxid_memcache.add(\"" + task + ":start\", (to String)new Date(), 0, 0);" << EOL;
 	ous << "ctxid_memcache.replace(\"" + task + ":start\", (to String)new Date(), 0, 0);" << EOL;
 	ous << msg << EOL;
 	ous << "ctxid_memcache.add(\"" + task + ":end\", (to String)new Date(), 0, 0);" << EOL;
