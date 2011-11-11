@@ -49,8 +49,8 @@ class Actor
 		_name = name;
 		_host = host;
 		_port = port;
-		Socket s = new Socket(host, port);
-		if (s != null) {
+		try {
+			Socket s = new Socket(host, port);
 			Map ldata = {};
 			ldata["name"] = name;
 			ldata["host"] = host;
@@ -60,7 +60,7 @@ class Actor
 			ous.writeMsgPack("ping");
 			ous.close();
 			s.close();
-		} else {
+		} catch (Exception!! e) {
 			throw new Script!!("cannot establish connection to host: " + host + ", port: " + (to String)port);
 		}
 	}
@@ -116,9 +116,12 @@ class Actor
 		endTask();
 	}
 
-	void startTask(String task_name) {
-		task = task_name;
-		role = "Role"; // TODO
+	void startTask(String task_name, String role) {
+		_task = task_name;
+		_role = role;
+		if (role == null) {
+			_role = "Role";
+		}
 		this.eval("<< " + role + ":" + task);
 	}
 

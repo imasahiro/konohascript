@@ -802,7 +802,7 @@ static knh_memcached_t *knh_memcached_malloc(CTX ctx)
 static void knh_memcached_init(CTX ctx, knh_memcached_t *memc, memcached_st *st)
 {
 	memc->ctx = NULL;
-	memc->a = NULL;
+	memc->a = new_Array0(ctx, 0);
 	memc->st = st;
 }
 
@@ -858,8 +858,10 @@ static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kn
 static void memc_reftrace(CTX ctx, knh_mapptr_t *m FTRARG)
 {
 	knh_memcached_t *memc = (knh_memcached_t *)m;
-	KNH_ADDNNREF(ctx, memc->a);
-	KNH_SIZEREF(ctx);
+	if (memc->ctx == NULL) {
+		KNH_ADDREF(ctx, memc->a);
+		KNH_SIZEREF(ctx);
+	}
 }
 
 static void memc_freemap(CTX ctx, knh_mapptr_t *m)
@@ -977,9 +979,6 @@ static knh_bool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_
 		memc->ctx = WCTX(ctx);
 		memcached_dump_fn callbacks[1];
 		callbacks[0] = &dumper;
-		if (memc->a == NULL) {
-			memc->a = new_Array0(ctx, memc_size(ctx, memc));
-		}
 		rc = memcached_dump(memc->st, callbacks, memc, 1);
 		if (rc != MEMCACHED_SUCCESS) {
 			knh_ldata_t ldata[] = {LOG_s("error", memcached_strerror(memc->st, rc)), LOG_END};
