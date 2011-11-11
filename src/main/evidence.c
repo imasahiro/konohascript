@@ -1489,11 +1489,11 @@ static void ntrace(CTX ctx, const char *event, int pe, const knh_ldata2_t *d)
 	p[0] = 0;
 	knh_syslog(logtype, (const char*)buf);
 	if(isVerbose) {
-		fputs(LOG__(logtype), stdout);
-		fputs(" ", stdout);
-		fputs(buf, stdout);
-		fputs(K_OSLINEFEED, stdout);
-		fflush(stdout);
+		fputs(LOG__(logtype), stderr);
+		fputs(" ", stderr);
+		fputs(buf, stderr);
+		fputs(K_OSLINEFEED, stderr);
+		fflush(stderr);
 	}
 //	if(pe % 2 == 1) {
 //

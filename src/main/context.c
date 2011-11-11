@@ -549,12 +549,19 @@ static void share_free(CTX ctx, knh_share_t *share)
 		}
 	}
 	knh_ObjectArena_finalfree(ctx, share->ObjectArenaTBL, share->sizeObjectArenaTBL);
+
+	/* freeing cdef */
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		knh_ClassTBL_t *ct = varClassTBL(i);
-		if(ct->cdef->asize > 0) {
+		const knh_ClassTBL_t *supTBL = ClassTBL(ct->supcid);
+		if (ct->cdef != supTBL ->cdef && ct->cdef->asize > 0) {
 			DBG_P("freeing ClassDef cid=%d %s", i, ct->cdef->name);
 			KNH_FREE(ctx, (void*)ct->cdef, ct->cdef->asize);
 		}
+	}
+	/* freeing ClassTBL->fields and ClassTBL */
+	for(i = 0; i < share->sizeClassTBL; i++) {
+		knh_ClassTBL_t *ct = varClassTBL(i);
 		if(ct->fcapacity > 0) {
 			KNH_FREE(ctx, ct->fields, sizeof(knh_fields_t) * ct->fcapacity);
 			ct->fields = NULL;
