@@ -377,7 +377,7 @@ static knh_String_t* ObjectField_getkey(CTX ctx, knh_sfp_t *sfp)
 
 static void pack_unbox(CTX ctx, void *pkr, knh_class_t cid, knh_Object_t **v, const knh_PackSPI_t *packspi)
 {
-        knh_num_t n = ((knh_num_t*)(v))[0];
+	knh_num_t n = ((knh_num_t*)(v))[0];
 	if (IS_Tint(cid)) {
 		packspi->pack_int(ctx, pkr, n.ivalue);
 	} else if (IS_Tfloat(cid)) {
@@ -403,9 +403,10 @@ static void Object_wdata(CTX ctx, knh_RawPtr_t *o, void *pkr, const knh_PackSPI_
 
 	// { "ks:class" : "main.Person", 
 	packspi->pack_beginmap(ctx, pkr, field_count + 1);
-	packspi->pack_string(ctx, pkr, "ks:class", sizeof("ks:class"));
+	packspi->pack_string(ctx, pkr, "ks:class", knh_strlen("ks:class"));
 	packspi->pack_putc(ctx, pkr, ':');
 	packspi->pack_string(ctx, pkr, S_totext(ct->sname), S_size(ct->sname));
+	packspi->pack_putc(ctx, pkr, ',');
 
 	for (i = 0; i < ct->fsize; i++) {
 		knh_fields_t *field = ct->fields + i;
@@ -418,6 +419,7 @@ static void Object_wdata(CTX ctx, knh_RawPtr_t *o, void *pkr, const knh_PackSPI_
 		}
 		key = knh_getFieldName(ctx, field->fn);
 		packspi->pack_string(ctx, pkr, S_totext(key), S_size(key));
+		packspi->pack_putc(ctx, pkr, ':');
 		if (IS_Tunbox(type)) {
 			pack_unbox(ctx, pkr, type, v + i, packspi);
 		} else {
@@ -1330,13 +1332,18 @@ static void Array_wdata(CTX ctx, knh_RawPtr_t *o, void *pkr, const knh_PackSPI_t
 	knh_class_t p1 = O_p1(a);
 	if (Array_isNDATA(a)) {
 		for (i = 0; i < a->size; i++) {
+			if (i != 0)
+				packspi->pack_putc(ctx, pkr, ',');
 			pack_unbox(ctx, pkr, p1, (knh_Object_t**)(a->ilist+i), packspi);
 		}
 	} else {
 		for (i = 0; i < a->size; i++) {
+			if (i != 0)
+				packspi->pack_putc(ctx, pkr, ',');
 			O_cTBL(a->list[i])->cdef->wdata(ctx, RAWPTR(a->list[i]), pkr, packspi);
 		}
 	}
+	packspi->pack_endarray(ctx, pkr);
 }
 
 static const knh_ClassDef_t ArrayDef = {
@@ -1506,11 +1513,51 @@ static void Map_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	knh_putc(ctx, w, '}');
 }
 
+static void pack_sfp(CTX ctx, void *pkr, knh_class_t cid, knh_sfp_t *sfp, const knh_PackSPI_t *packspi)
+{
+	if (IS_Tunbox(cid)) {
+		if (IS_Tint(cid)) {
+			packspi->pack_int(ctx, pkr, sfp[0].ivalue);
+		} else if (IS_Tfloat(cid)) {
+			packspi->pack_float(ctx, pkr, sfp[0].fvalue);
+		} else {
+			packspi->pack_bool(ctx, pkr, sfp[0].bvalue);
+		}
+	} else {
+		O_cTBL(sfp[0].o)->cdef->wdata(ctx, RAWPTR(sfp[0].o), pkr, packspi);
+	}
+}
+
+
+static void Map_wdata(CTX ctx, knh_RawPtr_t *o, void *pkr, const knh_PackSPI_t *packspi)
+{
+	knh_Map_t *m = (knh_Map_t*)o;
+	size_t i = 0, n = m->spi->size(ctx, m->mapptr);
+
+	packspi->pack_beginmap(ctx, pkr, n + 1);
+	if(n > 0) {
+		BEGIN_LOCAL(ctx, lsfp, 2);
+		knh_class_t p1 = O_cTBL(o)->p1, p2 = O_cTBL(o)->p2;
+		knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
+		while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
+			if (i++ != 0) {
+				packspi->pack_putc(ctx, pkr, ',');
+			}
+			pack_sfp(ctx, pkr, p1, lsfp, packspi);
+			packspi->pack_putc(ctx, pkr, ':');
+			pack_sfp(ctx, pkr, p2, lsfp+1, packspi);
+		}
+		END_LOCAL(ctx, lsfp);
+	}
+	packspi->pack_endmap(ctx, pkr);
+}
+
+
 static const knh_ClassDef_t MapDef = {
 	Map_init, TODO_initcopy, Map_reftrace, Map_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Map_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
-	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
+	DEFAULT_findTypeMapNULL, Map_wdata, DEFAULT_2, DEFAULT_3,
 	"Map", CFLAG_Map, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
