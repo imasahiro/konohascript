@@ -265,52 +265,52 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 // [Determine if a keys exists]
 
 //@Native @Public Boolean Memcache.exist(String key);
-# if LIBMEMCACHED_VERSION_HEX == 0x00053000
-KMETHOD Memcache_exist(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
-	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
-	memcached_return_t rc = 
-		memcached_exist(mcd->st, key, key_length);
-	if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND) {
-		// key is exists
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_exist", K_OK, ldata);
-	} else {
-		// its might be error
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_exist", K_FAILED, ldata);
-	}
-	RETURNb_(rc == MEMCACHED_SUCCESS);
-}
-#endif /* LIBMEMCACHED_VERSION_HEX == 0x00053000 */
+//# if LIBMEMCACHED_VERSION_HEX == 0x00053000
+//KMETHOD Memcache_exist(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+//	const char *key = String_to(const char*, sfp[1]);
+//	size_t key_length = ((sfp[1].s)->str.len);
+//	memcached_return_t rc = 
+//		memcached_exist(mcd->st, key, key_length);
+//	if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND) {
+//		// key is exists
+//		knh_ldata_t ldata[] = {LOG_END};
+//		KNH_NTRACE(ctx, "memcached_exist", K_OK, ldata);
+//	} else {
+//		// its might be error
+//		knh_ldata_t ldata[] = {
+//			LOG_i("return_t", rc), 
+//			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
+//			LOG_END};
+//		KNH_NTRACE(ctx, "memcached_exist", K_FAILED, ldata);
+//	}
+//	RETURNb_(rc == MEMCACHED_SUCCESS);
+//}
+//#endif /* LIBMEMCACHED_VERSION_HEX == 0x00053000 */
 
 //@Native @Public Boolean Memcache.exist_by_key(String key);
-# if LIBMEMCACHED_VERSION_HEX == 0x00053000
-KMETHOD Memcache_existByKey(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
-	const char *group_key = String_to(const char*, sfp[1]);
-	size_t group_key_length = ((sfp[1].s)->str.len);
-	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
-	memcached_return_t rc = 
-		memcached_exist_by_key(mcd->st, group_key, group_key_length,
-							   key, key_length);
-	if (rc == MEMCACHED_SUCCESS) {
-		// key is exists
-	} else if (rc == MEMCACHED_NOTFOUND) {
-		// key is not found
-	} else {
-		// its might be error
-	}
-	RETURNb_(rc == MEMCACHED_SUCCESS);
-}
-#endif /* LIBMEMCACHED_VERSION_HEX == 0x00053000 */
+//# if LIBMEMCACHED_VERSION_HEX == 0x00053000
+//KMETHOD Memcache_existByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+//	const char *group_key = String_to(const char*, sfp[1]);
+//	size_t group_key_length = ((sfp[1].s)->str.len);
+//	const char *key = String_to(const char*, sfp[2]);
+//	size_t key_length = ((sfp[2].s)->str.len);
+//	memcached_return_t rc = 
+//		memcached_exist_by_key(mcd->st, group_key, group_key_length,
+//							   key, key_length);
+//	if (rc == MEMCACHED_SUCCESS) {
+//		// key is exists
+//	} else if (rc == MEMCACHED_NOTFOUND) {
+//		// key is not found
+//	} else {
+//		// its might be error
+//	}
+//	RETURNb_(rc == MEMCACHED_SUCCESS);
+//}
+//#endif /* LIBMEMCACHED_VERSION_HEX == 0x00053000 */
 
 /* ======================================================================== */
 // [Flushing client buffers]
