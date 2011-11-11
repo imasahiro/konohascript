@@ -122,7 +122,7 @@ class Actor
 		if (role == null) {
 			_role = "Role";
 		}
-		this.eval("<< " + role + ":" + task);
+		this.eval("<< " + _role + ":" + task);
 	}
 
 	void endTask() {
