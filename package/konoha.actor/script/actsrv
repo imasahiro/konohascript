@@ -1,5 +1,5 @@
 using konoha.proc.*;
-using konoha.memcached.*;
+//using konoha.memcached.*;
 
 Proc mailbox;
 
@@ -15,14 +15,18 @@ void evalMsg(String role, String task, String msg) {
 	int port = 11211;
 	Proc p = new Proc([$konoha.bin.path, "-a", "--enforce-security=" + role, "--logcached=" + host + ":" + port, "-"]);
 	OutputStream ous = p.getOutputStream();
-	Memcache mc = new Memcache(host, port);
-	mc.add(task + ":start", (to String)new Date(), 0, 0);
-	mc.replace(task + ":start", (to String)new Date(), 0, 0);
+	//Memcache mc = new Memcache(host, port);
+	//mc.add(task + ":start", (to String)new Date(), 0, 0);
+	//mc.replace(task + ":start", (to String)new Date(), 0, 0);
 	ous << "using konoha.memcached.*;" << EOL;
 	ous << "Memcache ctxid_memcache = new Memcache(\"" << host << "\", " << port << ");" << EOL;
 	ous << "ctxid_memcache.add(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
 	ous << "ctxid_memcache.replace(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.add(\"" + task + ":start\", (to String)new Date(), 0, 0), 0, 0);" << EOL;
+	ous << "ctxid_memcache.replace(\"" + task + ":start\", (to String)new Date(), 0, 0);" << EOL;
 	ous << msg << EOL;
+	ous << "ctxid_memcache.add(\"" + task + ":end\", (to String)new Date(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.replace(\"" + task + ":end\", (to String)new Date(), 0, 0);" << EOL;
 	ous.close();
 	InputStream ins = p.getInputStream();
 	foreach(String s in ins) {
@@ -33,8 +37,8 @@ void evalMsg(String role, String task, String msg) {
 		ERR << s << EOL;
 	}
 	p.wait();
-	mc.add(task + ":end", (to String)new Date(), 0, 0);
-	mc.replace(task + ":end", (to String)new Date(), 0, 0);
+	//mc.add(task + ":end", (to String)new Date(), 0, 0);
+	//mc.replace(task + ":end", (to String)new Date(), 0, 0);
 }
 
 void main(String[] args)
