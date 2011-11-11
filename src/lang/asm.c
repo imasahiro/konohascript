@@ -883,6 +883,10 @@ static void _DYNMTD(CTX ctx, knh_sfp_t *sfp, struct klr_LDMTD_t *op)
 		if(IS_Tint(reqt) && IS_Tfloat(ct->cid)) {
 			sfp[idx].ivalue = (knh_int_t)N_tofloat(o); continue;
 		}
+		/* dynamic args */
+		if (reqt == TYPE_dyn) {
+			continue;
+		}
 		THROW_ParamTypeError(ctx, sfp, i, (mtd)->mn, reqt, O_cid(o));
 	}
 	sfp[thisidx+K_MTDIDX].mtdNC = op->mtdNC;
