@@ -3723,7 +3723,11 @@ static KMETHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 #endif
 	//NOTE_(ctx, "fork command='%s'", cmd);
 #ifdef K_USING_POSIX_
+#ifndef K_USING_LINUX_
 	FILE *fp = popen((const char*)cmd, "r+");
+#else
+	FILE *fp = popen((const char*)cmd, "r");
+#endif
 	if(fp != NULL) {
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		char buf[K_PAGESIZE];
