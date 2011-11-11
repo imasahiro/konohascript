@@ -1004,11 +1004,6 @@ typedef struct knh_NameSpaceEX_t {
 	struct knh_DictMap_t*   name2dpiNameDictMapNULL;
 	struct knh_Array_t*     methodsNULL;
 	struct knh_Array_t*     formattersNULL;
-
-	struct knh_DictMap_t*   aliasRulesNULL;
-	struct knh_Array_t*     syntaxRulesNULL;
-	struct knh_DictMap_t*   binaryRulesNULL;
-	struct knh_Array_t*     statementRulesNULL;
 } knh_NameSpaceEX_t;
 
 struct knh_NameSpace_t {
@@ -1024,7 +1019,7 @@ struct knh_NameSpace_t {
 //## @Private @Singleton class Script Object;
 
 typedef struct knh_Script_t knh_Script_t;
-#ifdef K_INTERNAL
+#ifdef USE_STRUCT_Script
 struct knh_Script_t {
 	knh_hObject_t h;
 	Object **fields;
@@ -1077,46 +1072,56 @@ struct knh_Assurance_t {
 //## class Sugar Object;
 //## class Expr  Object;
 //## class Stmt  Object;
+//## class Block Object;
+//## @Singleton class Lang Object;
 
-typedef knh_ushort_t   knh_token_t;
 typedef knh_ushort_t   knh_sugar_t;
 typedef knh_ushort_t   knh_expr_t;
-typedef knh_ushort_t   knh_stmt_t;
+
+typedef enum {
+	TK_NONE,
+	TK_CODE,
+	TK_INDENT,
+	TK_WHITESPACE,
+	TK_OPERATOR,
+	TK_SYMBOL,
+	TK_USYMBOL,
+	TK_TEXT,
+	TK_STEXT,
+	TK_INT,
+	TK_FLOAT,
+	TK_URN,
+	TK_REGEX,
+	TK_META,
+	TK_PROP,
+	TK_LIST,
+	TK_EXPR,
+	TK_STMT,
+	TK_BLOCK,
+} knh_token_t ;
+
+typedef enum {
+	STMT_DONE,
+	STMT_ERR,
+	STMT_DECL,
+	STMT_IF,
+	STMT_WHILE,
+	STMT_USER,
+} knh_stmt_t;
 
 typedef struct knh_Token_t knh_Token_t;
-
-#define TK_CODE     0
-#define TK_SYMBOL   1
-#define TK_USYMBOL  2
-#define TK_OPERATOR 3
-#define TK_TEXT     4
-#define TK_STEXT    5
-#define TK_REGEX    6
-#define TK_INT      7
-#define TK_FLOAT    8
-#define TK_URN      9
-#define TK_PROP    10
-#define TK_META    11
-#define TK_INDENT  12
-#define TK_WHITESPACE 13
-#define TK_END 14/*dummy*/
-
 #ifdef USE_STRUCT_Token
 struct knh_Token_t {
 	knh_hObject_t h;
-	knh_token_t token;  knh_short_t optnum;
+	knh_token_t token;
+	union {
+		struct knh_String_t *text;
+		struct knh_Expr_t *expr;
+	};
 	knh_uline_t  uline;
-	struct knh_String_t *text;
+	knh_ushort_t lpos; knh_short_t  topch;
 };
 #endif
-
-//sugar binary "+" > "=";
-//
-//a = {
-//	_ = $expr;
-//	$expr = $expr + 1;
-//	=> _;
-//}
 
 #define SUGAR_SYNTAX    0
 #define SUGAR_BINARY    1
@@ -1127,25 +1132,26 @@ typedef struct knh_Sugar_t knh_Sugar_t;
 struct knh_Sugar_t {
 	knh_hObject_t h;
 	knh_sugar_t sugar;  knh_short_t optnum;
-	struct knh_Array_t *rules;
-	struct knh_String_t *action;
+	struct knh_String_t *key;
+	struct knh_Array_t  *rules;
 };
 #endif
 
 #define EXPR_USER            0
-#define TERM_TYPE            1
-#define TERM_CONSTVALUE      2
-#define TERM_FUNCVAR         3
-#define TERM_BLOCKVAR        4
-#define TERM_FUNCFIELD       5
-#define TERM_BLOCKFIELD      6
+#define TERM_TOKEN           1
+#define TERM_TYPE            2
+#define TERM_CONST           3
+#define TERM_FUNCVAR         4
+#define TERM_BLOCKVAR        5
+#define TERM_FUNCFIELD       6
+#define TERM_BLOCKFIELD      7
 
 typedef struct knh_Expr_t knh_Expr_t;
 #ifdef USE_STRUCT_Expr
 struct knh_Expr_t {
 	knh_hObject_t h;
 	knh_expr_t expr; knh_type_t type;
-	knh_uline_t uline;
+	knh_Token_t *token;
 	union {
 		struct knh_Array_t *cons;
 		Object* data;
@@ -1167,24 +1173,45 @@ struct knh_Expr_t {
 };
 #endif
 
-#define STMT_USER  0
-#define STMT_BLOCK 1
-#define STMT_DECL  2
-#define STMT_IF    3
-
 typedef struct knh_Stmt_t knh_Stmt_t;
-#ifdef K_INTERNAL
+#ifdef USE_STRUCT_Stmt
 struct knh_Stmt_t {
 	knh_hObject_t h;
-	knh_stmt_t   stmt; knh_ushort_t optnum;
-	knh_uline_t uline;
-	union {
-		struct knh_DictMap_t* clauseDictMap;
-		struct knh_Array_t* blocks;
-	};
+	knh_stmt_t stmt;
+	struct knh_Stmt_t      *key;
+	struct knh_Block_t     *parent;
+	struct knh_DictMap_t   *clauseDictMap;
 };
 #endif
 
+typedef struct knh_Block_t knh_Block_t;
+#ifdef USE_STRUCT_Block
+struct knh_Block_t {
+	knh_hObject_t h;
+	struct knh_Stmt_t    *parent;
+	struct knh_Array_t   *blocks;
+};
+#endif
+
+typedef struct knh_Lang_t knh_Lang_t;
+#ifdef USE_STRUCT_Lang
+typedef struct knh_LangEX_t {
+	struct knh_DictMap_t*   tokenRulesNULL;
+	struct knh_DictMap_t*   uninaryRulesNULL;
+	struct knh_DictMap_t*   binaryRulesNULL;
+	struct knh_Array_t*     stmtRulesNULL;
+	struct knh_Array_t*     exprRulesNULL;
+} knh_LangEX_t ;
+
+
+struct knh_Lang_t {
+	knh_hObject_t h;
+	knh_LangEX_t *b;
+	struct knh_String_t  *name;
+	struct knh_Lang_t    *parentNULL;
+	struct knh_Array_t   *gcbuf;   // gc buffer
+};
+#endif
 
 
 /* ------------------------------------------------------------------------ */

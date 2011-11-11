@@ -4,11 +4,11 @@
  * Copyright (c) 2006-2011, Kimio Kuramitsu <kimio at ynu.ac.jp>
  *           (c) 2008-      Konoha Team konohaken@googlegroups.com
  * All rights reserved.
- * You may choose one of the following two licenses when you use konoha.
- * If you want to use the latter license, please contact us.
+ * You may choose one of the following two licelanges when you use konoha.
+ * If you want to use the latter licelange, please contact us.
  *
- * (1) GNU General Public License 3.0 (with K_UNDER_GPL)
- * (2) Konoha Non-Disclosure License 1.
+ * (1) GNU General Public Licelange 3.0 (with K_UNDER_GPL)
+ * (2) Konoha Non-Disclosure Licelange 1.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -31,8 +31,9 @@ static void Token_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Token_t *tk = (knh_Token_t*)o;
 	tk->uline     =   0;
-	tk->token     =   TK_WHITESPACE;
-	tk->optnum     =   0;
+	tk->token     =   TK_NONE;
+	tk->topch     =   0;
+	tk->lpos      =   -1;
 	KNH_INITv(tk->text, TS_EMPTY);
 }
 
@@ -72,17 +73,17 @@ static const knh_ClassDef_t TokenDef = {
 
 static void Sugar_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_Sugar_t *sugar = (knh_Sugar_t*)o;
-	sugar->sugar = SUGAR_SYNTAX;
-	KNH_INITv(sugar->rules, new_Array0(ctx, 0));
-	KNH_INITv(sugar->action, KNH_NULL);
+	knh_Sugar_t *sgr = (knh_Sugar_t*)o;
+	sgr->sugar = SUGAR_SYNTAX;
+	KNH_INITv(sgr->key, TS_EMPTY);
+	KNH_INITv(sgr->rules, new_Array0(ctx, 0));
 }
 
 static void Sugar_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
-	knh_Sugar_t *sugar = (knh_Sugar_t*)o;
-	KNH_ADDREF(ctx, sugar->rules);
-	KNH_ADDREF(ctx, sugar->action);
+	knh_Sugar_t *sgr = (knh_Sugar_t*)o;
+	KNH_ADDREF(ctx, sgr->key);
+	KNH_ADDREF(ctx, sgr->rules);
 	KNH_SIZEREF(ctx);
 }
 
@@ -116,34 +117,25 @@ static const knh_ClassDef_t SugarDef = {
 static void Expr_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Expr_t *expr = (knh_Expr_t*)o;
-	expr->uline      =   0;
 	expr->expr       =   EXPR_USER;
 	expr->type       =   TYPE_var;
-	expr->index      =    0;
-	expr->xindex     =    0;
-	KNH_INITv(expr->data, TS_EMPTY);
+	expr->index      =   0;
+	expr->xindex     =   0;
+	KNH_INITv(expr->token, KNH_NULL);
+	KNH_INITv(expr->data,  TS_EMPTY);
 }
 
 static void Expr_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Expr_t *expr = (knh_Expr_t*)o;
+	KNH_ADDREF(ctx, expr->token);
 	KNH_ADDREF(ctx, expr->data);
 	KNH_SIZEREF(ctx);
 }
 
 static void Expr_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-//	knh_Expr_t *tk = (knh_Expr_t*)o;
-//	if(IS_FMTdump(level)) {
-//		if(tk->uline != 0) {
-//			knh_write(ctx, w, STEXT("+L"));
-//			knh_write_ifmt(ctx, w, K_INT_FMT, ULINE_line(tk->uline));
-//		}
-//		if(SP(tk)->type != TYPE_var) {
-//			knh_write(ctx, w, STEXT("+:")); knh_write_type(ctx, w, SP(tk)->type);
-//		}
-//	}
-//	knh_write(ctx, w, S_tobytes(tk->text));
+
 }
 
 static const knh_ClassDef_t ExprDef = {
@@ -161,32 +153,24 @@ static const knh_ClassDef_t ExprDef = {
 static void Stmt_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
-	stmt->uline     =   0;
-	stmt->stmt      =   STMT_USER;
-	stmt->optnum    =   0;
+	stmt->stmt      =   STMT_DONE;
+	KNH_INITv(stmt->key,    TS_EMPTY);
+	KNH_INITv(stmt->parent, KNH_NULL);
 	KNH_INITv(stmt->clauseDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, NULL));
 }
 
 static void Stmt_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	KNH_ADDREF(ctx, stmt->key);
+	KNH_ADDREF(ctx, stmt->parent);
 	KNH_ADDREF(ctx, stmt->clauseDictMap);
 	KNH_SIZEREF(ctx);
 }
 
 static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-//	knh_Stmt_t *tk = (knh_Stmt_t*)o;
-//	if(IS_FMTdump(level)) {
-//		if(tk->uline != 0) {
-//			knh_write(ctx, w, STEXT("+L"));
-//			knh_write_ifmt(ctx, w, K_INT_FMT, ULINE_line(tk->uline));
-//		}
-//		if(SP(tk)->type != TYPE_var) {
-//			knh_write(ctx, w, STEXT("+:")); knh_write_type(ctx, w, SP(tk)->type);
-//		}
-//	}
-//	knh_write(ctx, w, S_tobytes(tk->text));
+
 }
 
 static const knh_ClassDef_t StmtDef = {
@@ -198,46 +182,81 @@ static const knh_ClassDef_t StmtDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 
-///* --------------- */
-///* Stmt */
-//
-//static void Stmt_init(CTX ctx, knh_RawPtr_t *o)
-//{
-//	knh_Stmt_t *tk = (knh_Stmt_t*)o;
-//	tk->uline     =   0;
-//	tk->token     =   TK_WHITESPACE;
-//	tk->optnum     =   0;
-//	KNH_INITv(tk->text, TS_EMPTY);
-//}
-//
-//static void Stmt_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
-//{
-//	knh_Stmt_t *tk = (knh_Stmt_t*)o;
-//	KNH_ADDREF(ctx, tk->text);
-//	KNH_SIZEREF(ctx);
-//}
-//
-//static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
-//{
-//	knh_Stmt_t *tk = (knh_Stmt_t*)o;
-////	if(IS_FMTdump(level)) {
-////		if(tk->uline != 0) {
-////			knh_write(ctx, w, STEXT("+L"));
-////			knh_write_ifmt(ctx, w, K_INT_FMT, ULINE_line(tk->uline));
-////		}
-////		if(SP(tk)->type != TYPE_var) {
-////			knh_write(ctx, w, STEXT("+:")); knh_write_type(ctx, w, SP(tk)->type);
-////		}
-////	}
+/* --------------- */
+/* Block */
+
+static void Block_init(CTX ctx, knh_RawPtr_t *o)
+{
+	knh_Block_t *bk = (knh_Block_t*)o;
+	KNH_INITv(bk->parent, KNH_NULL);
+	KNH_INITv(bk->blocks, new_Array0(ctx, 0));
+}
+
+static void Block_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+{
+	knh_Block_t *bk = (knh_Block_t*)o;
+	KNH_ADDREF(ctx, bk->parent);
+	KNH_ADDREF(ctx, bk->blocks);
+	KNH_SIZEREF(ctx);
+}
+
+static void Block_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+{
+//	knh_Block_t *bk = (knh_Block_t*)o;
 //	knh_write(ctx, w, S_tobytes(tk->text));
-//}
-//
-//static const knh_ClassDef_t StmtDef = {
-//	Stmt_init, TODO_initcopy, Stmt_reftrace, DEFAULT_free,
-//	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Stmt_p,
-//	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
-//	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-//	"Stmt", CFLAG_Stmt, 0, NULL,
-//	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
-//};
+}
+
+static const knh_ClassDef_t BlockDef = {
+	Block_init, TODO_initcopy, Block_reftrace, DEFAULT_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Block_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
+	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
+	"Block", CFLAG_Block, 0, NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+};
+
+static void Lang_init(CTX ctx, knh_RawPtr_t *o)
+{
+	knh_Lang_t *lang = (knh_Lang_t*)o;
+	knh_LangEX_t *b = knh_bodymalloc(ctx, Lang);
+	knh_bzero(b, sizeof(knh_LangEX_t));
+	lang->parentNULL       = NULL;
+	KNH_INITv(lang->name,  TS_EMPTY);
+	KNH_INITv(lang->gcbuf, new_Array0(ctx, 0));
+	lang->b = b;
+}
+
+static void Lang_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+{
+	knh_Lang_t *lang = (knh_Lang_t*)o;
+	knh_LangEX_t *b = DP(lang);
+	KNH_ADDREF(ctx, lang->name);
+	KNH_ADDREF(ctx, lang->gcbuf);
+	KNH_ADDNNREF(ctx, lang->parentNULL);
+	KNH_ADDNNREF(ctx, b->tokenRulesNULL);
+	KNH_ADDNNREF(ctx, b->uninaryRulesNULL);
+	KNH_ADDNNREF(ctx, b->binaryRulesNULL);
+	KNH_ADDNNREF(ctx, b->stmtRulesNULL);
+	KNH_ADDNNREF(ctx, b->exprRulesNULL);
+	KNH_SIZEREF(ctx);
+}
+
+static void Lang_free(CTX ctx, knh_RawPtr_t *o)
+{
+	BODY_free(ctx, o);
+}
+
+static void Lang_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+{
+
+}
+
+static const knh_ClassDef_t LangDef = {
+	Lang_init, TODO_initcopy, Lang_reftrace, Lang_free,
+	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Lang_p,
+	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
+	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
+	"Lang", CFLAG_Lang, sizeof(knh_LangEX_t), NULL,
+	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+};
 

@@ -116,6 +116,7 @@ static void CommonContext_init(CTX ctx, knh_context_t *o)
 	KNH_INITv(o->err, ctx->share->err);
 	KNH_INITv(o->e, KNH_NULL);
 	KNH_INITv(o->evaled, KNH_NULL);
+	KNH_INITv(o->errmsgs, new_Array0(ctx, 0));
 #ifndef K_USING_STRINGPOOL
 	KNH_INITv(o->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "Context.symbolDictMap"));
 #endif
@@ -132,6 +133,7 @@ static knh_Object_t** CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FTRARG
 //	KNH_ADDREF(ctx, ctxo->constPools);
 	KNH_ADDREF(ctx, ctxo->e);
 	KNH_ADDREF(ctx, ctxo->evaled);
+	KNH_ADDREF(ctx, ctxo->errmsgs);
 	KNH_ADDREF(ctx, (ctxo->script));
 	KNH_ADDREF(ctx, (ctxo->enc));
 	KNH_ADDREF(ctx, (ctxo->in));
@@ -314,6 +316,7 @@ static knh_context_t* new_RootContext(void)
 	share->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", NULL, 0, share->namecapacity, sizeof(knh_nameinfo_t));
 	KNH_INITv(share->urnDictSet, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "System.urnDictSet"));
 	KNH_INITv(share->urns, new_Array0(ctx, 1));
+	KNH_INITv(share->corelang, new_(Lang));
 	KNH_INITv(share->tokenDictSet, new_DictSet0(ctx, (TT_MAX - STT_MAX), 0/*isCaseMap*/, "System.tokenDictSet"));
 //	KNH_INITv(share->URNAliasDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.URNAliasDictMap"));
 
@@ -474,6 +477,7 @@ static knh_Object_t **share_reftrace(CTX ctx, knh_share_t *share FTRARG)
 	KNH_ADDREF(ctx, (share->urnDictSet));
 	KNH_ADDREF(ctx, (share->urns));
 	KNH_ADDREF(ctx, (share->tokenDictSet));
+	KNH_ADDREF(ctx, (share->corelang));
 //	KNH_ADDREF(ctx, (share->URNAliasDictMap));
 	KNH_ENSUREREF(ctx, size);
 	for(i = 0; i < size; i++) {

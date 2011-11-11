@@ -2433,14 +2433,13 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
 	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
-	memset(b, 0, sizeof(knh_NameSpaceEX_t));
+	knh_bzero(b, sizeof(knh_NameSpaceEX_t));
 	KNH_INITv(b->nsname, TS_main);
 	KNH_INITv(ns->path, ctx->share->cwdPath);
 	ns->parentNULL          = NULL;
 	b->ffilinksNULL         = NULL;
 	b->linkDictMapNULL      = NULL;
 	b->name2ctDictSetNULL  = NULL;
-//	b->func2cidDictSetNULL  = NULL;
 	b->constDictCaseMapNULL = NULL;
 	b->formattersNULL       = NULL;
 	b->methodsNULL          = NULL;
@@ -2462,10 +2461,6 @@ static void NameSpace_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDNNREF(ctx, b->constDictCaseMapNULL);
 	KNH_ADDNNREF(ctx, b->formattersNULL);
 	KNH_ADDNNREF(ctx, b->methodsNULL);
-	KNH_ADDNNREF(ctx, b->aliasRulesNULL);
-	KNH_ADDNNREF(ctx, b->syntaxRulesNULL);
-	KNH_ADDNNREF(ctx, b->binaryRulesNULL);
-	KNH_ADDNNREF(ctx, b->statementRulesNULL);
 	KNH_SIZEREF(ctx);
 }
 
@@ -3074,6 +3069,7 @@ static void knh_setDefaultValues(CTX ctx)
 	// load file/Channel/regex/db drivers
 	knh_setClassDefaultValue(ctx, CLASS_Context, KNH_NULL, knh_Context_fdefault);
 	knh_setClassDefaultValue(ctx, CLASS_NameSpace, UPCAST(ctx->share->rootns), NULL);
+	knh_setClassDefaultValue(ctx, CLASS_Lang, UPCAST(ctx->share->corelang), NULL);
 //	knh_setClassDefaultValue(ctx, CLASS_System, UPCAST(ctx->sys), NULL);
 	knh_loadSystemDriver(ctx, ctx->share->rootns);
 	{

@@ -31,6 +31,7 @@
 
 /* ************************************************************************ */
 
+#include "perror.h"
 #include "token.h"
 
 #ifdef __cplusplus
@@ -40,74 +41,89 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-void knh_NameSpace_loadAlias(CTX ctx, knh_NameSpace_t *ns, const char *rule, const char *alias)
-{
-	if(DP(ns)->aliasRulesNULL == NULL) {
-		KNH_INITv(DP(ns)->aliasRulesNULL, new_DictMap0(ctx, 0, 0, NULL));
-	}
-	knh_DictMap_set(ctx, DP(ns)->aliasRulesNULL, new_T(rule), (knh_Object_t*)new_T(alias));
-}
-
-void knh_NameSpace_loadSyntaxSugar(CTX ctx, knh_NameSpace_t *ns, const char *rules, void *func)
-{
-	if(DP(ns)->syntaxRulesNULL == NULL) {
-		KNH_INITv(DP(ns)->syntaxRulesNULL, new_Array0(ctx, 0));
-	}
-	knh_Sugar_t *sugar = new_(Sugar);
-	KNH_SETv(ctx, sugar->rules, new_Array0(ctx, 0));
-	KNH_SETv(ctx, sugar->action, new_RawPtr(ctx, ClassTBL(CLASS_Tdynamic), func));
-	knh_Array_add(ctx, DP(ns)->syntaxRulesNULL, sugar);
-	tenv_t tenvbuf = {
-		0,
-		sugar->rules,
-		(const knh_uchar_t *)rules,
-		ctx->bufa,
-		BA_size(ctx->bufa),
-		3,
-	};
-	parse(ctx, &tenvbuf, 0);
-}
-
-void knh_NameSpace_loadStatementSugar(CTX ctx, knh_NameSpace_t *ns, const char *rules, void *func)
-{
-	if(DP(ns)->statementRulesNULL == NULL) {
-		KNH_INITv(DP(ns)->statementRulesNULL, new_Array0(ctx, 0));
-	}
-	knh_Sugar_t *sugar = new_(Sugar);
-	KNH_SETv(ctx, sugar->rules, new_Array0(ctx, 0));
-	KNH_SETv(ctx, sugar->action, new_RawPtr(ctx, ClassTBL(CLASS_Tdynamic), func));
-	knh_Array_add(ctx, DP(ns)->statementRulesNULL, sugar);
-	tenv_t tenvbuf = {
-		0,
-		sugar->rules,
-		(const knh_uchar_t *)rules,
-		ctx->bufa,
-		BA_size(ctx->bufa),
-		3,
-	};
-	parse(ctx, &tenvbuf, 0);
-}
+//void knh_NameSpace_loadAlias(CTX ctx, knh_Lang_t *lol, const char *rule, const char *alias)
+//{
+//	if(DP(lol)->tokenRulesNULL == NULL) {
+//		KNH_INITv(DP(lol)->tokenRulesNULL, new_DictMap0(ctx, 0, 0, NULL));
+//	}
+//	knh_DictMap_set(ctx, DP(lol)->aliasRulesNULL, new_T(rule), (knh_Object_t*)new_T(alias));
+//}
+//
+//void knh_NameSpace_loadSyntaxSugar(CTX ctx, knh_Lang_t *lol, const char *rules, void *func)
+//{
+//	if(DP(lol)->syntaxRulesNULL == NULL) {
+//		KNH_INITv(DP(lol)->syntaxRulesNULL, new_Array0(ctx, 0));
+//	}
+//	knh_Sugar_t *sugar = new_(Sugar);
+//	KNH_SETv(ctx, sugar->rules, new_Array0(ctx, 0));
+//	KNH_SETv(ctx, sugar->action, new_RawPtr(ctx, ClassTBL(CLASS_Tdynamic), func));
+//	knh_Array_add(ctx, DP(ns)->syntaxRulesNULL, sugar);
+//	tenv_t tenvbuf = {
+//		0,
+//		sugar->rules,
+//		{rules}, rules,
+//		ctx->bufa,
+//		BA_size(ctx->bufa),
+//		3,
+//	};
+//	parse(ctx, &tenvbuf, 0);
+//}
+//
+//void knh_NameSpace_loadStatementSugar(CTX ctx, knh_Lang_t *lol, const char *rules, knh_stmt_t stmt, void *func)
+//{
+//	if(DP(ns)->statementRulesNULL == NULL) {
+//		KNH_INITv(DP(ns)->statementRulesNULL, new_Array0(ctx, 0));
+//	}
+//	knh_Sugar_t *sugar = new_(Sugar);
+//	knh_Array_add(ctx, DP(ns)->statementRulesNULL, sugar);
+//	sugar->optnum = (knh_ushort_t)stmt;
+//	KNH_SETv(ctx, sugar->rules, new_Array0(ctx, 0));
+//	if(func != NULL) {
+//		KNH_SETv(ctx, sugar->action, new_RawPtr(ctx, ClassTBL(CLASS_Tdynamic), func));
+//	}
+//	tenv_t tenvbuf = {
+//		0,
+//		sugar->rules,
+//		{rules}, rules,
+//		ctx->bufa,
+//		BA_size(ctx->bufa),
+//		3,
+//	};
+//	parse(ctx, &tenvbuf, 0);
+//}
 
 /* ------------------------------------------------------------------------ */
 /* [term] */
 
-static knh_IntData_t TokenConstInt[] = {
-	{"CODE", TK_CODE},
-	{"USYMBOL", TK_USYMBOL},
-	{"SYMBOL", TK_SYMBOL},
-	{"OPERATOR", TK_OPERATOR},
-	{"TEXT", TK_TEXT},
-	{"STEXT", TK_STEXT},
-	{"REGEX", TK_REGEX},
-	{"INT", TK_INT},
-	{"FLOAT", TK_FLOAT},
-	{"URN", TK_URN},
-	{"PROP", TK_PROP},
-	{"META", TK_META},
-	{"INDENT", TK_INDENT},
-	{"WHITESPACE", TK_WHITESPACE},
-	{NULL, 0},
+struct stmtsugar_t {
+	const char *rule;
+	knh_stmt_t stmt;
+	void *func;
+} stmtsugar_t;
+
+static struct stmtsugar_t stmtsugars[] = {
+	{"\"if\" \"(\" cond: expr \")\" then: block [\"else\" else: block]", STMT_IF, NULL},
+	{"\"while\" \"(\" cond: expr \")\" block", STMT_WHILE, NULL},
+	{NULL, STMT_DONE, NULL},
 };
+
+//static knh_IntData_t TokenConstInt[] = {
+//	{"CODE", TK_CODE},
+//	{"USYMBOL", TK_USYMBOL},
+//	{"SYMBOL", TK_SYMBOL},
+//	{"OPERATOR", TK_OPERATOR},
+//	{"TEXT", TK_TEXT},
+//	{"STEXT", TK_STEXT},
+//	{"REGEX", TK_REGEX},
+//	{"INT", TK_INT},
+//	{"FLOAT", TK_FLOAT},
+//	{"URN", TK_URN},
+//	{"PROP", TK_PROP},
+//	{"META", TK_META},
+//	{"INDENT", TK_INDENT},
+//	{"WHITESPACE", TK_WHITESPACE},
+//	{NULL, 0},
+//};
 
 /* ------------------------------------------------------------------------ */
 /* api */
@@ -121,7 +137,7 @@ static KMETHOD String_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 	tenv_t tenvbuf = {
 		1,
 		a,
-		(const knh_uchar_t *)S_totext(sfp[0].s),
+		{S_totext(sfp[0].s)}, S_totext(sfp[0].s),
 		ctx->bufa,
 		BA_size(ctx->bufa),
 		3,
@@ -134,18 +150,19 @@ static KMETHOD String_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(a);
 }
 
-// Token[] System.tokenize(String script, NameSpace _)
+// Token[] Lang.tokenize(String script)
 
-static KMETHOD System_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Lang_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *a = (knh_Array_t*)new_ReturnObject(ctx, sfp);
 	tenv_t tenvbuf = {
 		1,
 		a,
-		(const knh_uchar_t *)S_totext(sfp[1].s),
+		{S_totext(sfp[1].s)}, S_totext(sfp[1].s),
 		ctx->bufa,
 		BA_size(ctx->bufa),
 		3,/*tabsize*/
+		ctx->share->corelang,
 	};
 	KNH_SETv(ctx, sfp[K_RIX].o, a);
 	parse(ctx, &tenvbuf, 0);
@@ -169,21 +186,63 @@ static KMETHOD Token_getLine(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ULINE_line(tok->uline));
 }
 
+static KMETHOD Token_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	RETURNi_(tok->lpos);
+}
+
+static KMETHOD Token_error(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	knh_perror(ctx, ERR_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
+}
+
+static KMETHOD Token_warn(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	knh_perror(ctx, WARN_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
+}
+
+static KMETHOD Token_info(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	knh_perror(ctx, INFO_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
+}
+
+// sugar tokens "=>" uname;
+
 #define FuncData(X) {#X , X}
 
 static knh_FuncData_t FuncData[] = {
 	FuncData(String_tokenize),
-	FuncData(System_tokenize),
+	FuncData(Lang_tokenize),
 	FuncData(Token_getLine),
 	FuncData(Token_getText),
 	FuncData(Token_getType),
+	FuncData(Token_getPosition),
+	FuncData(Token_error),
+	FuncData(Token_warn),
+	FuncData(Token_info),
 	{NULL, NULL},
 };
 
 void knh_initSugarFuncData(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
-	kapi->loadClassIntConst(ctx, CLASS_Token, TokenConstInt);
+//	kapi->loadClassIntConst(ctx, CLASS_Token, TokenConstInt);
 	kapi->loadFuncData(ctx, FuncData);
+//	struct stmtsugar_t *stmt = stmtsugars;
+//	while(stmt->rule != NULL) {
+//		knh_NameSpace_loadStatementSugar(ctx, ctx->share->rootns, stmt->rule, stmt->stmt, stmt->func);
+//	}
+}
+
+void knh_initSugarData(CTX ctx, const knh_LoaderAPI_t *kapi)
+{
+//	struct stmtsugar_t *stmt = stmtsugars;
+//	while(stmt->rule != NULL) {
+//		knh_NameSpace_loadStatementSugar(ctx, ctx->share->rootns, stmt->rule, stmt->stmt, stmt->func);
+//	}
 }
 
 #ifdef __cplusplus

@@ -802,10 +802,8 @@ int knh_thread_key_create(knh_thread_key_t *key);
 int thread_setspecific(knh_thread_key_t key, const void *data);
 void* knh_thread_getspecific(knh_thread_key_t key);
 int knh_thread_key_delete(knh_thread_key_t key);
-void knh_NameSpace_loadAlias(CTX ctx, knh_NameSpace_t *ns, const char *rule, const char *alias);
-void knh_NameSpace_loadSyntaxSugar(CTX ctx, knh_NameSpace_t *ns, const char *rules, void *func);
-void knh_NameSpace_loadStatementSugar(CTX ctx, knh_NameSpace_t *ns, const char *rules, void *func);
 void knh_initSugarFuncData(CTX ctx, const knh_LoaderAPI_t *kapi);
+void knh_initSugarData(CTX ctx, const knh_LoaderAPI_t *kapi);
 
 #ifdef __cplusplus
 }

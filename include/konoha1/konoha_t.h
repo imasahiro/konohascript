@@ -975,6 +975,7 @@ typedef struct knh_share_t {
 
 	/* system */
 	struct knh_DictMap_t     *sysAliasDictMap;
+	struct knh_Lang_t        *corelang;     // core lang
 	struct knh_PtrMap_t      *inferPtrMap;  // mapinfer
 	struct knh_PtrMap_t      *constPtrMap;
 	struct knh_PtrMap_t      *xdataPtrMap;
@@ -1114,10 +1115,11 @@ typedef struct knh_context_t {
 	size_t                          stacksize;
 	knh_sfp_t*                      stack_uplimit;
 	void*                           cstack_bottom;  // for GC
-	struct knh_Exception_t         *e;
-	struct knh_ExceptionHandler_t  *ehdrNC;
-	struct knh_Object_t            *evaled;
-	knh_bool_t                      isEvaled;
+	struct knh_Exception_t          *e;
+	struct knh_ExceptionHandler_t   *ehdrNC;
+	struct knh_Object_t             *evaled;
+	knh_bool_t                       isEvaled;
+	struct knh_Array_t              *errmsgs;
 
 	/* cache */
 	knh_mtdcache_t              *mtdcache;
