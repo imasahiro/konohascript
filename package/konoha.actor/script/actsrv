@@ -21,11 +21,14 @@ void evalMsg(String role, String task, String msg) {
 	ous << "using konoha.memcached.*;" << EOL;
 	ous << "using konoha.posix.*;" << EOL;
 	ous << "Memcache ctxid_memcache = new Memcache(\"" << host << "\", " << port << ");" << EOL;
+	ous << "ctxid_memcache.add(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.replace(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
 	ous << "ctxid_memcache.add(\"" + task + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
-	ous << "ctxid_memcache.replace(\"" + task + "\" + \":\" + System.getHostName(), CTX.getTrace() + \":\" + System.getHostName(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.replace(\"" + task + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
 	//ous << "ctxid_memcache.add(\"" + task + ":start\", (to String)new Date(), 0, 0);" << EOL;
 	//ous << "ctxid_memcache.replace(\"" + task + ":start\", (to String)new Date(), 0, 0);" << EOL;
 	ous << msg << EOL;
+	ous << "ctxid_memcache.delete(\"" + task + "\", 0);" << EOL;
 	ous << "ctxid_memcache.delete(\"" + task + "\" + \":\" + System.getHostName(), 0);" << EOL;
 	//ous << "ctxid_memcache.add(\"" + task + ":end\", (to String)new Date(), 0, 0);" << EOL;
 	//ous << "ctxid_memcache.replace(\"" + task + ":end\", (to String)new Date(), 0, 0);" << EOL;
