@@ -1008,6 +1008,8 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
 		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	} else {
+		<C>::paint(painter, option, widget);
 	}
 }
 """;

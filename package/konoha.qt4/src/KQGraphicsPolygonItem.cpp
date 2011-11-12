@@ -200,6 +200,8 @@ void KQGraphicsPolygonItem::paint(QPainter *painter, const QStyleOptionGraphicsI
 		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
 		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	} else {
+		QGraphicsPolygonItem::paint(painter, option, widget);
 	}
 }
 
