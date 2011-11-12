@@ -19,12 +19,13 @@ public:
 	knh_Func_t *ungrab_mouse_event_func;
 	knh_Func_t *window_frame_event_func;
 	knh_Func_t *geometry_changed_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool changeEventDummy(QEvent* event);
 	bool closeEventDummy(QCloseEvent* event);
@@ -49,7 +50,8 @@ public:
 	DummyQGraphicsWidget *dummy;
 	KQGraphicsWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSWIDGET

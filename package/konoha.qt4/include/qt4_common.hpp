@@ -3,7 +3,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtWebKit>
-//#include <QtNetwork>
+#include <QtOpenGL/QtOpenGL>
 #define K_INTERNAL
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>

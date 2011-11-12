@@ -8,12 +8,13 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *link_activated_func;
 	knh_Func_t *link_hovered_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool linkActivatedSlot(const QString link);
@@ -27,7 +28,8 @@ public:
 	DummyQGraphicsTextItem *dummy;
 	KQGraphicsTextItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSTEXTITEM

@@ -25,12 +25,13 @@ public:
 	knh_Func_t *mouse_release_event_func;
 	knh_Func_t *scene_event_func;
 	knh_Func_t *wheel_event_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool contextMenuEventDummy(QGraphicsSceneContextMenuEvent* event);
 	bool dragEnterEventDummy(QGraphicsSceneDragDropEvent* event);
@@ -60,6 +61,8 @@ public:
 	DummyQGraphicsItem *dummy;
 	KQGraphicsItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSITEM

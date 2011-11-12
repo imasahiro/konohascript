@@ -6,12 +6,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsProxyWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -22,7 +23,8 @@ public:
 	DummyQGraphicsProxyWidget *dummy;
 	KQGraphicsProxyWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSPROXYWIDGET
