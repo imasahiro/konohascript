@@ -505,15 +505,13 @@ bool DummyQWebSettings::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWebSettings::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWebSettings::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQWebSettings::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQWebSettings::connection(QObject *o)
@@ -577,6 +575,7 @@ static void QWebSettings_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWebSettings *qp = (KQWebSettings *)p->rawptr;
+//		KQWebSettings *qp = static_cast<KQWebSettings*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

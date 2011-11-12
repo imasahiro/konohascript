@@ -107,15 +107,13 @@ bool DummyQInputContextFactory::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
-void DummyQInputContextFactory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQInputContextFactory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQInputContextFactory::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQInputContextFactory::connection(QObject *o)
@@ -179,6 +177,7 @@ static void QInputContextFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQInputContextFactory *qp = (KQInputContextFactory *)p->rawptr;
+//		KQInputContextFactory *qp = static_cast<KQInputContextFactory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

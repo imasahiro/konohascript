@@ -292,17 +292,20 @@ bool DummyQTcpServer::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTcpServer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTcpServer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQTcpServer::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, new_connection_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQTcpServer::connection(QObject *o)
@@ -375,6 +378,7 @@ static void QTcpServer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTcpServer *qp = (KQTcpServer *)p->rawptr;
+//		KQTcpServer *qp = static_cast<KQTcpServer*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -396,6 +400,7 @@ bool KQTcpServer::event(QEvent *event)
 		QTcpServer::event(event);
 		return false;
 	}
+//	QTcpServer::event(event);
 	return true;
 }
 

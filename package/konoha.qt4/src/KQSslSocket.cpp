@@ -1078,12 +1078,13 @@ bool DummyQSslSocket::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSslSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSslSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQSslSocket::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, encrypted_func);
 	KNH_ADDNNREF(ctx, encrypted_bytes_written_func);
 	KNH_ADDNNREF(ctx, mode_changed_func);
@@ -1092,7 +1093,9 @@ void DummyQSslSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQTcpSocket::reftrace(ctx, p, tail_);
+	tail_ = DummyQTcpSocket::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQSslSocket::connection(QObject *o)
@@ -1169,6 +1172,7 @@ static void QSslSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSslSocket *qp = (KQSslSocket *)p->rawptr;
+//		KQSslSocket *qp = static_cast<KQSslSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1190,6 +1194,7 @@ bool KQSslSocket::event(QEvent *event)
 		QSslSocket::event(event);
 		return false;
 	}
+//	QSslSocket::event(event);
 	return true;
 }
 

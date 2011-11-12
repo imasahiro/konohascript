@@ -56,20 +56,6 @@ KMETHOD QGraphicsTextItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override void QGraphicsTextItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
-KMETHOD QGraphicsTextItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGraphicsTextItem *  qp = RawPtr_to(QGraphicsTextItem *, sfp[0]);
-	if (qp) {
-		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
-		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
-		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
-		qp->paint(painter, option, widget);
-	}
-	RETURNvoid_();
-}
-
 //@Virtual @Override QPainterPath QGraphicsTextItem.shape();
 KMETHOD QGraphicsTextItem_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -394,14 +380,58 @@ KMETHOD QGraphicsTextItem_toPlainText(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+// //@Virtual void QGraphicsTextItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+// KMETHOD QGraphicsTextItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+// {
+// 	(void)ctx;
+// 	KQGraphicsTextItem *  qp = RawPtr_to(KQGraphicsTextItem *, sfp[0]);
+// 	if (qp) {
+// 		if (qp->dummy->paint_func != NULL) {
+// 			knh_Func_invoke(ctx, qp->dummy->paint_func, sfp, 4);
+// 		}
+// 	}
+// 	RETURNvoid_();
+// }
+
+//@Virtual void QGraphicsTextItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+KMETHOD QGraphicsTextItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	KQGraphicsTextItem *  qp = RawPtr_to(KQGraphicsTextItem *, sfp[0]);
+	if (qp) {
+		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
+		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
+		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
+		qp->paint(painter, option, widget);
+	}
+	RETURNvoid_();
+}
+
+void KQGraphicsTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+	if (dummy->paint_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
+		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	}
+}
 
 DummyQGraphicsTextItem::DummyQGraphicsTextItem()
 {
 	self = NULL;
 	link_activated_func = NULL;
 	link_hovered_func = NULL;
+	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("link-activated", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("link-hovered", NULL));
 }
@@ -460,6 +490,7 @@ bool DummyQGraphicsTextItem::addEvent(knh_Func_t *callback_func, string str)
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
+		paint_func = (*event_map)["paint"];
 		return true;
 	}
 }
@@ -479,18 +510,21 @@ bool DummyQGraphicsTextItem::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
-void DummyQGraphicsTextItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsTextItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQGraphicsTextItem::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, link_activated_func);
 	KNH_ADDNNREF(ctx, link_hovered_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQGraphicsObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQGraphicsObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQGraphicsTextItem::connection(QObject *o)
@@ -564,6 +598,7 @@ static void QGraphicsTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsTextItem *qp = (KQGraphicsTextItem *)p->rawptr;
+//		KQGraphicsTextItem *qp = static_cast<KQGraphicsTextItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -579,12 +614,13 @@ void KQGraphicsTextItem::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-bool KQGraphicsTextItem::event(QEvent *event)
+bool KQGraphicsTextItem::sceneEvent(QEvent *event)
 {
 	if (!dummy->eventDispatcher(event)) {
-		QGraphicsTextItem::event(event);
+		QGraphicsTextItem::sceneEvent(event);
 		return false;
 	}
+//	QGraphicsTextItem::sceneEvent(event);
 	return true;
 }
 

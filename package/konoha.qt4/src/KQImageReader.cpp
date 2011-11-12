@@ -649,15 +649,13 @@ bool DummyQImageReader::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQImageReader::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQImageReader::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQImageReader::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQImageReader::connection(QObject *o)
@@ -727,6 +725,7 @@ static void QImageReader_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQImageReader *qp = (KQImageReader *)p->rawptr;
+//		KQImageReader *qp = static_cast<KQImageReader*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

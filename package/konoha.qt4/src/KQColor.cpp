@@ -1297,15 +1297,13 @@ bool DummyQColor::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQColor::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQColor::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQColor::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQColor::connection(QObject *o)
@@ -1375,6 +1373,7 @@ static void QColor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQColor *qp = (KQColor *)p->rawptr;
+//		KQColor *qp = static_cast<KQColor*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

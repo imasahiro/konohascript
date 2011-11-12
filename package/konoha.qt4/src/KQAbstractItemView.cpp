@@ -1006,12 +1006,13 @@ bool DummyQAbstractItemView::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
-void DummyQAbstractItemView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractItemView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQAbstractItemView::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, activated_func);
 	KNH_ADDNNREF(ctx, clicked_func);
 	KNH_ADDNNREF(ctx, double_clicked_func);
@@ -1021,7 +1022,9 @@ void DummyQAbstractItemView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQAbstractItemView::connection(QObject *o)
@@ -1099,6 +1102,7 @@ static void QAbstractItemView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractItemView *qp = (KQAbstractItemView *)p->rawptr;
+//		KQAbstractItemView *qp = static_cast<KQAbstractItemView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1120,6 +1124,7 @@ bool KQAbstractItemView::event(QEvent *event)
 		QAbstractItemView::event(event);
 		return false;
 	}
+//	QAbstractItemView::event(event);
 	return true;
 }
 

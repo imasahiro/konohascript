@@ -274,15 +274,13 @@ bool DummyQSizeF::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSizeF::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSizeF::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSizeF::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQSizeF::connection(QObject *o)
@@ -352,6 +350,7 @@ static void QSizeF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSizeF *qp = (KQSizeF *)p->rawptr;
+//		KQSizeF *qp = static_cast<KQSizeF*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

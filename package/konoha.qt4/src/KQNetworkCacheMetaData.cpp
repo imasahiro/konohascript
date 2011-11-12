@@ -192,15 +192,13 @@ bool DummyQNetworkCacheMetaData::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
-void DummyQNetworkCacheMetaData::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQNetworkCacheMetaData::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQNetworkCacheMetaData::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQNetworkCacheMetaData::connection(QObject *o)
@@ -270,6 +268,7 @@ static void QNetworkCacheMetaData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQNetworkCacheMetaData *qp = (KQNetworkCacheMetaData *)p->rawptr;
+//		KQNetworkCacheMetaData *qp = static_cast<KQNetworkCacheMetaData*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

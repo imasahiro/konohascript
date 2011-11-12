@@ -178,16 +178,14 @@ bool DummyQTextFrame::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTextFrame::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextFrame::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTextFrame::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQTextObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQTextObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQTextFrame::connection(QObject *o)
@@ -259,6 +257,7 @@ static void QTextFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextFrame *qp = (KQTextFrame *)p->rawptr;
+//		KQTextFrame *qp = static_cast<KQTextFrame*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -280,6 +279,7 @@ bool KQTextFrame::event(QEvent *event)
 		QTextFrame::event(event);
 		return false;
 	}
+//	QTextFrame::event(event);
 	return true;
 }
 

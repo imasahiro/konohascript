@@ -178,16 +178,14 @@ bool DummyQDial::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDial::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDial::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQDial::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractSlider::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractSlider::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQDial::connection(QObject *o)
@@ -259,6 +257,7 @@ static void QDial_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDial *qp = (KQDial *)p->rawptr;
+//		KQDial *qp = static_cast<KQDial*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -280,6 +279,7 @@ bool KQDial::event(QEvent *event)
 		QDial::event(event);
 		return false;
 	}
+//	QDial::event(event);
 	return true;
 }
 

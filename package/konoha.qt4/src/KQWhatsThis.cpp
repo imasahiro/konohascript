@@ -133,15 +133,13 @@ bool DummyQWhatsThis::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWhatsThis::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWhatsThis::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQWhatsThis::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQWhatsThis::connection(QObject *o)
@@ -205,6 +203,7 @@ static void QWhatsThis_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWhatsThis *qp = (KQWhatsThis *)p->rawptr;
+//		KQWhatsThis *qp = static_cast<KQWhatsThis*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

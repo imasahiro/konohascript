@@ -59,16 +59,14 @@ bool DummyQStyleHintReturnMask::signalConnect(knh_Func_t *callback_func, string 
 	}
 }
 
-void DummyQStyleHintReturnMask::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStyleHintReturnMask::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQStyleHintReturnMask::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQStyleHintReturn::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQStyleHintReturn::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQStyleHintReturnMask::connection(QObject *o)
@@ -139,6 +137,7 @@ static void QStyleHintReturnMask_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQStyleHintReturnMask *qp = (KQStyleHintReturnMask *)p->rawptr;
+//		KQStyleHintReturnMask *qp = static_cast<KQStyleHintReturnMask*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

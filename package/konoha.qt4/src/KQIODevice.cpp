@@ -594,12 +594,13 @@ bool DummyQIODevice::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQIODevice::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQIODevice::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQIODevice::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, about_to_close_func);
 	KNH_ADDNNREF(ctx, bytes_written_func);
 	KNH_ADDNNREF(ctx, read_channel_finished_func);
@@ -607,7 +608,9 @@ void DummyQIODevice::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQIODevice::connection(QObject *o)
@@ -683,6 +686,7 @@ static void QIODevice_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQIODevice *qp = (KQIODevice *)p->rawptr;
+//		KQIODevice *qp = static_cast<KQIODevice*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -704,6 +708,7 @@ bool KQIODevice::event(QEvent *event)
 		QIODevice::event(event);
 		return false;
 	}
+//	QIODevice::event(event);
 	return true;
 }
 

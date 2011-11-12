@@ -517,12 +517,13 @@ bool DummyQToolBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQToolBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQToolBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQToolBar::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 8;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, action_triggered_func);
 	KNH_ADDNNREF(ctx, allowed_areas_changed_func);
 	KNH_ADDNNREF(ctx, icon_size_changed_func);
@@ -534,7 +535,9 @@ void DummyQToolBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQToolBar::connection(QObject *o)
@@ -614,6 +617,7 @@ static void QToolBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQToolBar *qp = (KQToolBar *)p->rawptr;
+//		KQToolBar *qp = static_cast<KQToolBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -635,6 +639,7 @@ bool KQToolBar::event(QEvent *event)
 		QToolBar::event(event);
 		return false;
 	}
+//	QToolBar::event(event);
 	return true;
 }
 

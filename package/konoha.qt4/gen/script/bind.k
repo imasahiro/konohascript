@@ -56,7 +56,7 @@ String CommonHpp()
 #include <QtCore>
 #include <QtGui>
 #include <QtWebKit>
-//#include <QtNetwork>
+#include <QtOpenGL/QtOpenGL>
 #define K_INTERNAL
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
@@ -154,9 +154,9 @@ String InitFunc()
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
 
 // //Array<String> System.parents(Object c);
 // KMETHOD System_parents(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -200,9 +200,9 @@ DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_LoaderAPI_t *)
 	RETURN_PKGINFO("Qt-4.7");
 }
 
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif
 """
 	return ret;
 }
@@ -477,6 +477,7 @@ set(CMAKE_BUILD_TYPE DEBUG)
 project(qt4)
 set(QT_USE_QTWEBKIT TRUE)
 find_package(Qt4 REQUIRED)
+find_package(OpenGL)
 #find_package(Qt4 COMPONENTS QtCore QtGui QtWebKit REQUIRED)
 set(PACKAGE_SOURCE_CODE
 CPPSRC
@@ -487,6 +488,7 @@ set(PACKAGE_EXTRA_LIBRARY
 	${QT_QTWEBKIT_LIBRARY}
 	${QT_QTGUI_LIBRARY}
 	${QT_QTNETWORK_LIBRARY}
+	${QT_QTOPENGL_LIBRARY}
 	)
 
 set(PACKAGE_HEADERS
@@ -963,4 +965,52 @@ KMETHOD <C>_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 	return ret;
 }
 
+String FUNC_PAINT(String class_name) //qp cast "KQ~" and 
+{
+	String ret = """
+// //@Virtual void <C>.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+// KMETHOD <C>_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+// {
+// 	(void)ctx;
+// 	K<C> *  qp = RawPtr_to(K<C> *, sfp[0]);
+// 	if (qp) {
+// 		if (qp->dummy->paint_func != NULL) {
+// 			knh_Func_invoke(ctx, qp->dummy->paint_func, sfp, 4);
+// 		}
+// 	}
+// 	RETURNvoid_();
+// }
 
+//@Virtual void <C>.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+KMETHOD <C>_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	K<C> *  qp = RawPtr_to(K<C> *, sfp[0]);
+	if (qp) {
+		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
+		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
+		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
+		qp->paint(painter, option, widget);
+	}
+	RETURNvoid_();
+}
+
+void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+	if (dummy->paint_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
+		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	}
+}
+""";
+	ret = ret.replace("<C>", class_name);
+	return ret;
+}

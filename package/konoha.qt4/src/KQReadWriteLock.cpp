@@ -175,15 +175,13 @@ bool DummyQReadWriteLock::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQReadWriteLock::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQReadWriteLock::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQReadWriteLock::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQReadWriteLock::connection(QObject *o)
@@ -253,6 +251,7 @@ static void QReadWriteLock_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQReadWriteLock *qp = (KQReadWriteLock *)p->rawptr;
+//		KQReadWriteLock *qp = static_cast<KQReadWriteLock*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

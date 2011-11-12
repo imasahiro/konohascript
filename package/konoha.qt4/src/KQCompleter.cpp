@@ -462,16 +462,14 @@ bool DummyQCompleter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQCompleter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQCompleter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQCompleter::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQCompleter::connection(QObject *o)
@@ -543,6 +541,7 @@ static void QCompleter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQCompleter *qp = (KQCompleter *)p->rawptr;
+//		KQCompleter *qp = static_cast<KQCompleter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -564,6 +563,7 @@ bool KQCompleter::event(QEvent *event)
 		QCompleter::event(event);
 		return false;
 	}
+//	QCompleter::event(event);
 	return true;
 }
 

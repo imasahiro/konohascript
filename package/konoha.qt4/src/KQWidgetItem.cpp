@@ -201,16 +201,14 @@ bool DummyQWidgetItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWidgetItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWidgetItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQWidgetItem::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQLayoutItem::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQLayoutItem::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQWidgetItem::connection(QObject *o)
@@ -281,6 +279,7 @@ static void QWidgetItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWidgetItem *qp = (KQWidgetItem *)p->rawptr;
+//		KQWidgetItem *qp = static_cast<KQWidgetItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -393,17 +393,20 @@ bool DummyQProgressDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQProgressDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQProgressDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQProgressDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, canceled_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQDialog::reftrace(ctx, p, tail_);
+	tail_ = DummyQDialog::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQProgressDialog::connection(QObject *o)
@@ -476,6 +479,7 @@ static void QProgressDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQProgressDialog *qp = (KQProgressDialog *)p->rawptr;
+//		KQProgressDialog *qp = static_cast<KQProgressDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -497,6 +501,7 @@ bool KQProgressDialog::event(QEvent *event)
 		QProgressDialog::event(event);
 		return false;
 	}
+//	QProgressDialog::event(event);
 	return true;
 }
 

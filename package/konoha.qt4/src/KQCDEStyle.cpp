@@ -121,16 +121,14 @@ bool DummyQCDEStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQCDEStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQCDEStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQCDEStyle::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQMotifStyle::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQMotifStyle::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQCDEStyle::connection(QObject *o)
@@ -202,6 +200,7 @@ static void QCDEStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQCDEStyle *qp = (KQCDEStyle *)p->rawptr;
+//		KQCDEStyle *qp = static_cast<KQCDEStyle*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -223,6 +222,7 @@ bool KQCDEStyle::event(QEvent *event)
 		QCDEStyle::event(event);
 		return false;
 	}
+//	QCDEStyle::event(event);
 	return true;
 }
 

@@ -178,16 +178,14 @@ bool DummyQGraphicsLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQGraphicsLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQGraphicsLayout::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQGraphicsLayoutItem::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQGraphicsLayoutItem::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQGraphicsLayout::connection(QObject *o)
@@ -258,6 +256,7 @@ static void QGraphicsLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsLayout *qp = (KQGraphicsLayout *)p->rawptr;
+//		KQGraphicsLayout *qp = static_cast<KQGraphicsLayout*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -1646,12 +1646,13 @@ bool DummyQGraphicsScene::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQGraphicsScene::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsScene::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQGraphicsScene::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 19;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, context_menu_event_func);
 	KNH_ADDNNREF(ctx, drag_enter_event_func);
 	KNH_ADDNNREF(ctx, drag_leave_event_func);
@@ -1674,7 +1675,9 @@ void DummyQGraphicsScene::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQGraphicsScene::connection(QObject *o)
@@ -1749,6 +1752,7 @@ static void QGraphicsScene_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsScene *qp = (KQGraphicsScene *)p->rawptr;
+//		KQGraphicsScene *qp = static_cast<KQGraphicsScene*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1770,6 +1774,7 @@ bool KQGraphicsScene::event(QEvent *event)
 		QGraphicsScene::event(event);
 		return false;
 	}
+	QGraphicsScene::event(event);
 	return true;
 }
 

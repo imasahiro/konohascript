@@ -159,16 +159,14 @@ bool DummyQAbstractNetworkCache::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
-void DummyQAbstractNetworkCache::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractNetworkCache::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQAbstractNetworkCache::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQAbstractNetworkCache::connection(QObject *o)
@@ -233,6 +231,7 @@ static void QAbstractNetworkCache_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractNetworkCache *qp = (KQAbstractNetworkCache *)p->rawptr;
+//		KQAbstractNetworkCache *qp = static_cast<KQAbstractNetworkCache*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -254,6 +253,7 @@ bool KQAbstractNetworkCache::event(QEvent *event)
 		QAbstractNetworkCache::event(event);
 		return false;
 	}
+//	QAbstractNetworkCache::event(event);
 	return true;
 }
 

@@ -351,8 +351,8 @@ class FunctionElement {
 			if ((exclude_const_type.startsWith("i") || exclude_const_type.startsWith("q"))
 				&& "int" in? type) {
 				str += Int_to(name, type, j);
-			} else if ("float" in? type ||
-					   "qreal" == type) {
+			} else if (exclude_const_type == "float" ||
+					   exclude_const_type == "qreal") {
 				str += Float_to(name, type, j);
 			} else if ("bool" in? type) {
 				str += Boolean_to(name, type, j);
@@ -481,6 +481,7 @@ class FunctionElement {
 			bind += "\n";
 		} else if (!constructorFlag) {
 			bind += "\t" + RawPtr_to("qp", (have_private_destructor_flag ? "K" : "") + class_name + " *", 0);
+//			bind += "\t" + RawPtr_to("qp", "K" + class_name + " *", 0);
 			bind += "\tif (qp) {\n";
 //			bind += "\tif (qp != NULL) {\n";
 			bind += argumentFormat();

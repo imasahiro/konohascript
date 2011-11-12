@@ -167,17 +167,20 @@ bool DummyQSplashScreen::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSplashScreen::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSplashScreen::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQSplashScreen::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, message_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQSplashScreen::connection(QObject *o)
@@ -250,6 +253,7 @@ static void QSplashScreen_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSplashScreen *qp = (KQSplashScreen *)p->rawptr;
+//		KQSplashScreen *qp = static_cast<KQSplashScreen*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -271,6 +275,7 @@ bool KQSplashScreen::event(QEvent *event)
 		QSplashScreen::event(event);
 		return false;
 	}
+//	QSplashScreen::event(event);
 	return true;
 }
 

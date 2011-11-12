@@ -82,12 +82,56 @@ KMETHOD QAbstractGraphicsShapeItem_setPen(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+// //@Virtual void QAbstractGraphicsShapeItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+// KMETHOD QAbstractGraphicsShapeItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+// {
+// 	(void)ctx;
+// 	KQAbstractGraphicsShapeItem *  qp = RawPtr_to(KQAbstractGraphicsShapeItem *, sfp[0]);
+// 	if (qp) {
+// 		if (qp->dummy->paint_func != NULL) {
+// 			knh_Func_invoke(ctx, qp->dummy->paint_func, sfp, 4);
+// 		}
+// 	}
+// 	RETURNvoid_();
+// }
+
+//@Virtual void QAbstractGraphicsShapeItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+KMETHOD QAbstractGraphicsShapeItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	KQAbstractGraphicsShapeItem *  qp = RawPtr_to(KQAbstractGraphicsShapeItem *, sfp[0]);
+	if (qp) {
+		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
+		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
+		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
+		qp->paint(painter, option, widget);
+	}
+	RETURNvoid_();
+}
+
+void KQAbstractGraphicsShapeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+	if (dummy->paint_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
+		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	}
+}
 
 DummyQAbstractGraphicsShapeItem::DummyQAbstractGraphicsShapeItem()
 {
 	self = NULL;
+	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
 }
 
 void DummyQAbstractGraphicsShapeItem::setSelf(knh_RawPtr_t *ptr)
@@ -116,6 +160,7 @@ bool DummyQAbstractGraphicsShapeItem::addEvent(knh_Func_t *callback_func, string
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
+		paint_func = (*event_map)["paint"];
 		return true;
 	}
 }
@@ -133,16 +178,14 @@ bool DummyQAbstractGraphicsShapeItem::signalConnect(knh_Func_t *callback_func, s
 	}
 }
 
-void DummyQAbstractGraphicsShapeItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractGraphicsShapeItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQAbstractGraphicsShapeItem::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQGraphicsItem::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQGraphicsItem::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQAbstractGraphicsShapeItem::connection(QObject *o)
@@ -213,6 +256,7 @@ static void QAbstractGraphicsShapeItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractGraphicsShapeItem *qp = (KQAbstractGraphicsShapeItem *)p->rawptr;
+//		KQAbstractGraphicsShapeItem *qp = static_cast<KQAbstractGraphicsShapeItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -226,6 +270,16 @@ void KQAbstractGraphicsShapeItem::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
+}
+
+bool KQAbstractGraphicsShapeItem::sceneEvent(QEvent *event)
+{
+	if (!dummy->eventDispatcher(event)) {
+		QAbstractGraphicsShapeItem::sceneEvent(event);
+		return false;
+	}
+//	QAbstractGraphicsShapeItem::sceneEvent(event);
+	return true;
 }
 
 

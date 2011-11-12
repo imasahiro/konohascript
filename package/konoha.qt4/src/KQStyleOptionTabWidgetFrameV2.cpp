@@ -83,16 +83,14 @@ bool DummyQStyleOptionTabWidgetFrameV2::signalConnect(knh_Func_t *callback_func,
 	}
 }
 
-void DummyQStyleOptionTabWidgetFrameV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStyleOptionTabWidgetFrameV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQStyleOptionTabWidgetFrameV2::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQStyleOptionTabWidgetFrame::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQStyleOptionTabWidgetFrame::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQStyleOptionTabWidgetFrameV2::connection(QObject *o)
@@ -163,6 +161,7 @@ static void QStyleOptionTabWidgetFrameV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRAR
 {
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabWidgetFrameV2 *qp = (KQStyleOptionTabWidgetFrameV2 *)p->rawptr;
+//		KQStyleOptionTabWidgetFrameV2 *qp = static_cast<KQStyleOptionTabWidgetFrameV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

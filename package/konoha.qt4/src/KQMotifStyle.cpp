@@ -278,16 +278,14 @@ bool DummyQMotifStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMotifStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMotifStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQMotifStyle::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQCommonStyle::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQCommonStyle::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQMotifStyle::connection(QObject *o)
@@ -359,6 +357,7 @@ static void QMotifStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMotifStyle *qp = (KQMotifStyle *)p->rawptr;
+//		KQMotifStyle *qp = static_cast<KQMotifStyle*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -380,6 +379,7 @@ bool KQMotifStyle::event(QEvent *event)
 		QMotifStyle::event(event);
 		return false;
 	}
+//	QMotifStyle::event(event);
 	return true;
 }
 

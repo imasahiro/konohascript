@@ -192,15 +192,13 @@ bool DummyQWebElementCollection::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
-void DummyQWebElementCollection::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWebElementCollection::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQWebElementCollection::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQWebElementCollection::connection(QObject *o)
@@ -270,6 +268,7 @@ static void QWebElementCollection_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWebElementCollection *qp = (KQWebElementCollection *)p->rawptr;
+//		KQWebElementCollection *qp = static_cast<KQWebElementCollection*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

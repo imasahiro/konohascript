@@ -282,15 +282,13 @@ bool DummyQNetworkProxyQuery::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
-void DummyQNetworkProxyQuery::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQNetworkProxyQuery::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQNetworkProxyQuery::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQNetworkProxyQuery::connection(QObject *o)
@@ -360,6 +358,7 @@ static void QNetworkProxyQuery_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQNetworkProxyQuery *qp = (KQNetworkProxyQuery *)p->rawptr;
+//		KQNetworkProxyQuery *qp = static_cast<KQNetworkProxyQuery*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

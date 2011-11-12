@@ -410,15 +410,13 @@ bool DummyQRegion::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQRegion::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQRegion::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQRegion::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQRegion::connection(QObject *o)
@@ -488,6 +486,7 @@ static void QRegion_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQRegion *qp = (KQRegion *)p->rawptr;
+//		KQRegion *qp = static_cast<KQRegion*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

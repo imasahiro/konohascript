@@ -2,9 +2,9 @@
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
 
 // //Array<String> System.parents(Object c);
 // KMETHOD System_parents(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -48,7 +48,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_LoaderAPI_t *)
 	RETURN_PKGINFO("Qt-4.7");
 }
 
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif
 

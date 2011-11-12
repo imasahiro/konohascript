@@ -146,18 +146,21 @@ bool DummyQGraphicsColorizeEffect::signalConnect(knh_Func_t *callback_func, stri
 	}
 }
 
-void DummyQGraphicsColorizeEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsColorizeEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQGraphicsColorizeEffect::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, color_changed_func);
 	KNH_ADDNNREF(ctx, strength_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+	tail_ = DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQGraphicsColorizeEffect::connection(QObject *o)
@@ -231,6 +234,7 @@ static void QGraphicsColorizeEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsColorizeEffect *qp = (KQGraphicsColorizeEffect *)p->rawptr;
+//		KQGraphicsColorizeEffect *qp = static_cast<KQGraphicsColorizeEffect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -252,6 +256,7 @@ bool KQGraphicsColorizeEffect::event(QEvent *event)
 		QGraphicsColorizeEffect::event(event);
 		return false;
 	}
+//	QGraphicsColorizeEffect::event(event);
 	return true;
 }
 

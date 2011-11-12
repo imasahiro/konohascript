@@ -135,16 +135,14 @@ bool DummyQTextImageFormat::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTextImageFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextImageFormat::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTextImageFormat::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQTextCharFormat::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQTextCharFormat::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQTextImageFormat::connection(QObject *o)
@@ -215,6 +213,7 @@ static void QTextImageFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextImageFormat *qp = (KQTextImageFormat *)p->rawptr;
+//		KQTextImageFormat *qp = static_cast<KQTextImageFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

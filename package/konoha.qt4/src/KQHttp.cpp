@@ -690,12 +690,13 @@ bool DummyQHttp::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQHttp::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQHttp::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQHttp::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 11;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, authentication_required_func);
 	KNH_ADDNNREF(ctx, data_read_progress_func);
 	KNH_ADDNNREF(ctx, data_send_progress_func);
@@ -710,7 +711,9 @@ void DummyQHttp::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQHttp::connection(QObject *o)
@@ -793,6 +796,7 @@ static void QHttp_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQHttp *qp = (KQHttp *)p->rawptr;
+//		KQHttp *qp = static_cast<KQHttp*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -814,6 +818,7 @@ bool KQHttp::event(QEvent *event)
 		QHttp::event(event);
 		return false;
 	}
+//	QHttp::event(event);
 	return true;
 }
 

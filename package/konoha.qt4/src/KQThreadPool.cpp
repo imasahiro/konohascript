@@ -196,16 +196,14 @@ bool DummyQThreadPool::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQThreadPool::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQThreadPool::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQThreadPool::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQThreadPool::connection(QObject *o)
@@ -277,6 +275,7 @@ static void QThreadPool_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQThreadPool *qp = (KQThreadPool *)p->rawptr;
+//		KQThreadPool *qp = static_cast<KQThreadPool*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -298,6 +297,7 @@ bool KQThreadPool::event(QEvent *event)
 		QThreadPool::event(event);
 		return false;
 	}
+//	QThreadPool::event(event);
 	return true;
 }
 

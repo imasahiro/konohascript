@@ -87,16 +87,14 @@ bool DummyQSizeGrip::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSizeGrip::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSizeGrip::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSizeGrip::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQWidget::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQSizeGrip::connection(QObject *o)
@@ -168,6 +166,7 @@ static void QSizeGrip_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSizeGrip *qp = (KQSizeGrip *)p->rawptr;
+//		KQSizeGrip *qp = static_cast<KQSizeGrip*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -189,6 +188,7 @@ bool KQSizeGrip::event(QEvent *event)
 		QSizeGrip::event(event);
 		return false;
 	}
+//	QSizeGrip::event(event);
 	return true;
 }
 

@@ -367,12 +367,13 @@ bool DummyQUndoGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQUndoGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQUndoGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQUndoGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, active_stack_changed_func);
 	KNH_ADDNNREF(ctx, can_redo_changed_func);
 	KNH_ADDNNREF(ctx, can_undo_changed_func);
@@ -383,7 +384,9 @@ void DummyQUndoGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQUndoGroup::connection(QObject *o)
@@ -462,6 +465,7 @@ static void QUndoGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQUndoGroup *qp = (KQUndoGroup *)p->rawptr;
+//		KQUndoGroup *qp = static_cast<KQUndoGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -483,6 +487,7 @@ bool KQUndoGroup::event(QEvent *event)
 		QUndoGroup::event(event);
 		return false;
 	}
+//	QUndoGroup::event(event);
 	return true;
 }
 

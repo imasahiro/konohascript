@@ -213,16 +213,14 @@ bool DummyQButtonGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQButtonGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQButtonGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQButtonGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQButtonGroup::connection(QObject *o)
@@ -294,6 +292,7 @@ static void QButtonGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQButtonGroup *qp = (KQButtonGroup *)p->rawptr;
+//		KQButtonGroup *qp = static_cast<KQButtonGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -315,6 +314,7 @@ bool KQButtonGroup::event(QEvent *event)
 		QButtonGroup::event(event);
 		return false;
 	}
+//	QButtonGroup::event(event);
 	return true;
 }
 

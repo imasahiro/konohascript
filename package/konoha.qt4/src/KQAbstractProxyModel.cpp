@@ -248,16 +248,14 @@ bool DummyQAbstractProxyModel::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQAbstractProxyModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractProxyModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQAbstractProxyModel::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractItemModel::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQAbstractProxyModel::connection(QObject *o)
@@ -329,6 +327,7 @@ static void QAbstractProxyModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractProxyModel *qp = (KQAbstractProxyModel *)p->rawptr;
+//		KQAbstractProxyModel *qp = static_cast<KQAbstractProxyModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -350,6 +349,7 @@ bool KQAbstractProxyModel::event(QEvent *event)
 		QAbstractProxyModel::event(event);
 		return false;
 	}
+//	QAbstractProxyModel::event(event);
 	return true;
 }
 

@@ -24,7 +24,7 @@ void outputCppSrc(BindInfo[] bia)
 		ous.println(bi.enum_bind);
 		ous.println(Class_Def(bi.class_name));
 		ous.println(genFlagObjectCpp(bi.class_name, bi.all_flag_objects));
-		if (!GEN_CONCATENATE_FILE) ous.println("\n#ifdef __cplusplus\n}\n#endif");
+//		if (!GEN_CONCATENATE_FILE) ous.println("\n#ifdef __cplusplus\n}\n#endif");
 		ous.flush();
 		ous.close();
 	}
@@ -70,10 +70,8 @@ void outputKSrc(BindInfo[] bia, QtHierarchy hierarchy)
 		k_func += bi.k_src + "\n";
 		k_flag_class += genFlagObjectKClass(bi.class_name, bi.all_flag_objects);
 		k_flag_func += genFlagObjectKMtd(bi.class_name, bi.all_flag_objects);
-		if (bi.class_name == "QPolygonF") {
-//			print "polygonf!!!";
-			k_func += "void QPolygonF.append(QPointF value);\n";
-		}
+		if (bi.class_name == "QPolygonF") k_func += "void QPolygonF.append(QPointF value);\n";
+		if (bi.class_name == "QGraphicsScene") k_func += "void QGraphicsScene.addGraphicsTextItem(QGraphicsTextItem item);\n";
 	}
 	for (int i = 0; i < |hierarchy.defined_classes|; i++) {
 		foreach (BindInfo bi in bia) {
@@ -105,40 +103,70 @@ void outputSrc(BindInfo[] bia, QtHierarchy hierarchy)
 	foreach (BindInfo bi in bia) {
 		bi.genSrc();
 	}
-//	print "outputCppSrc";
+	OUT << "outputCppSrc" << EOL;
 	outputCppSrc(bia);
-//	print "outputHppSrc";
+	OUT << "outputHppSrc" << EOL;
 	outputHppSrc(bia);
-//	print "outputKSrc";
+	OUT << "outputKSrc" << EOL;
 	outputKSrc(bia, hierarchy);
 }
 
-void outputCompletionRate(QtInterface[] interfaces, int event_mtds_num) {
+void outputCompletionRate(QtInterface[] interfaces, BindInfo[] bia, int event_mtds_num) {
 	if (!OUTPUT_ALL_METHODS) return;
 
 	OUT << "output compretion rate" << EOL;
 
+	boolean denomi_flag = false;
+
 	int denominator = 0;
-	foreach (QtInterface interface in interfaces) {
-		denominator += (|interface.public_functions|);
-		denominator += (|interface.public_slots|);
-		denominator += (|interface.signals|);
-		denominator += (|interface.static_public_members|);
-		denominator += (|interface.protected_functions|);
-		denominator += (|interface.reimplemented_public_functions|);
-		denominator += (|interface.reimplemented_protected_functions|);
-		denominator += (|interface.protected_slots|);
+	if (denomi_flag) {
+		foreach (QtInterface interface in interfaces) {
+			denominator += (|interface.public_functions|);
+			denominator += (|interface.public_slots|);
+			denominator += (|interface.signals|);
+			denominator += (|interface.static_public_members|);
+			denominator += (|interface.protected_functions|);
+			denominator += (|interface.reimplemented_public_functions|);
+			denominator += (|interface.reimplemented_protected_functions|);
+			denominator += (|interface.protected_slots|);
+		}
+	} else {
+		int index = 0;
+		foreach (BindInfo bi in bia) {
+			if (bi.checkUnusedClass()) continue;
+			index = bi.qtInterfaceIndex;
+			denominator += (|interfaces[index].public_functions|);
+			denominator += (|interfaces[index].public_slots|);
+			denominator += (|interfaces[index].signals|);
+			denominator += (|interfaces[index].static_public_members|);
+			denominator += (|interfaces[index].protected_functions|);
+			denominator += (|interfaces[index].reimplemented_public_functions|);
+			denominator += (|interfaces[index].reimplemented_protected_functions|);
+			denominator += (|interfaces[index].protected_slots|);
+		}
 	}
 
 	float numerator = 0.0;
 	numerator += event_mtds_num;
+//	print numerator;
 	ins = new InputStream("qt4.k");
 	if (ins == null) return;
 	foreach (String line in ins) {
-		if (line == "") continue;
-		if (!("class" in? line)) numerator++;
+		if (line == "") {
+			continue;
+		}
+		if (!("class " in? line) &&
+			!("addEvent" in? line) &&
+			!("signalConnect" in? line)) {
+			numerator++;
+		} else {
+//			print line;
+		}
 	}
+//	print numerator;
 
+//	print denominator;
+//	print numerator;
 	float completion_rate = numerator / denominator * 100;
 	OUT << "compretion rate = " << completion_rate << EOL;
 	return;

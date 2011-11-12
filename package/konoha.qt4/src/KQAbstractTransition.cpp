@@ -203,17 +203,20 @@ bool DummyQAbstractTransition::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQAbstractTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQAbstractTransition::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, triggered_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQAbstractTransition::connection(QObject *o)
@@ -286,6 +289,7 @@ static void QAbstractTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractTransition *qp = (KQAbstractTransition *)p->rawptr;
+//		KQAbstractTransition *qp = static_cast<KQAbstractTransition*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -307,6 +311,7 @@ bool KQAbstractTransition::event(QEvent *event)
 		QAbstractTransition::event(event);
 		return false;
 	}
+//	QAbstractTransition::event(event);
 	return true;
 }
 

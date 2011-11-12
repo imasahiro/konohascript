@@ -49,16 +49,14 @@ bool DummyQTextBlockGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTextBlockGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextBlockGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTextBlockGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQTextObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQTextObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQTextBlockGroup::connection(QObject *o)
@@ -123,6 +121,7 @@ static void QTextBlockGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextBlockGroup *qp = (KQTextBlockGroup *)p->rawptr;
+//		KQTextBlockGroup *qp = static_cast<KQTextBlockGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -144,6 +143,7 @@ bool KQTextBlockGroup::event(QEvent *event)
 		QTextBlockGroup::event(event);
 		return false;
 	}
+//	QTextBlockGroup::event(event);
 	return true;
 }
 

@@ -456,12 +456,13 @@ bool DummyQNetworkAccessManager::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
-void DummyQNetworkAccessManager::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQNetworkAccessManager::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQNetworkAccessManager::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, authentication_required_func);
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, network_accessible_changed_func);
@@ -470,7 +471,9 @@ void DummyQNetworkAccessManager::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQNetworkAccessManager::connection(QObject *o)
@@ -547,6 +550,7 @@ static void QNetworkAccessManager_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQNetworkAccessManager *qp = (KQNetworkAccessManager *)p->rawptr;
+//		KQNetworkAccessManager *qp = static_cast<KQNetworkAccessManager*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -568,6 +572,7 @@ bool KQNetworkAccessManager::event(QEvent *event)
 		QNetworkAccessManager::event(event);
 		return false;
 	}
+//	QNetworkAccessManager::event(event);
 	return true;
 }
 

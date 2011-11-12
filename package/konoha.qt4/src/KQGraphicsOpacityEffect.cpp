@@ -146,18 +146,21 @@ bool DummyQGraphicsOpacityEffect::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
-void DummyQGraphicsOpacityEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsOpacityEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQGraphicsOpacityEffect::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, opacity_changed_func);
 	KNH_ADDNNREF(ctx, opacity_mask_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+	tail_ = DummyQGraphicsEffect::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQGraphicsOpacityEffect::connection(QObject *o)
@@ -231,6 +234,7 @@ static void QGraphicsOpacityEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsOpacityEffect *qp = (KQGraphicsOpacityEffect *)p->rawptr;
+//		KQGraphicsOpacityEffect *qp = static_cast<KQGraphicsOpacityEffect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -252,6 +256,7 @@ bool KQGraphicsOpacityEffect::event(QEvent *event)
 		QGraphicsOpacityEffect::event(event);
 		return false;
 	}
+//	QGraphicsOpacityEffect::event(event);
 	return true;
 }
 

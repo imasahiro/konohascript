@@ -110,16 +110,14 @@ bool DummyQObjectCleanupHandler::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
-void DummyQObjectCleanupHandler::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQObjectCleanupHandler::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQObjectCleanupHandler::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQObjectCleanupHandler::connection(QObject *o)
@@ -191,6 +189,7 @@ static void QObjectCleanupHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQObjectCleanupHandler *qp = (KQObjectCleanupHandler *)p->rawptr;
+//		KQObjectCleanupHandler *qp = static_cast<KQObjectCleanupHandler*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -212,6 +211,7 @@ bool KQObjectCleanupHandler::event(QEvent *event)
 		QObjectCleanupHandler::event(event);
 		return false;
 	}
+//	QObjectCleanupHandler::event(event);
 	return true;
 }
 

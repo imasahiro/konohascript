@@ -523,15 +523,13 @@ bool DummyQAbstractFileEngine::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQAbstractFileEngine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractFileEngine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQAbstractFileEngine::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQAbstractFileEngine::connection(QObject *o)
@@ -595,6 +593,7 @@ static void QAbstractFileEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractFileEngine *qp = (KQAbstractFileEngine *)p->rawptr;
+//		KQAbstractFileEngine *qp = static_cast<KQAbstractFileEngine*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

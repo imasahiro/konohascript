@@ -75,16 +75,14 @@ bool DummyQDynamicPropertyChangeEvent::signalConnect(knh_Func_t *callback_func, 
 	}
 }
 
-void DummyQDynamicPropertyChangeEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDynamicPropertyChangeEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQDynamicPropertyChangeEvent::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQEvent::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQEvent::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQDynamicPropertyChangeEvent::connection(QObject *o)
@@ -155,6 +153,7 @@ static void QDynamicPropertyChangeEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG
 {
 	if (p->rawptr != NULL) {
 		KQDynamicPropertyChangeEvent *qp = (KQDynamicPropertyChangeEvent *)p->rawptr;
+//		KQDynamicPropertyChangeEvent *qp = static_cast<KQDynamicPropertyChangeEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

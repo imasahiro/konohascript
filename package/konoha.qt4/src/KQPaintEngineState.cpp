@@ -315,15 +315,13 @@ bool DummyQPaintEngineState::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
-void DummyQPaintEngineState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQPaintEngineState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQPaintEngineState::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQPaintEngineState::connection(QObject *o)
@@ -387,6 +385,7 @@ static void QPaintEngineState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQPaintEngineState *qp = (KQPaintEngineState *)p->rawptr;
+//		KQPaintEngineState *qp = static_cast<KQPaintEngineState*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

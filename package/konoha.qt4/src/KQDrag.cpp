@@ -244,18 +244,21 @@ bool DummyQDrag::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDrag::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDrag::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQDrag::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, action_changed_func);
 	KNH_ADDNNREF(ctx, target_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQDrag::connection(QObject *o)
@@ -329,6 +332,7 @@ static void QDrag_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDrag *qp = (KQDrag *)p->rawptr;
+//		KQDrag *qp = static_cast<KQDrag*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -350,6 +354,7 @@ bool KQDrag::event(QEvent *event)
 		QDrag::event(event);
 		return false;
 	}
+//	QDrag::event(event);
 	return true;
 }
 

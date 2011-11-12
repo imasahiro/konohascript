@@ -71,16 +71,14 @@ bool DummyQStyleOptionToolButton::signalConnect(knh_Func_t *callback_func, strin
 	}
 }
 
-void DummyQStyleOptionToolButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStyleOptionToolButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQStyleOptionToolButton::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQStyleOptionToolButton::connection(QObject *o)
@@ -151,6 +149,7 @@ static void QStyleOptionToolButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQStyleOptionToolButton *qp = (KQStyleOptionToolButton *)p->rawptr;
+//		KQStyleOptionToolButton *qp = static_cast<KQStyleOptionToolButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

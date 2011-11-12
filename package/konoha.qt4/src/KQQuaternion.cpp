@@ -335,15 +335,13 @@ bool DummyQQuaternion::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQQuaternion::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQQuaternion::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQQuaternion::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQQuaternion::connection(QObject *o)
@@ -413,6 +411,7 @@ static void QQuaternion_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQQuaternion *qp = (KQQuaternion *)p->rawptr;
+//		KQQuaternion *qp = static_cast<KQQuaternion*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -29,6 +29,7 @@ QMetaEnum
 QByteArrayMatcher
 QLocale
 QTileRules
+QGLContext
 QAtomicInt
 QEasingCurve
 QColormap
@@ -40,6 +41,7 @@ QPoint
 QMetaObject
 QTextCursor
 QSysInfo
+QGLFormat
 QWebHitTestResult
 QSemaphore
 QHostInfo
@@ -86,6 +88,7 @@ QAccessible
 QMargins
 QWebHistoryItem
 QPaintEngineState
+QGLBuffer
 QTextObjectInterface
 QSslError
 QUndoCommand
@@ -107,6 +110,7 @@ QDebug
 QItemEditorFactory
 QStaticText
 QIconEngine
+QGLFramebufferObjectFormat
 QGraphicsItem
 QWebElement
 QPointF
@@ -119,6 +123,7 @@ QRunnable
 QTextDocumentWriter
 QTextBlock
 QInputContextFactory
+QGLColormap
 QPalette
 QDateTime
 QUrl
@@ -206,10 +211,12 @@ QThreadPool
 QCloseEvent
 QStylePainter
 QHelpEvent
+QGLPixelBuffer
 QStyle
 QTextObject
 QTextCharFormat
 QGestureEvent
+QGLShaderProgram
 QAccessibleInterface
 QStyleOptionTab
 QWebPage
@@ -252,6 +259,7 @@ QWhatsThisClickedEvent
 QPicture
 QButtonGroup
 QFtp
+QGLShader
 QTimer
 QRadialGradient
 QSocketNotifier
@@ -263,6 +271,7 @@ QThread
 QWebHistoryInterface
 QCoreApplication
 QSpacerItem
+QGLFramebufferObject
 QTextBlockFormat
 QTranslator
 QSharedMemory
@@ -344,6 +353,7 @@ QGraphicsSimpleTextItem
 QEventTransition
 QHistoryState
 QBuffer
+QGLWidget
 QItemDelegate
 QToolBar
 QIntValidator

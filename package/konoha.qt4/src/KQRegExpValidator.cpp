@@ -115,16 +115,14 @@ bool DummyQRegExpValidator::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQRegExpValidator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQRegExpValidator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQRegExpValidator::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQValidator::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQValidator::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQRegExpValidator::connection(QObject *o)
@@ -196,6 +194,7 @@ static void QRegExpValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQRegExpValidator *qp = (KQRegExpValidator *)p->rawptr;
+//		KQRegExpValidator *qp = static_cast<KQRegExpValidator*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -217,6 +216,7 @@ bool KQRegExpValidator::event(QEvent *event)
 		QRegExpValidator::event(event);
 		return false;
 	}
+//	QRegExpValidator::event(event);
 	return true;
 }
 

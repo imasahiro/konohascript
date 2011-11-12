@@ -691,12 +691,13 @@ bool DummyQWizard::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWizard::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWizard::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQWizard::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, current_id_changed_func);
 	KNH_ADDNNREF(ctx, custom_button_clicked_func);
 	KNH_ADDNNREF(ctx, help_requested_func);
@@ -705,7 +706,9 @@ void DummyQWizard::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQDialog::reftrace(ctx, p, tail_);
+	tail_ = DummyQDialog::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQWizard::connection(QObject *o)
@@ -782,6 +785,7 @@ static void QWizard_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWizard *qp = (KQWizard *)p->rawptr;
+//		KQWizard *qp = static_cast<KQWizard*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -803,6 +807,7 @@ bool KQWizard::event(QEvent *event)
 		QWizard::event(event);
 		return false;
 	}
+//	QWizard::event(event);
 	return true;
 }
 

@@ -255,15 +255,13 @@ bool DummyQTextDocumentWriter::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQTextDocumentWriter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextDocumentWriter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTextDocumentWriter::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQTextDocumentWriter::connection(QObject *o)
@@ -333,6 +331,7 @@ static void QTextDocumentWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextDocumentWriter *qp = (KQTextDocumentWriter *)p->rawptr;
+//		KQTextDocumentWriter *qp = static_cast<KQTextDocumentWriter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

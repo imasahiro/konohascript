@@ -168,15 +168,13 @@ bool DummyQTextFragment::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTextFragment::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextFragment::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTextFragment::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQTextFragment::connection(QObject *o)
@@ -246,6 +244,7 @@ static void QTextFragment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextFragment *qp = (KQTextFragment *)p->rawptr;
+//		KQTextFragment *qp = static_cast<KQTextFragment*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

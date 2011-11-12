@@ -208,16 +208,14 @@ bool DummyQDoubleValidator::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDoubleValidator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDoubleValidator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQDoubleValidator::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQValidator::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQValidator::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQDoubleValidator::connection(QObject *o)
@@ -289,6 +287,7 @@ static void QDoubleValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDoubleValidator *qp = (KQDoubleValidator *)p->rawptr;
+//		KQDoubleValidator *qp = static_cast<KQDoubleValidator*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -310,6 +309,7 @@ bool KQDoubleValidator::event(QEvent *event)
 		QDoubleValidator::event(event);
 		return false;
 	}
+//	QDoubleValidator::event(event);
 	return true;
 }
 

@@ -551,17 +551,20 @@ bool DummyQCoreApplication::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQCoreApplication::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQCoreApplication::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQCoreApplication::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, about_to_quit_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQCoreApplication::connection(QObject *o)
@@ -634,6 +637,7 @@ static void QCoreApplication_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQCoreApplication *qp = (KQCoreApplication *)p->rawptr;
+//		KQCoreApplication *qp = static_cast<KQCoreApplication*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -655,6 +659,7 @@ bool KQCoreApplication::event(QEvent *event)
 		QCoreApplication::event(event);
 		return false;
 	}
+//	QCoreApplication::event(event);
 	return true;
 }
 

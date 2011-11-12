@@ -306,7 +306,7 @@ class Mtd {
 		case "QAbstractState":
 			ret += QClassCase("QFinalState", type, 0);
 			ret += QClassCase("QHistoryState", type, 1);
-/*			ret += QClassCase("QState", type, 2); //konoha panic*/
+			ret += QClassCase("QState", type, 2); //konoha panic
 			break;
 		case "QPaintDevice":
 			ret += QClassCase("QCustomRasterPaintDevice", type, 0);

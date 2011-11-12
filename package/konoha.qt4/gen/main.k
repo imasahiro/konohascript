@@ -37,7 +37,7 @@ void main() {
 	outputSrc(bia, hierarchy);
 	genCMake(bia);
 
-	outputCompletionRate(interfaces, event_mtd_num);
+	outputCompletionRate(interfaces, bia, event_mtd_num);
 
 	OUT << "exit nomally" << EOL;
 }

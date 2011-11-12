@@ -166,16 +166,14 @@ bool DummyQPageSetupDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQPageSetupDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQPageSetupDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQPageSetupDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQDialog::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQDialog::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQPageSetupDialog::connection(QObject *o)
@@ -247,6 +245,7 @@ static void QPageSetupDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQPageSetupDialog *qp = (KQPageSetupDialog *)p->rawptr;
+//		KQPageSetupDialog *qp = static_cast<KQPageSetupDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -268,6 +267,7 @@ bool KQPageSetupDialog::event(QEvent *event)
 		QPageSetupDialog::event(event);
 		return false;
 	}
+//	QPageSetupDialog::event(event);
 	return true;
 }
 

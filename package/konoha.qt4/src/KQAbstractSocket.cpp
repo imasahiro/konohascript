@@ -571,12 +571,13 @@ bool DummyQAbstractSocket::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQAbstractSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQAbstractSocket::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, connected_func);
 	KNH_ADDNNREF(ctx, disconnected_func);
 	KNH_ADDNNREF(ctx, error_func);
@@ -586,7 +587,9 @@ void DummyQAbstractSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQIODevice::reftrace(ctx, p, tail_);
+	tail_ = DummyQIODevice::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQAbstractSocket::connection(QObject *o)
@@ -664,6 +667,7 @@ static void QAbstractSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractSocket *qp = (KQAbstractSocket *)p->rawptr;
+//		KQAbstractSocket *qp = static_cast<KQAbstractSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -685,6 +689,7 @@ bool KQAbstractSocket::event(QEvent *event)
 		QAbstractSocket::event(event);
 		return false;
 	}
+//	QAbstractSocket::event(event);
 	return true;
 }
 

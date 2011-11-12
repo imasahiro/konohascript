@@ -819,12 +819,13 @@ bool DummyQAbstractItemModel::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
-void DummyQAbstractItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQAbstractItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQAbstractItemModel::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 18;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, columns_about_to_be_inserted_func);
 	KNH_ADDNNREF(ctx, columns_about_to_be_moved_func);
 	KNH_ADDNNREF(ctx, columns_about_to_be_removed_func);
@@ -846,7 +847,9 @@ void DummyQAbstractItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQAbstractItemModel::connection(QObject *o)
@@ -936,6 +939,7 @@ static void QAbstractItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQAbstractItemModel *qp = (KQAbstractItemModel *)p->rawptr;
+//		KQAbstractItemModel *qp = static_cast<KQAbstractItemModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -957,6 +961,7 @@ bool KQAbstractItemModel::event(QEvent *event)
 		QAbstractItemModel::event(event);
 		return false;
 	}
+//	QAbstractItemModel::event(event);
 	return true;
 }
 

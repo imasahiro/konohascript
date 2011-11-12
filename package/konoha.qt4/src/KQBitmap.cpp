@@ -153,16 +153,14 @@ bool DummyQBitmap::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQBitmap::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQBitmap::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQBitmap::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQPixmap::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQPixmap::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQBitmap::connection(QObject *o)
@@ -233,6 +231,7 @@ static void QBitmap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQBitmap *qp = (KQBitmap *)p->rawptr;
+//		KQBitmap *qp = static_cast<KQBitmap*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -154,17 +154,20 @@ bool DummyQCheckBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQCheckBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQCheckBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQCheckBox::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, state_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractButton::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractButton::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQCheckBox::connection(QObject *o)
@@ -237,6 +240,7 @@ static void QCheckBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQCheckBox *qp = (KQCheckBox *)p->rawptr;
+//		KQCheckBox *qp = static_cast<KQCheckBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -258,6 +262,7 @@ bool KQCheckBox::event(QEvent *event)
 		QCheckBox::event(event);
 		return false;
 	}
+//	QCheckBox::event(event);
 	return true;
 }
 

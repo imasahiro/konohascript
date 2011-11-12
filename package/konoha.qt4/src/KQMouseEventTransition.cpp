@@ -154,16 +154,14 @@ bool DummyQMouseEventTransition::signalConnect(knh_Func_t *callback_func, string
 	}
 }
 
-void DummyQMouseEventTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMouseEventTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQMouseEventTransition::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQEventTransition::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQEventTransition::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQMouseEventTransition::connection(QObject *o)
@@ -235,6 +233,7 @@ static void QMouseEventTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMouseEventTransition *qp = (KQMouseEventTransition *)p->rawptr;
+//		KQMouseEventTransition *qp = static_cast<KQMouseEventTransition*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -256,6 +255,7 @@ bool KQMouseEventTransition::event(QEvent *event)
 		QMouseEventTransition::event(event);
 		return false;
 	}
+//	QMouseEventTransition::event(event);
 	return true;
 }
 

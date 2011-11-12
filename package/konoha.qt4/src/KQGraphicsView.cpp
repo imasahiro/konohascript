@@ -1274,16 +1274,14 @@ bool DummyQGraphicsView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQGraphicsView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQGraphicsView::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQGraphicsView::connection(QObject *o)
@@ -1355,6 +1353,7 @@ static void QGraphicsView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsView *qp = (KQGraphicsView *)p->rawptr;
+//		KQGraphicsView *qp = static_cast<KQGraphicsView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1376,6 +1375,7 @@ bool KQGraphicsView::event(QEvent *event)
 		QGraphicsView::event(event);
 		return false;
 	}
+//	QGraphicsView::event(event);
 	return true;
 }
 

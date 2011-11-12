@@ -356,15 +356,13 @@ bool DummyQImageWriter::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQImageWriter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQImageWriter::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQImageWriter::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQImageWriter::connection(QObject *o)
@@ -434,6 +432,7 @@ static void QImageWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQImageWriter *qp = (KQImageWriter *)p->rawptr;
+//		KQImageWriter *qp = static_cast<KQImageWriter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

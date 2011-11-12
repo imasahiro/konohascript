@@ -645,17 +645,20 @@ bool DummyQMessageBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMessageBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMessageBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQMessageBox::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, button_clicked_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQDialog::reftrace(ctx, p, tail_);
+	tail_ = DummyQDialog::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQMessageBox::connection(QObject *o)
@@ -728,6 +731,7 @@ static void QMessageBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMessageBox *qp = (KQMessageBox *)p->rawptr;
+//		KQMessageBox *qp = static_cast<KQMessageBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -749,6 +753,7 @@ bool KQMessageBox::event(QEvent *event)
 		QMessageBox::event(event);
 		return false;
 	}
+//	QMessageBox::event(event);
 	return true;
 }
 

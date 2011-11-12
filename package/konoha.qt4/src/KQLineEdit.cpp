@@ -949,12 +949,13 @@ bool DummyQLineEdit::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQLineEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQLineEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQLineEdit::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, cursor_position_changed_func);
 	KNH_ADDNNREF(ctx, editing_finished_func);
 	KNH_ADDNNREF(ctx, return_pressed_func);
@@ -964,7 +965,9 @@ void DummyQLineEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQLineEdit::connection(QObject *o)
@@ -1042,6 +1045,7 @@ static void QLineEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQLineEdit *qp = (KQLineEdit *)p->rawptr;
+//		KQLineEdit *qp = static_cast<KQLineEdit*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1063,6 +1067,7 @@ bool KQLineEdit::event(QEvent *event)
 		QLineEdit::event(event);
 		return false;
 	}
+//	QLineEdit::event(event);
 	return true;
 }
 

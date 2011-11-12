@@ -298,15 +298,13 @@ bool DummyQBitArray::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQBitArray::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQBitArray::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQBitArray::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQBitArray::connection(QObject *o)
@@ -376,6 +374,7 @@ static void QBitArray_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQBitArray *qp = (KQBitArray *)p->rawptr;
+//		KQBitArray *qp = static_cast<KQBitArray*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

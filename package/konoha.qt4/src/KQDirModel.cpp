@@ -524,16 +524,14 @@ bool DummyQDirModel::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDirModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDirModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQDirModel::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractItemModel::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQDirModel::connection(QObject *o)
@@ -605,6 +603,7 @@ static void QDirModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDirModel *qp = (KQDirModel *)p->rawptr;
+//		KQDirModel *qp = static_cast<KQDirModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -626,6 +625,7 @@ bool KQDirModel::event(QEvent *event)
 		QDirModel::event(event);
 		return false;
 	}
+//	QDirModel::event(event);
 	return true;
 }
 

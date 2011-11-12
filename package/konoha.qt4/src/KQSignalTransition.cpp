@@ -127,16 +127,14 @@ bool DummyQSignalTransition::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
-void DummyQSignalTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSignalTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSignalTransition::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractTransition::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractTransition::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQSignalTransition::connection(QObject *o)
@@ -208,6 +206,7 @@ static void QSignalTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSignalTransition *qp = (KQSignalTransition *)p->rawptr;
+//		KQSignalTransition *qp = static_cast<KQSignalTransition*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -229,6 +228,7 @@ bool KQSignalTransition::event(QEvent *event)
 		QSignalTransition::event(event);
 		return false;
 	}
+//	QSignalTransition::event(event);
 	return true;
 }
 

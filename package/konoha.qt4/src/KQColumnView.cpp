@@ -275,17 +275,20 @@ bool DummyQColumnView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQColumnView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQColumnView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQColumnView::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, update_preview_widget_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractItemView::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractItemView::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQColumnView::connection(QObject *o)
@@ -358,6 +361,7 @@ static void QColumnView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQColumnView *qp = (KQColumnView *)p->rawptr;
+//		KQColumnView *qp = static_cast<KQColumnView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -379,6 +383,7 @@ bool KQColumnView::event(QEvent *event)
 		QColumnView::event(event);
 		return false;
 	}
+//	QColumnView::event(event);
 	return true;
 }
 

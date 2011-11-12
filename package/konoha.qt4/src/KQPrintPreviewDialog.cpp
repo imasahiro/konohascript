@@ -143,17 +143,20 @@ bool DummyQPrintPreviewDialog::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQPrintPreviewDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQPrintPreviewDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQPrintPreviewDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, paint_requested_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQDialog::reftrace(ctx, p, tail_);
+	tail_ = DummyQDialog::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQPrintPreviewDialog::connection(QObject *o)
@@ -226,6 +229,7 @@ static void QPrintPreviewDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQPrintPreviewDialog *qp = (KQPrintPreviewDialog *)p->rawptr;
+//		KQPrintPreviewDialog *qp = static_cast<KQPrintPreviewDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -247,6 +251,7 @@ bool KQPrintPreviewDialog::event(QEvent *event)
 		QPrintPreviewDialog::event(event);
 		return false;
 	}
+//	QPrintPreviewDialog::event(event);
 	return true;
 }
 

@@ -976,12 +976,13 @@ bool DummyQWebPage::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWebPage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWebPage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQWebPage::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 23;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, contents_changed_func);
 	KNH_ADDNNREF(ctx, database_quota_exceeded_func);
 	KNH_ADDNNREF(ctx, download_requested_func);
@@ -1008,7 +1009,9 @@ void DummyQWebPage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQWebPage::connection(QObject *o)
@@ -1103,6 +1106,7 @@ static void QWebPage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWebPage *qp = (KQWebPage *)p->rawptr;
+//		KQWebPage *qp = static_cast<KQWebPage*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1124,6 +1128,7 @@ bool KQWebPage::event(QEvent *event)
 		QWebPage::event(event);
 		return false;
 	}
+//	QWebPage::event(event);
 	return true;
 }
 

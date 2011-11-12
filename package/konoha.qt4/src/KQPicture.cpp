@@ -217,16 +217,14 @@ bool DummyQPicture::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQPicture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQPicture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQPicture::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQPaintDevice::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQPaintDevice::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQPicture::connection(QObject *o)
@@ -297,6 +295,7 @@ static void QPicture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQPicture *qp = (KQPicture *)p->rawptr;
+//		KQPicture *qp = static_cast<KQPicture*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

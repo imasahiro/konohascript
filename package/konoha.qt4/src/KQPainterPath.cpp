@@ -986,15 +986,13 @@ bool DummyQPainterPath::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQPainterPath::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQPainterPath::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQPainterPath::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQPainterPath::connection(QObject *o)
@@ -1056,14 +1054,14 @@ static void QPainterPath_free(CTX ctx, knh_RawPtr_t *p)
 	(void)ctx;
 	if (p->rawptr != NULL) {
 		KQPainterPath *qp = (KQPainterPath *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		delete qp;
 	}
 }
 static void QPainterPath_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQPainterPath *qp = (KQPainterPath *)p->rawptr;
+//		KQPainterPath *qp = static_cast<KQPainterPath*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -159,15 +159,13 @@ bool DummyQSystemSemaphore::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSystemSemaphore::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSystemSemaphore::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSystemSemaphore::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQSystemSemaphore::connection(QObject *o)
@@ -237,6 +235,7 @@ static void QSystemSemaphore_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSystemSemaphore *qp = (KQSystemSemaphore *)p->rawptr;
+//		KQSystemSemaphore *qp = static_cast<KQSystemSemaphore*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

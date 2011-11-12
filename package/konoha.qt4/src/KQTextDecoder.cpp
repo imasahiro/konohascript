@@ -135,15 +135,13 @@ bool DummyQTextDecoder::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTextDecoder::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextDecoder::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTextDecoder::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQTextDecoder::connection(QObject *o)
@@ -213,6 +211,7 @@ static void QTextDecoder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextDecoder *qp = (KQTextDecoder *)p->rawptr;
+//		KQTextDecoder *qp = static_cast<KQTextDecoder*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -142,16 +142,14 @@ bool DummyQTranslator::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTranslator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTranslator::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTranslator::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQTranslator::connection(QObject *o)
@@ -223,6 +221,7 @@ static void QTranslator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTranslator *qp = (KQTranslator *)p->rawptr;
+//		KQTranslator *qp = static_cast<KQTranslator*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -244,6 +243,7 @@ bool KQTranslator::event(QEvent *event)
 		QTranslator::event(event);
 		return false;
 	}
+//	QTranslator::event(event);
 	return true;
 }
 

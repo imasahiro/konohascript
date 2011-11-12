@@ -17,7 +17,7 @@ class QMethod {
 		mtd_name = fe.func_name;
 		return_type = fe.return_value_type.replace("Array<", "QList<");
 		return_value_type_object_flag = fe.return_value_type_object_flag;
-		argument_type_object_flag = []
+		argument_type_object_flag = [];
 		foreach (boolean b in fe.argument_type_object_flags) {
 			argument_type_object_flag <<< b;
 		}
@@ -164,7 +164,7 @@ class QMethod {
 		print event_type_name;
 	}
 }
-
+	
 
 String genHeaderSource(String class_name, QMethod[] mtds, QMethod[] sigs, BindInfo bi)
 {
@@ -192,7 +192,9 @@ public:
 	}
 	
 	kqclass += "\tvoid setSelf(knh_RawPtr_t *ptr);\n";
-	if (bi.checkHaveEventMethod()) kqclass += "\tbool event(QEvent *event);\n";
+	if (bi.have_event_method_flag) kqclass += "\tbool event(QEvent *event);\n";
+	if (bi.have_scene_event_method_flag) kqclass += "\tbool sceneEvent(QEvent *event);\n";
+	if (bi.inherits_qgraphicsitem_flag) kqclass += "\tvoid paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);\n";
 //	if (bi.checkInheritsQObject() && |sigs| != 0) {
 //		kqclass = kqclass.replace("<UNUSE>", "");
 //	} else {
@@ -316,51 +318,17 @@ static void <C>_free(CTX ctx, knh_RawPtr_t *p)
 }
 """;
 
-gc += """
+	gc += """
 static void <C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		K<C> *qp = (K<C> *)p->rawptr;
+//		K<C> *qp = static_cast<K<C>*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 """;
-// 	gc += """
-// static void <C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
-// {
-// <UNUSE>	(void)ctx; (void)p; (void)tail_;
-// 	int list_size = <NUM>;
-// 	KNH_ENSUREREF(ctx, list_size);
 
-// 	if (p->rawptr != NULL) {
-// 		K<C> *qp = (K<C> *)p->rawptr;
-// <UNUSE>		(void)qp;
-// """;
-// 	if (|mtds| == 0 && |sigs| == 0) {
-// 		gc = gc.replace("<UNUSE>", "");
-// 	} else {
-// 		gc = gc.replace("<UNUSE>", "//");
-// 	}
-
-// 	int num = |mtds| + |sigs|;
-// 	gc = gc.replace("<NUM>", (String)num);
-
-// 	foreach (QMethod mtd in mtds) {
-// 		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
-// 		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
-// 		gc += "\t\t\tKNH_SIZEREF(ctx);\n";
-// 		gc += "\t\t}\n";
-// 	}
-// 	foreach (QMethod mtd in sigs) {
-// 		gc += "\t\tif (qp->dummy->" + mtd.mtd_cname + "_func != NULL) {\n";
-// 		gc += "\t\t\tKNH_ADDREF(ctx, qp->dummy->" + mtd.mtd_cname + "_func);\n";
-// 		gc	+= "\t\t\tKNH_SIZEREF(ctx);\n";
-// 		gc	+= "\t\t}\n";
-// 	}
-// 	gc += """
-// 	}
-// }
-// """;
 //=======================Generate compareTo==============================//
 
 	String compare_to = COMPARE_TO(class_name, bi.have_compare_operator_flag);
@@ -375,17 +343,20 @@ void K<C>::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 """;
-//======================= Generate event ==============================//
+//======================= Generate event/sceneEvent ==============================//
 	String event = "";
-	if (bi.checkHaveEventMethod()) {
+
+	if (bi.have_event_method_flag ||
+		bi.have_scene_event_method_flag) {
 		event += """
 
-bool K<C>::event(QEvent *event)
+bool K<C>::<MN>(QEvent *event)
 {
 	if (!dummy->eventDispatcher(event)) {
-		<CALL>event(event);
+		<CALL><MN>(event);
 		return false;
 	}
+<NOT_USE>	<CALL><MN>(event);
 	return true;
 }
 """;
@@ -394,22 +365,20 @@ bool K<C>::event(QEvent *event)
 		} else {
 			event = event.replace("<CALL>", "<C>::");
 		}
+		if (bi.have_event_method_flag) {
+			event = event.replace("<MN>", "event");
+		} else {
+			event = event.replace("<MN>", "sceneEvent");
+		}
+		if (bi.class_name == "QGraphicsScene") {
+			event = event.replace("<NOT_USE>", "");
+		} else {
+			event = event.replace("<NOT_USE>", "//");
+		}
 	}
 
-// //======================= def ==========================================//
-// 	String def_class = """
-
-// DEFAPI(void) def<C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
-// {
-// 	(void)ctx; (void) cid;
-// 	cdef->name = \"<C>\";
-// 	cdef->free = <C>_free;
-// 	cdef->reftrace = <C>_reftrace;
-// 	cdef->compareTo = <C>_compareTo;
-// }
-// """;
 //=================================================================//
-    String cpp_src = "";
+	String cpp_src = "";
 	cpp_src += constructor;
 	cpp_src += addEvent;
 	cpp_src += signalConnect;
@@ -417,7 +386,6 @@ bool K<C>::event(QEvent *event)
 	cpp_src += compare_to;
 	cpp_src += setSelf;
 	cpp_src += event;
-//	cpp_src += def_class;
 	cpp_src = cpp_src.replace("<C>", class_name);
 	cpp_src = cpp_src.replace("<T>", "K" + class_name + " *");
 	return cpp_src;
@@ -472,13 +440,16 @@ public:
 	foreach (QMethod mtd in sigs) {
 		class_definition += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
 	}
+	if (bi.inherits_qgraphicsitem_flag) {
+		class_definition += "\tknh_Func_t *paint_func;\n";
+	}
 	class_definition += """
 	Dummy<C>();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 <CONNECTION><EVENT><SLOTS>};
 """;
 
@@ -486,7 +457,7 @@ public:
 		class_definition = class_definition.replace("<UNUSE>", "");
 	} else {
 		class_definition = class_definition.replace("<UNUSE>", "//");
-	}
+			}
 
 //====================== connection =============================//
 	String connection = "";
@@ -557,15 +528,21 @@ Dummy<C>::Dummy<C>()
 	foreach (QMethod mtd in sigs) {
 		constructor += "\t" + mtd.mtd_cname + "_func = NULL;\n";
 	}
+	if (bi.inherits_qgraphicsitem_flag) {
+		constructor += "\tpaint_func = NULL;\n";
+	}
 	constructor += "\tevent_map = new map<string, knh_Func_t *>();\n";
 	constructor += "\tslot_map = new map<string, knh_Func_t *>();\n";
 	foreach (QMethod mtd in mtds) {
 		constructor += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
 	}
+	if (bi.inherits_qgraphicsitem_flag) {
+		constructor += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"paint\", NULL));\n";
+	}
 	foreach (QMethod mtd in sigs) {
 		constructor += "\tslot_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
 	}
-	constructor += "}\n"
+	constructor += "}\n";
 
 //====================== setSelf =================================//
 
@@ -599,7 +576,8 @@ bool Dummy<C>::eventDispatcher(QEvent *event)
 		case_ += "\t\tbreak;";
 
 		String event = "";
-		if (bi.class_name == "QGraphicsScene") {
+		if (bi.class_name == "QGraphicsScene" ||
+			bi.have_scene_event_method_flag) {
 			foreach (String enum_name in e_table) {
 				if ((enum_name + "event").convert(to:lower) == ("GraphicsScene" + mtd.mtd_name).convert(to:lower)) {
 					event = "";
@@ -752,6 +730,9 @@ bool Dummy<C>::addEvent(knh_Func_t *callback_func, string str)
 	foreach (QMethod mtd in mtds) {
 		addEvent += "\t\t" + mtd.mtd_cname + "_func = (*event_map)[\"" + mtd.event_type_name + "\"];\n";
 	}
+	if (bi.inherits_qgraphicsitem_flag) {
+        addEvent += "\t\tpaint_func = (*event_map)[\"paint\"];\n";
+	}
 	addEvent += "\t\treturn true;\n\t}\n}\n\n";
 //=================== dummy::signalConnect  ==================//
 	String signalConnect = "";
@@ -782,33 +763,38 @@ bool Dummy<C>::signalConnect(knh_Func_t *callback_func, string str)
 
 	String reftrace = "";
 	reftrace += """
-void Dummy<C>::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** Dummy<C>::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 <UNUSE>	(void)ctx; (void)p; (void)tail_;
-	int list_size = <NUM>;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "Dummy<C>::reftrace p->rawptr=[%p]\\n", p->rawptr);
 
 """;
 	if (|mtds| == 0 && |sigs| == 0) {
 		reftrace = reftrace.replace("<UNUSE>", "");
 	} else {
 		reftrace = reftrace.replace("<UNUSE>", "//");
-	}
 
-	int num = |mtds| + |sigs|;
-	reftrace = reftrace.replace("<NUM>", (String)num);
+			reftrace += """
+	int list_size = <NUM>;
+	KNH_ENSUREREF(ctx, list_size);
+""";
+	
+		int num = |mtds| + |sigs|;
+		reftrace = reftrace.replace("<NUM>", (String)num);
 
-	foreach (QMethod mtd in mtds) {
-		reftrace += "\tKNH_ADDNNREF(ctx, " + mtd.mtd_cname + "_func);\n";
-	}
-	foreach (QMethod mtd in sigs) {
-		reftrace += "\tKNH_ADDNNREF(ctx, " + mtd.mtd_cname + "_func);\n";
-	}
-	reftrace += "\n\tKNH_SIZEREF(ctx);\n\n";
+		foreach (QMethod mtd in mtds) {
+			reftrace += "\tKNH_ADDNNREF(ctx, " + mtd.mtd_cname + "_func);\n";
+		}
+		foreach (QMethod mtd in sigs) {
+			reftrace += "\tKNH_ADDNNREF(ctx, " + mtd.mtd_cname + "_func);\n";
+		}
 //	reftrace += "\t}\n";
+		reftrace += "\n\tKNH_SIZEREF(ctx);\n\n";
+		}
 	foreach (String pn in bi.parent_name) {
-		reftrace += "\tDummy" + pn + "::reftrace(ctx, p, tail_);\n";
+		reftrace += "\ttail_ = Dummy" + pn + "::reftrace(ctx, p, tail_);\n";
 	}
+	reftrace += "\n\treturn tail_;\n";
 	reftrace += "}\n";
 
 //================== connection =========================//
@@ -857,7 +843,7 @@ void Dummy<C>::connection(QObject *o)
 	dummy_cpp = dummy_cpp.replace("<CLASS>", bi.class_name);
                  
 	return dummy_cpp;
-}
+	}
 
 String[] makeEventTable(QtInterface qevent)
 {

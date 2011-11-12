@@ -382,12 +382,13 @@ bool DummyQNetworkSession::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQNetworkSession::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQNetworkSession::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQNetworkSession::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, closed_func);
 	KNH_ADDNNREF(ctx, error_func);
 	KNH_ADDNNREF(ctx, new_configuration_activated_func);
@@ -397,7 +398,9 @@ void DummyQNetworkSession::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQNetworkSession::connection(QObject *o)
@@ -475,6 +478,7 @@ static void QNetworkSession_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQNetworkSession *qp = (KQNetworkSession *)p->rawptr;
+//		KQNetworkSession *qp = static_cast<KQNetworkSession*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -496,6 +500,7 @@ bool KQNetworkSession::event(QEvent *event)
 		QNetworkSession::event(event);
 		return false;
 	}
+//	QNetworkSession::event(event);
 	return true;
 }
 

@@ -893,15 +893,13 @@ bool DummyQTreeWidgetItem::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTreeWidgetItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTreeWidgetItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTreeWidgetItem::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQTreeWidgetItem::connection(QObject *o)
@@ -971,6 +969,7 @@ static void QTreeWidgetItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTreeWidgetItem *qp = (KQTreeWidgetItem *)p->rawptr;
+//		KQTreeWidgetItem *qp = static_cast<KQTreeWidgetItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

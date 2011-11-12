@@ -71,16 +71,14 @@ bool DummyQStyleOptionSpinBox::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQStyleOptionSpinBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStyleOptionSpinBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQStyleOptionSpinBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQStyleOptionComplex::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQStyleOptionSpinBox::connection(QObject *o)
@@ -151,6 +149,7 @@ static void QStyleOptionSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQStyleOptionSpinBox *qp = (KQStyleOptionSpinBox *)p->rawptr;
+//		KQStyleOptionSpinBox *qp = static_cast<KQStyleOptionSpinBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

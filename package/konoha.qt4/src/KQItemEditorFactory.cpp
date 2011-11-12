@@ -143,15 +143,13 @@ bool DummyQItemEditorFactory::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
-void DummyQItemEditorFactory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQItemEditorFactory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQItemEditorFactory::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQItemEditorFactory::connection(QObject *o)
@@ -221,6 +219,7 @@ static void QItemEditorFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQItemEditorFactory *qp = (KQItemEditorFactory *)p->rawptr;
+//		KQItemEditorFactory *qp = static_cast<KQItemEditorFactory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -179,15 +179,13 @@ bool DummyQProcessEnvironment::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQProcessEnvironment::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQProcessEnvironment::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQProcessEnvironment::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQProcessEnvironment::connection(QObject *o)
@@ -257,6 +255,7 @@ static void QProcessEnvironment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQProcessEnvironment *qp = (KQProcessEnvironment *)p->rawptr;
+//		KQProcessEnvironment *qp = static_cast<KQProcessEnvironment*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

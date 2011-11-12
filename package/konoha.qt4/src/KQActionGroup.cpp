@@ -228,18 +228,21 @@ bool DummyQActionGroup::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQActionGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQActionGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQActionGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, hovered_func);
 	KNH_ADDNNREF(ctx, triggered_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQActionGroup::connection(QObject *o)
@@ -313,6 +316,7 @@ static void QActionGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQActionGroup *qp = (KQActionGroup *)p->rawptr;
+//		KQActionGroup *qp = static_cast<KQActionGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -334,6 +338,7 @@ bool KQActionGroup::event(QEvent *event)
 		QActionGroup::event(event);
 		return false;
 	}
+//	QActionGroup::event(event);
 	return true;
 }
 

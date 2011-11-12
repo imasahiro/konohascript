@@ -6,10 +6,13 @@ class BindInfo {
 	boolean abstract_class_flag;
 	boolean template_class_flag;
 	boolean inherits_qobject_flag;
+	boolean inherits_qgraphicsitem_flag;
 	boolean make_rapper_class_flag;
 	boolean have_parent_flag;
 	boolean have_compare_operator_flag;
 	boolean have_private_destructor_flag;
+	boolean have_event_method_flag;
+	boolean have_scene_event_method_flag;
 	String[] all_enums;
 	String[] all_typedefed_objects;
 //	String[] flag_objects;
@@ -32,9 +35,12 @@ class BindInfo {
 
 	BindInfo(QtInterface interface) {
 		inherits_qobject_flag = false;
+		inherits_qgraphicsitem_flag = false;
 		make_rapper_class_flag = true;
 		have_compare_operator_flag = false;
 		have_private_destructor_flag = false;
+		have_event_method_flag = false;
+		have_scene_event_method_flag = false;
 		fea = [];
 		unused_classes = [];
 		constructor = null;
@@ -74,9 +80,16 @@ class BindInfo {
 
 		makeFunctionElements(interface.reimplemented_public_functions, true);
 		makeFunctionElements(interface.public_functions);
-		holdConstructor();
 		makeFunctionElements(interface.static_public_members, false, true);
 		makeFunctionElements(interface.public_slots);
+
+		holdConstructor();
+		checkEventDispatcher(interface);
+		if (class_name == "QObject") {
+			print class_name;
+			print have_event_method_flag;
+			print have_scene_event_method_flag;
+		}
 
 		enum_bind = genEnumBind(interface.enums);
 		have_private_destructor_flag = checkHavePrivateDestructor();
@@ -98,7 +111,12 @@ class BindInfo {
 				knh_interface = "//" + knh_interface;
 			}
 			bind += "\n";
-			func_bind += bind;
+			if (inherits_qgraphicsitem_flag &&
+				fe.func_name == "paint") {
+//				func_bind += FUNC_PAINT(class_name);
+			} else {
+				func_bind += bind;
+			}
 			if (knh_interface == "") {
 //				print "error bind";
 //				print bind;
@@ -107,16 +125,19 @@ class BindInfo {
 				k_src += knh_interface;
 			}
 		}
+		if (inherits_qgraphicsitem_flag) {
+			func_bind += FUNC_PAINT(class_name);
+		}
 		if (!checkObsolateClass()) {
 			if (have_parent_flag) k_src += "@Override ";
 			k_src += "@Virtual void <CLASS>.addEvent(String event_name, dynamic callback_func);\n";
 			if (have_parent_flag) k_src += "@Override ";
 			k_src += "@Virtual void <CLASS>.signalConnect(String signal_name, dynamic callback_func);\n";
-			k_src = k_src.replace("<CLASS>", class_name);
 			if (|parent_index| == 0) {
 				func_bind += FUNC_PARENTS(class_name);
-				k_src += "Array<String> <CLASS>.parents();\n".replace("<CLASS>", class_name);
+				k_src += "Array<String> <CLASS>.parents();\n";
 			}
+			k_src = k_src.replace("<CLASS>", class_name);
 		}
 	}
 
@@ -217,6 +238,21 @@ class BindInfo {
 		return ret;
 	}
 
+	void checkEventDispatcher(QtInterface interface) {
+		foreach (String hsem in HAVE_SCENE_EVENT_METHOD) {
+			if (class_name == hsem) {
+				have_scene_event_method_flag = true;
+				return;
+			}
+		}
+		foreach (String mtd in NOT_HAVE_EVENT_METHOD) {
+			if (class_name == mtd) {
+				return;
+			}
+		}
+		have_event_method_flag = true;
+	}
+
 	boolean checkUnusedWord(String mtd) {
 		if (mtd == "") return true;
 		foreach (key in UNUSED_WORDS) {
@@ -232,12 +268,12 @@ class BindInfo {
 		return false;
 	}
 
-	boolean checkHaveEventMethod() {
-		foreach (String key in NOT_HAVE_EVENT_METHOD) {
-			if (key == class_name) return false;
-		}
-		return true;
-	}
+	// boolean checkHaveEventMethod() {
+	// 	foreach (String key in NOT_HAVE_EVENT_METHOD) {
+	// 		if (key == class_name) return false;
+	// 	}
+	// 	return true;
+	// }
 
 	boolean checkHaveConstructor() {
 		// foreach (String key in NOT_HAVE_CONSTRUCTOR) {
@@ -386,7 +422,6 @@ class BindInfo {
 
 	void makeFunctionElements(String[] declarations, boolean overrideFlag = false, boolean staticFlag = false) {
 		foreach (String declaration in declarations) {
-//			if ("operator==" in? declaration) have_compare_operator_flag = true;
 			if (checkUnusedWord(declaration)) continue;
 			FunctionElement fe = new FunctionElement(declaration, class_name);
 			fe.pureVirtualFlag = checkPureVirtual(fe);
@@ -394,7 +429,6 @@ class BindInfo {
 			fe.overrideFlag = overrideFlag;
 			fe.staticFlag = staticFlag;
 			fe.setKonohaTypes();
-//			if (fe.destructorFlag) have_destructor_flag = true;
 			if (checkUnusedMethod(fe)) continue;
 			fea <<< fe;
 		}

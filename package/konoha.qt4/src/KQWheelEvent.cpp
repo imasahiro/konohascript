@@ -204,16 +204,14 @@ bool DummyQWheelEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWheelEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWheelEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQWheelEvent::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQInputEvent::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQInputEvent::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQWheelEvent::connection(QObject *o)
@@ -284,6 +282,7 @@ static void QWheelEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWheelEvent *qp = (KQWheelEvent *)p->rawptr;
+//		KQWheelEvent *qp = static_cast<KQWheelEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

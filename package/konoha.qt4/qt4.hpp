@@ -63,6 +63,8 @@ class QLocale;
 class DummyQLocale;
 class QTileRules;
 class DummyQTileRules;
+class QGLContext;
+class DummyQGLContext;
 class QAtomicInt;
 class DummyQAtomicInt;
 class QEasingCurve;
@@ -85,6 +87,8 @@ class QTextCursor;
 class DummyQTextCursor;
 class QSysInfo;
 class DummyQSysInfo;
+class QGLFormat;
+class DummyQGLFormat;
 class QWebHitTestResult;
 class DummyQWebHitTestResult;
 class QSemaphore;
@@ -177,6 +181,8 @@ class QWebHistoryItem;
 class DummyQWebHistoryItem;
 class QPaintEngineState;
 class DummyQPaintEngineState;
+class QGLBuffer;
+class DummyQGLBuffer;
 class QTextObjectInterface;
 class DummyQTextObjectInterface;
 class QSslError;
@@ -219,6 +225,8 @@ class QStaticText;
 class DummyQStaticText;
 class QIconEngine;
 class DummyQIconEngine;
+class QGLFramebufferObjectFormat;
+class DummyQGLFramebufferObjectFormat;
 class QGraphicsItem;
 class DummyQGraphicsItem;
 class QWebElement;
@@ -243,6 +251,8 @@ class QTextBlock;
 class DummyQTextBlock;
 class QInputContextFactory;
 class DummyQInputContextFactory;
+class QGLColormap;
+class DummyQGLColormap;
 class QPalette;
 class DummyQPalette;
 class QDateTime;
@@ -417,6 +427,8 @@ class QStylePainter;
 class DummyQStylePainter;
 class QHelpEvent;
 class DummyQHelpEvent;
+class QGLPixelBuffer;
+class DummyQGLPixelBuffer;
 class QStyle;
 class DummyQStyle;
 class QTextObject;
@@ -425,6 +437,8 @@ class QTextCharFormat;
 class DummyQTextCharFormat;
 class QGestureEvent;
 class DummyQGestureEvent;
+class QGLShaderProgram;
+class DummyQGLShaderProgram;
 class QAccessibleInterface;
 class DummyQAccessibleInterface;
 class QStyleOptionTab;
@@ -509,6 +523,8 @@ class QButtonGroup;
 class DummyQButtonGroup;
 class QFtp;
 class DummyQFtp;
+class QGLShader;
+class DummyQGLShader;
 class QTimer;
 class DummyQTimer;
 class QRadialGradient;
@@ -531,6 +547,8 @@ class QCoreApplication;
 class DummyQCoreApplication;
 class QSpacerItem;
 class DummyQSpacerItem;
+class QGLFramebufferObject;
+class DummyQGLFramebufferObject;
 class QTextBlockFormat;
 class DummyQTextBlockFormat;
 class QTranslator;
@@ -693,6 +711,8 @@ class QHistoryState;
 class DummyQHistoryState;
 class QBuffer;
 class DummyQBuffer;
+class QGLWidget;
+class DummyQGLWidget;
 class QItemDelegate;
 class DummyQItemDelegate;
 class QToolBar;
@@ -923,7 +943,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -953,7 +973,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -983,7 +1003,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1013,7 +1033,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1043,7 +1063,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1073,7 +1093,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1103,7 +1123,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1133,7 +1153,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1163,7 +1183,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1193,7 +1213,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1223,7 +1243,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1253,7 +1273,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1283,7 +1303,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1313,7 +1333,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1343,7 +1363,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1373,7 +1393,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1403,7 +1423,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1433,7 +1453,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1463,7 +1483,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1493,7 +1513,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1523,7 +1543,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1553,7 +1573,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1583,7 +1603,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1613,7 +1633,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1643,7 +1663,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1673,7 +1693,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1703,7 +1723,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1733,7 +1753,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1763,7 +1783,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1793,7 +1813,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1823,7 +1843,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1840,6 +1860,36 @@ public:
 
 
 
+#ifndef QGLCONTEXT
+#define QGLCONTEXT
+class DummyQGLContext {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLContext();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLContext : public QGLContext {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLContext *dummy;
+	KQGLContext(const QGLFormat format);
+	void setSelf(knh_RawPtr_t *ptr);
+};
+
+#endif //QGLCONTEXT
+
+
+
 #ifndef QATOMICINT
 #define QATOMICINT
 class DummyQAtomicInt {
@@ -1853,7 +1903,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1883,7 +1933,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1913,7 +1963,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1943,7 +1993,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -1973,7 +2023,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2003,7 +2053,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2033,7 +2083,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2063,7 +2113,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2093,7 +2143,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2123,7 +2173,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2153,7 +2203,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2170,6 +2220,36 @@ public:
 
 
 
+#ifndef QGLFORMAT
+#define QGLFORMAT
+class DummyQGLFormat {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLFormat();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLFormat : public QGLFormat {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLFormat *dummy;
+	KQGLFormat();
+	void setSelf(knh_RawPtr_t *ptr);
+};
+
+#endif //QGLFORMAT
+
+
+
 #ifndef QWEBHITTESTRESULT
 #define QWEBHITTESTRESULT
 class DummyQWebHitTestResult {
@@ -2183,7 +2263,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2213,7 +2293,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2243,7 +2323,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2273,7 +2353,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2303,7 +2383,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2333,7 +2413,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2363,7 +2443,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2393,7 +2473,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2423,7 +2503,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2453,7 +2533,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2483,7 +2563,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2513,7 +2593,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2543,7 +2623,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2573,7 +2653,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2603,7 +2683,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2633,7 +2713,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2663,7 +2743,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2693,7 +2773,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2727,7 +2807,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool childEventDummy(QChildEvent* event);
 	bool customEventDummy(QEvent* event);
@@ -2763,7 +2843,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2793,7 +2873,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2823,7 +2903,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2853,7 +2933,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2883,7 +2963,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2913,7 +2993,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2943,7 +3023,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -2973,7 +3053,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3003,7 +3083,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3033,7 +3113,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3063,7 +3143,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3093,7 +3173,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3123,7 +3203,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3153,7 +3233,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3183,7 +3263,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3213,7 +3293,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3243,7 +3323,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3273,7 +3353,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3303,7 +3383,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3333,7 +3413,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3363,7 +3443,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3393,7 +3473,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3423,7 +3503,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3453,7 +3533,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3483,7 +3563,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3513,7 +3593,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3543,7 +3623,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3560,6 +3640,36 @@ public:
 
 
 
+#ifndef QGLBUFFER
+#define QGLBUFFER
+class DummyQGLBuffer {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLBuffer();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLBuffer : public QGLBuffer {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLBuffer *dummy;
+	KQGLBuffer();
+	void setSelf(knh_RawPtr_t *ptr);
+};
+
+#endif //QGLBUFFER
+
+
+
 #ifndef QTEXTOBJECTINTERFACE
 #define QTEXTOBJECTINTERFACE
 class DummyQTextObjectInterface {
@@ -3573,7 +3683,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3603,7 +3713,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3633,7 +3743,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3663,7 +3773,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3693,7 +3803,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3723,7 +3833,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3753,7 +3863,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3783,7 +3893,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3813,7 +3923,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3843,7 +3953,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3873,7 +3983,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3903,7 +4013,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3933,7 +4043,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3963,7 +4073,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -3993,7 +4103,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4023,7 +4133,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4053,7 +4163,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4083,7 +4193,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4113,7 +4223,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4143,7 +4253,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4173,7 +4283,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4187,6 +4297,36 @@ public:
 };
 
 #endif //QICONENGINE
+
+
+
+#ifndef QGLFRAMEBUFFEROBJECTFORMAT
+#define QGLFRAMEBUFFEROBJECTFORMAT
+class DummyQGLFramebufferObjectFormat {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLFramebufferObjectFormat();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLFramebufferObjectFormat : public QGLFramebufferObjectFormat {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLFramebufferObjectFormat *dummy;
+	KQGLFramebufferObjectFormat();
+	void setSelf(knh_RawPtr_t *ptr);
+};
+
+#endif //QGLFRAMEBUFFEROBJECTFORMAT
 
 
 
@@ -4217,12 +4357,13 @@ public:
 	knh_Func_t *mouse_release_event_func;
 	knh_Func_t *scene_event_func;
 	knh_Func_t *wheel_event_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool contextMenuEventDummy(QGraphicsSceneContextMenuEvent* event);
 	bool dragEnterEventDummy(QGraphicsSceneDragDropEvent* event);
@@ -4252,6 +4393,8 @@ public:
 	DummyQGraphicsItem *dummy;
 	KQGraphicsItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSITEM
@@ -4271,7 +4414,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4301,7 +4444,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4331,7 +4474,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4361,7 +4504,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4391,7 +4534,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4421,7 +4564,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4451,7 +4594,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4481,7 +4624,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4511,7 +4654,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4541,7 +4684,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4571,7 +4714,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4588,6 +4731,36 @@ public:
 
 
 
+#ifndef QGLCOLORMAP
+#define QGLCOLORMAP
+class DummyQGLColormap {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLColormap();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLColormap : public QGLColormap {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLColormap *dummy;
+	KQGLColormap();
+	void setSelf(knh_RawPtr_t *ptr);
+};
+
+#endif //QGLCOLORMAP
+
+
+
 #ifndef QPALETTE
 #define QPALETTE
 class DummyQPalette {
@@ -4601,7 +4774,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4631,7 +4804,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4661,7 +4834,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4691,7 +4864,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4721,7 +4894,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4751,7 +4924,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4781,7 +4954,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4811,7 +4984,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4841,7 +5014,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4871,7 +5044,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4901,7 +5074,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4931,7 +5104,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4961,7 +5134,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -4991,7 +5164,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5021,7 +5194,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5051,7 +5224,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5081,7 +5254,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5111,7 +5284,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5141,7 +5314,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5171,7 +5344,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5201,7 +5374,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5231,7 +5404,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5261,7 +5434,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5291,7 +5464,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5321,7 +5494,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5351,7 +5524,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5381,7 +5554,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5411,7 +5584,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5441,7 +5614,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5471,7 +5644,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5502,7 +5675,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5538,7 +5711,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool configurationAddedSlot(const QNetworkConfiguration config);
@@ -5581,7 +5754,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool canRedoChangedSlot(bool canRedo);
@@ -5619,7 +5792,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5650,7 +5823,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5680,7 +5853,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5710,7 +5883,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5740,7 +5913,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5780,7 +5953,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool contentsSizeChangedSlot(const QSize size);
@@ -5822,7 +5995,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5852,7 +6025,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5893,7 +6066,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool authenticationRequiredSlot(const QString hostname, quint16 port, QAuthenticator* authenticator);
@@ -5936,7 +6109,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5966,7 +6139,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -5996,7 +6169,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6026,7 +6199,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6056,7 +6229,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6087,7 +6260,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6118,7 +6291,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6148,7 +6321,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6178,7 +6351,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6209,7 +6382,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6235,12 +6408,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsPixmapItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6251,6 +6425,8 @@ public:
 	DummyQGraphicsPixmapItem *dummy;
 	KQGraphicsPixmapItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSPIXMAPITEM
@@ -6270,7 +6446,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6300,7 +6476,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6330,7 +6506,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6360,7 +6536,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6391,7 +6567,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentIndexChangedSlot(int index);
@@ -6424,7 +6600,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6454,7 +6630,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6484,7 +6660,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6514,7 +6690,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6544,7 +6720,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6576,7 +6752,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool enteredSlot();
@@ -6616,7 +6792,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool closedSlot();
@@ -6656,7 +6832,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool hoveredSlot(QAction* action);
@@ -6685,12 +6861,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQAbstractGraphicsShapeItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6701,6 +6878,8 @@ public:
 	DummyQAbstractGraphicsShapeItem *dummy;
 	KQAbstractGraphicsShapeItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QABSTRACTGRAPHICSSHAPEITEM
@@ -6720,7 +6899,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6750,7 +6929,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6780,7 +6959,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6815,7 +6994,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool authenticationRequiredSlot(QNetworkReply* reply, QAuthenticator* authenticator);
@@ -6855,7 +7034,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool closeEditorSlot(QWidget* editor, QAbstractItemDelegate::EndEditHint hint);
@@ -6890,7 +7069,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -6939,7 +7118,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool contextMenuEventDummy(QGraphicsSceneContextMenuEvent* contextMenuEvent);
 	bool dragEnterEventDummy(QGraphicsSceneDragDropEvent* event);
@@ -6990,7 +7169,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7020,7 +7199,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7052,7 +7231,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool actionChangedSlot(Qt::DropAction action);
@@ -7116,7 +7295,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool enabledChangedSlot(bool enabled);
@@ -7149,7 +7328,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7180,7 +7359,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7215,7 +7394,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool documentSizeChangedSlot(const QSizeF new_Size);
@@ -7255,7 +7434,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool aboutToCloseSlot();
@@ -7291,7 +7470,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7322,7 +7501,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7352,7 +7531,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7382,7 +7561,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7399,6 +7578,36 @@ public:
 
 
 
+#ifndef QGLPIXELBUFFER
+#define QGLPIXELBUFFER
+class DummyQGLPixelBuffer : public DummyQPaintDevice {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLPixelBuffer();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLPixelBuffer : public QGLPixelBuffer {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLPixelBuffer *dummy;
+	KQGLPixelBuffer(const QSize size, const QGLFormat format, QGLWidget* shareWidget);
+	void setSelf(knh_RawPtr_t *ptr);
+};
+
+#endif //QGLPIXELBUFFER
+
+
+
 #ifndef QSTYLE
 #define QSTYLE
 class DummyQStyle : public DummyQObject {
@@ -7412,7 +7621,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7443,7 +7652,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7474,7 +7683,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7504,7 +7713,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7521,6 +7730,37 @@ public:
 
 
 
+#ifndef QGLSHADERPROGRAM
+#define QGLSHADERPROGRAM
+class DummyQGLShaderProgram : public DummyQObject {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLShaderProgram();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLShaderProgram : public QGLShaderProgram {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLShaderProgram *dummy;
+	KQGLShaderProgram(QObject* parent);
+	void setSelf(knh_RawPtr_t *ptr);
+	bool event(QEvent *event);
+};
+
+#endif //QGLSHADERPROGRAM
+
+
+
 #ifndef QACCESSIBLEINTERFACE
 #define QACCESSIBLEINTERFACE
 class DummyQAccessibleInterface : public DummyQAccessible {
@@ -7534,7 +7774,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7564,7 +7804,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7617,7 +7857,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool contentsChangedSlot();
@@ -7672,7 +7912,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7702,7 +7942,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7734,7 +7974,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool aboutToBlockSlot();
@@ -7797,7 +8037,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7827,7 +8067,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7857,7 +8097,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7895,7 +8135,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool errorSlot(QImageReader::ImageReaderError error);
@@ -7934,7 +8174,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7964,7 +8204,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -7999,7 +8239,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool finishedSlot();
@@ -8039,7 +8279,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool changedSlot();
@@ -8070,12 +8310,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsLineItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8086,6 +8327,8 @@ public:
 	DummyQGraphicsLineItem *dummy;
 	KQGraphicsLineItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSLINEITEM
@@ -8106,7 +8349,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool triggeredSlot();
@@ -8134,12 +8377,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsItemGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8150,6 +8394,8 @@ public:
 	DummyQGraphicsItemGroup *dummy;
 	KQGraphicsItemGroup(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSITEMGROUP
@@ -8169,7 +8415,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8218,7 +8464,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool columnsAboutToBeInsertedSlot(const QModelIndex parent, int start, int end);
@@ -8268,7 +8514,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8298,7 +8544,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8328,7 +8574,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8361,7 +8607,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool activatedSlot(QSystemTrayIcon::ActivationReason reason);
@@ -8395,7 +8641,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8425,7 +8671,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8455,7 +8701,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8485,7 +8731,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8515,7 +8761,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8545,7 +8791,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8580,12 +8826,13 @@ public:
 	knh_Func_t *x_changed_func;
 	knh_Func_t *y_changed_func;
 	knh_Func_t *z_changed_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool enabledChangedSlot();
@@ -8606,7 +8853,8 @@ public:
 	DummyQGraphicsObject *dummy;
 	KQGraphicsObject(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSOBJECT
@@ -8633,7 +8881,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool activeStackChangedSlot(QUndoStack* stack);
@@ -8699,7 +8947,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool actionEventDummy(QActionEvent* event);
 	bool changeEventDummy(QEvent* event);
@@ -8758,7 +9006,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8789,7 +9037,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool newConnectionSlot();
@@ -8822,7 +9070,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8852,7 +9100,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8882,7 +9130,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8912,7 +9160,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8942,7 +9190,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -8972,7 +9220,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9011,7 +9259,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool commandFinishedSlot(int id, bool error);
@@ -9038,6 +9286,37 @@ public:
 
 
 
+#ifndef QGLSHADER
+#define QGLSHADER
+class DummyQGLShader : public DummyQObject {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLShader();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLShader : public QGLShader {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLShader *dummy;
+	KQGLShader(QGLShader::ShaderType type, QObject* parent);
+	void setSelf(knh_RawPtr_t *ptr);
+	bool event(QEvent *event);
+};
+
+#endif //QGLSHADER
+
+
+
 #ifndef QTIMER
 #define QTIMER
 class DummyQTimer : public DummyQObject {
@@ -9052,7 +9331,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool timeoutSlot();
@@ -9085,7 +9364,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9116,7 +9395,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool activatedSlot(int socket);
@@ -9149,7 +9428,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9179,7 +9458,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9209,7 +9488,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9240,7 +9519,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool newConnectionSlot();
@@ -9276,7 +9555,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool finishedSlot();
@@ -9311,7 +9590,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9343,7 +9622,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool aboutToQuitSlot();
@@ -9376,7 +9655,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9393,6 +9672,36 @@ public:
 
 
 
+#ifndef QGLFRAMEBUFFEROBJECT
+#define QGLFRAMEBUFFEROBJECT
+class DummyQGLFramebufferObject : public DummyQPaintDevice {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLFramebufferObject();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLFramebufferObject : public QGLFramebufferObject {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLFramebufferObject *dummy;
+	KQGLFramebufferObject(const QSize size, GLenum target);
+	void setSelf(knh_RawPtr_t *ptr);
+};
+
+#endif //QGLFRAMEBUFFEROBJECT
+
+
+
 #ifndef QTEXTBLOCKFORMAT
 #define QTEXTBLOCKFORMAT
 class DummyQTextBlockFormat : public DummyQTextFormat {
@@ -9406,7 +9715,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9436,7 +9745,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9467,7 +9776,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9498,7 +9807,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9530,7 +9839,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool activatedSlot();
@@ -9564,7 +9873,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9594,7 +9903,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9624,7 +9933,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9663,7 +9972,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool blockCountChangedSlot(int new_BlockCount);
@@ -9704,7 +10013,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9734,7 +10043,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9765,7 +10074,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool itemChangedSlot(QStandardItem* item);
@@ -9798,7 +10107,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9828,7 +10137,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9861,7 +10170,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool paintRequestedSlot(QPrinter* printer);
@@ -9895,7 +10204,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -9929,7 +10238,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool resizedSlot(int screen);
@@ -9970,7 +10279,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool cursorPositionChangedSlot(int old, int new_);
@@ -10008,7 +10317,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10038,7 +10347,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10069,7 +10378,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10100,7 +10409,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10130,7 +10439,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10162,7 +10471,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool colorChangedSlot(const QColor color);
@@ -10200,7 +10509,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool aboutToHideSlot();
@@ -10236,7 +10545,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10267,7 +10576,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10298,7 +10607,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10337,7 +10646,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool iconChangedSlot();
@@ -10378,7 +10687,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10404,12 +10713,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsRectItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10420,6 +10730,8 @@ public:
 	DummyQGraphicsRectItem *dummy;
 	KQGraphicsRectItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSRECTITEM
@@ -10441,7 +10753,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool finishedSlot();
@@ -10477,7 +10789,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool iconSizeChangedSlot(const QSize iconSize);
@@ -10511,7 +10823,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10542,7 +10854,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10574,7 +10886,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool opacityChangedSlot(qreal opacity);
@@ -10608,7 +10920,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10639,7 +10951,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10672,7 +10984,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool blurRadiusChangedSlot(qreal blurRadius);
@@ -10707,7 +11019,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10737,7 +11049,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10772,7 +11084,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool acceptedSlot();
@@ -10808,7 +11120,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10839,7 +11151,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10870,7 +11182,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -10904,7 +11216,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool connectedSlot();
@@ -10945,7 +11257,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool originChangedSlot();
@@ -10982,7 +11294,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11012,7 +11324,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11047,7 +11359,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool activatedSlot(const QDate date);
@@ -11089,7 +11401,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool actionTriggeredSlot(int action);
@@ -11127,7 +11439,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11158,7 +11470,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11190,7 +11502,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool messageChangedSlot(const QString message);
@@ -11223,7 +11535,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11257,7 +11569,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool clickedSlot(bool checked);
@@ -11293,7 +11605,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11323,7 +11635,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11348,12 +11660,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsPolygonItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11364,6 +11677,8 @@ public:
 	DummyQGraphicsPolygonItem *dummy;
 	KQGraphicsPolygonItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSPOLYGONITEM
@@ -11384,7 +11699,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool editTextChangedSlot(const QString text);
@@ -11417,7 +11732,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11448,7 +11763,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11479,7 +11794,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool completeChangedSlot();
@@ -11512,7 +11827,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11542,7 +11857,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11578,7 +11893,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool connectedSlot();
@@ -11616,7 +11931,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11643,12 +11958,13 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *link_activated_func;
 	knh_Func_t *link_hovered_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool linkActivatedSlot(const QString link);
@@ -11662,7 +11978,8 @@ public:
 	DummyQGraphicsTextItem *dummy;
 	KQGraphicsTextItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSTEXTITEM
@@ -11677,12 +11994,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsEllipseItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11693,6 +12011,8 @@ public:
 	DummyQGraphicsEllipseItem *dummy;
 	KQGraphicsEllipseItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSELLIPSEITEM
@@ -11712,7 +12032,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11742,7 +12062,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11772,7 +12092,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11802,7 +12122,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11835,7 +12155,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool clickedSlot(bool checked);
@@ -11869,7 +12189,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11899,7 +12219,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11933,7 +12253,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentChangedSlot(int index);
@@ -11963,12 +12283,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsSimpleTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -11979,6 +12300,8 @@ public:
 	DummyQGraphicsSimpleTextItem *dummy;
 	KQGraphicsSimpleTextItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSSIMPLETEXTITEM
@@ -11998,7 +12321,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12029,7 +12352,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12060,7 +12383,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12078,6 +12401,37 @@ public:
 
 
 
+#ifndef QGLWIDGET
+#define QGLWIDGET
+class DummyQGLWidget : public DummyQWidget {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	std::map<std::string, knh_Func_t *> *event_map;
+	std::map<std::string, knh_Func_t *> *slot_map;
+	DummyQGLWidget();
+	void setSelf(knh_RawPtr_t *ptr);
+	bool eventDispatcher(QEvent *event);
+	bool addEvent(knh_Func_t *callback_func, std::string str);
+	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	void connection(QObject *o);
+};
+
+class KQGLWidget : public QGLWidget {
+//	Q_OBJECT;
+public:
+	knh_RawPtr_t *self;
+	DummyQGLWidget *dummy;
+	KQGLWidget(QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f);
+	void setSelf(knh_RawPtr_t *ptr);
+	bool event(QEvent *event);
+};
+
+#endif //QGLWIDGET
+
+
+
 #ifndef QITEMDELEGATE
 #define QITEMDELEGATE
 class DummyQItemDelegate : public DummyQAbstractItemDelegate {
@@ -12091,7 +12445,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12130,7 +12484,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool actionTriggeredSlot(QAction* action);
@@ -12170,7 +12524,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12202,7 +12556,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool valueChangedSlot(int value);
@@ -12235,7 +12589,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12265,7 +12619,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12295,7 +12649,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12326,7 +12680,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12361,7 +12715,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool allowedAreasChangedSlot(Qt::DockWidgetAreas allowedAreas);
@@ -12398,7 +12752,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12429,7 +12783,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12460,7 +12814,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12492,7 +12846,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool aboutToActivateSlot();
@@ -12526,7 +12880,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12556,7 +12910,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12586,7 +12940,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12617,7 +12971,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12647,7 +13001,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12683,7 +13037,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool downloadProgressSlot(qint64 bytesReceived, qint64 bytesTotal);
@@ -12721,7 +13075,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12755,7 +13109,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool focusChangedSlot(QWidget* old, QWidget* now);
@@ -12790,7 +13144,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12823,7 +13177,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool acceptedSlot();
@@ -12860,7 +13214,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool blurHintsChangedSlot(QGraphicsBlurEffect::BlurHints hints);
@@ -12894,7 +13248,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12925,7 +13279,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12956,7 +13310,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -12987,7 +13341,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool messageChangedSlot(const QString message);
@@ -13022,7 +13376,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool hoveredSlot(QAction* action);
@@ -13057,7 +13411,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool editingFinishedSlot();
@@ -13090,7 +13444,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13120,7 +13474,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13154,7 +13508,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool angleChangedSlot();
@@ -13189,7 +13543,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13220,7 +13574,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13257,7 +13611,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool errorSlot(QProcess::ProcessError error);
@@ -13295,7 +13649,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13327,7 +13681,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentChangedSlot(int index);
@@ -13369,12 +13723,13 @@ public:
 	knh_Func_t *ungrab_mouse_event_func;
 	knh_Func_t *window_frame_event_func;
 	knh_Func_t *geometry_changed_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool changeEventDummy(QEvent* event);
 	bool closeEventDummy(QCloseEvent* event);
@@ -13399,7 +13754,8 @@ public:
 	DummyQGraphicsWidget *dummy;
 	KQGraphicsWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSWIDGET
@@ -13419,7 +13775,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13450,7 +13806,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13481,7 +13837,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool windowActivatedSlot(QWidget* w);
@@ -13509,12 +13865,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsPathItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13525,6 +13882,8 @@ public:
 	DummyQGraphicsPathItem *dummy;
 	KQGraphicsPathItem(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSPATHITEM
@@ -13544,7 +13903,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13575,7 +13934,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13610,7 +13969,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentIdChangedSlot(int id);
@@ -13647,7 +14006,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13679,7 +14038,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool paintRequestedSlot(QPrinter* printer);
@@ -13712,7 +14071,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13743,7 +14102,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13773,7 +14132,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13803,7 +14162,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13834,7 +14193,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13865,7 +14224,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13895,7 +14254,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13926,7 +14285,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -13959,7 +14318,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool linkActivatedSlot(const QString link);
@@ -13994,7 +14353,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentChangedSlot(int index);
@@ -14027,7 +14386,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14058,7 +14417,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14089,7 +14448,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14120,7 +14479,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool overflowSlot();
@@ -14153,7 +14512,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14185,7 +14544,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool triggeredSlot(QAction* action);
@@ -14218,7 +14577,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14250,7 +14609,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool stateChangedSlot(int state);
@@ -14284,7 +14643,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 	bool viewportEventDummy(QEvent* event);
 };
@@ -14316,7 +14675,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14353,7 +14712,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool doubleValueChangedSlot(double value);
@@ -14391,7 +14750,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14422,7 +14781,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14455,7 +14814,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool colorSelectedSlot(const QColor color);
@@ -14489,7 +14848,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14523,7 +14882,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool dateChangedSlot(const QDate date);
@@ -14558,7 +14917,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14589,7 +14948,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14620,7 +14979,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentFontChangedSlot(const QFont font);
@@ -14653,7 +15012,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14685,7 +15044,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool buttonClickedSlot(QAbstractButton* button);
@@ -14719,7 +15078,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool canceledSlot();
@@ -14752,7 +15111,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14778,12 +15137,13 @@ public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
+	knh_Func_t *paint_func;
 	DummyQGraphicsProxyWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14794,7 +15154,8 @@ public:
 	DummyQGraphicsProxyWidget *dummy;
 	KQGraphicsProxyWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSPROXYWIDGET
@@ -14817,12 +15178,13 @@ public:
 	knh_Func_t *status_bar_message_func;
 	knh_Func_t *title_changed_func;
 	knh_Func_t *url_changed_func;
+	knh_Func_t *paint_func;
 	DummyQGraphicsWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool iconChangedSlot();
@@ -14842,7 +15204,8 @@ public:
 	DummyQGraphicsWebView *dummy;
 	KQGraphicsWebView(QGraphicsItem* parent);
 	void setSelf(knh_RawPtr_t *ptr);
-	bool event(QEvent *event);
+	bool sceneEvent(QEvent *event);
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
 #endif //QGRAPHICSWEBVIEW
@@ -14862,7 +15225,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14893,7 +15256,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14924,7 +15287,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -14956,7 +15319,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool splitterMovedSlot(int pos, int index);
@@ -14991,7 +15354,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentFontChangedSlot(const QFont font);
@@ -15025,7 +15388,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15056,7 +15419,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15092,7 +15455,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool encryptedSlot();
@@ -15136,7 +15499,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool copyAvailableSlot(bool yes);
@@ -15175,7 +15538,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15205,7 +15568,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15236,7 +15599,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15273,7 +15636,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool activatedSlot(const QModelIndex index);
@@ -15311,7 +15674,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15343,7 +15706,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool subWindowActivatedSlot(QMdiSubWindow* window);
@@ -15385,7 +15748,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool blockCountChangedSlot(int new_BlockCount);
@@ -15427,7 +15790,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool acceptedSlot(QPrinter* printer);
@@ -15460,7 +15823,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15491,7 +15854,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15523,7 +15886,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool updatePreviewWidgetSlot(const QModelIndex index);
@@ -15561,7 +15924,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool anchorClickedSlot(const QUrl link);
@@ -15598,7 +15961,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -15631,7 +15994,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool collapsedSlot(const QModelIndex index);
@@ -15676,7 +16039,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool geometriesChangedSlot();
@@ -15729,7 +16092,7 @@ public:
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	void reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
 	bool currentItemChangedSlot(QTreeWidgetItem* current, QTreeWidgetItem* previous);

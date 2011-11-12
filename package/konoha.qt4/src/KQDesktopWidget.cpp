@@ -280,19 +280,22 @@ bool DummyQDesktopWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDesktopWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDesktopWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQDesktopWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, resized_func);
 	KNH_ADDNNREF(ctx, screen_count_changed_func);
 	KNH_ADDNNREF(ctx, work_area_resized_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQDesktopWidget::connection(QObject *o)
@@ -360,6 +363,7 @@ static void QDesktopWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDesktopWidget *qp = (KQDesktopWidget *)p->rawptr;
+//		KQDesktopWidget *qp = static_cast<KQDesktopWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -381,6 +385,7 @@ bool KQDesktopWidget::event(QEvent *event)
 		QDesktopWidget::event(event);
 		return false;
 	}
+//	QDesktopWidget::event(event);
 	return true;
 }
 

@@ -160,15 +160,17 @@ RENAME_FUNCTION_LIST = [
 	["QProgressDialog", "open"]
 	];
 
-// NOT_HAVE_CONSTRUCTOR = [
-// 	"QGraphicsSceneEvent", "QInputEvent", "QSessionManager",
-// 	"QTextList", "QTextTable", "QWindowStateChangeEvent",
-// 	"QLibraryInfo", "QToolTip", "QWhatsThis"
-// 	];
-
 HAVE_PRIVATE_DESTRUCTOR_LIST = [
 	"QWebFrame"
-]
+	];
+
+HAVE_SCENE_EVENT_METHOD = [
+	"QGraphicsItem","QAbstractGraphicsShapeItem", "QGraphicsEllipseItem", "QGraphicsPathItem",
+	"QGraphicsPolygonItem", "QGraphicsRectItem", "QGraphicsSimpleTextItem", "QGraphicsItemGroup",
+	"QGraphicsLineItem", "QGraphicsObject", "QDeclarativeItem", "QGraphicsSvgItem",
+	"QGraphicsTextItem", "QGraphicsWidget", "QGraphicsProxyWidget", "QGraphicsWebView",
+	"QGraphicsPixmapItem"
+	];
 
 NOT_HAVE_EVENT_METHOD = [ // these class do not have method "bool event()"
 	"QAbstractFileEngine", "QAbstractFileEngineHandler",
@@ -244,5 +246,7 @@ NOT_HAVE_EVENT_METHOD = [ // these class do not have method "bool event()"
 	"QHttpResponseHeader", "QNetworkAddressEntry", "QNetworkCacheMetaData",
 	"QNetworkConfiguration", "QNetworkCookie", "QNetworkInterface", "QNetworkProxy",
 	"QNetworkProxyFactory",	"QNetworkProxyQuery", "QNetworkRequest", "QSslCertificate",
-	"QSslCipher", "QSslConfiguration", "QSslError",	"QSslKey", "QUrlInfo"
+	"QSslCipher", "QSslConfiguration", "QSslError",	"QSslKey", "QUrlInfo",
+	"QGLBuffer", "QGLColormap", "QGLContext", "QGLFormat", "QGLFramebufferObject",
+	"QGLFramebufferObjectFormat", "QGLPixelBuffer"
 	];

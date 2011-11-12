@@ -315,15 +315,13 @@ bool DummyQWebHistory::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWebHistory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWebHistory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQWebHistory::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQWebHistory::connection(QObject *o)
@@ -387,6 +385,7 @@ static void QWebHistory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWebHistory *qp = (KQWebHistory *)p->rawptr;
+//		KQWebHistory *qp = static_cast<KQWebHistory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

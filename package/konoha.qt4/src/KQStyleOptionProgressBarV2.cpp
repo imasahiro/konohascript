@@ -83,16 +83,14 @@ bool DummyQStyleOptionProgressBarV2::signalConnect(knh_Func_t *callback_func, st
 	}
 }
 
-void DummyQStyleOptionProgressBarV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStyleOptionProgressBarV2::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQStyleOptionProgressBarV2::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQStyleOptionProgressBar::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQStyleOptionProgressBar::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQStyleOptionProgressBarV2::connection(QObject *o)
@@ -163,6 +161,7 @@ static void QStyleOptionProgressBarV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQStyleOptionProgressBarV2 *qp = (KQStyleOptionProgressBarV2 *)p->rawptr;
+//		KQStyleOptionProgressBarV2 *qp = static_cast<KQStyleOptionProgressBarV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

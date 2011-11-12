@@ -360,17 +360,20 @@ bool DummyQToolBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQToolBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQToolBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQToolBox::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, current_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQFrame::reftrace(ctx, p, tail_);
+	tail_ = DummyQFrame::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQToolBox::connection(QObject *o)
@@ -443,6 +446,7 @@ static void QToolBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQToolBox *qp = (KQToolBox *)p->rawptr;
+//		KQToolBox *qp = static_cast<KQToolBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -464,6 +468,7 @@ bool KQToolBox::event(QEvent *event)
 		QToolBox::event(event);
 		return false;
 	}
+//	QToolBox::event(event);
 	return true;
 }
 

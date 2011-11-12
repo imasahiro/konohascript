@@ -3624,12 +3624,13 @@ bool DummyQWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 27;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, action_event_func);
 	KNH_ADDNNREF(ctx, change_event_func);
 	KNH_ADDNNREF(ctx, close_event_func);
@@ -3660,8 +3661,10 @@ void DummyQWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
-	DummyQPaintDevice::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQPaintDevice::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQWidget::connection(QObject *o)
@@ -3735,6 +3738,7 @@ static void QWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQWidget *qp = (KQWidget *)p->rawptr;
+//		KQWidget *qp = static_cast<KQWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -3756,6 +3760,7 @@ bool KQWidget::event(QEvent *event)
 		QWidget::event(event);
 		return false;
 	}
+//	QWidget::event(event);
 	return true;
 }
 

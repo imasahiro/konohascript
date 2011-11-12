@@ -244,17 +244,20 @@ bool DummyQToolButton::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQToolButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQToolButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQToolButton::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, triggered_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractButton::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractButton::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQToolButton::connection(QObject *o)
@@ -327,6 +330,7 @@ static void QToolButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQToolButton *qp = (KQToolButton *)p->rawptr;
+//		KQToolButton *qp = static_cast<KQToolButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -348,6 +352,7 @@ bool KQToolButton::event(QEvent *event)
 		QToolButton::event(event);
 		return false;
 	}
+//	QToolButton::event(event);
 	return true;
 }
 

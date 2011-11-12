@@ -576,18 +576,21 @@ bool DummyQLabel::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQLabel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQLabel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQLabel::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, link_activated_func);
 	KNH_ADDNNREF(ctx, link_hovered_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQFrame::reftrace(ctx, p, tail_);
+	tail_ = DummyQFrame::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQLabel::connection(QObject *o)
@@ -661,6 +664,7 @@ static void QLabel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQLabel *qp = (KQLabel *)p->rawptr;
+//		KQLabel *qp = static_cast<KQLabel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -682,6 +686,7 @@ bool KQLabel::event(QEvent *event)
 		QLabel::event(event);
 		return false;
 	}
+//	QLabel::event(event);
 	return true;
 }
 

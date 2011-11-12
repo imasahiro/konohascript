@@ -56,20 +56,6 @@ KMETHOD QGraphicsRectItem_opaqueArea(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override void QGraphicsRectItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
-KMETHOD QGraphicsRectItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGraphicsRectItem *  qp = RawPtr_to(QGraphicsRectItem *, sfp[0]);
-	if (qp) {
-		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
-		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
-		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
-		qp->paint(painter, option, widget);
-	}
-	RETURNvoid_();
-}
-
 //@Virtual @Override QPainterPath QGraphicsRectItem.shape();
 KMETHOD QGraphicsRectItem_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -181,12 +167,56 @@ KMETHOD QGraphicsRectItem_setRect(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 */
+// //@Virtual void QGraphicsRectItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+// KMETHOD QGraphicsRectItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+// {
+// 	(void)ctx;
+// 	KQGraphicsRectItem *  qp = RawPtr_to(KQGraphicsRectItem *, sfp[0]);
+// 	if (qp) {
+// 		if (qp->dummy->paint_func != NULL) {
+// 			knh_Func_invoke(ctx, qp->dummy->paint_func, sfp, 4);
+// 		}
+// 	}
+// 	RETURNvoid_();
+// }
+
+//@Virtual void QGraphicsRectItem.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+KMETHOD QGraphicsRectItem_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	KQGraphicsRectItem *  qp = RawPtr_to(KQGraphicsRectItem *, sfp[0]);
+	if (qp) {
+		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
+		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
+		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
+		qp->paint(painter, option, widget);
+	}
+	RETURNvoid_();
+}
+
+void KQGraphicsRectItem::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+	if (dummy->paint_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
+		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	}
+}
 
 DummyQGraphicsRectItem::DummyQGraphicsRectItem()
 {
 	self = NULL;
+	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
 }
 
 void DummyQGraphicsRectItem::setSelf(knh_RawPtr_t *ptr)
@@ -215,6 +245,7 @@ bool DummyQGraphicsRectItem::addEvent(knh_Func_t *callback_func, string str)
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
+		paint_func = (*event_map)["paint"];
 		return true;
 	}
 }
@@ -232,16 +263,14 @@ bool DummyQGraphicsRectItem::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
-void DummyQGraphicsRectItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsRectItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQGraphicsRectItem::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractGraphicsShapeItem::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractGraphicsShapeItem::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQGraphicsRectItem::connection(QObject *o)
@@ -312,6 +341,7 @@ static void QGraphicsRectItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsRectItem *qp = (KQGraphicsRectItem *)p->rawptr;
+//		KQGraphicsRectItem *qp = static_cast<KQGraphicsRectItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -325,6 +355,16 @@ void KQGraphicsRectItem::setSelf(knh_RawPtr_t *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
+}
+
+bool KQGraphicsRectItem::sceneEvent(QEvent *event)
+{
+	if (!dummy->eventDispatcher(event)) {
+		QGraphicsRectItem::sceneEvent(event);
+		return false;
+	}
+//	QGraphicsRectItem::sceneEvent(event);
+	return true;
 }
 
 

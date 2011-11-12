@@ -558,12 +558,13 @@ bool DummyQMenu::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMenu::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMenu::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQMenu::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, about_to_hide_func);
 	KNH_ADDNNREF(ctx, about_to_show_func);
 	KNH_ADDNNREF(ctx, hovered_func);
@@ -571,7 +572,9 @@ void DummyQMenu::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQMenu::connection(QObject *o)
@@ -647,6 +650,7 @@ static void QMenu_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMenu *qp = (KQMenu *)p->rawptr;
+//		KQMenu *qp = static_cast<KQMenu*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -668,6 +672,7 @@ bool KQMenu::event(QEvent *event)
 		QMenu::event(event);
 		return false;
 	}
+//	QMenu::event(event);
 	return true;
 }
 

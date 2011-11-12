@@ -326,18 +326,21 @@ bool DummyQColorDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQColorDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQColorDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQColorDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, color_selected_func);
 	KNH_ADDNNREF(ctx, current_color_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQDialog::reftrace(ctx, p, tail_);
+	tail_ = DummyQDialog::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQColorDialog::connection(QObject *o)
@@ -411,6 +414,7 @@ static void QColorDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQColorDialog *qp = (KQColorDialog *)p->rawptr;
+//		KQColorDialog *qp = static_cast<KQColorDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -432,6 +436,7 @@ bool KQColorDialog::event(QEvent *event)
 		QColorDialog::event(event);
 		return false;
 	}
+//	QColorDialog::event(event);
 	return true;
 }
 

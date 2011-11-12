@@ -210,17 +210,20 @@ bool DummyQStatusBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQStatusBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStatusBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQStatusBar::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, message_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQStatusBar::connection(QObject *o)
@@ -293,6 +296,7 @@ static void QStatusBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQStatusBar *qp = (KQStatusBar *)p->rawptr;
+//		KQStatusBar *qp = static_cast<KQStatusBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -314,6 +318,7 @@ bool KQStatusBar::event(QEvent *event)
 		QStatusBar::event(event);
 		return false;
 	}
+//	QStatusBar::event(event);
 	return true;
 }
 

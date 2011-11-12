@@ -263,16 +263,14 @@ bool DummyQSharedMemory::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSharedMemory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSharedMemory::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSharedMemory::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQSharedMemory::connection(QObject *o)
@@ -344,6 +342,7 @@ static void QSharedMemory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSharedMemory *qp = (KQSharedMemory *)p->rawptr;
+//		KQSharedMemory *qp = static_cast<KQSharedMemory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -365,6 +364,7 @@ bool KQSharedMemory::event(QEvent *event)
 		QSharedMemory::event(event);
 		return false;
 	}
+//	QSharedMemory::event(event);
 	return true;
 }
 

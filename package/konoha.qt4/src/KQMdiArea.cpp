@@ -442,17 +442,20 @@ bool DummyQMdiArea::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMdiArea::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMdiArea::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQMdiArea::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, sub_window_activated_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQMdiArea::connection(QObject *o)
@@ -525,6 +528,7 @@ static void QMdiArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMdiArea *qp = (KQMdiArea *)p->rawptr;
+//		KQMdiArea *qp = static_cast<KQMdiArea*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -546,6 +550,7 @@ bool KQMdiArea::event(QEvent *event)
 		QMdiArea::event(event);
 		return false;
 	}
+//	QMdiArea::event(event);
 	return true;
 }
 

@@ -260,15 +260,13 @@ bool DummyQCursor::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQCursor::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQCursor::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQCursor::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQCursor::connection(QObject *o)
@@ -338,6 +336,7 @@ static void QCursor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQCursor *qp = (KQCursor *)p->rawptr;
+//		KQCursor *qp = static_cast<KQCursor*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

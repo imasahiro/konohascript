@@ -400,17 +400,20 @@ bool DummyQProgressBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQProgressBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQProgressBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQProgressBar::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, value_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQProgressBar::connection(QObject *o)
@@ -483,6 +486,7 @@ static void QProgressBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQProgressBar *qp = (KQProgressBar *)p->rawptr;
+//		KQProgressBar *qp = static_cast<KQProgressBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -504,6 +508,7 @@ bool KQProgressBar::event(QEvent *event)
 		QProgressBar::event(event);
 		return false;
 	}
+//	QProgressBar::event(event);
 	return true;
 }
 

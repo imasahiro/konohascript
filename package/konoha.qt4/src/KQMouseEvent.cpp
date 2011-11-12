@@ -206,16 +206,14 @@ bool DummyQMouseEvent::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMouseEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMouseEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQMouseEvent::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQInputEvent::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQInputEvent::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQMouseEvent::connection(QObject *o)
@@ -286,6 +284,7 @@ static void QMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMouseEvent *qp = (KQMouseEvent *)p->rawptr;
+//		KQMouseEvent *qp = static_cast<KQMouseEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

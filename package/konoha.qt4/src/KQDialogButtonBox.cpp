@@ -359,12 +359,13 @@ bool DummyQDialogButtonBox::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDialogButtonBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDialogButtonBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQDialogButtonBox::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, accepted_func);
 	KNH_ADDNNREF(ctx, clicked_func);
 	KNH_ADDNNREF(ctx, help_requested_func);
@@ -372,7 +373,9 @@ void DummyQDialogButtonBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQDialogButtonBox::connection(QObject *o)
@@ -448,6 +451,7 @@ static void QDialogButtonBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDialogButtonBox *qp = (KQDialogButtonBox *)p->rawptr;
+//		KQDialogButtonBox *qp = static_cast<KQDialogButtonBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -469,6 +473,7 @@ bool KQDialogButtonBox::event(QEvent *event)
 		QDialogButtonBox::event(event);
 		return false;
 	}
+//	QDialogButtonBox::event(event);
 	return true;
 }
 

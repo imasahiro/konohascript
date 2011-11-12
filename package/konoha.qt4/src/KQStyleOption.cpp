@@ -100,15 +100,13 @@ bool DummyQStyleOption::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQStyleOption::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStyleOption::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQStyleOption::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQStyleOption::connection(QObject *o)
@@ -178,6 +176,7 @@ static void QStyleOption_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQStyleOption *qp = (KQStyleOption *)p->rawptr;
+//		KQStyleOption *qp = static_cast<KQStyleOption*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

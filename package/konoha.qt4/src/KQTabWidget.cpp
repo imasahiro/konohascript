@@ -674,18 +674,21 @@ bool DummyQTabWidget::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTabWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTabWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQTabWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, current_changed_func);
 	KNH_ADDNNREF(ctx, tab_close_requested_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQTabWidget::connection(QObject *o)
@@ -759,6 +762,7 @@ static void QTabWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTabWidget *qp = (KQTabWidget *)p->rawptr;
+//		KQTabWidget *qp = static_cast<KQTabWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -780,6 +784,7 @@ bool KQTabWidget::event(QEvent *event)
 		QTabWidget::event(event);
 		return false;
 	}
+//	QTabWidget::event(event);
 	return true;
 }
 

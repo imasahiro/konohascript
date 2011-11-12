@@ -45,20 +45,6 @@ KMETHOD QGraphicsWebView_itemChange(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-//@Virtual @Override void QGraphicsWebView.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
-KMETHOD QGraphicsWebView_paint(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(void)ctx;
-	QGraphicsWebView *  qp = RawPtr_to(QGraphicsWebView *, sfp[0]);
-	if (qp) {
-		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
-		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
-		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
-		qp->paint(painter, option, widget);
-	}
-	RETURNvoid_();
-}
-
 //@Virtual @Override void QGraphicsWebView.setGeometry(QRectF rect);
 KMETHOD QGraphicsWebView_setGeometry(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -449,6 +435,48 @@ KMETHOD QGraphicsWebView_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+// //@Virtual void QGraphicsWebView.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+// KMETHOD QGraphicsWebView_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+// {
+// 	(void)ctx;
+// 	KQGraphicsWebView *  qp = RawPtr_to(KQGraphicsWebView *, sfp[0]);
+// 	if (qp) {
+// 		if (qp->dummy->paint_func != NULL) {
+// 			knh_Func_invoke(ctx, qp->dummy->paint_func, sfp, 4);
+// 		}
+// 	}
+// 	RETURNvoid_();
+// }
+
+//@Virtual void QGraphicsWebView.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+KMETHOD QGraphicsWebView_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	KQGraphicsWebView *  qp = RawPtr_to(KQGraphicsWebView *, sfp[0]);
+	if (qp) {
+		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
+		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
+		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
+		qp->paint(painter, option, widget);
+	}
+	RETURNvoid_();
+}
+
+void KQGraphicsWebView::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+	if (dummy->paint_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
+		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	}
+}
 
 DummyQGraphicsWebView::DummyQGraphicsWebView()
 {
@@ -461,8 +489,10 @@ DummyQGraphicsWebView::DummyQGraphicsWebView()
 	status_bar_message_func = NULL;
 	title_changed_func = NULL;
 	url_changed_func = NULL;
+	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("icon-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("link-clicked", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("load-finished", NULL));
@@ -605,6 +635,7 @@ bool DummyQGraphicsWebView::addEvent(knh_Func_t *callback_func, string str)
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
+		paint_func = (*event_map)["paint"];
 		return true;
 	}
 }
@@ -630,12 +661,13 @@ bool DummyQGraphicsWebView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQGraphicsWebView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsWebView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQGraphicsWebView::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 8;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, icon_changed_func);
 	KNH_ADDNNREF(ctx, link_clicked_func);
 	KNH_ADDNNREF(ctx, load_finished_func);
@@ -647,7 +679,9 @@ void DummyQGraphicsWebView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQGraphicsWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQGraphicsWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQGraphicsWebView::connection(QObject *o)
@@ -727,6 +761,7 @@ static void QGraphicsWebView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsWebView *qp = (KQGraphicsWebView *)p->rawptr;
+//		KQGraphicsWebView *qp = static_cast<KQGraphicsWebView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -742,12 +777,13 @@ void KQGraphicsWebView::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-bool KQGraphicsWebView::event(QEvent *event)
+bool KQGraphicsWebView::sceneEvent(QEvent *event)
 {
 	if (!dummy->eventDispatcher(event)) {
-		QGraphicsWebView::event(event);
+		QGraphicsWebView::sceneEvent(event);
 		return false;
 	}
+//	QGraphicsWebView::sceneEvent(event);
 	return true;
 }
 

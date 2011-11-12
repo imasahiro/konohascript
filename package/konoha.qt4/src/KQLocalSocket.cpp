@@ -405,12 +405,13 @@ bool DummyQLocalSocket::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQLocalSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQLocalSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQLocalSocket::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, connected_func);
 	KNH_ADDNNREF(ctx, disconnected_func);
 	KNH_ADDNNREF(ctx, error_func);
@@ -418,7 +419,9 @@ void DummyQLocalSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQIODevice::reftrace(ctx, p, tail_);
+	tail_ = DummyQIODevice::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQLocalSocket::connection(QObject *o)
@@ -494,6 +497,7 @@ static void QLocalSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQLocalSocket *qp = (KQLocalSocket *)p->rawptr;
+//		KQLocalSocket *qp = static_cast<KQLocalSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -515,6 +519,7 @@ bool KQLocalSocket::event(QEvent *event)
 		QLocalSocket::event(event);
 		return false;
 	}
+//	QLocalSocket::event(event);
 	return true;
 }
 

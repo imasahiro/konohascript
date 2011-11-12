@@ -167,16 +167,14 @@ bool DummyQSlider::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSlider::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSlider::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSlider::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractSlider::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractSlider::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQSlider::connection(QObject *o)
@@ -248,6 +246,7 @@ static void QSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSlider *qp = (KQSlider *)p->rawptr;
+//		KQSlider *qp = static_cast<KQSlider*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -269,6 +268,7 @@ bool KQSlider::event(QEvent *event)
 		QSlider::event(event);
 		return false;
 	}
+//	QSlider::event(event);
 	return true;
 }
 

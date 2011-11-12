@@ -450,8 +450,7 @@ bool DummyQTimeLine::valueChangedSlot(qreal value)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, qreal, value);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+2].fvalue = value;
 		knh_Func_invoke(lctx, value_changed_func, lsfp, 2);
 		return true;
 	}
@@ -488,12 +487,13 @@ bool DummyQTimeLine::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTimeLine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTimeLine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQTimeLine::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, frame_changed_func);
 	KNH_ADDNNREF(ctx, state_changed_func);
@@ -501,7 +501,9 @@ void DummyQTimeLine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQTimeLine::connection(QObject *o)
@@ -577,6 +579,7 @@ static void QTimeLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTimeLine *qp = (KQTimeLine *)p->rawptr;
+//		KQTimeLine *qp = static_cast<KQTimeLine*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -598,6 +601,7 @@ bool KQTimeLine::event(QEvent *event)
 		QTimeLine::event(event);
 		return false;
 	}
+//	QTimeLine::event(event);
 	return true;
 }
 

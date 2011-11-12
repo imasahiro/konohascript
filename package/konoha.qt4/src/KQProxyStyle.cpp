@@ -424,16 +424,14 @@ bool DummyQProxyStyle::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQProxyStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQProxyStyle::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQProxyStyle::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQCommonStyle::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQCommonStyle::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQProxyStyle::connection(QObject *o)
@@ -505,6 +503,7 @@ static void QProxyStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQProxyStyle *qp = (KQProxyStyle *)p->rawptr;
+//		KQProxyStyle *qp = static_cast<KQProxyStyle*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -526,6 +525,7 @@ bool KQProxyStyle::event(QEvent *event)
 		QProxyStyle::event(event);
 		return false;
 	}
+//	QProxyStyle::event(event);
 	return true;
 }
 

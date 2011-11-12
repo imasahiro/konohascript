@@ -200,16 +200,14 @@ bool DummyQItemDelegate::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQItemDelegate::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQItemDelegate::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQItemDelegate::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractItemDelegate::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractItemDelegate::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQItemDelegate::connection(QObject *o)
@@ -281,6 +279,7 @@ static void QItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQItemDelegate *qp = (KQItemDelegate *)p->rawptr;
+//		KQItemDelegate *qp = static_cast<KQItemDelegate*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -302,6 +301,7 @@ bool KQItemDelegate::event(QEvent *event)
 		QItemDelegate::event(event);
 		return false;
 	}
+//	QItemDelegate::event(event);
 	return true;
 }
 

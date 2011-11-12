@@ -99,16 +99,14 @@ bool DummyQTapAndHoldGesture::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
-void DummyQTapAndHoldGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTapAndHoldGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTapAndHoldGesture::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQGesture::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQGesture::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQTapAndHoldGesture::connection(QObject *o)
@@ -173,6 +171,7 @@ static void QTapAndHoldGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTapAndHoldGesture *qp = (KQTapAndHoldGesture *)p->rawptr;
+//		KQTapAndHoldGesture *qp = static_cast<KQTapAndHoldGesture*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -194,6 +193,7 @@ bool KQTapAndHoldGesture::event(QEvent *event)
 		QTapAndHoldGesture::event(event);
 		return false;
 	}
+//	QTapAndHoldGesture::event(event);
 	return true;
 }
 

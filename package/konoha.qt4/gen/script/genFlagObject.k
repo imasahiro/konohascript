@@ -174,6 +174,8 @@ DEFAPI(void) def<P><C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 			enum_name = "Capability";
 		} else if (flag_object[1] == "BindMode") {
 			enum_name = "BindFlag";
+		} else if (flag_object[1] == "ShaderType") {
+			enum_name = "ShaderTypeBit";
 		} else if (flag_object[1].endsWith("s")) {
 			enum_name = flag_object[1][0 : -1];
 		} else {

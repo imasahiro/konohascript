@@ -389,18 +389,21 @@ bool DummyQMenuBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMenuBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMenuBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQMenuBar::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, hovered_func);
 	KNH_ADDNNREF(ctx, triggered_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQMenuBar::connection(QObject *o)
@@ -474,6 +477,7 @@ static void QMenuBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMenuBar *qp = (KQMenuBar *)p->rawptr;
+//		KQMenuBar *qp = static_cast<KQMenuBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -495,6 +499,7 @@ bool KQMenuBar::event(QEvent *event)
 		QMenuBar::event(event);
 		return false;
 	}
+//	QMenuBar::event(event);
 	return true;
 }
 

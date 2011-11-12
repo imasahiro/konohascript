@@ -591,15 +591,13 @@ bool DummyQMatrix4x4::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMatrix4x4::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMatrix4x4::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQMatrix4x4::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQMatrix4x4::connection(QObject *o)
@@ -669,6 +667,7 @@ static void QMatrix4x4_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMatrix4x4 *qp = (KQMatrix4x4 *)p->rawptr;
+//		KQMatrix4x4 *qp = static_cast<KQMatrix4x4*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

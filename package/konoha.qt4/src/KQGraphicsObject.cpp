@@ -24,6 +24,48 @@ KMETHOD QGraphicsObject_ungrabGesture(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+// //@Virtual void QGraphicsObject.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+// KMETHOD QGraphicsObject_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+// {
+// 	(void)ctx;
+// 	KQGraphicsObject *  qp = RawPtr_to(KQGraphicsObject *, sfp[0]);
+// 	if (qp) {
+// 		if (qp->dummy->paint_func != NULL) {
+// 			knh_Func_invoke(ctx, qp->dummy->paint_func, sfp, 4);
+// 		}
+// 	}
+// 	RETURNvoid_();
+// }
+
+//@Virtual void QGraphicsObject.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
+KMETHOD QGraphicsObject_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	KQGraphicsObject *  qp = RawPtr_to(KQGraphicsObject *, sfp[0]);
+	if (qp) {
+		QPainter*  painter = RawPtr_to(QPainter*, sfp[1]);
+		const QStyleOptionGraphicsItem*  option = RawPtr_to(const QStyleOptionGraphicsItem*, sfp[2]);
+		QWidget*  widget = RawPtr_to(QWidget*, sfp[3]);
+		qp->paint(painter, option, widget);
+	}
+	RETURNvoid_();
+}
+
+void KQGraphicsObject::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+	if (dummy->paint_func != NULL) {
+		CTX lctx = knh_getCurrentContext();
+		knh_sfp_t *lsfp = lctx->esp;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
+		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
+		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
+		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
+	}
+}
 
 DummyQGraphicsObject::DummyQGraphicsObject()
 {
@@ -37,8 +79,10 @@ DummyQGraphicsObject::DummyQGraphicsObject()
 	x_changed_func = NULL;
 	y_changed_func = NULL;
 	z_changed_func = NULL;
+	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("enabled-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("opacity-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("parent-changed", NULL));
@@ -189,6 +233,7 @@ bool DummyQGraphicsObject::addEvent(knh_Func_t *callback_func, string str)
 		return ret;
 	} else {
 		KNH_INITv((*event_map)[str], callback_func);
+		paint_func = (*event_map)["paint"];
 		return true;
 	}
 }
@@ -217,12 +262,13 @@ bool DummyQGraphicsObject::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQGraphicsObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQGraphicsObject::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 9;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, enabled_changed_func);
 	KNH_ADDNNREF(ctx, opacity_changed_func);
 	KNH_ADDNNREF(ctx, parent_changed_func);
@@ -235,8 +281,10 @@ void DummyQGraphicsObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQGraphicsItem::reftrace(ctx, p, tail_);
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQGraphicsItem::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQGraphicsObject::connection(QObject *o)
@@ -318,6 +366,7 @@ static void QGraphicsObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsObject *qp = (KQGraphicsObject *)p->rawptr;
+//		KQGraphicsObject *qp = static_cast<KQGraphicsObject*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -333,12 +382,13 @@ void KQGraphicsObject::setSelf(knh_RawPtr_t *ptr)
 	dummy->setSelf(ptr);
 }
 
-bool KQGraphicsObject::event(QEvent *event)
+bool KQGraphicsObject::sceneEvent(QEvent *event)
 {
 	if (!dummy->eventDispatcher(event)) {
-		QGraphicsObject::event(event);
+		QGraphicsObject::sceneEvent(event);
 		return false;
 	}
+//	QGraphicsObject::sceneEvent(event);
 	return true;
 }
 

@@ -1173,12 +1173,13 @@ bool DummyQTextDocument::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTextDocument::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextDocument::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQTextDocument::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 9;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, block_count_changed_func);
 	KNH_ADDNNREF(ctx, contents_change_func);
 	KNH_ADDNNREF(ctx, contents_changed_func);
@@ -1191,7 +1192,9 @@ void DummyQTextDocument::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQTextDocument::connection(QObject *o)
@@ -1272,6 +1275,7 @@ static void QTextDocument_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextDocument *qp = (KQTextDocument *)p->rawptr;
+//		KQTextDocument *qp = static_cast<KQTextDocument*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1293,6 +1297,7 @@ bool KQTextDocument::event(QEvent *event)
 		QTextDocument::event(event);
 		return false;
 	}
+//	QTextDocument::event(event);
 	return true;
 }
 

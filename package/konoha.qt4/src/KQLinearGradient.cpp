@@ -169,16 +169,14 @@ bool DummyQLinearGradient::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQLinearGradient::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQLinearGradient::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQLinearGradient::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQGradient::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQGradient::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQLinearGradient::connection(QObject *o)
@@ -249,6 +247,7 @@ static void QLinearGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQLinearGradient *qp = (KQLinearGradient *)p->rawptr;
+//		KQLinearGradient *qp = static_cast<KQLinearGradient*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

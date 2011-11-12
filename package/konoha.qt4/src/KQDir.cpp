@@ -728,15 +728,13 @@ bool DummyQDir::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDir::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDir::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQDir::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQDir::connection(QObject *o)
@@ -806,6 +804,7 @@ static void QDir_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDir *qp = (KQDir *)p->rawptr;
+//		KQDir *qp = static_cast<KQDir*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

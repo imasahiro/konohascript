@@ -89,16 +89,14 @@ bool DummyQGraphicsSceneMoveEvent::signalConnect(knh_Func_t *callback_func, stri
 	}
 }
 
-void DummyQGraphicsSceneMoveEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsSceneMoveEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQGraphicsSceneMoveEvent::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQGraphicsSceneMoveEvent::connection(QObject *o)
@@ -169,6 +167,7 @@ static void QGraphicsSceneMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneMoveEvent *qp = (KQGraphicsSceneMoveEvent *)p->rawptr;
+//		KQGraphicsSceneMoveEvent *qp = static_cast<KQGraphicsSceneMoveEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

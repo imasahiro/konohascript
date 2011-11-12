@@ -216,16 +216,14 @@ bool DummyQGraphicsSceneDragDropEvent::signalConnect(knh_Func_t *callback_func, 
 	}
 }
 
-void DummyQGraphicsSceneDragDropEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGraphicsSceneDragDropEvent::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQGraphicsSceneDragDropEvent::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQGraphicsSceneEvent::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQGraphicsSceneDragDropEvent::connection(QObject *o)
@@ -290,6 +288,7 @@ static void QGraphicsSceneDragDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG
 {
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneDragDropEvent *qp = (KQGraphicsSceneDragDropEvent *)p->rawptr;
+//		KQGraphicsSceneDragDropEvent *qp = static_cast<KQGraphicsSceneDragDropEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

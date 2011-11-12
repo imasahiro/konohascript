@@ -124,16 +124,14 @@ bool DummyQHistoryState::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQHistoryState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQHistoryState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQHistoryState::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQAbstractState::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQAbstractState::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQHistoryState::connection(QObject *o)
@@ -205,6 +203,7 @@ static void QHistoryState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQHistoryState *qp = (KQHistoryState *)p->rawptr;
+//		KQHistoryState *qp = static_cast<KQHistoryState*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -226,6 +225,7 @@ bool KQHistoryState::event(QEvent *event)
 		QHistoryState::event(event);
 		return false;
 	}
+//	QHistoryState::event(event);
 	return true;
 }
 

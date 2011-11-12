@@ -296,15 +296,13 @@ bool DummyQHostInfo::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQHostInfo::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQHostInfo::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQHostInfo::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQHostInfo::connection(QObject *o)
@@ -374,6 +372,7 @@ static void QHostInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQHostInfo *qp = (KQHostInfo *)p->rawptr;
+//		KQHostInfo *qp = static_cast<KQHostInfo*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

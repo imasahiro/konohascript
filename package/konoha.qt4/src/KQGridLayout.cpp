@@ -604,16 +604,14 @@ bool DummyQGridLayout::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQGridLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQGridLayout::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQGridLayout::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQLayout::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQLayout::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQGridLayout::connection(QObject *o)
@@ -685,6 +683,7 @@ static void QGridLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQGridLayout *qp = (KQGridLayout *)p->rawptr;
+//		KQGridLayout *qp = static_cast<KQGridLayout*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -706,6 +705,7 @@ bool KQGridLayout::event(QEvent *event)
 		QGridLayout::event(event);
 		return false;
 	}
+//	QGridLayout::event(event);
 	return true;
 }
 

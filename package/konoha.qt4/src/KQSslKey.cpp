@@ -200,15 +200,13 @@ bool DummyQSslKey::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSslKey::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSslKey::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSslKey::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQSslKey::connection(QObject *o)
@@ -278,6 +276,7 @@ static void QSslKey_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSslKey *qp = (KQSslKey *)p->rawptr;
+//		KQSslKey *qp = static_cast<KQSslKey*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

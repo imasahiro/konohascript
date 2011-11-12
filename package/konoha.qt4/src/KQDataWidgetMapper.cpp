@@ -406,17 +406,20 @@ bool DummyQDataWidgetMapper::signalConnect(knh_Func_t *callback_func, string str
 	}
 }
 
-void DummyQDataWidgetMapper::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDataWidgetMapper::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQDataWidgetMapper::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, current_index_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQDataWidgetMapper::connection(QObject *o)
@@ -489,6 +492,7 @@ static void QDataWidgetMapper_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDataWidgetMapper *qp = (KQDataWidgetMapper *)p->rawptr;
+//		KQDataWidgetMapper *qp = static_cast<KQDataWidgetMapper*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -510,6 +514,7 @@ bool KQDataWidgetMapper::event(QEvent *event)
 		QDataWidgetMapper::event(event);
 		return false;
 	}
+//	QDataWidgetMapper::event(event);
 	return true;
 }
 

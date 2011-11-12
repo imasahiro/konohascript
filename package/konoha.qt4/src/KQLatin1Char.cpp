@@ -105,15 +105,13 @@ bool DummyQLatin1Char::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQLatin1Char::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQLatin1Char::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQLatin1Char::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQLatin1Char::connection(QObject *o)
@@ -183,6 +181,7 @@ static void QLatin1Char_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQLatin1Char *qp = (KQLatin1Char *)p->rawptr;
+//		KQLatin1Char *qp = static_cast<KQLatin1Char*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

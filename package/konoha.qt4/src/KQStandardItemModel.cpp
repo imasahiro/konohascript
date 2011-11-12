@@ -770,17 +770,20 @@ bool DummyQStandardItemModel::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
-void DummyQStandardItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQStandardItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQStandardItemModel::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, item_changed_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractItemModel::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQStandardItemModel::connection(QObject *o)
@@ -853,6 +856,7 @@ static void QStandardItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQStandardItemModel *qp = (KQStandardItemModel *)p->rawptr;
+//		KQStandardItemModel *qp = static_cast<KQStandardItemModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -874,6 +878,7 @@ bool KQStandardItemModel::event(QEvent *event)
 		QStandardItemModel::event(event);
 		return false;
 	}
+//	QStandardItemModel::event(event);
 	return true;
 }
 

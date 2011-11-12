@@ -334,16 +334,14 @@ bool DummyQPinchGesture::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQPinchGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQPinchGesture::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQPinchGesture::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQGesture::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQGesture::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQPinchGesture::connection(QObject *o)
@@ -408,6 +406,7 @@ static void QPinchGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQPinchGesture *qp = (KQPinchGesture *)p->rawptr;
+//		KQPinchGesture *qp = static_cast<KQPinchGesture*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -429,6 +428,7 @@ bool KQPinchGesture::event(QEvent *event)
 		QPinchGesture::event(event);
 		return false;
 	}
+//	QPinchGesture::event(event);
 	return true;
 }
 

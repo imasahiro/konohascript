@@ -258,19 +258,22 @@ bool DummyQDialog::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, accepted_func);
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, rejected_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQDialog::connection(QObject *o)
@@ -345,6 +348,7 @@ static void QDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQDialog *qp = (KQDialog *)p->rawptr;
+//		KQDialog *qp = static_cast<KQDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -366,6 +370,7 @@ bool KQDialog::event(QEvent *event)
 		QDialog::event(event);
 		return false;
 	}
+//	QDialog::event(event);
 	return true;
 }
 

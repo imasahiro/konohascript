@@ -189,15 +189,13 @@ bool DummyQMargins::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQMargins::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQMargins::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQMargins::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQMargins::connection(QObject *o)
@@ -267,6 +265,7 @@ static void QMargins_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQMargins *qp = (KQMargins *)p->rawptr;
+//		KQMargins *qp = static_cast<KQMargins*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

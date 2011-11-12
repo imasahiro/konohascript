@@ -172,16 +172,14 @@ bool DummyQSound::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSound::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSound::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSound::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQSound::connection(QObject *o)
@@ -253,6 +251,7 @@ static void QSound_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSound *qp = (KQSound *)p->rawptr;
+//		KQSound *qp = static_cast<KQSound*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -274,6 +273,7 @@ bool KQSound::event(QEvent *event)
 		QSound::event(event);
 		return false;
 	}
+//	QSound::event(event);
 	return true;
 }
 

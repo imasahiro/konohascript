@@ -829,18 +829,21 @@ bool DummyQTreeView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTreeView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTreeView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQTreeView::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, collapsed_func);
 	KNH_ADDNNREF(ctx, expanded_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractItemView::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractItemView::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQTreeView::connection(QObject *o)
@@ -914,6 +917,7 @@ static void QTreeView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTreeView *qp = (KQTreeView *)p->rawptr;
+//		KQTreeView *qp = static_cast<KQTreeView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -935,6 +939,7 @@ bool KQTreeView::event(QEvent *event)
 		QTreeView::event(event);
 		return false;
 	}
+//	QTreeView::event(event);
 	return true;
 }
 

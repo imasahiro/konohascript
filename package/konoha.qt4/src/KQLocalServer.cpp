@@ -248,17 +248,20 @@ bool DummyQLocalServer::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQLocalServer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQLocalServer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQLocalServer::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 1;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, new_connection_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQLocalServer::connection(QObject *o)
@@ -331,6 +334,7 @@ static void QLocalServer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQLocalServer *qp = (KQLocalServer *)p->rawptr;
+//		KQLocalServer *qp = static_cast<KQLocalServer*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -352,6 +356,7 @@ bool KQLocalServer::event(QEvent *event)
 		QLocalServer::event(event);
 		return false;
 	}
+//	QLocalServer::event(event);
 	return true;
 }
 

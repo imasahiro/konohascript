@@ -72,10 +72,18 @@ void setInheritsQObjectFlag(BindInfo[] bia, BindInfo bi)
 	}
 }
 
+void setInheritsQGraphicsItemFlag(BindInfo[] bia, BindInfo bi)
+{
+	bi.inherits_qgraphicsitem_flag = true;
+	foreach (int index in bi.children_index) {
+		setInheritsQGraphicsItemFlag(bia, bia[index]);
+	}
+}
+
 BindInfo[] makeBindInfo(QtInterface[] interfaces, QtHierarchy hierarchy) {
 	OUT << "make BindInfo" << EOL;
 
-	String[] supported_domain = ["QtGui", "QtCore", "QtWebKit"/*, "QtOpenGL"*/, "QtNetwork"];
+	String[] supported_domain = ["QtGui", "QtCore", "QtWebKit", "QtOpenGL", "QtNetwork"];
 	String[] binding_class = [];
 	foreach (domain in supported_domain) {
 		Dir dir = System.openDir(QT_INCLUDE_DIR + domain);
@@ -98,12 +106,14 @@ BindInfo[] makeBindInfo(QtInterface[] interfaces, QtHierarchy hierarchy) {
 	}
 	BIsetParentIndex(bia, hierarchy);
 	int qobject_index = -1;
-//	foreach (BindInfo bi in bia) {
+	int qgraphcisitem_index = -1;
 	for (int i = 0; i < |bia|; i++) {
 		BIsetHierarchyDepth(bia, bia[i]);
 		if (bia[i].class_name == "QObject") qobject_index = i;
+		if (bia[i].class_name == "QGraphicsItem") qgraphicsitem_index = i;
 	}
 	setInheritsQObjectFlag(bia, bia[qobject_index]);
+	setInheritsQGraphicsItemFlag(bia, bia[qgraphicsitem_index]);
 //	debugBindInfo(bia, "QWidget");
 	// foreach (bi in bia) {
 	// 	if (bi.class_name == "QStyle") {

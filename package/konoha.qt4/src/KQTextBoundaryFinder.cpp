@@ -243,15 +243,13 @@ bool DummyQTextBoundaryFinder::signalConnect(knh_Func_t *callback_func, string s
 	}
 }
 
-void DummyQTextBoundaryFinder::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTextBoundaryFinder::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQTextBoundaryFinder::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQTextBoundaryFinder::connection(QObject *o)
@@ -321,6 +319,7 @@ static void QTextBoundaryFinder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTextBoundaryFinder *qp = (KQTextBoundaryFinder *)p->rawptr;
+//		KQTextBoundaryFinder *qp = static_cast<KQTextBoundaryFinder*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -997,12 +997,13 @@ bool DummyQPlainTextEdit::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQPlainTextEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQPlainTextEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQPlainTextEdit::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 9;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, block_count_changed_func);
 	KNH_ADDNNREF(ctx, copy_available_func);
 	KNH_ADDNNREF(ctx, cursor_position_changed_func);
@@ -1015,7 +1016,9 @@ void DummyQPlainTextEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractScrollArea::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQPlainTextEdit::connection(QObject *o)
@@ -1096,6 +1099,7 @@ static void QPlainTextEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQPlainTextEdit *qp = (KQPlainTextEdit *)p->rawptr;
+//		KQPlainTextEdit *qp = static_cast<KQPlainTextEdit*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1117,6 +1121,7 @@ bool KQPlainTextEdit::event(QEvent *event)
 		QPlainTextEdit::event(event);
 		return false;
 	}
+//	QPlainTextEdit::event(event);
 	return true;
 }
 

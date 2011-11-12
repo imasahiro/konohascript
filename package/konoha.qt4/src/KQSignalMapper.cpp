@@ -214,16 +214,14 @@ bool DummyQSignalMapper::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSignalMapper::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSignalMapper::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQSignalMapper::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQSignalMapper::connection(QObject *o)
@@ -295,6 +293,7 @@ static void QSignalMapper_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSignalMapper *qp = (KQSignalMapper *)p->rawptr;
+//		KQSignalMapper *qp = static_cast<KQSignalMapper*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -316,6 +315,7 @@ bool KQSignalMapper::event(QEvent *event)
 		QSignalMapper::event(event);
 		return false;
 	}
+//	QSignalMapper::event(event);
 	return true;
 }
 

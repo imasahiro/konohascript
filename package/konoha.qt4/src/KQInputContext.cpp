@@ -242,16 +242,14 @@ bool DummyQInputContext::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQInputContext::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQInputContext::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQInputContext::reftrace p->rawptr=[%p]\n", p->rawptr);
 
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
 
-	KNH_SIZEREF(ctx);
-
-	DummyQObject::reftrace(ctx, p, tail_);
+	return tail_;
 }
 
 void DummyQInputContext::connection(QObject *o)
@@ -323,6 +321,7 @@ static void QInputContext_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQInputContext *qp = (KQInputContext *)p->rawptr;
+//		KQInputContext *qp = static_cast<KQInputContext*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -344,6 +343,7 @@ bool KQInputContext::event(QEvent *event)
 		QInputContext::event(event);
 		return false;
 	}
+//	QInputContext::event(event);
 	return true;
 }
 

@@ -1014,12 +1014,13 @@ bool DummyQHeaderView::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQHeaderView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQHeaderView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQHeaderView::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 11;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, geometries_changed_func);
 	KNH_ADDNNREF(ctx, section_auto_resize_func);
 	KNH_ADDNNREF(ctx, section_clicked_func);
@@ -1034,7 +1035,9 @@ void DummyQHeaderView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 
 	KNH_SIZEREF(ctx);
 
-	DummyQAbstractItemView::reftrace(ctx, p, tail_);
+	tail_ = DummyQAbstractItemView::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQHeaderView::connection(QObject *o)
@@ -1117,6 +1120,7 @@ static void QHeaderView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQHeaderView *qp = (KQHeaderView *)p->rawptr;
+//		KQHeaderView *qp = static_cast<KQHeaderView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1138,6 +1142,7 @@ bool KQHeaderView::event(QEvent *event)
 		QHeaderView::event(event);
 		return false;
 	}
+//	QHeaderView::event(event);
 	return true;
 }
 

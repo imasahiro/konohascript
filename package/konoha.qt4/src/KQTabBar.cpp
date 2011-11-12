@@ -774,19 +774,22 @@ bool DummyQTabBar::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQTabBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQTabBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQTabBar::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, current_changed_func);
 	KNH_ADDNNREF(ctx, tab_close_requested_func);
 	KNH_ADDNNREF(ctx, tab_moved_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQWidget::reftrace(ctx, p, tail_);
+	tail_ = DummyQWidget::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQTabBar::connection(QObject *o)
@@ -861,6 +864,7 @@ static void QTabBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQTabBar *qp = (KQTabBar *)p->rawptr;
+//		KQTabBar *qp = static_cast<KQTabBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -882,6 +886,7 @@ bool KQTabBar::event(QEvent *event)
 		QTabBar::event(event);
 		return false;
 	}
+//	QTabBar::event(event);
 	return true;
 }
 

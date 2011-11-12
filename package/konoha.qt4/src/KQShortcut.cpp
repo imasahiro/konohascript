@@ -261,18 +261,21 @@ bool DummyQShortcut::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQShortcut::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQShortcut::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQShortcut::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, activated_func);
 	KNH_ADDNNREF(ctx, activated_ambiguously_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQShortcut::connection(QObject *o)
@@ -346,6 +349,7 @@ static void QShortcut_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQShortcut *qp = (KQShortcut *)p->rawptr;
+//		KQShortcut *qp = static_cast<KQShortcut*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -367,6 +371,7 @@ bool KQShortcut::event(QEvent *event)
 		QShortcut::event(event);
 		return false;
 	}
+//	QShortcut::event(event);
 	return true;
 }
 

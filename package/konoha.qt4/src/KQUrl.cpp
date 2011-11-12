@@ -1046,15 +1046,13 @@ bool DummyQUrl::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQUrl::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQUrl::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
+//	fprintf(stderr, "DummyQUrl::reftrace p->rawptr=[%p]\n", p->rawptr);
 
 
-	KNH_SIZEREF(ctx);
-
+	return tail_;
 }
 
 void DummyQUrl::connection(QObject *o)
@@ -1124,6 +1122,7 @@ static void QUrl_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQUrl *qp = (KQUrl *)p->rawptr;
+//		KQUrl *qp = static_cast<KQUrl*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

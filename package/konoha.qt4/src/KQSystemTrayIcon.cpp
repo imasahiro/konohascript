@@ -284,18 +284,21 @@ bool DummyQSystemTrayIcon::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
-void DummyQSystemTrayIcon::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+knh_Object_t** DummyQSystemTrayIcon::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQSystemTrayIcon::reftrace p->rawptr=[%p]\n", p->rawptr);
+
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
-
 	KNH_ADDNNREF(ctx, activated_func);
 	KNH_ADDNNREF(ctx, message_clicked_func);
 
 	KNH_SIZEREF(ctx);
 
-	DummyQObject::reftrace(ctx, p, tail_);
+	tail_ = DummyQObject::reftrace(ctx, p, tail_);
+
+	return tail_;
 }
 
 void DummyQSystemTrayIcon::connection(QObject *o)
@@ -369,6 +372,7 @@ static void QSystemTrayIcon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		KQSystemTrayIcon *qp = (KQSystemTrayIcon *)p->rawptr;
+//		KQSystemTrayIcon *qp = static_cast<KQSystemTrayIcon*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -390,6 +394,7 @@ bool KQSystemTrayIcon::event(QEvent *event)
 		QSystemTrayIcon::event(event);
 		return false;
 	}
+//	QSystemTrayIcon::event(event);
 	return true;
 }
 
