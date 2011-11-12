@@ -9,7 +9,7 @@ String triple = """\"\"\"
 abcdefgh
 \"\"\"
 """;
-assure "String Literal" {
+assure "Sugar: String Literal" {
 	assert "\"abcd\"".tokenize()[0] == "abcd";
 	assert "\'abcd\'".tokenize()[0] == "abcd";
 	print triple;
@@ -17,6 +17,6 @@ assure "String Literal" {
 }
 
 // FIXME
-assure "Regex Token" {
+assure "Sugar: Regex Token" {
 	assert "/abcd/".tokenize()[0] == "/abcd/";
 }

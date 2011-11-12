@@ -5,8 +5,9 @@
 
 
 // We need more tests for character conversion. 
-
-assure "SupportCharacterConversion" {
-	assert charset:SJIS;   // This means we succeed to link to libiconv 
-}
-
+//
+// TODO
+//assure "SupportCharacterConversion" {
+//	assert charset:SJIS;   // This means we succeed to link to libiconv 
+//}
+//

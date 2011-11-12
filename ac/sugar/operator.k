@@ -6,13 +6,13 @@
 
 using konoha.sugar.*;
 
-assure "Parsing Plus Operator" {
+assure "Sugar: Parsing Plus Operator" {
 	a = "a + b".tokenize();
 	print a;
 	assert a.size == 3 && a[0] == "a" && a[1] == "+" && a[2] == "b";
 }
 
-assure "Parsing Operator" {
+assure "Sugar: Parsing Operator" {
 	a = "a +b- c * d / e% f & g <h > i += j+.k!! l <> m ** n <= o != p".tokenize();
 	print a;
 	print |a|

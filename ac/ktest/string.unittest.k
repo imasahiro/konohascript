@@ -25,7 +25,7 @@ assure "String.getSize:multi"
 assure "String.get"
 {
     String sn = "string";
-    assert "".get()
+    assert "".get() == "";
     assert sn.get() == "s";
 }
 
