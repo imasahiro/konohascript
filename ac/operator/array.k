@@ -1,6 +1,7 @@
 /****************************************************************************
  * KONOHA ASSURANCE CASE
  *  written by Kimio Kuramitsu  twitter: @konohakun 
+ *  written by Masahiro Ide
  ***************************************************************************/
 
 assure "ArrayOperation" {
@@ -39,3 +40,20 @@ assure "ArrayOperation: int[]" {
 	assert |a| == 0;
 }
 
+assure "ArrayOperation: Array<T>.pop" {
+	String[] a = ["hello"];
+	String elem = a.pop();
+	assert a.size == 0 && elem == "hello";
+
+	String elem2 = a.pop();
+	assert a.size == 0 && elem2 == null;
+}
+
+assure "ArrayOperation: Array<Int>.pop" {
+	Int[] a = [3];
+	Int elem = a.pop();
+	assert a.size == 0 && elem == 3;
+
+	Int elem2 = a.pop();
+	assert a.size == 0 && elem2 == 0;
+}

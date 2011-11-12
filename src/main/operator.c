@@ -1696,6 +1696,14 @@ static KMETHOD Array_pop(CTX ctx, knh_sfp_t *sfp _RIX)
 	if (a->size > 0) {
 		(a)->api->fastget(ctx, sfp, a->size - 1, K_RIX);
 		knh_Array_clear(ctx, a, a->size - 1);
+	} else {
+		knh_class_t p1 = O_p1(a);
+		knh_Object_t *o = KNH_NULVAL(p1);
+		if (IS_Tunbox(p1)) {
+			RETURNd_(O_data(o));
+		} else {
+			RETURN_(o);
+		}
 	}
 }
 /* ------------------------------------------------------------------------ */
