@@ -100,14 +100,14 @@ const char* TERM_ENOTE(CTX ctx, int pe)
 	return CTX_isTERM(ctx) ? "\x1b[0m" : "";
 }
 
-static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
+static knh_String_t *GammaBuilder_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 {
 	knh_String_t *msg = TS_EMPTY;
 	int isPRINT = (pe <= KC_DWARN) ? 1 : 0;
 	if(pe != KC_DEBUG && (CTX_isInteractive(ctx) || knh_isCompileOnly(ctx))) {
 		isPRINT = 1;
 	}
-	if(Gamma_isQuiet(ctx->gma) || ctx->gma->uline == 0) {
+	if(GammaBuilder_isQuiet(ctx->gma) || ctx->gma->uline == 0) {
 		isPRINT = 0;
 	}
 	if(isPRINT == 1) {
@@ -123,12 +123,12 @@ static knh_String_t *Gamma_vperror(CTX ctx, int pe, const char *fmt, va_list ap)
 	return msg;
 }
 
-static knh_Term_t *Gamma_perror(CTX ctx, int pe, const char *fmt, ...)
+static knh_Term_t *GammaBuilder_perror(CTX ctx, int pe, const char *fmt, ...)
 {
 	knh_String_t *msg;
 	va_list ap;
 	va_start(ap, fmt);
-	msg = Gamma_vperror(ctx, pe, fmt, ap);
+	msg = GammaBuilder_vperror(ctx, pe, fmt, ap);
 	va_end(ap);
 	if(pe < KC_DWARN) {
 		knh_Term_t *tkERR = new_(Term);
@@ -147,7 +147,7 @@ static knh_Term_t *knh_Term_toERR(CTX ctx, knh_Term_t *tk, const char *fmt, ...)
 		va_list ap;
 		va_start(ap, fmt);
 		ctx->gma->uline = tk->uline;
-		msg = Gamma_vperror(ctx, KC_ERR, fmt, ap);
+		msg = GammaBuilder_vperror(ctx, KC_ERR, fmt, ap);
 		va_end(ap);
 		TT_(tk) = TT_ERR;
 		KNH_SETv(ctx, (tk)->data, msg);
@@ -160,87 +160,87 @@ static knh_Term_t *knh_Term_toERR(CTX ctx, knh_Term_t *tk, const char *fmt, ...)
 
 knh_Term_t* ERROR_NotFound(CTX ctx, const char *whatis, const char *t)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%s not found: %s"), whatis, t);
+	return GammaBuilder_perror(ctx, KC_ERR, _("%s not found: %s"), whatis, t);
 }
 void WARN_NotFound(CTX ctx, const char *whatis, const char *t)
 {
-	Gamma_perror(ctx, KC_DWARN, _("%s not found: %s"), whatis, t);
+	GammaBuilder_perror(ctx, KC_DWARN, _("%s not found: %s"), whatis, t);
 }
 knh_Term_t* ERROR_Incompatible(CTX ctx, const char *whatis, const char *name)
 {
-	return Gamma_perror(ctx, KC_ERR, "incompatible %s: %s", whatis, name);
+	return GammaBuilder_perror(ctx, KC_ERR, "incompatible %s: %s", whatis, name);
 }
 knh_Term_t* ERROR_SingleParam(CTX ctx)
 {
-	return Gamma_perror(ctx, KC_ERR, _("syntax error: always takes only one parameter"));
+	return GammaBuilder_perror(ctx, KC_ERR, _("syntax error: always takes only one parameter"));
 }
 //knh_Term_t* ErrorExtendingFinalClass(CTX ctx, knh_class_t cid)
 //{
-//	return Gamma_perror(ctx, KC_ERR, _("cannot extends final class %C"), cid);
+//	return GammaBuilder_perror(ctx, KC_ERR, _("cannot extends final class %C"), cid);
 //}
 void WARN_MuchBetter(CTX ctx, const char *token, const char *token2)
 {
 	if(token2 != NULL) {
-		Gamma_perror(ctx, KC_DWARN, _("%s is better than %s"), token, token2);
+		GammaBuilder_perror(ctx, KC_DWARN, _("%s is better than %s"), token, token2);
 	}
 	else {
-		Gamma_perror(ctx, KC_DWARN, _("%s is better"), token);
+		GammaBuilder_perror(ctx, KC_DWARN, _("%s is better"), token);
 	}
 }
 void WarningMethodName(CTX ctx, const char *name)
 {
-	Gamma_perror(ctx, KC_DWARN, _("%s should starts with lowercase"), name);
+	GammaBuilder_perror(ctx, KC_DWARN, _("%s should starts with lowercase"), name);
 }
 
 void WARN_MustCloseWith(CTX ctx, int ch)
 {
 	char buf[40];
 	knh_snprintf(buf, sizeof(buf), "%c", ch);
-	Gamma_perror(ctx, KC_DWARN, "must close with %s", buf);
+	GammaBuilder_perror(ctx, KC_DWARN, "must close with %s", buf);
 }
 
 void WARN_Semicolon(CTX ctx)
 {
-	if(!CTX_isInteractive(ctx)) Gamma_perror(ctx, KC_BAD, "needs ");
+	if(!CTX_isInteractive(ctx)) GammaBuilder_perror(ctx, KC_BAD, "needs ");
 }
 void WARN_UnxpectedMultiByteChar(CTX ctx, const char *ch)
 {
 	if(ch == NULL) ch = "???";
-	Gamma_perror(ctx, KC_DWARN, _("unexpected multi-byte character: '%s'"), ch);
+	GammaBuilder_perror(ctx, KC_DWARN, _("unexpected multi-byte character: '%s'"), ch);
 }
 knh_Term_t *ErrorHazardousStatement(CTX ctx)
 {
-	return Gamma_perror(ctx, KC_ERR, _("hazardous statement"));
+	return GammaBuilder_perror(ctx, KC_ERR, _("hazardous statement"));
 }
 void WarningNoEffect(CTX ctx)
 {
-	Gamma_perror(ctx, KC_DWARN, _("no effect"));
+	GammaBuilder_perror(ctx, KC_DWARN, _("no effect"));
 }
 knh_Term_t* ErrorMisplaced(CTX ctx)
 {
-	return Gamma_perror(ctx, KC_ERR, _("misplaced"));
+	return GammaBuilder_perror(ctx, KC_ERR, _("misplaced"));
 }
 //knh_Term_t* ErrorStaticType(CTX ctx, const char *msg)
 //{
-//	knh_Term_t* tkERR = Gamma_perror(ctx, KC_ERR, _("%s is not dynamic"), msg);
+//	knh_Term_t* tkERR = GammaBuilder_perror(ctx, KC_ERR, _("%s is not dynamic"), msg);
 //	DBG_ABORT("stop why?");
 //	return tkERR;
 //}
 knh_Term_t* ERROR_UnableToAdd(CTX ctx, knh_class_t cid, const char *whatis)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%T is unable to add new %s"), cid, whatis);
+	return GammaBuilder_perror(ctx, KC_ERR, _("%T is unable to add new %s"), cid, whatis);
 }
 knh_Term_t* ERROR_Block(CTX ctx, const char* block)
 {
-	return Gamma_perror(ctx, KC_ERR, _("syntax error: wrong %s"), block);
+	return GammaBuilder_perror(ctx, KC_ERR, _("syntax error: wrong %s"), block);
 }
 knh_Term_t* ERROR_WrongFFILink(CTX ctx, const char* link)
 {
-	return Gamma_perror(ctx, KC_ERR, _("syntax error: ffi link: %s"), link);
+	return GammaBuilder_perror(ctx, KC_ERR, _("syntax error: ffi link: %s"), link);
 }
 knh_Term_t* ERROR_text(CTX ctx, const char *keyword K_TRACEARGV)
 {
-	knh_Term_t *tk = Gamma_perror(ctx, KC_ERR, ("syntax error: %s"), keyword);
+	knh_Term_t *tk = GammaBuilder_perror(ctx, KC_ERR, ("syntax error: %s"), keyword);
 	KNH_HINT(ctx, keyword);
 	DBG_ABORT("why?");
 	return tk;
@@ -259,11 +259,11 @@ knh_Term_t* ERROR_Stmt(CTX ctx, knh_StmtExpr_t *stmt K_TRACEARGV)
 }
 knh_Term_t* ERROR_TermIsNot(CTX ctx, knh_Term_t *tk, const char* whatis)
 {
-	return Gamma_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
+	return GammaBuilder_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
 }
 knh_Term_t* ERROR_TermIs(CTX ctx, knh_Term_t *tk, const char* whatis)
 {
-	return Gamma_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
+	return GammaBuilder_perror(ctx, KC_ERR, ("%O is not %s"), tk, whatis);
 }
 knh_Term_t* ERROR_Required(CTX ctx, knh_Term_t *tk, const char *stmtexpr, const char *token)
 {
@@ -271,7 +271,7 @@ knh_Term_t* ERROR_Required(CTX ctx, knh_Term_t *tk, const char *stmtexpr, const 
 }
 void WarningNotInitialized(CTX ctx, knh_Term_t *tk, const char *tool)
 {
-	Gamma_perror(ctx, KC_EWARN, _("%s is not installed"), tool);
+	GammaBuilder_perror(ctx, KC_EWARN, _("%s is not installed"), tool);
 }
 knh_Term_t* ERROR_RegexCompilation(CTX ctx, knh_Term_t *tk, const char *regname, const char *regdata)
 {
@@ -293,23 +293,23 @@ knh_Term_t* ERROR_UndefinedName(CTX ctx, knh_Term_t *tk)
 void WARN_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Term_t *tk)
 {
 	if(cid != CLASS_unknown) {
-		Gamma_perror(ctx, KC_EWARN, _("undefined %s: %T.%O"), whatis, cid, tk);
+		GammaBuilder_perror(ctx, KC_EWARN, _("undefined %s: %T.%O"), whatis, cid, tk);
 	}
 	else {
-		Gamma_perror(ctx, KC_EWARN, _("undefined %s: %O"), whatis, tk);
+		GammaBuilder_perror(ctx, KC_EWARN, _("undefined %s: %O"), whatis, tk);
 	}
 }
 knh_Term_t* ERROR_AlreadyDefined(CTX ctx, const char *whatis, Object *o)
 {
-	return Gamma_perror(ctx, KC_ERR, _("already defined %s: %O"), whatis, o);
+	return GammaBuilder_perror(ctx, KC_ERR, _("already defined %s: %O"), whatis, o);
 }
 void WARN_AlreadyDefined(CTX ctx, const char *whatis, Object *o)
 {
-	Gamma_perror(ctx, KC_DWARN, _("already defined %s: %O"), whatis, o);
+	GammaBuilder_perror(ctx, KC_DWARN, _("already defined %s: %O"), whatis, o);
 }
 void WARN_AlreadyDefinedClass(CTX ctx, knh_class_t cid, knh_class_t oldcid)
 {
-	Gamma_perror(ctx, KC_DWARN, _("%C is already defined: %C"), cid, oldcid);
+	GammaBuilder_perror(ctx, KC_DWARN, _("%C is already defined: %C"), cid, oldcid);
 }
 knh_Term_t* ERROR_Denied(CTX ctx, const char *why, knh_Term_t *tk)
 {
@@ -317,157 +317,157 @@ knh_Term_t* ERROR_Denied(CTX ctx, const char *why, knh_Term_t *tk)
 }
 void WarningUnknownClass(CTX ctx, knh_Term_t *tk, knh_class_t defc)
 {
-	Gamma_perror(ctx, KC_DWARN, _("unknown class: %L ==> %T"), tk, defc);
+	GammaBuilder_perror(ctx, KC_DWARN, _("unknown class: %L ==> %T"), tk, defc);
 }
 knh_Term_t* ERROR_UnableToAssign(CTX ctx, knh_Term_t *tk)
 {
-	return Gamma_perror(ctx, KC_ERR, _("unable to make assignment"));
+	return GammaBuilder_perror(ctx, KC_ERR, _("unable to make assignment"));
 }
 knh_Term_t* ErrorUnsupportedConstructor(CTX ctx, knh_class_t mtd_cid)
 {
-	return Gamma_perror(ctx, KC_ERR, _("the constructor of %T is not supported"), mtd_cid);
+	return GammaBuilder_perror(ctx, KC_ERR, _("the constructor of %T is not supported"), mtd_cid);
 }
 knh_Term_t* ERROR_UndefinedBehavior(CTX ctx, const char *token)
 {
-	return Gamma_perror(ctx, KC_ERR, _("undefined behavior: %s"), token);
+	return GammaBuilder_perror(ctx, KC_ERR, _("undefined behavior: %s"), token);
 }
 knh_Term_t* ERROR_CompilerControlledParameter(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn, int n)
 {
-	return Gamma_perror(ctx, KC_ERR, _("compiler controlled parameter: %C.%M(#%d)"), mtd_cid, mn, n);
+	return GammaBuilder_perror(ctx, KC_ERR, _("compiler controlled parameter: %C.%M(#%d)"), mtd_cid, mn, n);
 }
 
 knh_Term_t* ERROR_RequiredParameter(CTX ctx)
 {
-	return Gamma_perror(ctx, KC_ERR, _("needs a parameter to infer its type"));
+	return GammaBuilder_perror(ctx, KC_ERR, _("needs a parameter to infer its type"));
 }
 void WARN_WrongTypeParam(CTX ctx, knh_class_t cid)
 {
 	if(cid != CLASS_unknown) {
 		knh_bytes_t bname = C_bname(cid);
-		Gamma_perror(ctx, KC_DWARN, "%B<>: wrong type parameter", bname);
+		GammaBuilder_perror(ctx, KC_DWARN, "%B<>: wrong type parameter", bname);
 	}
 }
 void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
 {
-	Gamma_perror(ctx, KC_TINFO, "suppose %s%B has %T type", prefix, name, type);
+	GammaBuilder_perror(ctx, KC_TINFO, "suppose %s%B has %T type", prefix, name, type);
 }
 void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 {
-	Gamma_perror(ctx, KC_EWARN, _("%s overflow: %B"), floatorint, t);
+	GammaBuilder_perror(ctx, KC_EWARN, _("%s overflow: %B"), floatorint, t);
 }
 void WARN_Unused(CTX ctx, knh_Term_t *tk, knh_fieldn_t fn)
 {
 	knh_uline_t uline = ctx->gma->uline;
 	ctx->gma->uline = tk->uline;
-	Gamma_perror(ctx, KC_DWARN, _("unused %N"), fn);
+	GammaBuilder_perror(ctx, KC_DWARN, _("unused %N"), fn);
 	ctx->gma->uline = uline;
 }
 knh_Term_t* ERROR_AlreadyDefinedType(CTX ctx, knh_fieldn_t fn, knh_type_t type)
 {
-	return Gamma_perror(ctx, KC_TERROR, _("already defined: previous type %T %N"), type, fn);
+	return GammaBuilder_perror(ctx, KC_TERROR, _("already defined: previous type %T %N"), type, fn);
 }
 knh_Term_t* ErrorTooManyVariables(CTX ctx)
 {
-	return Gamma_perror(ctx, KC_ERR, _("too many variables"));
+	return GammaBuilder_perror(ctx, KC_ERR, _("too many variables"));
 }
 //void WarningTooManyReturnValues(CTX ctx)
 //{
-//	Gamma_perror(ctx, KC_DWARN, _("too many return values"));
+//	GammaBuilder_perror(ctx, KC_DWARN, _("too many return values"));
 //}
 void WARN_UseDefaultValue(CTX ctx, const char *whatis, knh_type_t type)
 {
-	Gamma_perror(ctx, KC_DWARN, _("%s default value of %T"), whatis, type);
+	GammaBuilder_perror(ctx, KC_DWARN, _("%s default value of %T"), whatis, type);
 }
 void WarningNoFmt(CTX ctx, const char *fmt)
 {
-	Gamma_perror(ctx, KC_DWARN, "no such formatter: '%s'", fmt);
+	GammaBuilder_perror(ctx, KC_DWARN, "no such formatter: '%s'", fmt);
 }
 void WarningIllegalFormatting(CTX ctx, const char *fmt)
 {
-	Gamma_perror(ctx, KC_DWARN, "illegal formatting at: `.. %s`", fmt);
+	GammaBuilder_perror(ctx, KC_DWARN, "illegal formatting at: `.. %s`", fmt);
 }
 knh_Term_t* ERROR_MethodIsNot(CTX ctx, knh_Method_t *mtd, const char *how)
 {
 	if(IS_Method(mtd)) {
-		return Gamma_perror(ctx, KC_ERR, _("%C.%M is not %s"), (mtd)->cid, (mtd)->mn, how);
+		return GammaBuilder_perror(ctx, KC_ERR, _("%C.%M is not %s"), (mtd)->cid, (mtd)->mn, how);
 	}
 	else {
-		return Gamma_perror(ctx, KC_ERR, _("method is not %s"), how);
+		return GammaBuilder_perror(ctx, KC_ERR, _("method is not %s"), how);
 	}
 }
 void WARN_MethodIs(CTX ctx, knh_Method_t *mtd, const char *how)
 {
 	if(IS_Method(mtd)) {
-		Gamma_perror(ctx, KC_DWARN, _("%C.%M is %s"), (mtd)->cid, (mtd)->mn, how);
+		GammaBuilder_perror(ctx, KC_DWARN, _("%C.%M is %s"), (mtd)->cid, (mtd)->mn, how);
 	}
 	else {
-		Gamma_perror(ctx, KC_DWARN, _("method is %s"), how);
+		GammaBuilder_perror(ctx, KC_DWARN, _("method is %s"), how);
 	}
 }
 knh_Term_t *ERROR_Unsupported(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
 {
 	if(symbol == NULL) {
-		return Gamma_perror(ctx, KC_ERR, "unsupported %s", whatis);
+		return GammaBuilder_perror(ctx, KC_ERR, "unsupported %s", whatis);
 	}
 	else if(cid == CLASS_unknown) {
-		return Gamma_perror(ctx, KC_ERR, "unsupported %s: %s", whatis, symbol);
+		return GammaBuilder_perror(ctx, KC_ERR, "unsupported %s: %s", whatis, symbol);
 	}
 	else {
-		return Gamma_perror(ctx, KC_ERR, "unsupported %s: %s in %C", whatis, symbol, cid);
+		return GammaBuilder_perror(ctx, KC_ERR, "unsupported %s: %s in %C", whatis, symbol, cid);
 	}
 }
 void WARN_Unsupported(CTX ctx, const char *msg)
 {
-	Gamma_perror(ctx, KC_DWARN, _("unsupported %s"), msg);
+	GammaBuilder_perror(ctx, KC_DWARN, _("unsupported %s"), msg);
 }
 void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
 {
 	if(symbol == NULL) {
-		Gamma_perror(ctx, KC_DWARN, "ignored %s", whatis, symbol);
+		GammaBuilder_perror(ctx, KC_DWARN, "ignored %s", whatis, symbol);
 	}
 	else if(cid == CLASS_unknown) {
-		Gamma_perror(ctx, KC_DWARN, "ignored %s: %s", whatis, symbol);
+		GammaBuilder_perror(ctx, KC_DWARN, "ignored %s: %s", whatis, symbol);
 	}
 	else {
-		Gamma_perror(ctx, KC_DWARN, "ignored %s: %C.%s", whatis, cid, symbol);
+		GammaBuilder_perror(ctx, KC_DWARN, "ignored %s: %C.%s", whatis, cid, symbol);
 	}
 }
 void WARN_Unnecesary(CTX ctx, knh_Term_t *tk)
 {
-	Gamma_perror(ctx, KC_DWARN, _("unnecessary %O"), tk);
+	GammaBuilder_perror(ctx, KC_DWARN, _("unnecessary %O"), tk);
 }
 void WarningUnnecessaryOperation(CTX ctx, const char *msg)
 {
-	Gamma_perror(ctx, KC_DWARN, "unnecessary operation: %s", msg);
+	GammaBuilder_perror(ctx, KC_DWARN, "unnecessary operation: %s", msg);
 }
 void WARN_TooMany(CTX ctx, const char *whatis, const char *symbol)
 {
-	Gamma_perror(ctx, KC_DWARN, _("%s: too many %s, and be ignored."), symbol, whatis);
+	GammaBuilder_perror(ctx, KC_DWARN, _("%s: too many %s, and be ignored."), symbol, whatis);
 }
 knh_Term_t* ERROR_Needs(CTX ctx, const char *whatis)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%s is necessary"), whatis);
+	return GammaBuilder_perror(ctx, KC_ERR, _("%s is necessary"), whatis);
 }
 knh_Term_t* ERROR_MustBe(CTX ctx, const char *whatis, const char* token)
 {
 	if(token == NULL) {
-		return Gamma_perror(ctx, KC_ERR, "must be %s", whatis);
+		return GammaBuilder_perror(ctx, KC_ERR, "must be %s", whatis);
 	}
 	else {
-		return Gamma_perror(ctx, KC_ERR, "%s must be %s", token, whatis);
+		return GammaBuilder_perror(ctx, KC_ERR, "%s must be %s", token, whatis);
 	}
 }
 knh_Term_t* ERROR_OutOfIndex(CTX ctx, knh_int_t s, knh_int_t n, knh_int_t e)
 {
-	return Gamma_perror(ctx, KC_ERR, "index must be %i <= %i < %i", s, n, e);
+	return GammaBuilder_perror(ctx, KC_ERR, "index must be %i <= %i < %i", s, n, e);
 }
 void WarningNullable(CTX ctx, knh_class_t cid)
 {
-	Gamma_perror(ctx, KC_DWARN, "%C doesn't take null", cid);
+	GammaBuilder_perror(ctx, KC_DWARN, "%C doesn't take null", cid);
 }
 knh_Term_t* ErrorComparedDiffrentType(CTX ctx, knh_type_t t1, knh_type_t t2)
 {
-	return Gamma_perror(ctx, KC_TERROR, _("comparison of different type: %T %T"), t1, t2);
+	return GammaBuilder_perror(ctx, KC_TERROR, _("comparison of different type: %T %T"), t1, t2);
 }
 /* type error */
 knh_Term_t *TERROR_Term(CTX ctx, knh_Term_t *tk, knh_class_t type, knh_class_t reqt)
@@ -476,88 +476,88 @@ knh_Term_t *TERROR_Term(CTX ctx, knh_Term_t *tk, knh_class_t type, knh_class_t r
 }
 knh_Term_t *TypeErrorStmtNN(CTX ctx, knh_StmtExpr_t *stmt, int n, knh_type_t reqt, knh_type_t type)
 {
-	return Gamma_perror(ctx, KC_TERROR, _("%s(%d) has type %T, not %T"), TT__(SP(stmt)->stt), n, reqt, type);
+	return GammaBuilder_perror(ctx, KC_TERROR, _("%s(%d) has type %T, not %T"), TT__(SP(stmt)->stt), n, reqt, type);
 }
 knh_Term_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, knh_class_t reqt, knh_class_t type)
 {
 	if(IS_Method(mtd)) {
-		return Gamma_perror(ctx, KC_TERROR, _("%C.%M(#%d) has type %T, not %T"), (mtd)->cid, (mtd)->mn, n - 1, reqt, type);
+		return GammaBuilder_perror(ctx, KC_TERROR, _("%C.%M(#%d) has type %T, not %T"), (mtd)->cid, (mtd)->mn, n - 1, reqt, type);
 	}
 	else {
 		KNH_ASSERT(IS_String(mtd));
 		const char *fname = S_totext((knh_String_t*)mtd);
-		return Gamma_perror(ctx, KC_TERROR, _("%s(#d) has type %T, not %T"), fname, n - 1, reqt, type);
+		return GammaBuilder_perror(ctx, KC_TERROR, _("%s(#d) has type %T, not %T"), fname, n - 1, reqt, type);
 	}
 }
 void WARN_Cast(CTX ctx, const char *whatis, knh_class_t tcid, knh_class_t scid)
 {
-	Gamma_perror(ctx, KC_EWARN, _("%s (%T)%T"), whatis, tcid, scid);
+	GammaBuilder_perror(ctx, KC_EWARN, _("%s (%T)%T"), whatis, tcid, scid);
 }
 knh_Term_t* ERROR_ForeachNotIterative(CTX ctx, knh_class_t p1, knh_class_t type)
 {
 	if(p1 == CLASS_Tvar) {
-		return Gamma_perror(ctx, KC_ERR, "foreach %T is not iterative", type);
+		return GammaBuilder_perror(ctx, KC_ERR, "foreach %T is not iterative", type);
 	}
 	else {
-		return Gamma_perror(ctx, KC_ERR, "foreach: %T is not iteration of %T", p1, type);
+		return GammaBuilder_perror(ctx, KC_ERR, "foreach: %T is not iteration of %T", p1, type);
 	}
 }
 void WarningDuplicatedDefault(CTX ctx)
 {
-	Gamma_perror(ctx, KC_EWARN, _("multiple default in switch"));
+	GammaBuilder_perror(ctx, KC_EWARN, _("multiple default in switch"));
 }
 void WarningNotConstant(CTX ctx)
 {
-Gamma_perror(ctx, KC_DWARN, _("case takes a constant value"));
+GammaBuilder_perror(ctx, KC_DWARN, _("case takes a constant value"));
 }
 void WarningAlwaysFalseAssertion(CTX ctx)
 {
-Gamma_perror(ctx, KC_EWARN, _("always throw Assertion!!"));
+GammaBuilder_perror(ctx, KC_EWARN, _("always throw Assertion!!"));
 }
 void WarningDifferentMethodClass(CTX ctx, knh_bytes_t name, knh_class_t cid)
 {
-	Gamma_perror(ctx, KC_DWARN, _("different class: %B ==> %C"), name, cid);
+	GammaBuilder_perror(ctx, KC_DWARN, _("different class: %B ==> %C"), name, cid);
 }
 void WarningDeprecated(CTX ctx, const char *msg)
 {
-	Gamma_perror(ctx, KC_DWARN, _("depreciated %s"), msg);
+	GammaBuilder_perror(ctx, KC_DWARN, _("depreciated %s"), msg);
 }
 knh_Term_t* ErrorFinalMethod(CTX ctx, knh_class_t cid, knh_methodn_t mn)
 {
-	return Gamma_perror(ctx, KC_ERR, _("%C.%M is final"), cid, mn);
+	return GammaBuilder_perror(ctx, KC_ERR, _("%C.%M is final"), cid, mn);
 }
 knh_Term_t* ErrorDifferentlyDefinedMethod(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn)
 {
-	return Gamma_perror(ctx, KC_TERROR, _("%C.%M must be defined the same"), mtd_cid, mn);
+	return GammaBuilder_perror(ctx, KC_TERROR, _("%C.%M must be defined the same"), mtd_cid, mn);
 }
 
 /* ------------------------------------------------------------------------ */
 
 knh_Term_t* ERROR_OnlyTopLevel(CTX ctx, const char* stmt)
 {
-	return Gamma_perror(ctx, KC_ERR, _("available only at the top level: %s"), stmt);
+	return GammaBuilder_perror(ctx, KC_ERR, _("available only at the top level: %s"), stmt);
 }
 knh_Term_t* ErrorUndefinedLabel(CTX ctx, knh_Term_t *tk)
 {
-	return Gamma_perror(ctx, KC_ERR, _("undefined label: %L"), tk);
+	return GammaBuilder_perror(ctx, KC_ERR, _("undefined label: %L"), tk);
 }
 void WarningAbstractMethod(CTX ctx, knh_Method_t *mtd)
 {
-	Gamma_perror(ctx, KC_DWARN, "abstract? %C.%M", (mtd)->cid, (mtd)->mn);
+	GammaBuilder_perror(ctx, KC_DWARN, "abstract? %C.%M", (mtd)->cid, (mtd)->mn);
 }
 void WARN_DividedByZero(CTX ctx)
 {
-	Gamma_perror(ctx, KC_DWARN, _("divided by zero"));
+	GammaBuilder_perror(ctx, KC_DWARN, _("divided by zero"));
 }
 
 void WarningUndefinedFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn)
 {
-	Gamma_perror(ctx, KC_DWARN, _("undefined formatter: %M for %C"), mn, cid);
+	GammaBuilder_perror(ctx, KC_DWARN, _("undefined formatter: %M for %C"), mn, cid);
 }
 
 void NoticeInliningMethod(CTX ctx, knh_Method_t *mtd)
 {
-	Gamma_perror(ctx, KC_DEBUG, _("inlining: %C.%M"), (mtd)->cid, (mtd)->mn);
+	GammaBuilder_perror(ctx, KC_DEBUG, _("inlining: %C.%M"), (mtd)->cid, (mtd)->mn);
 }
 
 /* ------------------------------------------------------------------------ */

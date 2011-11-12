@@ -2884,13 +2884,13 @@ static const knh_ClassDef_t StmtExprDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 
-/* Gamma */
+/* GammaBuilder */
 
-static void Gamma_init(CTX ctx, knh_RawPtr_t *o)
+static void GammaBuilder_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_GammaEX_t *b = knh_bodymalloc(ctx, Gamma);
-	knh_bzero(b, sizeof(knh_GammaEX_t));
-	b->cflag = FLAG_Gamma_InlineFunction | FLAG_Gamma_TailRecursion;
+	knh_GammaBuilderEX_t *b = knh_bodymalloc(ctx, GammaBuilder);
+	knh_bzero(b, sizeof(knh_GammaBuilderEX_t));
+	b->cflag = FLAG_GammaBuilder_InlineFunction | FLAG_GammaBuilder_TailRecursion;
 	KNH_INITv(b->mtd, KNH_NULL);
 	KNH_INITv(b->stmt, KNH_NULL);
 	KNH_INITv(b->lstacks, new_Array0(ctx, 0));
@@ -2898,13 +2898,13 @@ static void Gamma_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(b->errmsgs, new_Array0(ctx, 0));
 	KNH_INITv(b->finallyStmt, KNH_NULL);
 	o->rawptr = b;
-	KNH_INITv(((knh_Gamma_t*)o)->scr, ctx->script);
+	KNH_INITv(((knh_GammaBuilder_t*)o)->scr, ctx->script);
 }
 
-static void Gamma_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void GammaBuilder_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	size_t i;
-	knh_GammaEX_t *b = DP((knh_Gamma_t*)o);
+	knh_GammaBuilderEX_t *b = DP((knh_GammaBuilder_t*)o);
 	KNH_ENSUREREF(ctx, b->gcapacity * 3);
 	for(i = 0; i < b->gcapacity; i++) {
 		KNH_ADDREF(ctx, b->gf[i].tkIDX);
@@ -2916,25 +2916,25 @@ static void Gamma_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_ADDREF(ctx, (b->insts));
 	KNH_ADDREF(ctx, (b->errmsgs));
 	KNH_ADDREF(ctx, (b->finallyStmt));
-	KNH_ADDREF(ctx, ((knh_Gamma_t*)o)->scr);
+	KNH_ADDREF(ctx, ((knh_GammaBuilder_t*)o)->scr);
 	KNH_SIZEREF(ctx);
 }
 
-static void Gamma_free(CTX ctx, knh_RawPtr_t *o)
+static void GammaBuilder_free(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_GammaEX_t *b = DP((knh_Gamma_t*)o);
+	knh_GammaBuilderEX_t *b = DP((knh_GammaBuilder_t*)o);
 	if(b->gcapacity) {
 		KNH_FREE(ctx, b->gf, b->gcapacity * sizeof(knh_gamma2_t));
 	}
-	knh_bodyfree(ctx, b, Gamma);
+	knh_bodyfree(ctx, b, GammaBuilder);
 }
 
-static const knh_ClassDef_t GammaDef = {
-	Gamma_init, TODO_initcopy, Gamma_reftrace, Gamma_free,
+static const knh_ClassDef_t GammaBuilderDef = {
+	GammaBuilder_init, TODO_initcopy, GammaBuilder_reftrace, GammaBuilder_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"Gamma", CFLAG_Gamma, sizeof(knh_GammaEX_t), NULL,
+	"GammaBuilder", CFLAG_GammaBuilder, sizeof(knh_GammaBuilderEX_t), NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 

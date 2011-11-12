@@ -75,7 +75,7 @@ const char* TT__(knh_term_t tt);
 #define knh_Stmt_flag(ctx, stmt, text, flag)   knh_Stmt_flag_(ctx, stmt, STEXT(text), flag)
 #define knh_StmtMETA_is(ctx, stmt, anno)       StmtMETA_is_(ctx, stmt, STEXT(anno))
 
-#define Gamma_isCompilingFmt(ctx)    MN_isFMT((DP(ctx->gma)->mtd)->mn)
+#define GammaBuilder_isCompilingFmt(ctx)    MN_isFMT((DP(ctx->gma)->mtd)->mn)
 
 /* ------------------------------------------------------------------------ */
 

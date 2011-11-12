@@ -1153,16 +1153,8 @@ struct knh_Expr_t {
 	knh_expr_t expr; knh_type_t type;
 	knh_Token_t *token;
 	union {
-		struct knh_Array_t *cons;
+		struct knh_Array_t *cons;  // (expr).x
 		Object* data;
-//		struct knh_Array_t   *list;
-//		struct knh_String_t  *text;
-//		struct knh_Term_t   *token;
-//		struct knh_StmtExpr_t    *stmt;
-//		struct knh_Method_t  *mtd;
-//		struct knh_TypeMap_t *mpr;
-//		struct knh_Term_t   *tkIDX;
-//		struct knh_Int_t     *num;
 	};
 	union {
 		knh_short_t   index;
@@ -1361,25 +1353,25 @@ struct knh_StmtExpr_t {
 #define Stmt_isTyped(o)        ((o)->type != TYPE_var)
 
 /* ------------------------------------------------------------------------ */
-//## @Struct @Private class Gamma Object;
-//## flag Gamma EnforceConst  0 DP(%s)->flag is  set   * *;
-//## flag Gamma Quiet         1 DP(%s)->flag is  set   * *;
-//## flag Gamma Throwable     2 DP(%s)->flag is  set   * *;
-//## flag Gamma PROCEED       3 DP(%s)->flag has found * *;
-//## flag Gamma REGISTER      4 DP(%s)->flag has found * *;
-//## flag Gamma YEILD         5 DP(%s)->flag has found * *;
-//## flag Gamma FIELD         6 DP(%s)->flag has found * *;
-//## flag Gamma LexicalScope  7 DP(%s)->flag has found * *;
-//## flag Gamma SCRIPT        8 DP(%s)->flag has found * *;
+//## @Struct @Private class GammaBuilder Object;
+//## flag GammaBuilder EnforceConst  0 DP(%s)->flag is  set   * *;
+//## flag GammaBuilder Quiet         1 DP(%s)->flag is  set   * *;
+//## flag GammaBuilder Throwable     2 DP(%s)->flag is  set   * *;
+//## flag GammaBuilder PROCEED       3 DP(%s)->flag has found * *;
+//## flag GammaBuilder REGISTER      4 DP(%s)->flag has found * *;
+//## flag GammaBuilder YEILD         5 DP(%s)->flag has found * *;
+//## flag GammaBuilder FIELD         6 DP(%s)->flag has found * *;
+//## flag GammaBuilder LexicalScope  7 DP(%s)->flag has found * *;
+//## flag GammaBuilder SCRIPT        8 DP(%s)->flag has found * *;
 
-//## flag Gamma InlineFunction  0 DP(%s)->cflag is set * *;
-//## flag Gamma TailRecursion   1 DP(%s)->cflag is set * *;
+//## flag GammaBuilder InlineFunction  0 DP(%s)->cflag is set * *;
+//## flag GammaBuilder TailRecursion   1 DP(%s)->cflag is set * *;
 
 #ifndef K_GAMMAMAX
 #define K_GAMMAMAX 64
 #endif
 
-typedef struct knh_Gamma_t knh_Gamma_t;
+typedef struct knh_GammaBuilder_t knh_GammaBuilder_t;
 
 #ifdef K_INTERNAL
 typedef knh_short_t knh_gint_t;
@@ -1398,7 +1390,7 @@ typedef struct {
 #define K_GMASCR   ((ctx->gma)->scr)
 #define K_GMANS    ((ctx->gma)->scr->ns)
 
-typedef struct knh_GammaEX_t {
+typedef struct knh_GammaBuilderEX_t {
 	knh_flag_t                 flag;
 	knh_flag_t                 cflag;
 	struct knh_StmtExpr_t*         stmt;
@@ -1423,11 +1415,11 @@ typedef struct knh_GammaEX_t {
 	struct knh_StmtExpr_t          *finallyStmt;
 	struct knh_Array_t         *errmsgs;
 	void  *asm_data;           // what is this?
-} knh_GammaEX_t;
+} knh_GammaBuilderEX_t;
 
-struct knh_Gamma_t {
+struct knh_GammaBuilder_t {
 	knh_hObject_t h;
-	knh_GammaEX_t *b;
+	knh_GammaBuilderEX_t *b;
 	knh_uline_t uline;         // same as Term
 	knh_Script_t *scr;
 };
@@ -1612,7 +1604,7 @@ typedef struct knh_RawPtr_t {
 
 #define Method_isKonohaCode(mtd) ((mtd)->fcall_1 == knh_Fmethod_runVM)
 
-#define Gamma_hasJIT(ctx)     0
+#define GammaBuilder_hasJIT(ctx)     0
 #define CODE_VEXEC     (ctx->share->PRECOMPILED_VEXEC)
 #define CODE_LAUNCH    (ctx->share->PRECOMPILED_LAUNCH)
 #define CODE_FUNCCALL  (ctx->share->PRECOMPILED_FUNCCALL)

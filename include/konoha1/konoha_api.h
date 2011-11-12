@@ -298,7 +298,7 @@ void knh_PRINT(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_
 void knh_PRINTi(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_String_t *msg, knh_int_t n);
 void knh_PRINTf(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_String_t *msg, knh_float_t f);
 void knh_PRINTb(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh_String_t *msg, knh_bool_t b);
-void Gamma_shiftLocalScope(CTX ctx);
+void GammaBuilder_shiftLocalScope(CTX ctx);
 void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB, knh_Ftyping typing);
 KMETHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX);
 void knh_loadScriptSystemKonohaCode(CTX ctx);
@@ -422,7 +422,7 @@ knh_Term_t* new_TermTYPED(CTX ctx, knh_term_t tt, knh_type_t type, knh_short_t n
 knh_bool_t StmtMETA_is_(CTX ctx, knh_StmtExpr_t *stmt, knh_bytes_t name);
 knh_fieldn_t Term_fnq(CTX ctx, knh_Term_t *tk);
 knh_class_t knh_Term_cid(CTX ctx, knh_Term_t *tk, knh_type_t reqt);
-void knh_Gamma_init(CTX ctx);
+void knh_GammaBuilder_init(CTX ctx);
 knh_bool_t typingFunction(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB);
 void SCRIPT_typing(CTX ctx, knh_StmtExpr_t *stmt);
 knh_bool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB);

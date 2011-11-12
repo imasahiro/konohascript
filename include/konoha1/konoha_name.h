@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      772
+#define K_REVISION                      776
 #endif
-#define K_BUILDID                       1186
+#define K_BUILDID                       1187
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -433,13 +433,13 @@
 #define FLAG_StmtExpr           KNH_MAGICFLAG(CFLAG_StmtExpr)
 
 /* ------------------------------------------------------------------------ */
-/* Gamma */
-#define CLASS_Gamma             ((knh_class_t)47)
-#define IS_Gamma(o)             (O_cid(o) == CLASS_Gamma)
-#define IS_bGamma(o)            (O_bcid(o) == CLASS_Gamma)
-#define TYPE_Gamma              CLASS_Gamma
-#define CFLAG_Gamma             ((knh_flag_t)FLAG_Class_Private)
-#define FLAG_Gamma              KNH_MAGICFLAG(CFLAG_Gamma)
+/* GammaBuilder */
+#define CLASS_GammaBuilder      ((knh_class_t)47)
+#define IS_GammaBuilder(o)      (O_cid(o) == CLASS_GammaBuilder)
+#define IS_bGammaBuilder(o)     (O_bcid(o) == CLASS_GammaBuilder)
+#define TYPE_GammaBuilder       CLASS_GammaBuilder
+#define CFLAG_GammaBuilder      ((knh_flag_t)FLAG_Class_Private)
+#define FLAG_GammaBuilder       KNH_MAGICFLAG(CFLAG_GammaBuilder)
 
 /* ------------------------------------------------------------------------ */
 /* BasicBlock */
@@ -534,7 +534,7 @@
 #define USE_STRUCT_Lang
 #define USE_STRUCT_Term
 #define USE_STRUCT_StmtExpr
-#define USE_STRUCT_Gamma
+#define USE_STRUCT_GammaBuilder
 #define USE_STRUCT_BasicBlock
 #define USE_STRUCT_KonohaCode
 #define USE_STRUCT_Immutable
@@ -814,39 +814,39 @@
 #define FLAG_Stmt_Memo2 ((knh_flag_t)(1<<5))
 #define Stmt_isMemo2(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2))
 #define Stmt_setMemo2(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2,b)
-#define FLAG_Gamma_EnforceConst ((knh_flag_t)(1<<0))
-#define Gamma_isEnforceConst(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_EnforceConst))
-#define Gamma_setEnforceConst(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_EnforceConst,b)
-#define FLAG_Gamma_Quiet ((knh_flag_t)(1<<1))
-#define Gamma_isQuiet(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_Quiet))
-#define Gamma_setQuiet(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_Quiet,b)
-#define FLAG_Gamma_Throwable ((knh_flag_t)(1<<2))
-#define Gamma_isThrowable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_Throwable))
-#define Gamma_setThrowable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_Throwable,b)
-#define FLAG_Gamma_PROCEED ((knh_flag_t)(1<<3))
-#define Gamma_hasPROCEED(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_PROCEED))
-#define Gamma_foundPROCEED(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_PROCEED,b)
-#define FLAG_Gamma_REGISTER ((knh_flag_t)(1<<4))
-#define Gamma_hasREGISTER(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_REGISTER))
-#define Gamma_foundREGISTER(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_REGISTER,b)
-#define FLAG_Gamma_YEILD ((knh_flag_t)(1<<5))
-#define Gamma_hasYEILD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_YEILD))
-#define Gamma_foundYEILD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_YEILD,b)
-#define FLAG_Gamma_FIELD ((knh_flag_t)(1<<6))
-#define Gamma_hasFIELD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_FIELD))
-#define Gamma_foundFIELD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_FIELD,b)
-#define FLAG_Gamma_LexicalScope ((knh_flag_t)(1<<7))
-#define Gamma_hasLexicalScope(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_LexicalScope))
-#define Gamma_foundLexicalScope(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_LexicalScope,b)
-#define FLAG_Gamma_SCRIPT ((knh_flag_t)(1<<8))
-#define Gamma_hasSCRIPT(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Gamma_SCRIPT))
-#define Gamma_foundSCRIPT(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Gamma_SCRIPT,b)
-#define FLAG_Gamma_InlineFunction ((knh_flag_t)(1<<0))
-#define Gamma_isInlineFunction(o)  (TFLAG_is(knh_flag_t,DP(o)->cflag,FLAG_Gamma_InlineFunction))
-#define Gamma_setInlineFunction(o,b) TFLAG_set(knh_flag_t,DP(o)->cflag,FLAG_Gamma_InlineFunction,b)
-#define FLAG_Gamma_TailRecursion ((knh_flag_t)(1<<1))
-#define Gamma_isTailRecursion(o)  (TFLAG_is(knh_flag_t,DP(o)->cflag,FLAG_Gamma_TailRecursion))
-#define Gamma_setTailRecursion(o,b) TFLAG_set(knh_flag_t,DP(o)->cflag,FLAG_Gamma_TailRecursion,b)
+#define FLAG_GammaBuilder_EnforceConst ((knh_flag_t)(1<<0))
+#define GammaBuilder_isEnforceConst(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_EnforceConst))
+#define GammaBuilder_setEnforceConst(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_EnforceConst,b)
+#define FLAG_GammaBuilder_Quiet ((knh_flag_t)(1<<1))
+#define GammaBuilder_isQuiet(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Quiet))
+#define GammaBuilder_setQuiet(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Quiet,b)
+#define FLAG_GammaBuilder_Throwable ((knh_flag_t)(1<<2))
+#define GammaBuilder_isThrowable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Throwable))
+#define GammaBuilder_setThrowable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Throwable,b)
+#define FLAG_GammaBuilder_PROCEED ((knh_flag_t)(1<<3))
+#define GammaBuilder_hasPROCEED(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_PROCEED))
+#define GammaBuilder_foundPROCEED(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_PROCEED,b)
+#define FLAG_GammaBuilder_REGISTER ((knh_flag_t)(1<<4))
+#define GammaBuilder_hasREGISTER(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_REGISTER))
+#define GammaBuilder_foundREGISTER(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_REGISTER,b)
+#define FLAG_GammaBuilder_YEILD ((knh_flag_t)(1<<5))
+#define GammaBuilder_hasYEILD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_YEILD))
+#define GammaBuilder_foundYEILD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_YEILD,b)
+#define FLAG_GammaBuilder_FIELD ((knh_flag_t)(1<<6))
+#define GammaBuilder_hasFIELD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_FIELD))
+#define GammaBuilder_foundFIELD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_FIELD,b)
+#define FLAG_GammaBuilder_LexicalScope ((knh_flag_t)(1<<7))
+#define GammaBuilder_hasLexicalScope(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_LexicalScope))
+#define GammaBuilder_foundLexicalScope(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_LexicalScope,b)
+#define FLAG_GammaBuilder_SCRIPT ((knh_flag_t)(1<<8))
+#define GammaBuilder_hasSCRIPT(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_SCRIPT))
+#define GammaBuilder_foundSCRIPT(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_SCRIPT,b)
+#define FLAG_GammaBuilder_InlineFunction ((knh_flag_t)(1<<0))
+#define GammaBuilder_isInlineFunction(o)  (TFLAG_is(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_InlineFunction))
+#define GammaBuilder_setInlineFunction(o,b) TFLAG_set(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_InlineFunction,b)
+#define FLAG_GammaBuilder_TailRecursion ((knh_flag_t)(1<<1))
+#define GammaBuilder_isTailRecursion(o)  (TFLAG_is(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_TailRecursion))
+#define GammaBuilder_setTailRecursion(o,b) TFLAG_set(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_TailRecursion,b)
 #define FLAG_BasicBlock_Visited FLAG_Object_Local1
 #define BasicBlock_isVisited(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_BasicBlock_Visited))
 #define BasicBlock_setVisited(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_BasicBlock_Visited,b)

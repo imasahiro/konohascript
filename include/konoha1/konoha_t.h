@@ -579,6 +579,13 @@ typedef void *(*knh_Fthread)(void *);
 		struct knh_Context_t           *cx;\
 		struct knh_Script_t            *scr;\
 		struct knh_Assurance_t         *as;\
+		struct knh_Token_t             *tk;\
+		struct knh_Stmt_t              *stmt;\
+		struct knh_Expr_t              *expr;\
+		struct knh_Block_t             *bk;\
+		struct knh_Lang_t              *lang;\
+		struct knh_Gamma_t             *gma;\
+		struct knh_Build_t             *bui;\
 		knh_int_t     dummy_ivalue;\
 		knh_float_t   dummy_fvalue \
 
@@ -1147,7 +1154,7 @@ typedef struct knh_context_t {
 	struct knh_OutputStream_t*   err;
 	struct knh_Bytes_t*          bufa;
 	struct knh_OutputStream_t*   bufw;
-	struct knh_Gamma_t*          gma;
+	struct knh_GammaBuilder_t*          gma;
 
 #ifndef K_USING_STRINGPOOL
 	struct knh_DictMap_t*        symbolDictMap;

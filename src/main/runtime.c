@@ -407,9 +407,9 @@ static void shell_restart(CTX ctx)
 //	KNH_SETv(ctx, ((knh_share_t*)ctx->share)->rootns, ns);
 //	KNH_SETv(ctx, ((knh_context_t*)ctx)->script, new_(Script));
 //	{
-//		knh_Gamma_t *newgma = new_(Gamma);
+//		knh_GammaBuilder_t *newgma = new_(GammaBuilder);
 //		KNH_SETv(ctx, ((knh_context_t*)ctx)->gma, newgma);
-//		KNH_INITv(DP(newgma)->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "Gamma.symbolDictMap"));
+//		KNH_INITv(DP(newgma)->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "GammaBuilder.symbolDictMap"));
 //		KNH_INITv(DP(newgma)->constPools, new_Array0(ctx, 0));
 //		KNH_INITv(DP(newgma)->script, ctx->script);
 //	}

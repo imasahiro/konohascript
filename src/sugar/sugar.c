@@ -9,7 +9,7 @@
  * If you want to use the latter license, please contact us.
  *
  * (1) GNU General Public License 3.0 (with K_UNDER_GPL)
- * (2) Konoha Non-Disclosure License 1.0
+ * (2) Konoha Non-Disclosure License 1.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -168,6 +168,81 @@ static KMETHOD Lang_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 	parse(ctx, &tenvbuf, 0);
 }
 
+// @Static Block Lang.newBlock(String script, int uline, NameSpace _)
+
+static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Lang_t *lang = ctx->share->corelang;
+	klr_setesp(ctx, sfp+5);
+	knh_Array_t *a = new_Array(ctx, CLASS_Token, 0);
+	KNH_SETv(ctx, sfp[4].o, a);
+	tenv_t tenvbuf = {
+		sfp[2].ivalue == 0 ? 1 : (knh_uline_t)sfp[2].ivalue,
+		a,
+		{S_totext(sfp[1].s)}, S_totext(sfp[1].s),
+		ctx->bufa,
+		BA_size(ctx->bufa),
+		3,/*tabsize*/
+		lang,
+	};
+	parse(ctx, &tenvbuf, 0);
+	RETURN_(new_Block(ctx, a, 0, knh_Array_size(a), lang, sfp[3].ns));
+}
+
+//// boolean Lang.evalSugarDecl(Stmt stmt, NameSpace _);
+//
+//static KMETHOD Lang_evalSugarDecl(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Stmt_t *stmt = sfp[1].stmt;
+//	knh_String_t *key = Stmt_getStringNULL(ctx, "sugarname");
+//	knh_Array_t *a = Stmt_getConst(ctx, "tokens");
+//	knh_Sugar_t *sgr;
+//
+//}
+//
+//// void boolean Lang_evalBlock(Block block, NameSpace _);
+//
+//static KMETHOD Block_eval(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Lang_t *lang = ctx->share->corelang;
+//	knh_Block_t *bk = sfp[1].bk;
+//	size_t i;
+//	for(i = 0; i < knh_Array_size(bk->blocks); i++) {
+//		knh_Stmt_t *stmt = (knh_Stmt_t*)bk->blocks->list[i];
+//		knh_Method_t *mtd = NULL;//Lang_getEvalNULL(ctx, lang, stmt->key);
+//		if(mtd != NULL) {
+//
+//		}
+//	}
+//	RETURNb_(1);
+//}
+//
+//// void boolean Block_typeCheck(Gamma gma);
+//
+//static KMETHOD Block_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	knh_Lang_t *lang = ctx->share->corelang;
+//	knh_Block_t *bk = sfp[0].bk;
+//	size_t i;
+//	for(i = 0; i < knh_Array_size(bk->blocks); i++) {
+//		knh_Stmt_t *stmt = (knh_Stmt_t*)bk->blocks->list[i];
+//		knh_Method_t *mtd = NULL;//Lang_getTypeCheckNULL(ctx, lang, stmt->key);
+//		if(mtd != NULL) {
+//
+//		}
+//	}
+//	RETURNb_(1);
+//}
+//
+//// void boolean Block_build(Builder build);
+//
+//static KMETHOD Block_build(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	RETURNb_(1);
+//}
+
+
+
 static KMETHOD Token_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
@@ -217,6 +292,7 @@ static KMETHOD Token_info(CTX ctx, knh_sfp_t *sfp _RIX)
 static knh_FuncData_t FuncData[] = {
 	FuncData(String_tokenize),
 	FuncData(Lang_tokenize),
+	FuncData(Lang_newBlock),
 	FuncData(Token_getLine),
 	FuncData(Token_getText),
 	FuncData(Token_getType),
@@ -224,6 +300,7 @@ static knh_FuncData_t FuncData[] = {
 	FuncData(Token_error),
 	FuncData(Token_warn),
 	FuncData(Token_info),
+
 	{NULL, NULL},
 };
 

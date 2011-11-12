@@ -299,7 +299,9 @@ static size_t addQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 		}
 		if(ch == quote) {
 			if(!isTriple || (pos-3 >= tok_start && tenv->line[pos-2] == quote && tenv->line[pos-3] == quote)) {
-				knh_String_t *text = new_String2(ctx, CLASS_String, BA_totext(tenv->buf), BA_size(tenv->buf), 0);
+				const char *s1 = BA_totext(tenv->buf) + tenv->bufhead;
+				size_t len = BA_size(tenv->buf) - tenv->bufhead;
+				knh_String_t *text = new_String2(ctx, CLASS_String, s1, len, 0);
 				knh_token_t ttype = (quote == '"') ? TK_TEXT : TK_STEXT;
 				addToken(ctx, tenv, new_Token(ctx, ttype, uline, lpos(tenv, qs), text, DUMMY));
 				knh_Bytes_clear(tenv->buf, tenv->bufhead);
@@ -346,6 +348,7 @@ static size_t addRawQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 
 static size_t checkRegex(CTX ctx, tenv_t *tenv, size_t pos)
 {
+	DBG_ASSERT(pos > 0);
 	if(pos == 1) return 1;
 	int i, ch,  prev = tenv->line[pos-2], next = tenv->line[pos];
 	for(i = pos - 2; i >= 0; i--) {
@@ -410,6 +413,7 @@ static int addOperator(CTX ctx, tenv_t *tenv, int tok_start)
 			case '^': case '!': case '~': case '|':
 			continue;
 		}
+		break;
 	}
 	{
 		const char *s = tenv->s + tok_start;
@@ -474,14 +478,19 @@ static size_t addNumber(CTX ctx, tenv_t *tenv, int tok_start)
 			continue;
 		}
 		if((ch == 'e' || ch == 'E') && (tenv->line[pos] == '+' || tenv->line[pos] =='-')) {
+			knh_Bytes_putc(ctx, tenv->buf, ch);
+			knh_Bytes_putc(ctx, tenv->buf, tenv->line[pos]);
 			pos++;
+			continue;
 		}
 		if(!isalnum(ch)) break;
 		knh_Bytes_putc(ctx, tenv->buf, ch);
 	}
 	L_NUM: {
 		const char *s = tenv->s + tok_start;
-		knh_String_t *text = new_String2(ctx, CLASS_String, BA_totext(tenv->buf), BA_size(tenv->buf), K_SPOLICY_ASCII);
+		const char *s1 = BA_totext(tenv->buf) + tenv->bufhead;
+		size_t len = BA_size(tenv->buf) - tenv->bufhead;
+		knh_String_t *text = new_String2(ctx, CLASS_String, s1, len, K_SPOLICY_ASCII);
 		int ttype = (dot == 0) ? TK_INT : TK_FLOAT;
 		addToken(ctx, tenv, new_Token(ctx, ttype, tenv->uline, lpos(tenv, s), text, DUMMY));
 		knh_Bytes_clear(tenv->buf, tenv->bufhead);
@@ -512,6 +521,9 @@ static size_t addWhiteSpace(CTX ctx, tenv_t *tenv, size_t pos)
 #define _UNFOLD      (1)
 #define _WHITESPACE  (1<<1)
 #define _INDENT      (1<<2)
+
+#define _TOPLEVEL    _INDENT|_UNFOLD
+#define _METHOD      _INDENT
 
 static size_t addNewLine(CTX ctx, tenv_t *tenv, size_t pos, int pol)
 {
@@ -1139,7 +1151,7 @@ static knh_Expr_t* matchName(CTX ctx, toks_t *toks)
 static knh_Expr_t* matchType(CTX ctx, toks_t *toks)
 {
 	knh_Token_t *tk0 = tkN(toks, 0);
-	knh_Expr_t *expr;
+	knh_Expr_t *expr = NULL;
 	if(tk0->token == TK_USYMBOL) {
 		knh_class_t cid = knh_NameSpace_getcid(ctx, toks->ns, S_tobytes(tk0->text));
 		if(cid != CLASS_unknown) {
@@ -1148,9 +1160,9 @@ static knh_Expr_t* matchType(CTX ctx, toks_t *toks)
 			incN(toks, 1);
 		}
 	}
-//	if(expr != NULL) {
-//
-//	}
+	if(expr != NULL) {
+
+	}
 	return expr;
 }
 
@@ -1313,17 +1325,33 @@ static knh_Expr_t* matchExpr(CTX ctx, toks_t *toks)
 
 static knh_Expr_t* matchBlock(CTX ctx, toks_t *toks)
 {
+	toks_t sub;
 	knh_Token_t *tk0 = tkN(toks, 0);
+	knh_Block_t *bk = NULL;
 	if(tk0->topch == '{') {
-		toks_t sub;
 		if(subBetween(&sub, toks, '{', '}')) {
-
+			bk = new_Block(ctx, toks->list, sub.cur, sub.eol, toks->lang, toks->ns);
 		}
 	}
-	if(tk0->token == TK_CODE) {
-
+	else if(tk0->token == TK_CODE) {
+		DBG_P("@@='''%s'''", S_totext(tk0->text));
+		size_t toks_listsize = knh_Array_size(toks->list);
+		tenv_t tenvbuf = {
+			tk0->uline,
+			toks->list,
+			{S_totext(tk0->text)},
+			S_totext(tk0->text),
+			ctx->bufa,
+			BA_size(ctx->bufa),
+			3,
+			toks->lang,
+			1
+		};
+		parse(ctx, &tenvbuf, _METHOD);
+		bk = new_Block(ctx, toks->list, toks_listsize, knh_Array_size(toks->list), toks->lang, toks->ns);
+		knh_Array_clear(ctx, toks->list, toks_listsize);
 	}
-	return NULL;
+	return (knh_Expr_t*)bk;
 }
 
 /* ------------------------------------------------------------------------ */

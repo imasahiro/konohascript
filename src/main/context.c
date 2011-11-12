@@ -324,7 +324,7 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptSystemData(ctx, share->rootns, kapi);
 	knh_System_initPath(ctx);                 // require rootns
 	KNH_INITv(ctx->script, new_(Script));     // require rootns
-	KNH_INITv(ctx->gma, new_(Gamma));         // require script
+	KNH_INITv(ctx->gma, new_(GammaBuilder));         // require script
 	knh_loadScriptSystemKonohaCode(ctx);      // require gamma
 	loadPolicy(ctx); // added by Wakamori
 	knh_loadScriptSystemMethod(ctx, kapi);
@@ -332,7 +332,7 @@ static knh_context_t* new_RootContext(void)
 	knh_loadScriptTermData(ctx);
 	knh_loadScriptAliasTermData(ctx);
 	share->ctx0 = ctx;
-	knh_Gamma_init(ctx);  // initalize gamma->gf, reported by uh
+	knh_GammaBuilder_init(ctx);  // initalize gamma->gf, reported by uh
 	knh_initBuiltInPackage(ctx, knh_getLoaderAPI());
 	share->contextCounter = 1;
 	share->threadCounter = 1;
@@ -359,8 +359,8 @@ knh_context_t *new_ThreadContext(CTX ctx)
 	newCtx->parent = WCTX(ctx);
 	newCtx->freeObjectList = NULL;
 	newCtx->freeObjectTail = NULL;
-	KNH_INITv(newCtx->gma, new_(Gamma));
-	knh_Gamma_init(newCtx);
+	KNH_INITv(newCtx->gma, new_(GammaBuilder));
+	knh_GammaBuilder_init(newCtx);
 	CommonContext_init(ctx, newCtx);
 	knh_stack_initexpand(newCtx, NULL, K_STACKSIZE);
 

@@ -41,7 +41,7 @@ extern "C" {
 
 static void Tn_asm(CTX ctx, knh_StmtExpr_t *stmt, size_t n, int espidx);
 static void BLOCK_asm(CTX ctx, knh_StmtExpr_t *stmtH);
-#define GammaLabel(ctx, n)   (knh_BasicBlock_t*)knh_Array_n(DP(ctx->gma)->lstacks, n)
+#define GammaBuilderLabel(ctx, n)   (knh_BasicBlock_t*)knh_Array_n(DP(ctx->gma)->lstacks, n)
 #define HAS_OPCODE(C)     1
 
 knh_BasicBlock_t* new_BasicBlockLABEL(CTX ctx)
@@ -63,12 +63,12 @@ knh_BasicBlock_t* new_BasicBlockLABEL(CTX ctx)
 
 #define ASM(T, ...) { \
 		klr_##T##_t op_ = {TADDR, OPCODE_##T, ASMLINE, ## __VA_ARGS__}; \
-		Gamma_asm(ctx, (knh_opline_t*)(&op_), sizeof(klr_##T##_t)); \
+		GammaBuilder_asm(ctx, (knh_opline_t*)(&op_), sizeof(klr_##T##_t)); \
 	}\
 
 #define ASMop(T, OP, ...) { \
 		klr_##T##_t op_ = {TADDR, OP, ASMLINE, ## __VA_ARGS__}; \
-		Gamma_asm(ctx, (knh_opline_t*)(&op_), sizeof(klr_##T##_t)); \
+		GammaBuilder_asm(ctx, (knh_opline_t*)(&op_), sizeof(klr_##T##_t)); \
 	}\
 
 #define ASMbranch(T, lb, ...) { \
@@ -131,7 +131,7 @@ void knh_BasicBlock_add_(CTX ctx, knh_BasicBlock_t *bb, knh_ushort_t line, knh_o
 static void _bBOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
 static void _BOX(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct);
 
-static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t opsize)
+static void GammaBuilder_asm(CTX ctx, knh_opline_t *op, size_t opsize)
 {
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	DBG_ASSERT(op->opcode != OPCODE_JMPF);
@@ -158,7 +158,7 @@ static void Gamma_asm(CTX ctx, knh_opline_t *op, size_t opsize)
 	knh_BasicBlock_add_(ctx, bb, ULINE_line(ctx->gma->uline), op, opsize);
 }
 
-static int Gamma_asmJMPF(CTX ctx, klr_JMPF_t *op)
+static int GammaBuilder_asmJMPF(CTX ctx, klr_JMPF_t *op)
 {
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	DBG_ASSERT(op->opcode == OPCODE_JMPF);
@@ -668,7 +668,7 @@ static void Method_threadCode(CTX ctx, knh_Method_t *mtd, knh_KonohaCode_t *kcod
 	}
 }
 
-static void Gamma_compile(CTX ctx, knh_BasicBlock_t *bb, knh_BasicBlock_t *bbRET)
+static void GammaBuilder_compile(CTX ctx, knh_BasicBlock_t *bb, knh_BasicBlock_t *bbRET)
 {
 	knh_Method_t *mtd = DP(ctx->gma)->mtd;
 	BasicBlock_strip0(ctx, bb);
@@ -713,7 +713,7 @@ static knh_BasicBlock_t* ASM_JMPF(CTX ctx, int flocal, knh_BasicBlock_t *lbJUMP)
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	knh_BasicBlock_t *lbNEXT = new_BasicBlockLABEL(ctx);
 	klr_JMPF_t op = {TADDR, OPCODE_JMPF, ASMLINE, NULL, NC_(flocal)};
-	if(Gamma_asmJMPF(ctx, &op)) {
+	if(GammaBuilder_asmJMPF(ctx, &op)) {
 		bb->jumpNC = lbNEXT;
 		bb->nextNC = lbJUMP;
 	}
@@ -731,7 +731,7 @@ static void ASM_BRANCH_(CTX ctx, knh_BasicBlock_t *jump, knh_opline_t *op, size_
 {
 	knh_BasicBlock_t *bb = DP(ctx->gma)->bbNC;
 	knh_BasicBlock_t *newbb = new_BasicBlockLABEL(ctx);
-	Gamma_asm(ctx, op, size);
+	GammaBuilder_asm(ctx, op, size);
 	bb->jumpNC = jump;  DP(jump)->incoming += 1;
 	bb->nextNC = newbb;  DP(newbb)->incoming += 1;
 	DP(ctx->gma)->bbNC = newbb;
@@ -746,7 +746,7 @@ static void ASM_RET(CTX ctx, knh_StmtExpr_t *stmt)
 //		}
 //	}
 //	{
-		knh_BasicBlock_t *bbEND = GammaLabel(ctx,  2);
+		knh_BasicBlock_t *bbEND = GammaBuilderLabel(ctx,  2);
 		ASM_JMP(ctx, bbEND);
 //	}
 }
@@ -954,7 +954,7 @@ static knh_Fmethod SYSVAL_MTD[] = {
 };
 
 /* ------------------------------------------------------------------------ */
-/* [Gamma] */
+/* [GammaBuilder] */
 
 #define TT_isSFPIDX(tk)   (TT_(tk) == TT_LVAR || TT_(tk) == TT_FVAR)
 #define Term_index(tk)   Term_index_(ctx, tk)
@@ -1290,8 +1290,8 @@ static int CALLPARAMs_asm(CTX ctx, knh_StmtExpr_t *stmt, size_t s, int local, kn
 		Tn_asm(ctx, stmt, i, local + i + (K_CALLDELTA-1));
 	}
 //	// TODO(@imasahiro)
-//	if(Stmt_isTAILRECURSION(stmt) && Gamma_isTailRecursion(ctx->gma)) {
-//		knh_BasicBlock_t *lbBEGIN = GammaLabel(ctx, 1);
+//	if(Stmt_isTAILRECURSION(stmt) && GammaBuilder_isTailRecursion(ctx->gma)) {
+//		knh_BasicBlock_t *lbBEGIN = GammaBuilderLabel(ctx, 1);
 //		for(i = s; i < DP(stmt)->size; i++) {
 //			knh_type_t reqt = Tn_type(stmt, i); //Tn_ptype(ctx, stmt, i, cid, mtd);
 //			if(IS_Tunbox(reqt)) {
@@ -1361,7 +1361,7 @@ static void ASM_CALL(CTX ctx, int espidx, knh_type_t rtype, knh_Method_t *mtd, i
 	DBG_ASSERT(IS_Method(mtd));
 	if(Method_isFinal(mtd) || isStatic) {
 		if(Method_isKonohaCode(mtd) || DP(ctx->gma)->mtd == mtd) {
-			if(Gamma_isInlineFunction(ctx->gma) && DP(ctx->gma)->mtd != mtd) {
+			if(GammaBuilder_isInlineFunction(ctx->gma) && DP(ctx->gma)->mtd != mtd) {
 				knh_KonohaCode_t *kcode = DP(mtd)->kcode;
 				size_t isize = kcode->codesize / sizeof(knh_opline_t);
 				if(isize < K_INLINECODE) {
@@ -1944,7 +1944,7 @@ static void LETEXPR_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 
 static KMETHOD Fmethod_empty(CTX ctx, knh_sfp_t *sfp _RIX) {}
 
-static knh_Method_t* Gamma_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
+static knh_Method_t* GammaBuilder_getFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn0)
 {
 	knh_methodn_t mn = mn0;
 	knh_NameSpace_t *ns = K_GMANS;
@@ -2049,7 +2049,7 @@ static void SEND_asm(CTX ctx, knh_StmtExpr_t *stmt, int espidx)
 				DBG_ASSERT(mtd != NULL);
 			}
 			else {
-				mtd = Gamma_getFmt(ctx, cid, MN__s);
+				mtd = GammaBuilder_getFmt(ctx, cid, MN__s);
 			}
 			ASM(SCALL, -1, SFP_(thisidx), ESP_((thisidx-K_CALLDELTA), 1), mtd);
 		}
@@ -2115,7 +2115,7 @@ static void Tn_asm(CTX ctx, knh_StmtExpr_t *stmt, size_t n, int espidx)
 /* ------------------------------------------------------------------------ */
 /* [LABEL]  */
 
-static void Gamma_pushLABEL(CTX ctx, knh_StmtExpr_t *stmt, knh_BasicBlock_t *lbC, knh_BasicBlock_t *lbB)
+static void GammaBuilder_pushLABEL(CTX ctx, knh_StmtExpr_t *stmt, knh_BasicBlock_t *lbC, knh_BasicBlock_t *lbB)
 {
 	knh_Object_t *tkL = NULL;
 	if(IS_Map(DP(stmt)->metaDictCaseMap)) {
@@ -2130,7 +2130,7 @@ static void Gamma_pushLABEL(CTX ctx, knh_StmtExpr_t *stmt, knh_BasicBlock_t *lbC
 	knh_Array_add(ctx, DP(ctx->gma)->lstacks, KNH_NULL);
 }
 
-static void Gamma_popLABEL(CTX ctx)
+static void GammaBuilder_popLABEL(CTX ctx)
 {
 	knh_Array_t *a = DP(ctx->gma)->lstacks;
 	DBG_ASSERT(knh_Array_size(a) - 4 >= 0);
@@ -2253,7 +2253,7 @@ static void SWITCH_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t *lbNEXT = NULL;
-	Gamma_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
+	GammaBuilder_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
 	ASM_LABEL(ctx, lbCONTINUE);
 	//switch(it)
 	Tn_asm(ctx, stmt, 0, Term_index(tkIT));
@@ -2285,7 +2285,7 @@ static void SWITCH_asm(CTX ctx, knh_StmtExpr_t *stmt)
 		stmtCASE = DP(stmtCASE)->nextNULL;
 	}
 	ASM_LABEL(ctx, lbBREAK);
-	Gamma_popLABEL(ctx);
+	GammaBuilder_popLABEL(ctx);
 }
 
 static void ASM_JUMPLABEL(CTX ctx, knh_StmtExpr_t *stmt, int delta)
@@ -2307,14 +2307,14 @@ static void ASM_JUMPLABEL(CTX ctx, knh_StmtExpr_t *stmt, int delta)
 			for(i = s - 4; i >= 0; i -= 4) {
 				knh_Term_t *tkSTACK = DP(ctx->gma)->lstacks->terms[i];
 				if(IS_NOTNULL(tkSTACK) && S_equals((tkSTACK)->text, lname)) {
-					lbBLOCK = GammaLabel(ctx,  i + delta);
+					lbBLOCK = GammaBuilderLabel(ctx,  i + delta);
 					goto L_JUMP;
 				}
 			}
 			ErrorUndefinedLabel(ctx, tkL);
 			return;
 		}
-		lbBLOCK = GammaLabel(ctx,  s - 4 + delta);
+		lbBLOCK = GammaBuilderLabel(ctx,  s - 4 + delta);
 		L_JUMP:;
 		ASM_JMP(ctx, lbBLOCK);
 	}
@@ -2334,7 +2334,7 @@ static void WHILE_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
-	Gamma_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
+	GammaBuilder_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
 	ASM_LABEL(ctx, lbCONTINUE);
 	ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
 	if(!Tn_isTRUE(stmt, 0)) {
@@ -2344,21 +2344,21 @@ static void WHILE_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	Tn_asmBLOCK(ctx, stmt, 1);
 	ASM_JMP(ctx, lbCONTINUE);
 	ASM_LABEL(ctx, lbBREAK);
-	Gamma_popLABEL(ctx);
+	GammaBuilder_popLABEL(ctx);
 }
 
 static void DO_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
-	Gamma_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
+	GammaBuilder_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
 	ASM_LABEL(ctx, lbCONTINUE);
 	ASM_SAFEPOINT(ctx, DP(stmt)->espidx);
 	Tn_asmBLOCK(ctx, stmt, 0);
 	Tn_JMPIF(ctx, stmt, 1, 0/*FALSE*/, lbBREAK, DP(stmt)->espidx);
 	ASM_JMP(ctx, lbCONTINUE);
 	ASM_LABEL(ctx, lbBREAK);
-	Gamma_popLABEL(ctx);
+	GammaBuilder_popLABEL(ctx);
 }
 
 static void FOR_asm(CTX ctx, knh_StmtExpr_t *stmt)
@@ -2366,7 +2366,7 @@ static void FOR_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_BasicBlock_t* lbCONTINUE = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbBREAK = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbREDO = new_BasicBlockLABEL(ctx);
-	Gamma_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
+	GammaBuilder_pushLABEL(ctx, stmt, lbCONTINUE, lbBREAK);
 	/* i = 1 part */
 	Tn_asmBLOCK(ctx, stmt, 0);
 	ASM_JMP(ctx, lbREDO);
@@ -2382,7 +2382,7 @@ static void FOR_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	Tn_asmBLOCK(ctx, stmt, 3);
 	ASM_JMP(ctx, lbCONTINUE);
 	ASM_LABEL(ctx, lbBREAK);
-	Gamma_popLABEL(ctx);
+	GammaBuilder_popLABEL(ctx);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2391,7 +2391,7 @@ static void FOREACH_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_BasicBlock_t* lbC = new_BasicBlockLABEL(ctx);
 	knh_BasicBlock_t* lbB = new_BasicBlockLABEL(ctx);
-	Gamma_pushLABEL(ctx, stmt, lbC, lbB);
+	GammaBuilder_pushLABEL(ctx, stmt, lbC, lbB);
 	{
 		knh_Term_t *tkN = tkNN(stmt, 0);
 		int varidx = Term_index(tkN);
@@ -2405,15 +2405,15 @@ static void FOREACH_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	ASM_JMP(ctx, lbC);
 	/* end */
 	ASM_LABEL(ctx, lbB);
-	Gamma_popLABEL(ctx);
+	GammaBuilder_popLABEL(ctx);
 }
 
 /* ------------------------------------------------------------------------ */
 /* [TRY] */
 
-#define Gamma_inTry(ctx)  IS_StmtExpr(DP(ctx->gma)->finallyStmt)
+#define GammaBuilder_inTry(ctx)  IS_StmtExpr(DP(ctx->gma)->finallyStmt)
 
-static void Gamma_setFINALLY(CTX ctx, knh_StmtExpr_t *stmt)
+static void GammaBuilder_setFINALLY(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	if(IS_NOTNULL(stmt)) {
 		if(IS_NOTNULL(DP(ctx->gma)->finallyStmt)) {
@@ -2441,12 +2441,12 @@ static void TRY_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_BasicBlock_t*  lbFINALLY = new_BasicBlockLABEL(ctx);
 	knh_Term_t *tkIT = Tn_it(stmt, 3/*HDR*/);
 	knh_StmtExpr_t *stmtCATCH = stmtNN(stmt, 1);
-	Gamma_setFINALLY(ctx, stmtNN(stmt, 2/*finally*/));
+	GammaBuilder_setFINALLY(ctx, stmtNN(stmt, 2/*finally*/));
 	/* try { */
 	ASMbranch(TRY, lbCATCH, OC_((tkIT)->index));
 	Tn_asmBLOCK(ctx, stmt, 0/*try*/);
 	ASM_JMP(ctx, lbFINALLY);
-	Gamma_setFINALLY(ctx, (knh_StmtExpr_t*)KNH_NULL); // InTry
+	GammaBuilder_setFINALLY(ctx, (knh_StmtExpr_t*)KNH_NULL); // InTry
 	/* catch */
 	ASM_LABEL(ctx, lbCATCH);
 	DBG_P("stmtCATCH=%s", CLASS__(O_cid(stmtCATCH)));
@@ -2485,7 +2485,7 @@ static void ASSURE_asm(CTX ctx, knh_StmtExpr_t *stmt)
 static void THROW_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	int start = 0, espidx = DP(stmt)->espidx;
-	if(Gamma_inTry(ctx)) {
+	if(GammaBuilder_inTry(ctx)) {
 		start = espidx;
 	}
 	Tn_asm(ctx, stmt, 0, espidx);
@@ -2522,7 +2522,7 @@ static void ERR_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	DBG_ASSERT(DP(stmt)->size > 0);
 	DBG_ASSERT(TT_(tkERR) == TT_ERR);
-	if(Gamma_inTry(ctx)) start = espidx;
+	if(GammaBuilder_inTry(ctx)) start = espidx;
 	DBG_ASSERT(IS_String((tkERR)->text));
 	knh_write_ascii(ctx, cwb->w, "Script!!: ");
 	knh_write(ctx, cwb->w, S_tobytes(tkERR->text));
@@ -2808,7 +2808,7 @@ static void _THCODE(CTX ctx, knh_opline_t *pc, void **codeaddr)
 #endif
 }
 
-void Gamma_shiftLocalScope(CTX ctx)
+void GammaBuilder_shiftLocalScope(CTX ctx)
 {
 	knh_gint_t shift = DP(ctx->gma)->fvarsize;
 	size_t i;
@@ -2842,9 +2842,9 @@ static void Method_compile(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
 	knh_BasicBlock_t* lbEND = new_BasicBlockLABEL(ctx);
 	SP(ctx->gma)->uline = SP(stmtB)->uline;
 	DP(ctx->gma)->bbNC = lbINIT;
-	Gamma_pushLABEL(ctx, stmtB, lbBEGIN, lbEND);
+	GammaBuilder_pushLABEL(ctx, stmtB, lbBEGIN, lbEND);
 	ASM(THCODE, _THCODE, ULINE_uri(SP(stmtB)->uline));
-	if(Method_isStatic(mtd) && Gamma_hasFIELD(ctx->gma)) {
+	if(Method_isStatic(mtd) && GammaBuilder_hasFIELD(ctx->gma)) {
 		ASM(TR, OC_(0), SFP_(0), RIX_(0), ClassTBL(DP(ctx->gma)->this_cid), _NULVAL);
 	}
 	ASM_LABEL(ctx, lbBEGIN);
@@ -2887,9 +2887,9 @@ static void Method_compile(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
 	BLOCK_asm(ctx, stmtB);
 	ASM_LABEL(ctx, lbEND);
 	ASM(RET);
-	Gamma_popLABEL(ctx);
+	GammaBuilder_popLABEL(ctx);
 	DBG_ASSERT(knh_Array_size(DP(ctx->gma)->lstacks) == 0);
-	Gamma_compile(ctx, lbINIT, lbEND);
+	GammaBuilder_compile(ctx, lbINIT, lbEND);
 }
 
 void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB, knh_Ftyping typing)
@@ -2900,7 +2900,7 @@ void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB, knh_Ftypi
 	KNH_SETv(ctx, DP(ctx->gma)->mtd, mtd);
 	typing(ctx, mtd, stmtB);
 //	knh_Method_toAbstract(ctx, mtd);
-	Gamma_shiftLocalScope(ctx);
+	GammaBuilder_shiftLocalScope(ctx);
 	knh_Array_clear(ctx, DP(ctx->gma)->lstacks, 0);
 #ifdef K_USING_LLVM
 	void knh_LLVMMethod_asm(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtP);
