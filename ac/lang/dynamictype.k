@@ -1,6 +1,7 @@
 /****************************************************************************
  * KONOHA ASSURANCE CASE
  *  written by Kimio Kuramitsu  twitter: @konohakun 
+ *  written by Masahiro Ide
  ***************************************************************************/
 
 assure "DynamicType" {
@@ -35,4 +36,13 @@ assure "DynamicTypeCall" {
 	dynamic d = "naruto";
 	assert d.startsWith("n");
 	assert not d.startsWith("A");
+}
+
+assure "TypedVariable + DynamicTypeVariable" {
+	String s = "abcd";
+	dynamic d = "1234";
+	dynamic n = 1234;
+	assert s + d == "abcd1234";
+	assert d + 10 == "123410";
+	assert n + 10 == 1244;
 }
