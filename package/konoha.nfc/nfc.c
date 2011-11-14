@@ -84,10 +84,14 @@ KMETHOD Pasori_readId(CTX ctx, knh_sfp_t *sfp _RIX)
 	};
 	int res;
 	nfc_target_t nt;
+	nfc_initiator_init(pnd);
 	res = nfc_initiator_poll_target(pnd, mod, modSize, uiPollNr, uiPeriod, &nt);
-	if (res != 0) {
-		knh_ldata_t ldata[] = {LOG_i("res", res), LOG_END};
-		KNH_NTRACE(ctx, "nfc_initiator_poll_target", K_FAILED, ldata);
+	while (res == 0) {
+		{
+			knh_ldata_t ldata[] = {LOG_i("res", res), LOG_END};
+			KNH_NTRACE(ctx, "nfc_initiator_poll_target", K_FAILED, ldata);
+		}
+		res = nfc_initiator_poll_target(pnd, mod, modSize, uiPollNr, uiPeriod, &nt);
 	}
 	DBG_ASSERT(nt.nm.nmt == NMT_FELICA);
 	nfc_felica_info_t nfc = nt.nti.nfi;
