@@ -847,6 +847,9 @@ static int pcre_parsecflags(CTX ctx, const char *option)
 		case 'x': //extended
 			cflags |= PCRE_EXTENDED;
 			break;
+		case 'u': //utf
+			cflags |= PCRE_UTF8;
+			break;
 		default: break;
 		}
 	}
