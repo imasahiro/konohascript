@@ -107,23 +107,23 @@ static struct stmtsugar_t stmtsugars[] = {
 	{NULL, STMT_DONE, NULL},
 };
 
-//static knh_IntData_t TokenConstInt[] = {
-//	{"CODE", TK_CODE},
-//	{"USYMBOL", TK_USYMBOL},
-//	{"SYMBOL", TK_SYMBOL},
-//	{"OPERATOR", TK_OPERATOR},
-//	{"TEXT", TK_TEXT},
-//	{"STEXT", TK_STEXT},
-//	{"REGEX", TK_REGEX},
-//	{"INT", TK_INT},
-//	{"FLOAT", TK_FLOAT},
-//	{"URN", TK_URN},
-//	{"PROP", TK_PROP},
-//	{"META", TK_META},
-//	{"INDENT", TK_INDENT},
-//	{"WHITESPACE", TK_WHITESPACE},
-//	{NULL, 0},
-//};
+static knh_IntData_t TokenConstInt[] = {
+	{"CODE", TK_CODE},
+	{"USYMBOL", TK_USYMBOL},
+	{"SYMBOL", TK_SYMBOL},
+	{"OPERATOR", TK_OPERATOR},
+	{"TEXT2", TK_TEXT},
+	{"STEXT", TK_STEXT},
+	{"REGEX", TK_REGEX},
+	{"INT", TK_INT},
+	{"FLOAT", TK_FLOAT},
+	{"URN", TK_URN},
+	{"PROP", TK_PROP},
+	{"META", TK_META},
+	{"INDENT", TK_INDENT},
+	{"WHITESPACE", TK_WHITESPACE},
+	{NULL, 0},
+};
 
 /* ------------------------------------------------------------------------ */
 /* api */
@@ -306,7 +306,7 @@ static knh_FuncData_t FuncData[] = {
 
 void knh_initSugarFuncData(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
-//	kapi->loadClassIntConst(ctx, CLASS_Token, TokenConstInt);
+	kapi->loadClassIntConst(ctx, CLASS_Token, TokenConstInt);
 	kapi->loadFuncData(ctx, FuncData);
 //	struct stmtsugar_t *stmt = stmtsugars;
 //	while(stmt->rule != NULL) {

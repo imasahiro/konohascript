@@ -33,7 +33,7 @@ assure "Sugar: Parsing Number with Expornent" {
 }
 
 assure "Sugar: Parsing Number with Positive Expornent" {
-	assert "3.14e+2".tokenize()[0] == "3.14e2";
+	assert "3.14e+2".tokenize()[0] == "3.14e+2";
 }
 
 assure "Sugar: Parsing Number with Negative Expornent" {

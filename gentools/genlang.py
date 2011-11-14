@@ -94,7 +94,7 @@ print     0     _MEXPR
 assure    0     _EXPR _STMT
 assert    0     _EXPR
 register  0     _MEXPR
-go        0     _STMT
+#go        0     _STMT
 function  0     _FUNCTION
 '''
 
