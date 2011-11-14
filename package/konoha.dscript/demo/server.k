@@ -2,6 +2,10 @@ using konoha.proc.*;
 using konoha.socket.*;
 using konoha.posix.*;
 using konoha.io.*;
+using konoha.memcached.*;
+
+HOST="192.168.0.201";
+PORT=11211;
 
 @Public String InputStream.readAll(int length) {
     InputStream ins = this;
@@ -18,6 +22,14 @@ String join(String[] args, String d) {
     return line;
 }
 
+String readError(InputStream err) {
+    String res = "";
+    foreach (String line in err) {
+        res += line + EOL;
+    }
+    return res;
+}
+
 String dispatch(String cmd, String role, String id, String dtask, String data, OutputStream ous) {
     if (cmd == null) {
         return "";
@@ -26,24 +38,39 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
     print cmd;
     print data;
     cmd = cmd.split(" ")[0];
+    String fname = join([dtask], ".") + "k";
+    print fname;
     if (cmd == "TCHECK") {
-        fname = join([role, id], ".") + "k";
-        ous = new OutputStream(fname);
+        o = new OutputStream(fname);
+        o.println(data);
+        o.close();
+        Proc proc new Proc([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, fname]);
+
+        String res = readError(proc.getErrorInputStream());
+        print res;
+
+        String data = "OK"+EOL+"Content-Length: " + res.size+ EOL + res;
         ous.println(data);
-        ous.close();
-        line = join([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, fname], " ");
-        print line;
-        String res = System.exec(line);
-        print res;
-        ous.println("TCHECK OK");
-        ous.println("Content-Length: " + res.size);
-        ous.println("");
-        ous.println("");
-        ous.print(res);
-        print res;
         ous.flush();
         return res;
     } else if (cmd == "EVAL") {
+        print role, id, dtask, data, fname;
+
+        //Proc proc = new Proc([$konoha.bin.path, "-a", "--logcached=" + HOST + ":" + PORT, fname], null, true);
+        //Memcache mc = new Memcache(HOST, PORT);
+        //mc[id] = "OK";
+        Proc proc = new Proc([$konoha.bin.path, "-a", fname], null, false);
+
+        print "hi";
+        String res = readError(proc.getErrorInputStream());
+        print "hi";
+        print "hi";
+        String data = "OK"+EOL+"Content-Length: " + res.size+ EOL + res;
+        print "hi";
+        ous.println(data);
+        ous.flush();
+        print "hi";
+        return res;
     } else if (cmd == "DEBUG") {
     }
     return data;
@@ -85,7 +112,7 @@ void main(String[] args) {
                 //print line, i;
                 if (line.startsWith("Auth")) {
                     auth = data;
-                } else if (line.startsWith("ID")) {
+                } else if (line.startsWith("D-Trace")) {
                     id = data;
                 } else if (line.startsWith("Content-Length")) {
                     length = (Int) data;

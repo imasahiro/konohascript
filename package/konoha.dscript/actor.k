@@ -62,11 +62,12 @@ class Actor {
 	}
 
 	boolean tcheck(InputStream ins) {
-		protocol = ins.readLine();
+		String protocol = ins.readLine();
 		print protocol;
 		Int length;
 		while (true) {
 			line = ins.readLine();
+			print line;
 			if (line == "") {
 				break;
 			}
@@ -78,9 +79,8 @@ class Actor {
 		b = new Bytes(length);
 		ins.read(b, 0, length);
 		this.errorbuf = b.decode(null);
-		/* "TCHECK OK" */
-		/* "TCHECK NG" */
-		return protocol.split(" ")[1] == "OK";
+		/* "OK" or "NG" */
+		return protocol == "OK";
 	}
 
 	boolean send(String msg) {
@@ -91,8 +91,8 @@ class Actor {
 			OutputStream ous = s.getOutputStream();
 			ous.println(msg);
 			ous.flush();
-			//res = tcheck(ins);
-			//print errorbuf;
+			res = tcheck(ins);
+			print errorbuf;
 			s.close();
 		} catch (Exception!! e) {
 			print "Not Connected: ", host, port;
@@ -102,7 +102,7 @@ class Actor {
 	}
 
 	boolean bind(String script, String role, String id) {
-		msg = "TCHECK 0.9\nAuth: " + role + "\nID: " + id + "\nContent-Length: " + (script.size + 1) +"\n\n" + script;
+		msg = "TCHECK 0.9\nAuth: " + role + "\nD-Task: " + id + "\nContent-Length: " + (script.size + 1) +"\n\n" + script;
 		return send(msg);
 	}
 
