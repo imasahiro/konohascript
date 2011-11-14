@@ -43,6 +43,8 @@ class Actor {
 	String host;
 	int    port;
 
+	String errorbuf;
+
 	Actor(String name, String host, int port) {
 		_name = name;
 		_host = host;
@@ -59,25 +61,48 @@ class Actor {
 		return null;
 	}
 
+	boolean tcheck(InputStream ins) {
+		protocol = ins.readLine();
+		print protocol;
+		Int length;
+		while (true) {
+			line = ins.readLine();
+			if (line == "") {
+				break;
+			}
+			data = line.split(":")[1].trim();
+			if (line.startsWith("Content-Length")) {
+				length = (Int) data;
+			}
+		}
+		b = new Bytes(length);
+		ins.read(b, 0, length);
+		this.errorbuf = b.decode(null);
+		/* "TCHECK OK" */
+		/* "TCHECK NG" */
+		return protocol.split(" ")[1] == "OK";
+	}
+
 	boolean send(String msg) {
+		boolean res = false;
 		try {
 			Socket s = new Socket(this.host, this.port);
 			InputStream  ins = s.getInputStream();
 			OutputStream ous = s.getOutputStream();
 			ous.println(msg);
 			ous.flush();
-			ous.close();
-			
+			//res = tcheck(ins);
+			//print errorbuf;
 			s.close();
 		} catch (Exception!! e) {
 			print "Not Connected: ", host, port;
 			return false;
 		}
-		return true;
+		return res;
 	}
 
-	boolean bind(String script, String role) {
-		msg = "TCHECK 0.9\nAuth: " + role + "\nContent-Length: " + (script.size + 1) +"\n\n" + script;
+	boolean bind(String script, String role, String id) {
+		msg = "TCHECK 0.9\nAuth: " + role + "\nID: " + id + "\nContent-Length: " + (script.size + 1) +"\n\n" + script;
 		return send(msg);
 	}
 
@@ -88,7 +113,7 @@ class Actor {
 		}
 		msg += "Content-Length: " + (script.size + 1) + "\n\n" + script;
 		return send(msg);
-	}		
+	}
 
 	boolean debug(String script, Map map) {
 		msg = "DEBUG 0.9\n";
@@ -156,8 +181,8 @@ class DTask {
 
 	boolean bind(Actor actor, String role) {
 		String trace = CTX.getTrace();
-		if(actor.bind(script, role)) {
-			_actors.add(actor);		
+		if(actor.bind(script, role, name)) {
+			_actors.add(actor);
 			return true;
 		}
 		else {
@@ -170,7 +195,7 @@ class DTask {
 		for (int i = 0; i < |actors|; i++) {
 			Actor actor = actors[i];
 			actor.eval(script) with {
-				"D-Task": task;
+				"D-Task": name;
 				"D-Trace": traceid + "-" + (String)i;
 			}
 			//String host = "192.168.0.201"; /* diag */
@@ -196,10 +221,10 @@ class DControl {
 	void go(String traceid) {
 		for(int i = 0; i < |tasks|; i++) {
 			DTask task = (DTask)tasks[i];
-			DTrace trace = t.go(traceid + "-" + (String)i);
+			DTrace trace = task.go(traceid + "-" + (String)i);
 			if(trace.checkTaskLog()) continue;
 			helper.go(traceid);
-			t.go(traceid + "-" + (String)i + "-RETRY");			
+			task.go(traceid + "-" + (String)i + "-RETRY");			
 		}
 	}
 }

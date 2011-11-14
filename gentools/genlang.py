@@ -127,7 +127,7 @@ print     -          0
 assure    -          0
 assert    -          0
 register  -          0
-go        -          0
+#go        -          0
 #end_stmt
 
 extends    -         0
