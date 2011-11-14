@@ -831,7 +831,7 @@ static int pcre_nmatchsize(CTX ctx, knh_regex_t *reg)
 
 static int pcre_parsecflags(CTX ctx, const char *option)
 {
-	int i, cflags = PCRE_UTF8;
+	int i, cflags = 0;
 	int optlen = strlen(option);
 	for (i = 0; i < optlen; i++) {
 		switch(option[i]) {
