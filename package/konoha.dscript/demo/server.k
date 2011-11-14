@@ -2,8 +2,6 @@ using konoha.proc.*;
 using konoha.socket.*;
 using konoha.posix.*;
 using konoha.io.*;
-using konoha.memcached.*;
-using konoha.ntrace.*;
 
 HOST="192.168.0.201";
 PORT=11211;
@@ -42,19 +40,28 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 	String fname = join([dtask], ".") + "k";
 	print fname;
 	if (cmd == "TCHECK") {
+
 		o = new OutputStream(fname);
 		o << "using konoha.memcached.*;" << EOL;
 		o << "using konoha.posix.*;" << EOL;
-		o << "using konoha.ntrace.*;" << EOL;
-		o << "Map g_ldata = {};" << EOL;
-		o << "g_ldata[\"name\"] = \"" + dtask + "\";" << EOL;
-		o << "g_ldata[\"role\"] = \"" + role + "\";" << EOL;
-		o << "System.ntrace_notice(\"task_start\", g_ldata);" << EOL;
 		o << "Memcache ctxid_memcache = new Memcache(\"" << HOST << "\", " << PORT << ");" << EOL;
 		o << "ctxid_memcache.set(\"" + dtask + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
+		o << "String g_syslogpath = \"/var/log/syslog\";" << EOL;
+		o << "if (System.getHostName() == \"chen-pro.local\") g_syslogpath = \"/var/log/system.log\";" << EOL;
+		o << "OutputStream g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
+		o << "g_syslog << (to String)new Date() << \" \" << System.getHostName()";
+		o << " << \" konoha[\" << (to String)System.getPid() << \"]: \" << CTX.getTrace()";
+		o << " << \"+\" << (to String)CTX.getSeq() << \" task_start {\\\"name\\\": \\\"";
+		o << dtask << "\\\", \\\"role\\\": \\\"" << role << "\\\"}\" << EOL;" << EOL;
+		o << "g_syslog.close();" << EOL;
 		o.println(data);
+		o << "g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
+		o << "g_syslog << (to String)new Date() << \" \" << System.getHostName()";
+		o << " << \" konoha[\" << (to String)System.getPid() << \"]: \" << CTX.getTrace()";
+		o << " << \"+\" << (to String)(CTX.getSeq() + 1) << \" task_end {\\\"name\\\": \\\"";
+		o << dtask << "\\\", \\\"role\\\": \\\"" << role << "\\\"}\" << EOL;" << EOL;
+		o << "g_syslog.close();" << EOL;
 		o << "ctxid_memcache.delete(\"" + dtask + "\" + \":\" + System.getHostName(), 0);" << EOL;
-		o << "System.ntrace_notice(\"task_end\", g_ldata);" << EOL;
 		o.close();
 		Proc proc new Proc([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, fname]);
 
