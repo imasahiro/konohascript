@@ -231,69 +231,109 @@ static void child(CTX ctx, knh_sfp_t *sfp, knh_Array_t *args, knh_DictMap_t *env
 }
 
 /* ======================================================================== */
-// [KMETHODS]
+// [KMETHODS, Proc]
 
-//## @Native Proc Proc.new(String[] args, Map<String,String> env);
+/*static void trapCHLD (int sig, siginfo_t *si, void *sc)
+{
+	CTX ctx = knh_getCurrentContext();
+	if (ctx != NULL) {
+		knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTRACE(ctx, "tarpChild", K_NOTICE, ldata);
+	}
+	//	childFlag = 1; // ON
+	}*/
+
+
+#define R 0
+#define W 1
+//## @Native Proc Proc.new(String[] args, Map<String, String> env);
 KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
 	knh_Array_t *args = sfp[1].a;
 	knh_DictMap_t *env = (knh_DictMap_t *)sfp[2].o;
-	int pipes1[2] = {0}; // for write
-	int pipes2[2] = {0}; // for read stdout
-	int pipes3[2] = {0}; // for read stderr
+	int isBackground = Int_to(int, sfp[3]);
+	int parent2client[2] = {0}; // for write
+	int client2parent[2] = {0}; // for read stdout
 	int pid = 0;
 	// pipe
 	errno = 0;
-	if (pipe(pipes1)) {
-		knh_ldata_t ldata[] = {LOG_i("pipefd[0]", pipes1[0]), LOG_i("pipefd[1]", pipes1[1]), LOG_END};
+
+
+	if (pipe(parent2client)) {
+		knh_ldata_t ldata[] = {LOG_i("parent2client[0]", parent2client[R]), LOG_i("parent2client[1]",parent2client[W]), LOG_END};
 		KNH_NTHROW(ctx, sfp, "System!!", "pipe", K_PERROR, ldata);
 	}
-	if (pipe(pipes2)) {
-		knh_ldata_t ldata[] = {LOG_i("pipefd[0]", pipes2[0]), LOG_i("pipefd[1]", pipes2[1]), LOG_END};
-		KNH_NTHROW(ctx, sfp, "System!!", "pipe", K_PERROR, ldata);
-	}
-	if (pipe(pipes3)) {
-		knh_ldata_t ldata[] = {LOG_i("pipefd[0]", pipes3[0]), LOG_i("pipefd[1]", pipes3[1]), LOG_END};
+	if (pipe(client2parent)) {
+		knh_ldata_t ldata[] = {LOG_i("client2parent[0]", client2parent[R]), LOG_i("alt_stdout[1]", client2parent[W]), LOG_END};
 		KNH_NTHROW(ctx, sfp, "System!!", "pipe", K_PERROR, ldata);
 	}
 
 	// fork
-	pid = fork();
-	errno = 0;
-	if (pid == -1) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTHROW(ctx, sfp, "System!!", "fork", K_PERROR, ldata);
-		knh_Object_toNULL(ctx, sp);
-		RETURN_(sp);
-	}
-
-	if (pid == 0) { // child
-		// [NOTE] please implement error handling if needed
-//		close(0);
-//		close(1);
-//		close(2);
-//		dup(pipes1[0]);
-//		dup(pipes2[1]);
-//		dup(pipes3[1]);
-//		close(pipes1[0]);
-//		close(pipes1[1]);
-//		close(pipes2[0]);
-//		close(pipes2[1]);
-//		close(pipes3[0]);
-//		close(pipes3[1]);
-		child(ctx, sfp, args, env);
-	} else { // parent
-		close(pipes1[0]);
-		close(pipes2[1]);
-		close(pipes3[1]);
-		sp->in = pipes2[0];
-//		DBG_P("in=%lu", sp->in);
-		sp->out = pipes1[1];
-//		DBG_P("out=%lu", sp->out);
-		sp->err = pipes3[0];
-//		DBG_P("err=%lu", sp->err);
-		sp->pid = pid;
+	if (isBackground == 1 ) {
+		pid = fork();
+		errno = 0;
+		if (pid == -1) {
+			close(client2parent[R]);
+			close(client2parent[W]);
+			close(parent2client[R]);
+			close(parent2client[W]);
+			knh_ldata_t ldata[] = {LOG_END};
+			KNH_NTHROW(ctx, sfp, "System!!", "fork", K_PERROR, ldata);
+			knh_Object_toNULL(ctx, sp);
+			RETURN_(sp);
+		}
+		
+		if (pid == 0) { // child
+			// [NOTE] please implement error handling if needed
+			close(parent2client[W]);
+			close(client2parent[R]);
+			dup2(parent2client[R], 0);
+			dup2(client2parent[W], 1);
+			close(0);
+			close(1);
+			close(2);
+			child(ctx, sfp, args, env);
+		} else { // parent
+			close(parent2client[R]);
+			close(client2parent[W]);
+			dup2(parent2client[W], 1);
+			dup2(client2parent[R], 0);
+			sp->in = client2parent[R];
+			sp->out = parent2client[W];
+			sp->pid = pid;
+		}
+	} else  { // isBackground
+		pid = fork();
+		errno = 0;
+		if (pid == -1) {
+			close(client2parent[R]);
+			close(client2parent[W]);
+			close(parent2client[R]);
+			close(parent2client[W]);
+			knh_ldata_t ldata[] = {LOG_END};
+			KNH_NTHROW(ctx, sfp, "System!!", "fork", K_PERROR, ldata);
+			knh_Object_toNULL(ctx, sp);
+			RETURN_(sp);
+		}
+		if (pid == 0) { // child
+			// [NOTE] please implement error handling if needed
+			close(parent2client[W]);
+			close(client2parent[W]);
+			close(client2parent[R]);
+			dup2(parent2client[R], 0);
+			close(0);
+			close(2);
+			child(ctx, sfp, args, env);
+		} else { // parent
+			close(parent2client[R]);
+			close(client2parent[W]);
+			close(client2parent[R]);
+			dup2(parent2client[W], 1);
+			//			sp->in = client2parent[R];
+			sp->out = parent2client[W];
+			sp->pid = pid;
+		}
 	}
 	RETURN_(sp);
 }

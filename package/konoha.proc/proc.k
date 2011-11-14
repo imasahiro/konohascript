@@ -28,13 +28,14 @@
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
+//  shinpei_NKT - Shinpei Nakata, Yokohama National University, Japan
 // **************************************************************************
 
 include "lib:gluelink";
 
 @Native class Proc;
 
-@Native Proc Proc.new(String[] cmds, Map<String,String> env);
+@Native Proc Proc.new(String[] cmds, Map<String,String> env, boolean isBackground);
 @Native InputStream Proc.getInputStream();
 @Native InputStream Proc.getErrorInputStream();
 @Native OutputStream Proc.getOutputStream();
