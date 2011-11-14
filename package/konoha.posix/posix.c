@@ -286,6 +286,16 @@ KMETHOD System_fork(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(pid);
 }
 
+//## @Native int System.system(void)
+KMETHOD System_system(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	char *cmd = String_to(char *, sfp[1]);
+	int ret = system(cmd);
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "system", ret != -1 ? K_OK : K_PERROR, ldata);
+	RETURNi_(ret);
+}
+
 //## @Native int System.wait(void)
 KMETHOD System_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 {
