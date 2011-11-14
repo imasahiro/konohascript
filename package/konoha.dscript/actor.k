@@ -38,32 +38,15 @@ using konoha.memcached.*;
 using konoha.ntrace.*;
 using konoha.posix.*;
 
-class Actor
-{
+class Actor {
 	String name;
 	String host;
-	int port;
-	String task;
-	String traceid;
+	int    port;
 
 	Actor(String name, String host, int port) {
 		_name = name;
 		_host = host;
 		_port = port;
-		try {
-			Socket s = new Socket(host, port);
-			Map ldata = {};
-			ldata["name"] = name;
-			ldata["host"] = host;
-			ldata["port"] = port;
-			System.ntrace_notice("actor:new", ldata);
-			OutputStream ous = s.getOutputStream();
-			ous.writeMsgPack("ping");
-			ous.close();
-			s.close();
-		} catch (Exception!! e) {
-			throw new Script!!("cannot establish connection to host: " + host + ", port: " + (to String)port);
-		}
 	}
 
 	@Hidden Actor opLINK(String path, NameSpace _) {
@@ -76,109 +59,62 @@ class Actor
 		return null;
 	}
 
-	boolean eval(String script) {
+	boolean send(String msg) {
 		try {
 			Socket s = new Socket(this.host, this.port);
+			InputStream  ins = s.getInputStream();
 			OutputStream ous = s.getOutputStream();
-			ous.writeMsgPack(script);
+			ous.println(msg);
 			ous.flush();
 			ous.close();
+			
 			s.close();
 		} catch (Exception!! e) {
-			throw new Script!!("cannot establish connection to host: " + host + ", port: " + (to String)port);
+			print "Not Connected: ", host, port;
+			return false;
 		}
 		return true;
 	}
 
-	boolean evalFile(Path urn) {
+	boolean bind(String script, String role) {
+		msg = "TCHECK 0.9\nAuth: " + role + "\nContent-Length: " + (script.size + 1) +"\n\n" + script;
+		return send(msg);
+	}
+
+	boolean eval(String script, Map map) {
+		msg = "EVAL 0.9\n";
+		for(String key : map.keys()) {
+			msg += key + ": " + (String)map[key] + "\n";
+		}
+		msg += "Content-Length: " + (script.size + 1) + "\n\n" + script;
+		return send(msg);
+	}		
+
+	boolean debug(String script, Map map) {
+		msg = "DEBUG 0.9\n";
+		for(String key : map.keys()) {
+			msg += key + ": " + (String)map[key] + "\n";
+		}
+		msg += "\n" + script;
+		return send(msg);
+	}
+
+	@Static String loadScript(Path urn) {
 		InputStream ins = new InputStream(urn, "r");
 		String buf = "";
 		foreach (String line in ins) {
 			buf += line + EOL;
 		}
-		this.eval(buf);
-		ins.close();
-		return true;
-	}
-
-	void interactive(String task_name) {
-		String script = "";
-		int n = 1;
-		while (true) {
-			String line = System.readLine("(ash:" + n++ + ") ");
-			if (line == null) {
-				break;
-			}
-			script += line + EOL;
-		}
-		OUT << EOL;
-		startTask(task_name);
-		eval(script);
-		endTask();
-	}
-
-	void startTask(String task_name, String id) {
-		if (id == null) {
-			Bytes b = new byte[10];
-			for (int i = 0; i < 9; i++) {
-				b[i] = Int.random() % 26 + 65;
-			}
-			id = b.decode();
-		}
-		this.eval("<< " + task_name + ":" + id);
-		_task = task_name;
-		_traceid = id;
-	}
-
-	void endTask() {
-		this.eval(">> " + task + ":" + traceid);
-	}
-
-	boolean close() {
-		this.eval("close()");
-		Map ldata = {};
-		ldata["name"] = name;
-		ldata["host"] = host;
-		ldata["port"] = port;
-		System.ntrace_notice("actor:close", ldata);
-		return true;
+		return buf;
 	}
 }
 
-class StoreActor
-{
-	Map m;
-	String name;
 
-	StoreActor(String name, String host, int port) {
-		_m = Map.open("memcached:" + host + ":" + (to String)port);
-		if (_m == null) throw new Script!!("cannot open memcached");
-		_name = name;
-	}
-
-	dynamic get(String key) {
-		if (m[key] == null) return null;
-		Bytes b;
-		if (m[key] <: String)
-			b = (to Bytes)(to String)m[key];
-		else
-			b = m[key];
-		return b.readMsgPack(0, |b|);
-	}
-
-	void set(String key, Object data) {
-		Bytes b = new Bytes();
-		b.writeMsgPack(data);
-		m[key] = b;
-	}
-}
-
-class Trace
-{
+class DTrace {
 	String id;
 	int num;
-
-	Trace(String id, int parallel_num) {
+	
+	DTrace(String id, int parallel_num) {
 		_id = id;
 		_num = parallel_num;
 		if (parallel_num == 0) {
@@ -186,65 +122,84 @@ class Trace
 		}
 	}
 
-	boolean checkTaskLog() {
+	boolean checkTaskLog () {
 		String host = "192.168.0.201"; /* diag */
 		int port = 11211;
 		Memcache mc = new Memcache(host, port);
 		for (int i = 0; i < num; i++) {
-			while (mc[id + (to String)i + ":start"] != null) {
+			String result, key = id + "-" (to String)i;
+			while((result = mc[key]) != null) {
 				System.usleep(1000);
+			}
+			if(result == "FAILED") {
+				return false;
 			}
 		}
 		return true;
 	}
 }
 
-class Task
-{
+class DTask {
 	String name;
 	String script;
 	Actor[] actors;
 
-	Task(String name, String script) {
+	DTask(String name, String script) {
 		_name = name;
 		_script = script;
 		_actors = [];
 	}
 
-	boolean bind(Actor actor, String role) {
-		String trace = CTX.getTrace();
-		//print trace;
-		actor.eval("bind:" + role + ":" + name + ":" + trace);
-		actor.eval(script);
-		actor.eval("bind:" + role + ":" + name + ":" + trace);
-		String host = "192.168.0.201"; /* diag */
-		int port = 11211;
-		Memcache mc = new Memcache(host, port);
-		while (mc[trace + ":" + name] == null) {
-			//print "wait " + trace + ":" + name;
-			System.usleep(1000);
-		}
-		String res = mc[trace + ":" + name];
-		ERR << "DEBUG: " << res << EOL;
-		if (res.indexOf("is not allowed") != -1) {
-			return false;
-		}
-		_actors.add(actor);
-		return true;
+	void show() {
+		OUT << EOL << script << EOL;
 	}
 
-	Trace goTask(String traceid) {
+	boolean bind(Actor actor, String role) {
+		String trace = CTX.getTrace();
+		if(actor.bind(script, role)) {
+			_actors.add(actor);		
+			return true;
+		}
+		else {
+			
+		}
+		return false;
+	}
+
+	DTrace go(String traceid) {
 		for (int i = 0; i < |actors|; i++) {
 			Actor actor = actors[i];
-			actor.startTask(name, traceid + (to String)i);
-			//actor.eval(script);
-			actor.endTask();
-			String host = "192.168.0.201"; /* diag */
-			int port = 11211;
-			Memcache mc = new Memcache(host, port);
-			mc.add(traceid + (to String)i + ":start", (to String)new Date(), 0, 0);
-			mc.replace(traceid + (to String)i + ":start", (to String)new Date(), 0, 0);
+			actor.eval(script) with {
+				"D-Task": task;
+				"D-Trace": traceid + "-" + (String)i;
+			}
+			//String host = "192.168.0.201"; /* diag */
+			//int port = 11211;
+			//Memcache mc = new Memcache(host, port);
+			//mc.add(traceid + (to String)i + ":start", (to String)new Date(), 0, 0);
+			//mc.replace(traceid + (to String)i + ":start", (to String)new Date(), 0, 0);
 		}
-		return new Trace(traceid, |actors|);
+		return new DTrace(traceid, |actors|);
+	}
+}
+
+class DControl {
+	String name;
+	DTask[] tasks;
+	DTask   helper;
+	
+	DControl(String name, DTask helper) {
+		_name = name;
+		_tasks = [];
+	}
+
+	void go(String traceid) {
+		for(int i = 0; i < |tasks|; i++) {
+			DTask task = (DTask)tasks[i];
+			DTrace trace = t.go(traceid + "-" + (String)i);
+			if(trace.checkTaskLog()) continue;
+			helper.go(traceid);
+			t.go(traceid + "-" + (String)i + "-RETRY");			
+		}
 	}
 }

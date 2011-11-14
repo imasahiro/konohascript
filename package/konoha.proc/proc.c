@@ -270,29 +270,29 @@ KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 	if (pid == 0) { // child
 		// [NOTE] please implement error handling if needed
-		close(0);
-		close(1);
-		close(2);
-		dup(pipes1[0]);
-		dup(pipes2[1]);
-		dup(pipes3[1]);
-		close(pipes1[0]);
-		close(pipes1[1]);
-		close(pipes2[0]);
-		close(pipes2[1]);
-		close(pipes3[0]);
-		close(pipes3[1]);
+//		close(0);
+//		close(1);
+//		close(2);
+//		dup(pipes1[0]);
+//		dup(pipes2[1]);
+//		dup(pipes3[1]);
+//		close(pipes1[0]);
+//		close(pipes1[1]);
+//		close(pipes2[0]);
+//		close(pipes2[1]);
+//		close(pipes3[0]);
+//		close(pipes3[1]);
 		child(ctx, sfp, args, env);
 	} else { // parent
 		close(pipes1[0]);
 		close(pipes2[1]);
 		close(pipes3[1]);
 		sp->in = pipes2[0];
-		DBG_P("in=%lu", sp->in);
+//		DBG_P("in=%lu", sp->in);
 		sp->out = pipes1[1];
-		DBG_P("out=%lu", sp->out);
+//		DBG_P("out=%lu", sp->out);
 		sp->err = pipes3[0];
-		DBG_P("err=%lu", sp->err);
+//		DBG_P("err=%lu", sp->err);
 		sp->pid = pid;
 	}
 	RETURN_(sp);
