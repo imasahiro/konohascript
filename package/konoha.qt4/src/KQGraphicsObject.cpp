@@ -65,7 +65,7 @@ void KQGraphicsObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
 		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
 	} else {
-		QGraphicsObject::paint(painter, option, widget);
+//		QGraphicsObject::paint(painter, option, widget);
 	}
 }
 

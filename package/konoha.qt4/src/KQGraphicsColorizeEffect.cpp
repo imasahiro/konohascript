@@ -110,8 +110,7 @@ bool DummyQGraphicsColorizeEffect::strengthChangedSlot(qreal strength)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, qreal, strength);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+2].fvalue = strength;
 		knh_Func_invoke(lctx, strength_changed_func, lsfp, 2);
 		return true;
 	}

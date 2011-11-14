@@ -1054,7 +1054,8 @@ static void QPainterPath_free(CTX ctx, knh_RawPtr_t *p)
 	(void)ctx;
 	if (p->rawptr != NULL) {
 		KQPainterPath *qp = (KQPainterPath *)p->rawptr;
-		delete qp;
+		(void)qp;
+		//delete qp;
 	}
 }
 static void QPainterPath_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)

@@ -881,7 +881,7 @@ int genEventSource(BindInfo[] bia, QtInterface[] interfaces)
 			if (bi.checkUnusedWord(f)) continue;
 			FunctionElement fe = new FunctionElement(f, class_name);
 			fe.renamePublicTypes(bi.all_enums, bi.all_typedefed_objects, bi.all_flag_objects, bi.all_class_objects);
-//			if (bi.constructor == null && fe.constructorFlag) bi.constructor = fe;
+			fe.setKonohaTypes();
 			if (bi.checkUnusedMethod(fe) ||
 				fe.constructorFlag ||
 				!("Event" in? fe.func_name && fe.virtualFlag)) continue;
@@ -893,6 +893,7 @@ int genEventSource(BindInfo[] bia, QtInterface[] interfaces)
 			if (bi.checkUnusedWord(f)) continue;
 			FunctionElement fe = new FunctionElement(f, class_name);
 			fe.renamePublicTypes(bi.all_enums, bi.all_typedefed_objects, bi.all_flag_objects, bi.all_class_objects);
+			fe.setKonohaTypes();
 			if (bi.checkUnusedMethod(fe) ||
 				fe.constructorFlag) continue;
 			QMethod mtd = new QMethod(fe);

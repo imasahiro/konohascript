@@ -123,7 +123,7 @@ void KQAbstractGraphicsShapeItem::paint(QPainter *painter, const QStyleOptionGra
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
 		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
 	} else {
-		QAbstractGraphicsShapeItem::paint(painter, option, widget);
+//		QAbstractGraphicsShapeItem::paint(painter, option, widget);
 	}
 }
 

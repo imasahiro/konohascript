@@ -838,11 +838,16 @@ String EventArgPassing(String arg_type)
 		return ret;
 	}
 
+	if (!arg_type.startsWith("Q")) {
+
+	}
+
 	switch (arg_type) {
 	case "int":
 		ret += "\t\tlsfp[K_CALLDELTA+<DELTA>].ivalue = <V>;\n";
 		break;
 	case "float":
+	case "qreal":
 		ret += "\t\tlsfp[K_CALLDELTA+<DELTA>].fvalue = <V>;\n";
 		break;
 	case "bool":
@@ -1009,10 +1014,17 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
 		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
 	} else {
-		<C>::paint(painter, option, widget);
+<UNUSED>		<C>::paint(painter, option, widget);
 	}
 }
 """;
 	ret = ret.replace("<C>", class_name);
+	if (class_name == "QGraphicsItem"　||
+		class_name == "QGraphicsObject" ||
+		class_name == "QAbstractGraphicsShapeItem") {
+		ret = ret.replace("<UNUSED>", "//");
+	} else {
+		ret = ret.replace("<UNUSED>", "");
+	}
 	return ret;
 }

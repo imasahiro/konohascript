@@ -96,8 +96,7 @@ bool DummyQGraphicsOpacityEffect::opacityChangedSlot(qreal opacity)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, qreal, opacity);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+2].fvalue = opacity;
 		knh_Func_invoke(lctx, opacity_changed_func, lsfp, 2);
 		return true;
 	}
