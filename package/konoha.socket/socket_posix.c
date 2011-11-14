@@ -38,6 +38,7 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {
