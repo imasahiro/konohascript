@@ -1,0 +1,143 @@
+using konoha.proc.*;
+using konoha.memcached.*;
+using konoha.json.*;
+
+Proc mailbox;
+
+Map g_task = {};
+
+@Around void System.exit(int status) {
+	if (mailbox != null) {
+		mailbox.terminate();
+	}
+	proceed(status);
+}
+
+void evalMsg(String trace, String task, String script) {
+	String host = "192.168.0.201"; /* diag */
+	int port = 11211;
+	Proc p = new Proc([$konoha.bin.path, "-a", "--logcached=" + host + ":" + port, "-"]);
+	OutputStream ous = p.getOutputStream();
+	ous << "using konoha.memcached.*;" << EOL;
+	ous << "using konoha.posix.*;" << EOL;
+	ous << "Memcache ctxid_memcache = new Memcache(\"" << host << "\", " << port << ");" << EOL;
+	ous << "ctxid_memcache.add(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.replace(\"" + task + "\", CTX.getTrace(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.add(\"" + task + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.replace(\"" + task + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.add(\"" + trace + "\", CTX.getTrace(), 0, 0);" << EOL;
+	ous << "ctxid_memcache.replace(\"" + trace + "\", CTX.getTrace(), 0, 0);" << EOL;
+	//ous << "ctxid_memcache.add(\"" + task + ":start\", (to String)new Date(), 0, 0);" << EOL;
+	//ous << "ctxid_memcache.replace(\"" + task + ":start\", (to String)new Date(), 0, 0);" << EOL;
+	if (g_task[task] != null) {
+		ous << g_task[task] << EOL;
+	}
+	ous << script << EOL;
+	ous << "ctxid_memcache.delete(\"" + task + "\", 0);" << EOL;
+	ous << "ctxid_memcache.delete(\"" + task + "\" + \":\" + System.getHostName(), 0);" << EOL;
+	ous << "ctxid_memcache.delete(\"" + trace + "\", 0);" << EOL;
+	ous << "ctxid_memcache.delete(\"" + trace + ":start\", 0);" << EOL;
+	//ous << "ctxid_memcache.add(\"" + task + ":end\", (to String)new Date(), 0, 0);" << EOL;
+	//ous << "ctxid_memcache.replace(\"" + task + ":end\", (to String)new Date(), 0, 0);" << EOL;
+	ous.close();
+	InputStream ins = p.getInputStream();
+	foreach(String s in ins) {
+		OUT << s << EOL;
+	}
+	InputStream err = p.getErrorInputStream();
+	foreach(String s in err) {
+		ERR << s << EOL;
+	}
+	p.wait();
+	g_task.remove(task);
+	//mc.add(task + ":end", (to String)new Date(), 0, 0);
+	//mc.replace(task + ":end", (to String)new Date(), 0, 0);
+}
+
+String bind(String role, String script)
+{
+	String host = "192.168.0.201"; /* diag */
+	int port = 11211;
+	Proc p = new Proc([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, "-"]);
+	OutputStream ous = p.getOutputStream();
+	ous << script << EOL;
+	ous.close();
+	InputStream ins = p.getInputStream();
+	String ret = "";
+	foreach(String s in ins) {
+		ret += s + EOL;
+	}
+	InputStream err = p.getErrorInputStream();
+	foreach(String s in err) {
+		ret += s + EOL;
+	}
+	p.wait();
+	return ret;
+}
+
+void main(String[] args)
+{
+	int port = 2000;
+	if (|args| > 0) {
+		port = (to int)args[0];
+	}
+
+	OUT << "start an ActorServer with port: " + (to String)port << EOL;
+	mailbox = new Proc([$konoha.bin.path, $konoha.script.path + "/mailbox.k", (String)port]);
+	InputStream ins = mailbox.getInputStream();
+
+	String task = "";
+	String trace = "";
+	while (mailbox.isAlive()) {
+		String line = ins.readLine();
+		//print line;
+		if (line == "ping") continue;
+		if (|line.match($/bind:[a-zA-Z0-9\.\-_]+:[a-zA-Z0-9\.\-_]+:[A-Z0-9]+$/)| > 0) {
+			String role = line.replace($/bind:([a-zA-Z0-9\.\-_]+):[a-zA-Z0-9\.\-_]+:[A-Z0-9]+$/, "$1");
+			task = line.replace($/bind:[a-zA-Z0-9\.\-_]+:([a-zA-Z0-9\.\-_]+):[A-Z0-9]+$/, "$1");
+			String ctxid = line.replace($/bind:[a-zA-Z0-9\.\-_]+:[a-zA-Z0-9\.\-_]+:([A-Z0-9]+)$/, "$1");
+			//print role, task, ctxid;
+			String script = "";
+			foreach (String s in ins) {
+				if (|s.match($/bind:[a-zA-Z0-9\.\-_]+:[a-zA-Z0-9\.\-_]+:[A-Z0-9]+$/)| > 0) {
+					break;
+				}
+				script += s + EOL;
+			}
+			String ret = bind(role, script);
+			ERR << "DEBUG: " << ret << EOL;
+			if (ret == "") {
+				ret = "OK";
+			}
+			if (ret.indexOf("is not allowed") == -1) {
+				g_task[task] = script;
+			}
+			String host = "192.168.0.201"; /* diag */
+			int port = 11211;
+			Memcache mc = new Memcache(host, port);
+			mc.add(ctxid + ":" + task, ret, 60 * 30, 0);
+			mc.replace(ctxid + ":" + task, ret, 60 * 30, 0);
+			continue;
+		}
+		String[] matches = line.match($/<<\s*[a-zA-Z0-9\.\-_]+:[A-Z0-9\+]+$/);
+		//print matches;
+		if (|matches| > 0) {
+			//print matches;
+			// start of Task
+			String[] task_trace = matches[0].replace($/<<\s*([a-zA-Z0-9\.\-_]+):([A-Z0-9\+]+)$/,
+					"$1:$2").split(":");
+			task = task_trace[0];
+			trace = task_trace[1];
+			String script = "";
+			foreach (String s in ins) {
+				if (|s.match($/>>\s*[a-zA-Z0-9\.\-_]+:[A-Z0-9\+]+$/)| > 0) {
+					break;
+				}
+				script += s + EOL;
+			}
+			print trace, task, script;
+			evalMsg(trace, task, script);
+			continue;
+		}
+	}
+}

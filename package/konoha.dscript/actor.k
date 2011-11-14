@@ -36,14 +36,15 @@ using konoha.socket.*;
 using konoha.io.*;
 using konoha.memcached.*;
 using konoha.ntrace.*;
+using konoha.posix.*;
 
 class Actor
 {
 	String name;
 	String host;
 	int port;
-	String role;
 	String task;
+	String traceid;
 
 	Actor(String name, String host, int port) {
 		_name = name;
@@ -75,7 +76,7 @@ class Actor
 		return null;
 	}
 
-	@Virtual boolean eval(String script) {
+	boolean eval(String script) {
 		try {
 			Socket s = new Socket(this.host, this.port);
 			OutputStream ous = s.getOutputStream();
@@ -116,17 +117,21 @@ class Actor
 		endTask();
 	}
 
-	void startTask(String task_name, String role) {
-		_task = task_name;
-		_role = role;
-		if (role == null) {
-			_role = "Role";
+	void startTask(String task_name, String id) {
+		if (id == null) {
+			Bytes b = new byte[10];
+			for (int i = 0; i < 9; i++) {
+				b[i] = Int.random() % 26 + 65;
+			}
+			id = b.decode();
 		}
-		this.eval("<< " + _role + ":" + task);
+		this.eval("<< " + task_name + ":" + id);
+		_task = task_name;
+		_traceid = id;
 	}
 
 	void endTask() {
-		this.eval(">> " + role + ":" + task);
+		this.eval(">> " + task + ":" + traceid);
 	}
 
 	boolean close() {
@@ -165,5 +170,81 @@ class StoreActor
 		Bytes b = new Bytes();
 		b.writeMsgPack(data);
 		m[key] = b;
+	}
+}
+
+class Trace
+{
+	String id;
+	int num;
+
+	Trace(String id, int parallel_num) {
+		_id = id;
+		_num = parallel_num;
+		if (parallel_num == 0) {
+			_num = 1;
+		}
+	}
+
+	boolean checkTaskLog() {
+		String host = "192.168.0.201"; /* diag */
+		int port = 11211;
+		Memcache mc = new Memcache(host, port);
+		for (int i = 0; i < num; i++) {
+			while (mc[id + (to String)i + ":start"] != null) {
+				System.usleep(1000);
+			}
+		}
+		return true;
+	}
+}
+
+class Task
+{
+	String name;
+	String script;
+	Actor[] actors;
+
+	Task(String name, String script) {
+		_name = name;
+		_script = script;
+		_actors = [];
+	}
+
+	boolean bind(Actor actor, String role) {
+		String trace = CTX.getTrace();
+		//print trace;
+		actor.eval("bind:" + role + ":" + name + ":" + trace);
+		actor.eval(script);
+		actor.eval("bind:" + role + ":" + name + ":" + trace);
+		String host = "192.168.0.201"; /* diag */
+		int port = 11211;
+		Memcache mc = new Memcache(host, port);
+		while (mc[trace + ":" + name] == null) {
+			//print "wait " + trace + ":" + name;
+			System.usleep(1000);
+		}
+		String res = mc[trace + ":" + name];
+		ERR << "DEBUG: " << res << EOL;
+		if (res.indexOf("is not allowed") != -1) {
+			return false;
+		}
+		_actors.add(actor);
+		return true;
+	}
+
+	Trace goTask(String traceid) {
+		for (int i = 0; i < |actors|; i++) {
+			Actor actor = actors[i];
+			actor.startTask(name, traceid + (to String)i);
+			//actor.eval(script);
+			actor.endTask();
+			String host = "192.168.0.201"; /* diag */
+			int port = 11211;
+			Memcache mc = new Memcache(host, port);
+			mc.add(traceid + (to String)i + ":start", (to String)new Date(), 0, 0);
+			mc.replace(traceid + (to String)i + ":start", (to String)new Date(), 0, 0);
+		}
+		return new Trace(traceid, |actors|);
 	}
 }
