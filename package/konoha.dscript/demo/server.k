@@ -46,7 +46,7 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
         o.close();
         Proc proc new Proc([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, fname]);
 
-        String res = readError(proc.getErrorInputStream());
+        String res = "";//readError(proc.getErrorInputStream());
         print res;
 
         String data = "OK"+EOL+"Content-Length: " + res.size+ EOL + res;
@@ -56,15 +56,22 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
     } else if (cmd == "EVAL") {
         print role, id, dtask, data, fname;
 
+        ins = new InputStream(fname);
+        foreach (String l in ins) {
+            print l;
+        }
+        print $konoha.bin.path, fname;
         //Proc proc = new Proc([$konoha.bin.path, "-a", "--logcached=" + HOST + ":" + PORT, fname], null, true);
         //Memcache mc = new Memcache(HOST, PORT);
         //mc[id] = "OK";
-        Proc proc = new Proc([$konoha.bin.path, "-a", fname], null, false);
-
-        print "hi";
-        String res = readError(proc.getErrorInputStream());
-        print "hi";
-        print "hi";
+        //Proc proc = new Proc([$konoha.bin.path, "-a", fname], null, true);
+        String cmdline = join([$konoha.bin.path, "-a", fname], " ");
+        print cmdline;
+        int ret = System.thread(cmdline);
+        print "**";
+        String res = "";//readError(proc.getErrorInputStream());
+        print "**";
+        print "**";
         String data = "OK"+EOL+"Content-Length: " + res.size+ EOL + res;
         print "hi";
         ous.println(data);
@@ -92,6 +99,8 @@ void main(String[] args) {
     print ss.localPort, ss.receiveBufferSize, ss.soTimeout, ss.reuseAddress;
     while (true) {
         Socket connection = ss.accept();
+        print connection.isClosed();
+        System.usleep(1000);
         OUT << "accepted" << EOL;
         if (!connection.isClosed()) {
             ins = connection.getInputStream();
@@ -128,6 +137,7 @@ void main(String[] args) {
         } else {
             OUT << "socket has been closed by the peer" << EOL;
         }
+        print connection.isClosed();
         OUT << "connection closed" << EOL;
     }
     ss.close();

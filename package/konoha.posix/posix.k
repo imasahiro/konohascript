@@ -53,6 +53,7 @@ include "lib:gluelink";
 @Public @Native int System.fork();
 //@Public @Native int System.execv(Path path, String[] args);
 @Public @Native int System.system(String cmd);
+@Public @Native int System.thread(String cmd);
 @Public @Native int System.wait();
 @Public @Native int System.waitpid(int pid, int options);
 

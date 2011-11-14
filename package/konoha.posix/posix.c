@@ -296,6 +296,22 @@ KMETHOD System_system(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
+void *thread_func(void *arg)
+{
+	char* p = (char *) arg;
+	system(p);
+	return 0;
+}
+#include <pthread.h>
+
+KMETHOD System_thread(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	const char *p = S_totext(sfp[1].s);
+	pthread_t pthread;
+	pthread_create(&pthread, NULL, thread_func, (void*)p);
+	pthread_detach(pthread);
+}
+
 //## @Native int System.wait(void)
 KMETHOD System_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 {

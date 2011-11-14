@@ -138,7 +138,7 @@ class Actor {
 class DTrace {
 	String id;
 	int num;
-	
+
 	DTrace(String id, int parallel_num) {
 		_id = id;
 		_num = parallel_num;
@@ -152,7 +152,7 @@ class DTrace {
 		int port = 11211;
 		Memcache mc = new Memcache(host, port);
 		for (int i = 0; i < num; i++) {
-			String result, key = id + "-" (to String)i;
+			String result, key = id + "-" + (to String)i;
 			while((result = mc[key]) != null) {
 				System.usleep(1000);
 			}
@@ -186,7 +186,7 @@ class DTask {
 			return true;
 		}
 		else {
-			
+
 		}
 		return false;
 	}
@@ -212,7 +212,7 @@ class DControl {
 	String name;
 	DTask[] tasks;
 	DTask   helper;
-	
+
 	DControl(String name, DTask helper) {
 		_name = name;
 		_tasks = [];
@@ -228,3 +228,4 @@ class DControl {
 		}
 	}
 }
+

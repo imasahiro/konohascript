@@ -449,29 +449,39 @@ KMETHOD ServerSocket_accept(CTX ctx, knh_sfp_t* sfp _RIX)
 	if (unlikely(ss->isListen == 0)) {
 		knh_ldata_t ldata2[] = {LOG_i("port", ss->port), LOG_i("max_connection", ss->backlog), LOG_sfp, LOG_END};
 		if (listen(ss->sd, ss->backlog) == -1) {
-		  so = new_ReturnRawPtr(ctx, sfp, NULL);
-		  KNH_NTHROW(ctx, sfp, "ServerSocket!!", "listen", K_PERROR, ldata2);
-		  goto L_RETURN;
+			so = new_ReturnRawPtr(ctx, sfp, NULL);
+			KNH_NTHROW(ctx, sfp, "ServerSocket!!", "listen", K_PERROR, ldata2);
+			goto L_RETURN;
 		} else {
-		  ss->isListen = 1;
-		  KNH_NTRACE(ctx, "listen", K_OK, ldata2);
+			ss->isListen = 1;
+			KNH_NTRACE(ctx, "listen", K_OK, ldata2);
 		}
 	}
-	struct sockaddr_in client_address;
-	socklen_t client_len = sizeof(struct sockaddr_in);
-	knh_intptr_t fd = accept(ss->sd, (struct sockaddr*)&client_address, &client_len);
 
-	knh_ldata_t ldata[] = {LOG_END};
-	if (fd == -1) {
-		so = new_ReturnRawPtr(ctx, sfp, NULL);
-		KNH_NTHROW(ctx, sfp, "ServerSocket!!", "accept", K_PERROR, ldata);
+
+	/* TODO signal(@imasahiro) */
+	while (1) {
+		struct sockaddr_in client_address;
+		socklen_t client_len = sizeof(struct sockaddr_in);
+		knh_intptr_t fd = accept(ss->sd,
+				(struct sockaddr*)&client_address, &client_len);
+
+		knh_ldata_t ldata[] = {LOG_END};
+		if (fd == -1) {
+			if (errno == 4) {
+				continue;
+			}
+			so = new_ReturnRawPtr(ctx, sfp, NULL);
+			KNH_NTHROW(ctx, sfp, "ServerSocket!!", "accept", K_PERROR, ldata);
+		}
+		else {
+			so = new_ReturnRawPtr(ctx, sfp, (void*)fd);
+			KNH_NTRACE(ctx, "accept", K_OK, ldata);
+			break;
+		}
 	}
-	else {
-		so = new_ReturnRawPtr(ctx, sfp, (void*)fd);
-		KNH_NTRACE(ctx, "accept", K_OK, ldata);
-	}
-	
- L_RETURN:
+
+L_RETURN:
 	RETURN_(so);
 }
 
@@ -593,7 +603,7 @@ KMETHOD ServerSocket_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
-//	kapi->loadClassIntConst(ctx, CLASS_System, IntConstData);
+	//	kapi->loadClassIntConst(ctx, CLASS_System, IntConstData);
 	RETURN_PKGINFO("konoha.socket");
 }
 
