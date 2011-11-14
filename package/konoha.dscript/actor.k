@@ -38,6 +38,8 @@ using konoha.memcached.*;
 using konoha.ntrace.*;
 using konoha.posix.*;
 
+String globalRole;
+
 class Actor {
 	String name;
 	String host;
@@ -132,6 +134,10 @@ class Actor {
 		}
 		return buf;
 	}
+
+	@Static void setRole(String r) {
+		globalRole = r;
+	}
 }
 
 
@@ -175,12 +181,24 @@ class DTask {
 		_actors = [];
 	}
 
+	void load(Path urn) {
+		InputStream ins = new InputStream(urn, "r");
+		String buf = "";
+		foreach (String line in ins) {
+			buf += line + EOL;
+		}
+		_script = buf;
+	}
+
 	void show() {
 		OUT << EOL << script << EOL;
 	}
 
 	boolean bind(Actor actor, String role) {
 		String trace = CTX.getTrace();
+		if(role == null) {
+			role = globalRole;
+		}
 		if(actor.bind(script, role, name)) {
 			_actors.add(actor);
 			return true;
