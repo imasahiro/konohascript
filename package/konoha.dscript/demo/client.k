@@ -6,7 +6,7 @@ using konoha.posix.*;
 System.sleep(3);
 print 'hi';""");
 print t.bind(a, "Role1");
-trace = t.go("TestTransaaaaaaaaaaaaaaaaa");
+trace = t.go("TestTrans");
 print trace.checkTaskLog();
 //dc = new DControl("hoge");
 //dc.add(t);

@@ -68,17 +68,17 @@ class Actor {
 		print protocol;
 		Int length;
 		while (true) {
-			line = ins.readLine();
+			String line = ins.readLine();
 			print line;
 			if (line == "") {
 				break;
 			}
 			data = line.split(":")[1].trim();
 			if (line.startsWith("Content-Length")) {
-				length = (Int) data;
+				int length = (Int) data;
 			}
 		}
-		b = new Bytes(length);
+		Bytes b = new Bytes(length);
 		ins.read(b, 0, length);
 		this.errorbuf = b.decode(null);
 		/* "OK" or "NG" */
@@ -104,12 +104,12 @@ class Actor {
 	}
 
 	boolean bind(String script, String role, String id) {
-		msg = "TCHECK 0.9\nAuth: " + role + "\nD-Task: " + id + "\nContent-Length: " + (script.size + 1) +"\n\n" + script;
+		String msg = "TCHECK 0.9\nAuth: " + role + "\nD-Task: " + id + "\nContent-Length: " + (script.size + 1) +"\n\n" + script;
 		return send(msg);
 	}
 
 	boolean eval(String script, Map map) {
-		msg = "EVAL 0.9\n";
+		String msg = "EVAL 0.9\n";
 		for(String key : map.keys()) {
 			msg += key + ": " + (String)map[key] + "\n";
 		}
@@ -118,7 +118,7 @@ class Actor {
 	}
 
 	boolean debug(String script, Map map) {
-		msg = "DEBUG 0.9\n";
+		String msg = "DEBUG 0.9\n";
 		for(String key : map.keys()) {
 			msg += key + ": " + (String)map[key] + "\n";
 		}
@@ -163,6 +163,7 @@ class DTrace {
 				System.usleep(1000);
 			}
 			print result;
+			mc.delete(key, 0);
 			if(result == "FAILED") {
 				return false;
 			}

@@ -2,6 +2,7 @@ using konoha.proc.*;
 using konoha.socket.*;
 using konoha.posix.*;
 using konoha.io.*;
+using konoha.ntrace.*;
 
 HOST="192.168.0.201";
 PORT=11211;
@@ -37,7 +38,7 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 	print cmd;
 	print data;
 	cmd = cmd.split(" ")[0];
-	String fname = join([dtask], ".") + "k";
+	String fname = "/tmp/" + join([dtask], ".") + "k";
 	print fname;
 	if (cmd == "TCHECK") {
 
@@ -79,6 +80,15 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 		return res;
 	} else if (cmd == "EVAL") {
 		print role, id, dtask, data, fname;
+
+		Map ldata = {};
+		ldata["role"] = role;
+		ldata["id"] = id;
+		ldata["dtask"] = dtask;
+		ldata["data"] = data;
+		ldata["fname"] = fname;
+		print ldata;
+		System.ntrace_notice("d-task", ldata);
 
 		ous = new OutputStream(fname, "a");
 		ous << "\tctxid_memcache.set(\"" + id + "\", \"OK\", 0, 0);" << EOL;
