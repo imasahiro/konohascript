@@ -159,9 +159,10 @@ class DTrace {
 		Memcache mc = new Memcache(host, port);
 		for (int i = 0; i < num; i++) {
 			String result, key = id + "-" + (to String)i;
-			while((result = mc[key]) != null) {
+			while((result = mc[key]) == null) {
 				System.usleep(1000);
 			}
+			print result;
 			if(result == "FAILED") {
 				return false;
 			}
@@ -242,7 +243,7 @@ class DControl {
 			DTrace trace = task.go(traceid + "-" + (String)i);
 			if(trace.checkTaskLog()) continue;
 			helper.go(traceid);
-			task.go(traceid + "-" + (String)i + "-RETRY");			
+			task.go(traceid + "-" + (String)i + "-RETRY");
 		}
 	}
 }

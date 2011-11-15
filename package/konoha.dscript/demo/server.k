@@ -44,24 +44,29 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 		o = new OutputStream(fname);
 		o << "using konoha.memcached.*;" << EOL;
 		o << "using konoha.posix.*;" << EOL;
-		o << "Memcache ctxid_memcache = new Memcache(\"" << HOST << "\", " << PORT << ");" << EOL;
-		o << "ctxid_memcache.set(\"" + dtask + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
-		o << "String g_syslogpath = \"/var/log/syslog\";" << EOL;
-		o << "if (System.getHostName() == \"chen-pro.local\") g_syslogpath = \"/var/log/system.log\";" << EOL;
-		o << "OutputStream g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
-		o << "g_syslog << (to String)new Date() << \" \" << System.getHostName()";
+		o << "{" << EOL;
+		o << "\tMemcache ctxid_memcache = new Memcache(\"" << HOST << "\", " << PORT << ");" << EOL;
+		o << "\tctxid_memcache.set(\"" + dtask + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
+		o << "\tString g_syslogpath = \"/var/log/syslog\";" << EOL;
+		o << "\tif (System.getHostName() == \"chen-pro.local\") g_syslogpath = \"/var/log/system.log\";" << EOL;
+		o << "\tOutputStream g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
+		o << "\tg_syslog << (to String)new Date() << \" \" << System.getHostName()";
 		o << " << \" konoha[\" << (to String)System.getPid() << \"]: \" << CTX.getTrace()";
 		o << " << \"+\" << (to String)CTX.getSeq() << \" task_start {\\\"name\\\": \\\"";
 		o << dtask << "\\\", \\\"role\\\": \\\"" << role << "\\\"}\" << EOL;" << EOL;
-		o << "g_syslog.close();" << EOL;
+		o << "\tg_syslog.close();" << EOL << "}" << EOL;
 		o.println(data);
-		o << "g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
-		o << "g_syslog << (to String)new Date() << \" \" << System.getHostName()";
+		o << "{" << EOL;
+		o << "\tString g_syslogpath = \"/var/log/syslog\";" << EOL;
+		o << "\tif (System.getHostName() == \"chen-pro.local\") g_syslogpath = \"/var/log/system.log\";" << EOL;
+		o << "\tOutputStream g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
+		o << "\tg_syslog << (to String)new Date() << \" \" << System.getHostName()";
 		o << " << \" konoha[\" << (to String)System.getPid() << \"]: \" << CTX.getTrace()";
 		o << " << \"+\" << (to String)(CTX.getSeq() + 1) << \" task_end {\\\"name\\\": \\\"";
 		o << dtask << "\\\", \\\"role\\\": \\\"" << role << "\\\"}\" << EOL;" << EOL;
-		o << "g_syslog.close();" << EOL;
-		o << "ctxid_memcache.delete(\"" + dtask + "\" + \":\" + System.getHostName(), 0);" << EOL;
+		o << "\tg_syslog.close();" << EOL;
+		o << "\tMemcache ctxid_memcache = new Memcache(\"" << HOST << "\", " << PORT << ");" << EOL;
+		o << "\tctxid_memcache.delete(\"" + dtask + "\" + \":\" + System.getHostName(), 0);" << EOL;
 		o.close();
 		Proc proc new Proc([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, fname]);
 
@@ -75,6 +80,10 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 	} else if (cmd == "EVAL") {
 		print role, id, dtask, data, fname;
 
+		ous = new OutputStream(fname, "a");
+		ous << "\tctxid_memcache.set(\"" + id + "\", \"OK\", 0, 0);" << EOL;
+		ous << "}" << EOL;
+		ous.close();
 		ins = new InputStream(fname);
 		foreach (String l in ins) {
 			print l;
