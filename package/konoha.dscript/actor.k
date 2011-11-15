@@ -192,6 +192,16 @@ class DTask {
 		_script = buf;
 	}
 
+	void additionalLoad(Path urn) {
+		InputStream ins = new InputStream(urn, "r");
+		String buf = "";
+		foreach (String line in ins) {
+			buf += line + EOL;
+		}
+		_script += buf;
+	}
+
+
 	void show() {
 		OUT << EOL << script << EOL;
 	}

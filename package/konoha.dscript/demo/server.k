@@ -3,6 +3,7 @@ using konoha.socket.*;
 using konoha.posix.*;
 using konoha.io.*;
 using konoha.ntrace.*;
+using konoha.memcached.*;
 
 HOST="192.168.0.201";
 PORT=11211;
@@ -43,33 +44,12 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 	String fname = "/tmp/" + join([dtask], ".") + "k";
 	if (DEBUG) print fname;
 	if (cmd == "TCHECK") {
-
 		o = new OutputStream(fname);
-		o << "using konoha.memcached.*;" << EOL;
-		o << "using konoha.posix.*;" << EOL;
-		o << "{" << EOL;
-		o << "\tMemcache ctxid_memcache = new Memcache(\"" << HOST << "\", " << PORT << ");" << EOL;
-		o << "\tctxid_memcache.set(\"" + dtask + "\" + \":\" + System.getHostName(), CTX.getTrace(), 0, 0);" << EOL;
-		o << "\tString g_syslogpath = \"/var/log/syslog\";" << EOL;
-		o << "\tif (System.getHostName() == \"chen-pro.local\") g_syslogpath = \"/var/log/system.log\";" << EOL;
-		o << "\tOutputStream g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
-		o << "\tg_syslog << (to String)new Date() << \" \" << System.getHostName()";
-		o << " << \" konoha[\" << (to String)System.getPid() << \"]: \" << CTX.getTrace()";
-		o << " << \"+\" << (to String)CTX.getSeq() << \" task_start {\\\"name\\\": \\\"";
-		o << dtask << "\\\", \\\"role\\\": \\\"" << role << "\\\"}\" << EOL;" << EOL;
-		o << "\tg_syslog.close();" << EOL << "}" << EOL;
+		o << "$PREPROCESS_HOST = \"" << HOST << "\";" << EOL;
+		o << "$PREPROCESS_DTASK = \"" << dtask << "\";" << EOL;
+		o << "include \"/tmp/preprocess.k\";" << EOL;
 		o.println(data);
-		o << "{" << EOL;
-		o << "\tString g_syslogpath = \"/var/log/syslog\";" << EOL;
-		o << "\tif (System.getHostName() == \"chen-pro.local\") g_syslogpath = \"/var/log/system.log\";" << EOL;
-		o << "\tOutputStream g_syslog = new OutputStream(g_syslogpath, \"a\");" << EOL;
-		o << "\tg_syslog << (to String)new Date() << \" \" << System.getHostName()";
-		o << " << \" konoha[\" << (to String)System.getPid() << \"]: \" << CTX.getTrace()";
-		o << " << \"+\" << (to String)(CTX.getSeq() + 1) << \" task_end {\\\"name\\\": \\\"";
-		o << dtask << "\\\", \\\"role\\\": \\\"" << role << "\\\"}\" << EOL;" << EOL;
-		o << "\tg_syslog.close();" << EOL;
-		o << "\tMemcache ctxid_memcache = new Memcache(\"" << HOST << "\", " << PORT << ");" << EOL;
-		o << "\tctxid_memcache.delete(\"" + dtask + "\" + \":\" + System.getHostName(), 0);" << EOL;
+		o << "include \"/tmp/postprocess.k\";" << EOL;
 		o.close();
 		Proc proc new Proc([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, fname]);
 
@@ -123,6 +103,23 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 	return data;
 }
 
+void init(int port) {
+	Memcache mc = new Memcache(HOST, PORT);
+	//String init_task_names = mc.get("INIT_TASK").split(":");
+	String init_task_name = mc.get("INIT_TASK") + ".k";
+	Dir d = System.opendir(".");
+	String cmdline = join([$konoha.bin.path, "-a", "--logcached=" + HOST + ":" + PORT, ], " ");
+	while ((s = d.readName()) != null) {
+		if (init_task_name == s) {
+			cmdline = cmdline + " " + s;
+			if (DEBUG) print cmdline;
+			int ret = System.thread(cmdline);
+			mc.set("INIT_TASK", "FINISHED");
+			break;
+		}
+	}
+}
+
 void main(String[] args) {
 	int argc = |args|;
 	int port = 8080;
@@ -137,6 +134,7 @@ void main(String[] args) {
 	ServerSocket ss = new ServerSocket(port, 3);
 
 	if (DEBUG) print ss.localPort, ss.receiveBufferSize, ss.soTimeout, ss.reuseAddress;
+	init(port);
 	while (true) {
 		Socket connection = ss.accept();
 		if (DEBUG) print connection.isClosed();
@@ -169,7 +167,12 @@ void main(String[] args) {
 					dtask = data;
 				}
 			}
-			String s = ins.readAll(length);
+			String s;
+			foreach(String buf in ins) {
+				s += buf + "\n";
+				if ("SCRIPTEND" in? buf) break;
+			}
+			//			String s = ins.readAll(length);
 			if (DEBUG) print auth, id, dtask, length, s;
 			String res = dispatch(protocol, auth, id, dtask, s, ous);
 			if (DEBUG) print "bye";
