@@ -7,6 +7,8 @@ using konoha.ntrace.*;
 HOST="192.168.0.201";
 PORT=11211;
 
+DEBUG=false;
+
 @Public String InputStream.readAll(int length) {
 	InputStream ins = this;
 	b = new Bytes(length);
@@ -34,12 +36,12 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 	if (cmd == null) {
 		return "";
 	}
-	print cmd.split(" ")[0];
-	print cmd;
-	print data;
+	if (DEBUG) print cmd.split(" ")[0];
+	if (DEBUG) print cmd;
+	if (DEBUG) print data;
 	cmd = cmd.split(" ")[0];
 	String fname = "/tmp/" + join([dtask], ".") + "k";
-	print fname;
+	if (DEBUG) print fname;
 	if (cmd == "TCHECK") {
 
 		o = new OutputStream(fname);
@@ -72,14 +74,14 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 		Proc proc new Proc([$konoha.bin.path, "-a", "-c", "--enforce-security=" + role, fname]);
 
 		String res = "";//readError(proc.getErrorInputStream());
-		print res;
+		if (DEBUG) print res;
 
 		String data = "OK"+EOL+"Content-Length: " + res.size+ EOL + res;
 		ous.println(data);
 		ous.flush();
 		return res;
 	} else if (cmd == "EVAL") {
-		print role, id, dtask, data, fname;
+		if (DEBUG) print role, id, dtask, data, fname;
 
 		Map ldata = {};
 		ldata["role"] = role;
@@ -87,7 +89,7 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 		ldata["dtask"] = dtask;
 		ldata["data"] = data;
 		ldata["fname"] = fname;
-		print ldata;
+		if (DEBUG) print ldata;
 		System.ntrace_notice("d-task", ldata);
 
 		ous = new OutputStream(fname, "a");
@@ -96,25 +98,25 @@ String dispatch(String cmd, String role, String id, String dtask, String data, O
 		ous.close();
 		ins = new InputStream(fname);
 		foreach (String l in ins) {
-			print l;
+			if (DEBUG) print l;
 		}
-		print $konoha.bin.path, fname;
+		if (DEBUG) print $konoha.bin.path, fname;
 		//Proc proc = new Proc([$konoha.bin.path, "-a", "--logcached=" + HOST + ":" + PORT, fname], null, true);
 		//Memcache mc = new Memcache(HOST, PORT);
 		//mc[id] = "OK";
 		//Proc proc = new Proc([$konoha.bin.path, "-a", fname], null, true);
 		String cmdline = join([$konoha.bin.path, "-a", fname, "--logcached=" + HOST + ":" + PORT], " ");
-		print cmdline;
+		if (DEBUG) print cmdline;
 		int ret = System.thread(cmdline);
-		print "**";
+		if (DEBUG) print "**";
 		String res = "";//readError(proc.getErrorInputStream());
-		print "**";
-		print "**";
+		if (DEBUG) print "**";
+		if (DEBUG) print "**";
 		String data = "OK"+EOL+"Content-Length: " + res.size+ EOL + res;
-		print "hi";
+		if (DEBUG) print "hi";
 		ous.println(data);
 		ous.flush();
-		print "hi";
+		if (DEBUG) print "hi";
 		return res;
 	} else if (cmd == "DEBUG") {
 	}
@@ -125,27 +127,27 @@ void main(String[] args) {
 	int argc = |args|;
 	int port = 8080;
 	if (argc < 1) {
-		OUT <<< "warining: you need port number" <<< EOL;
+		if (DEBUG) OUT <<< "warining: you need port number" <<< EOL;
 	} else {
 		port = (int)args[0]
 	}
 	int ch;
 	String line = "";
-	OUT << "port: " + port << EOL;
+	if (DEBUG) OUT << "port: " + port << EOL;
 	ServerSocket ss = new ServerSocket(port, 3);
 
-	print ss.localPort, ss.receiveBufferSize, ss.soTimeout, ss.reuseAddress;
+	if (DEBUG) print ss.localPort, ss.receiveBufferSize, ss.soTimeout, ss.reuseAddress;
 	while (true) {
 		Socket connection = ss.accept();
-		print connection.isClosed();
+		if (DEBUG) print connection.isClosed();
 		System.usleep(1000);
-		OUT << "accepted" << EOL;
+		if (DEBUG) OUT << "accepted" << EOL;
 		if (!connection.isClosed()) {
 			ins = connection.getInputStream();
 			// blocking...
 			ous = connection.getOutputStream();
 			protocol = ins.readLine();
-			print protocol;
+			if (DEBUG) print protocol;
 			String auth;
 			String id;
 			String dtask;
@@ -156,7 +158,7 @@ void main(String[] args) {
 					break;
 				}
 				data = line.split(":")[1].trim();
-				//print line, i;
+				//if (DEBUG) print line, i;
 				if (line.startsWith("Auth")) {
 					auth = data;
 				} else if (line.startsWith("D-Trace")) {
@@ -168,15 +170,15 @@ void main(String[] args) {
 				}
 			}
 			String s = ins.readAll(length);
-			print auth, id, dtask, length, s;
+			if (DEBUG) print auth, id, dtask, length, s;
 			String res = dispatch(protocol, auth, id, dtask, s, ous);
-			print "bye";
+			if (DEBUG) print "bye";
 			connection.close();
 		} else {
-			OUT << "socket has been closed by the peer" << EOL;
+			if (DEBUG) OUT << "socket has been closed by the peer" << EOL;
 		}
-		print connection.isClosed();
-		OUT << "connection closed" << EOL;
+		if (DEBUG) print connection.isClosed();
+		if (DEBUG) OUT << "connection closed" << EOL;
 	}
 	ss.close();
 }
