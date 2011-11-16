@@ -33,8 +33,8 @@ Translated to Konoha by Masahiro Ide
 
 */
 
-
-double System.currentTimeMillis() {
+using konoha.compiler.*;
+@Public double System.currentTimeMillis() {
     return (double) System.getTime();
 }
 

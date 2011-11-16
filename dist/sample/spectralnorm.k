@@ -1,3 +1,4 @@
+using konoha.compiler.*;
 using konoha.math.*;
 class Spectralnorm {
      double Approximate(int n) {

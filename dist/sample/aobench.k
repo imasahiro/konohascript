@@ -1,5 +1,6 @@
 #!/usr/local/bin/konoha
 
+using konoha.compiler.*;
 using konoha.math.*;
 using konoha.io.*;
 

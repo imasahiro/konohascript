@@ -3,6 +3,7 @@
    contributed by Kimio Kuramitsu
 */
 
+using konoha.compiler.*;
 MINDEPTH = 4;
 
 class TreeNode {
