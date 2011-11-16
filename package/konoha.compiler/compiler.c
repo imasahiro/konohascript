@@ -213,8 +213,9 @@ static void kook_ERR_asm(CTX ctx, knh_Stmt_t *stmt)
 
 static void kook_LETEXPR_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)
 {
-    knh_Token_t *tk = tkNN(stmt, 0);
-    CALL(ctx, COMPILER_API.LETEXPR, 3, stmt, NN(espidx), tk);
+    knh_Token_t *tk = tkNN(stmt, 1);
+    knh_Stmt_t *expr = stmtNN(stmt, 2);
+    CALL(ctx, COMPILER_API.LETEXPR, 4, stmt, NN(espidx), tk, expr);
 }
 
 static void kook_FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, int espidx)

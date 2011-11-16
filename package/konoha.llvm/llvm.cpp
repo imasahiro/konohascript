@@ -25,6 +25,7 @@
 
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
+#include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
 #include <llvm/GlobalVariable.h>
 #include <llvm/Function.h>
@@ -32,6 +33,7 @@
 #include <llvm/Instructions.h>
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/Support/DynamicLibrary.h>
+#include <llvm/Support/TargetSelect.h>
 #include <llvm/Pass.h>
 #include <llvm/PassManager.h>
 #include <llvm/Analysis/Verifier.h>
@@ -39,9 +41,7 @@
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
-#include <llvm/Target/TargetSelect.h>
 #include <llvm/Target/TargetData.h>
-#include <llvm/DerivedTypes.h>
 #include <llvm/Transforms/Scalar.h>
 
 #undef HAVE_SYS_TYPES_H
@@ -355,7 +355,7 @@ KMETHOD Type_getInt64PtrTy(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Static PointerType PointerType.get(Type type);
 KMETHOD PointerType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	const Type *type = konoha::object_cast<const Type *>(sfp[1].p);
+	Type *type = konoha::object_cast<Type *>(sfp[1].p);
 	const Type *ptr  = PointerType::get(type, 0);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), type_ptr_free);
 	RETURN_(p);
@@ -494,20 +494,20 @@ KMETHOD IRBuilder_createInvoke3(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## InvokeInst IRBuilder.CreateInvoke(Value Callee, BasicBlock NormalDest, BasicBlock UnwindDest, ArrayRef<Value> Args);
-KMETHOD IRBuilder_createInvoke(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
-	Value *Callee = konoha::object_cast<Value *>(sfp[1].p);
-	BasicBlock *NormalDest = konoha::object_cast<BasicBlock *>(sfp[2].p);
-	BasicBlock *UnwindDest = konoha::object_cast<BasicBlock *>(sfp[3].p);
-	knh_Array_t *Args = (sfp[4].a);
-	std::vector<Value*> List;
-	konoha::convert_array(List, Args);
-	InvokeInst *ptr = self->CreateInvoke(Callee, NormalDest, UnwindDest, List.begin(), List.end());
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
-	RETURN_(p);
-}
+////## InvokeInst IRBuilder.CreateInvoke(Value Callee, BasicBlock NormalDest, BasicBlock UnwindDest, ArrayRef<Value> Args);
+//KMETHOD IRBuilder_createInvoke(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
+//	Value *Callee = konoha::object_cast<Value *>(sfp[1].p);
+//	BasicBlock *NormalDest = konoha::object_cast<BasicBlock *>(sfp[2].p);
+//	BasicBlock *UnwindDest = konoha::object_cast<BasicBlock *>(sfp[3].p);
+//	knh_Array_t *Args = (sfp[4].a);
+//	std::vector<Value*> List;
+//	konoha::convert_array(List, Args);
+//	InvokeInst *ptr = self->CreateInvoke(Callee, NormalDest, UnwindDest, List.begin(), List.end());
+//	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+//	RETURN_(p);
+//}
 
 ////## ResumeInst IRBuilder.CreateResume(Value Exn);
 //KMETHOD IRBuilder_createResume(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -931,7 +931,7 @@ KMETHOD IRBuilder_createGEP(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *IdxList = sfp[2].a;
 	std::vector<Value*> List;
 	konoha::convert_array(List, IdxList);
-	Value *ptr = self->CreateGEP(Ptr, List.begin(), List.end());
+	Value *ptr = self->CreateGEP(Ptr, List);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -944,7 +944,7 @@ KMETHOD IRBuilder_createInBoundsGEP(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *IdxList = sfp[2].a;
 	std::vector<Value*> List;
 	konoha::convert_array(List, IdxList);
-	Value *ptr = self->CreateInBoundsGEP(Ptr, List.begin(), List.end());
+	Value *ptr = self->CreateInBoundsGEP(Ptr, List);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -1557,12 +1557,13 @@ KMETHOD IRBuilder_createFCmpUNE(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## PHINode IRBuilder.CreatePHI(Type Ty);
+//## PHINode IRBuilder.CreatePHI(Type Ty, int numReservedValues);
 KMETHOD IRBuilder_createPHI(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Type *Ty = konoha::object_cast<Type *>(sfp[1].p);
-	PHINode *ptr = self->CreatePHI(Ty);
+	knh_int_t num = sfp[2].ivalue;
+	PHINode *ptr = self->CreatePHI(Ty, num);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -1650,7 +1651,7 @@ KMETHOD IRBuilder_createCall(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *Args = sfp[2].a;
 	std::vector<Value*> List;
 	konoha::convert_array(List, Args);
-	CallInst *ptr = self->CreateCall(Callee, List.begin(), List.end());
+	CallInst *ptr = self->CreateCall(Callee, List);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -1870,15 +1871,15 @@ KMETHOD Module_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## void Module.addTypeName(String name, Type type);
-KMETHOD Module_addTypeName(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	Module *self = konoha::object_cast<Module *>(sfp[0].p);
-	knh_String_t * name = sfp[1].s;
-	Type *type = konoha::object_cast<Type *>(sfp[2].p);
-	self->addTypeName(S_totext(name), type);
-	RETURNvoid_();
-}
+////## void Module.addTypeName(String name, Type type);
+//KMETHOD Module_addTypeName(CTX ctx, knh_sfp_t *sfp _RIX)
+//{
+//	Module *self = konoha::object_cast<Module *>(sfp[0].p);
+//	knh_String_t * name = sfp[1].s;
+//	Type *type = konoha::object_cast<Type *>(sfp[2].p);
+//	self->addTypeName(S_totext(name), type);
+//	RETURNvoid_();
+//}
 
 //## void Module.dump();
 KMETHOD Module_dump(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1938,6 +1939,9 @@ KMETHOD Module_createExecutionEngine(CTX ctx, knh_sfp_t *sfp _RIX)
 	Module *self = konoha::object_cast<Module *>(sfp[0].p);
 	ExecutionEngine *ptr = EngineBuilder(self).setEngineKind(EngineKind::JIT).create();
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), ExecutionEngine_obj_free);
+	if (!ptr) {
+		KNH_P("error");
+	}
 	RETURN_(p);
 }
 //## @Static BasicBlock BasicBlock.create(Function parent);
@@ -1952,10 +1956,10 @@ KMETHOD BasicBlock_create(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Static FunctionType.get(Type retTy, Array<Type> args, boolean b);
 KMETHOD FunctionType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	const Type *retTy = konoha::object_cast<Type *>(sfp[1].p);
+	Type *retTy = konoha::object_cast<Type *>(sfp[1].p);
 	knh_Array_t * args = sfp[2].a;
 	knh_bool_t b = sfp[3].bvalue;
-	std::vector<const Type*> List;
+	std::vector<Type*> List;
 	konoha::convert_array(List, args);
 	FunctionType *ptr = FunctionType::get(retTy, List, b);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
@@ -1987,12 +1991,26 @@ KMETHOD StructType_get(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Array_t *args = sfp[1].a;
 	knh_bool_t isPacked = sfp[2].bvalue;
-	std::vector<const Type*> List;
+	std::vector<Type*> List;
 	konoha::convert_array(List, args);
 	StructType *ptr = StructType::get(getGlobalContext(), List, isPacked);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
+
+//## @Static StructType.create(Array<Type> args, String name, boolean isPacked);
+KMETHOD StructType_create(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	knh_Array_t *args = sfp[1].a;
+	knh_String_t *name = sfp[2].s;
+	knh_bool_t isPacked = sfp[3].bvalue;
+	std::vector<Type*> List;
+	konoha::convert_array(List, args);
+	StructType *ptr = StructType::create(List, S_totext(name), isPacked);
+	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
 
 //## NativeFunction ExecutionEngine.getPointerToFunction(Module m, Function func);
 KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -2002,24 +2020,15 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 	Function *func = konoha::object_cast<Function *>(sfp[2].p);
 
 	FunctionPassManager pm(m);
-	pm.add(new TargetData(*(ee->getTargetData())));
-	pm.add(createVerifierPass());
+	pm.add(new TargetData(*ee->getTargetData()));
+	pm.add(createBasicAliasAnalysisPass());
+	pm.add(createPromoteMemoryToRegisterPass());
 	pm.add(createInstructionCombiningPass());
-	pm.add(createLICMPass());
-	pm.add(createIndVarSimplifyPass());
-	pm.add(createLoopDeletionPass());
-	for(int repeat=0; repeat < 3; repeat++) {
-		pm.add(createGVNPass());
-		pm.add(createSCCPPass());
-		pm.add(createCFGSimplificationPass());
-		pm.add(createInstructionCombiningPass());
-		pm.add(createConstantPropagationPass());
-		pm.add(createAggressiveDCEPass());
-		pm.add(createCFGSimplificationPass());
-		pm.add(createDeadStoreEliminationPass());
-		pm.add(createDemoteRegisterToMemoryPass());
-	}
+	pm.add(createReassociatePass());
+	pm.add(createGVNPass());
+	pm.add(createCFGSimplificationPass());
 	pm.doInitialization();
+
 	pm.run(*func);
 
 	void *ptr = ee->getPointerToFunction(func);

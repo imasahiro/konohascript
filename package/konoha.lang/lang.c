@@ -87,7 +87,13 @@ KMETHOD Stmt_getESPIDX(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
     RETURNi_(DP(stmt)->espidx);
 }
-
+//## void Stmt.setESPIDX(int espidx);
+KMETHOD Stmt_setESPIDX(CTX ctx, knh_sfp_t *sfp _RIX) {
+    knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
+    knh_int_t espidx = Int_to(knh_int_t, sfp[1]);
+    DP(stmt)->espidx = espidx;
+    RETURNvoid_();
+}
 //## Token Stmt.getT(int n);
 KMETHOD Stmt_getT(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Stmt_t *stmt = (knh_Stmt_t*)sfp[0].o;
@@ -154,7 +160,8 @@ KMETHOD Stmt_toToken(CTX ctx, knh_sfp_t *sfp _RIX) {
 //## int Token.getT();
 KMETHOD Token_getT(CTX ctx, knh_sfp_t *sfp _RIX) {
     knh_Token_t *tk = (knh_Token_t*)sfp[0].o;
-    RETURNi_(SP(tk)->type);
+    knh_Class_t *res = new_Type(ctx, SP(tk)->type);
+    RETURN_(res);
 }
 
 static int Token_index_(CTX ctx, knh_Token_t *tk) 
