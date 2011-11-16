@@ -84,7 +84,7 @@ include "lib:gluelink";
 @Native InvokeInst IRBuilder.createInvoke0(Value callee, BasicBlock normalDest, BasicBlock unwindDest);
 @Native InvokeInst IRBuilder.createInvoke1(Value callee, BasicBlock normalDest, BasicBlock unwindDest, Value arg1);
 @Native InvokeInst IRBuilder.createInvoke3(Value callee, BasicBlock normalDest, BasicBlock unwindDest, Value arg1, Value arg2, Value arg3);
-@Native InvokeInst IRBuilder.createInvoke(Value callee, BasicBlock normalDest, BasicBlock unwindDest, Array<Value> args);
+//@Native InvokeInst IRBuilder.createInvoke(Value callee, BasicBlock normalDest, BasicBlock unwindDest, Array<Value> args);
 //@Native ResumeInst IRBuilder.createResume(Value exn);
 @Native UnreachableInst IRBuilder.createUnreachable();
 @Native Value IRBuilder.createAdd(Value lhs, Value rhs);

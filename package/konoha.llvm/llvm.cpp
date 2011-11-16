@@ -25,6 +25,7 @@
 
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
+#include <llvm/DerivedTypes.h>
 #include <llvm/Constants.h>
 #include <llvm/GlobalVariable.h>
 #include <llvm/Function.h>
@@ -32,6 +33,7 @@
 #include <llvm/Instructions.h>
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/Support/DynamicLibrary.h>
+#include <llvm/Support/TargetSelect.h>
 #include <llvm/Pass.h>
 #include <llvm/PassManager.h>
 #include <llvm/Analysis/Verifier.h>
@@ -39,9 +41,7 @@
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
-#include <llvm/Target/TargetSelect.h>
 #include <llvm/Target/TargetData.h>
-#include <llvm/DerivedTypes.h>
 #include <llvm/Transforms/Scalar.h>
 
 #undef HAVE_SYS_TYPES_H
@@ -1871,15 +1871,16 @@ KMETHOD Module_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-////## void Module.addTypeName(String name, Type type);
-//KMETHOD Module_addTypeName(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	Module *self = konoha::object_cast<Module *>(sfp[0].p);
-//	knh_String_t * name = sfp[1].s;
-//	Type *type = konoha::object_cast<Type *>(sfp[2].p);
-//	self->addTypeName(S_totext(name), type);
-//	RETURNvoid_();
-//}
+//## void Module.addTypeName(String name, Type type);
+KMETHOD Module_addTypeName(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KNH_P("deprecated method");
+	//Module *self = konoha::object_cast<Module *>(sfp[0].p);
+	//knh_String_t * name = sfp[1].s;
+	//Type *type = konoha::object_cast<Type *>(sfp[2].p);
+	//self->addTypeName(S_totext(name), type);
+	RETURNvoid_();
+}
 
 //## void Module.dump();
 KMETHOD Module_dump(CTX ctx, knh_sfp_t *sfp _RIX)
