@@ -36,6 +36,7 @@ include "lib:gluelink";
 @Native class Proc;
 
 @Native Proc Proc.new(String[] cmds, Map<String,String> env, boolean isBackground);
+//@Native Proc Proc.popen(String[] cmds, int stdin, int stdout, int stderr);
 @Native InputStream Proc.getInputStream();
 @Native InputStream Proc.getErrorInputStream();
 @Native OutputStream Proc.getOutputStream();

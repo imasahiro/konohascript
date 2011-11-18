@@ -28,6 +28,7 @@
 // LIST OF CONTRIBUTERS
 //  kimio - Kimio Kuramitsu, Yokohama National University, Japan
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
+//  shinpei_NKT - Shinpei Nakata, Yokohama National University, Japan
 // **************************************************************************
 
 #define USE_STRUCT_InputStream
@@ -49,19 +50,30 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 // [struct]
 
+
+static knh_IntData_t ProcConstInt[] = {
+	{"PIPE", 1},
+	{NULL, 0}
+};
+
+DEFAPI(void) constProc(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+{
+	kapi->loadClassIntConst(ctx, cid, ProcConstInt);
+}
+
 typedef struct {
 	knh_hObject_t h;
-	knh_io_t in;
-	knh_io_t out;
-	knh_io_t err;
+	knh_io_t out; // used as stdin for child
+	knh_io_t in; // used as stdout for child
+	knh_io_t err; // used as stderr for child
 	knh_intptr_t pid;
 } knh_Proc_t;
 
 static void Proc_init(CTX ctx, knh_RawPtr_t *po)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)po;
-	sp->in = IO_NULL;
 	sp->out = IO_NULL;
+	sp->in = IO_NULL;
 	sp->err = IO_NULL;
 	sp->pid = 0;
 }
@@ -69,17 +81,17 @@ static void Proc_init(CTX ctx, knh_RawPtr_t *po)
 static void Proc_free(CTX ctx, knh_RawPtr_t *po)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)po;
-	if (sp->in != IO_NULL) {
-		if (close(sp->in)) {
-			DBG_P("in close failed");
-		}
-		sp->in = IO_NULL;
-	}
 	if (sp->out != IO_NULL) {
 		if (close(sp->out)) {
 			DBG_P("out close failed");
 		}
 		sp->out = IO_NULL;
+	}
+	if (sp->in != IO_NULL) {
+		if (close(sp->in)) {
+			DBG_P("in close failed");
+		}
+		sp->in = IO_NULL;
 	}
 	if (sp->err != IO_NULL) {
 		if (close(sp->err)) {
@@ -104,7 +116,10 @@ static knh_io_t PROC_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictM
 
 static knh_intptr_t PROC_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
 {
-	return read(fd, buf, bufsiz);
+	int ret = read(fd, buf, bufsiz);
+	knh_ldata_t ldata[] = {LOG_END};
+	KNH_NTRACE(ctx, "read", (ret == -1) ? K_PERROR : K_OK, ldata);
+	return (knh_intptr_t)ret;
 }
 
 static knh_intptr_t PROC_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
@@ -233,19 +248,23 @@ static void child(CTX ctx, knh_sfp_t *sfp, knh_Array_t *args, knh_DictMap_t *env
 /* ======================================================================== */
 // [KMETHODS, Proc]
 
-/*static void trapCHLD (int sig, siginfo_t *si, void *sc)
+static void trapPIPE (int sig, siginfo_t *si, void *ptr)
 {
 	CTX ctx = knh_getCurrentContext();
 	if (ctx != NULL) {
 		knh_ldata_t ldata[] = {LOG_END};
 		KNH_NTRACE(ctx, "tarpChild", K_NOTICE, ldata);
 	}
+	printf("SIGPIPE caught\n");
+	_Exit(EXIT_FAILURE);
 	//	childFlag = 1; // ON
-	}*/
+}
 
 
 #define R 0
 #define W 1
+#include <fcntl.h>
+#include <signal.h>
 //## @Native Proc Proc.new(String[] args, Map<String, String> env);
 KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
@@ -253,86 +272,87 @@ KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *args = sfp[1].a;
 	knh_DictMap_t *env = (knh_DictMap_t *)sfp[2].o;
 	int isBackground = Int_to(int, sfp[3]);
-	int parent2client[2] = {0}; // for write
-	int client2parent[2] = {0}; // for read stdout
 	int pid = 0;
-	// pipe
-	errno = 0;
+	int fd1[2] = {0};
+	int fd2[2] = {0};
+	int fd3[2] = {0};
 
+	// trap SIGPIPE
+	struct sigaction sa = {};
+	struct sigaction sa_old = {};
+	sa.sa_sigaction = trapPIPE;
+	sa.sa_flags = SA_SIGINFO;
 
-	if (pipe(parent2client)) {
-		knh_ldata_t ldata[] = {LOG_i("parent2client[0]", parent2client[R]), LOG_i("parent2client[1]",parent2client[W]), LOG_END};
-		KNH_NTHROW(ctx, sfp, "System!!", "pipe", K_PERROR, ldata);
+	//TODO: also, trap SIGCHLD
+
+	if (sigaction(SIGPIPE, &sa, &sa_old) < 0) {
+		//set trapPIPE
+		knh_ldata_t ldata[] = {LOG_i("signal", SIGPIPE), LOG_END};
+		KNH_NTHROW(ctx, sfp, "Proc!!", "sigaction", K_PERROR, ldata);
+		knh_Object_toNULL(ctx, sp);
+		RETURN_(sp);
 	}
-	if (pipe(client2parent)) {
-		knh_ldata_t ldata[] = {LOG_i("client2parent[0]", client2parent[R]), LOG_i("alt_stdout[1]", client2parent[W]), LOG_END};
-		KNH_NTHROW(ctx, sfp, "System!!", "pipe", K_PERROR, ldata);
+	if (pipe(fd1) < 0 || pipe(fd2) < 0 || pipe(fd3)) {
+		//error
+		knh_ldata_t ldata[] = {
+			LOG_i("fd1[0]", fd1[R]), LOG_i("fd1[1]", fd1[W]),
+			LOG_i("fd2[0]", fd2[R]), LOG_i("fd2[1]", fd2[W]),
+			LOG_i("fd3[0]", fd3[R]), LOG_i("fd3[1]", fd3[W]),
+			LOG_END};
+		KNH_NTHROW(ctx, sfp, "Proc!!", "pipe", K_PERROR, ldata);
+		knh_Object_toNULL(ctx, sp);
+		RETURN_(sp);
 	}
-
-	// fork
-	if (isBackground == 1 ) {
-		pid = fork();
-		errno = 0;
-		if (pid == -1) {
-			close(client2parent[R]);
-			close(client2parent[W]);
-			close(parent2client[R]);
-			close(parent2client[W]);
-			knh_ldata_t ldata[] = {LOG_END};
-			KNH_NTHROW(ctx, sfp, "System!!", "fork", K_PERROR, ldata);
-			knh_Object_toNULL(ctx, sp);
-			RETURN_(sp);
-		}
-		
-		if (pid == 0) { // child
-			// [NOTE] please implement error handling if needed
-			close(parent2client[W]);
-			close(client2parent[R]);
-			dup2(parent2client[R], 0);
-			dup2(client2parent[W], 1);
+	errno = 0; // to detect fork error, reset errno
+	if ((pid = fork()) < 0) {
+		knh_ldata_t ldata[] = {LOG_END};
+		KNH_NTHROW(ctx, sfp, "Proc!!", "fork", K_PERROR, ldata);
+		knh_Object_toNULL(ctx, sp);
+		RETURN_(sp);
+	} else if (pid > 0) {
+		// parent
+		close(fd1[R]); // used as stdin for child
+		close(fd2[W]); // used as stdout for child
+		close(fd3[W]); // used as stderr for child
+		sp->out = fd1[W]; // stdin for child
+		sp->in = fd2[R]; // stdout for child
+		sp->err = fd3[R]; // stderr for child
+		sp->pid = pid;
+	} else {
+		// child
+		close(fd1[W]);
+		close(fd2[R]);
+		close(fd3[R]);
+		if (isBackground == 0) {
 			close(0);
 			close(1);
 			close(2);
+			if (dup2(fd1[R], 0) != 0) {
+				close(fd1[R]);
+			}
+			if (dup2(fd2[W], 1) != 1) {
+				close(fd2[W]);
+			}
+			if (dup2(fd3[W], 2) != 2) {
+				close(fd3[W]);
+			}
 			child(ctx, sfp, args, env);
-		} else { // parent
-			close(parent2client[R]);
-			close(client2parent[W]);
-			dup2(parent2client[W], 1);
-			dup2(client2parent[R], 0);
-			sp->in = client2parent[R];
-			sp->out = parent2client[W];
-			sp->pid = pid;
-		}
-	} else  { // isBackground
-		pid = fork();
-		errno = 0;
-		if (pid == -1) {
-			close(client2parent[R]);
-			close(client2parent[W]);
-			close(parent2client[R]);
-			close(parent2client[W]);
-			knh_ldata_t ldata[] = {LOG_END};
-			KNH_NTHROW(ctx, sfp, "System!!", "fork", K_PERROR, ldata);
-			knh_Object_toNULL(ctx, sp);
-			RETURN_(sp);
-		}
-		if (pid == 0) { // child
-			// [NOTE] please implement error handling if needed
-			close(parent2client[W]);
-			close(client2parent[W]);
-			close(client2parent[R]);
-			dup2(parent2client[R], 0);
-			close(0);
-			close(2);
+		} else { /* isBackground = false */
+			// pipe to devnull
+			int dn;
+			if ((dn = open("/dev/null", O_RDWR)) < 0) {
+				//error;
+			}
+			if (dup2(fd1[R], dn) != dn) {
+				close(fd1[R]);
+			}
+			if (dup2(fd2[W], dn) != dn) {
+				close(fd2[W]);
+			}
+			if (dup2(fd3[W], dn) != dn) {
+				close(fd3[W]);
+			}
 			child(ctx, sfp, args, env);
-		} else { // parent
-			close(parent2client[R]);
-			close(client2parent[W]);
-			close(client2parent[R]);
-			dup2(parent2client[W], 1);
-			//			sp->in = client2parent[R];
-			sp->out = parent2client[W];
-			sp->pid = pid;
 		}
 	}
 	RETURN_(sp);
