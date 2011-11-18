@@ -40,9 +40,18 @@ KMETHOD QRadioButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQRadioButton::DummyQRadioButton()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQRadioButton::~DummyQRadioButton()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQRadioButton::setSelf(knh_RawPtr_t *ptr)
@@ -108,11 +117,17 @@ void DummyQRadioButton::connection(QObject *o)
 
 KQRadioButton::KQRadioButton(QWidget* parent) : QRadioButton(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQRadioButton();
 	dummy->connection((QObject*)this);
 }
 
+KQRadioButton::~KQRadioButton()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QRadioButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -157,17 +172,23 @@ KMETHOD QRadioButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QRadioButton_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQRadioButton *qp = (KQRadioButton *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QRadioButton*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QRadioButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQRadioButton *qp = (KQRadioButton *)p->rawptr;
-//		KQRadioButton *qp = static_cast<KQRadioButton*>(p->rawptr);
+//		KQRadioButton *qp = (KQRadioButton *)p->rawptr;
+		KQRadioButton *qp = static_cast<KQRadioButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

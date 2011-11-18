@@ -26,7 +26,27 @@ public:
 	knh_Func_t *scene_event_func;
 	knh_Func_t *wheel_event_func;
 	knh_Func_t *paint_func;
+	knh_RawPtr_t *contextMenuEventPtr;
+	knh_RawPtr_t *dragEnterEventPtr;
+	knh_RawPtr_t *dragLeaveEventPtr;
+	knh_RawPtr_t *dragMoveEventPtr;
+	knh_RawPtr_t *dropEventPtr;
+	knh_RawPtr_t *focusInEventPtr;
+	knh_RawPtr_t *focusOutEventPtr;
+	knh_RawPtr_t *hoverEnterEventPtr;
+	knh_RawPtr_t *hoverLeaveEventPtr;
+	knh_RawPtr_t *hoverMoveEventPtr;
+	knh_RawPtr_t *inputMethodEventPtr;
+	knh_RawPtr_t *keyPressEventPtr;
+	knh_RawPtr_t *keyReleaseEventPtr;
+	knh_RawPtr_t *mouseDoubleClickEventPtr;
+	knh_RawPtr_t *mouseMoveEventPtr;
+	knh_RawPtr_t *mousePressEventPtr;
+	knh_RawPtr_t *mouseReleaseEventPtr;
+	knh_RawPtr_t *sceneEventPtr;
+	knh_RawPtr_t *wheelEventPtr;
 	DummyQGraphicsItem();
+	virtual ~DummyQGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -57,9 +77,11 @@ public:
 class KQGraphicsItem : public QGraphicsItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsItem *dummy;
 	KQGraphicsItem(QGraphicsItem* parent);
+	~KQGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);

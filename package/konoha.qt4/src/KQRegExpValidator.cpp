@@ -67,9 +67,18 @@ KMETHOD QRegExpValidator_setRegExp(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQRegExpValidator::DummyQRegExpValidator()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQRegExpValidator::~DummyQRegExpValidator()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQRegExpValidator::setSelf(knh_RawPtr_t *ptr)
@@ -135,11 +144,17 @@ void DummyQRegExpValidator::connection(QObject *o)
 
 KQRegExpValidator::KQRegExpValidator(QObject* parent) : QRegExpValidator(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQRegExpValidator();
 	dummy->connection((QObject*)this);
 }
 
+KQRegExpValidator::~KQRegExpValidator()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QRegExpValidator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -184,17 +199,23 @@ KMETHOD QRegExpValidator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QRegExpValidator_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQRegExpValidator *qp = (KQRegExpValidator *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QRegExpValidator*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QRegExpValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQRegExpValidator *qp = (KQRegExpValidator *)p->rawptr;
-//		KQRegExpValidator *qp = static_cast<KQRegExpValidator*>(p->rawptr);
+//		KQRegExpValidator *qp = (KQRegExpValidator *)p->rawptr;
+		KQRegExpValidator *qp = static_cast<KQRegExpValidator*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

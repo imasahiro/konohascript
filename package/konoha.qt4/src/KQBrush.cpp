@@ -8,6 +8,17 @@ KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(rptr);
 }
 
+KMETHOD QBrush_newWithGradient(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	QGradient *g = RawPtr_to(QGradient *, sfp[1]);
+	KQBrush *ret_v = new KQBrush(*g);
+	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	ret_v->setSelf(rptr);
+	RETURN_(rptr);
+}
+
+
 /*
 //QBrush QBrush.new(int style);
 KMETHOD QBrush_new(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -341,9 +352,18 @@ KMETHOD QBrush_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQBrush::DummyQBrush()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQBrush::~DummyQBrush()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQBrush::setSelf(knh_RawPtr_t *ptr)
@@ -404,10 +424,23 @@ void DummyQBrush::connection(QObject *o)
 
 KQBrush::KQBrush() : QBrush()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQBrush();
 }
 
+KQBrush::KQBrush(const QGradient &g) : QBrush(g)
+{
+	magic_num = G_MAGIC_NUM;
+	self = NULL;
+	dummy = new DummyQBrush();
+}
+
+KQBrush::~KQBrush()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QBrush_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -452,17 +485,23 @@ KMETHOD QBrush_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QBrush_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQBrush *qp = (KQBrush *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QBrush*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QBrush_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQBrush *qp = (KQBrush *)p->rawptr;
-//		KQBrush *qp = static_cast<KQBrush*>(p->rawptr);
+//		KQBrush *qp = (KQBrush *)p->rawptr;
+		KQBrush *qp = static_cast<KQBrush*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

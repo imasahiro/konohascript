@@ -9,6 +9,7 @@ public:
 	knh_Func_t *paint_requested_func;
 	knh_Func_t *preview_changed_func;
 	DummyQPrintPreviewWidget();
+	virtual ~DummyQPrintPreviewWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQPrintPreviewWidget : public QPrintPreviewWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrintPreviewWidget *dummy;
 	KQPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags);
+	~KQPrintPreviewWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

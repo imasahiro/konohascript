@@ -26,9 +26,18 @@ KMETHOD QStatusTipEvent_tip(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStatusTipEvent::DummyQStatusTipEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStatusTipEvent::~DummyQStatusTipEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStatusTipEvent::setSelf(knh_RawPtr_t *ptr)
@@ -94,10 +103,16 @@ void DummyQStatusTipEvent::connection(QObject *o)
 
 KQStatusTipEvent::KQStatusTipEvent(const QString tip) : QStatusTipEvent(tip)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStatusTipEvent();
 }
 
+KQStatusTipEvent::~KQStatusTipEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStatusTipEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -142,17 +157,23 @@ KMETHOD QStatusTipEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStatusTipEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStatusTipEvent *qp = (KQStatusTipEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStatusTipEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStatusTipEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStatusTipEvent *qp = (KQStatusTipEvent *)p->rawptr;
-//		KQStatusTipEvent *qp = static_cast<KQStatusTipEvent*>(p->rawptr);
+//		KQStatusTipEvent *qp = (KQStatusTipEvent *)p->rawptr;
+		KQStatusTipEvent *qp = static_cast<KQStatusTipEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

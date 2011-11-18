@@ -490,9 +490,18 @@ KMETHOD QStyle_visualRect(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyle::DummyQStyle()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyle::~DummyQStyle()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyle::setSelf(knh_RawPtr_t *ptr)
@@ -558,11 +567,17 @@ void DummyQStyle::connection(QObject *o)
 
 KQStyle::KQStyle() : QStyle()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyle();
 	dummy->connection((QObject*)this);
 }
 
+KQStyle::~KQStyle()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -607,17 +622,23 @@ KMETHOD QStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyle_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyle *qp = (KQStyle *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyle*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyle *qp = (KQStyle *)p->rawptr;
-//		KQStyle *qp = static_cast<KQStyle*>(p->rawptr);
+//		KQStyle *qp = (KQStyle *)p->rawptr;
+		KQStyle *qp = static_cast<KQStyle*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1318,7 +1339,8 @@ static void QStyleState_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QStyle::State *qp = (QStyle::State *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1481,7 +1503,8 @@ static void QStyleSubControls_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QStyle::SubControls *qp = (QStyle::SubControls *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

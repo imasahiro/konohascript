@@ -564,6 +564,8 @@ KMETHOD QWizard_restart(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWizard::DummyQWizard()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	current_id_changed_func = NULL;
 	custom_button_clicked_func = NULL;
@@ -577,6 +579,13 @@ DummyQWizard::DummyQWizard()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("help-requested", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("page-added", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("page-removed", NULL));
+}
+DummyQWizard::~DummyQWizard()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWizard::setSelf(knh_RawPtr_t *ptr)
@@ -696,8 +705,9 @@ knh_Object_t** DummyQWizard::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQWizard::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 5;
+	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, current_id_changed_func);
 	KNH_ADDNNREF(ctx, custom_button_clicked_func);
 	KNH_ADDNNREF(ctx, help_requested_func);
@@ -726,11 +736,17 @@ void DummyQWizard::connection(QObject *o)
 
 KQWizard::KQWizard(QWidget* parent, Qt::WindowFlags flags) : QWizard(parent, flags)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWizard();
 	dummy->connection((QObject*)this);
 }
 
+KQWizard::~KQWizard()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWizard_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -775,17 +791,23 @@ KMETHOD QWizard_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWizard_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWizard *qp = (KQWizard *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWizard*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWizard_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWizard *qp = (KQWizard *)p->rawptr;
-//		KQWizard *qp = static_cast<KQWizard*>(p->rawptr);
+//		KQWizard *qp = (KQWizard *)p->rawptr;
+		KQWizard *qp = static_cast<KQWizard*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -989,7 +1011,8 @@ static void QWizardWizardOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QWizard::WizardOptions *qp = (QWizard::WizardOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

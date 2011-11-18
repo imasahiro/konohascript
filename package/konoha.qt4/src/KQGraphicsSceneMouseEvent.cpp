@@ -182,9 +182,18 @@ KMETHOD QGraphicsSceneMouseEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsSceneMouseEvent::DummyQGraphicsSceneMouseEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGraphicsSceneMouseEvent::~DummyQGraphicsSceneMouseEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsSceneMouseEvent::setSelf(knh_RawPtr_t *ptr)
@@ -248,6 +257,11 @@ void DummyQGraphicsSceneMouseEvent::connection(QObject *o)
 	DummyQGraphicsSceneEvent::connection(o);
 }
 
+KQGraphicsSceneMouseEvent::~KQGraphicsSceneMouseEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsSceneMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -292,17 +306,23 @@ KMETHOD QGraphicsSceneMouseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsSceneMouseEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneMouseEvent *qp = (KQGraphicsSceneMouseEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsSceneMouseEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsSceneMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsSceneMouseEvent *qp = (KQGraphicsSceneMouseEvent *)p->rawptr;
-//		KQGraphicsSceneMouseEvent *qp = static_cast<KQGraphicsSceneMouseEvent*>(p->rawptr);
+//		KQGraphicsSceneMouseEvent *qp = (KQGraphicsSceneMouseEvent *)p->rawptr;
+		KQGraphicsSceneMouseEvent *qp = static_cast<KQGraphicsSceneMouseEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

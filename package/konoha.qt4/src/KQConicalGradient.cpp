@@ -104,9 +104,18 @@ KMETHOD QConicalGradient_setCenter(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQConicalGradient::DummyQConicalGradient()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQConicalGradient::~DummyQConicalGradient()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQConicalGradient::setSelf(knh_RawPtr_t *ptr)
@@ -172,10 +181,16 @@ void DummyQConicalGradient::connection(QObject *o)
 
 KQConicalGradient::KQConicalGradient() : QConicalGradient()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQConicalGradient();
 }
 
+KQConicalGradient::~KQConicalGradient()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QConicalGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -220,17 +235,23 @@ KMETHOD QConicalGradient_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QConicalGradient_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQConicalGradient *qp = (KQConicalGradient *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QConicalGradient*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QConicalGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQConicalGradient *qp = (KQConicalGradient *)p->rawptr;
-//		KQConicalGradient *qp = static_cast<KQConicalGradient*>(p->rawptr);
+//		KQConicalGradient *qp = (KQConicalGradient *)p->rawptr;
+		KQConicalGradient *qp = static_cast<KQConicalGradient*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

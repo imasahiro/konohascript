@@ -2583,9 +2583,18 @@ KMETHOD QPainter_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPainter::DummyQPainter()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPainter::~DummyQPainter()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPainter::setSelf(knh_RawPtr_t *ptr)
@@ -2646,10 +2655,16 @@ void DummyQPainter::connection(QObject *o)
 
 KQPainter::KQPainter() : QPainter()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPainter();
 }
 
+KQPainter::~KQPainter()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPainter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -2694,17 +2709,23 @@ KMETHOD QPainter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPainter_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPainter *qp = (KQPainter *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPainter*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPainter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPainter *qp = (KQPainter *)p->rawptr;
-//		KQPainter *qp = static_cast<KQPainter*>(p->rawptr);
+//		KQPainter *qp = (KQPainter *)p->rawptr;
+		KQPainter *qp = static_cast<KQPainter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -2903,7 +2924,8 @@ static void QPainterPixmapFragmentHints_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QPainter::PixmapFragmentHints *qp = (QPainter::PixmapFragmentHints *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -3066,7 +3088,8 @@ static void QPainterRenderHints_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QPainter::RenderHints *qp = (QPainter::RenderHints *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

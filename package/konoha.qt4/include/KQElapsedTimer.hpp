@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQElapsedTimer();
+	virtual ~DummyQElapsedTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,10 @@ public:
 class KQElapsedTimer : public QElapsedTimer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQElapsedTimer *dummy;
-
+	~KQElapsedTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

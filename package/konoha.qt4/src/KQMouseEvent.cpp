@@ -158,9 +158,18 @@ KMETHOD QMouseEvent_y(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMouseEvent::DummyQMouseEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQMouseEvent::~DummyQMouseEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMouseEvent::setSelf(knh_RawPtr_t *ptr)
@@ -226,10 +235,16 @@ void DummyQMouseEvent::connection(QObject *o)
 
 KQMouseEvent::KQMouseEvent(QMouseEvent::Type type, const QPoint position, Qt::MouseButton button, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers) : QMouseEvent(type, position, button, buttons, modifiers)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMouseEvent();
 }
 
+KQMouseEvent::~KQMouseEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMouseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -274,17 +289,23 @@ KMETHOD QMouseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMouseEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMouseEvent *qp = (KQMouseEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMouseEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMouseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMouseEvent *qp = (KQMouseEvent *)p->rawptr;
-//		KQMouseEvent *qp = static_cast<KQMouseEvent*>(p->rawptr);
+//		KQMouseEvent *qp = (KQMouseEvent *)p->rawptr;
+		KQMouseEvent *qp = static_cast<KQMouseEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

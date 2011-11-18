@@ -77,9 +77,18 @@ KMETHOD QTextEncoder_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextEncoder::DummyQTextEncoder()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextEncoder::~DummyQTextEncoder()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextEncoder::setSelf(knh_RawPtr_t *ptr)
@@ -140,10 +149,16 @@ void DummyQTextEncoder::connection(QObject *o)
 
 KQTextEncoder::KQTextEncoder(const QTextCodec* codec) : QTextEncoder(codec)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextEncoder();
 }
 
+KQTextEncoder::~KQTextEncoder()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextEncoder_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -188,17 +203,23 @@ KMETHOD QTextEncoder_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextEncoder_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextEncoder *qp = (KQTextEncoder *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextEncoder*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextEncoder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextEncoder *qp = (KQTextEncoder *)p->rawptr;
-//		KQTextEncoder *qp = static_cast<KQTextEncoder*>(p->rawptr);
+//		KQTextEncoder *qp = (KQTextEncoder *)p->rawptr;
+		KQTextEncoder *qp = static_cast<KQTextEncoder*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

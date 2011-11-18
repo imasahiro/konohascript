@@ -9,6 +9,7 @@ public:
 	knh_Func_t *hovered_func;
 	knh_Func_t *triggered_func;
 	DummyQActionGroup();
+	virtual ~DummyQActionGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQActionGroup : public QActionGroup {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQActionGroup *dummy;
 	KQActionGroup(QObject* parent);
+	~KQActionGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

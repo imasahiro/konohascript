@@ -183,6 +183,8 @@ KMETHOD QShortcut_getWhatsThis(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQShortcut::DummyQShortcut()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	activated_func = NULL;
 	activated_ambiguously_func = NULL;
@@ -190,6 +192,13 @@ DummyQShortcut::DummyQShortcut()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("activated", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("activated-ambiguously", NULL));
+}
+DummyQShortcut::~DummyQShortcut()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQShortcut::setSelf(knh_RawPtr_t *ptr)
@@ -266,8 +275,9 @@ knh_Object_t** DummyQShortcut::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQShortcut::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, activated_func);
 	KNH_ADDNNREF(ctx, activated_ambiguously_func);
 
@@ -290,11 +300,17 @@ void DummyQShortcut::connection(QObject *o)
 
 KQShortcut::KQShortcut(QWidget* parent) : QShortcut(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQShortcut();
 	dummy->connection((QObject*)this);
 }
 
+KQShortcut::~KQShortcut()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QShortcut_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -339,17 +355,23 @@ KMETHOD QShortcut_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QShortcut_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQShortcut *qp = (KQShortcut *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QShortcut*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QShortcut_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQShortcut *qp = (KQShortcut *)p->rawptr;
-//		KQShortcut *qp = static_cast<KQShortcut*>(p->rawptr);
+//		KQShortcut *qp = (KQShortcut *)p->rawptr;
+		KQShortcut *qp = static_cast<KQShortcut*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

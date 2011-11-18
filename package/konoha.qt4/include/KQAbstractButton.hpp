@@ -11,6 +11,7 @@ public:
 	knh_Func_t *released_func;
 	knh_Func_t *toggled_func;
 	DummyQAbstractButton();
+	virtual ~DummyQAbstractButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +28,11 @@ public slots:
 class KQAbstractButton : public QAbstractButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractButton *dummy;
 	KQAbstractButton(QWidget* parent);
+	~KQAbstractButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

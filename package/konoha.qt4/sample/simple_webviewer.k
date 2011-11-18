@@ -8,6 +8,7 @@ class SimpleWebViewer {
 	QLineEdit location_bar;
 	QHBoxLayout hbl;
 	QVBoxLayout vbl;
+//	QWebSettings webSettings;
 	QWidget body;
 
 	SimpleWebViewer(String u) {
@@ -15,8 +16,8 @@ class SimpleWebViewer {
 		url.setUrl(u);
 //		url.setUrl("http://typing.sakura.ne.jp/sushida/");
 
-		QWebSettings webSettings = QWebSettings.globalSettings();
-		webSettings.setAttribute(QWebSettings.PluginsEnabled, true);
+//		webSettings = QWebSettings.globalSettings();
+//		webSettings.setAttribute(QWebSettings.PluginsEnabled, true);
 		web_view = new ();
 		web_view.load(url);
 //		print _web_view.page.mainFrame().toHtml();

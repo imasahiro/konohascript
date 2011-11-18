@@ -23,9 +23,18 @@ KMETHOD QStyleOptionFocusRect_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionFocusRect::DummyQStyleOptionFocusRect()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionFocusRect::~DummyQStyleOptionFocusRect()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionFocusRect::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionFocusRect::connection(QObject *o)
 
 KQStyleOptionFocusRect::KQStyleOptionFocusRect() : QStyleOptionFocusRect()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionFocusRect();
 }
 
+KQStyleOptionFocusRect::~KQStyleOptionFocusRect()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionFocusRect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionFocusRect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionFocusRect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionFocusRect *qp = (KQStyleOptionFocusRect *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionFocusRect*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionFocusRect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionFocusRect *qp = (KQStyleOptionFocusRect *)p->rawptr;
-//		KQStyleOptionFocusRect *qp = static_cast<KQStyleOptionFocusRect*>(p->rawptr);
+//		KQStyleOptionFocusRect *qp = (KQStyleOptionFocusRect *)p->rawptr;
+		KQStyleOptionFocusRect *qp = static_cast<KQStyleOptionFocusRect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

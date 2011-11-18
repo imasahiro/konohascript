@@ -526,6 +526,8 @@ KMETHOD QCalendarWidget_showToday(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQCalendarWidget::DummyQCalendarWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	activated_func = NULL;
 	clicked_func = NULL;
@@ -537,6 +539,13 @@ DummyQCalendarWidget::DummyQCalendarWidget()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("current-page-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("selection-changed", NULL));
+}
+DummyQCalendarWidget::~DummyQCalendarWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQCalendarWidget::setSelf(knh_RawPtr_t *ptr)
@@ -645,8 +654,9 @@ knh_Object_t** DummyQCalendarWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQCalendarWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, activated_func);
 	KNH_ADDNNREF(ctx, clicked_func);
 	KNH_ADDNNREF(ctx, current_page_changed_func);
@@ -673,11 +683,17 @@ void DummyQCalendarWidget::connection(QObject *o)
 
 KQCalendarWidget::KQCalendarWidget(QWidget* parent) : QCalendarWidget(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQCalendarWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQCalendarWidget::~KQCalendarWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QCalendarWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -722,17 +738,23 @@ KMETHOD QCalendarWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QCalendarWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQCalendarWidget *qp = (KQCalendarWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QCalendarWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QCalendarWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQCalendarWidget *qp = (KQCalendarWidget *)p->rawptr;
-//		KQCalendarWidget *qp = static_cast<KQCalendarWidget*>(p->rawptr);
+//		KQCalendarWidget *qp = (KQCalendarWidget *)p->rawptr;
+		KQCalendarWidget *qp = static_cast<KQCalendarWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

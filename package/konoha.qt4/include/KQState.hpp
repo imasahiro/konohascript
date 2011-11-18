@@ -9,6 +9,7 @@ public:
 	knh_Func_t *finished_func;
 	knh_Func_t *properties_assigned_func;
 	DummyQState();
+	virtual ~DummyQState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQState : public QState {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQState *dummy;
 	KQState(QState* parent);
+	~KQState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

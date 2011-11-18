@@ -94,9 +94,18 @@ KMETHOD QTranslator_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTranslator::DummyQTranslator()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTranslator::~DummyQTranslator()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTranslator::setSelf(knh_RawPtr_t *ptr)
@@ -162,11 +171,17 @@ void DummyQTranslator::connection(QObject *o)
 
 KQTranslator::KQTranslator(QObject* parent) : QTranslator(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTranslator();
 	dummy->connection((QObject*)this);
 }
 
+KQTranslator::~KQTranslator()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTranslator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -211,17 +226,23 @@ KMETHOD QTranslator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTranslator_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTranslator *qp = (KQTranslator *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTranslator*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTranslator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTranslator *qp = (KQTranslator *)p->rawptr;
-//		KQTranslator *qp = static_cast<KQTranslator*>(p->rawptr);
+//		KQTranslator *qp = (KQTranslator *)p->rawptr;
+		KQTranslator *qp = static_cast<KQTranslator*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

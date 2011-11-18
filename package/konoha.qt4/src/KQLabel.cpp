@@ -494,6 +494,8 @@ KMETHOD QLabel_setText(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLabel::DummyQLabel()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	link_activated_func = NULL;
 	link_hovered_func = NULL;
@@ -501,6 +503,13 @@ DummyQLabel::DummyQLabel()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("link-activated", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("link-hovered", NULL));
+}
+DummyQLabel::~DummyQLabel()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLabel::setSelf(knh_RawPtr_t *ptr)
@@ -581,8 +590,9 @@ knh_Object_t** DummyQLabel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQLabel::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, link_activated_func);
 	KNH_ADDNNREF(ctx, link_hovered_func);
 
@@ -605,11 +615,17 @@ void DummyQLabel::connection(QObject *o)
 
 KQLabel::KQLabel(QWidget* parent, Qt::WindowFlags f) : QLabel(parent, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLabel();
 	dummy->connection((QObject*)this);
 }
 
+KQLabel::~KQLabel()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLabel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -654,17 +670,23 @@ KMETHOD QLabel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLabel_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLabel *qp = (KQLabel *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLabel*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLabel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLabel *qp = (KQLabel *)p->rawptr;
-//		KQLabel *qp = static_cast<KQLabel*>(p->rawptr);
+//		KQLabel *qp = (KQLabel *)p->rawptr;
+		KQLabel *qp = static_cast<KQLabel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

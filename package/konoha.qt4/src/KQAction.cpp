@@ -784,6 +784,8 @@ KMETHOD QAction_trigger(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAction::DummyQAction()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	changed_func = NULL;
 	hovered_func = NULL;
@@ -795,6 +797,13 @@ DummyQAction::DummyQAction()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("hovered", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("toggled", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
+}
+DummyQAction::~DummyQAction()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAction::setSelf(knh_RawPtr_t *ptr)
@@ -899,8 +908,9 @@ knh_Object_t** DummyQAction::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAction::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, changed_func);
 	KNH_ADDNNREF(ctx, hovered_func);
 	KNH_ADDNNREF(ctx, toggled_func);
@@ -927,11 +937,17 @@ void DummyQAction::connection(QObject *o)
 
 KQAction::KQAction(QObject* parent) : QAction(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAction();
 	dummy->connection((QObject*)this);
 }
 
+KQAction::~KQAction()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAction_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -976,17 +992,23 @@ KMETHOD QAction_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAction_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAction *qp = (KQAction *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAction*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAction_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAction *qp = (KQAction *)p->rawptr;
-//		KQAction *qp = static_cast<KQAction*>(p->rawptr);
+//		KQAction *qp = (KQAction *)p->rawptr;
+		KQAction *qp = static_cast<KQAction*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

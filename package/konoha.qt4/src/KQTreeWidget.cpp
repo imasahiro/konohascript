@@ -594,6 +594,8 @@ KMETHOD QTreeWidget_scrollToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTreeWidget::DummyQTreeWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	current_item_changed_func = NULL;
 	item_activated_func = NULL;
@@ -617,6 +619,13 @@ DummyQTreeWidget::DummyQTreeWidget()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("item-expanded", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("item-pressed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("item-selection-changed", NULL));
+}
+DummyQTreeWidget::~DummyQTreeWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTreeWidget::setSelf(knh_RawPtr_t *ptr)
@@ -823,8 +832,9 @@ knh_Object_t** DummyQTreeWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTreeWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 10;
+	int list_size = 11;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, current_item_changed_func);
 	KNH_ADDNNREF(ctx, item_activated_func);
 	KNH_ADDNNREF(ctx, item_changed_func);
@@ -863,11 +873,17 @@ void DummyQTreeWidget::connection(QObject *o)
 
 KQTreeWidget::KQTreeWidget(QWidget* parent) : QTreeWidget(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTreeWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQTreeWidget::~KQTreeWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTreeWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -912,17 +928,23 @@ KMETHOD QTreeWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTreeWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTreeWidget *qp = (KQTreeWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTreeWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTreeWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTreeWidget *qp = (KQTreeWidget *)p->rawptr;
-//		KQTreeWidget *qp = static_cast<KQTreeWidget*>(p->rawptr);
+//		KQTreeWidget *qp = (KQTreeWidget *)p->rawptr;
+		KQTreeWidget *qp = static_cast<KQTreeWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

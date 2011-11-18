@@ -249,6 +249,8 @@ KMETHOD QDialogButtonBox_getStandardButtons(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDialogButtonBox::DummyQDialogButtonBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	accepted_func = NULL;
 	clicked_func = NULL;
@@ -260,6 +262,13 @@ DummyQDialogButtonBox::DummyQDialogButtonBox()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("help-requested", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("rejected", NULL));
+}
+DummyQDialogButtonBox::~DummyQDialogButtonBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDialogButtonBox::setSelf(knh_RawPtr_t *ptr)
@@ -364,8 +373,9 @@ knh_Object_t** DummyQDialogButtonBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQDialogButtonBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, accepted_func);
 	KNH_ADDNNREF(ctx, clicked_func);
 	KNH_ADDNNREF(ctx, help_requested_func);
@@ -392,11 +402,17 @@ void DummyQDialogButtonBox::connection(QObject *o)
 
 KQDialogButtonBox::KQDialogButtonBox(QWidget* parent) : QDialogButtonBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDialogButtonBox();
 	dummy->connection((QObject*)this);
 }
 
+KQDialogButtonBox::~KQDialogButtonBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDialogButtonBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -441,17 +457,23 @@ KMETHOD QDialogButtonBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDialogButtonBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDialogButtonBox *qp = (KQDialogButtonBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDialogButtonBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDialogButtonBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDialogButtonBox *qp = (KQDialogButtonBox *)p->rawptr;
-//		KQDialogButtonBox *qp = static_cast<KQDialogButtonBox*>(p->rawptr);
+//		KQDialogButtonBox *qp = (KQDialogButtonBox *)p->rawptr;
+		KQDialogButtonBox *qp = static_cast<KQDialogButtonBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -654,7 +676,8 @@ static void QDialogButtonBoxStandardButtons_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QDialogButtonBox::StandardButtons *qp = (QDialogButtonBox::StandardButtons *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

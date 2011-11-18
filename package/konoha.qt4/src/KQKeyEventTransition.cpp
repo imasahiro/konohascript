@@ -79,9 +79,18 @@ KMETHOD QKeyEventTransition_setModifierMask(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQKeyEventTransition::DummyQKeyEventTransition()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQKeyEventTransition::~DummyQKeyEventTransition()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQKeyEventTransition::setSelf(knh_RawPtr_t *ptr)
@@ -147,11 +156,17 @@ void DummyQKeyEventTransition::connection(QObject *o)
 
 KQKeyEventTransition::KQKeyEventTransition(QState* sourceState) : QKeyEventTransition(sourceState)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQKeyEventTransition();
 	dummy->connection((QObject*)this);
 }
 
+KQKeyEventTransition::~KQKeyEventTransition()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QKeyEventTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -196,17 +211,23 @@ KMETHOD QKeyEventTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QKeyEventTransition_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQKeyEventTransition *qp = (KQKeyEventTransition *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QKeyEventTransition*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QKeyEventTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQKeyEventTransition *qp = (KQKeyEventTransition *)p->rawptr;
-//		KQKeyEventTransition *qp = static_cast<KQKeyEventTransition*>(p->rawptr);
+//		KQKeyEventTransition *qp = (KQKeyEventTransition *)p->rawptr;
+		KQKeyEventTransition *qp = static_cast<KQKeyEventTransition*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

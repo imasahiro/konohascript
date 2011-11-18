@@ -288,9 +288,18 @@ KMETHOD QTime_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTime::DummyQTime()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTime::~DummyQTime()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTime::setSelf(knh_RawPtr_t *ptr)
@@ -351,10 +360,16 @@ void DummyQTime::connection(QObject *o)
 
 KQTime::KQTime() : QTime()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTime();
 }
 
+KQTime::~KQTime()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTime_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -399,17 +414,23 @@ KMETHOD QTime_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTime_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTime *qp = (KQTime *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTime*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTime_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTime *qp = (KQTime *)p->rawptr;
-//		KQTime *qp = static_cast<KQTime*>(p->rawptr);
+//		KQTime *qp = (KQTime *)p->rawptr;
+		KQTime *qp = static_cast<KQTime*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

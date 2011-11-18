@@ -29,6 +29,8 @@ KMETHOD QAbstractState_parentState(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractState::DummyQAbstractState()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	entered_func = NULL;
 	exited_func = NULL;
@@ -36,6 +38,13 @@ DummyQAbstractState::DummyQAbstractState()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("entered", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("exited", NULL));
+}
+DummyQAbstractState::~DummyQAbstractState()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractState::setSelf(knh_RawPtr_t *ptr)
@@ -112,8 +121,9 @@ knh_Object_t** DummyQAbstractState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractState::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, entered_func);
 	KNH_ADDNNREF(ctx, exited_func);
 
@@ -134,6 +144,11 @@ void DummyQAbstractState::connection(QObject *o)
 	DummyQObject::connection(o);
 }
 
+KQAbstractState::~KQAbstractState()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -178,17 +193,23 @@ KMETHOD QAbstractState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractState_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractState *qp = (KQAbstractState *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractState*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractState *qp = (KQAbstractState *)p->rawptr;
-//		KQAbstractState *qp = static_cast<KQAbstractState*>(p->rawptr);
+//		KQAbstractState *qp = (KQAbstractState *)p->rawptr;
+		KQAbstractState *qp = static_cast<KQAbstractState*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

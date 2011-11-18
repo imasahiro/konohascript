@@ -33,9 +33,18 @@ KMETHOD QStyleFactory_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleFactory::DummyQStyleFactory()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleFactory::~DummyQStyleFactory()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleFactory::setSelf(knh_RawPtr_t *ptr)
@@ -94,6 +103,11 @@ void DummyQStyleFactory::connection(QObject *o)
 	}
 }
 
+KQStyleFactory::~KQStyleFactory()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -138,17 +152,23 @@ KMETHOD QStyleFactory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleFactory_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleFactory *qp = (KQStyleFactory *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleFactory*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleFactory *qp = (KQStyleFactory *)p->rawptr;
-//		KQStyleFactory *qp = static_cast<KQStyleFactory*>(p->rawptr);
+//		KQStyleFactory *qp = (KQStyleFactory *)p->rawptr;
+		KQStyleFactory *qp = static_cast<KQStyleFactory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -119,9 +119,18 @@ KMETHOD QSlider_getTickPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSlider::DummyQSlider()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSlider::~DummyQSlider()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSlider::setSelf(knh_RawPtr_t *ptr)
@@ -187,11 +196,17 @@ void DummyQSlider::connection(QObject *o)
 
 KQSlider::KQSlider(QWidget* parent) : QSlider(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSlider();
 	dummy->connection((QObject*)this);
 }
 
+KQSlider::~KQSlider()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSlider_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -236,17 +251,23 @@ KMETHOD QSlider_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSlider_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSlider *qp = (KQSlider *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSlider*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSlider *qp = (KQSlider *)p->rawptr;
-//		KQSlider *qp = static_cast<KQSlider*>(p->rawptr);
+//		KQSlider *qp = (KQSlider *)p->rawptr;
+		KQSlider *qp = static_cast<KQSlider*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

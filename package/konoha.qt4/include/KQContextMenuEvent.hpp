@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQContextMenuEvent();
+	virtual ~DummyQContextMenuEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQContextMenuEvent : public QContextMenuEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQContextMenuEvent *dummy;
 	KQContextMenuEvent(QContextMenuEvent::Reason reason, const QPoint pos, const QPoint globalPos, Qt::KeyboardModifiers modifiers);
+	~KQContextMenuEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

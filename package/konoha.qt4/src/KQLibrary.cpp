@@ -264,9 +264,18 @@ KMETHOD QLibrary_resolve(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLibrary::DummyQLibrary()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQLibrary::~DummyQLibrary()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLibrary::setSelf(knh_RawPtr_t *ptr)
@@ -332,11 +341,17 @@ void DummyQLibrary::connection(QObject *o)
 
 KQLibrary::KQLibrary(QObject* parent) : QLibrary(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLibrary();
 	dummy->connection((QObject*)this);
 }
 
+KQLibrary::~KQLibrary()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLibrary_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -381,17 +396,23 @@ KMETHOD QLibrary_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLibrary_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLibrary *qp = (KQLibrary *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLibrary*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLibrary_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLibrary *qp = (KQLibrary *)p->rawptr;
-//		KQLibrary *qp = static_cast<KQLibrary*>(p->rawptr);
+//		KQLibrary *qp = (KQLibrary *)p->rawptr;
+		KQLibrary *qp = static_cast<KQLibrary*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -564,7 +585,8 @@ static void QLibraryLoadHints_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QLibrary::LoadHints *qp = (QLibrary::LoadHints *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

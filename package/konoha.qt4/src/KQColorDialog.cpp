@@ -244,6 +244,8 @@ KMETHOD QColorDialog_setStandardColor(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQColorDialog::DummyQColorDialog()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	color_selected_func = NULL;
 	current_color_changed_func = NULL;
@@ -251,6 +253,13 @@ DummyQColorDialog::DummyQColorDialog()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("color-selected", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("current-color-changed", NULL));
+}
+DummyQColorDialog::~DummyQColorDialog()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQColorDialog::setSelf(knh_RawPtr_t *ptr)
@@ -331,8 +340,9 @@ knh_Object_t** DummyQColorDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQColorDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, color_selected_func);
 	KNH_ADDNNREF(ctx, current_color_changed_func);
 
@@ -355,11 +365,17 @@ void DummyQColorDialog::connection(QObject *o)
 
 KQColorDialog::KQColorDialog(QWidget* parent) : QColorDialog(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQColorDialog();
 	dummy->connection((QObject*)this);
 }
 
+KQColorDialog::~KQColorDialog()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QColorDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -404,17 +420,23 @@ KMETHOD QColorDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QColorDialog_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQColorDialog *qp = (KQColorDialog *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QColorDialog*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QColorDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQColorDialog *qp = (KQColorDialog *)p->rawptr;
-//		KQColorDialog *qp = static_cast<KQColorDialog*>(p->rawptr);
+//		KQColorDialog *qp = (KQColorDialog *)p->rawptr;
+		KQColorDialog *qp = static_cast<KQColorDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -587,7 +609,8 @@ static void QColorDialogColorDialogOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QColorDialog::ColorDialogOptions *qp = (QColorDialog::ColorDialogOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

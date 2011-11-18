@@ -204,6 +204,8 @@ KMETHOD QUndoGroup_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQUndoGroup::DummyQUndoGroup()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	active_stack_changed_func = NULL;
 	can_redo_changed_func = NULL;
@@ -221,6 +223,13 @@ DummyQUndoGroup::DummyQUndoGroup()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("index-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("redo-text-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-text-changed", NULL));
+}
+DummyQUndoGroup::~DummyQUndoGroup()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQUndoGroup::setSelf(knh_RawPtr_t *ptr)
@@ -372,8 +381,9 @@ knh_Object_t** DummyQUndoGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQUndoGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 7;
+	int list_size = 8;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, active_stack_changed_func);
 	KNH_ADDNNREF(ctx, can_redo_changed_func);
 	KNH_ADDNNREF(ctx, can_undo_changed_func);
@@ -406,11 +416,17 @@ void DummyQUndoGroup::connection(QObject *o)
 
 KQUndoGroup::KQUndoGroup(QObject* parent) : QUndoGroup(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQUndoGroup();
 	dummy->connection((QObject*)this);
 }
 
+KQUndoGroup::~KQUndoGroup()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QUndoGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -455,17 +471,23 @@ KMETHOD QUndoGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QUndoGroup_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQUndoGroup *qp = (KQUndoGroup *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QUndoGroup*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QUndoGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQUndoGroup *qp = (KQUndoGroup *)p->rawptr;
-//		KQUndoGroup *qp = static_cast<KQUndoGroup*>(p->rawptr);
+//		KQUndoGroup *qp = (KQUndoGroup *)p->rawptr;
+		KQUndoGroup *qp = static_cast<KQUndoGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

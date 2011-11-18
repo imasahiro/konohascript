@@ -1833,9 +1833,18 @@ KMETHOD QGLShaderProgram_hasOpenGLShaderPrograms(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGLShaderProgram::DummyQGLShaderProgram()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLShaderProgram::~DummyQGLShaderProgram()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLShaderProgram::setSelf(knh_RawPtr_t *ptr)
@@ -1901,11 +1910,17 @@ void DummyQGLShaderProgram::connection(QObject *o)
 
 KQGLShaderProgram::KQGLShaderProgram(QObject* parent) : QGLShaderProgram(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLShaderProgram();
 	dummy->connection((QObject*)this);
 }
 
+KQGLShaderProgram::~KQGLShaderProgram()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLShaderProgram_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1950,17 +1965,23 @@ KMETHOD QGLShaderProgram_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLShaderProgram_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLShaderProgram *qp = (KQGLShaderProgram *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLShaderProgram*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLShaderProgram_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLShaderProgram *qp = (KQGLShaderProgram *)p->rawptr;
-//		KQGLShaderProgram *qp = static_cast<KQGLShaderProgram*>(p->rawptr);
+//		KQGLShaderProgram *qp = (KQGLShaderProgram *)p->rawptr;
+		KQGLShaderProgram *qp = static_cast<KQGLShaderProgram*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

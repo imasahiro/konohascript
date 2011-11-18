@@ -240,9 +240,18 @@ KMETHOD QTextBlockFormat_getTopMargin(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextBlockFormat::DummyQTextBlockFormat()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextBlockFormat::~DummyQTextBlockFormat()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextBlockFormat::setSelf(knh_RawPtr_t *ptr)
@@ -308,10 +317,16 @@ void DummyQTextBlockFormat::connection(QObject *o)
 
 KQTextBlockFormat::KQTextBlockFormat() : QTextBlockFormat()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextBlockFormat();
 }
 
+KQTextBlockFormat::~KQTextBlockFormat()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextBlockFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -356,17 +371,23 @@ KMETHOD QTextBlockFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextBlockFormat_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextBlockFormat *qp = (KQTextBlockFormat *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextBlockFormat*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextBlockFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextBlockFormat *qp = (KQTextBlockFormat *)p->rawptr;
-//		KQTextBlockFormat *qp = static_cast<KQTextBlockFormat*>(p->rawptr);
+//		KQTextBlockFormat *qp = (KQTextBlockFormat *)p->rawptr;
+		KQTextBlockFormat *qp = static_cast<KQTextBlockFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

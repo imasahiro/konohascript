@@ -23,9 +23,18 @@ KMETHOD QStyleOptionToolBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionToolBar::DummyQStyleOptionToolBar()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionToolBar::~DummyQStyleOptionToolBar()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionToolBar::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionToolBar::connection(QObject *o)
 
 KQStyleOptionToolBar::KQStyleOptionToolBar() : QStyleOptionToolBar()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionToolBar();
 }
 
+KQStyleOptionToolBar::~KQStyleOptionToolBar()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionToolBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionToolBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionToolBar_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionToolBar *qp = (KQStyleOptionToolBar *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionToolBar*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionToolBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionToolBar *qp = (KQStyleOptionToolBar *)p->rawptr;
-//		KQStyleOptionToolBar *qp = static_cast<KQStyleOptionToolBar*>(p->rawptr);
+//		KQStyleOptionToolBar *qp = (KQStyleOptionToolBar *)p->rawptr;
+		KQStyleOptionToolBar *qp = static_cast<KQStyleOptionToolBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -317,7 +338,8 @@ static void QStyleOptionToolBarToolBarFeatures_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QStyleOptionToolBar::ToolBarFeatures *qp = (QStyleOptionToolBar::ToolBarFeatures *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

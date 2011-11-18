@@ -64,6 +64,8 @@ KMETHOD QGraphicsOpacityEffect_setOpacityMask(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsOpacityEffect::DummyQGraphicsOpacityEffect()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	opacity_changed_func = NULL;
 	opacity_mask_changed_func = NULL;
@@ -71,6 +73,13 @@ DummyQGraphicsOpacityEffect::DummyQGraphicsOpacityEffect()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("opacity-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("opacity-mask-changed", NULL));
+}
+DummyQGraphicsOpacityEffect::~DummyQGraphicsOpacityEffect()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsOpacityEffect::setSelf(knh_RawPtr_t *ptr)
@@ -150,8 +159,9 @@ knh_Object_t** DummyQGraphicsOpacityEffect::reftrace(CTX ctx, knh_RawPtr_t *p FT
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsOpacityEffect::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, opacity_changed_func);
 	KNH_ADDNNREF(ctx, opacity_mask_changed_func);
 
@@ -174,11 +184,17 @@ void DummyQGraphicsOpacityEffect::connection(QObject *o)
 
 KQGraphicsOpacityEffect::KQGraphicsOpacityEffect(QObject* parent) : QGraphicsOpacityEffect(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsOpacityEffect();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsOpacityEffect::~KQGraphicsOpacityEffect()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsOpacityEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -223,17 +239,23 @@ KMETHOD QGraphicsOpacityEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsOpacityEffect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsOpacityEffect *qp = (KQGraphicsOpacityEffect *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsOpacityEffect*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsOpacityEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsOpacityEffect *qp = (KQGraphicsOpacityEffect *)p->rawptr;
-//		KQGraphicsOpacityEffect *qp = static_cast<KQGraphicsOpacityEffect*>(p->rawptr);
+//		KQGraphicsOpacityEffect *qp = (KQGraphicsOpacityEffect *)p->rawptr;
+		KQGraphicsOpacityEffect *qp = static_cast<KQGraphicsOpacityEffect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

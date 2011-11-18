@@ -705,11 +705,20 @@ KMETHOD QStandardItemModel_getVerticalHeaderItem(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStandardItemModel::DummyQStandardItemModel()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	item_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("item-changed", NULL));
+}
+DummyQStandardItemModel::~DummyQStandardItemModel()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStandardItemModel::setSelf(knh_RawPtr_t *ptr)
@@ -775,8 +784,9 @@ knh_Object_t** DummyQStandardItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQStandardItemModel::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, item_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -797,11 +807,17 @@ void DummyQStandardItemModel::connection(QObject *o)
 
 KQStandardItemModel::KQStandardItemModel(QObject* parent) : QStandardItemModel(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStandardItemModel();
 	dummy->connection((QObject*)this);
 }
 
+KQStandardItemModel::~KQStandardItemModel()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStandardItemModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -846,17 +862,23 @@ KMETHOD QStandardItemModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStandardItemModel_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStandardItemModel *qp = (KQStandardItemModel *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStandardItemModel*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStandardItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStandardItemModel *qp = (KQStandardItemModel *)p->rawptr;
-//		KQStandardItemModel *qp = static_cast<KQStandardItemModel*>(p->rawptr);
+//		KQStandardItemModel *qp = (KQStandardItemModel *)p->rawptr;
+		KQStandardItemModel *qp = static_cast<KQStandardItemModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

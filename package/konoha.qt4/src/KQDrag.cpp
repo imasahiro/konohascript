@@ -163,6 +163,8 @@ KMETHOD QDrag_target(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDrag::DummyQDrag()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	action_changed_func = NULL;
 	target_changed_func = NULL;
@@ -170,6 +172,13 @@ DummyQDrag::DummyQDrag()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("action-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("target-changed", NULL));
+}
+DummyQDrag::~DummyQDrag()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDrag::setSelf(knh_RawPtr_t *ptr)
@@ -249,8 +258,9 @@ knh_Object_t** DummyQDrag::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQDrag::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, action_changed_func);
 	KNH_ADDNNREF(ctx, target_changed_func);
 
@@ -273,11 +283,17 @@ void DummyQDrag::connection(QObject *o)
 
 KQDrag::KQDrag(QWidget* dragSource) : QDrag(dragSource)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDrag();
 	dummy->connection((QObject*)this);
 }
 
+KQDrag::~KQDrag()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDrag_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -322,17 +338,23 @@ KMETHOD QDrag_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDrag_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDrag *qp = (KQDrag *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDrag*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDrag_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDrag *qp = (KQDrag *)p->rawptr;
-//		KQDrag *qp = static_cast<KQDrag*>(p->rawptr);
+//		KQDrag *qp = (KQDrag *)p->rawptr;
+		KQDrag *qp = static_cast<KQDrag*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

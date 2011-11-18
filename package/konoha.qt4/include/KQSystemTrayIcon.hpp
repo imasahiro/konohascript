@@ -9,6 +9,7 @@ public:
 	knh_Func_t *activated_func;
 	knh_Func_t *message_clicked_func;
 	DummyQSystemTrayIcon();
+	virtual ~DummyQSystemTrayIcon();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQSystemTrayIcon : public QSystemTrayIcon {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSystemTrayIcon *dummy;
 	KQSystemTrayIcon(QObject* parent);
+	~KQSystemTrayIcon();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

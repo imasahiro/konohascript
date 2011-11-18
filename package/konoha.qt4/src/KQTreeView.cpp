@@ -747,6 +747,8 @@ KMETHOD QTreeView_showColumn(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTreeView::DummyQTreeView()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	collapsed_func = NULL;
 	expanded_func = NULL;
@@ -754,6 +756,13 @@ DummyQTreeView::DummyQTreeView()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("collapsed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("expanded", NULL));
+}
+DummyQTreeView::~DummyQTreeView()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTreeView::setSelf(knh_RawPtr_t *ptr)
@@ -834,8 +843,9 @@ knh_Object_t** DummyQTreeView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTreeView::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, collapsed_func);
 	KNH_ADDNNREF(ctx, expanded_func);
 
@@ -858,11 +868,17 @@ void DummyQTreeView::connection(QObject *o)
 
 KQTreeView::KQTreeView(QWidget* parent) : QTreeView(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTreeView();
 	dummy->connection((QObject*)this);
 }
 
+KQTreeView::~KQTreeView()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTreeView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -907,17 +923,23 @@ KMETHOD QTreeView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTreeView_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTreeView *qp = (KQTreeView *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTreeView*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTreeView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTreeView *qp = (KQTreeView *)p->rawptr;
-//		KQTreeView *qp = static_cast<KQTreeView*>(p->rawptr);
+//		KQTreeView *qp = (KQTreeView *)p->rawptr;
+		KQTreeView *qp = static_cast<KQTreeView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

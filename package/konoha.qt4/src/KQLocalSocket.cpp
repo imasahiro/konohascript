@@ -295,6 +295,8 @@ KMETHOD QLocalSocket_waitForDisconnected(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLocalSocket::DummyQLocalSocket()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	connected_func = NULL;
 	disconnected_func = NULL;
@@ -306,6 +308,13 @@ DummyQLocalSocket::DummyQLocalSocket()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("disconnected", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("error", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+}
+DummyQLocalSocket::~DummyQLocalSocket()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLocalSocket::setSelf(knh_RawPtr_t *ptr)
@@ -410,8 +419,9 @@ knh_Object_t** DummyQLocalSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQLocalSocket::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, connected_func);
 	KNH_ADDNNREF(ctx, disconnected_func);
 	KNH_ADDNNREF(ctx, error_func);
@@ -438,11 +448,17 @@ void DummyQLocalSocket::connection(QObject *o)
 
 KQLocalSocket::KQLocalSocket(QObject* parent) : QLocalSocket(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLocalSocket();
 	dummy->connection((QObject*)this);
 }
 
+KQLocalSocket::~KQLocalSocket()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLocalSocket_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -487,17 +503,23 @@ KMETHOD QLocalSocket_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLocalSocket_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLocalSocket *qp = (KQLocalSocket *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLocalSocket*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLocalSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLocalSocket *qp = (KQLocalSocket *)p->rawptr;
-//		KQLocalSocket *qp = static_cast<KQLocalSocket*>(p->rawptr);
+//		KQLocalSocket *qp = (KQLocalSocket *)p->rawptr;
+		KQLocalSocket *qp = static_cast<KQLocalSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

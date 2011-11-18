@@ -23,9 +23,18 @@ KMETHOD QStyleOptionSizeGrip_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionSizeGrip::DummyQStyleOptionSizeGrip()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionSizeGrip::~DummyQStyleOptionSizeGrip()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionSizeGrip::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionSizeGrip::connection(QObject *o)
 
 KQStyleOptionSizeGrip::KQStyleOptionSizeGrip() : QStyleOptionSizeGrip()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionSizeGrip();
 }
 
+KQStyleOptionSizeGrip::~KQStyleOptionSizeGrip()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionSizeGrip_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionSizeGrip_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionSizeGrip_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionSizeGrip *qp = (KQStyleOptionSizeGrip *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionSizeGrip*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionSizeGrip_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionSizeGrip *qp = (KQStyleOptionSizeGrip *)p->rawptr;
-//		KQStyleOptionSizeGrip *qp = static_cast<KQStyleOptionSizeGrip*>(p->rawptr);
+//		KQStyleOptionSizeGrip *qp = (KQStyleOptionSizeGrip *)p->rawptr;
+		KQStyleOptionSizeGrip *qp = static_cast<KQStyleOptionSizeGrip*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

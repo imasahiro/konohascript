@@ -214,11 +214,20 @@ KMETHOD QWorkspace_tile(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWorkspace::DummyQWorkspace()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	window_activated_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("window-activated", NULL));
+}
+DummyQWorkspace::~DummyQWorkspace()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWorkspace::setSelf(knh_RawPtr_t *ptr)
@@ -284,8 +293,9 @@ knh_Object_t** DummyQWorkspace::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQWorkspace::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, window_activated_func);
 
 	KNH_SIZEREF(ctx);
@@ -306,11 +316,17 @@ void DummyQWorkspace::connection(QObject *o)
 
 KQWorkspace::KQWorkspace(QWidget* parent) : QWorkspace(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWorkspace();
 	dummy->connection((QObject*)this);
 }
 
+KQWorkspace::~KQWorkspace()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWorkspace_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -355,17 +371,23 @@ KMETHOD QWorkspace_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWorkspace_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWorkspace *qp = (KQWorkspace *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWorkspace*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWorkspace_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWorkspace *qp = (KQWorkspace *)p->rawptr;
-//		KQWorkspace *qp = static_cast<KQWorkspace*>(p->rawptr);
+//		KQWorkspace *qp = (KQWorkspace *)p->rawptr;
+		KQWorkspace *qp = static_cast<KQWorkspace*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

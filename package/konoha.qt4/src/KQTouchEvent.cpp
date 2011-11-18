@@ -86,9 +86,18 @@ KMETHOD QTouchEvent_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTouchEvent::DummyQTouchEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTouchEvent::~DummyQTouchEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTouchEvent::setSelf(knh_RawPtr_t *ptr)
@@ -154,10 +163,16 @@ void DummyQTouchEvent::connection(QObject *o)
 
 KQTouchEvent::KQTouchEvent(QEvent::Type eventType, QTouchEvent::DeviceType deviceType, Qt::KeyboardModifiers modifiers, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> touchPoints) : QTouchEvent(eventType, deviceType, modifiers, touchPointStates, touchPoints)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTouchEvent();
 }
 
+KQTouchEvent::~KQTouchEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTouchEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -202,17 +217,23 @@ KMETHOD QTouchEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTouchEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTouchEvent *qp = (KQTouchEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTouchEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTouchEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTouchEvent *qp = (KQTouchEvent *)p->rawptr;
-//		KQTouchEvent *qp = static_cast<KQTouchEvent*>(p->rawptr);
+//		KQTouchEvent *qp = (KQTouchEvent *)p->rawptr;
+		KQTouchEvent *qp = static_cast<KQTouchEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

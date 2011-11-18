@@ -35,9 +35,18 @@ KMETHOD QStyleOptionFrameV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionFrameV2::DummyQStyleOptionFrameV2()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionFrameV2::~DummyQStyleOptionFrameV2()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionFrameV2::setSelf(knh_RawPtr_t *ptr)
@@ -103,10 +112,16 @@ void DummyQStyleOptionFrameV2::connection(QObject *o)
 
 KQStyleOptionFrameV2::KQStyleOptionFrameV2() : QStyleOptionFrameV2()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionFrameV2();
 }
 
+KQStyleOptionFrameV2::~KQStyleOptionFrameV2()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionFrameV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -151,17 +166,23 @@ KMETHOD QStyleOptionFrameV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionFrameV2_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionFrameV2 *qp = (KQStyleOptionFrameV2 *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionFrameV2*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionFrameV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionFrameV2 *qp = (KQStyleOptionFrameV2 *)p->rawptr;
-//		KQStyleOptionFrameV2 *qp = static_cast<KQStyleOptionFrameV2*>(p->rawptr);
+//		KQStyleOptionFrameV2 *qp = (KQStyleOptionFrameV2 *)p->rawptr;
+		KQStyleOptionFrameV2 *qp = static_cast<KQStyleOptionFrameV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -324,7 +345,8 @@ static void QStyleOptionFrameV2FrameFeatures_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QStyleOptionFrameV2::FrameFeatures *qp = (QStyleOptionFrameV2::FrameFeatures *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

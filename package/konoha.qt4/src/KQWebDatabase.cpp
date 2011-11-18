@@ -138,9 +138,18 @@ KMETHOD QWebDatabase_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWebDatabase::DummyQWebDatabase()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQWebDatabase::~DummyQWebDatabase()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWebDatabase::setSelf(knh_RawPtr_t *ptr)
@@ -201,10 +210,16 @@ void DummyQWebDatabase::connection(QObject *o)
 
 KQWebDatabase::KQWebDatabase(const QWebDatabase other) : QWebDatabase(other)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWebDatabase();
 }
 
+KQWebDatabase::~KQWebDatabase()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWebDatabase_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -249,17 +264,23 @@ KMETHOD QWebDatabase_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWebDatabase_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWebDatabase *qp = (KQWebDatabase *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWebDatabase*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWebDatabase_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWebDatabase *qp = (KQWebDatabase *)p->rawptr;
-//		KQWebDatabase *qp = static_cast<KQWebDatabase*>(p->rawptr);
+//		KQWebDatabase *qp = (KQWebDatabase *)p->rawptr;
+		KQWebDatabase *qp = static_cast<KQWebDatabase*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

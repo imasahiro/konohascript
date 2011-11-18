@@ -806,6 +806,8 @@ KMETHOD QPlainTextEdit_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPlainTextEdit::DummyQPlainTextEdit()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	block_count_changed_func = NULL;
 	copy_available_func = NULL;
@@ -827,6 +829,13 @@ DummyQPlainTextEdit::DummyQPlainTextEdit()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("text-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-available", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("update-request", NULL));
+}
+DummyQPlainTextEdit::~DummyQPlainTextEdit()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPlainTextEdit::setSelf(knh_RawPtr_t *ptr)
@@ -1002,8 +1011,9 @@ knh_Object_t** DummyQPlainTextEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQPlainTextEdit::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 9;
+	int list_size = 10;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, block_count_changed_func);
 	KNH_ADDNNREF(ctx, copy_available_func);
 	KNH_ADDNNREF(ctx, cursor_position_changed_func);
@@ -1040,11 +1050,17 @@ void DummyQPlainTextEdit::connection(QObject *o)
 
 KQPlainTextEdit::KQPlainTextEdit(QWidget* parent) : QPlainTextEdit(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPlainTextEdit();
 	dummy->connection((QObject*)this);
 }
 
+KQPlainTextEdit::~KQPlainTextEdit()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPlainTextEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1089,17 +1105,23 @@ KMETHOD QPlainTextEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPlainTextEdit_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPlainTextEdit *qp = (KQPlainTextEdit *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPlainTextEdit*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPlainTextEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPlainTextEdit *qp = (KQPlainTextEdit *)p->rawptr;
-//		KQPlainTextEdit *qp = static_cast<KQPlainTextEdit*>(p->rawptr);
+//		KQPlainTextEdit *qp = (KQPlainTextEdit *)p->rawptr;
+		KQPlainTextEdit *qp = static_cast<KQPlainTextEdit*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -66,9 +66,18 @@ KMETHOD QMutexLocker_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMutexLocker::DummyQMutexLocker()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQMutexLocker::~DummyQMutexLocker()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMutexLocker::setSelf(knh_RawPtr_t *ptr)
@@ -129,10 +138,16 @@ void DummyQMutexLocker::connection(QObject *o)
 
 KQMutexLocker::KQMutexLocker(QMutex* mutex) : QMutexLocker(mutex)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMutexLocker();
 }
 
+KQMutexLocker::~KQMutexLocker()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMutexLocker_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -177,17 +192,23 @@ KMETHOD QMutexLocker_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMutexLocker_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMutexLocker *qp = (KQMutexLocker *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMutexLocker*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMutexLocker_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMutexLocker *qp = (KQMutexLocker *)p->rawptr;
-//		KQMutexLocker *qp = static_cast<KQMutexLocker*>(p->rawptr);
+//		KQMutexLocker *qp = (KQMutexLocker *)p->rawptr;
+		KQMutexLocker *qp = static_cast<KQMutexLocker*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

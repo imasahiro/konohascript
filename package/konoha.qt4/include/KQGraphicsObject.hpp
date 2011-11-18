@@ -17,6 +17,7 @@ public:
 	knh_Func_t *z_changed_func;
 	knh_Func_t *paint_func;
 	DummyQGraphicsObject();
+	virtual ~DummyQGraphicsObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -38,9 +39,11 @@ public slots:
 class KQGraphicsObject : public QGraphicsObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsObject *dummy;
 	KQGraphicsObject(QGraphicsItem* parent);
+	~KQGraphicsObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);

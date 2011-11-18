@@ -160,9 +160,18 @@ KMETHOD QDoubleValidator_getTop(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDoubleValidator::DummyQDoubleValidator()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDoubleValidator::~DummyQDoubleValidator()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDoubleValidator::setSelf(knh_RawPtr_t *ptr)
@@ -228,11 +237,17 @@ void DummyQDoubleValidator::connection(QObject *o)
 
 KQDoubleValidator::KQDoubleValidator(QObject* parent) : QDoubleValidator(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDoubleValidator();
 	dummy->connection((QObject*)this);
 }
 
+KQDoubleValidator::~KQDoubleValidator()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDoubleValidator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -277,17 +292,23 @@ KMETHOD QDoubleValidator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDoubleValidator_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDoubleValidator *qp = (KQDoubleValidator *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDoubleValidator*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDoubleValidator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDoubleValidator *qp = (KQDoubleValidator *)p->rawptr;
-//		KQDoubleValidator *qp = static_cast<KQDoubleValidator*>(p->rawptr);
+//		KQDoubleValidator *qp = (KQDoubleValidator *)p->rawptr;
+		KQDoubleValidator *qp = static_cast<KQDoubleValidator*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

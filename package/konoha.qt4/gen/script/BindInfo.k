@@ -85,11 +85,6 @@ class BindInfo {
 
 		holdConstructor();
 		checkEventDispatcher(interface);
-		if (class_name == "QObject") {
-			print class_name;
-			print have_event_method_flag;
-			print have_scene_event_method_flag;
-		}
 
 		enum_bind = genEnumBind(interface.enums);
 		have_private_destructor_flag = checkHavePrivateDestructor();
@@ -268,17 +263,14 @@ class BindInfo {
 		return false;
 	}
 
-	// boolean checkHaveEventMethod() {
-	// 	foreach (String key in NOT_HAVE_EVENT_METHOD) {
-	// 		if (key == class_name) return false;
-	// 	}
-	// 	return true;
-	// }
+	boolean checkHaveProtectedDestructor() {
+		foreach (String key in HAVE_PROTECTED_DESTRUCTOR_LIST) {
+			if (key == class_name) return true;
+		}
+		return false;
+	}
 
 	boolean checkHaveConstructor() {
-		// foreach (String key in NOT_HAVE_CONSTRUCTOR) {
-		// 	if (key == class_name) return false;
-		// }
 		if (constructor == null) {
 			return false;
 		} else {

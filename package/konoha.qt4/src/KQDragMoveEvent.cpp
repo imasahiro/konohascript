@@ -32,9 +32,18 @@ KMETHOD QDragMoveEvent_answerRect(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDragMoveEvent::DummyQDragMoveEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDragMoveEvent::~DummyQDragMoveEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDragMoveEvent::setSelf(knh_RawPtr_t *ptr)
@@ -100,10 +109,16 @@ void DummyQDragMoveEvent::connection(QObject *o)
 
 KQDragMoveEvent::KQDragMoveEvent(const QPoint pos, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QDragMoveEvent::Type type) : QDragMoveEvent(pos, actions, data, buttons, modifiers, type)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDragMoveEvent();
 }
 
+KQDragMoveEvent::~KQDragMoveEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDragMoveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -148,17 +163,23 @@ KMETHOD QDragMoveEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDragMoveEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDragMoveEvent *qp = (KQDragMoveEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDragMoveEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDragMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDragMoveEvent *qp = (KQDragMoveEvent *)p->rawptr;
-//		KQDragMoveEvent *qp = static_cast<KQDragMoveEvent*>(p->rawptr);
+//		KQDragMoveEvent *qp = (KQDragMoveEvent *)p->rawptr;
+		KQDragMoveEvent *qp = static_cast<KQDragMoveEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

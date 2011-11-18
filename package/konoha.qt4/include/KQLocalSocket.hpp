@@ -11,6 +11,7 @@ public:
 	knh_Func_t *error_func;
 	knh_Func_t *state_changed_func;
 	DummyQLocalSocket();
+	virtual ~DummyQLocalSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +28,11 @@ public slots:
 class KQLocalSocket : public QLocalSocket {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLocalSocket *dummy;
 	KQLocalSocket(QObject* parent);
+	~KQLocalSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

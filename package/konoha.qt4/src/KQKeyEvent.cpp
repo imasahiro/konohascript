@@ -144,9 +144,18 @@ KMETHOD QKeyEvent_text(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQKeyEvent::DummyQKeyEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQKeyEvent::~DummyQKeyEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQKeyEvent::setSelf(knh_RawPtr_t *ptr)
@@ -212,10 +221,16 @@ void DummyQKeyEvent::connection(QObject *o)
 
 KQKeyEvent::KQKeyEvent(QKeyEvent::Type type, int key, Qt::KeyboardModifiers modifiers, const QString text, bool autorep, ushort count) : QKeyEvent(type, key, modifiers, text, autorep, count)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQKeyEvent();
 }
 
+KQKeyEvent::~KQKeyEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QKeyEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -260,17 +275,23 @@ KMETHOD QKeyEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QKeyEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQKeyEvent *qp = (KQKeyEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QKeyEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QKeyEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQKeyEvent *qp = (KQKeyEvent *)p->rawptr;
-//		KQKeyEvent *qp = static_cast<KQKeyEvent*>(p->rawptr);
+//		KQKeyEvent *qp = (KQKeyEvent *)p->rawptr;
+		KQKeyEvent *qp = static_cast<KQKeyEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

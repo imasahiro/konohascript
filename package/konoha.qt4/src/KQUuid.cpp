@@ -129,9 +129,18 @@ KMETHOD QUuid_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQUuid::DummyQUuid()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQUuid::~DummyQUuid()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQUuid::setSelf(knh_RawPtr_t *ptr)
@@ -192,10 +201,16 @@ void DummyQUuid::connection(QObject *o)
 
 KQUuid::KQUuid() : QUuid()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQUuid();
 }
 
+KQUuid::~KQUuid()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QUuid_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -240,17 +255,23 @@ KMETHOD QUuid_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QUuid_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQUuid *qp = (KQUuid *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QUuid*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QUuid_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQUuid *qp = (KQUuid *)p->rawptr;
-//		KQUuid *qp = static_cast<KQUuid*>(p->rawptr);
+//		KQUuid *qp = (KQUuid *)p->rawptr;
+		KQUuid *qp = static_cast<KQUuid*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

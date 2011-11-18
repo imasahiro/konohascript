@@ -35,9 +35,18 @@ KMETHOD QStyleOptionProgressBarV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionProgressBarV2::DummyQStyleOptionProgressBarV2()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionProgressBarV2::~DummyQStyleOptionProgressBarV2()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionProgressBarV2::setSelf(knh_RawPtr_t *ptr)
@@ -103,10 +112,16 @@ void DummyQStyleOptionProgressBarV2::connection(QObject *o)
 
 KQStyleOptionProgressBarV2::KQStyleOptionProgressBarV2() : QStyleOptionProgressBarV2()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionProgressBarV2();
 }
 
+KQStyleOptionProgressBarV2::~KQStyleOptionProgressBarV2()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionProgressBarV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -151,17 +166,23 @@ KMETHOD QStyleOptionProgressBarV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionProgressBarV2_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionProgressBarV2 *qp = (KQStyleOptionProgressBarV2 *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionProgressBarV2*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionProgressBarV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionProgressBarV2 *qp = (KQStyleOptionProgressBarV2 *)p->rawptr;
-//		KQStyleOptionProgressBarV2 *qp = static_cast<KQStyleOptionProgressBarV2*>(p->rawptr);
+//		KQStyleOptionProgressBarV2 *qp = (KQStyleOptionProgressBarV2 *)p->rawptr;
+		KQStyleOptionProgressBarV2 *qp = static_cast<KQStyleOptionProgressBarV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

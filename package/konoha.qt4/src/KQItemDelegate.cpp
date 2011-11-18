@@ -152,9 +152,18 @@ KMETHOD QItemDelegate_setItemEditorFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQItemDelegate::DummyQItemDelegate()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQItemDelegate::~DummyQItemDelegate()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQItemDelegate::setSelf(knh_RawPtr_t *ptr)
@@ -220,11 +229,17 @@ void DummyQItemDelegate::connection(QObject *o)
 
 KQItemDelegate::KQItemDelegate(QObject* parent) : QItemDelegate(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQItemDelegate();
 	dummy->connection((QObject*)this);
 }
 
+KQItemDelegate::~KQItemDelegate()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -269,17 +284,23 @@ KMETHOD QItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQItemDelegate *qp = (KQItemDelegate *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QItemDelegate*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQItemDelegate *qp = (KQItemDelegate *)p->rawptr;
-//		KQItemDelegate *qp = static_cast<KQItemDelegate*>(p->rawptr);
+//		KQItemDelegate *qp = (KQItemDelegate *)p->rawptr;
+		KQItemDelegate *qp = static_cast<KQItemDelegate*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

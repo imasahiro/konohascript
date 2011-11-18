@@ -683,9 +683,18 @@ KMETHOD QDir_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDir::DummyQDir()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDir::~DummyQDir()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDir::setSelf(knh_RawPtr_t *ptr)
@@ -746,10 +755,16 @@ void DummyQDir::connection(QObject *o)
 
 KQDir::KQDir(const QDir dir) : QDir(dir)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDir();
 }
 
+KQDir::~KQDir()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDir_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -794,17 +809,23 @@ KMETHOD QDir_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDir_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDir *qp = (KQDir *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDir*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDir_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDir *qp = (KQDir *)p->rawptr;
-//		KQDir *qp = static_cast<KQDir*>(p->rawptr);
+//		KQDir *qp = (KQDir *)p->rawptr;
+		KQDir *qp = static_cast<KQDir*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -991,7 +1012,8 @@ static void QDirFilters_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QDir::Filters *qp = (QDir::Filters *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1154,7 +1176,8 @@ static void QDirSortFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QDir::SortFlags *qp = (QDir::SortFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

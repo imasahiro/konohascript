@@ -445,9 +445,18 @@ KMETHOD QLineF_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLineF::DummyQLineF()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQLineF::~DummyQLineF()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLineF::setSelf(knh_RawPtr_t *ptr)
@@ -508,10 +517,16 @@ void DummyQLineF::connection(QObject *o)
 
 KQLineF::KQLineF() : QLineF()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLineF();
 }
 
+KQLineF::~KQLineF()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLineF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -556,17 +571,23 @@ KMETHOD QLineF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLineF_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLineF *qp = (KQLineF *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLineF*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLineF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLineF *qp = (KQLineF *)p->rawptr;
-//		KQLineF *qp = static_cast<KQLineF*>(p->rawptr);
+//		KQLineF *qp = (KQLineF *)p->rawptr;
+		KQLineF *qp = static_cast<KQLineF*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -23,9 +23,18 @@ KMETHOD QStyleOptionTitleBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionTitleBar::DummyQStyleOptionTitleBar()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionTitleBar::~DummyQStyleOptionTitleBar()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionTitleBar::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionTitleBar::connection(QObject *o)
 
 KQStyleOptionTitleBar::KQStyleOptionTitleBar() : QStyleOptionTitleBar()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionTitleBar();
 }
 
+KQStyleOptionTitleBar::~KQStyleOptionTitleBar()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionTitleBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionTitleBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionTitleBar_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionTitleBar *qp = (KQStyleOptionTitleBar *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionTitleBar*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionTitleBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionTitleBar *qp = (KQStyleOptionTitleBar *)p->rawptr;
-//		KQStyleOptionTitleBar *qp = static_cast<KQStyleOptionTitleBar*>(p->rawptr);
+//		KQStyleOptionTitleBar *qp = (KQStyleOptionTitleBar *)p->rawptr;
+		KQStyleOptionTitleBar *qp = static_cast<KQStyleOptionTitleBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

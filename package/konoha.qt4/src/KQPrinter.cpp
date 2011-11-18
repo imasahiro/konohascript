@@ -799,9 +799,18 @@ KMETHOD QPrinter_toPage(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPrinter::DummyQPrinter()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPrinter::~DummyQPrinter()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPrinter::setSelf(knh_RawPtr_t *ptr)
@@ -867,10 +876,16 @@ void DummyQPrinter::connection(QObject *o)
 
 KQPrinter::KQPrinter(QPrinter::PrinterMode mode) : QPrinter(mode)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPrinter();
 }
 
+KQPrinter::~KQPrinter()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPrinter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -915,17 +930,23 @@ KMETHOD QPrinter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPrinter_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPrinter *qp = (KQPrinter *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPrinter*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPrinter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPrinter *qp = (KQPrinter *)p->rawptr;
-//		KQPrinter *qp = static_cast<KQPrinter*>(p->rawptr);
+//		KQPrinter *qp = (KQPrinter *)p->rawptr;
+		KQPrinter *qp = static_cast<KQPrinter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

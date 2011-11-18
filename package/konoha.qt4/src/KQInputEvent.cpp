@@ -16,9 +16,18 @@ KMETHOD QInputEvent_modifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQInputEvent::DummyQInputEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQInputEvent::~DummyQInputEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQInputEvent::setSelf(knh_RawPtr_t *ptr)
@@ -82,6 +91,11 @@ void DummyQInputEvent::connection(QObject *o)
 	DummyQEvent::connection(o);
 }
 
+KQInputEvent::~KQInputEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QInputEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -126,17 +140,23 @@ KMETHOD QInputEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QInputEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQInputEvent *qp = (KQInputEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QInputEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QInputEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQInputEvent *qp = (KQInputEvent *)p->rawptr;
-//		KQInputEvent *qp = static_cast<KQInputEvent*>(p->rawptr);
+//		KQInputEvent *qp = (KQInputEvent *)p->rawptr;
+		KQInputEvent *qp = static_cast<KQInputEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

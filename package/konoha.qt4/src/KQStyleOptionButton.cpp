@@ -23,9 +23,18 @@ KMETHOD QStyleOptionButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionButton::DummyQStyleOptionButton()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionButton::~DummyQStyleOptionButton()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionButton::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionButton::connection(QObject *o)
 
 KQStyleOptionButton::KQStyleOptionButton() : QStyleOptionButton()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionButton();
 }
 
+KQStyleOptionButton::~KQStyleOptionButton()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionButton_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionButton *qp = (KQStyleOptionButton *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionButton*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionButton *qp = (KQStyleOptionButton *)p->rawptr;
-//		KQStyleOptionButton *qp = static_cast<KQStyleOptionButton*>(p->rawptr);
+//		KQStyleOptionButton *qp = (KQStyleOptionButton *)p->rawptr;
+		KQStyleOptionButton *qp = static_cast<KQStyleOptionButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -317,7 +338,8 @@ static void QStyleOptionButtonButtonFeatures_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QStyleOptionButton::ButtonFeatures *qp = (QStyleOptionButton::ButtonFeatures *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

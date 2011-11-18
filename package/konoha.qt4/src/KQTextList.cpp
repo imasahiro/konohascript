@@ -122,9 +122,18 @@ KMETHOD QTextList_setFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextList::DummyQTextList()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextList::~DummyQTextList()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextList::setSelf(knh_RawPtr_t *ptr)
@@ -188,6 +197,11 @@ void DummyQTextList::connection(QObject *o)
 	DummyQTextBlockGroup::connection(o);
 }
 
+KQTextList::~KQTextList()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextList_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -232,17 +246,23 @@ KMETHOD QTextList_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextList_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextList *qp = (KQTextList *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextList*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextList_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextList *qp = (KQTextList *)p->rawptr;
-//		KQTextList *qp = static_cast<KQTextList*>(p->rawptr);
+//		KQTextList *qp = (KQTextList *)p->rawptr;
+		KQTextList *qp = static_cast<KQTextList*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

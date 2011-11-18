@@ -23,9 +23,18 @@ KMETHOD QStyleOptionToolButton_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionToolButton::DummyQStyleOptionToolButton()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionToolButton::~DummyQStyleOptionToolButton()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionToolButton::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionToolButton::connection(QObject *o)
 
 KQStyleOptionToolButton::KQStyleOptionToolButton() : QStyleOptionToolButton()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionToolButton();
 }
 
+KQStyleOptionToolButton::~KQStyleOptionToolButton()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionToolButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionToolButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionToolButton_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionToolButton *qp = (KQStyleOptionToolButton *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionToolButton*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionToolButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionToolButton *qp = (KQStyleOptionToolButton *)p->rawptr;
-//		KQStyleOptionToolButton *qp = static_cast<KQStyleOptionToolButton*>(p->rawptr);
+//		KQStyleOptionToolButton *qp = (KQStyleOptionToolButton *)p->rawptr;
+		KQStyleOptionToolButton *qp = static_cast<KQStyleOptionToolButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -317,7 +338,8 @@ static void QStyleOptionToolButtonToolButtonFeatures_free(CTX ctx, knh_RawPtr_t 
 	if (p->rawptr != NULL) {
 		QStyleOptionToolButton::ToolButtonFeatures *qp = (QStyleOptionToolButton::ToolButtonFeatures *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

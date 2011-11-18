@@ -9,6 +9,7 @@ public:
 	knh_Func_t *current_changed_func;
 	knh_Func_t *tab_close_requested_func;
 	DummyQTabWidget();
+	virtual ~DummyQTabWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQTabWidget : public QTabWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTabWidget *dummy;
 	KQTabWidget(QWidget* parent);
+	~KQTabWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

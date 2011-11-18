@@ -434,6 +434,8 @@ KMETHOD QAbstractItemModel_submit(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractItemModel::DummyQAbstractItemModel()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	columns_about_to_be_inserted_func = NULL;
 	columns_about_to_be_moved_func = NULL;
@@ -473,6 +475,13 @@ DummyQAbstractItemModel::DummyQAbstractItemModel()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-inserted", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-moved", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("rows-removed", NULL));
+}
+DummyQAbstractItemModel::~DummyQAbstractItemModel()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractItemModel::setSelf(knh_RawPtr_t *ptr)
@@ -824,8 +833,9 @@ knh_Object_t** DummyQAbstractItemModel::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractItemModel::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 18;
+	int list_size = 19;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, columns_about_to_be_inserted_func);
 	KNH_ADDNNREF(ctx, columns_about_to_be_moved_func);
 	KNH_ADDNNREF(ctx, columns_about_to_be_removed_func);
@@ -880,11 +890,17 @@ void DummyQAbstractItemModel::connection(QObject *o)
 
 KQAbstractItemModel::KQAbstractItemModel(QObject* parent) : QAbstractItemModel(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractItemModel();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractItemModel::~KQAbstractItemModel()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractItemModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -929,17 +945,23 @@ KMETHOD QAbstractItemModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractItemModel_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractItemModel *qp = (KQAbstractItemModel *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractItemModel*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractItemModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractItemModel *qp = (KQAbstractItemModel *)p->rawptr;
-//		KQAbstractItemModel *qp = static_cast<KQAbstractItemModel*>(p->rawptr);
+//		KQAbstractItemModel *qp = (KQAbstractItemModel *)p->rawptr;
+		KQAbstractItemModel *qp = static_cast<KQAbstractItemModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

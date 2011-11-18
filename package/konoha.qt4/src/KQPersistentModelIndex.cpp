@@ -162,9 +162,18 @@ KMETHOD QPersistentModelIndex_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPersistentModelIndex::DummyQPersistentModelIndex()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPersistentModelIndex::~DummyQPersistentModelIndex()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPersistentModelIndex::setSelf(knh_RawPtr_t *ptr)
@@ -225,10 +234,16 @@ void DummyQPersistentModelIndex::connection(QObject *o)
 
 KQPersistentModelIndex::KQPersistentModelIndex(const QModelIndex index) : QPersistentModelIndex(index)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPersistentModelIndex();
 }
 
+KQPersistentModelIndex::~KQPersistentModelIndex()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPersistentModelIndex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -273,17 +288,23 @@ KMETHOD QPersistentModelIndex_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPersistentModelIndex_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPersistentModelIndex *qp = (KQPersistentModelIndex *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPersistentModelIndex*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPersistentModelIndex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPersistentModelIndex *qp = (KQPersistentModelIndex *)p->rawptr;
-//		KQPersistentModelIndex *qp = static_cast<KQPersistentModelIndex*>(p->rawptr);
+//		KQPersistentModelIndex *qp = (KQPersistentModelIndex *)p->rawptr;
+		KQPersistentModelIndex *qp = static_cast<KQPersistentModelIndex*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

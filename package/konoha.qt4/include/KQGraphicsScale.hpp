@@ -12,6 +12,7 @@ public:
 	knh_Func_t *y_scale_changed_func;
 	knh_Func_t *z_scale_changed_func;
 	DummyQGraphicsScale();
+	virtual ~DummyQGraphicsScale();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -29,9 +30,11 @@ public slots:
 class KQGraphicsScale : public QGraphicsScale {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsScale *dummy;
 	KQGraphicsScale(QObject* parent);
+	~KQGraphicsScale();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

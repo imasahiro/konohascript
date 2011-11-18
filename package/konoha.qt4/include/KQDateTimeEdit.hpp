@@ -10,6 +10,7 @@ public:
 	knh_Func_t *date_time_changed_func;
 	knh_Func_t *time_changed_func;
 	DummyQDateTimeEdit();
+	virtual ~DummyQDateTimeEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -25,9 +26,11 @@ public slots:
 class KQDateTimeEdit : public QDateTimeEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDateTimeEdit *dummy;
 	KQDateTimeEdit(QWidget* parent);
+	~KQDateTimeEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -941,9 +941,18 @@ KMETHOD QPainterPath_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPainterPath::DummyQPainterPath()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPainterPath::~DummyQPainterPath()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPainterPath::setSelf(knh_RawPtr_t *ptr)
@@ -1004,10 +1013,16 @@ void DummyQPainterPath::connection(QObject *o)
 
 KQPainterPath::KQPainterPath() : QPainterPath()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPainterPath();
 }
 
+KQPainterPath::~KQPainterPath()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPainterPath_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1052,17 +1067,23 @@ KMETHOD QPainterPath_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPainterPath_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPainterPath *qp = (KQPainterPath *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPainterPath*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPainterPath_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPainterPath *qp = (KQPainterPath *)p->rawptr;
-//		KQPainterPath *qp = static_cast<KQPainterPath*>(p->rawptr);
+//		KQPainterPath *qp = (KQPainterPath *)p->rawptr;
+		KQPainterPath *qp = static_cast<KQPainterPath*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

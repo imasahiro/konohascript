@@ -184,6 +184,8 @@ KMETHOD QDesktopWidget_screenNumber(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDesktopWidget::DummyQDesktopWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	resized_func = NULL;
 	screen_count_changed_func = NULL;
@@ -193,6 +195,13 @@ DummyQDesktopWidget::DummyQDesktopWidget()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("resized", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("screen-count-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("work-area-resized", NULL));
+}
+DummyQDesktopWidget::~DummyQDesktopWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDesktopWidget::setSelf(knh_RawPtr_t *ptr)
@@ -285,8 +294,9 @@ knh_Object_t** DummyQDesktopWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQDesktopWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 3;
+	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, resized_func);
 	KNH_ADDNNREF(ctx, screen_count_changed_func);
 	KNH_ADDNNREF(ctx, work_area_resized_func);
@@ -309,6 +319,11 @@ void DummyQDesktopWidget::connection(QObject *o)
 	DummyQWidget::connection(o);
 }
 
+KQDesktopWidget::~KQDesktopWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDesktopWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -353,17 +368,23 @@ KMETHOD QDesktopWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDesktopWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDesktopWidget *qp = (KQDesktopWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDesktopWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDesktopWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDesktopWidget *qp = (KQDesktopWidget *)p->rawptr;
-//		KQDesktopWidget *qp = static_cast<KQDesktopWidget*>(p->rawptr);
+//		KQDesktopWidget *qp = (KQDesktopWidget *)p->rawptr;
+		KQDesktopWidget *qp = static_cast<KQDesktopWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

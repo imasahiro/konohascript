@@ -377,11 +377,20 @@ KMETHOD QMdiArea_tileSubWindows(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMdiArea::DummyQMdiArea()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	sub_window_activated_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("sub-window-activated", NULL));
+}
+DummyQMdiArea::~DummyQMdiArea()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMdiArea::setSelf(knh_RawPtr_t *ptr)
@@ -447,8 +456,9 @@ knh_Object_t** DummyQMdiArea::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQMdiArea::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, sub_window_activated_func);
 
 	KNH_SIZEREF(ctx);
@@ -469,11 +479,17 @@ void DummyQMdiArea::connection(QObject *o)
 
 KQMdiArea::KQMdiArea(QWidget* parent) : QMdiArea(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMdiArea();
 	dummy->connection((QObject*)this);
 }
 
+KQMdiArea::~KQMdiArea()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMdiArea_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -518,17 +534,23 @@ KMETHOD QMdiArea_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMdiArea_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMdiArea *qp = (KQMdiArea *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMdiArea*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMdiArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMdiArea *qp = (KQMdiArea *)p->rawptr;
-//		KQMdiArea *qp = static_cast<KQMdiArea*>(p->rawptr);
+//		KQMdiArea *qp = (KQMdiArea *)p->rawptr;
+		KQMdiArea *qp = static_cast<KQMdiArea*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -704,7 +726,8 @@ static void QMdiAreaAreaOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QMdiArea::AreaOptions *qp = (QMdiArea::AreaOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

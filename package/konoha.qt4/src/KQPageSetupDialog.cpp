@@ -118,9 +118,18 @@ KMETHOD QPageSetupDialog_testOption(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPageSetupDialog::DummyQPageSetupDialog()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPageSetupDialog::~DummyQPageSetupDialog()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPageSetupDialog::setSelf(knh_RawPtr_t *ptr)
@@ -186,11 +195,17 @@ void DummyQPageSetupDialog::connection(QObject *o)
 
 KQPageSetupDialog::KQPageSetupDialog(QPrinter* printer, QWidget* parent) : QPageSetupDialog(printer, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPageSetupDialog();
 	dummy->connection((QObject*)this);
 }
 
+KQPageSetupDialog::~KQPageSetupDialog()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPageSetupDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -235,17 +250,23 @@ KMETHOD QPageSetupDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPageSetupDialog_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPageSetupDialog *qp = (KQPageSetupDialog *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPageSetupDialog*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPageSetupDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPageSetupDialog *qp = (KQPageSetupDialog *)p->rawptr;
-//		KQPageSetupDialog *qp = static_cast<KQPageSetupDialog*>(p->rawptr);
+//		KQPageSetupDialog *qp = (KQPageSetupDialog *)p->rawptr;
+		KQPageSetupDialog *qp = static_cast<KQPageSetupDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -416,7 +437,8 @@ static void QPageSetupDialogPageSetupDialogOptions_free(CTX ctx, knh_RawPtr_t *p
 	if (p->rawptr != NULL) {
 		QPageSetupDialog::PageSetupDialogOptions *qp = (QPageSetupDialog::PageSetupDialogOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

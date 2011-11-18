@@ -302,6 +302,8 @@ KMETHOD QAbstractSlider_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractSlider::DummyQAbstractSlider()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	action_triggered_func = NULL;
 	range_changed_func = NULL;
@@ -317,6 +319,13 @@ DummyQAbstractSlider::DummyQAbstractSlider()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("slider-pressed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("slider-released", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("value-changed", NULL));
+}
+DummyQAbstractSlider::~DummyQAbstractSlider()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractSlider::setSelf(knh_RawPtr_t *ptr)
@@ -450,8 +459,9 @@ knh_Object_t** DummyQAbstractSlider::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractSlider::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, action_triggered_func);
 	KNH_ADDNNREF(ctx, range_changed_func);
 	KNH_ADDNNREF(ctx, slider_moved_func);
@@ -482,11 +492,17 @@ void DummyQAbstractSlider::connection(QObject *o)
 
 KQAbstractSlider::KQAbstractSlider(QWidget* parent) : QAbstractSlider(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractSlider();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractSlider::~KQAbstractSlider()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractSlider_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -531,17 +547,23 @@ KMETHOD QAbstractSlider_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractSlider_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractSlider *qp = (KQAbstractSlider *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractSlider*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractSlider *qp = (KQAbstractSlider *)p->rawptr;
-//		KQAbstractSlider *qp = static_cast<KQAbstractSlider*>(p->rawptr);
+//		KQAbstractSlider *qp = (KQAbstractSlider *)p->rawptr;
+		KQAbstractSlider *qp = static_cast<KQAbstractSlider*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

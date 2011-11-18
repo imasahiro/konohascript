@@ -215,9 +215,18 @@ KMETHOD QCursor_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQCursor::DummyQCursor()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQCursor::~DummyQCursor()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQCursor::setSelf(knh_RawPtr_t *ptr)
@@ -278,10 +287,16 @@ void DummyQCursor::connection(QObject *o)
 
 KQCursor::KQCursor() : QCursor()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQCursor();
 }
 
+KQCursor::~KQCursor()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QCursor_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -326,17 +341,23 @@ KMETHOD QCursor_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QCursor_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQCursor *qp = (KQCursor *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QCursor*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QCursor_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQCursor *qp = (KQCursor *)p->rawptr;
-//		KQCursor *qp = static_cast<KQCursor*>(p->rawptr);
+//		KQCursor *qp = (KQCursor *)p->rawptr;
+		KQCursor *qp = static_cast<KQCursor*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

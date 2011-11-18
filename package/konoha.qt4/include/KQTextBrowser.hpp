@@ -12,6 +12,7 @@ public:
 	knh_Func_t *history_changed_func;
 	knh_Func_t *source_changed_func;
 	DummyQTextBrowser();
+	virtual ~DummyQTextBrowser();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -29,9 +30,11 @@ public slots:
 class KQTextBrowser : public QTextBrowser {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextBrowser *dummy;
 	KQTextBrowser(QWidget* parent);
+	~KQTextBrowser();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

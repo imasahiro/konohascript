@@ -311,9 +311,18 @@ KMETHOD QImageWriter_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQImageWriter::DummyQImageWriter()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQImageWriter::~DummyQImageWriter()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQImageWriter::setSelf(knh_RawPtr_t *ptr)
@@ -374,10 +383,16 @@ void DummyQImageWriter::connection(QObject *o)
 
 KQImageWriter::KQImageWriter() : QImageWriter()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQImageWriter();
 }
 
+KQImageWriter::~KQImageWriter()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QImageWriter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -422,17 +437,23 @@ KMETHOD QImageWriter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QImageWriter_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQImageWriter *qp = (KQImageWriter *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QImageWriter*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QImageWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQImageWriter *qp = (KQImageWriter *)p->rawptr;
-//		KQImageWriter *qp = static_cast<KQImageWriter*>(p->rawptr);
+//		KQImageWriter *qp = (KQImageWriter *)p->rawptr;
+		KQImageWriter *qp = static_cast<KQImageWriter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

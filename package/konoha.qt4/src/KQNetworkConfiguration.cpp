@@ -186,9 +186,18 @@ KMETHOD QNetworkConfiguration_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkConfiguration::DummyQNetworkConfiguration()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkConfiguration::~DummyQNetworkConfiguration()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkConfiguration::setSelf(knh_RawPtr_t *ptr)
@@ -249,10 +258,16 @@ void DummyQNetworkConfiguration::connection(QObject *o)
 
 KQNetworkConfiguration::KQNetworkConfiguration() : QNetworkConfiguration()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkConfiguration();
 }
 
+KQNetworkConfiguration::~KQNetworkConfiguration()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkConfiguration_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -297,17 +312,23 @@ KMETHOD QNetworkConfiguration_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkConfiguration_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkConfiguration *qp = (KQNetworkConfiguration *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkConfiguration*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkConfiguration_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkConfiguration *qp = (KQNetworkConfiguration *)p->rawptr;
-//		KQNetworkConfiguration *qp = static_cast<KQNetworkConfiguration*>(p->rawptr);
+//		KQNetworkConfiguration *qp = (KQNetworkConfiguration *)p->rawptr;
+		KQNetworkConfiguration *qp = static_cast<KQNetworkConfiguration*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -488,7 +509,8 @@ static void QNetworkConfigurationStateFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QNetworkConfiguration::StateFlags *qp = (QNetworkConfiguration::StateFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

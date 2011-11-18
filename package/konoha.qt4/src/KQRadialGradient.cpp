@@ -175,9 +175,18 @@ KMETHOD QRadialGradient_setRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQRadialGradient::DummyQRadialGradient()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQRadialGradient::~DummyQRadialGradient()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQRadialGradient::setSelf(knh_RawPtr_t *ptr)
@@ -243,10 +252,16 @@ void DummyQRadialGradient::connection(QObject *o)
 
 KQRadialGradient::KQRadialGradient() : QRadialGradient()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQRadialGradient();
 }
 
+KQRadialGradient::~KQRadialGradient()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QRadialGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -291,17 +306,23 @@ KMETHOD QRadialGradient_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QRadialGradient_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQRadialGradient *qp = (KQRadialGradient *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QRadialGradient*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QRadialGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQRadialGradient *qp = (KQRadialGradient *)p->rawptr;
-//		KQRadialGradient *qp = static_cast<KQRadialGradient*>(p->rawptr);
+//		KQRadialGradient *qp = (KQRadialGradient *)p->rawptr;
+		KQRadialGradient *qp = static_cast<KQRadialGradient*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

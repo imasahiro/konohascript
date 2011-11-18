@@ -106,11 +106,20 @@ KMETHOD QFontComboBox_setCurrentFont(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQFontComboBox::DummyQFontComboBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	current_font_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("current-font-changed", NULL));
+}
+DummyQFontComboBox::~DummyQFontComboBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQFontComboBox::setSelf(knh_RawPtr_t *ptr)
@@ -176,8 +185,9 @@ knh_Object_t** DummyQFontComboBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQFontComboBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, current_font_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -198,11 +208,17 @@ void DummyQFontComboBox::connection(QObject *o)
 
 KQFontComboBox::KQFontComboBox(QWidget* parent) : QFontComboBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQFontComboBox();
 	dummy->connection((QObject*)this);
 }
 
+KQFontComboBox::~KQFontComboBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QFontComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -247,17 +263,23 @@ KMETHOD QFontComboBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QFontComboBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQFontComboBox *qp = (KQFontComboBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QFontComboBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QFontComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQFontComboBox *qp = (KQFontComboBox *)p->rawptr;
-//		KQFontComboBox *qp = static_cast<KQFontComboBox*>(p->rawptr);
+//		KQFontComboBox *qp = (KQFontComboBox *)p->rawptr;
+		KQFontComboBox *qp = static_cast<KQFontComboBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -432,7 +454,8 @@ static void QFontComboBoxFontFilters_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QFontComboBox::FontFilters *qp = (QFontComboBox::FontFilters *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

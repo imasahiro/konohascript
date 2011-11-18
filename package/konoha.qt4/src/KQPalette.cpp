@@ -628,9 +628,18 @@ KMETHOD QPalette_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPalette::DummyQPalette()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPalette::~DummyQPalette()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPalette::setSelf(knh_RawPtr_t *ptr)
@@ -691,10 +700,16 @@ void DummyQPalette::connection(QObject *o)
 
 KQPalette::KQPalette() : QPalette()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPalette();
 }
 
+KQPalette::~KQPalette()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPalette_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -739,17 +754,23 @@ KMETHOD QPalette_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPalette_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPalette *qp = (KQPalette *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPalette*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPalette_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPalette *qp = (KQPalette *)p->rawptr;
-//		KQPalette *qp = static_cast<KQPalette*>(p->rawptr);
+//		KQPalette *qp = (KQPalette *)p->rawptr;
+		KQPalette *qp = static_cast<KQPalette*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

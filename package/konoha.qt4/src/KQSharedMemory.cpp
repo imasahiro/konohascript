@@ -215,9 +215,18 @@ KMETHOD QSharedMemory_unlock(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSharedMemory::DummyQSharedMemory()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSharedMemory::~DummyQSharedMemory()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSharedMemory::setSelf(knh_RawPtr_t *ptr)
@@ -283,11 +292,17 @@ void DummyQSharedMemory::connection(QObject *o)
 
 KQSharedMemory::KQSharedMemory(const QString key, QObject* parent) : QSharedMemory(key, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSharedMemory();
 	dummy->connection((QObject*)this);
 }
 
+KQSharedMemory::~KQSharedMemory()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSharedMemory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -332,17 +347,23 @@ KMETHOD QSharedMemory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSharedMemory_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSharedMemory *qp = (KQSharedMemory *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSharedMemory*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSharedMemory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSharedMemory *qp = (KQSharedMemory *)p->rawptr;
-//		KQSharedMemory *qp = static_cast<KQSharedMemory*>(p->rawptr);
+//		KQSharedMemory *qp = (KQSharedMemory *)p->rawptr;
+		KQSharedMemory *qp = static_cast<KQSharedMemory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

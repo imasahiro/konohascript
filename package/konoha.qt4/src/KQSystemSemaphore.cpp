@@ -114,9 +114,18 @@ KMETHOD QSystemSemaphore_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSystemSemaphore::DummyQSystemSemaphore()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSystemSemaphore::~DummyQSystemSemaphore()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSystemSemaphore::setSelf(knh_RawPtr_t *ptr)
@@ -177,10 +186,16 @@ void DummyQSystemSemaphore::connection(QObject *o)
 
 KQSystemSemaphore::KQSystemSemaphore(const QString key, int initialValue, QSystemSemaphore::AccessMode mode) : QSystemSemaphore(key, initialValue, mode)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSystemSemaphore();
 }
 
+KQSystemSemaphore::~KQSystemSemaphore()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSystemSemaphore_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -225,17 +240,23 @@ KMETHOD QSystemSemaphore_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSystemSemaphore_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSystemSemaphore *qp = (KQSystemSemaphore *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSystemSemaphore*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSystemSemaphore_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSystemSemaphore *qp = (KQSystemSemaphore *)p->rawptr;
-//		KQSystemSemaphore *qp = static_cast<KQSystemSemaphore*>(p->rawptr);
+//		KQSystemSemaphore *qp = (KQSystemSemaphore *)p->rawptr;
+		KQSystemSemaphore *qp = static_cast<KQSystemSemaphore*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

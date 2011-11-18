@@ -23,9 +23,18 @@ KMETHOD QStyleOptionDockWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionDockWidget::DummyQStyleOptionDockWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionDockWidget::~DummyQStyleOptionDockWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionDockWidget::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionDockWidget::connection(QObject *o)
 
 KQStyleOptionDockWidget::KQStyleOptionDockWidget() : QStyleOptionDockWidget()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionDockWidget();
 }
 
+KQStyleOptionDockWidget::~KQStyleOptionDockWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionDockWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionDockWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionDockWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionDockWidget *qp = (KQStyleOptionDockWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionDockWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionDockWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionDockWidget *qp = (KQStyleOptionDockWidget *)p->rawptr;
-//		KQStyleOptionDockWidget *qp = static_cast<KQStyleOptionDockWidget*>(p->rawptr);
+//		KQStyleOptionDockWidget *qp = (KQStyleOptionDockWidget *)p->rawptr;
+		KQStyleOptionDockWidget *qp = static_cast<KQStyleOptionDockWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

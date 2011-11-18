@@ -55,9 +55,18 @@ KMETHOD QStyleOption_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOption::DummyQStyleOption()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOption::~DummyQStyleOption()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOption::setSelf(knh_RawPtr_t *ptr)
@@ -118,10 +127,16 @@ void DummyQStyleOption::connection(QObject *o)
 
 KQStyleOption::KQStyleOption(int version, int type) : QStyleOption(version, type)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOption();
 }
 
+KQStyleOption::~KQStyleOption()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOption_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -166,17 +181,23 @@ KMETHOD QStyleOption_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOption_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOption *qp = (KQStyleOption *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOption*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOption_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOption *qp = (KQStyleOption *)p->rawptr;
-//		KQStyleOption *qp = static_cast<KQStyleOption*>(p->rawptr);
+//		KQStyleOption *qp = (KQStyleOption *)p->rawptr;
+		KQStyleOption *qp = static_cast<KQStyleOption*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

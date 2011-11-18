@@ -290,9 +290,18 @@ KMETHOD QQuaternion_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQQuaternion::DummyQQuaternion()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQQuaternion::~DummyQQuaternion()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQQuaternion::setSelf(knh_RawPtr_t *ptr)
@@ -353,10 +362,16 @@ void DummyQQuaternion::connection(QObject *o)
 
 KQQuaternion::KQQuaternion() : QQuaternion()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQQuaternion();
 }
 
+KQQuaternion::~KQQuaternion()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QQuaternion_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -401,17 +416,23 @@ KMETHOD QQuaternion_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QQuaternion_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQQuaternion *qp = (KQQuaternion *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QQuaternion*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QQuaternion_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQQuaternion *qp = (KQQuaternion *)p->rawptr;
-//		KQQuaternion *qp = static_cast<KQQuaternion*>(p->rawptr);
+//		KQQuaternion *qp = (KQQuaternion *)p->rawptr;
+		KQQuaternion *qp = static_cast<KQQuaternion*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -247,9 +247,18 @@ KMETHOD QTextOption_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextOption::DummyQTextOption()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextOption::~DummyQTextOption()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextOption::setSelf(knh_RawPtr_t *ptr)
@@ -310,10 +319,16 @@ void DummyQTextOption::connection(QObject *o)
 
 KQTextOption::KQTextOption() : QTextOption()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextOption();
 }
 
+KQTextOption::~KQTextOption()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextOption_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -358,17 +373,23 @@ KMETHOD QTextOption_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextOption_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextOption *qp = (KQTextOption *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextOption*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextOption_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextOption *qp = (KQTextOption *)p->rawptr;
-//		KQTextOption *qp = static_cast<KQTextOption*>(p->rawptr);
+//		KQTextOption *qp = (KQTextOption *)p->rawptr;
+		KQTextOption *qp = static_cast<KQTextOption*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -542,7 +563,8 @@ static void QTextOptionFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QTextOption::Flags *qp = (QTextOption::Flags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

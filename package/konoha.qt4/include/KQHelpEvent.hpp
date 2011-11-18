@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHelpEvent();
+	virtual ~DummyQHelpEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQHelpEvent : public QHelpEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHelpEvent *dummy;
 	KQHelpEvent(QHelpEvent::Type type, const QPoint pos, const QPoint globalPos);
+	~KQHelpEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

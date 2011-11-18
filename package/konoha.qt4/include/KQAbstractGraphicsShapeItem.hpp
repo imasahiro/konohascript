@@ -8,6 +8,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQAbstractGraphicsShapeItem();
+	virtual ~DummyQAbstractGraphicsShapeItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -19,9 +20,11 @@ public:
 class KQAbstractGraphicsShapeItem : public QAbstractGraphicsShapeItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractGraphicsShapeItem *dummy;
 	KQAbstractGraphicsShapeItem(QGraphicsItem* parent);
+	~KQAbstractGraphicsShapeItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);

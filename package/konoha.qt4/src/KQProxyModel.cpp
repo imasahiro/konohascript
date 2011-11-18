@@ -363,9 +363,18 @@ KMETHOD QProxyModel_setModel(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQProxyModel::DummyQProxyModel()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQProxyModel::~DummyQProxyModel()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQProxyModel::setSelf(knh_RawPtr_t *ptr)
@@ -431,11 +440,17 @@ void DummyQProxyModel::connection(QObject *o)
 
 KQProxyModel::KQProxyModel(QObject* parent) : QProxyModel(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQProxyModel();
 	dummy->connection((QObject*)this);
 }
 
+KQProxyModel::~KQProxyModel()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QProxyModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -480,17 +495,23 @@ KMETHOD QProxyModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QProxyModel_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQProxyModel *qp = (KQProxyModel *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QProxyModel*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QProxyModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQProxyModel *qp = (KQProxyModel *)p->rawptr;
-//		KQProxyModel *qp = static_cast<KQProxyModel*>(p->rawptr);
+//		KQProxyModel *qp = (KQProxyModel *)p->rawptr;
+		KQProxyModel *qp = static_cast<KQProxyModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -207,11 +207,20 @@ void KQGraphicsPolygonItem::paint(QPainter *painter, const QStyleOptionGraphicsI
 
 DummyQGraphicsPolygonItem::DummyQGraphicsPolygonItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
+}
+DummyQGraphicsPolygonItem::~DummyQGraphicsPolygonItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsPolygonItem::setSelf(knh_RawPtr_t *ptr)
@@ -278,10 +287,16 @@ void DummyQGraphicsPolygonItem::connection(QObject *o)
 
 KQGraphicsPolygonItem::KQGraphicsPolygonItem(QGraphicsItem* parent) : QGraphicsPolygonItem(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsPolygonItem();
 }
 
+KQGraphicsPolygonItem::~KQGraphicsPolygonItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsPolygonItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -326,17 +341,23 @@ KMETHOD QGraphicsPolygonItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsPolygonItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsPolygonItem *qp = (KQGraphicsPolygonItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsPolygonItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsPolygonItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsPolygonItem *qp = (KQGraphicsPolygonItem *)p->rawptr;
-//		KQGraphicsPolygonItem *qp = static_cast<KQGraphicsPolygonItem*>(p->rawptr);
+//		KQGraphicsPolygonItem *qp = (KQGraphicsPolygonItem *)p->rawptr;
+		KQGraphicsPolygonItem *qp = static_cast<KQGraphicsPolygonItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

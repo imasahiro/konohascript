@@ -90,11 +90,20 @@ KMETHOD QCheckBox_setTristate(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQCheckBox::DummyQCheckBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	state_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+}
+DummyQCheckBox::~DummyQCheckBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQCheckBox::setSelf(knh_RawPtr_t *ptr)
@@ -159,8 +168,9 @@ knh_Object_t** DummyQCheckBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQCheckBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, state_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -181,11 +191,17 @@ void DummyQCheckBox::connection(QObject *o)
 
 KQCheckBox::KQCheckBox(QWidget* parent) : QCheckBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQCheckBox();
 	dummy->connection((QObject*)this);
 }
 
+KQCheckBox::~KQCheckBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QCheckBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -230,17 +246,23 @@ KMETHOD QCheckBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QCheckBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQCheckBox *qp = (KQCheckBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QCheckBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QCheckBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQCheckBox *qp = (KQCheckBox *)p->rawptr;
-//		KQCheckBox *qp = static_cast<KQCheckBox*>(p->rawptr);
+//		KQCheckBox *qp = (KQCheckBox *)p->rawptr;
+		KQCheckBox *qp = static_cast<KQCheckBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

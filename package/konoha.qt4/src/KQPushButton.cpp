@@ -181,9 +181,18 @@ KMETHOD QPushButton_showMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPushButton::DummyQPushButton()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPushButton::~DummyQPushButton()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPushButton::setSelf(knh_RawPtr_t *ptr)
@@ -249,11 +258,17 @@ void DummyQPushButton::connection(QObject *o)
 
 KQPushButton::KQPushButton(QWidget* parent) : QPushButton(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPushButton();
 	dummy->connection((QObject*)this);
 }
 
+KQPushButton::~KQPushButton()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPushButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -298,17 +313,23 @@ KMETHOD QPushButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPushButton_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPushButton *qp = (KQPushButton *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPushButton*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPushButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPushButton *qp = (KQPushButton *)p->rawptr;
-//		KQPushButton *qp = static_cast<KQPushButton*>(p->rawptr);
+//		KQPushButton *qp = (KQPushButton *)p->rawptr;
+		KQPushButton *qp = static_cast<KQPushButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

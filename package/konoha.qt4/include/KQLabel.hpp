@@ -9,6 +9,7 @@ public:
 	knh_Func_t *link_activated_func;
 	knh_Func_t *link_hovered_func;
 	DummyQLabel();
+	virtual ~DummyQLabel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQLabel : public QLabel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLabel *dummy;
 	KQLabel(QWidget* parent, Qt::WindowFlags f);
+	~KQLabel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

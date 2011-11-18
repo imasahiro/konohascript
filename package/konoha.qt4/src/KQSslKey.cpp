@@ -155,9 +155,18 @@ KMETHOD QSslKey_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSslKey::DummyQSslKey()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSslKey::~DummyQSslKey()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSslKey::setSelf(knh_RawPtr_t *ptr)
@@ -218,10 +227,16 @@ void DummyQSslKey::connection(QObject *o)
 
 KQSslKey::KQSslKey() : QSslKey()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSslKey();
 }
 
+KQSslKey::~KQSslKey()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSslKey_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -266,17 +281,23 @@ KMETHOD QSslKey_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSslKey_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSslKey *qp = (KQSslKey *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSslKey*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSslKey_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSslKey *qp = (KQSslKey *)p->rawptr;
-//		KQSslKey *qp = static_cast<KQSslKey*>(p->rawptr);
+//		KQSslKey *qp = (KQSslKey *)p->rawptr;
+		KQSslKey *qp = static_cast<KQSslKey*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

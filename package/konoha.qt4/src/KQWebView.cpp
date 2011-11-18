@@ -435,6 +435,8 @@ KMETHOD QWebView_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWebView::DummyQWebView()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	icon_changed_func = NULL;
 	link_clicked_func = NULL;
@@ -456,6 +458,13 @@ DummyQWebView::DummyQWebView()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("status-bar-message", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("title-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("url-changed", NULL));
+}
+DummyQWebView::~DummyQWebView()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWebView::setSelf(knh_RawPtr_t *ptr)
@@ -633,8 +642,9 @@ knh_Object_t** DummyQWebView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQWebView::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 9;
+	int list_size = 10;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, icon_changed_func);
 	KNH_ADDNNREF(ctx, link_clicked_func);
 	KNH_ADDNNREF(ctx, load_finished_func);
@@ -671,11 +681,17 @@ void DummyQWebView::connection(QObject *o)
 
 KQWebView::KQWebView(QWidget* parent) : QWebView(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWebView();
 	dummy->connection((QObject*)this);
 }
 
+KQWebView::~KQWebView()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWebView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -720,17 +736,23 @@ KMETHOD QWebView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWebView_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWebView *qp = (KQWebView *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWebView*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWebView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWebView *qp = (KQWebView *)p->rawptr;
-//		KQWebView *qp = static_cast<KQWebView*>(p->rawptr);
+//		KQWebView *qp = (KQWebView *)p->rawptr;
+		KQWebView *qp = static_cast<KQWebView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

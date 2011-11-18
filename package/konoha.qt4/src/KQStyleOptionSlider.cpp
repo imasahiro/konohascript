@@ -23,9 +23,18 @@ KMETHOD QStyleOptionSlider_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionSlider::DummyQStyleOptionSlider()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionSlider::~DummyQStyleOptionSlider()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionSlider::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionSlider::connection(QObject *o)
 
 KQStyleOptionSlider::KQStyleOptionSlider() : QStyleOptionSlider()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionSlider();
 }
 
+KQStyleOptionSlider::~KQStyleOptionSlider()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionSlider_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionSlider_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionSlider_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionSlider *qp = (KQStyleOptionSlider *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionSlider*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionSlider_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionSlider *qp = (KQStyleOptionSlider *)p->rawptr;
-//		KQStyleOptionSlider *qp = static_cast<KQStyleOptionSlider*>(p->rawptr);
+//		KQStyleOptionSlider *qp = (KQStyleOptionSlider *)p->rawptr;
+		KQStyleOptionSlider *qp = static_cast<KQStyleOptionSlider*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

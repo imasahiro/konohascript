@@ -51,9 +51,18 @@ KMETHOD QErrorMessage_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQErrorMessage::DummyQErrorMessage()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQErrorMessage::~DummyQErrorMessage()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQErrorMessage::setSelf(knh_RawPtr_t *ptr)
@@ -119,11 +128,17 @@ void DummyQErrorMessage::connection(QObject *o)
 
 KQErrorMessage::KQErrorMessage(QWidget* parent) : QErrorMessage(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQErrorMessage();
 	dummy->connection((QObject*)this);
 }
 
+KQErrorMessage::~KQErrorMessage()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QErrorMessage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -168,17 +183,23 @@ KMETHOD QErrorMessage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QErrorMessage_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQErrorMessage *qp = (KQErrorMessage *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QErrorMessage*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QErrorMessage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQErrorMessage *qp = (KQErrorMessage *)p->rawptr;
-//		KQErrorMessage *qp = static_cast<KQErrorMessage*>(p->rawptr);
+//		KQErrorMessage *qp = (KQErrorMessage *)p->rawptr;
+		KQErrorMessage *qp = static_cast<KQErrorMessage*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

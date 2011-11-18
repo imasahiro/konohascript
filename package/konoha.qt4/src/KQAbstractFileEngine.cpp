@@ -478,9 +478,18 @@ KMETHOD QAbstractFileEngine_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractFileEngine::DummyQAbstractFileEngine()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAbstractFileEngine::~DummyQAbstractFileEngine()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractFileEngine::setSelf(knh_RawPtr_t *ptr)
@@ -539,6 +548,11 @@ void DummyQAbstractFileEngine::connection(QObject *o)
 	}
 }
 
+KQAbstractFileEngine::~KQAbstractFileEngine()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractFileEngine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -583,17 +597,23 @@ KMETHOD QAbstractFileEngine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractFileEngine_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractFileEngine *qp = (KQAbstractFileEngine *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractFileEngine*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractFileEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractFileEngine *qp = (KQAbstractFileEngine *)p->rawptr;
-//		KQAbstractFileEngine *qp = static_cast<KQAbstractFileEngine*>(p->rawptr);
+//		KQAbstractFileEngine *qp = (KQAbstractFileEngine *)p->rawptr;
+		KQAbstractFileEngine *qp = static_cast<KQAbstractFileEngine*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -792,7 +812,8 @@ static void QAbstractFileEngineFileFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QAbstractFileEngine::FileFlags *qp = (QAbstractFileEngine::FileFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

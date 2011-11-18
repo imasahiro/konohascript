@@ -204,9 +204,18 @@ KMETHOD QBuffer_setData(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQBuffer::DummyQBuffer()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQBuffer::~DummyQBuffer()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQBuffer::setSelf(knh_RawPtr_t *ptr)
@@ -272,11 +281,17 @@ void DummyQBuffer::connection(QObject *o)
 
 KQBuffer::KQBuffer(QObject* parent) : QBuffer(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQBuffer();
 	dummy->connection((QObject*)this);
 }
 
+KQBuffer::~KQBuffer()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QBuffer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -321,17 +336,23 @@ KMETHOD QBuffer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QBuffer_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQBuffer *qp = (KQBuffer *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QBuffer*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QBuffer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQBuffer *qp = (KQBuffer *)p->rawptr;
-//		KQBuffer *qp = static_cast<KQBuffer*>(p->rawptr);
+//		KQBuffer *qp = (KQBuffer *)p->rawptr;
+		KQBuffer *qp = static_cast<KQBuffer*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

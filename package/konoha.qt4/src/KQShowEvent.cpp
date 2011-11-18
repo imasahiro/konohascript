@@ -11,9 +11,18 @@ KMETHOD QShowEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQShowEvent::DummyQShowEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQShowEvent::~DummyQShowEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQShowEvent::setSelf(knh_RawPtr_t *ptr)
@@ -79,10 +88,16 @@ void DummyQShowEvent::connection(QObject *o)
 
 KQShowEvent::KQShowEvent() : QShowEvent()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQShowEvent();
 }
 
+KQShowEvent::~KQShowEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QShowEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -127,17 +142,23 @@ KMETHOD QShowEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QShowEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQShowEvent *qp = (KQShowEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QShowEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QShowEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQShowEvent *qp = (KQShowEvent *)p->rawptr;
-//		KQShowEvent *qp = static_cast<KQShowEvent*>(p->rawptr);
+//		KQShowEvent *qp = (KQShowEvent *)p->rawptr;
+		KQShowEvent *qp = static_cast<KQShowEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

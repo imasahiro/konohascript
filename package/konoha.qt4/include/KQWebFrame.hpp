@@ -16,6 +16,7 @@ public:
 	knh_Func_t *title_changed_func;
 	knh_Func_t *url_changed_func;
 	DummyQWebFrame();
+//	virtual ~DummyQWebFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -37,6 +38,7 @@ public slots:
 class KQWebFrame {
 // Q_OBJECT;
 public:
+	int magic_num;
 	QWebFrame *q_self;
 	knh_RawPtr_t *self;
 	DummyQWebFrame *dummy;

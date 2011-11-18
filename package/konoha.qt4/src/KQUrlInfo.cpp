@@ -456,9 +456,18 @@ KMETHOD QUrlInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQUrlInfo::DummyQUrlInfo()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQUrlInfo::~DummyQUrlInfo()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQUrlInfo::setSelf(knh_RawPtr_t *ptr)
@@ -519,10 +528,16 @@ void DummyQUrlInfo::connection(QObject *o)
 
 KQUrlInfo::KQUrlInfo() : QUrlInfo()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQUrlInfo();
 }
 
+KQUrlInfo::~KQUrlInfo()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QUrlInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -567,17 +582,23 @@ KMETHOD QUrlInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QUrlInfo_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQUrlInfo *qp = (KQUrlInfo *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QUrlInfo*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QUrlInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQUrlInfo *qp = (KQUrlInfo *)p->rawptr;
-//		KQUrlInfo *qp = static_cast<KQUrlInfo*>(p->rawptr);
+//		KQUrlInfo *qp = (KQUrlInfo *)p->rawptr;
+		KQUrlInfo *qp = static_cast<KQUrlInfo*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

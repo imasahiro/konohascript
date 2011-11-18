@@ -56,9 +56,18 @@ KMETHOD QRunnable_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQRunnable::DummyQRunnable()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQRunnable::~DummyQRunnable()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQRunnable::setSelf(knh_RawPtr_t *ptr)
@@ -119,10 +128,16 @@ void DummyQRunnable::connection(QObject *o)
 
 KQRunnable::KQRunnable() : QRunnable()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQRunnable();
 }
 
+KQRunnable::~KQRunnable()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QRunnable_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -167,17 +182,23 @@ KMETHOD QRunnable_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QRunnable_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQRunnable *qp = (KQRunnable *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QRunnable*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QRunnable_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQRunnable *qp = (KQRunnable *)p->rawptr;
-//		KQRunnable *qp = static_cast<KQRunnable*>(p->rawptr);
+//		KQRunnable *qp = (KQRunnable *)p->rawptr;
+		KQRunnable *qp = static_cast<KQRunnable*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

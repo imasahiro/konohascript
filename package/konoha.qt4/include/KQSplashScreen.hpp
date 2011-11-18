@@ -8,6 +8,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *message_changed_func;
 	DummyQSplashScreen();
+	virtual ~DummyQSplashScreen();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -21,9 +22,11 @@ public slots:
 class KQSplashScreen : public QSplashScreen {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSplashScreen *dummy;
 	KQSplashScreen(const QPixmap pixmap, Qt::WindowFlags f);
+	~KQSplashScreen();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

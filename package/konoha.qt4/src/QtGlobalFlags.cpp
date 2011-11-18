@@ -124,7 +124,8 @@ static void QtAlignment_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::Alignment *qp = (Qt::Alignment *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -287,7 +288,8 @@ static void QtDockWidgetAreas_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::DockWidgetAreas *qp = (Qt::DockWidgetAreas *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -450,7 +452,8 @@ static void QtDropActions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::DropActions *qp = (Qt::DropActions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -613,7 +616,8 @@ static void QtGestureFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::GestureFlags *qp = (Qt::GestureFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -776,7 +780,8 @@ static void QtImageConversionFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::ImageConversionFlags *qp = (Qt::ImageConversionFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -939,7 +944,8 @@ static void QtInputMethodHints_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::InputMethodHints *qp = (Qt::InputMethodHints *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1102,7 +1108,8 @@ static void QtItemFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::ItemFlags *qp = (Qt::ItemFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1265,7 +1272,8 @@ static void QtKeyboardModifiers_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::KeyboardModifiers *qp = (Qt::KeyboardModifiers *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1428,7 +1436,8 @@ static void QtMatchFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::MatchFlags *qp = (Qt::MatchFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1591,7 +1600,8 @@ static void QtMouseButtons_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::MouseButtons *qp = (Qt::MouseButtons *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1754,7 +1764,8 @@ static void QtOrientations_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::Orientations *qp = (Qt::Orientations *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1917,7 +1928,8 @@ static void QtTextInteractionFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::TextInteractionFlags *qp = (Qt::TextInteractionFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -2080,7 +2092,8 @@ static void QtToolBarAreas_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::ToolBarAreas *qp = (Qt::ToolBarAreas *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -2243,7 +2256,8 @@ static void QtTouchPointStates_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::TouchPointStates *qp = (Qt::TouchPointStates *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -2406,7 +2420,8 @@ static void QtWindowFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::WindowFlags *qp = (Qt::WindowFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -2569,7 +2584,8 @@ static void QtWindowStates_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		Qt::WindowStates *qp = (Qt::WindowStates *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

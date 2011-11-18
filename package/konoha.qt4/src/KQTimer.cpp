@@ -136,11 +136,20 @@ KMETHOD QTimer_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTimer::DummyQTimer()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	timeout_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("timeout", NULL));
+}
+DummyQTimer::~DummyQTimer()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTimer::setSelf(knh_RawPtr_t *ptr)
@@ -204,8 +213,9 @@ knh_Object_t** DummyQTimer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTimer::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, timeout_func);
 
 	KNH_SIZEREF(ctx);
@@ -226,11 +236,17 @@ void DummyQTimer::connection(QObject *o)
 
 KQTimer::KQTimer(QObject* parent) : QTimer(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTimer();
 	dummy->connection((QObject*)this);
 }
 
+KQTimer::~KQTimer()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTimer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -275,17 +291,23 @@ KMETHOD QTimer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTimer_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTimer *qp = (KQTimer *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTimer*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTimer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTimer *qp = (KQTimer *)p->rawptr;
-//		KQTimer *qp = static_cast<KQTimer*>(p->rawptr);
+//		KQTimer *qp = (KQTimer *)p->rawptr;
+		KQTimer *qp = static_cast<KQTimer*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

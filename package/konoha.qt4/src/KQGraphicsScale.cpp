@@ -99,6 +99,8 @@ KMETHOD QGraphicsScale_getZScale(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsScale::DummyQGraphicsScale()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	origin_changed_func = NULL;
 	scale_changed_func = NULL;
@@ -112,6 +114,13 @@ DummyQGraphicsScale::DummyQGraphicsScale()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("x-scale-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("y-scale-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("z-scale-changed", NULL));
+}
+DummyQGraphicsScale::~DummyQGraphicsScale()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsScale::setSelf(knh_RawPtr_t *ptr)
@@ -227,8 +236,9 @@ knh_Object_t** DummyQGraphicsScale::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsScale::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 5;
+	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, origin_changed_func);
 	KNH_ADDNNREF(ctx, scale_changed_func);
 	KNH_ADDNNREF(ctx, x_scale_changed_func);
@@ -257,11 +267,17 @@ void DummyQGraphicsScale::connection(QObject *o)
 
 KQGraphicsScale::KQGraphicsScale(QObject* parent) : QGraphicsScale(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsScale();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsScale::~KQGraphicsScale()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsScale_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -306,17 +322,23 @@ KMETHOD QGraphicsScale_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsScale_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsScale *qp = (KQGraphicsScale *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsScale*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsScale_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsScale *qp = (KQGraphicsScale *)p->rawptr;
-//		KQGraphicsScale *qp = static_cast<KQGraphicsScale*>(p->rawptr);
+//		KQGraphicsScale *qp = (KQGraphicsScale *)p->rawptr;
+		KQGraphicsScale *qp = static_cast<KQGraphicsScale*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

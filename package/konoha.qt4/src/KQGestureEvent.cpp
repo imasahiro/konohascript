@@ -126,9 +126,18 @@ KMETHOD QGestureEvent_widget(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGestureEvent::DummyQGestureEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGestureEvent::~DummyQGestureEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGestureEvent::setSelf(knh_RawPtr_t *ptr)
@@ -194,10 +203,16 @@ void DummyQGestureEvent::connection(QObject *o)
 
 KQGestureEvent::KQGestureEvent(const QList<QGesture*> gestures) : QGestureEvent(gestures)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGestureEvent();
 }
 
+KQGestureEvent::~KQGestureEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGestureEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -242,17 +257,23 @@ KMETHOD QGestureEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGestureEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGestureEvent *qp = (KQGestureEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGestureEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGestureEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGestureEvent *qp = (KQGestureEvent *)p->rawptr;
-//		KQGestureEvent *qp = static_cast<KQGestureEvent*>(p->rawptr);
+//		KQGestureEvent *qp = (KQGestureEvent *)p->rawptr;
+		KQGestureEvent *qp = static_cast<KQGestureEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -160,9 +160,18 @@ KMETHOD QUdpSocket_writeDatagram(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQUdpSocket::DummyQUdpSocket()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQUdpSocket::~DummyQUdpSocket()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQUdpSocket::setSelf(knh_RawPtr_t *ptr)
@@ -228,11 +237,17 @@ void DummyQUdpSocket::connection(QObject *o)
 
 KQUdpSocket::KQUdpSocket(QObject* parent) : QUdpSocket(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQUdpSocket();
 	dummy->connection((QObject*)this);
 }
 
+KQUdpSocket::~KQUdpSocket()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QUdpSocket_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -277,17 +292,23 @@ KMETHOD QUdpSocket_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QUdpSocket_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQUdpSocket *qp = (KQUdpSocket *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QUdpSocket*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QUdpSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQUdpSocket *qp = (KQUdpSocket *)p->rawptr;
-//		KQUdpSocket *qp = static_cast<KQUdpSocket*>(p->rawptr);
+//		KQUdpSocket *qp = (KQUdpSocket *)p->rawptr;
+		KQUdpSocket *qp = static_cast<KQUdpSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -461,7 +482,8 @@ static void QUdpSocketBindMode_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QUdpSocket::BindMode *qp = (QUdpSocket::BindMode *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

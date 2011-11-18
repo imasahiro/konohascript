@@ -1226,9 +1226,18 @@ KMETHOD QGraphicsView_updateSceneRect(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsView::DummyQGraphicsView()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGraphicsView::~DummyQGraphicsView()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsView::setSelf(knh_RawPtr_t *ptr)
@@ -1294,11 +1303,17 @@ void DummyQGraphicsView::connection(QObject *o)
 
 KQGraphicsView::KQGraphicsView(QWidget* parent) : QGraphicsView(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsView();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsView::~KQGraphicsView()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1343,17 +1358,23 @@ KMETHOD QGraphicsView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsView_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsView *qp = (KQGraphicsView *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsView*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsView *qp = (KQGraphicsView *)p->rawptr;
-//		KQGraphicsView *qp = static_cast<KQGraphicsView*>(p->rawptr);
+//		KQGraphicsView *qp = (KQGraphicsView *)p->rawptr;
+		KQGraphicsView *qp = static_cast<KQGraphicsView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1540,7 +1561,8 @@ static void QGraphicsViewCacheMode_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QGraphicsView::CacheMode *qp = (QGraphicsView::CacheMode *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -1703,7 +1725,8 @@ static void QGraphicsViewOptimizationFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QGraphicsView::OptimizationFlags *qp = (QGraphicsView::OptimizationFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

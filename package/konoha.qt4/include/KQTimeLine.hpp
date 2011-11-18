@@ -11,6 +11,7 @@ public:
 	knh_Func_t *state_changed_func;
 	knh_Func_t *value_changed_func;
 	DummyQTimeLine();
+	virtual ~DummyQTimeLine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +28,11 @@ public slots:
 class KQTimeLine : public QTimeLine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTimeLine *dummy;
 	KQTimeLine(int duration, QObject* parent);
+	~KQTimeLine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -87,9 +87,18 @@ KMETHOD QTextImageFormat_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextImageFormat::DummyQTextImageFormat()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextImageFormat::~DummyQTextImageFormat()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextImageFormat::setSelf(knh_RawPtr_t *ptr)
@@ -155,10 +164,16 @@ void DummyQTextImageFormat::connection(QObject *o)
 
 KQTextImageFormat::KQTextImageFormat() : QTextImageFormat()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextImageFormat();
 }
 
+KQTextImageFormat::~KQTextImageFormat()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextImageFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -203,17 +218,23 @@ KMETHOD QTextImageFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextImageFormat_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextImageFormat *qp = (KQTextImageFormat *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextImageFormat*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextImageFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextImageFormat *qp = (KQTextImageFormat *)p->rawptr;
-//		KQTextImageFormat *qp = static_cast<KQTextImageFormat*>(p->rawptr);
+//		KQTextImageFormat *qp = (KQTextImageFormat *)p->rawptr;
+		KQTextImageFormat *qp = static_cast<KQTextImageFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

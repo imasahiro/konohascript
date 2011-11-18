@@ -13,6 +13,7 @@ public:
 	knh_Func_t *text_value_changed_func;
 	knh_Func_t *text_value_selected_func;
 	DummyQInputDialog();
+	virtual ~DummyQInputDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,11 @@ public slots:
 class KQInputDialog : public QInputDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQInputDialog *dummy;
 	KQInputDialog(QWidget* parent, Qt::WindowFlags flags);
+	~KQInputDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

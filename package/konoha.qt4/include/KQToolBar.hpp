@@ -15,6 +15,7 @@ public:
 	knh_Func_t *top_level_changed_func;
 	knh_Func_t *visibility_changed_func;
 	DummyQToolBar();
+	virtual ~DummyQToolBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -35,9 +36,11 @@ public slots:
 class KQToolBar : public QToolBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQToolBar *dummy;
 	KQToolBar(const QString title, QWidget* parent);
+	~KQToolBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -1001,9 +1001,18 @@ KMETHOD QUrl_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQUrl::DummyQUrl()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQUrl::~DummyQUrl()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQUrl::setSelf(knh_RawPtr_t *ptr)
@@ -1064,10 +1073,16 @@ void DummyQUrl::connection(QObject *o)
 
 KQUrl::KQUrl() : QUrl()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQUrl();
 }
 
+KQUrl::~KQUrl()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QUrl_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1112,17 +1127,23 @@ KMETHOD QUrl_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QUrl_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQUrl *qp = (KQUrl *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QUrl*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QUrl_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQUrl *qp = (KQUrl *)p->rawptr;
-//		KQUrl *qp = static_cast<KQUrl*>(p->rawptr);
+//		KQUrl *qp = (KQUrl *)p->rawptr;
+		KQUrl *qp = static_cast<KQUrl*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1294,7 +1315,8 @@ static void QUrlFormattingOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QUrl::FormattingOptions *qp = (QUrl::FormattingOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

@@ -4,6 +4,7 @@ class DummyQGraphicsScene : public DummyQObject {
 	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	QList<knh_RawPtr_t *> *added_list;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *context_menu_event_func;
@@ -25,7 +26,24 @@ public:
 	knh_Func_t *changed_func;
 	knh_Func_t *scene_rect_changed_func;
 	knh_Func_t *selection_changed_func;
+	knh_RawPtr_t *contextMenuEventPtr;
+	knh_RawPtr_t *dragEnterEventPtr;
+	knh_RawPtr_t *dragLeaveEventPtr;
+	knh_RawPtr_t *dragMoveEventPtr;
+	knh_RawPtr_t *dropEventPtr;
+	knh_RawPtr_t *focusInEventPtr;
+	knh_RawPtr_t *focusOutEventPtr;
+	knh_RawPtr_t *helpEventPtr;
+	knh_RawPtr_t *inputMethodEventPtr;
+	knh_RawPtr_t *keyPressEventPtr;
+	knh_RawPtr_t *keyReleaseEventPtr;
+	knh_RawPtr_t *mouseDoubleClickEventPtr;
+	knh_RawPtr_t *mouseMoveEventPtr;
+	knh_RawPtr_t *mousePressEventPtr;
+	knh_RawPtr_t *mouseReleaseEventPtr;
+	knh_RawPtr_t *wheelEventPtr;
 	DummyQGraphicsScene();
+	virtual ~DummyQGraphicsScene();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -57,9 +75,11 @@ public slots:
 class KQGraphicsScene : public QGraphicsScene {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsScene *dummy;
 	KQGraphicsScene(QObject* parent);
+	~KQGraphicsScene();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

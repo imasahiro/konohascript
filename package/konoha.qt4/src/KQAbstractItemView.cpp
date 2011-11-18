@@ -858,6 +858,8 @@ KMETHOD QAbstractItemView_update(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractItemView::DummyQAbstractItemView()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	activated_func = NULL;
 	clicked_func = NULL;
@@ -873,6 +875,13 @@ DummyQAbstractItemView::DummyQAbstractItemView()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("entered", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("pressed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("viewport-entered", NULL));
+}
+DummyQAbstractItemView::~DummyQAbstractItemView()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractItemView::setSelf(knh_RawPtr_t *ptr)
@@ -1011,8 +1020,9 @@ knh_Object_t** DummyQAbstractItemView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractItemView::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, activated_func);
 	KNH_ADDNNREF(ctx, clicked_func);
 	KNH_ADDNNREF(ctx, double_clicked_func);
@@ -1043,11 +1053,17 @@ void DummyQAbstractItemView::connection(QObject *o)
 
 KQAbstractItemView::KQAbstractItemView(QWidget* parent) : QAbstractItemView(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractItemView();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractItemView::~KQAbstractItemView()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractItemView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1092,17 +1108,23 @@ KMETHOD QAbstractItemView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractItemView_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractItemView *qp = (KQAbstractItemView *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractItemView*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractItemView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractItemView *qp = (KQAbstractItemView *)p->rawptr;
-//		KQAbstractItemView *qp = static_cast<KQAbstractItemView*>(p->rawptr);
+//		KQAbstractItemView *qp = (KQAbstractItemView *)p->rawptr;
+		KQAbstractItemView *qp = static_cast<KQAbstractItemView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1298,7 +1320,8 @@ static void QAbstractItemViewEditTriggers_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QAbstractItemView::EditTriggers *qp = (QAbstractItemView::EditTriggers *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

@@ -143,9 +143,18 @@ KMETHOD QStyledItemDelegate_setItemEditorFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyledItemDelegate::DummyQStyledItemDelegate()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyledItemDelegate::~DummyQStyledItemDelegate()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyledItemDelegate::setSelf(knh_RawPtr_t *ptr)
@@ -211,11 +220,17 @@ void DummyQStyledItemDelegate::connection(QObject *o)
 
 KQStyledItemDelegate::KQStyledItemDelegate(QObject* parent) : QStyledItemDelegate(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyledItemDelegate();
 	dummy->connection((QObject*)this);
 }
 
+KQStyledItemDelegate::~KQStyledItemDelegate()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyledItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -260,17 +275,23 @@ KMETHOD QStyledItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyledItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyledItemDelegate *qp = (KQStyledItemDelegate *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyledItemDelegate*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyledItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyledItemDelegate *qp = (KQStyledItemDelegate *)p->rawptr;
-//		KQStyledItemDelegate *qp = static_cast<KQStyledItemDelegate*>(p->rawptr);
+//		KQStyledItemDelegate *qp = (KQStyledItemDelegate *)p->rawptr;
+		KQStyledItemDelegate *qp = static_cast<KQStyledItemDelegate*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

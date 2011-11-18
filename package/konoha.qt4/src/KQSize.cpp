@@ -202,9 +202,18 @@ KMETHOD QSize_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSize::DummyQSize()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSize::~DummyQSize()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSize::setSelf(knh_RawPtr_t *ptr)
@@ -265,10 +274,16 @@ void DummyQSize::connection(QObject *o)
 
 KQSize::KQSize() : QSize()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSize();
 }
 
+KQSize::~KQSize()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSize_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -313,17 +328,23 @@ KMETHOD QSize_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSize_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSize *qp = (KQSize *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSize*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSize_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSize *qp = (KQSize *)p->rawptr;
-//		KQSize *qp = static_cast<KQSize*>(p->rawptr);
+//		KQSize *qp = (KQSize *)p->rawptr;
+		KQSize *qp = static_cast<KQSize*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

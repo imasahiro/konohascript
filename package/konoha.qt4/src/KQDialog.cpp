@@ -164,6 +164,8 @@ KMETHOD QDialog_reject(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDialog::DummyQDialog()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	accepted_func = NULL;
 	finished_func = NULL;
@@ -173,6 +175,13 @@ DummyQDialog::DummyQDialog()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("accepted", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("rejected", NULL));
+}
+DummyQDialog::~DummyQDialog()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDialog::setSelf(knh_RawPtr_t *ptr)
@@ -263,8 +272,9 @@ knh_Object_t** DummyQDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 3;
+	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, accepted_func);
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, rejected_func);
@@ -289,11 +299,17 @@ void DummyQDialog::connection(QObject *o)
 
 KQDialog::KQDialog(QWidget* parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDialog();
 	dummy->connection((QObject*)this);
 }
 
+KQDialog::~KQDialog()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -338,17 +354,23 @@ KMETHOD QDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDialog_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDialog *qp = (KQDialog *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDialog*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDialog *qp = (KQDialog *)p->rawptr;
-//		KQDialog *qp = static_cast<KQDialog*>(p->rawptr);
+//		KQDialog *qp = (KQDialog *)p->rawptr;
+		KQDialog *qp = static_cast<KQDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -86,9 +86,18 @@ KMETHOD QLibraryInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLibraryInfo::DummyQLibraryInfo()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQLibraryInfo::~DummyQLibraryInfo()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLibraryInfo::setSelf(knh_RawPtr_t *ptr)
@@ -147,6 +156,11 @@ void DummyQLibraryInfo::connection(QObject *o)
 	}
 }
 
+KQLibraryInfo::~KQLibraryInfo()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLibraryInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -191,17 +205,23 @@ KMETHOD QLibraryInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLibraryInfo_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLibraryInfo *qp = (KQLibraryInfo *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLibraryInfo*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLibraryInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLibraryInfo *qp = (KQLibraryInfo *)p->rawptr;
-//		KQLibraryInfo *qp = static_cast<KQLibraryInfo*>(p->rawptr);
+//		KQLibraryInfo *qp = (KQLibraryInfo *)p->rawptr;
+		KQLibraryInfo *qp = static_cast<KQLibraryInfo*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -580,11 +580,20 @@ KMETHOD QMessageBox_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMessageBox::DummyQMessageBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	button_clicked_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("button-clicked", NULL));
+}
+DummyQMessageBox::~DummyQMessageBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMessageBox::setSelf(knh_RawPtr_t *ptr)
@@ -650,8 +659,9 @@ knh_Object_t** DummyQMessageBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQMessageBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, button_clicked_func);
 
 	KNH_SIZEREF(ctx);
@@ -672,11 +682,17 @@ void DummyQMessageBox::connection(QObject *o)
 
 KQMessageBox::KQMessageBox(QWidget* parent) : QMessageBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMessageBox();
 	dummy->connection((QObject*)this);
 }
 
+KQMessageBox::~KQMessageBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMessageBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -721,17 +737,23 @@ KMETHOD QMessageBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMessageBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMessageBox *qp = (KQMessageBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMessageBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMessageBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMessageBox *qp = (KQMessageBox *)p->rawptr;
-//		KQMessageBox *qp = static_cast<KQMessageBox*>(p->rawptr);
+//		KQMessageBox *qp = (KQMessageBox *)p->rawptr;
+		KQMessageBox *qp = static_cast<KQMessageBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -941,7 +963,8 @@ static void QMessageBoxStandardButtons_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QMessageBox::StandardButtons *qp = (QMessageBox::StandardButtons *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

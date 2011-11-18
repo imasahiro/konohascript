@@ -132,7 +132,6 @@ QGenericArgument
 QPainterPathStroker
 QTextFormat
 QRegExp
-QWebSettings
 QMutex
 QIcon
 QCryptographicHash

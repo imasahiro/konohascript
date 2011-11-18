@@ -105,6 +105,8 @@ KMETHOD QNetworkConfigurationManager_updateConfigurations(CTX ctx, knh_sfp_t *sf
 
 DummyQNetworkConfigurationManager::DummyQNetworkConfigurationManager()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	configuration_added_func = NULL;
 	configuration_changed_func = NULL;
@@ -118,6 +120,13 @@ DummyQNetworkConfigurationManager::DummyQNetworkConfigurationManager()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("configuration-removed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("online-state-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("update-completed", NULL));
+}
+DummyQNetworkConfigurationManager::~DummyQNetworkConfigurationManager()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkConfigurationManager::setSelf(knh_RawPtr_t *ptr)
@@ -240,8 +249,9 @@ knh_Object_t** DummyQNetworkConfigurationManager::reftrace(CTX ctx, knh_RawPtr_t
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQNetworkConfigurationManager::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 5;
+	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, configuration_added_func);
 	KNH_ADDNNREF(ctx, configuration_changed_func);
 	KNH_ADDNNREF(ctx, configuration_removed_func);
@@ -270,11 +280,17 @@ void DummyQNetworkConfigurationManager::connection(QObject *o)
 
 KQNetworkConfigurationManager::KQNetworkConfigurationManager(QObject* parent) : QNetworkConfigurationManager(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkConfigurationManager();
 	dummy->connection((QObject*)this);
 }
 
+KQNetworkConfigurationManager::~KQNetworkConfigurationManager()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkConfigurationManager_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -319,17 +335,23 @@ KMETHOD QNetworkConfigurationManager_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkConfigurationManager_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkConfigurationManager *qp = (KQNetworkConfigurationManager *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkConfigurationManager*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkConfigurationManager_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkConfigurationManager *qp = (KQNetworkConfigurationManager *)p->rawptr;
-//		KQNetworkConfigurationManager *qp = static_cast<KQNetworkConfigurationManager*>(p->rawptr);
+//		KQNetworkConfigurationManager *qp = (KQNetworkConfigurationManager *)p->rawptr;
+		KQNetworkConfigurationManager *qp = static_cast<KQNetworkConfigurationManager*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -506,7 +528,8 @@ static void QNetworkConfigurationManagerCapabilities_free(CTX ctx, knh_RawPtr_t 
 	if (p->rawptr != NULL) {
 		QNetworkConfigurationManager::Capabilities *qp = (QNetworkConfigurationManager::Capabilities *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

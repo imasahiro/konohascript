@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDial();
+	virtual ~DummyQDial();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQDial : public QDial {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDial *dummy;
 	KQDial(QWidget* parent);
+	~KQDial();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

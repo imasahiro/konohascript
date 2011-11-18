@@ -12,6 +12,7 @@ public:
 	knh_Func_t *online_state_changed_func;
 	knh_Func_t *update_completed_func;
 	DummyQNetworkConfigurationManager();
+	virtual ~DummyQNetworkConfigurationManager();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -29,9 +30,11 @@ public slots:
 class KQNetworkConfigurationManager : public QNetworkConfigurationManager {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkConfigurationManager *dummy;
 	KQNetworkConfigurationManager(QObject* parent);
+	~KQNetworkConfigurationManager();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -342,11 +342,20 @@ KMETHOD QDataWidgetMapper_toPrevious(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDataWidgetMapper::DummyQDataWidgetMapper()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	current_index_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("current-index-changed", NULL));
+}
+DummyQDataWidgetMapper::~DummyQDataWidgetMapper()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDataWidgetMapper::setSelf(knh_RawPtr_t *ptr)
@@ -411,8 +420,9 @@ knh_Object_t** DummyQDataWidgetMapper::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQDataWidgetMapper::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, current_index_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -433,11 +443,17 @@ void DummyQDataWidgetMapper::connection(QObject *o)
 
 KQDataWidgetMapper::KQDataWidgetMapper(QObject* parent) : QDataWidgetMapper(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDataWidgetMapper();
 	dummy->connection((QObject*)this);
 }
 
+KQDataWidgetMapper::~KQDataWidgetMapper()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDataWidgetMapper_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -482,17 +498,23 @@ KMETHOD QDataWidgetMapper_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDataWidgetMapper_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDataWidgetMapper *qp = (KQDataWidgetMapper *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDataWidgetMapper*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDataWidgetMapper_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDataWidgetMapper *qp = (KQDataWidgetMapper *)p->rawptr;
-//		KQDataWidgetMapper *qp = static_cast<KQDataWidgetMapper*>(p->rawptr);
+//		KQDataWidgetMapper *qp = (KQDataWidgetMapper *)p->rawptr;
+		KQDataWidgetMapper *qp = static_cast<KQDataWidgetMapper*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

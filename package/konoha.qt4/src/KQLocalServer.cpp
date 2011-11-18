@@ -185,11 +185,20 @@ KMETHOD QLocalServer_removeServer(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLocalServer::DummyQLocalServer()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	new_connection_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("new-connection", NULL));
+}
+DummyQLocalServer::~DummyQLocalServer()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLocalServer::setSelf(knh_RawPtr_t *ptr)
@@ -253,8 +262,9 @@ knh_Object_t** DummyQLocalServer::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQLocalServer::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, new_connection_func);
 
 	KNH_SIZEREF(ctx);
@@ -275,11 +285,17 @@ void DummyQLocalServer::connection(QObject *o)
 
 KQLocalServer::KQLocalServer(QObject* parent) : QLocalServer(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLocalServer();
 	dummy->connection((QObject*)this);
 }
 
+KQLocalServer::~KQLocalServer()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLocalServer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -324,17 +340,23 @@ KMETHOD QLocalServer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLocalServer_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLocalServer *qp = (KQLocalServer *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLocalServer*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLocalServer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLocalServer *qp = (KQLocalServer *)p->rawptr;
-//		KQLocalServer *qp = static_cast<KQLocalServer*>(p->rawptr);
+//		KQLocalServer *qp = (KQLocalServer *)p->rawptr;
+		KQLocalServer *qp = static_cast<KQLocalServer*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -415,6 +415,8 @@ KMETHOD QMovie_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMovie::DummyQMovie()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	error_func = NULL;
 	finished_func = NULL;
@@ -432,6 +434,13 @@ DummyQMovie::DummyQMovie()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("started", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("updated", NULL));
+}
+DummyQMovie::~DummyQMovie()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMovie::setSelf(knh_RawPtr_t *ptr)
@@ -580,8 +589,9 @@ knh_Object_t** DummyQMovie::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQMovie::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 7;
+	int list_size = 8;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, error_func);
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, frame_changed_func);
@@ -614,11 +624,17 @@ void DummyQMovie::connection(QObject *o)
 
 KQMovie::KQMovie(QObject* parent) : QMovie(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMovie();
 	dummy->connection((QObject*)this);
 }
 
+KQMovie::~KQMovie()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMovie_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -663,17 +679,23 @@ KMETHOD QMovie_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMovie_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMovie *qp = (KQMovie *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMovie*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMovie_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMovie *qp = (KQMovie *)p->rawptr;
-//		KQMovie *qp = static_cast<KQMovie*>(p->rawptr);
+//		KQMovie *qp = (KQMovie *)p->rawptr;
+		KQMovie *qp = static_cast<KQMovie*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

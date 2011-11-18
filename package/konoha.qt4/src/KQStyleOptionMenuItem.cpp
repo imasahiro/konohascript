@@ -23,9 +23,18 @@ KMETHOD QStyleOptionMenuItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionMenuItem::DummyQStyleOptionMenuItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionMenuItem::~DummyQStyleOptionMenuItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionMenuItem::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionMenuItem::connection(QObject *o)
 
 KQStyleOptionMenuItem::KQStyleOptionMenuItem() : QStyleOptionMenuItem()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionMenuItem();
 }
 
+KQStyleOptionMenuItem::~KQStyleOptionMenuItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionMenuItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionMenuItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionMenuItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionMenuItem *qp = (KQStyleOptionMenuItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionMenuItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionMenuItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionMenuItem *qp = (KQStyleOptionMenuItem *)p->rawptr;
-//		KQStyleOptionMenuItem *qp = static_cast<KQStyleOptionMenuItem*>(p->rawptr);
+//		KQStyleOptionMenuItem *qp = (KQStyleOptionMenuItem *)p->rawptr;
+		KQStyleOptionMenuItem *qp = static_cast<KQStyleOptionMenuItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

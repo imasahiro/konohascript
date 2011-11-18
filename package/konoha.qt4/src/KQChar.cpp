@@ -1101,9 +1101,18 @@ KMETHOD QChar_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQChar::DummyQChar()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQChar::~DummyQChar()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQChar::setSelf(knh_RawPtr_t *ptr)
@@ -1164,10 +1173,16 @@ void DummyQChar::connection(QObject *o)
 
 KQChar::KQChar() : QChar()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQChar();
 }
 
+KQChar::~KQChar()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QChar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1212,17 +1227,23 @@ KMETHOD QChar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QChar_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQChar *qp = (KQChar *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QChar*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QChar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQChar *qp = (KQChar *)p->rawptr;
-//		KQChar *qp = static_cast<KQChar*>(p->rawptr);
+//		KQChar *qp = (KQChar *)p->rawptr;
+		KQChar *qp = static_cast<KQChar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

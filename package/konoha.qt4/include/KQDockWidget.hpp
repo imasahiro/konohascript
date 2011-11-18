@@ -12,6 +12,7 @@ public:
 	knh_Func_t *top_level_changed_func;
 	knh_Func_t *visibility_changed_func;
 	DummyQDockWidget();
+	virtual ~DummyQDockWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -29,9 +30,11 @@ public slots:
 class KQDockWidget : public QDockWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDockWidget *dummy;
 	KQDockWidget(const QString title, QWidget* parent, Qt::WindowFlags flags);
+	~KQDockWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

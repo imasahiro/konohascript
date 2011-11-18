@@ -50,7 +50,7 @@ KMETHOD QPolygon_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRect ret_v = qp->boundingRect();
 		QRect *ret_v_ = new QRect(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -65,7 +65,7 @@ KMETHOD QPolygon_containsPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[1]);
 		Qt::FillRule fillRule = Int_to(Qt::FillRule, sfp[2]);
 		bool ret_v = qp->containsPoint(point, fillRule);
@@ -80,7 +80,7 @@ KMETHOD QPolygon_intersected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  r = *RawPtr_to(const QPolygon *, sfp[1]);
 		QPolygon ret_v = qp->intersected(r);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -96,7 +96,7 @@ KMETHOD QPolygon_getPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int* x = Int_to(int*, sfp[2]);
 		int* y = Int_to(int*, sfp[3]);
@@ -111,7 +111,7 @@ KMETHOD QPolygon_getPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		QPoint ret_v = qp->point(index);
 		QPoint *ret_v_ = new QPoint(ret_v);
@@ -127,7 +127,7 @@ KMETHOD QPolygon_putPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int nPoints = Int_to(int, sfp[2]);
 		const QPolygon  fromPolygon = *RawPtr_to(const QPolygon *, sfp[3]);
@@ -142,7 +142,7 @@ KMETHOD QPolygon_setPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		int x = Int_to(int, sfp[2]);
 		int y = Int_to(int, sfp[3]);
@@ -157,7 +157,7 @@ KMETHOD QPolygon_setPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int index = Int_to(int, sfp[1]);
 		const QPoint  point = *RawPtr_to(const QPoint *, sfp[2]);
 		qp->setPoint(index, point);
@@ -170,7 +170,7 @@ KMETHOD QPolygon_setPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int nPoints = Int_to(int, sfp[1]);
 		const int* points = Int_to(const int*, sfp[2]);
 		qp->setPoints(nPoints, points);
@@ -183,7 +183,7 @@ KMETHOD QPolygon_subtracted(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  r = *RawPtr_to(const QPolygon *, sfp[1]);
 		QPolygon ret_v = qp->subtracted(r);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -199,7 +199,7 @@ KMETHOD QPolygon_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		qp->translate(dx, dy);
@@ -213,7 +213,7 @@ KMETHOD QPolygon_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  offset = *RawPtr_to(const QPoint *, sfp[1]);
 		qp->translate(offset);
 	}
@@ -225,7 +225,7 @@ KMETHOD QPolygon_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		int dx = Int_to(int, sfp[1]);
 		int dy = Int_to(int, sfp[2]);
 		QPolygon ret_v = qp->translated(dx, dy);
@@ -243,7 +243,7 @@ KMETHOD QPolygon_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPoint  offset = *RawPtr_to(const QPoint *, sfp[1]);
 		QPolygon ret_v = qp->translated(offset);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -259,7 +259,7 @@ KMETHOD QPolygon_united(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygon *  qp = RawPtr_to(QPolygon *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygon  r = *RawPtr_to(const QPolygon *, sfp[1]);
 		QPolygon ret_v = qp->united(r);
 		QPolygon *ret_v_ = new QPolygon(ret_v);
@@ -273,9 +273,18 @@ KMETHOD QPolygon_united(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPolygon::DummyQPolygon()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPolygon::~DummyQPolygon()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPolygon::setSelf(knh_RawPtr_t *ptr)
@@ -321,6 +330,15 @@ bool DummyQPolygon::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+knh_Object_t** DummyQPolygon::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQPolygon::reftrace p->rawptr=[%p]\n", p->rawptr);
+
+//	tail_ = DummyQVector::reftrace(ctx, p, tail_);
+
+	return tail_;
+}
 
 void DummyQPolygon::connection(QObject *o)
 {
@@ -332,10 +350,16 @@ void DummyQPolygon::connection(QObject *o)
 
 KQPolygon::KQPolygon() : QPolygon()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPolygon();
 }
 
+KQPolygon::~KQPolygon()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPolygon_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -382,19 +406,21 @@ static void QPolygon_free(CTX ctx, knh_RawPtr_t *p)
 	(void)ctx;
 	if (p->rawptr != NULL) {
 		KQPolygon *qp = (KQPolygon *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPolygon*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPolygon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
-		KQPolygon *qp = (KQPolygon *)p->rawptr;
-		(void)qp;
+//		KQPolygon *qp = (KQPolygon *)p->rawptr;
+		KQPolygon *qp = static_cast<KQPolygon*>(p->rawptr);
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 

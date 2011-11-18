@@ -13,6 +13,7 @@ public:
 	knh_Func_t *pressed_func;
 	knh_Func_t *viewport_entered_func;
 	DummyQAbstractItemView();
+	virtual ~DummyQAbstractItemView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,11 @@ public slots:
 class KQAbstractItemView : public QAbstractItemView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractItemView *dummy;
 	KQAbstractItemView(QWidget* parent);
+	~KQAbstractItemView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

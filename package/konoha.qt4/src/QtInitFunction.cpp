@@ -43,6 +43,8 @@ KMETHOD System_getClassParents(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
+bool exec_flag = false;
+
 DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_LoaderAPI_t *)
 {
 	RETURN_PKGINFO("Qt-4.7");

@@ -12,6 +12,7 @@ public:
 	knh_Func_t *page_added_func;
 	knh_Func_t *page_removed_func;
 	DummyQWizard();
+	virtual ~DummyQWizard();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -29,9 +30,11 @@ public slots:
 class KQWizard : public QWizard {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWizard *dummy;
 	KQWizard(QWidget* parent, Qt::WindowFlags flags);
+	~KQWizard();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

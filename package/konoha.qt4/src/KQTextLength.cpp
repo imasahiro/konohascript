@@ -82,9 +82,18 @@ KMETHOD QTextLength_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextLength::DummyQTextLength()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextLength::~DummyQTextLength()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextLength::setSelf(knh_RawPtr_t *ptr)
@@ -145,10 +154,16 @@ void DummyQTextLength::connection(QObject *o)
 
 KQTextLength::KQTextLength() : QTextLength()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextLength();
 }
 
+KQTextLength::~KQTextLength()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextLength_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -193,17 +208,23 @@ KMETHOD QTextLength_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextLength_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextLength *qp = (KQTextLength *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextLength*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextLength_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextLength *qp = (KQTextLength *)p->rawptr;
-//		KQTextLength *qp = static_cast<KQTextLength*>(p->rawptr);
+//		KQTextLength *qp = (KQTextLength *)p->rawptr;
+		KQTextLength *qp = static_cast<KQTextLength*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

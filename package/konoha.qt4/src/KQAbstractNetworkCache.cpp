@@ -111,9 +111,18 @@ KMETHOD QAbstractNetworkCache_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractNetworkCache::DummyQAbstractNetworkCache()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAbstractNetworkCache::~DummyQAbstractNetworkCache()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractNetworkCache::setSelf(knh_RawPtr_t *ptr)
@@ -177,6 +186,11 @@ void DummyQAbstractNetworkCache::connection(QObject *o)
 	DummyQObject::connection(o);
 }
 
+KQAbstractNetworkCache::~KQAbstractNetworkCache()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractNetworkCache_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -221,17 +235,23 @@ KMETHOD QAbstractNetworkCache_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractNetworkCache_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractNetworkCache *qp = (KQAbstractNetworkCache *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractNetworkCache*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractNetworkCache_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractNetworkCache *qp = (KQAbstractNetworkCache *)p->rawptr;
-//		KQAbstractNetworkCache *qp = static_cast<KQAbstractNetworkCache*>(p->rawptr);
+//		KQAbstractNetworkCache *qp = (KQAbstractNetworkCache *)p->rawptr;
+		KQAbstractNetworkCache *qp = static_cast<KQAbstractNetworkCache*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

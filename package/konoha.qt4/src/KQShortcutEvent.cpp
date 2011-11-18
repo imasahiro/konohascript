@@ -55,9 +55,18 @@ KMETHOD QShortcutEvent_shortcutId(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQShortcutEvent::DummyQShortcutEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQShortcutEvent::~DummyQShortcutEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQShortcutEvent::setSelf(knh_RawPtr_t *ptr)
@@ -123,10 +132,16 @@ void DummyQShortcutEvent::connection(QObject *o)
 
 KQShortcutEvent::KQShortcutEvent(const QKeySequence key, int id, bool ambiguous) : QShortcutEvent(key, id, ambiguous)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQShortcutEvent();
 }
 
+KQShortcutEvent::~KQShortcutEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QShortcutEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -171,17 +186,23 @@ KMETHOD QShortcutEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QShortcutEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQShortcutEvent *qp = (KQShortcutEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QShortcutEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QShortcutEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQShortcutEvent *qp = (KQShortcutEvent *)p->rawptr;
-//		KQShortcutEvent *qp = static_cast<KQShortcutEvent*>(p->rawptr);
+//		KQShortcutEvent *qp = (KQShortcutEvent *)p->rawptr;
+		KQShortcutEvent *qp = static_cast<KQShortcutEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

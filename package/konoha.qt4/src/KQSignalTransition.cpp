@@ -79,9 +79,18 @@ KMETHOD QSignalTransition_getSignal(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSignalTransition::DummyQSignalTransition()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSignalTransition::~DummyQSignalTransition()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSignalTransition::setSelf(knh_RawPtr_t *ptr)
@@ -147,11 +156,17 @@ void DummyQSignalTransition::connection(QObject *o)
 
 KQSignalTransition::KQSignalTransition(QState* sourceState) : QSignalTransition(sourceState)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSignalTransition();
 	dummy->connection((QObject*)this);
 }
 
+KQSignalTransition::~KQSignalTransition()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSignalTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -196,17 +211,23 @@ KMETHOD QSignalTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSignalTransition_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSignalTransition *qp = (KQSignalTransition *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSignalTransition*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSignalTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSignalTransition *qp = (KQSignalTransition *)p->rawptr;
-//		KQSignalTransition *qp = static_cast<KQSignalTransition*>(p->rawptr);
+//		KQSignalTransition *qp = (KQSignalTransition *)p->rawptr;
+		KQSignalTransition *qp = static_cast<KQSignalTransition*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

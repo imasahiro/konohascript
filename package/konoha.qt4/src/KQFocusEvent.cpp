@@ -52,9 +52,18 @@ KMETHOD QFocusEvent_reason(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQFocusEvent::DummyQFocusEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQFocusEvent::~DummyQFocusEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQFocusEvent::setSelf(knh_RawPtr_t *ptr)
@@ -120,10 +129,16 @@ void DummyQFocusEvent::connection(QObject *o)
 
 KQFocusEvent::KQFocusEvent(QFocusEvent::Type type, Qt::FocusReason reason) : QFocusEvent(type, reason)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQFocusEvent();
 }
 
+KQFocusEvent::~KQFocusEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QFocusEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -168,17 +183,23 @@ KMETHOD QFocusEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QFocusEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQFocusEvent *qp = (KQFocusEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QFocusEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QFocusEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQFocusEvent *qp = (KQFocusEvent *)p->rawptr;
-//		KQFocusEvent *qp = static_cast<KQFocusEvent*>(p->rawptr);
+//		KQFocusEvent *qp = (KQFocusEvent *)p->rawptr;
+		KQFocusEvent *qp = static_cast<KQFocusEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

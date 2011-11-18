@@ -53,9 +53,18 @@ KMETHOD QTextObjectInterface_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextObjectInterface::DummyQTextObjectInterface()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextObjectInterface::~DummyQTextObjectInterface()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextObjectInterface::setSelf(knh_RawPtr_t *ptr)
@@ -114,6 +123,11 @@ void DummyQTextObjectInterface::connection(QObject *o)
 	}
 }
 
+KQTextObjectInterface::~KQTextObjectInterface()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextObjectInterface_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -158,17 +172,23 @@ KMETHOD QTextObjectInterface_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextObjectInterface_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextObjectInterface *qp = (KQTextObjectInterface *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextObjectInterface*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextObjectInterface_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextObjectInterface *qp = (KQTextObjectInterface *)p->rawptr;
-//		KQTextObjectInterface *qp = static_cast<KQTextObjectInterface*>(p->rawptr);
+//		KQTextObjectInterface *qp = (KQTextObjectInterface *)p->rawptr;
+		KQTextObjectInterface *qp = static_cast<KQTextObjectInterface*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

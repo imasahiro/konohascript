@@ -23,9 +23,18 @@ KMETHOD QStyleOptionFrame_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionFrame::DummyQStyleOptionFrame()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionFrame::~DummyQStyleOptionFrame()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionFrame::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionFrame::connection(QObject *o)
 
 KQStyleOptionFrame::KQStyleOptionFrame() : QStyleOptionFrame()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionFrame();
 }
 
+KQStyleOptionFrame::~KQStyleOptionFrame()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionFrame_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionFrame *qp = (KQStyleOptionFrame *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionFrame*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionFrame *qp = (KQStyleOptionFrame *)p->rawptr;
-//		KQStyleOptionFrame *qp = static_cast<KQStyleOptionFrame*>(p->rawptr);
+//		KQStyleOptionFrame *qp = (KQStyleOptionFrame *)p->rawptr;
+		KQStyleOptionFrame *qp = static_cast<KQStyleOptionFrame*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

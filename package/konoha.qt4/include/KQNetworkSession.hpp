@@ -13,6 +13,7 @@ public:
 	knh_Func_t *preferred_configuration_changed_func;
 	knh_Func_t *state_changed_func;
 	DummyQNetworkSession();
+	virtual ~DummyQNetworkSession();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,11 @@ public slots:
 class KQNetworkSession : public QNetworkSession {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkSession *dummy;
 	KQNetworkSession(const QNetworkConfiguration connectionConfig, QObject* parent);
+	~KQNetworkSession();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

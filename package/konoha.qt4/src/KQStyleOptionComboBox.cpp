@@ -23,9 +23,18 @@ KMETHOD QStyleOptionComboBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionComboBox::DummyQStyleOptionComboBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionComboBox::~DummyQStyleOptionComboBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionComboBox::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionComboBox::connection(QObject *o)
 
 KQStyleOptionComboBox::KQStyleOptionComboBox() : QStyleOptionComboBox()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionComboBox();
 }
 
+KQStyleOptionComboBox::~KQStyleOptionComboBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionComboBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionComboBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionComboBox *qp = (KQStyleOptionComboBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionComboBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionComboBox *qp = (KQStyleOptionComboBox *)p->rawptr;
-//		KQStyleOptionComboBox *qp = static_cast<KQStyleOptionComboBox*>(p->rawptr);
+//		KQStyleOptionComboBox *qp = (KQStyleOptionComboBox *)p->rawptr;
+		KQStyleOptionComboBox *qp = static_cast<KQStyleOptionComboBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

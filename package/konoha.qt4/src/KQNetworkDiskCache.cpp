@@ -191,9 +191,18 @@ KMETHOD QNetworkDiskCache_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkDiskCache::DummyQNetworkDiskCache()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkDiskCache::~DummyQNetworkDiskCache()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkDiskCache::setSelf(knh_RawPtr_t *ptr)
@@ -259,11 +268,17 @@ void DummyQNetworkDiskCache::connection(QObject *o)
 
 KQNetworkDiskCache::KQNetworkDiskCache(QObject* parent) : QNetworkDiskCache(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkDiskCache();
 	dummy->connection((QObject*)this);
 }
 
+KQNetworkDiskCache::~KQNetworkDiskCache()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkDiskCache_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -308,17 +323,23 @@ KMETHOD QNetworkDiskCache_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkDiskCache_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkDiskCache *qp = (KQNetworkDiskCache *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkDiskCache*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkDiskCache_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkDiskCache *qp = (KQNetworkDiskCache *)p->rawptr;
-//		KQNetworkDiskCache *qp = static_cast<KQNetworkDiskCache*>(p->rawptr);
+//		KQNetworkDiskCache *qp = (KQNetworkDiskCache *)p->rawptr;
+		KQNetworkDiskCache *qp = static_cast<KQNetworkDiskCache*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

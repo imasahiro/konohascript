@@ -198,9 +198,18 @@ KMETHOD QResource_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQResource::DummyQResource()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQResource::~DummyQResource()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQResource::setSelf(knh_RawPtr_t *ptr)
@@ -261,10 +270,16 @@ void DummyQResource::connection(QObject *o)
 
 KQResource::KQResource(const QString file, const QLocale locale) : QResource(file, locale)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQResource();
 }
 
+KQResource::~KQResource()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QResource_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -309,17 +324,23 @@ KMETHOD QResource_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QResource_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQResource *qp = (KQResource *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QResource*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QResource_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQResource *qp = (KQResource *)p->rawptr;
-//		KQResource *qp = static_cast<KQResource*>(p->rawptr);
+//		KQResource *qp = (KQResource *)p->rawptr;
+		KQResource *qp = static_cast<KQResource*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

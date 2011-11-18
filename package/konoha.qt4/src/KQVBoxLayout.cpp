@@ -23,9 +23,18 @@ KMETHOD QVBoxLayout_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQVBoxLayout::DummyQVBoxLayout()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQVBoxLayout::~DummyQVBoxLayout()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQVBoxLayout::setSelf(knh_RawPtr_t *ptr)
@@ -91,11 +100,17 @@ void DummyQVBoxLayout::connection(QObject *o)
 
 KQVBoxLayout::KQVBoxLayout() : QVBoxLayout()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQVBoxLayout();
 	dummy->connection((QObject*)this);
 }
 
+KQVBoxLayout::~KQVBoxLayout()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QVBoxLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -140,17 +155,23 @@ KMETHOD QVBoxLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QVBoxLayout_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQVBoxLayout *qp = (KQVBoxLayout *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QVBoxLayout*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QVBoxLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQVBoxLayout *qp = (KQVBoxLayout *)p->rawptr;
-//		KQVBoxLayout *qp = static_cast<KQVBoxLayout*>(p->rawptr);
+//		KQVBoxLayout *qp = (KQVBoxLayout *)p->rawptr;
+		KQVBoxLayout *qp = static_cast<KQVBoxLayout*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

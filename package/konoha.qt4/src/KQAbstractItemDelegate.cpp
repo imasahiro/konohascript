@@ -125,6 +125,8 @@ KMETHOD QAbstractItemDelegate_helpEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractItemDelegate::DummyQAbstractItemDelegate()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	close_editor_func = NULL;
 	commit_data_func = NULL;
@@ -134,6 +136,13 @@ DummyQAbstractItemDelegate::DummyQAbstractItemDelegate()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("close-editor", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("commit-data", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("size-hint-changed", NULL));
+}
+DummyQAbstractItemDelegate::~DummyQAbstractItemDelegate()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractItemDelegate::setSelf(knh_RawPtr_t *ptr)
@@ -230,8 +239,9 @@ knh_Object_t** DummyQAbstractItemDelegate::reftrace(CTX ctx, knh_RawPtr_t *p FTR
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractItemDelegate::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 3;
+	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, close_editor_func);
 	KNH_ADDNNREF(ctx, commit_data_func);
 	KNH_ADDNNREF(ctx, size_hint_changed_func);
@@ -256,11 +266,17 @@ void DummyQAbstractItemDelegate::connection(QObject *o)
 
 KQAbstractItemDelegate::KQAbstractItemDelegate(QObject* parent) : QAbstractItemDelegate(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractItemDelegate();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractItemDelegate::~KQAbstractItemDelegate()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractItemDelegate_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -305,17 +321,23 @@ KMETHOD QAbstractItemDelegate_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractItemDelegate_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractItemDelegate *qp = (KQAbstractItemDelegate *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractItemDelegate*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractItemDelegate_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractItemDelegate *qp = (KQAbstractItemDelegate *)p->rawptr;
-//		KQAbstractItemDelegate *qp = static_cast<KQAbstractItemDelegate*>(p->rawptr);
+//		KQAbstractItemDelegate *qp = (KQAbstractItemDelegate *)p->rawptr;
+		KQAbstractItemDelegate *qp = static_cast<KQAbstractItemDelegate*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

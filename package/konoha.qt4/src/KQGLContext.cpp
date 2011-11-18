@@ -372,9 +372,18 @@ KMETHOD QGLContext_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGLContext::DummyQGLContext()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLContext::~DummyQGLContext()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLContext::setSelf(knh_RawPtr_t *ptr)
@@ -435,10 +444,16 @@ void DummyQGLContext::connection(QObject *o)
 
 KQGLContext::KQGLContext(const QGLFormat format) : QGLContext(format)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLContext();
 }
 
+KQGLContext::~KQGLContext()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLContext_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -483,17 +498,23 @@ KMETHOD QGLContext_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLContext_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLContext *qp = (KQGLContext *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLContext*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLContext_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLContext *qp = (KQGLContext *)p->rawptr;
-//		KQGLContext *qp = static_cast<KQGLContext*>(p->rawptr);
+//		KQGLContext *qp = (KQGLContext *)p->rawptr;
+		KQGLContext *qp = static_cast<KQGLContext*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -659,7 +680,8 @@ static void QGLContextBindOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QGLContext::BindOptions *qp = (QGLContext::BindOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

@@ -1068,6 +1068,8 @@ KMETHOD QTextEdit_zoomOut(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextEdit::DummyQTextEdit()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	copy_available_func = NULL;
 	current_char_format_changed_func = NULL;
@@ -1085,6 +1087,13 @@ DummyQTextEdit::DummyQTextEdit()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("selection-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("text-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-available", NULL));
+}
+DummyQTextEdit::~DummyQTextEdit()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextEdit::setSelf(knh_RawPtr_t *ptr)
@@ -1231,8 +1240,9 @@ knh_Object_t** DummyQTextEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTextEdit::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 7;
+	int list_size = 8;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, copy_available_func);
 	KNH_ADDNNREF(ctx, current_char_format_changed_func);
 	KNH_ADDNNREF(ctx, cursor_position_changed_func);
@@ -1265,11 +1275,17 @@ void DummyQTextEdit::connection(QObject *o)
 
 KQTextEdit::KQTextEdit(QWidget* parent) : QTextEdit(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextEdit();
 	dummy->connection((QObject*)this);
 }
 
+KQTextEdit::~KQTextEdit()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1314,17 +1330,23 @@ KMETHOD QTextEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextEdit_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextEdit *qp = (KQTextEdit *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextEdit*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextEdit *qp = (KQTextEdit *)p->rawptr;
-//		KQTextEdit *qp = static_cast<KQTextEdit*>(p->rawptr);
+//		KQTextEdit *qp = (KQTextEdit *)p->rawptr;
+		KQTextEdit *qp = static_cast<KQTextEdit*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1501,7 +1523,8 @@ static void QTextEditAutoFormatting_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QTextEdit::AutoFormatting *qp = (QTextEdit::AutoFormatting *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

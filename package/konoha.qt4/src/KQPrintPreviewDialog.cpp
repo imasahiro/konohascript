@@ -78,11 +78,20 @@ KMETHOD QPrintPreviewDialog_printer(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPrintPreviewDialog::DummyQPrintPreviewDialog()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	paint_requested_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("paint-requested", NULL));
+}
+DummyQPrintPreviewDialog::~DummyQPrintPreviewDialog()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPrintPreviewDialog::setSelf(knh_RawPtr_t *ptr)
@@ -148,8 +157,9 @@ knh_Object_t** DummyQPrintPreviewDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRAR
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQPrintPreviewDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, paint_requested_func);
 
 	KNH_SIZEREF(ctx);
@@ -170,11 +180,17 @@ void DummyQPrintPreviewDialog::connection(QObject *o)
 
 KQPrintPreviewDialog::KQPrintPreviewDialog(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewDialog(printer, parent, flags)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPrintPreviewDialog();
 	dummy->connection((QObject*)this);
 }
 
+KQPrintPreviewDialog::~KQPrintPreviewDialog()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPrintPreviewDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -219,17 +235,23 @@ KMETHOD QPrintPreviewDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPrintPreviewDialog_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPrintPreviewDialog *qp = (KQPrintPreviewDialog *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPrintPreviewDialog*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPrintPreviewDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPrintPreviewDialog *qp = (KQPrintPreviewDialog *)p->rawptr;
-//		KQPrintPreviewDialog *qp = static_cast<KQPrintPreviewDialog*>(p->rawptr);
+//		KQPrintPreviewDialog *qp = (KQPrintPreviewDialog *)p->rawptr;
+		KQPrintPreviewDialog *qp = static_cast<KQPrintPreviewDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -342,9 +342,18 @@ KMETHOD QPaintEngine_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPaintEngine::DummyQPaintEngine()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPaintEngine::~DummyQPaintEngine()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPaintEngine::setSelf(knh_RawPtr_t *ptr)
@@ -405,10 +414,16 @@ void DummyQPaintEngine::connection(QObject *o)
 
 KQPaintEngine::KQPaintEngine(QPaintEngine::PaintEngineFeatures caps) : QPaintEngine(caps)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPaintEngine();
 }
 
+KQPaintEngine::~KQPaintEngine()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPaintEngine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -453,17 +468,23 @@ KMETHOD QPaintEngine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPaintEngine_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPaintEngine *qp = (KQPaintEngine *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPaintEngine*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPaintEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPaintEngine *qp = (KQPaintEngine *)p->rawptr;
-//		KQPaintEngine *qp = static_cast<KQPaintEngine*>(p->rawptr);
+//		KQPaintEngine *qp = (KQPaintEngine *)p->rawptr;
+		KQPaintEngine *qp = static_cast<KQPaintEngine*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -679,7 +700,8 @@ static void QPaintEngineDirtyFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QPaintEngine::DirtyFlags *qp = (QPaintEngine::DirtyFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 
@@ -842,7 +864,8 @@ static void QPaintEnginePaintEngineFeatures_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QPaintEngine::PaintEngineFeatures *qp = (QPaintEngine::PaintEngineFeatures *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

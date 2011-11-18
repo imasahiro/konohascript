@@ -52,9 +52,18 @@ KMETHOD QSwipeGesture_verticalDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSwipeGesture::DummyQSwipeGesture()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSwipeGesture::~DummyQSwipeGesture()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSwipeGesture::setSelf(knh_RawPtr_t *ptr)
@@ -118,6 +127,11 @@ void DummyQSwipeGesture::connection(QObject *o)
 	DummyQGesture::connection(o);
 }
 
+KQSwipeGesture::~KQSwipeGesture()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSwipeGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -162,17 +176,23 @@ KMETHOD QSwipeGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSwipeGesture_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSwipeGesture *qp = (KQSwipeGesture *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSwipeGesture*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSwipeGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSwipeGesture *qp = (KQSwipeGesture *)p->rawptr;
-//		KQSwipeGesture *qp = static_cast<KQSwipeGesture*>(p->rawptr);
+//		KQSwipeGesture *qp = (KQSwipeGesture *)p->rawptr;
+		KQSwipeGesture *qp = static_cast<KQSwipeGesture*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

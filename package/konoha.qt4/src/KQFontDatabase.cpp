@@ -389,9 +389,18 @@ KMETHOD QFontDatabase_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQFontDatabase::DummyQFontDatabase()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQFontDatabase::~DummyQFontDatabase()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQFontDatabase::setSelf(knh_RawPtr_t *ptr)
@@ -452,10 +461,16 @@ void DummyQFontDatabase::connection(QObject *o)
 
 KQFontDatabase::KQFontDatabase() : QFontDatabase()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQFontDatabase();
 }
 
+KQFontDatabase::~KQFontDatabase()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QFontDatabase_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -500,17 +515,23 @@ KMETHOD QFontDatabase_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QFontDatabase_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQFontDatabase *qp = (KQFontDatabase *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QFontDatabase*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QFontDatabase_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQFontDatabase *qp = (KQFontDatabase *)p->rawptr;
-//		KQFontDatabase *qp = static_cast<KQFontDatabase*>(p->rawptr);
+//		KQFontDatabase *qp = (KQFontDatabase *)p->rawptr;
+		KQFontDatabase *qp = static_cast<KQFontDatabase*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

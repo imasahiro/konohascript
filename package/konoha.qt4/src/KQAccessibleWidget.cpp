@@ -199,9 +199,18 @@ KMETHOD QAccessibleWidget_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAccessibleWidget::DummyQAccessibleWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAccessibleWidget::~DummyQAccessibleWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAccessibleWidget::setSelf(knh_RawPtr_t *ptr)
@@ -267,10 +276,16 @@ void DummyQAccessibleWidget::connection(QObject *o)
 
 KQAccessibleWidget::KQAccessibleWidget(QWidget* w, QAccessibleWidget::Role role, const QString name) : QAccessibleWidget(w, role, name)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAccessibleWidget();
 }
 
+KQAccessibleWidget::~KQAccessibleWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAccessibleWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -315,17 +330,23 @@ KMETHOD QAccessibleWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAccessibleWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAccessibleWidget *qp = (KQAccessibleWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+//			delete (QAccessibleWidget*)qp;
+//			p->rawptr = NULL;
+		}
 	}
 }
 static void QAccessibleWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAccessibleWidget *qp = (KQAccessibleWidget *)p->rawptr;
-//		KQAccessibleWidget *qp = static_cast<KQAccessibleWidget*>(p->rawptr);
+//		KQAccessibleWidget *qp = (KQAccessibleWidget *)p->rawptr;
+		KQAccessibleWidget *qp = static_cast<KQAccessibleWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

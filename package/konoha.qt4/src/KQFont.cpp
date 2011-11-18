@@ -775,9 +775,18 @@ KMETHOD QFont_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQFont::DummyQFont()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQFont::~DummyQFont()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQFont::setSelf(knh_RawPtr_t *ptr)
@@ -838,10 +847,16 @@ void DummyQFont::connection(QObject *o)
 
 KQFont::KQFont() : QFont()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQFont();
 }
 
+KQFont::~KQFont()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QFont_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -886,17 +901,23 @@ KMETHOD QFont_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QFont_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQFont *qp = (KQFont *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QFont*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QFont_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQFont *qp = (KQFont *)p->rawptr;
-//		KQFont *qp = static_cast<KQFont*>(p->rawptr);
+//		KQFont *qp = (KQFont *)p->rawptr;
+		KQFont *qp = static_cast<KQFont*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

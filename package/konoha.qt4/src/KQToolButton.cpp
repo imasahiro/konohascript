@@ -179,11 +179,20 @@ KMETHOD QToolButton_showMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQToolButton::DummyQToolButton()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	triggered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
+}
+DummyQToolButton::~DummyQToolButton()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQToolButton::setSelf(knh_RawPtr_t *ptr)
@@ -249,8 +258,9 @@ knh_Object_t** DummyQToolButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQToolButton::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, triggered_func);
 
 	KNH_SIZEREF(ctx);
@@ -271,11 +281,17 @@ void DummyQToolButton::connection(QObject *o)
 
 KQToolButton::KQToolButton(QWidget* parent) : QToolButton(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQToolButton();
 	dummy->connection((QObject*)this);
 }
 
+KQToolButton::~KQToolButton()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QToolButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -320,17 +336,23 @@ KMETHOD QToolButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QToolButton_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQToolButton *qp = (KQToolButton *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QToolButton*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QToolButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQToolButton *qp = (KQToolButton *)p->rawptr;
-//		KQToolButton *qp = static_cast<KQToolButton*>(p->rawptr);
+//		KQToolButton *qp = (KQToolButton *)p->rawptr;
+		KQToolButton *qp = static_cast<KQToolButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

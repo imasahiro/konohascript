@@ -168,6 +168,8 @@ KMETHOD QGroupBox_setChecked(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGroupBox::DummyQGroupBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	clicked_func = NULL;
 	toggled_func = NULL;
@@ -175,6 +177,13 @@ DummyQGroupBox::DummyQGroupBox()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("clicked", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("toggled", NULL));
+}
+DummyQGroupBox::~DummyQGroupBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGroupBox::setSelf(knh_RawPtr_t *ptr)
@@ -253,8 +262,9 @@ knh_Object_t** DummyQGroupBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGroupBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, clicked_func);
 	KNH_ADDNNREF(ctx, toggled_func);
 
@@ -277,11 +287,17 @@ void DummyQGroupBox::connection(QObject *o)
 
 KQGroupBox::KQGroupBox(QWidget* parent) : QGroupBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGroupBox();
 	dummy->connection((QObject*)this);
 }
 
+KQGroupBox::~KQGroupBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGroupBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -326,17 +342,23 @@ KMETHOD QGroupBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGroupBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGroupBox *qp = (KQGroupBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGroupBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGroupBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGroupBox *qp = (KQGroupBox *)p->rawptr;
-//		KQGroupBox *qp = static_cast<KQGroupBox*>(p->rawptr);
+//		KQGroupBox *qp = (KQGroupBox *)p->rawptr;
+		KQGroupBox *qp = static_cast<KQGroupBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

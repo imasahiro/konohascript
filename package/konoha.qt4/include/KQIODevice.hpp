@@ -11,6 +11,7 @@ public:
 	knh_Func_t *read_channel_finished_func;
 	knh_Func_t *ready_read_func;
 	DummyQIODevice();
+	virtual ~DummyQIODevice();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +28,11 @@ public slots:
 class KQIODevice : public QIODevice {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQIODevice *dummy;
 	KQIODevice();
+	~KQIODevice();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

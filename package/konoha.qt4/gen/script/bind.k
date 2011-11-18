@@ -43,6 +43,8 @@ using namespace std;
 extern "C" {
 #endif
 
+extern bool exec_flag;
+
 """;
 	ret = ret.replace("HEADER", CONCATENATE_HPP_FILE);
 	return ret;
@@ -64,6 +66,7 @@ String CommonHpp()
 #define new_RawPtrFromClass(CLASS, o) new_RawPtr(lctx, getClassTBL(CLASS), o)
 #include <map>
 #define new_QRawPtr(lctx, T, v) new_QRawPtr_(lctx, getClassTBL(T), v)
+#define new_empty_QRawPtr(lctx, T) new_QRawPtr_(lctx, getClassTBL(T), (void*)NULL)
 //#define QRawPtrNull_to(T, a) ((((a.p)->rawptr) != NULL) ? (*RawPtr_to(T, a)) : 0)
 
 #define initFlag(NAME, T, a) T NAME;QRawPtrNull_to(NAME, T, a);
@@ -73,7 +76,7 @@ String CommonHpp()
 (NAME) = 0;														  \\
 }
 
-
+#define G_MAGIC_NUM 39543
 
 // template<class T>
 // inline knh_RawPtr_t *new_QRawPtr(CTX lctx, T *v)
@@ -194,6 +197,8 @@ KMETHOD System_getClassParents(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(KNH_NULL);
 	}
 }
+
+bool exec_flag = false;
 
 DEFAPI(const knh_PackageDef_t*) init(CTX, const knh_LoaderAPI_t *)
 {
@@ -821,7 +826,7 @@ void setMEMBERea(EnumInterface[] members, InputStream ins)
 // 	return ret;
 // }
 
-String EventArgPassing(String arg_type)
+String EventArgPassing(boolean event_flag, String arg_type, String mtd_name)
 {
 	String ret  = "";
 	if ("QList<" in? arg_type) {
@@ -849,7 +854,7 @@ String EventArgPassing(String arg_type)
 	case "float":
 	case "qreal":
 		ret += "\t\tlsfp[K_CALLDELTA+<DELTA>].fvalue = <V>;\n";
-		break;
+	break;
 	case "bool":
 		ret += "\t\tlsfp[K_CALLDELTA+<DELTA>].bvalue = <V>;\n";
 		break;
@@ -858,8 +863,13 @@ String EventArgPassing(String arg_type)
 		ret += "\t\tlsfp[K_CALLDELTA+<DELTA>].s = s<N>;\n";
 		break;
 	default:
-		ret += "\t\tknh_RawPtr_t *p<N> = new_QRawPtr(lctx, <T>, <V>);\n";
-		ret += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+<DELTA>].o, UPCAST(p<N>));\n";
+		if (event_flag) {
+			ret += "\t\t" + mtd_name + "Ptr->rawptr = <V>;\n";
+			ret += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+<DELTA>].o, (UPCAST(" + mtd_name + "Ptr)));\n";
+		} else {
+			ret += "\t\tknh_RawPtr_t *p<N> = new_QRawPtr(lctx, <T>, <V>);\n";
+			ret += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+<DELTA>].o, UPCAST(p<N>));\n";
+		}
 	}
 	return ret;
 }
@@ -942,6 +952,26 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	return ret;
 }
 
+String QApplicationExec()
+{
+	String ret = """
+KMETHOD QApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	(void)ctx;
+	if (true) {
+		exec_flag = true;
+		int ret_v = QApplication::exec();
+//		fprintf(stderr, "exec end\\n");
+		exec_flag = false;
+		RETURNi_(ret_v);
+	} else {
+		RETURNi_(0);
+	}
+}
+""";
+	return ret;
+}
+
 String FUNC_PARENTS(String class_name)
 {
 	String array_size = "10";
@@ -1019,7 +1049,7 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 }
 """;
 	ret = ret.replace("<C>", class_name);
-	if (class_name == "QGraphicsItem"　||
+	if (class_name == "QGraphicsItem" ||
 		class_name == "QGraphicsObject" ||
 		class_name == "QAbstractGraphicsShapeItem") {
 		ret = ret.replace("<UNUSED>", "//");
@@ -1028,3 +1058,32 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 	}
 	return ret;
 }
+
+// String FUNC_parentCall(String class_name)
+// {
+// 	String ret = "";
+// 	ret += ""
+
+// KMETHOD <C>_parentCall(CTX ctx, knh_sfp_t *sfp, _RIX)
+// {
+// 	<C> *qp = RawPtr_to(<C> *, sfp[0]);
+// 	if (qp) {
+// 		char *c_str = String_to(char *, sfp[1]);
+// 		std::string str(c_str);
+
+// 		std::map<string, knh_Func_t*> *mp = qp->dummy->event_map;
+// 		std::map<string, knh_Func_t*>::iterator itr;
+// 		if ((itr = em->find(str)) == em->end()) {
+// 		}
+// 		if ((itr = em->find(str)) == em->end()) {
+// 		}
+
+
+
+// 	} else {
+
+// 	}
+// }
+
+// 	return ret;
+// }

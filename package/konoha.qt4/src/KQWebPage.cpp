@@ -542,6 +542,8 @@ KMETHOD QWebPage_shouldInterruptJavaScript(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWebPage::DummyQWebPage()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	contents_changed_func = NULL;
 	database_quota_exceeded_func = NULL;
@@ -591,6 +593,13 @@ DummyQWebPage::DummyQWebPage()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("tool-bar-visibility-change-requested", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("unsupported-content", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("window-close-requested", NULL));
+}
+DummyQWebPage::~DummyQWebPage()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWebPage::setSelf(knh_RawPtr_t *ptr)
@@ -981,8 +990,9 @@ knh_Object_t** DummyQWebPage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQWebPage::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 23;
+	int list_size = 24;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, contents_changed_func);
 	KNH_ADDNNREF(ctx, database_quota_exceeded_func);
 	KNH_ADDNNREF(ctx, download_requested_func);
@@ -1047,11 +1057,17 @@ void DummyQWebPage::connection(QObject *o)
 
 KQWebPage::KQWebPage(QObject* parent) : QWebPage(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWebPage();
 	dummy->connection((QObject*)this);
 }
 
+KQWebPage::~KQWebPage()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWebPage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1096,17 +1112,23 @@ KMETHOD QWebPage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWebPage_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWebPage *qp = (KQWebPage *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWebPage*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWebPage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWebPage *qp = (KQWebPage *)p->rawptr;
-//		KQWebPage *qp = static_cast<KQWebPage*>(p->rawptr);
+//		KQWebPage *qp = (KQWebPage *)p->rawptr;
+		KQWebPage *qp = static_cast<KQWebPage*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1365,7 +1387,8 @@ static void QWebPageFindFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QWebPage::FindFlags *qp = (QWebPage::FindFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

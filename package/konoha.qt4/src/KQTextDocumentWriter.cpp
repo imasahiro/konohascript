@@ -210,9 +210,18 @@ KMETHOD QTextDocumentWriter_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextDocumentWriter::DummyQTextDocumentWriter()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextDocumentWriter::~DummyQTextDocumentWriter()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextDocumentWriter::setSelf(knh_RawPtr_t *ptr)
@@ -273,10 +282,16 @@ void DummyQTextDocumentWriter::connection(QObject *o)
 
 KQTextDocumentWriter::KQTextDocumentWriter() : QTextDocumentWriter()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextDocumentWriter();
 }
 
+KQTextDocumentWriter::~KQTextDocumentWriter()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextDocumentWriter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -321,17 +336,23 @@ KMETHOD QTextDocumentWriter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextDocumentWriter_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextDocumentWriter *qp = (KQTextDocumentWriter *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextDocumentWriter*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextDocumentWriter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextDocumentWriter *qp = (KQTextDocumentWriter *)p->rawptr;
-//		KQTextDocumentWriter *qp = static_cast<KQTextDocumentWriter*>(p->rawptr);
+//		KQTextDocumentWriter *qp = (KQTextDocumentWriter *)p->rawptr;
+		KQTextDocumentWriter *qp = static_cast<KQTextDocumentWriter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

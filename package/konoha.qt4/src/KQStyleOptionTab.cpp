@@ -23,9 +23,18 @@ KMETHOD QStyleOptionTab_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionTab::DummyQStyleOptionTab()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionTab::~DummyQStyleOptionTab()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionTab::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionTab::connection(QObject *o)
 
 KQStyleOptionTab::KQStyleOptionTab() : QStyleOptionTab()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionTab();
 }
 
+KQStyleOptionTab::~KQStyleOptionTab()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionTab_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionTab_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionTab_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionTab *qp = (KQStyleOptionTab *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionTab*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionTab_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionTab *qp = (KQStyleOptionTab *)p->rawptr;
-//		KQStyleOptionTab *qp = static_cast<KQStyleOptionTab*>(p->rawptr);
+//		KQStyleOptionTab *qp = (KQStyleOptionTab *)p->rawptr;
+		KQStyleOptionTab *qp = static_cast<KQStyleOptionTab*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -321,7 +342,8 @@ static void QStyleOptionTabCornerWidgets_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QStyleOptionTab::CornerWidgets *qp = (QStyleOptionTab::CornerWidgets *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

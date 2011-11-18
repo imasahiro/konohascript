@@ -263,9 +263,18 @@ KMETHOD QCommonStyle_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQCommonStyle::DummyQCommonStyle()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQCommonStyle::~DummyQCommonStyle()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQCommonStyle::setSelf(knh_RawPtr_t *ptr)
@@ -331,11 +340,17 @@ void DummyQCommonStyle::connection(QObject *o)
 
 KQCommonStyle::KQCommonStyle() : QCommonStyle()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQCommonStyle();
 	dummy->connection((QObject*)this);
 }
 
+KQCommonStyle::~KQCommonStyle()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QCommonStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -380,17 +395,23 @@ KMETHOD QCommonStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QCommonStyle_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQCommonStyle *qp = (KQCommonStyle *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QCommonStyle*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QCommonStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQCommonStyle *qp = (KQCommonStyle *)p->rawptr;
-//		KQCommonStyle *qp = static_cast<KQCommonStyle*>(p->rawptr);
+//		KQCommonStyle *qp = (KQCommonStyle *)p->rawptr;
+		KQCommonStyle *qp = static_cast<KQCommonStyle*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

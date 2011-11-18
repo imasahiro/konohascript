@@ -80,6 +80,8 @@ KMETHOD QGraphicsBlurEffect_setBlurRadius(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsBlurEffect::DummyQGraphicsBlurEffect()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	blur_hints_changed_func = NULL;
 	blur_radius_changed_func = NULL;
@@ -87,6 +89,13 @@ DummyQGraphicsBlurEffect::DummyQGraphicsBlurEffect()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("blur-hints-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("blur-radius-changed", NULL));
+}
+DummyQGraphicsBlurEffect::~DummyQGraphicsBlurEffect()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsBlurEffect::setSelf(knh_RawPtr_t *ptr)
@@ -126,8 +135,7 @@ bool DummyQGraphicsBlurEffect::blurRadiusChangedSlot(qreal radius)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, qreal, radius);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		lsfp[K_CALLDELTA+2].fvalue = radius;
 		knh_Func_invoke(lctx, blur_radius_changed_func, lsfp, 2);
 		return true;
 	}
@@ -169,6 +177,7 @@ knh_Object_t** DummyQGraphicsBlurEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRAR
 
 	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, blur_hints_changed_func);
 	KNH_ADDNNREF(ctx, blur_radius_changed_func);
 
@@ -183,7 +192,7 @@ void DummyQGraphicsBlurEffect::connection(QObject *o)
 {
 	QGraphicsBlurEffect *p = dynamic_cast<QGraphicsBlurEffect*>(o);
 	if (p != NULL) {
-		connect(p, SIGNAL(blurHintsChanged(QGraphicsBlurEffect::BlurHints)), this, SLOT(blurHintsChangedSlot(QGraphicsBlurEffect::BlurHints)));
+		connect(p, SIGNAL(blurHintsChanged(BlurHints)), this, SLOT(blurHintsChangedSlot(BlurHints)));
 		connect(p, SIGNAL(blurRadiusChanged(qreal)), this, SLOT(blurRadiusChangedSlot(qreal)));
 	}
 	DummyQGraphicsEffect::connection(o);
@@ -191,11 +200,17 @@ void DummyQGraphicsBlurEffect::connection(QObject *o)
 
 KQGraphicsBlurEffect::KQGraphicsBlurEffect(QObject* parent) : QGraphicsBlurEffect(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsBlurEffect();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsBlurEffect::~KQGraphicsBlurEffect()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsBlurEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -242,15 +257,20 @@ static void QGraphicsBlurEffect_free(CTX ctx, knh_RawPtr_t *p)
 	(void)ctx;
 	if (p->rawptr != NULL) {
 		KQGraphicsBlurEffect *qp = (KQGraphicsBlurEffect *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsBlurEffect*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsBlurEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsBlurEffect *qp = (KQGraphicsBlurEffect *)p->rawptr;
-//		KQGraphicsBlurEffect *qp = static_cast<KQGraphicsBlurEffect*>(p->rawptr);
+//		KQGraphicsBlurEffect *qp = (KQGraphicsBlurEffect *)p->rawptr;
+		KQGraphicsBlurEffect *qp = static_cast<KQGraphicsBlurEffect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -423,7 +443,8 @@ static void QGraphicsBlurEffectBlurHints_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QGraphicsBlurEffect::BlurHints *qp = (QGraphicsBlurEffect::BlurHints *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

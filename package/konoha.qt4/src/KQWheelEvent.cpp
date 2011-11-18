@@ -156,9 +156,18 @@ KMETHOD QWheelEvent_y(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWheelEvent::DummyQWheelEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQWheelEvent::~DummyQWheelEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWheelEvent::setSelf(knh_RawPtr_t *ptr)
@@ -224,10 +233,16 @@ void DummyQWheelEvent::connection(QObject *o)
 
 KQWheelEvent::KQWheelEvent(const QPoint pos, int delta, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, Qt::Orientation orient) : QWheelEvent(pos, delta, buttons, modifiers, orient)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWheelEvent();
 }
 
+KQWheelEvent::~KQWheelEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWheelEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -272,17 +287,23 @@ KMETHOD QWheelEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWheelEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWheelEvent *qp = (KQWheelEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWheelEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWheelEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWheelEvent *qp = (KQWheelEvent *)p->rawptr;
-//		KQWheelEvent *qp = static_cast<KQWheelEvent*>(p->rawptr);
+//		KQWheelEvent *qp = (KQWheelEvent *)p->rawptr;
+		KQWheelEvent *qp = static_cast<KQWheelEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

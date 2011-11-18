@@ -330,11 +330,20 @@ KMETHOD QProgressDialog_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQProgressDialog::DummyQProgressDialog()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	canceled_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("canceled", NULL));
+}
+DummyQProgressDialog::~DummyQProgressDialog()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQProgressDialog::setSelf(knh_RawPtr_t *ptr)
@@ -398,8 +407,9 @@ knh_Object_t** DummyQProgressDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQProgressDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, canceled_func);
 
 	KNH_SIZEREF(ctx);
@@ -420,11 +430,17 @@ void DummyQProgressDialog::connection(QObject *o)
 
 KQProgressDialog::KQProgressDialog(QWidget* parent, Qt::WindowFlags f) : QProgressDialog(parent, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQProgressDialog();
 	dummy->connection((QObject*)this);
 }
 
+KQProgressDialog::~KQProgressDialog()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QProgressDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -469,17 +485,23 @@ KMETHOD QProgressDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QProgressDialog_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQProgressDialog *qp = (KQProgressDialog *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QProgressDialog*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QProgressDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQProgressDialog *qp = (KQProgressDialog *)p->rawptr;
-//		KQProgressDialog *qp = static_cast<KQProgressDialog*>(p->rawptr);
+//		KQProgressDialog *qp = (KQProgressDialog *)p->rawptr;
+		KQProgressDialog *qp = static_cast<KQProgressDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

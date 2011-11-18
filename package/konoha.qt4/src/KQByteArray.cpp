@@ -1891,9 +1891,18 @@ KMETHOD QByteArray_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQByteArray::DummyQByteArray()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQByteArray::~DummyQByteArray()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQByteArray::setSelf(knh_RawPtr_t *ptr)
@@ -1954,10 +1963,16 @@ void DummyQByteArray::connection(QObject *o)
 
 KQByteArray::KQByteArray() : QByteArray()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQByteArray();
 }
 
+KQByteArray::~KQByteArray()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QByteArray_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -2002,17 +2017,23 @@ KMETHOD QByteArray_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QByteArray_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQByteArray *qp = (KQByteArray *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QByteArray*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QByteArray_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQByteArray *qp = (KQByteArray *)p->rawptr;
-//		KQByteArray *qp = static_cast<KQByteArray*>(p->rawptr);
+//		KQByteArray *qp = (KQByteArray *)p->rawptr;
+		KQByteArray *qp = static_cast<KQByteArray*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

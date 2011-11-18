@@ -129,11 +129,20 @@ void KQAbstractGraphicsShapeItem::paint(QPainter *painter, const QStyleOptionGra
 
 DummyQAbstractGraphicsShapeItem::DummyQAbstractGraphicsShapeItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
+}
+DummyQAbstractGraphicsShapeItem::~DummyQAbstractGraphicsShapeItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractGraphicsShapeItem::setSelf(knh_RawPtr_t *ptr)
@@ -200,10 +209,16 @@ void DummyQAbstractGraphicsShapeItem::connection(QObject *o)
 
 KQAbstractGraphicsShapeItem::KQAbstractGraphicsShapeItem(QGraphicsItem* parent) : QAbstractGraphicsShapeItem(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractGraphicsShapeItem();
 }
 
+KQAbstractGraphicsShapeItem::~KQAbstractGraphicsShapeItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractGraphicsShapeItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -248,17 +263,23 @@ KMETHOD QAbstractGraphicsShapeItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractGraphicsShapeItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractGraphicsShapeItem *qp = (KQAbstractGraphicsShapeItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractGraphicsShapeItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractGraphicsShapeItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractGraphicsShapeItem *qp = (KQAbstractGraphicsShapeItem *)p->rawptr;
-//		KQAbstractGraphicsShapeItem *qp = static_cast<KQAbstractGraphicsShapeItem*>(p->rawptr);
+//		KQAbstractGraphicsShapeItem *qp = (KQAbstractGraphicsShapeItem *)p->rawptr;
+		KQAbstractGraphicsShapeItem *qp = static_cast<KQAbstractGraphicsShapeItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

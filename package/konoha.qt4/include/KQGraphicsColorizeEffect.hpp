@@ -9,6 +9,7 @@ public:
 	knh_Func_t *color_changed_func;
 	knh_Func_t *strength_changed_func;
 	DummyQGraphicsColorizeEffect();
+	virtual ~DummyQGraphicsColorizeEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQGraphicsColorizeEffect : public QGraphicsColorizeEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsColorizeEffect *dummy;
 	KQGraphicsColorizeEffect(QObject* parent);
+	~KQGraphicsColorizeEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

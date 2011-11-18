@@ -332,6 +332,8 @@ KMETHOD QAbstractButton_toggle(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractButton::DummyQAbstractButton()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	clicked_func = NULL;
 	pressed_func = NULL;
@@ -343,6 +345,13 @@ DummyQAbstractButton::DummyQAbstractButton()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("pressed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("released", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("toggled", NULL));
+}
+DummyQAbstractButton::~DummyQAbstractButton()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractButton::setSelf(knh_RawPtr_t *ptr)
@@ -447,8 +456,9 @@ knh_Object_t** DummyQAbstractButton::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractButton::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, clicked_func);
 	KNH_ADDNNREF(ctx, pressed_func);
 	KNH_ADDNNREF(ctx, released_func);
@@ -475,11 +485,17 @@ void DummyQAbstractButton::connection(QObject *o)
 
 KQAbstractButton::KQAbstractButton(QWidget* parent) : QAbstractButton(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractButton();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractButton::~KQAbstractButton()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -524,17 +540,23 @@ KMETHOD QAbstractButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractButton_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractButton *qp = (KQAbstractButton *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractButton*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractButton *qp = (KQAbstractButton *)p->rawptr;
-//		KQAbstractButton *qp = static_cast<KQAbstractButton*>(p->rawptr);
+//		KQAbstractButton *qp = (KQAbstractButton *)p->rawptr;
+		KQAbstractButton *qp = static_cast<KQAbstractButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

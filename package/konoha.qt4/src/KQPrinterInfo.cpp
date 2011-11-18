@@ -137,9 +137,18 @@ KMETHOD QPrinterInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPrinterInfo::DummyQPrinterInfo()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPrinterInfo::~DummyQPrinterInfo()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPrinterInfo::setSelf(knh_RawPtr_t *ptr)
@@ -200,10 +209,16 @@ void DummyQPrinterInfo::connection(QObject *o)
 
 KQPrinterInfo::KQPrinterInfo() : QPrinterInfo()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPrinterInfo();
 }
 
+KQPrinterInfo::~KQPrinterInfo()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPrinterInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -248,17 +263,23 @@ KMETHOD QPrinterInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPrinterInfo_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPrinterInfo *qp = (KQPrinterInfo *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPrinterInfo*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPrinterInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPrinterInfo *qp = (KQPrinterInfo *)p->rawptr;
-//		KQPrinterInfo *qp = static_cast<KQPrinterInfo*>(p->rawptr);
+//		KQPrinterInfo *qp = (KQPrinterInfo *)p->rawptr;
+		KQPrinterInfo *qp = static_cast<KQPrinterInfo*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

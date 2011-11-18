@@ -205,6 +205,8 @@ KMETHOD QSystemTrayIcon_show(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSystemTrayIcon::DummyQSystemTrayIcon()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	activated_func = NULL;
 	message_clicked_func = NULL;
@@ -212,6 +214,13 @@ DummyQSystemTrayIcon::DummyQSystemTrayIcon()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("activated", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("message-clicked", NULL));
+}
+DummyQSystemTrayIcon::~DummyQSystemTrayIcon()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSystemTrayIcon::setSelf(knh_RawPtr_t *ptr)
@@ -289,8 +298,9 @@ knh_Object_t** DummyQSystemTrayIcon::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQSystemTrayIcon::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, activated_func);
 	KNH_ADDNNREF(ctx, message_clicked_func);
 
@@ -313,11 +323,17 @@ void DummyQSystemTrayIcon::connection(QObject *o)
 
 KQSystemTrayIcon::KQSystemTrayIcon(QObject* parent) : QSystemTrayIcon(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSystemTrayIcon();
 	dummy->connection((QObject*)this);
 }
 
+KQSystemTrayIcon::~KQSystemTrayIcon()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSystemTrayIcon_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -362,17 +378,23 @@ KMETHOD QSystemTrayIcon_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSystemTrayIcon_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSystemTrayIcon *qp = (KQSystemTrayIcon *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSystemTrayIcon*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSystemTrayIcon_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSystemTrayIcon *qp = (KQSystemTrayIcon *)p->rawptr;
-//		KQSystemTrayIcon *qp = static_cast<KQSystemTrayIcon*>(p->rawptr);
+//		KQSystemTrayIcon *qp = (KQSystemTrayIcon *)p->rawptr;
+		KQSystemTrayIcon *qp = static_cast<KQSystemTrayIcon*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

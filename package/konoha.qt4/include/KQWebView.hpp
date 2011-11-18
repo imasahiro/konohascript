@@ -16,6 +16,7 @@ public:
 	knh_Func_t *title_changed_func;
 	knh_Func_t *url_changed_func;
 	DummyQWebView();
+	virtual ~DummyQWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -37,9 +38,11 @@ public slots:
 class KQWebView : public QWebView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebView *dummy;
 	KQWebView(QWidget* parent);
+	~KQWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

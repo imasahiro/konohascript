@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSystemSemaphore();
+	virtual ~DummyQSystemSemaphore();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQSystemSemaphore : public QSystemSemaphore {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSystemSemaphore *dummy;
 	KQSystemSemaphore(const QString key, int initialValue, QSystemSemaphore::AccessMode mode);
+	~KQSystemSemaphore();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

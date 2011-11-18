@@ -800,11 +800,20 @@ KMETHOD QComboBox_setEditText(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQComboBox::DummyQComboBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	edit_text_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("edit-text-changed", NULL));
+}
+DummyQComboBox::~DummyQComboBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQComboBox::setSelf(knh_RawPtr_t *ptr)
@@ -870,8 +879,9 @@ knh_Object_t** DummyQComboBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQComboBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, edit_text_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -892,11 +902,17 @@ void DummyQComboBox::connection(QObject *o)
 
 KQComboBox::KQComboBox(QWidget* parent) : QComboBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQComboBox();
 	dummy->connection((QObject*)this);
 }
 
+KQComboBox::~KQComboBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QComboBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -941,17 +957,23 @@ KMETHOD QComboBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QComboBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQComboBox *qp = (KQComboBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QComboBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QComboBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQComboBox *qp = (KQComboBox *)p->rawptr;
-//		KQComboBox *qp = static_cast<KQComboBox*>(p->rawptr);
+//		KQComboBox *qp = (KQComboBox *)p->rawptr;
+		KQComboBox *qp = static_cast<KQComboBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

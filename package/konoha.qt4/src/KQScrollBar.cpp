@@ -54,9 +54,18 @@ KMETHOD QScrollBar_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQScrollBar::DummyQScrollBar()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQScrollBar::~DummyQScrollBar()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQScrollBar::setSelf(knh_RawPtr_t *ptr)
@@ -122,11 +131,17 @@ void DummyQScrollBar::connection(QObject *o)
 
 KQScrollBar::KQScrollBar(QWidget* parent) : QScrollBar(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQScrollBar();
 	dummy->connection((QObject*)this);
 }
 
+KQScrollBar::~KQScrollBar()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QScrollBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -171,17 +186,23 @@ KMETHOD QScrollBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QScrollBar_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQScrollBar *qp = (KQScrollBar *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QScrollBar*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QScrollBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQScrollBar *qp = (KQScrollBar *)p->rawptr;
-//		KQScrollBar *qp = static_cast<KQScrollBar*>(p->rawptr);
+//		KQScrollBar *qp = (KQScrollBar *)p->rawptr;
+		KQScrollBar *qp = static_cast<KQScrollBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

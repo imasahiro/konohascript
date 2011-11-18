@@ -162,9 +162,18 @@ KMETHOD QScrollArea_getWidgetResizable(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQScrollArea::DummyQScrollArea()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQScrollArea::~DummyQScrollArea()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQScrollArea::setSelf(knh_RawPtr_t *ptr)
@@ -230,11 +239,17 @@ void DummyQScrollArea::connection(QObject *o)
 
 KQScrollArea::KQScrollArea(QWidget* parent) : QScrollArea(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQScrollArea();
 	dummy->connection((QObject*)this);
 }
 
+KQScrollArea::~KQScrollArea()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QScrollArea_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -279,17 +294,23 @@ KMETHOD QScrollArea_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QScrollArea_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQScrollArea *qp = (KQScrollArea *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QScrollArea*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QScrollArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQScrollArea *qp = (KQScrollArea *)p->rawptr;
-//		KQScrollArea *qp = static_cast<KQScrollArea*>(p->rawptr);
+//		KQScrollArea *qp = (KQScrollArea *)p->rawptr;
+		KQScrollArea *qp = static_cast<KQScrollArea*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

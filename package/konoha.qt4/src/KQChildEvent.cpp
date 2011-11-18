@@ -66,9 +66,18 @@ KMETHOD QChildEvent_removed(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQChildEvent::DummyQChildEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQChildEvent::~DummyQChildEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQChildEvent::setSelf(knh_RawPtr_t *ptr)
@@ -134,10 +143,16 @@ void DummyQChildEvent::connection(QObject *o)
 
 KQChildEvent::KQChildEvent(QChildEvent::Type type, QObject* child) : QChildEvent(type, child)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQChildEvent();
 }
 
+KQChildEvent::~KQChildEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QChildEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -182,17 +197,23 @@ KMETHOD QChildEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QChildEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQChildEvent *qp = (KQChildEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QChildEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QChildEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQChildEvent *qp = (KQChildEvent *)p->rawptr;
-//		KQChildEvent *qp = static_cast<KQChildEvent*>(p->rawptr);
+//		KQChildEvent *qp = (KQChildEvent *)p->rawptr;
+		KQChildEvent *qp = static_cast<KQChildEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

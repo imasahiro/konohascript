@@ -71,6 +71,8 @@ void KQGraphicsObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 
 DummyQGraphicsObject::DummyQGraphicsObject()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	enabled_changed_func = NULL;
 	opacity_changed_func = NULL;
@@ -94,6 +96,13 @@ DummyQGraphicsObject::DummyQGraphicsObject()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("x-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("y-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("z-changed", NULL));
+}
+DummyQGraphicsObject::~DummyQGraphicsObject()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsObject::setSelf(knh_RawPtr_t *ptr)
@@ -269,8 +278,9 @@ knh_Object_t** DummyQGraphicsObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsObject::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 9;
+	int list_size = 10;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, enabled_changed_func);
 	KNH_ADDNNREF(ctx, opacity_changed_func);
 	KNH_ADDNNREF(ctx, parent_changed_func);
@@ -280,6 +290,7 @@ knh_Object_t** DummyQGraphicsObject::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	KNH_ADDNNREF(ctx, x_changed_func);
 	KNH_ADDNNREF(ctx, y_changed_func);
 	KNH_ADDNNREF(ctx, z_changed_func);
+	KNH_ADDNNREF(ctx, paint_func);
 
 	KNH_SIZEREF(ctx);
 
@@ -309,11 +320,17 @@ void DummyQGraphicsObject::connection(QObject *o)
 
 KQGraphicsObject::KQGraphicsObject(QGraphicsItem* parent) : QGraphicsObject(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsObject();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsObject::~KQGraphicsObject()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -358,17 +375,23 @@ KMETHOD QGraphicsObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsObject_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsObject *qp = (KQGraphicsObject *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsObject*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsObject *qp = (KQGraphicsObject *)p->rawptr;
-//		KQGraphicsObject *qp = static_cast<KQGraphicsObject*>(p->rawptr);
+//		KQGraphicsObject *qp = (KQGraphicsObject *)p->rawptr;
+		KQGraphicsObject *qp = static_cast<KQGraphicsObject*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -23,9 +23,18 @@ KMETHOD QStyleOptionGroupBox_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionGroupBox::DummyQStyleOptionGroupBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionGroupBox::~DummyQStyleOptionGroupBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionGroupBox::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionGroupBox::connection(QObject *o)
 
 KQStyleOptionGroupBox::KQStyleOptionGroupBox() : QStyleOptionGroupBox()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionGroupBox();
 }
 
+KQStyleOptionGroupBox::~KQStyleOptionGroupBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionGroupBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionGroupBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionGroupBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionGroupBox *qp = (KQStyleOptionGroupBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionGroupBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionGroupBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionGroupBox *qp = (KQStyleOptionGroupBox *)p->rawptr;
-//		KQStyleOptionGroupBox *qp = static_cast<KQStyleOptionGroupBox*>(p->rawptr);
+//		KQStyleOptionGroupBox *qp = (KQStyleOptionGroupBox *)p->rawptr;
+		KQStyleOptionGroupBox *qp = static_cast<KQStyleOptionGroupBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

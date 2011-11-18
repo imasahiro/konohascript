@@ -111,9 +111,18 @@ KMETHOD QDebug_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDebug::DummyQDebug()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDebug::~DummyQDebug()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDebug::setSelf(knh_RawPtr_t *ptr)
@@ -174,10 +183,16 @@ void DummyQDebug::connection(QObject *o)
 
 KQDebug::KQDebug(QIODevice* device) : QDebug(device)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDebug();
 }
 
+KQDebug::~KQDebug()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDebug_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -222,17 +237,23 @@ KMETHOD QDebug_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDebug_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDebug *qp = (KQDebug *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDebug*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDebug_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDebug *qp = (KQDebug *)p->rawptr;
-//		KQDebug *qp = static_cast<KQDebug*>(p->rawptr);
+//		KQDebug *qp = (KQDebug *)p->rawptr;
+		KQDebug *qp = static_cast<KQDebug*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

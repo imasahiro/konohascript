@@ -27,9 +27,18 @@ KMETHOD QDynamicPropertyChangeEvent_propertyName(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDynamicPropertyChangeEvent::DummyQDynamicPropertyChangeEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDynamicPropertyChangeEvent::~DummyQDynamicPropertyChangeEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDynamicPropertyChangeEvent::setSelf(knh_RawPtr_t *ptr)
@@ -95,10 +104,16 @@ void DummyQDynamicPropertyChangeEvent::connection(QObject *o)
 
 KQDynamicPropertyChangeEvent::KQDynamicPropertyChangeEvent(const QByteArray name) : QDynamicPropertyChangeEvent(name)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDynamicPropertyChangeEvent();
 }
 
+KQDynamicPropertyChangeEvent::~KQDynamicPropertyChangeEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDynamicPropertyChangeEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -143,17 +158,23 @@ KMETHOD QDynamicPropertyChangeEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDynamicPropertyChangeEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDynamicPropertyChangeEvent *qp = (KQDynamicPropertyChangeEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDynamicPropertyChangeEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDynamicPropertyChangeEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDynamicPropertyChangeEvent *qp = (KQDynamicPropertyChangeEvent *)p->rawptr;
-//		KQDynamicPropertyChangeEvent *qp = static_cast<KQDynamicPropertyChangeEvent*>(p->rawptr);
+//		KQDynamicPropertyChangeEvent *qp = (KQDynamicPropertyChangeEvent *)p->rawptr;
+		KQDynamicPropertyChangeEvent *qp = static_cast<KQDynamicPropertyChangeEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

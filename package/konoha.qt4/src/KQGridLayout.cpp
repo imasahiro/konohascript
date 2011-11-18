@@ -556,9 +556,18 @@ KMETHOD QGridLayout_getVerticalSpacing(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGridLayout::DummyQGridLayout()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGridLayout::~DummyQGridLayout()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGridLayout::setSelf(knh_RawPtr_t *ptr)
@@ -624,11 +633,17 @@ void DummyQGridLayout::connection(QObject *o)
 
 KQGridLayout::KQGridLayout(QWidget* parent) : QGridLayout(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGridLayout();
 	dummy->connection((QObject*)this);
 }
 
+KQGridLayout::~KQGridLayout()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGridLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -673,17 +688,23 @@ KMETHOD QGridLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGridLayout_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGridLayout *qp = (KQGridLayout *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGridLayout*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGridLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGridLayout *qp = (KQGridLayout *)p->rawptr;
-//		KQGridLayout *qp = static_cast<KQGridLayout*>(p->rawptr);
+//		KQGridLayout *qp = (KQGridLayout *)p->rawptr;
+		KQGridLayout *qp = static_cast<KQGridLayout*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

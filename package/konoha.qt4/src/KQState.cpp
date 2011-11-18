@@ -195,6 +195,8 @@ KMETHOD QState_transitions(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQState::DummyQState()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	finished_func = NULL;
 	properties_assigned_func = NULL;
@@ -202,6 +204,13 @@ DummyQState::DummyQState()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("properties-assigned", NULL));
+}
+DummyQState::~DummyQState()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQState::setSelf(knh_RawPtr_t *ptr)
@@ -278,8 +287,9 @@ knh_Object_t** DummyQState::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQState::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, properties_assigned_func);
 
@@ -302,11 +312,17 @@ void DummyQState::connection(QObject *o)
 
 KQState::KQState(QState* parent) : QState(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQState();
 	dummy->connection((QObject*)this);
 }
 
+KQState::~KQState()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -351,17 +367,23 @@ KMETHOD QState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QState_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQState *qp = (KQState *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QState*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQState *qp = (KQState *)p->rawptr;
-//		KQState *qp = static_cast<KQState*>(p->rawptr);
+//		KQState *qp = (KQState *)p->rawptr;
+		KQState *qp = static_cast<KQState*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

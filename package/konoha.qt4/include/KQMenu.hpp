@@ -11,6 +11,7 @@ public:
 	knh_Func_t *hovered_func;
 	knh_Func_t *triggered_func;
 	DummyQMenu();
+	virtual ~DummyQMenu();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +28,11 @@ public slots:
 class KQMenu : public QMenu {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMenu *dummy;
 	KQMenu(QWidget* parent);
+	~KQMenu();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

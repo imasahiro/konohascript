@@ -130,9 +130,18 @@ KMETHOD QTextFrame_setFrameFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextFrame::DummyQTextFrame()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextFrame::~DummyQTextFrame()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextFrame::setSelf(knh_RawPtr_t *ptr)
@@ -198,11 +207,17 @@ void DummyQTextFrame::connection(QObject *o)
 
 KQTextFrame::KQTextFrame(QTextDocument* document) : QTextFrame(document)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextFrame();
 	dummy->connection((QObject*)this);
 }
 
+KQTextFrame::~KQTextFrame()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -247,17 +262,23 @@ KMETHOD QTextFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextFrame_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextFrame *qp = (KQTextFrame *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextFrame*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextFrame *qp = (KQTextFrame *)p->rawptr;
-//		KQTextFrame *qp = static_cast<KQTextFrame*>(p->rawptr);
+//		KQTextFrame *qp = (KQTextFrame *)p->rawptr;
+		KQTextFrame *qp = static_cast<KQTextFrame*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

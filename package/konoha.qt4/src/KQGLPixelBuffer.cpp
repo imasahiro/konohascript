@@ -271,9 +271,18 @@ KMETHOD QGLPixelBuffer_hasOpenGLPbuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGLPixelBuffer::DummyQGLPixelBuffer()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLPixelBuffer::~DummyQGLPixelBuffer()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLPixelBuffer::setSelf(knh_RawPtr_t *ptr)
@@ -339,10 +348,16 @@ void DummyQGLPixelBuffer::connection(QObject *o)
 
 KQGLPixelBuffer::KQGLPixelBuffer(const QSize size, const QGLFormat format, QGLWidget* shareWidget) : QGLPixelBuffer(size, format, shareWidget)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLPixelBuffer();
 }
 
+KQGLPixelBuffer::~KQGLPixelBuffer()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLPixelBuffer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -387,17 +402,23 @@ KMETHOD QGLPixelBuffer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLPixelBuffer_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLPixelBuffer *qp = (KQGLPixelBuffer *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLPixelBuffer*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLPixelBuffer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLPixelBuffer *qp = (KQGLPixelBuffer *)p->rawptr;
-//		KQGLPixelBuffer *qp = static_cast<KQGLPixelBuffer*>(p->rawptr);
+//		KQGLPixelBuffer *qp = (KQGLPixelBuffer *)p->rawptr;
+		KQGLPixelBuffer *qp = static_cast<KQGLPixelBuffer*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTabV3();
+	virtual ~DummyQStyleOptionTabV3();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQStyleOptionTabV3 : public QStyleOptionTabV3 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTabV3 *dummy;
 	KQStyleOptionTabV3();
+	~KQStyleOptionTabV3();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

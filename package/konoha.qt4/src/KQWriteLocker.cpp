@@ -66,9 +66,18 @@ KMETHOD QWriteLocker_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWriteLocker::DummyQWriteLocker()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQWriteLocker::~DummyQWriteLocker()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWriteLocker::setSelf(knh_RawPtr_t *ptr)
@@ -129,10 +138,16 @@ void DummyQWriteLocker::connection(QObject *o)
 
 KQWriteLocker::KQWriteLocker(QReadWriteLock* lock) : QWriteLocker(lock)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWriteLocker();
 }
 
+KQWriteLocker::~KQWriteLocker()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWriteLocker_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -177,17 +192,23 @@ KMETHOD QWriteLocker_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWriteLocker_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWriteLocker *qp = (KQWriteLocker *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWriteLocker*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWriteLocker_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWriteLocker *qp = (KQWriteLocker *)p->rawptr;
-//		KQWriteLocker *qp = static_cast<KQWriteLocker*>(p->rawptr);
+//		KQWriteLocker *qp = (KQWriteLocker *)p->rawptr;
+		KQWriteLocker *qp = static_cast<KQWriteLocker*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

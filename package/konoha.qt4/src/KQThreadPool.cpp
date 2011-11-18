@@ -148,9 +148,18 @@ KMETHOD QThreadPool_globalInstance(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQThreadPool::DummyQThreadPool()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQThreadPool::~DummyQThreadPool()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQThreadPool::setSelf(knh_RawPtr_t *ptr)
@@ -216,11 +225,17 @@ void DummyQThreadPool::connection(QObject *o)
 
 KQThreadPool::KQThreadPool(QObject* parent) : QThreadPool(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQThreadPool();
 	dummy->connection((QObject*)this);
 }
 
+KQThreadPool::~KQThreadPool()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QThreadPool_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -265,17 +280,23 @@ KMETHOD QThreadPool_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QThreadPool_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQThreadPool *qp = (KQThreadPool *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QThreadPool*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QThreadPool_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQThreadPool *qp = (KQThreadPool *)p->rawptr;
-//		KQThreadPool *qp = static_cast<KQThreadPool*>(p->rawptr);
+//		KQThreadPool *qp = (KQThreadPool *)p->rawptr;
+		KQThreadPool *qp = static_cast<KQThreadPool*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

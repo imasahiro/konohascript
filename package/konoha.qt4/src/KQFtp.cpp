@@ -394,6 +394,8 @@ KMETHOD QFtp_abort(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQFtp::DummyQFtp()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	command_finished_func = NULL;
 	command_started_func = NULL;
@@ -413,6 +415,13 @@ DummyQFtp::DummyQFtp()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("raw-command-reply", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("ready-read", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+}
+DummyQFtp::~DummyQFtp()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQFtp::setSelf(knh_RawPtr_t *ptr)
@@ -581,8 +590,9 @@ knh_Object_t** DummyQFtp::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQFtp::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 8;
+	int list_size = 9;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, command_finished_func);
 	KNH_ADDNNREF(ctx, command_started_func);
 	KNH_ADDNNREF(ctx, data_transfer_progress_func);
@@ -617,11 +627,17 @@ void DummyQFtp::connection(QObject *o)
 
 KQFtp::KQFtp(QObject* parent) : QFtp(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQFtp();
 	dummy->connection((QObject*)this);
 }
 
+KQFtp::~KQFtp()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QFtp_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -666,17 +682,23 @@ KMETHOD QFtp_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QFtp_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQFtp *qp = (KQFtp *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QFtp*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QFtp_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQFtp *qp = (KQFtp *)p->rawptr;
-//		KQFtp *qp = static_cast<KQFtp*>(p->rawptr);
+//		KQFtp *qp = (KQFtp *)p->rawptr;
+		KQFtp *qp = static_cast<KQFtp*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

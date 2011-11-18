@@ -38,9 +38,18 @@ KMETHOD QAbstractTableModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractTableModel::DummyQAbstractTableModel()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAbstractTableModel::~DummyQAbstractTableModel()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractTableModel::setSelf(knh_RawPtr_t *ptr)
@@ -106,11 +115,17 @@ void DummyQAbstractTableModel::connection(QObject *o)
 
 KQAbstractTableModel::KQAbstractTableModel(QObject* parent) : QAbstractTableModel(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractTableModel();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractTableModel::~KQAbstractTableModel()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractTableModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -155,17 +170,23 @@ KMETHOD QAbstractTableModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractTableModel_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractTableModel *qp = (KQAbstractTableModel *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractTableModel*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractTableModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractTableModel *qp = (KQAbstractTableModel *)p->rawptr;
-//		KQAbstractTableModel *qp = static_cast<KQAbstractTableModel*>(p->rawptr);
+//		KQAbstractTableModel *qp = (KQAbstractTableModel *)p->rawptr;
+		KQAbstractTableModel *qp = static_cast<KQAbstractTableModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

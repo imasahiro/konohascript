@@ -203,9 +203,18 @@ KMETHOD QKeySequence_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQKeySequence::DummyQKeySequence()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQKeySequence::~DummyQKeySequence()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQKeySequence::setSelf(knh_RawPtr_t *ptr)
@@ -266,10 +275,16 @@ void DummyQKeySequence::connection(QObject *o)
 
 KQKeySequence::KQKeySequence() : QKeySequence()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQKeySequence();
 }
 
+KQKeySequence::~KQKeySequence()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QKeySequence_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -314,17 +329,23 @@ KMETHOD QKeySequence_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QKeySequence_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQKeySequence *qp = (KQKeySequence *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QKeySequence*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QKeySequence_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQKeySequence *qp = (KQKeySequence *)p->rawptr;
-//		KQKeySequence *qp = static_cast<KQKeySequence*>(p->rawptr);
+//		KQKeySequence *qp = (KQKeySequence *)p->rawptr;
+		KQKeySequence *qp = static_cast<KQKeySequence*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

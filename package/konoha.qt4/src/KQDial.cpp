@@ -130,9 +130,18 @@ KMETHOD QDial_setWrapping(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDial::DummyQDial()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDial::~DummyQDial()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDial::setSelf(knh_RawPtr_t *ptr)
@@ -198,11 +207,17 @@ void DummyQDial::connection(QObject *o)
 
 KQDial::KQDial(QWidget* parent) : QDial(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDial();
 	dummy->connection((QObject*)this);
 }
 
+KQDial::~KQDial()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDial_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -247,17 +262,23 @@ KMETHOD QDial_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDial_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDial *qp = (KQDial *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDial*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDial_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDial *qp = (KQDial *)p->rawptr;
-//		KQDial *qp = static_cast<KQDial*>(p->rawptr);
+//		KQDial *qp = (KQDial *)p->rawptr;
+		KQDial *qp = static_cast<KQDial*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

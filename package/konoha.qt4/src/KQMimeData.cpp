@@ -288,9 +288,18 @@ KMETHOD QMimeData_getUrls(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMimeData::DummyQMimeData()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQMimeData::~DummyQMimeData()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMimeData::setSelf(knh_RawPtr_t *ptr)
@@ -356,11 +365,17 @@ void DummyQMimeData::connection(QObject *o)
 
 KQMimeData::KQMimeData() : QMimeData()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMimeData();
 	dummy->connection((QObject*)this);
 }
 
+KQMimeData::~KQMimeData()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMimeData_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -405,17 +420,23 @@ KMETHOD QMimeData_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMimeData_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMimeData *qp = (KQMimeData *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMimeData*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMimeData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMimeData *qp = (KQMimeData *)p->rawptr;
-//		KQMimeData *qp = static_cast<KQMimeData*>(p->rawptr);
+//		KQMimeData *qp = (KQMimeData *)p->rawptr;
+		KQMimeData *qp = static_cast<KQMimeData*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

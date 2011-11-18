@@ -130,7 +130,8 @@ static void <P><C>_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		<P>::<C> *qp = (<P>::<C> *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

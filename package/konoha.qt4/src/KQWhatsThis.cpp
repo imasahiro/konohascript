@@ -88,9 +88,18 @@ KMETHOD QWhatsThis_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWhatsThis::DummyQWhatsThis()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQWhatsThis::~DummyQWhatsThis()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWhatsThis::setSelf(knh_RawPtr_t *ptr)
@@ -149,6 +158,11 @@ void DummyQWhatsThis::connection(QObject *o)
 	}
 }
 
+KQWhatsThis::~KQWhatsThis()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWhatsThis_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -193,17 +207,23 @@ KMETHOD QWhatsThis_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWhatsThis_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWhatsThis *qp = (KQWhatsThis *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWhatsThis*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWhatsThis_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWhatsThis *qp = (KQWhatsThis *)p->rawptr;
-//		KQWhatsThis *qp = static_cast<KQWhatsThis*>(p->rawptr);
+//		KQWhatsThis *qp = (KQWhatsThis *)p->rawptr;
+		KQWhatsThis *qp = static_cast<KQWhatsThis*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

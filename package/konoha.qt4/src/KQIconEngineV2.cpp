@@ -80,9 +80,18 @@ KMETHOD QIconEngineV2_virtual_hook(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQIconEngineV2::DummyQIconEngineV2()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQIconEngineV2::~DummyQIconEngineV2()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQIconEngineV2::setSelf(knh_RawPtr_t *ptr)
@@ -146,6 +155,11 @@ void DummyQIconEngineV2::connection(QObject *o)
 	DummyQIconEngine::connection(o);
 }
 
+KQIconEngineV2::~KQIconEngineV2()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QIconEngineV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -190,17 +204,23 @@ KMETHOD QIconEngineV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QIconEngineV2_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQIconEngineV2 *qp = (KQIconEngineV2 *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QIconEngineV2*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QIconEngineV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQIconEngineV2 *qp = (KQIconEngineV2 *)p->rawptr;
-//		KQIconEngineV2 *qp = static_cast<KQIconEngineV2*>(p->rawptr);
+//		KQIconEngineV2 *qp = (KQIconEngineV2 *)p->rawptr;
+		KQIconEngineV2 *qp = static_cast<KQIconEngineV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -163,9 +163,18 @@ KMETHOD QTextTableCell_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextTableCell::DummyQTextTableCell()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextTableCell::~DummyQTextTableCell()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextTableCell::setSelf(knh_RawPtr_t *ptr)
@@ -226,10 +235,16 @@ void DummyQTextTableCell::connection(QObject *o)
 
 KQTextTableCell::KQTextTableCell() : QTextTableCell()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextTableCell();
 }
 
+KQTextTableCell::~KQTextTableCell()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextTableCell_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -274,17 +289,23 @@ KMETHOD QTextTableCell_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextTableCell_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextTableCell *qp = (KQTextTableCell *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextTableCell*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextTableCell_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextTableCell *qp = (KQTextTableCell *)p->rawptr;
-//		KQTextTableCell *qp = static_cast<KQTextTableCell*>(p->rawptr);
+//		KQTextTableCell *qp = (KQTextTableCell *)p->rawptr;
+		KQTextTableCell *qp = static_cast<KQTextTableCell*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

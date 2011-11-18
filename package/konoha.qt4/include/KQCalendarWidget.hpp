@@ -11,6 +11,7 @@ public:
 	knh_Func_t *current_page_changed_func;
 	knh_Func_t *selection_changed_func;
 	DummyQCalendarWidget();
+	virtual ~DummyQCalendarWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +28,11 @@ public slots:
 class KQCalendarWidget : public QCalendarWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCalendarWidget *dummy;
 	KQCalendarWidget(QWidget* parent);
+	~KQCalendarWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

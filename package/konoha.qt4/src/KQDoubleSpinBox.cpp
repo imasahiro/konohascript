@@ -282,9 +282,18 @@ KMETHOD QDoubleSpinBox_setValue(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDoubleSpinBox::DummyQDoubleSpinBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDoubleSpinBox::~DummyQDoubleSpinBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDoubleSpinBox::setSelf(knh_RawPtr_t *ptr)
@@ -350,11 +359,17 @@ void DummyQDoubleSpinBox::connection(QObject *o)
 
 KQDoubleSpinBox::KQDoubleSpinBox(QWidget* parent) : QDoubleSpinBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDoubleSpinBox();
 	dummy->connection((QObject*)this);
 }
 
+KQDoubleSpinBox::~KQDoubleSpinBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDoubleSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -399,17 +414,23 @@ KMETHOD QDoubleSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDoubleSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDoubleSpinBox *qp = (KQDoubleSpinBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDoubleSpinBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDoubleSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDoubleSpinBox *qp = (KQDoubleSpinBox *)p->rawptr;
-//		KQDoubleSpinBox *qp = static_cast<KQDoubleSpinBox*>(p->rawptr);
+//		KQDoubleSpinBox *qp = (KQDoubleSpinBox *)p->rawptr;
+		KQDoubleSpinBox *qp = static_cast<KQDoubleSpinBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

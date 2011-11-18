@@ -9,6 +9,7 @@ public:
 	knh_Func_t *action_changed_func;
 	knh_Func_t *target_changed_func;
 	DummyQDrag();
+	virtual ~DummyQDrag();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQDrag : public QDrag {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDrag *dummy;
 	KQDrag(QWidget* dragSource);
+	~KQDrag();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

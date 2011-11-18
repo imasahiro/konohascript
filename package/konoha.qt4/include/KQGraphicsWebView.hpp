@@ -16,6 +16,7 @@ public:
 	knh_Func_t *url_changed_func;
 	knh_Func_t *paint_func;
 	DummyQGraphicsWebView();
+	virtual ~DummyQGraphicsWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -36,9 +37,11 @@ public slots:
 class KQGraphicsWebView : public QGraphicsWebView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsWebView *dummy;
 	KQGraphicsWebView(QGraphicsItem* parent);
+	~KQGraphicsWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);

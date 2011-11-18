@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneDragDropEvent();
+	virtual ~DummyQGraphicsSceneDragDropEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,10 @@ public:
 class KQGraphicsSceneDragDropEvent : public QGraphicsSceneDragDropEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneDragDropEvent *dummy;
-
+	~KQGraphicsSceneDragDropEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

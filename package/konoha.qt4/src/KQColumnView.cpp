@@ -210,11 +210,20 @@ KMETHOD QColumnView_setResizeGripsVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQColumnView::DummyQColumnView()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	update_preview_widget_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("update-preview-widget", NULL));
+}
+DummyQColumnView::~DummyQColumnView()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQColumnView::setSelf(knh_RawPtr_t *ptr)
@@ -280,8 +289,9 @@ knh_Object_t** DummyQColumnView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQColumnView::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, update_preview_widget_func);
 
 	KNH_SIZEREF(ctx);
@@ -302,11 +312,17 @@ void DummyQColumnView::connection(QObject *o)
 
 KQColumnView::KQColumnView(QWidget* parent) : QColumnView(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQColumnView();
 	dummy->connection((QObject*)this);
 }
 
+KQColumnView::~KQColumnView()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QColumnView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -351,17 +367,23 @@ KMETHOD QColumnView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QColumnView_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQColumnView *qp = (KQColumnView *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QColumnView*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QColumnView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQColumnView *qp = (KQColumnView *)p->rawptr;
-//		KQColumnView *qp = static_cast<KQColumnView*>(p->rawptr);
+//		KQColumnView *qp = (KQColumnView *)p->rawptr;
+		KQColumnView *qp = static_cast<KQColumnView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

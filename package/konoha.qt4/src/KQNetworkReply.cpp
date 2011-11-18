@@ -287,6 +287,8 @@ KMETHOD QNetworkReply_ignoreSslErrors(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkReply::DummyQNetworkReply()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	download_progress_func = NULL;
 	error_func = NULL;
@@ -302,6 +304,13 @@ DummyQNetworkReply::DummyQNetworkReply()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("meta-data-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("ssl-errors", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("upload-progress", NULL));
+}
+DummyQNetworkReply::~DummyQNetworkReply()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkReply::setSelf(knh_RawPtr_t *ptr)
@@ -447,8 +456,9 @@ knh_Object_t** DummyQNetworkReply::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQNetworkReply::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, download_progress_func);
 	KNH_ADDNNREF(ctx, error_func);
 	KNH_ADDNNREF(ctx, finished_func);
@@ -477,6 +487,11 @@ void DummyQNetworkReply::connection(QObject *o)
 	DummyQIODevice::connection(o);
 }
 
+KQNetworkReply::~KQNetworkReply()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkReply_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -521,17 +536,23 @@ KMETHOD QNetworkReply_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkReply_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkReply *qp = (KQNetworkReply *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkReply*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkReply_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkReply *qp = (KQNetworkReply *)p->rawptr;
-//		KQNetworkReply *qp = static_cast<KQNetworkReply*>(p->rawptr);
+//		KQNetworkReply *qp = (KQNetworkReply *)p->rawptr;
+		KQNetworkReply *qp = static_cast<KQNetworkReply*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

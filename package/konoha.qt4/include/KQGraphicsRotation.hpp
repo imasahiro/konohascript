@@ -10,6 +10,7 @@ public:
 	knh_Func_t *axis_changed_func;
 	knh_Func_t *origin_changed_func;
 	DummyQGraphicsRotation();
+	virtual ~DummyQGraphicsRotation();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -25,9 +26,11 @@ public slots:
 class KQGraphicsRotation : public QGraphicsRotation {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsRotation *dummy;
 	KQGraphicsRotation(QObject* parent);
+	~KQGraphicsRotation();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

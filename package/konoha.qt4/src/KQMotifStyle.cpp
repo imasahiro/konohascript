@@ -230,9 +230,18 @@ KMETHOD QMotifStyle_getUseHighlightColors(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMotifStyle::DummyQMotifStyle()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQMotifStyle::~DummyQMotifStyle()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMotifStyle::setSelf(knh_RawPtr_t *ptr)
@@ -298,11 +307,17 @@ void DummyQMotifStyle::connection(QObject *o)
 
 KQMotifStyle::KQMotifStyle(bool useHighlightCols) : QMotifStyle(useHighlightCols)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMotifStyle();
 	dummy->connection((QObject*)this);
 }
 
+KQMotifStyle::~KQMotifStyle()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMotifStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -347,17 +362,23 @@ KMETHOD QMotifStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMotifStyle_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMotifStyle *qp = (KQMotifStyle *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMotifStyle*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMotifStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMotifStyle *qp = (KQMotifStyle *)p->rawptr;
-//		KQMotifStyle *qp = static_cast<KQMotifStyle*>(p->rawptr);
+//		KQMotifStyle *qp = (KQMotifStyle *)p->rawptr;
+		KQMotifStyle *qp = static_cast<KQMotifStyle*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

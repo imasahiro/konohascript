@@ -793,9 +793,18 @@ KMETHOD QTransform_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTransform::DummyQTransform()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTransform::~DummyQTransform()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTransform::setSelf(knh_RawPtr_t *ptr)
@@ -856,10 +865,16 @@ void DummyQTransform::connection(QObject *o)
 
 KQTransform::KQTransform() : QTransform()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTransform();
 }
 
+KQTransform::~KQTransform()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTransform_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -904,17 +919,23 @@ KMETHOD QTransform_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTransform_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTransform *qp = (KQTransform *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTransform*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTransform_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTransform *qp = (KQTransform *)p->rawptr;
-//		KQTransform *qp = static_cast<KQTransform*>(p->rawptr);
+//		KQTransform *qp = (KQTransform *)p->rawptr;
+		KQTransform *qp = static_cast<KQTransform*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

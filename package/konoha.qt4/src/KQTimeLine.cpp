@@ -376,6 +376,8 @@ KMETHOD QTimeLine_toggleDirection(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTimeLine::DummyQTimeLine()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	finished_func = NULL;
 	frame_changed_func = NULL;
@@ -387,6 +389,13 @@ DummyQTimeLine::DummyQTimeLine()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("frame-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("value-changed", NULL));
+}
+DummyQTimeLine::~DummyQTimeLine()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTimeLine::setSelf(knh_RawPtr_t *ptr)
@@ -492,8 +501,9 @@ knh_Object_t** DummyQTimeLine::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTimeLine::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, frame_changed_func);
 	KNH_ADDNNREF(ctx, state_changed_func);
@@ -520,11 +530,17 @@ void DummyQTimeLine::connection(QObject *o)
 
 KQTimeLine::KQTimeLine(int duration, QObject* parent) : QTimeLine(duration, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTimeLine();
 	dummy->connection((QObject*)this);
 }
 
+KQTimeLine::~KQTimeLine()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTimeLine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -569,17 +585,23 @@ KMETHOD QTimeLine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTimeLine_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTimeLine *qp = (KQTimeLine *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTimeLine*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTimeLine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTimeLine *qp = (KQTimeLine *)p->rawptr;
-//		KQTimeLine *qp = static_cast<KQTimeLine*>(p->rawptr);
+//		KQTimeLine *qp = (KQTimeLine *)p->rawptr;
+		KQTimeLine *qp = static_cast<KQTimeLine*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -269,8 +269,6 @@ class QTextFormat;
 class DummyQTextFormat;
 class QRegExp;
 class DummyQRegExp;
-class QWebSettings;
-class DummyQWebSettings;
 class QMutex;
 class DummyQMutex;
 class QIcon;
@@ -939,6 +937,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQReadLocker();
+	virtual ~DummyQReadLocker();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -950,9 +949,11 @@ public:
 class KQReadLocker : public QReadLocker {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQReadLocker *dummy;
 	KQReadLocker(QReadWriteLock* lock);
+	~KQReadLocker();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -969,6 +970,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPen();
+	virtual ~DummyQPen();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -980,9 +982,11 @@ public:
 class KQPen : public QPen {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPen *dummy;
 	KQPen();
+	~KQPen();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -999,6 +1003,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMatrix4x4();
+	virtual ~DummyQMatrix4x4();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1010,9 +1015,11 @@ public:
 class KQMatrix4x4 : public QMatrix4x4 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMatrix4x4 *dummy;
 	KQMatrix4x4();
+	~KQMatrix4x4();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1029,6 +1036,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQByteArray();
+	virtual ~DummyQByteArray();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1040,9 +1048,11 @@ public:
 class KQByteArray : public QByteArray {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQByteArray *dummy;
 	KQByteArray();
+	~KQByteArray();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1059,6 +1069,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebHistory();
+//	virtual ~DummyQWebHistory();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1067,9 +1078,11 @@ public:
 	void connection(QObject *o);
 };
 
-class KQWebHistory : public QWebHistory {
-//	Q_OBJECT;
+class KQWebHistory {
+// Q_OBJECT;
 public:
+	int magic_num;
+	QWebHistory *q_self;
 	knh_RawPtr_t *self;
 	DummyQWebHistory *dummy;
 
@@ -1089,6 +1102,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHostAddress();
+	virtual ~DummyQHostAddress();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1100,9 +1114,11 @@ public:
 class KQHostAddress : public QHostAddress {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHostAddress *dummy;
 	KQHostAddress();
+	~KQHostAddress();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1119,6 +1135,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSizeF();
+	virtual ~DummyQSizeF();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1130,9 +1147,11 @@ public:
 class KQSizeF : public QSizeF {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSizeF *dummy;
 	KQSizeF();
+	~KQSizeF();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1149,6 +1168,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAuthenticator();
+	virtual ~DummyQAuthenticator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1160,9 +1180,11 @@ public:
 class KQAuthenticator : public QAuthenticator {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAuthenticator *dummy;
 	KQAuthenticator();
+	~KQAuthenticator();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1179,6 +1201,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebDatabase();
+	virtual ~DummyQWebDatabase();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1190,9 +1213,11 @@ public:
 class KQWebDatabase : public QWebDatabase {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebDatabase *dummy;
 	KQWebDatabase(const QWebDatabase other);
+	~KQWebDatabase();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1209,6 +1234,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSslCipher();
+	virtual ~DummyQSslCipher();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1220,9 +1246,11 @@ public:
 class KQSslCipher : public QSslCipher {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSslCipher *dummy;
 	KQSslCipher();
+	~KQSslCipher();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1239,6 +1267,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSslKey();
+	virtual ~DummyQSslKey();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1250,9 +1279,11 @@ public:
 class KQSslKey : public QSslKey {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSslKey *dummy;
 	KQSslKey();
+	~KQSslKey();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1269,6 +1300,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSslConfiguration();
+	virtual ~DummyQSslConfiguration();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1280,9 +1312,11 @@ public:
 class KQSslConfiguration : public QSslConfiguration {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSslConfiguration *dummy;
 	KQSslConfiguration();
+	~KQSslConfiguration();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1299,6 +1333,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQKeySequence();
+	virtual ~DummyQKeySequence();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1310,9 +1345,11 @@ public:
 class KQKeySequence : public QKeySequence {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQKeySequence *dummy;
 	KQKeySequence();
+	~KQKeySequence();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1329,6 +1366,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLine();
+	virtual ~DummyQLine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1340,9 +1378,11 @@ public:
 class KQLine : public QLine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLine *dummy;
 	KQLine();
+	~KQLine();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1359,6 +1399,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFontInfo();
+	virtual ~DummyQFontInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1370,9 +1411,11 @@ public:
 class KQFontInfo : public QFontInfo {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFontInfo *dummy;
 	KQFontInfo(const QFont font);
+	~KQFontInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1389,6 +1432,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFontMetricsF();
+	virtual ~DummyQFontMetricsF();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1400,9 +1444,11 @@ public:
 class KQFontMetricsF : public QFontMetricsF {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFontMetricsF *dummy;
 	KQFontMetricsF(const QFont font);
+	~KQFontMetricsF();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1419,6 +1465,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextCodec();
+	virtual ~DummyQTextCodec();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1430,9 +1477,10 @@ public:
 class KQTextCodec : public QTextCodec {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextCodec *dummy;
-
+	~KQTextCodec();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1449,6 +1497,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebElementCollection();
+	virtual ~DummyQWebElementCollection();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1460,9 +1509,11 @@ public:
 class KQWebElementCollection : public QWebElementCollection {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebElementCollection *dummy;
 	KQWebElementCollection();
+	~KQWebElementCollection();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1479,6 +1530,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQColor();
+	virtual ~DummyQColor();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1490,9 +1542,11 @@ public:
 class KQColor : public QColor {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQColor *dummy;
 	KQColor();
+	~KQColor();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1509,6 +1563,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLatin1Char();
+	virtual ~DummyQLatin1Char();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1520,9 +1575,11 @@ public:
 class KQLatin1Char : public QLatin1Char {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLatin1Char *dummy;
 	KQLatin1Char(char c);
+	~KQLatin1Char();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1539,6 +1596,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWhatsThis();
+	virtual ~DummyQWhatsThis();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1550,9 +1608,10 @@ public:
 class KQWhatsThis : public QWhatsThis {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWhatsThis *dummy;
-
+	~KQWhatsThis();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1569,6 +1628,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleHintReturn();
+	virtual ~DummyQStyleHintReturn();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1580,9 +1640,11 @@ public:
 class KQStyleHintReturn : public QStyleHintReturn {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleHintReturn *dummy;
 	KQStyleHintReturn(int version, int type);
+	~KQStyleHintReturn();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1599,6 +1661,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLibraryInfo();
+	virtual ~DummyQLibraryInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1610,9 +1673,10 @@ public:
 class KQLibraryInfo : public QLibraryInfo {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLibraryInfo *dummy;
-
+	~KQLibraryInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1629,6 +1693,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextFragment();
+	virtual ~DummyQTextFragment();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1640,9 +1705,11 @@ public:
 class KQTextFragment : public QTextFragment {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextFragment *dummy;
 	KQTextFragment();
+	~KQTextFragment();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1659,6 +1726,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextTableCell();
+	virtual ~DummyQTextTableCell();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1670,9 +1738,11 @@ public:
 class KQTextTableCell : public QTextTableCell {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextTableCell *dummy;
 	KQTextTableCell();
+	~KQTextTableCell();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1689,6 +1759,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFont();
+	virtual ~DummyQFont();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1700,9 +1771,11 @@ public:
 class KQFont : public QFont {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFont *dummy;
 	KQFont();
+	~KQFont();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1719,6 +1792,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPrinterInfo();
+	virtual ~DummyQPrinterInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1730,9 +1804,11 @@ public:
 class KQPrinterInfo : public QPrinterInfo {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrinterInfo *dummy;
 	KQPrinterInfo();
+	~KQPrinterInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1749,6 +1825,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMetaEnum();
+	virtual ~DummyQMetaEnum();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1760,9 +1837,10 @@ public:
 class KQMetaEnum : public QMetaEnum {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMetaEnum *dummy;
-
+	~KQMetaEnum();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1779,6 +1857,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQByteArrayMatcher();
+	virtual ~DummyQByteArrayMatcher();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1790,9 +1869,11 @@ public:
 class KQByteArrayMatcher : public QByteArrayMatcher {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQByteArrayMatcher *dummy;
 	KQByteArrayMatcher();
+	~KQByteArrayMatcher();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1809,6 +1890,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLocale();
+	virtual ~DummyQLocale();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1820,9 +1902,11 @@ public:
 class KQLocale : public QLocale {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLocale *dummy;
 	KQLocale();
+	~KQLocale();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1839,6 +1923,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTileRules();
+	virtual ~DummyQTileRules();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1850,9 +1935,11 @@ public:
 class KQTileRules : public QTileRules {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTileRules *dummy;
 	KQTileRules(Qt::TileRule horizontalRule, Qt::TileRule verticalRule);
+	~KQTileRules();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1869,6 +1956,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLContext();
+	virtual ~DummyQGLContext();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1880,9 +1968,11 @@ public:
 class KQGLContext : public QGLContext {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLContext *dummy;
 	KQGLContext(const QGLFormat format);
+	~KQGLContext();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1899,6 +1989,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAtomicInt();
+	virtual ~DummyQAtomicInt();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1910,9 +2001,11 @@ public:
 class KQAtomicInt : public QAtomicInt {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAtomicInt *dummy;
 	KQAtomicInt(int value);
+	~KQAtomicInt();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1929,6 +2022,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQEasingCurve();
+	virtual ~DummyQEasingCurve();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1940,9 +2034,11 @@ public:
 class KQEasingCurve : public QEasingCurve {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQEasingCurve *dummy;
 	KQEasingCurve(QEasingCurve::Type type);
+	~KQEasingCurve();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1959,6 +2055,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQColormap();
+	virtual ~DummyQColormap();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -1970,9 +2067,11 @@ public:
 class KQColormap : public QColormap {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQColormap *dummy;
 	KQColormap(const QColormap colormap);
+	~KQColormap();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -1989,6 +2088,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextBoundaryFinder();
+	virtual ~DummyQTextBoundaryFinder();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2000,9 +2100,11 @@ public:
 class KQTextBoundaryFinder : public QTextBoundaryFinder {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextBoundaryFinder *dummy;
 	KQTextBoundaryFinder();
+	~KQTextBoundaryFinder();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2019,6 +2121,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMutexLocker();
+	virtual ~DummyQMutexLocker();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2030,9 +2133,11 @@ public:
 class KQMutexLocker : public QMutexLocker {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMutexLocker *dummy;
 	KQMutexLocker(QMutex* mutex);
+	~KQMutexLocker();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2049,6 +2154,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRegion();
+	virtual ~DummyQRegion();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2060,9 +2166,11 @@ public:
 class KQRegion : public QRegion {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRegion *dummy;
 	KQRegion();
+	~KQRegion();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2079,6 +2187,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQEvent();
+	virtual ~DummyQEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2090,9 +2199,11 @@ public:
 class KQEvent : public QEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQEvent *dummy;
 	KQEvent(QEvent::Type type);
+	~KQEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2109,6 +2220,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPoint();
+	virtual ~DummyQPoint();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2120,9 +2232,11 @@ public:
 class KQPoint : public QPoint {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPoint *dummy;
 	KQPoint();
+	~KQPoint();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2139,6 +2253,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMetaObject();
+	virtual ~DummyQMetaObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2150,9 +2265,10 @@ public:
 class KQMetaObject : public QMetaObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMetaObject *dummy;
-
+	~KQMetaObject();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2169,6 +2285,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextCursor();
+	virtual ~DummyQTextCursor();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2180,9 +2297,11 @@ public:
 class KQTextCursor : public QTextCursor {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextCursor *dummy;
 	KQTextCursor();
+	~KQTextCursor();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2199,6 +2318,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSysInfo();
+	virtual ~DummyQSysInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2210,9 +2330,10 @@ public:
 class KQSysInfo : public QSysInfo {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSysInfo *dummy;
-
+	~KQSysInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2229,6 +2350,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLFormat();
+	virtual ~DummyQGLFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2240,9 +2362,11 @@ public:
 class KQGLFormat : public QGLFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLFormat *dummy;
 	KQGLFormat();
+	~KQGLFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2259,6 +2383,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebHitTestResult();
+	virtual ~DummyQWebHitTestResult();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2270,9 +2395,11 @@ public:
 class KQWebHitTestResult : public QWebHitTestResult {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebHitTestResult *dummy;
 	KQWebHitTestResult();
+	~KQWebHitTestResult();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2289,6 +2416,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSemaphore();
+	virtual ~DummyQSemaphore();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2300,9 +2428,11 @@ public:
 class KQSemaphore : public QSemaphore {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSemaphore *dummy;
 	KQSemaphore(int n);
+	~KQSemaphore();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2319,6 +2449,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHostInfo();
+	virtual ~DummyQHostInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2330,9 +2461,11 @@ public:
 class KQHostInfo : public QHostInfo {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHostInfo *dummy;
 	KQHostInfo(int id);
+	~KQHostInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2349,6 +2482,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkCacheMetaData();
+	virtual ~DummyQNetworkCacheMetaData();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2360,9 +2494,11 @@ public:
 class KQNetworkCacheMetaData : public QNetworkCacheMetaData {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkCacheMetaData *dummy;
 	KQNetworkCacheMetaData();
+	~KQNetworkCacheMetaData();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2379,6 +2515,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStandardItem();
+	virtual ~DummyQStandardItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2390,9 +2527,11 @@ public:
 class KQStandardItem : public QStandardItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStandardItem *dummy;
 	KQStandardItem();
+	~KQStandardItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2409,6 +2548,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDesktopServices();
+	virtual ~DummyQDesktopServices();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2420,9 +2560,10 @@ public:
 class KQDesktopServices : public QDesktopServices {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDesktopServices *dummy;
-
+	~KQDesktopServices();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2439,6 +2580,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPainter();
+	virtual ~DummyQPainter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2450,9 +2592,11 @@ public:
 class KQPainter : public QPainter {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPainter *dummy;
 	KQPainter();
+	~KQPainter();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2469,6 +2613,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQImageWriter();
+	virtual ~DummyQImageWriter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2480,9 +2625,11 @@ public:
 class KQImageWriter : public QImageWriter {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQImageWriter *dummy;
 	KQImageWriter();
+	~KQImageWriter();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2499,6 +2646,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQBitArray();
+	virtual ~DummyQBitArray();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2510,9 +2658,11 @@ public:
 class KQBitArray : public QBitArray {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQBitArray *dummy;
 	KQBitArray();
+	~KQBitArray();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2529,6 +2679,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAbstractFileEngineHandler();
+	virtual ~DummyQAbstractFileEngineHandler();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2540,9 +2691,11 @@ public:
 class KQAbstractFileEngineHandler : public QAbstractFileEngineHandler {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractFileEngineHandler *dummy;
 	KQAbstractFileEngineHandler();
+	~KQAbstractFileEngineHandler();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2559,6 +2712,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextDocumentFragment();
+	virtual ~DummyQTextDocumentFragment();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2570,9 +2724,11 @@ public:
 class KQTextDocumentFragment : public QTextDocumentFragment {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextDocumentFragment *dummy;
 	KQTextDocumentFragment();
+	~KQTextDocumentFragment();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2589,6 +2745,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPainterPath();
+	virtual ~DummyQPainterPath();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2600,9 +2757,11 @@ public:
 class KQPainterPath : public QPainterPath {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPainterPath *dummy;
 	KQPainterPath();
+	~KQPainterPath();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2619,6 +2778,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQUuid();
+	virtual ~DummyQUuid();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2630,9 +2790,11 @@ public:
 class KQUuid : public QUuid {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUuid *dummy;
 	KQUuid();
+	~KQUuid();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2649,6 +2811,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQCursor();
+	virtual ~DummyQCursor();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2660,9 +2823,11 @@ public:
 class KQCursor : public QCursor {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCursor *dummy;
 	KQCursor();
+	~KQCursor();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2679,6 +2844,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkProxy();
+	virtual ~DummyQNetworkProxy();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2690,9 +2856,11 @@ public:
 class KQNetworkProxy : public QNetworkProxy {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkProxy *dummy;
 	KQNetworkProxy();
+	~KQNetworkProxy();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2709,6 +2877,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPaintEngine();
+	virtual ~DummyQPaintEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2720,9 +2889,11 @@ public:
 class KQPaintEngine : public QPaintEngine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPaintEngine *dummy;
 	KQPaintEngine(QPaintEngine::PaintEngineFeatures caps);
+	~KQPaintEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2739,6 +2910,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsLayoutItem();
+	virtual ~DummyQGraphicsLayoutItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2750,9 +2922,11 @@ public:
 class KQGraphicsLayoutItem : public QGraphicsLayoutItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsLayoutItem *dummy;
 	KQGraphicsLayoutItem(QGraphicsLayoutItem* parent, bool isLayout);
+	~KQGraphicsLayoutItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2769,6 +2943,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextBlockUserData();
+	virtual ~DummyQTextBlockUserData();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2780,9 +2955,10 @@ public:
 class KQTextBlockUserData : public QTextBlockUserData {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextBlockUserData *dummy;
-
+	~KQTextBlockUserData();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2802,7 +2978,11 @@ public:
 	knh_Func_t *custom_event_func;
 	knh_Func_t *timer_event_func;
 	knh_Func_t *destroyed_func;
+	knh_RawPtr_t *childEventPtr;
+	knh_RawPtr_t *customEventPtr;
+	knh_RawPtr_t *timerEventPtr;
 	DummyQObject();
+	virtual ~DummyQObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2819,9 +2999,11 @@ public slots:
 class KQObject : public QObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQObject *dummy;
 	KQObject(QObject* parent);
+	~KQObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -2839,6 +3021,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGradient();
+	virtual ~DummyQGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2850,9 +3033,10 @@ public:
 class KQGradient : public QGradient {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGradient *dummy;
-
+	~KQGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2869,6 +3053,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWriteLocker();
+	virtual ~DummyQWriteLocker();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2880,9 +3065,11 @@ public:
 class KQWriteLocker : public QWriteLocker {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWriteLocker *dummy;
 	KQWriteLocker(QReadWriteLock* lock);
+	~KQWriteLocker();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2899,6 +3086,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWaitCondition();
+	virtual ~DummyQWaitCondition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2910,9 +3098,11 @@ public:
 class KQWaitCondition : public QWaitCondition {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWaitCondition *dummy;
 	KQWaitCondition();
+	~KQWaitCondition();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2929,6 +3119,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebSecurityOrigin();
+	virtual ~DummyQWebSecurityOrigin();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2940,9 +3131,11 @@ public:
 class KQWebSecurityOrigin : public QWebSecurityOrigin {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebSecurityOrigin *dummy;
 	KQWebSecurityOrigin(const QWebSecurityOrigin other);
+	~KQWebSecurityOrigin();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2959,6 +3152,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSharedData();
+	virtual ~DummyQSharedData();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -2970,9 +3164,11 @@ public:
 class KQSharedData : public QSharedData {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSharedData *dummy;
 	KQSharedData();
+	~KQSharedData();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -2989,6 +3185,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDate();
+	virtual ~DummyQDate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3000,9 +3197,11 @@ public:
 class KQDate : public QDate {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDate *dummy;
 	KQDate();
+	~KQDate();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3019,6 +3218,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkRequest();
+	virtual ~DummyQNetworkRequest();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3030,9 +3230,11 @@ public:
 class KQNetworkRequest : public QNetworkRequest {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkRequest *dummy;
 	KQNetworkRequest(const QUrl url);
+	~KQNetworkRequest();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3049,6 +3251,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFontMetrics();
+	virtual ~DummyQFontMetrics();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3060,9 +3263,11 @@ public:
 class KQFontMetrics : public QFontMetrics {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFontMetrics *dummy;
 	KQFontMetrics(const QFont font);
+	~KQFontMetrics();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3079,6 +3284,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkAddressEntry();
+	virtual ~DummyQNetworkAddressEntry();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3090,9 +3296,11 @@ public:
 class KQNetworkAddressEntry : public QNetworkAddressEntry {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkAddressEntry *dummy;
 	KQNetworkAddressEntry();
+	~KQNetworkAddressEntry();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3109,6 +3317,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLayoutItem();
+	virtual ~DummyQLayoutItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3120,9 +3329,11 @@ public:
 class KQLayoutItem : public QLayoutItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLayoutItem *dummy;
 	KQLayoutItem(Qt::Alignment alignment);
+	~KQLayoutItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3139,6 +3350,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQToolTip();
+	virtual ~DummyQToolTip();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3150,9 +3362,10 @@ public:
 class KQToolTip : public QToolTip {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQToolTip *dummy;
-
+	~KQToolTip();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3169,6 +3382,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextOption();
+	virtual ~DummyQTextOption();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3180,9 +3394,11 @@ public:
 class KQTextOption : public QTextOption {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextOption *dummy;
 	KQTextOption();
+	~KQTextOption();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3199,6 +3415,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPersistentModelIndex();
+	virtual ~DummyQPersistentModelIndex();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3210,9 +3427,11 @@ public:
 class KQPersistentModelIndex : public QPersistentModelIndex {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPersistentModelIndex *dummy;
 	KQPersistentModelIndex(const QModelIndex index);
+	~KQPersistentModelIndex();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3229,6 +3448,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTransform();
+	virtual ~DummyQTransform();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3240,9 +3460,11 @@ public:
 class KQTransform : public QTransform {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTransform *dummy;
 	KQTransform();
+	~KQTransform();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3259,6 +3481,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkInterface();
+	virtual ~DummyQNetworkInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3270,9 +3493,11 @@ public:
 class KQNetworkInterface : public QNetworkInterface {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkInterface *dummy;
 	KQNetworkInterface();
+	~KQNetworkInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3289,6 +3514,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPixmapCache();
+	virtual ~DummyQPixmapCache();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3300,9 +3526,10 @@ public:
 class KQPixmapCache : public QPixmapCache {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPixmapCache *dummy;
-
+	~KQPixmapCache();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3319,6 +3546,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQProcessEnvironment();
+	virtual ~DummyQProcessEnvironment();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3330,9 +3558,11 @@ public:
 class KQProcessEnvironment : public QProcessEnvironment {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQProcessEnvironment *dummy;
 	KQProcessEnvironment();
+	~KQProcessEnvironment();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3349,6 +3579,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSystemLocale();
+	virtual ~DummyQSystemLocale();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3360,9 +3591,11 @@ public:
 class KQSystemLocale : public QSystemLocale {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSystemLocale *dummy;
 	KQSystemLocale();
+	~KQSystemLocale();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3379,6 +3612,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQModelIndex();
+	virtual ~DummyQModelIndex();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3390,9 +3624,11 @@ public:
 class KQModelIndex : public QModelIndex {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQModelIndex *dummy;
 	KQModelIndex();
+	~KQModelIndex();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3409,6 +3645,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQResource();
+	virtual ~DummyQResource();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3420,9 +3657,11 @@ public:
 class KQResource : public QResource {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQResource *dummy;
 	KQResource(const QString file, const QLocale locale);
+	~KQResource();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3439,6 +3678,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQQuaternion();
+	virtual ~DummyQQuaternion();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3450,9 +3690,11 @@ public:
 class KQQuaternion : public QQuaternion {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQQuaternion *dummy;
 	KQQuaternion();
+	~KQQuaternion();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3469,6 +3711,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTreeWidgetItem();
+	virtual ~DummyQTreeWidgetItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3480,9 +3723,11 @@ public:
 class KQTreeWidgetItem : public QTreeWidgetItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTreeWidgetItem *dummy;
 	KQTreeWidgetItem(int type);
+	~KQTreeWidgetItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3499,6 +3744,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAccessibleBridge();
+	virtual ~DummyQAccessibleBridge();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3510,9 +3756,10 @@ public:
 class KQAccessibleBridge : public QAccessibleBridge {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAccessibleBridge *dummy;
-
+	~KQAccessibleBridge();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3529,6 +3776,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAccessible();
+	virtual ~DummyQAccessible();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3540,9 +3788,10 @@ public:
 class KQAccessible : public QAccessible {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAccessible *dummy;
-
+	~KQAccessible();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3559,6 +3808,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMargins();
+	virtual ~DummyQMargins();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3570,9 +3820,11 @@ public:
 class KQMargins : public QMargins {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMargins *dummy;
 	KQMargins();
+	~KQMargins();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3589,6 +3841,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebHistoryItem();
+	virtual ~DummyQWebHistoryItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3600,9 +3853,11 @@ public:
 class KQWebHistoryItem : public QWebHistoryItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebHistoryItem *dummy;
 	KQWebHistoryItem(const QWebHistoryItem other);
+	~KQWebHistoryItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3619,6 +3874,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPaintEngineState();
+	virtual ~DummyQPaintEngineState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3630,9 +3886,10 @@ public:
 class KQPaintEngineState : public QPaintEngineState {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPaintEngineState *dummy;
-
+	~KQPaintEngineState();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3649,6 +3906,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLBuffer();
+	virtual ~DummyQGLBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3660,9 +3918,11 @@ public:
 class KQGLBuffer : public QGLBuffer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLBuffer *dummy;
 	KQGLBuffer();
+	~KQGLBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3679,6 +3939,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextObjectInterface();
+	virtual ~DummyQTextObjectInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3690,9 +3951,10 @@ public:
 class KQTextObjectInterface : public QTextObjectInterface {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextObjectInterface *dummy;
-
+	~KQTextObjectInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3709,6 +3971,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSslError();
+	virtual ~DummyQSslError();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3720,9 +3983,11 @@ public:
 class KQSslError : public QSslError {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSslError *dummy;
 	KQSslError();
+	~KQSslError();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3739,6 +4004,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQUndoCommand();
+	virtual ~DummyQUndoCommand();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3750,9 +4016,11 @@ public:
 class KQUndoCommand : public QUndoCommand {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUndoCommand *dummy;
 	KQUndoCommand(QUndoCommand* parent);
+	~KQUndoCommand();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3769,6 +4037,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAbstractFileEngine();
+	virtual ~DummyQAbstractFileEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3780,9 +4049,10 @@ public:
 class KQAbstractFileEngine : public QAbstractFileEngine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractFileEngine *dummy;
-
+	~KQAbstractFileEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3799,6 +4069,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSizePolicy();
+	virtual ~DummyQSizePolicy();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3810,9 +4081,11 @@ public:
 class KQSizePolicy : public QSizePolicy {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSizePolicy *dummy;
 	KQSizePolicy();
+	~KQSizePolicy();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3829,6 +4102,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTime();
+	virtual ~DummyQTime();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3840,9 +4114,11 @@ public:
 class KQTime : public QTime {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTime *dummy;
 	KQTime();
+	~KQTime();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3859,6 +4135,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextLength();
+	virtual ~DummyQTextLength();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3870,9 +4147,11 @@ public:
 class KQTextLength : public QTextLength {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextLength *dummy;
 	KQTextLength();
+	~KQTextLength();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3889,6 +4168,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQBasicTimer();
+	virtual ~DummyQBasicTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3900,9 +4180,11 @@ public:
 class KQBasicTimer : public QBasicTimer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQBasicTimer *dummy;
 	KQBasicTimer();
+	~KQBasicTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3919,6 +4201,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkCookie();
+	virtual ~DummyQNetworkCookie();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3930,9 +4213,11 @@ public:
 class KQNetworkCookie : public QNetworkCookie {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkCookie *dummy;
 	KQNetworkCookie(const QByteArray name, const QByteArray value);
+	~KQNetworkCookie();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3949,6 +4234,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkConfiguration();
+	virtual ~DummyQNetworkConfiguration();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3960,9 +4246,11 @@ public:
 class KQNetworkConfiguration : public QNetworkConfiguration {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkConfiguration *dummy;
 	KQNetworkConfiguration();
+	~KQNetworkConfiguration();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -3979,6 +4267,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextLayout();
+	virtual ~DummyQTextLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -3990,9 +4279,11 @@ public:
 class KQTextLayout : public QTextLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextLayout *dummy;
 	KQTextLayout();
+	~KQTextLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4009,6 +4300,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleFactory();
+	virtual ~DummyQStyleFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4020,9 +4312,10 @@ public:
 class KQStyleFactory : public QStyleFactory {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleFactory *dummy;
-
+	~KQStyleFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4039,6 +4332,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSystemSemaphore();
+	virtual ~DummyQSystemSemaphore();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4050,9 +4344,11 @@ public:
 class KQSystemSemaphore : public QSystemSemaphore {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSystemSemaphore *dummy;
 	KQSystemSemaphore(const QString key, int initialValue, QSystemSemaphore::AccessMode mode);
+	~KQSystemSemaphore();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4069,6 +4365,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDir();
+	virtual ~DummyQDir();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4080,9 +4377,11 @@ public:
 class KQDir : public QDir {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDir *dummy;
 	KQDir(const QDir dir);
+	~KQDir();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4099,6 +4398,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQImageReader();
+	virtual ~DummyQImageReader();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4110,9 +4410,11 @@ public:
 class KQImageReader : public QImageReader {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQImageReader *dummy;
 	KQImageReader();
+	~KQImageReader();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4129,6 +4431,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRect();
+	virtual ~DummyQRect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4140,9 +4443,11 @@ public:
 class KQRect : public QRect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRect *dummy;
 	KQRect();
+	~KQRect();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4159,6 +4464,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPaintDevice();
+	virtual ~DummyQPaintDevice();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4170,9 +4476,10 @@ public:
 class KQPaintDevice : public QPaintDevice {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPaintDevice *dummy;
-
+	~KQPaintDevice();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4189,6 +4496,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDebug();
+	virtual ~DummyQDebug();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4200,9 +4508,11 @@ public:
 class KQDebug : public QDebug {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDebug *dummy;
 	KQDebug(QIODevice* device);
+	~KQDebug();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4219,6 +4529,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQItemEditorFactory();
+	virtual ~DummyQItemEditorFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4230,9 +4541,11 @@ public:
 class KQItemEditorFactory : public QItemEditorFactory {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQItemEditorFactory *dummy;
 	KQItemEditorFactory();
+	~KQItemEditorFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4249,6 +4562,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStaticText();
+	virtual ~DummyQStaticText();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4260,9 +4574,11 @@ public:
 class KQStaticText : public QStaticText {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStaticText *dummy;
 	KQStaticText();
+	~KQStaticText();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4279,6 +4595,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQIconEngine();
+	virtual ~DummyQIconEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4290,9 +4607,10 @@ public:
 class KQIconEngine : public QIconEngine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQIconEngine *dummy;
-
+	~KQIconEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4309,6 +4627,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLFramebufferObjectFormat();
+	virtual ~DummyQGLFramebufferObjectFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4320,9 +4639,11 @@ public:
 class KQGLFramebufferObjectFormat : public QGLFramebufferObjectFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLFramebufferObjectFormat *dummy;
 	KQGLFramebufferObjectFormat();
+	~KQGLFramebufferObjectFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4358,7 +4679,27 @@ public:
 	knh_Func_t *scene_event_func;
 	knh_Func_t *wheel_event_func;
 	knh_Func_t *paint_func;
+	knh_RawPtr_t *contextMenuEventPtr;
+	knh_RawPtr_t *dragEnterEventPtr;
+	knh_RawPtr_t *dragLeaveEventPtr;
+	knh_RawPtr_t *dragMoveEventPtr;
+	knh_RawPtr_t *dropEventPtr;
+	knh_RawPtr_t *focusInEventPtr;
+	knh_RawPtr_t *focusOutEventPtr;
+	knh_RawPtr_t *hoverEnterEventPtr;
+	knh_RawPtr_t *hoverLeaveEventPtr;
+	knh_RawPtr_t *hoverMoveEventPtr;
+	knh_RawPtr_t *inputMethodEventPtr;
+	knh_RawPtr_t *keyPressEventPtr;
+	knh_RawPtr_t *keyReleaseEventPtr;
+	knh_RawPtr_t *mouseDoubleClickEventPtr;
+	knh_RawPtr_t *mouseMoveEventPtr;
+	knh_RawPtr_t *mousePressEventPtr;
+	knh_RawPtr_t *mouseReleaseEventPtr;
+	knh_RawPtr_t *sceneEventPtr;
+	knh_RawPtr_t *wheelEventPtr;
 	DummyQGraphicsItem();
+	virtual ~DummyQGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4389,9 +4730,11 @@ public:
 class KQGraphicsItem : public QGraphicsItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsItem *dummy;
 	KQGraphicsItem(QGraphicsItem* parent);
+	~KQGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -4410,6 +4753,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebElement();
+	virtual ~DummyQWebElement();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4421,9 +4765,11 @@ public:
 class KQWebElement : public QWebElement {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebElement *dummy;
 	KQWebElement();
+	~KQWebElement();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4440,6 +4786,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPointF();
+	virtual ~DummyQPointF();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4451,9 +4798,11 @@ public:
 class KQPointF : public QPointF {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPointF *dummy;
 	KQPointF();
+	~KQPointF();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4470,6 +4819,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMetaProperty();
+	virtual ~DummyQMetaProperty();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4481,9 +4831,10 @@ public:
 class KQMetaProperty : public QMetaProperty {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMetaProperty *dummy;
-
+	~KQMetaProperty();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4500,6 +4851,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextItem();
+	virtual ~DummyQTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4511,9 +4863,10 @@ public:
 class KQTextItem : public QTextItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextItem *dummy;
-
+	~KQTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4530,6 +4883,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLatin1String();
+	virtual ~DummyQLatin1String();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4541,9 +4895,11 @@ public:
 class KQLatin1String : public QLatin1String {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLatin1String *dummy;
 	KQLatin1String(const char* str);
+	~KQLatin1String();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4560,6 +4916,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQUrlInfo();
+	virtual ~DummyQUrlInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4571,9 +4928,11 @@ public:
 class KQUrlInfo : public QUrlInfo {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUrlInfo *dummy;
 	KQUrlInfo();
+	~KQUrlInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4590,6 +4949,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkProxyFactory();
+	virtual ~DummyQNetworkProxyFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4601,9 +4961,11 @@ public:
 class KQNetworkProxyFactory : public QNetworkProxyFactory {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkProxyFactory *dummy;
 	KQNetworkProxyFactory();
+	~KQNetworkProxyFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4620,6 +4982,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRunnable();
+	virtual ~DummyQRunnable();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4631,9 +4994,11 @@ public:
 class KQRunnable : public QRunnable {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRunnable *dummy;
 	KQRunnable();
+	~KQRunnable();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4650,6 +5015,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextDocumentWriter();
+	virtual ~DummyQTextDocumentWriter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4661,9 +5027,11 @@ public:
 class KQTextDocumentWriter : public QTextDocumentWriter {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextDocumentWriter *dummy;
 	KQTextDocumentWriter();
+	~KQTextDocumentWriter();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4680,6 +5048,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextBlock();
+	virtual ~DummyQTextBlock();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4691,9 +5060,11 @@ public:
 class KQTextBlock : public QTextBlock {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextBlock *dummy;
 	KQTextBlock(const QTextBlock other);
+	~KQTextBlock();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4710,6 +5081,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQInputContextFactory();
+	virtual ~DummyQInputContextFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4721,9 +5093,10 @@ public:
 class KQInputContextFactory : public QInputContextFactory {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQInputContextFactory *dummy;
-
+	~KQInputContextFactory();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4740,6 +5113,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLColormap();
+	virtual ~DummyQGLColormap();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4751,9 +5125,11 @@ public:
 class KQGLColormap : public QGLColormap {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLColormap *dummy;
 	KQGLColormap();
+	~KQGLColormap();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4770,6 +5146,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPalette();
+	virtual ~DummyQPalette();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4781,9 +5158,11 @@ public:
 class KQPalette : public QPalette {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPalette *dummy;
 	KQPalette();
+	~KQPalette();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4800,6 +5179,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDateTime();
+	virtual ~DummyQDateTime();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4811,9 +5191,11 @@ public:
 class KQDateTime : public QDateTime {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDateTime *dummy;
 	KQDateTime();
+	~KQDateTime();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4830,6 +5212,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQUrl();
+	virtual ~DummyQUrl();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4841,9 +5224,11 @@ public:
 class KQUrl : public QUrl {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUrl *dummy;
 	KQUrl();
+	~KQUrl();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4860,6 +5245,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRectF();
+	virtual ~DummyQRectF();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4871,9 +5257,11 @@ public:
 class KQRectF : public QRectF {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRectF *dummy;
 	KQRectF();
+	~KQRectF();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4890,6 +5278,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGenericArgument();
+	virtual ~DummyQGenericArgument();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4901,9 +5290,11 @@ public:
 class KQGenericArgument : public QGenericArgument {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGenericArgument *dummy;
 	KQGenericArgument(const char* name, const void* data);
+	~KQGenericArgument();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4920,6 +5311,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPainterPathStroker();
+	virtual ~DummyQPainterPathStroker();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4931,9 +5323,11 @@ public:
 class KQPainterPathStroker : public QPainterPathStroker {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPainterPathStroker *dummy;
 	KQPainterPathStroker();
+	~KQPainterPathStroker();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4950,6 +5344,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextFormat();
+	virtual ~DummyQTextFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4961,9 +5356,11 @@ public:
 class KQTextFormat : public QTextFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextFormat *dummy;
 	KQTextFormat();
+	~KQTextFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -4980,6 +5377,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRegExp();
+	virtual ~DummyQRegExp();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -4991,43 +5389,15 @@ public:
 class KQRegExp : public QRegExp {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRegExp *dummy;
 	KQRegExp();
+	~KQRegExp();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
 #endif //QREGEXP
-
-
-
-#ifndef QWEBSETTINGS
-#define QWEBSETTINGS
-class DummyQWebSettings {
-//	Q_OBJECT;
-public:
-	knh_RawPtr_t *self;
-	std::map<std::string, knh_Func_t *> *event_map;
-	std::map<std::string, knh_Func_t *> *slot_map;
-	DummyQWebSettings();
-	void setSelf(knh_RawPtr_t *ptr);
-	bool eventDispatcher(QEvent *event);
-	bool addEvent(knh_Func_t *callback_func, std::string str);
-	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
-	void connection(QObject *o);
-};
-
-class KQWebSettings : public QWebSettings {
-//	Q_OBJECT;
-public:
-	knh_RawPtr_t *self;
-	DummyQWebSettings *dummy;
-
-	void setSelf(knh_RawPtr_t *ptr);
-};
-
-#endif //QWEBSETTINGS
 
 
 
@@ -5040,6 +5410,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMutex();
+	virtual ~DummyQMutex();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5051,9 +5422,11 @@ public:
 class KQMutex : public QMutex {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMutex *dummy;
 	KQMutex(QMutex::RecursionMode mode);
+	~KQMutex();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5070,6 +5443,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQIcon();
+	virtual ~DummyQIcon();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5081,9 +5455,11 @@ public:
 class KQIcon : public QIcon {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQIcon *dummy;
 	KQIcon();
+	~KQIcon();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5100,6 +5476,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQCryptographicHash();
+	virtual ~DummyQCryptographicHash();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5111,9 +5488,11 @@ public:
 class KQCryptographicHash : public QCryptographicHash {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCryptographicHash *dummy;
 	KQCryptographicHash(QCryptographicHash::Algorithm method);
+	~KQCryptographicHash();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5130,6 +5509,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPrintEngine();
+	virtual ~DummyQPrintEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5141,9 +5521,10 @@ public:
 class KQPrintEngine : public QPrintEngine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrintEngine *dummy;
-
+	~KQPrintEngine();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5160,6 +5541,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQReadWriteLock();
+	virtual ~DummyQReadWriteLock();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5171,9 +5553,11 @@ public:
 class KQReadWriteLock : public QReadWriteLock {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQReadWriteLock *dummy;
 	KQReadWriteLock();
+	~KQReadWriteLock();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5190,6 +5574,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkProxyQuery();
+	virtual ~DummyQNetworkProxyQuery();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5201,9 +5586,11 @@ public:
 class KQNetworkProxyQuery : public QNetworkProxyQuery {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkProxyQuery *dummy;
 	KQNetworkProxyQuery();
+	~KQNetworkProxyQuery();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5220,6 +5607,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextDecoder();
+	virtual ~DummyQTextDecoder();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5231,9 +5619,11 @@ public:
 class KQTextDecoder : public QTextDecoder {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextDecoder *dummy;
 	KQTextDecoder(const QTextCodec* codec);
+	~KQTextDecoder();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5250,6 +5640,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLineF();
+	virtual ~DummyQLineF();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5261,9 +5652,11 @@ public:
 class KQLineF : public QLineF {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLineF *dummy;
 	KQLineF();
+	~KQLineF();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5280,6 +5673,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQElapsedTimer();
+	virtual ~DummyQElapsedTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5291,9 +5685,10 @@ public:
 class KQElapsedTimer : public QElapsedTimer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQElapsedTimer *dummy;
-
+	~KQElapsedTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5310,6 +5705,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMetaClassInfo();
+	virtual ~DummyQMetaClassInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5321,9 +5717,10 @@ public:
 class KQMetaClassInfo : public QMetaClassInfo {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMetaClassInfo *dummy;
-
+	~KQMetaClassInfo();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5340,6 +5737,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextLine();
+	virtual ~DummyQTextLine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5351,9 +5749,11 @@ public:
 class KQTextLine : public QTextLine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextLine *dummy;
 	KQTextLine();
+	~KQTextLine();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5370,6 +5770,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQBrush();
+	virtual ~DummyQBrush();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5381,9 +5782,12 @@ public:
 class KQBrush : public QBrush {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQBrush *dummy;
 	KQBrush();
+	KQBrush(const QGradient &g);
+	~KQBrush();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5400,6 +5804,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextInlineObject();
+	virtual ~DummyQTextInlineObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5411,9 +5816,11 @@ public:
 class KQTextInlineObject : public QTextInlineObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextInlineObject *dummy;
 	KQTextInlineObject(int i, QTextEngine* e);
+	~KQTextInlineObject();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5430,6 +5837,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQChar();
+	virtual ~DummyQChar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5441,9 +5849,11 @@ public:
 class KQChar : public QChar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQChar *dummy;
 	KQChar();
+	~KQChar();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5460,6 +5870,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFontDatabase();
+	virtual ~DummyQFontDatabase();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5471,9 +5882,11 @@ public:
 class KQFontDatabase : public QFontDatabase {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFontDatabase *dummy;
 	KQFontDatabase();
+	~KQFontDatabase();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5490,6 +5903,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextEncoder();
+	virtual ~DummyQTextEncoder();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5501,9 +5915,11 @@ public:
 class KQTextEncoder : public QTextEncoder {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextEncoder *dummy;
 	KQTextEncoder(const QTextCodec* codec);
+	~KQTextEncoder();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5520,6 +5936,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOption();
+	virtual ~DummyQStyleOption();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5531,9 +5948,11 @@ public:
 class KQStyleOption : public QStyleOption {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOption *dummy;
 	KQStyleOption(int version, int type);
+	~KQStyleOption();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5550,6 +5969,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMetaMethod();
+	virtual ~DummyQMetaMethod();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5561,9 +5981,10 @@ public:
 class KQMetaMethod : public QMetaMethod {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMetaMethod *dummy;
-
+	~KQMetaMethod();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5580,6 +6001,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSize();
+	virtual ~DummyQSize();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5591,9 +6013,11 @@ public:
 class KQSize : public QSize {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSize *dummy;
 	KQSize();
+	~KQSize();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5610,6 +6034,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSslCertificate();
+	virtual ~DummyQSslCertificate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5621,9 +6046,11 @@ public:
 class KQSslCertificate : public QSslCertificate {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSslCertificate *dummy;
 	KQSslCertificate(QIODevice* device, QSsl::EncodingFormat format);
+	~KQSslCertificate();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5640,6 +6067,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsAnchor();
+	virtual ~DummyQGraphicsAnchor();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5651,9 +6079,10 @@ public:
 class KQGraphicsAnchor : public QGraphicsAnchor {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsAnchor *dummy;
-
+	~KQGraphicsAnchor();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -5671,6 +6100,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAbstractNetworkCache();
+	virtual ~DummyQAbstractNetworkCache();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5682,9 +6112,10 @@ public:
 class KQAbstractNetworkCache : public QAbstractNetworkCache {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractNetworkCache *dummy;
-
+	~KQAbstractNetworkCache();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -5707,6 +6138,7 @@ public:
 	knh_Func_t *online_state_changed_func;
 	knh_Func_t *update_completed_func;
 	DummyQNetworkConfigurationManager();
+	virtual ~DummyQNetworkConfigurationManager();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5724,9 +6156,11 @@ public slots:
 class KQNetworkConfigurationManager : public QNetworkConfigurationManager {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkConfigurationManager *dummy;
 	KQNetworkConfigurationManager(QObject* parent);
+	~KQNetworkConfigurationManager();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -5750,6 +6184,7 @@ public:
 	knh_Func_t *redo_text_changed_func;
 	knh_Func_t *undo_text_changed_func;
 	DummyQUndoStack();
+	virtual ~DummyQUndoStack();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5768,9 +6203,11 @@ public slots:
 class KQUndoStack : public QUndoStack {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUndoStack *dummy;
 	KQUndoStack(QObject* parent);
+	~KQUndoStack();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -5788,6 +6225,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQInputContext();
+	virtual ~DummyQInputContext();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5799,9 +6237,11 @@ public:
 class KQInputContext : public QInputContext {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQInputContext *dummy;
 	KQInputContext(QObject* parent);
+	~KQInputContext();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -5819,6 +6259,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQShortcutEvent();
+	virtual ~DummyQShortcutEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5830,9 +6271,11 @@ public:
 class KQShortcutEvent : public QShortcutEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQShortcutEvent *dummy;
 	KQShortcutEvent(const QKeySequence key, int id, bool ambiguous);
+	~KQShortcutEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5849,6 +6292,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTabBarBase();
+	virtual ~DummyQStyleOptionTabBarBase();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5860,9 +6304,11 @@ public:
 class KQStyleOptionTabBarBase : public QStyleOptionTabBarBase {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTabBarBase *dummy;
 	KQStyleOptionTabBarBase();
+	~KQStyleOptionTabBarBase();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5879,6 +6325,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQIconDragEvent();
+	virtual ~DummyQIconDragEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5890,9 +6337,11 @@ public:
 class KQIconDragEvent : public QIconDragEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQIconDragEvent *dummy;
 	KQIconDragEvent();
+	~KQIconDragEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -5909,6 +6358,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGesture();
+	virtual ~DummyQGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5920,9 +6370,11 @@ public:
 class KQGesture : public QGesture {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGesture *dummy;
 	KQGesture(QObject* parent);
+	~KQGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -5949,6 +6401,7 @@ public:
 	knh_Func_t *title_changed_func;
 	knh_Func_t *url_changed_func;
 	DummyQWebFrame();
+//	virtual ~DummyQWebFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -5970,6 +6423,7 @@ public slots:
 class KQWebFrame {
 // Q_OBJECT;
 public:
+	int magic_num;
 	QWebFrame *q_self;
 	knh_RawPtr_t *self;
 	DummyQWebFrame *dummy;
@@ -5991,6 +6445,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionToolBar();
+	virtual ~DummyQStyleOptionToolBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6002,9 +6457,11 @@ public:
 class KQStyleOptionToolBar : public QStyleOptionToolBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionToolBar *dummy;
 	KQStyleOptionToolBar();
+	~KQStyleOptionToolBar();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6021,6 +6478,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDragLeaveEvent();
+	virtual ~DummyQDragLeaveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6032,9 +6490,11 @@ public:
 class KQDragLeaveEvent : public QDragLeaveEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDragLeaveEvent *dummy;
 	KQDragLeaveEvent();
+	~KQDragLeaveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6062,6 +6522,7 @@ public:
 	knh_Func_t *ssl_errors_func;
 	knh_Func_t *state_changed_func;
 	DummyQHttp();
+	virtual ~DummyQHttp();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6085,9 +6546,11 @@ public slots:
 class KQHttp : public QHttp {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHttp *dummy;
 	KQHttp(QObject* parent);
+	~KQHttp();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6105,6 +6568,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionButton();
+	virtual ~DummyQStyleOptionButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6116,9 +6580,11 @@ public:
 class KQStyleOptionButton : public QStyleOptionButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionButton *dummy;
 	KQStyleOptionButton();
+	~KQStyleOptionButton();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6135,6 +6601,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionFocusRect();
+	virtual ~DummyQStyleOptionFocusRect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6146,9 +6613,11 @@ public:
 class KQStyleOptionFocusRect : public QStyleOptionFocusRect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionFocusRect *dummy;
 	KQStyleOptionFocusRect();
+	~KQStyleOptionFocusRect();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6165,6 +6634,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionHeader();
+	virtual ~DummyQStyleOptionHeader();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6176,9 +6646,11 @@ public:
 class KQStyleOptionHeader : public QStyleOptionHeader {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionHeader *dummy;
 	KQStyleOptionHeader();
+	~KQStyleOptionHeader();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6195,6 +6667,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleHintReturnVariant();
+	virtual ~DummyQStyleHintReturnVariant();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6206,9 +6679,11 @@ public:
 class KQStyleHintReturnVariant : public QStyleHintReturnVariant {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleHintReturnVariant *dummy;
 	KQStyleHintReturnVariant();
+	~KQStyleHintReturnVariant();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6225,6 +6700,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSignalMapper();
+	virtual ~DummyQSignalMapper();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6236,9 +6712,11 @@ public:
 class KQSignalMapper : public QSignalMapper {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSignalMapper *dummy;
 	KQSignalMapper(QObject* parent);
+	~KQSignalMapper();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6256,6 +6734,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQCompleter();
+	virtual ~DummyQCompleter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6267,9 +6746,11 @@ public:
 class KQCompleter : public QCompleter {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCompleter *dummy;
 	KQCompleter(QObject* parent);
+	~KQCompleter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6287,6 +6768,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextFrameFormat();
+	virtual ~DummyQTextFrameFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6298,9 +6780,11 @@ public:
 class KQTextFrameFormat : public QTextFrameFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextFrameFormat *dummy;
 	KQTextFrameFormat();
+	~KQTextFrameFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6317,6 +6801,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQShowEvent();
+	virtual ~DummyQShowEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6328,9 +6813,11 @@ public:
 class KQShowEvent : public QShowEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQShowEvent *dummy;
 	KQShowEvent();
+	~KQShowEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6347,6 +6834,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSound();
+	virtual ~DummyQSound();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6358,9 +6846,11 @@ public:
 class KQSound : public QSound {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSound *dummy;
 	KQSound(const QString filename, QObject* parent);
+	~KQSound();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6378,6 +6868,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQObjectCleanupHandler();
+	virtual ~DummyQObjectCleanupHandler();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6389,9 +6880,11 @@ public:
 class KQObjectCleanupHandler : public QObjectCleanupHandler {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQObjectCleanupHandler *dummy;
 	KQObjectCleanupHandler();
+	~KQObjectCleanupHandler();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6410,6 +6903,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsPixmapItem();
+	virtual ~DummyQGraphicsPixmapItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6421,9 +6915,11 @@ public:
 class KQGraphicsPixmapItem : public QGraphicsPixmapItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsPixmapItem *dummy;
 	KQGraphicsPixmapItem(QGraphicsItem* parent);
+	~KQGraphicsPixmapItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -6442,6 +6938,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFocusEvent();
+	virtual ~DummyQFocusEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6453,9 +6950,11 @@ public:
 class KQFocusEvent : public QFocusEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFocusEvent *dummy;
 	KQFocusEvent(QFocusEvent::Type type, Qt::FocusReason reason);
+	~KQFocusEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6472,6 +6971,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionProgressBar();
+	virtual ~DummyQStyleOptionProgressBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6483,9 +6983,11 @@ public:
 class KQStyleOptionProgressBar : public QStyleOptionProgressBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionProgressBar *dummy;
 	KQStyleOptionProgressBar();
+	~KQStyleOptionProgressBar();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6502,6 +7004,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQActionEvent();
+	virtual ~DummyQActionEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6513,9 +7016,11 @@ public:
 class KQActionEvent : public QActionEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQActionEvent *dummy;
 	KQActionEvent(int type, QAction* action, QAction* before);
+	~KQActionEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6532,6 +7037,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAccessibleEvent();
+	virtual ~DummyQAccessibleEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6543,9 +7049,11 @@ public:
 class KQAccessibleEvent : public QAccessibleEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAccessibleEvent *dummy;
 	KQAccessibleEvent(QAccessibleEvent::Type type, int child);
+	~KQAccessibleEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6563,6 +7071,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *current_index_changed_func;
 	DummyQDataWidgetMapper();
+	virtual ~DummyQDataWidgetMapper();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6576,9 +7085,11 @@ public slots:
 class KQDataWidgetMapper : public QDataWidgetMapper {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDataWidgetMapper *dummy;
 	KQDataWidgetMapper(QObject* parent);
+	~KQDataWidgetMapper();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6596,6 +7107,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPrinter();
+	virtual ~DummyQPrinter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6607,9 +7119,11 @@ public:
 class KQPrinter : public QPrinter {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrinter *dummy;
 	KQPrinter(QPrinter::PrinterMode mode);
+	~KQPrinter();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6626,6 +7140,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStatusTipEvent();
+	virtual ~DummyQStatusTipEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6637,9 +7152,11 @@ public:
 class KQStatusTipEvent : public QStatusTipEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStatusTipEvent *dummy;
 	KQStatusTipEvent(const QString tip);
+	~KQStatusTipEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6656,6 +7173,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTimerEvent();
+	virtual ~DummyQTimerEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6667,9 +7185,11 @@ public:
 class KQTimerEvent : public QTimerEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTimerEvent *dummy;
 	KQTimerEvent(int timerId);
+	~KQTimerEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6686,6 +7206,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGenericReturnArgument();
+	virtual ~DummyQGenericReturnArgument();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6697,9 +7218,11 @@ public:
 class KQGenericReturnArgument : public QGenericReturnArgument {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGenericReturnArgument *dummy;
 	KQGenericReturnArgument(const char* name, void* data);
+	~KQGenericReturnArgument();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6716,6 +7239,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQImage();
+	virtual ~DummyQImage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6727,9 +7251,11 @@ public:
 class KQImage : public QImage {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQImage *dummy;
 	KQImage();
+	~KQImage();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6748,6 +7274,7 @@ public:
 	knh_Func_t *entered_func;
 	knh_Func_t *exited_func;
 	DummyQAbstractState();
+	virtual ~DummyQAbstractState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6762,9 +7289,10 @@ public slots:
 class KQAbstractState : public QAbstractState {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractState *dummy;
-
+	~KQAbstractState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6788,6 +7316,7 @@ public:
 	knh_Func_t *preferred_configuration_changed_func;
 	knh_Func_t *state_changed_func;
 	DummyQNetworkSession();
+	virtual ~DummyQNetworkSession();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6806,9 +7335,11 @@ public slots:
 class KQNetworkSession : public QNetworkSession {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkSession *dummy;
 	KQNetworkSession(const QNetworkConfiguration connectionConfig, QObject* parent);
+	~KQNetworkSession();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6828,6 +7359,7 @@ public:
 	knh_Func_t *hovered_func;
 	knh_Func_t *triggered_func;
 	DummyQActionGroup();
+	virtual ~DummyQActionGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6842,9 +7374,11 @@ public slots:
 class KQActionGroup : public QActionGroup {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQActionGroup *dummy;
 	KQActionGroup(QObject* parent);
+	~KQActionGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -6863,6 +7397,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQAbstractGraphicsShapeItem();
+	virtual ~DummyQAbstractGraphicsShapeItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6874,9 +7409,11 @@ public:
 class KQAbstractGraphicsShapeItem : public QAbstractGraphicsShapeItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractGraphicsShapeItem *dummy;
 	KQAbstractGraphicsShapeItem(QGraphicsItem* parent);
+	~KQAbstractGraphicsShapeItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -6895,6 +7432,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQIconEngineV2();
+	virtual ~DummyQIconEngineV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6906,9 +7444,10 @@ public:
 class KQIconEngineV2 : public QIconEngineV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQIconEngineV2 *dummy;
-
+	~KQIconEngineV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6925,6 +7464,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHideEvent();
+	virtual ~DummyQHideEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6936,9 +7476,11 @@ public:
 class KQHideEvent : public QHideEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHideEvent *dummy;
 	KQHideEvent();
+	~KQHideEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6955,6 +7497,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQResizeEvent();
+	virtual ~DummyQResizeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -6966,9 +7509,11 @@ public:
 class KQResizeEvent : public QResizeEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQResizeEvent *dummy;
 	KQResizeEvent(const QSize size, const QSize oldSize);
+	~KQResizeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -6990,6 +7535,7 @@ public:
 	knh_Func_t *proxy_authentication_required_func;
 	knh_Func_t *ssl_errors_func;
 	DummyQNetworkAccessManager();
+	virtual ~DummyQNetworkAccessManager();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7007,9 +7553,11 @@ public slots:
 class KQNetworkAccessManager : public QNetworkAccessManager {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkAccessManager *dummy;
 	KQNetworkAccessManager(QObject* parent);
+	~KQNetworkAccessManager();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7030,6 +7578,7 @@ public:
 	knh_Func_t *commit_data_func;
 	knh_Func_t *size_hint_changed_func;
 	DummyQAbstractItemDelegate();
+	virtual ~DummyQAbstractItemDelegate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7045,9 +7594,11 @@ public slots:
 class KQAbstractItemDelegate : public QAbstractItemDelegate {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractItemDelegate *dummy;
 	KQAbstractItemDelegate(QObject* parent);
+	~KQAbstractItemDelegate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7065,6 +7616,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMoveEvent();
+	virtual ~DummyQMoveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7076,9 +7628,11 @@ public:
 class KQMoveEvent : public QMoveEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMoveEvent *dummy;
 	KQMoveEvent(const QPoint pos, const QPoint oldPos);
+	~KQMoveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7092,6 +7646,7 @@ class DummyQGraphicsScene : public DummyQObject {
 	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	QList<knh_RawPtr_t *> *added_list;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *context_menu_event_func;
@@ -7113,7 +7668,24 @@ public:
 	knh_Func_t *changed_func;
 	knh_Func_t *scene_rect_changed_func;
 	knh_Func_t *selection_changed_func;
+	knh_RawPtr_t *contextMenuEventPtr;
+	knh_RawPtr_t *dragEnterEventPtr;
+	knh_RawPtr_t *dragLeaveEventPtr;
+	knh_RawPtr_t *dragMoveEventPtr;
+	knh_RawPtr_t *dropEventPtr;
+	knh_RawPtr_t *focusInEventPtr;
+	knh_RawPtr_t *focusOutEventPtr;
+	knh_RawPtr_t *helpEventPtr;
+	knh_RawPtr_t *inputMethodEventPtr;
+	knh_RawPtr_t *keyPressEventPtr;
+	knh_RawPtr_t *keyReleaseEventPtr;
+	knh_RawPtr_t *mouseDoubleClickEventPtr;
+	knh_RawPtr_t *mouseMoveEventPtr;
+	knh_RawPtr_t *mousePressEventPtr;
+	knh_RawPtr_t *mouseReleaseEventPtr;
+	knh_RawPtr_t *wheelEventPtr;
 	DummyQGraphicsScene();
+	virtual ~DummyQGraphicsScene();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7145,9 +7717,11 @@ public slots:
 class KQGraphicsScene : public QGraphicsScene {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsScene *dummy;
 	KQGraphicsScene(QObject* parent);
+	~KQGraphicsScene();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7165,6 +7739,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneEvent();
+	virtual ~DummyQGraphicsSceneEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7176,9 +7751,10 @@ public:
 class KQGraphicsSceneEvent : public QGraphicsSceneEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneEvent *dummy;
-
+	~KQGraphicsSceneEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7195,6 +7771,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionToolBox();
+	virtual ~DummyQStyleOptionToolBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7206,9 +7783,11 @@ public:
 class KQStyleOptionToolBox : public QStyleOptionToolBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionToolBox *dummy;
 	KQStyleOptionToolBox();
+	~KQStyleOptionToolBox();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7227,6 +7806,7 @@ public:
 	knh_Func_t *action_changed_func;
 	knh_Func_t *target_changed_func;
 	DummyQDrag();
+	virtual ~DummyQDrag();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7241,9 +7821,11 @@ public slots:
 class KQDrag : public QDrag {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDrag *dummy;
 	KQDrag(QWidget* dragSource);
+	~KQDrag();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7261,19 +7843,23 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPolygonF();
+	virtual ~DummyQPolygonF();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
 class KQPolygonF : public QPolygonF {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPolygonF *dummy;
 	KQPolygonF();
+	~KQPolygonF();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7291,6 +7877,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *enabled_changed_func;
 	DummyQGraphicsEffect();
+	virtual ~DummyQGraphicsEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7304,9 +7891,11 @@ public slots:
 class KQGraphicsEffect : public QGraphicsEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsEffect *dummy;
 	KQGraphicsEffect(QObject* parent);
+	~KQGraphicsEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7324,6 +7913,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLibrary();
+	virtual ~DummyQLibrary();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7335,9 +7925,11 @@ public:
 class KQLibrary : public QLibrary {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLibrary *dummy;
 	KQLibrary(QObject* parent);
+	~KQLibrary();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7355,6 +7947,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkCookieJar();
+	virtual ~DummyQNetworkCookieJar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7366,9 +7959,11 @@ public:
 class KQNetworkCookieJar : public QNetworkCookieJar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkCookieJar *dummy;
 	KQNetworkCookieJar(QObject* parent);
+	~KQNetworkCookieJar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7390,6 +7985,7 @@ public:
 	knh_Func_t *update_func;
 	knh_Func_t *update_block_func;
 	DummyQAbstractTextDocumentLayout();
+	virtual ~DummyQAbstractTextDocumentLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7406,9 +8002,11 @@ public slots:
 class KQAbstractTextDocumentLayout : public QAbstractTextDocumentLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractTextDocumentLayout *dummy;
 	KQAbstractTextDocumentLayout(QTextDocument* document);
+	~KQAbstractTextDocumentLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7430,6 +8028,7 @@ public:
 	knh_Func_t *read_channel_finished_func;
 	knh_Func_t *ready_read_func;
 	DummyQIODevice();
+	virtual ~DummyQIODevice();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7446,9 +8045,11 @@ public slots:
 class KQIODevice : public QIODevice {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQIODevice *dummy;
 	KQIODevice();
+	~KQIODevice();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7466,6 +8067,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQThreadPool();
+	virtual ~DummyQThreadPool();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7477,9 +8079,11 @@ public:
 class KQThreadPool : public QThreadPool {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQThreadPool *dummy;
 	KQThreadPool(QObject* parent);
+	~KQThreadPool();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7497,6 +8101,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQCloseEvent();
+	virtual ~DummyQCloseEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7508,9 +8113,11 @@ public:
 class KQCloseEvent : public QCloseEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCloseEvent *dummy;
 	KQCloseEvent();
+	~KQCloseEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7527,6 +8134,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStylePainter();
+	virtual ~DummyQStylePainter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7538,9 +8146,11 @@ public:
 class KQStylePainter : public QStylePainter {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStylePainter *dummy;
 	KQStylePainter();
+	~KQStylePainter();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7557,6 +8167,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHelpEvent();
+	virtual ~DummyQHelpEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7568,9 +8179,11 @@ public:
 class KQHelpEvent : public QHelpEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHelpEvent *dummy;
 	KQHelpEvent(QHelpEvent::Type type, const QPoint pos, const QPoint globalPos);
+	~KQHelpEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7587,6 +8200,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLPixelBuffer();
+	virtual ~DummyQGLPixelBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7598,9 +8212,11 @@ public:
 class KQGLPixelBuffer : public QGLPixelBuffer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLPixelBuffer *dummy;
 	KQGLPixelBuffer(const QSize size, const QGLFormat format, QGLWidget* shareWidget);
+	~KQGLPixelBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7617,6 +8233,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyle();
+	virtual ~DummyQStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7628,9 +8245,11 @@ public:
 class KQStyle : public QStyle {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyle *dummy;
 	KQStyle();
+	~KQStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7648,6 +8267,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextObject();
+	virtual ~DummyQTextObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7659,9 +8279,10 @@ public:
 class KQTextObject : public QTextObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextObject *dummy;
-
+	~KQTextObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7679,6 +8300,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextCharFormat();
+	virtual ~DummyQTextCharFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7690,9 +8312,11 @@ public:
 class KQTextCharFormat : public QTextCharFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextCharFormat *dummy;
 	KQTextCharFormat();
+	~KQTextCharFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7709,6 +8333,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGestureEvent();
+	virtual ~DummyQGestureEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7720,9 +8345,11 @@ public:
 class KQGestureEvent : public QGestureEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGestureEvent *dummy;
 	KQGestureEvent(const QList<QGesture*> gestures);
+	~KQGestureEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7739,6 +8366,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLShaderProgram();
+	virtual ~DummyQGLShaderProgram();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7750,9 +8378,11 @@ public:
 class KQGLShaderProgram : public QGLShaderProgram {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLShaderProgram *dummy;
 	KQGLShaderProgram(QObject* parent);
+	~KQGLShaderProgram();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7770,6 +8400,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAccessibleInterface();
+	virtual ~DummyQAccessibleInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7781,9 +8412,10 @@ public:
 class KQAccessibleInterface : public QAccessibleInterface {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAccessibleInterface *dummy;
-
+	~KQAccessibleInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7800,6 +8432,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTab();
+	virtual ~DummyQStyleOptionTab();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7811,9 +8444,11 @@ public:
 class KQStyleOptionTab : public QStyleOptionTab {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTab *dummy;
 	KQStyleOptionTab();
+	~KQStyleOptionTab();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7853,6 +8488,7 @@ public:
 	knh_Func_t *unsupported_content_func;
 	knh_Func_t *window_close_requested_func;
 	DummyQWebPage();
+	virtual ~DummyQWebPage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7888,9 +8524,11 @@ public slots:
 class KQWebPage : public QWebPage {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebPage *dummy;
 	KQWebPage(QObject* parent);
+	~KQWebPage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -7908,6 +8546,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleHintReturnMask();
+	virtual ~DummyQStyleHintReturnMask();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7919,9 +8558,11 @@ public:
 class KQStyleHintReturnMask : public QStyleHintReturnMask {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleHintReturnMask *dummy;
 	KQStyleHintReturnMask();
+	~KQStyleHintReturnMask();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7938,6 +8579,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionDockWidget();
+	virtual ~DummyQStyleOptionDockWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7949,9 +8591,11 @@ public:
 class KQStyleOptionDockWidget : public QStyleOptionDockWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionDockWidget *dummy;
 	KQStyleOptionDockWidget();
+	~KQStyleOptionDockWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -7970,6 +8614,7 @@ public:
 	knh_Func_t *about_to_block_func;
 	knh_Func_t *awake_func;
 	DummyQAbstractEventDispatcher();
+	virtual ~DummyQAbstractEventDispatcher();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -7984,9 +8629,11 @@ public slots:
 class KQAbstractEventDispatcher : public QAbstractEventDispatcher {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractEventDispatcher *dummy;
 	KQAbstractEventDispatcher(QObject* parent);
+	~KQAbstractEventDispatcher();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8004,19 +8651,23 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPolygon();
+	virtual ~DummyQPolygon();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
 	bool signalConnect(knh_Func_t *callback_func, std::string str);
+	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 };
 
 class KQPolygon : public QPolygon {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPolygon *dummy;
 	KQPolygon();
+	~KQPolygon();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8033,6 +8684,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsLayout();
+	virtual ~DummyQGraphicsLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8044,9 +8696,11 @@ public:
 class KQGraphicsLayout : public QGraphicsLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsLayout *dummy;
 	KQGraphicsLayout(QGraphicsLayoutItem* parent);
+	~KQGraphicsLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8063,6 +8717,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionRubberBand();
+	virtual ~DummyQStyleOptionRubberBand();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8074,9 +8729,11 @@ public:
 class KQStyleOptionRubberBand : public QStyleOptionRubberBand {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionRubberBand *dummy;
 	KQStyleOptionRubberBand();
+	~KQStyleOptionRubberBand();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8093,6 +8750,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQEventLoop();
+	virtual ~DummyQEventLoop();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8104,9 +8762,11 @@ public:
 class KQEventLoop : public QEventLoop {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQEventLoop *dummy;
 	KQEventLoop(QObject* parent);
+	~KQEventLoop();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8131,6 +8791,7 @@ public:
 	knh_Func_t *state_changed_func;
 	knh_Func_t *updated_func;
 	DummyQMovie();
+	virtual ~DummyQMovie();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8150,9 +8811,11 @@ public slots:
 class KQMovie : public QMovie {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMovie *dummy;
 	KQMovie(QObject* parent);
+	~KQMovie();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8170,6 +8833,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQChildEvent();
+	virtual ~DummyQChildEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8181,9 +8845,11 @@ public:
 class KQChildEvent : public QChildEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQChildEvent *dummy;
 	KQChildEvent(QChildEvent::Type type, QObject* child);
+	~KQChildEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8200,6 +8866,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMimeData();
+	virtual ~DummyQMimeData();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8211,9 +8878,11 @@ public:
 class KQMimeData : public QMimeData {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMimeData *dummy;
 	KQMimeData();
+	~KQMimeData();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8235,6 +8904,7 @@ public:
 	knh_Func_t *state_changed_func;
 	knh_Func_t *value_changed_func;
 	DummyQTimeLine();
+	virtual ~DummyQTimeLine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8251,9 +8921,11 @@ public slots:
 class KQTimeLine : public QTimeLine {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTimeLine *dummy;
 	KQTimeLine(int duration, QObject* parent);
+	~KQTimeLine();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8275,6 +8947,7 @@ public:
 	knh_Func_t *toggled_func;
 	knh_Func_t *triggered_func;
 	DummyQAction();
+	virtual ~DummyQAction();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8291,9 +8964,11 @@ public slots:
 class KQAction : public QAction {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAction *dummy;
 	KQAction(QObject* parent);
+	~KQAction();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8312,6 +8987,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsLineItem();
+	virtual ~DummyQGraphicsLineItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8323,9 +8999,11 @@ public:
 class KQGraphicsLineItem : public QGraphicsLineItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsLineItem *dummy;
 	KQGraphicsLineItem(QGraphicsItem* parent);
+	~KQGraphicsLineItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -8345,6 +9023,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *triggered_func;
 	DummyQAbstractTransition();
+	virtual ~DummyQAbstractTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8358,9 +9037,11 @@ public slots:
 class KQAbstractTransition : public QAbstractTransition {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractTransition *dummy;
 	KQAbstractTransition(QState* sourceState);
+	~KQAbstractTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8375,10 +9056,12 @@ class DummyQGraphicsItemGroup : public DummyQGraphicsItem {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	QList<knh_RawPtr_t *> *added_list;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsItemGroup();
+	virtual ~DummyQGraphicsItemGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8390,9 +9073,11 @@ public:
 class KQGraphicsItemGroup : public QGraphicsItemGroup {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsItemGroup *dummy;
 	KQGraphicsItemGroup(QGraphicsItem* parent);
+	~KQGraphicsItemGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -8411,6 +9096,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsTransform();
+	virtual ~DummyQGraphicsTransform();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8422,9 +9108,11 @@ public:
 class KQGraphicsTransform : public QGraphicsTransform {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsTransform *dummy;
 	KQGraphicsTransform(QObject* parent);
+	~KQGraphicsTransform();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8460,6 +9148,7 @@ public:
 	knh_Func_t *rows_moved_func;
 	knh_Func_t *rows_removed_func;
 	DummyQAbstractItemModel();
+	virtual ~DummyQAbstractItemModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8490,9 +9179,11 @@ public slots:
 class KQAbstractItemModel : public QAbstractItemModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractItemModel *dummy;
 	KQAbstractItemModel(QObject* parent);
+	~KQAbstractItemModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8510,6 +9201,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPaintEvent();
+	virtual ~DummyQPaintEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8521,9 +9213,11 @@ public:
 class KQPaintEvent : public QPaintEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPaintEvent *dummy;
 	KQPaintEvent(const QRegion paintRegion);
+	~KQPaintEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8540,6 +9234,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHoverEvent();
+	virtual ~DummyQHoverEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8551,9 +9246,11 @@ public:
 class KQHoverEvent : public QHoverEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHoverEvent *dummy;
 	KQHoverEvent(QHoverEvent::Type type, const QPoint pos, const QPoint oldPos);
+	~KQHoverEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8570,6 +9267,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQValidator();
+	virtual ~DummyQValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8581,9 +9279,11 @@ public:
 class KQValidator : public QValidator {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQValidator *dummy;
 	KQValidator(QObject* parent);
+	~KQValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8603,6 +9303,7 @@ public:
 	knh_Func_t *activated_func;
 	knh_Func_t *message_clicked_func;
 	DummyQSystemTrayIcon();
+	virtual ~DummyQSystemTrayIcon();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8617,9 +9318,11 @@ public slots:
 class KQSystemTrayIcon : public QSystemTrayIcon {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSystemTrayIcon *dummy;
 	KQSystemTrayIcon(QObject* parent);
+	~KQSystemTrayIcon();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8637,6 +9340,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQInputMethodEvent();
+	virtual ~DummyQInputMethodEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8648,9 +9352,11 @@ public:
 class KQInputMethodEvent : public QInputMethodEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQInputMethodEvent *dummy;
 	KQInputMethodEvent();
+	~KQInputMethodEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8667,6 +9373,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWindowStateChangeEvent();
+	virtual ~DummyQWindowStateChangeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8678,9 +9385,10 @@ public:
 class KQWindowStateChangeEvent : public QWindowStateChangeEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWindowStateChangeEvent *dummy;
-
+	~KQWindowStateChangeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8697,6 +9405,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQConicalGradient();
+	virtual ~DummyQConicalGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8708,9 +9417,11 @@ public:
 class KQConicalGradient : public QConicalGradient {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQConicalGradient *dummy;
 	KQConicalGradient();
+	~KQConicalGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8727,6 +9438,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionMenuItem();
+	virtual ~DummyQStyleOptionMenuItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8738,9 +9450,11 @@ public:
 class KQStyleOptionMenuItem : public QStyleOptionMenuItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionMenuItem *dummy;
 	KQStyleOptionMenuItem();
+	~KQStyleOptionMenuItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8757,6 +9471,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionComplex();
+	virtual ~DummyQStyleOptionComplex();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8768,9 +9483,11 @@ public:
 class KQStyleOptionComplex : public QStyleOptionComplex {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionComplex *dummy;
 	KQStyleOptionComplex(int version, int type);
+	~KQStyleOptionComplex();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -8787,6 +9504,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLayout();
+	virtual ~DummyQLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8798,9 +9516,11 @@ public:
 class KQLayout : public QLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLayout *dummy;
 	KQLayout(QWidget* parent);
+	~KQLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8828,6 +9548,7 @@ public:
 	knh_Func_t *z_changed_func;
 	knh_Func_t *paint_func;
 	DummyQGraphicsObject();
+	virtual ~DummyQGraphicsObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8849,9 +9570,11 @@ public slots:
 class KQGraphicsObject : public QGraphicsObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsObject *dummy;
 	KQGraphicsObject(QGraphicsItem* parent);
+	~KQGraphicsObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -8877,6 +9600,7 @@ public:
 	knh_Func_t *redo_text_changed_func;
 	knh_Func_t *undo_text_changed_func;
 	DummyQUndoGroup();
+	virtual ~DummyQUndoGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8896,9 +9620,11 @@ public slots:
 class KQUndoGroup : public QUndoGroup {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUndoGroup *dummy;
 	KQUndoGroup(QObject* parent);
+	~KQUndoGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -8942,7 +9668,34 @@ public:
 	knh_Func_t *tablet_event_func;
 	knh_Func_t *wheel_event_func;
 	knh_Func_t *custom_context_menu_requested_func;
+	knh_RawPtr_t *actionEventPtr;
+	knh_RawPtr_t *changeEventPtr;
+	knh_RawPtr_t *closeEventPtr;
+	knh_RawPtr_t *contextMenuEventPtr;
+	knh_RawPtr_t *dragEnterEventPtr;
+	knh_RawPtr_t *dragLeaveEventPtr;
+	knh_RawPtr_t *dragMoveEventPtr;
+	knh_RawPtr_t *dropEventPtr;
+	knh_RawPtr_t *enterEventPtr;
+	knh_RawPtr_t *focusInEventPtr;
+	knh_RawPtr_t *focusOutEventPtr;
+	knh_RawPtr_t *hideEventPtr;
+	knh_RawPtr_t *inputMethodEventPtr;
+	knh_RawPtr_t *keyPressEventPtr;
+	knh_RawPtr_t *keyReleaseEventPtr;
+	knh_RawPtr_t *leaveEventPtr;
+	knh_RawPtr_t *mouseDoubleClickEventPtr;
+	knh_RawPtr_t *mouseMoveEventPtr;
+	knh_RawPtr_t *mousePressEventPtr;
+	knh_RawPtr_t *mouseReleaseEventPtr;
+	knh_RawPtr_t *moveEventPtr;
+	knh_RawPtr_t *paintEventPtr;
+	knh_RawPtr_t *resizeEventPtr;
+	knh_RawPtr_t *showEventPtr;
+	knh_RawPtr_t *tabletEventPtr;
+	knh_RawPtr_t *wheelEventPtr;
 	DummyQWidget();
+	virtual ~DummyQWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -8982,9 +9735,11 @@ public slots:
 class KQWidget : public QWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWidget *dummy;
 	KQWidget(QWidget* parent, Qt::WindowFlags f);
+	~KQWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9002,6 +9757,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPixmap();
+	virtual ~DummyQPixmap();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9013,9 +9769,11 @@ public:
 class KQPixmap : public QPixmap {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPixmap *dummy;
 	KQPixmap();
+	~KQPixmap();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9033,6 +9791,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *new_connection_func;
 	DummyQLocalServer();
+	virtual ~DummyQLocalServer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9046,9 +9805,11 @@ public slots:
 class KQLocalServer : public QLocalServer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLocalServer *dummy;
 	KQLocalServer(QObject* parent);
+	~KQLocalServer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9066,6 +9827,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWidgetItem();
+	virtual ~DummyQWidgetItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9077,9 +9839,11 @@ public:
 class KQWidgetItem : public QWidgetItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWidgetItem *dummy;
 	KQWidgetItem(QWidget* widget);
+	~KQWidgetItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9096,6 +9860,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionGraphicsItem();
+	virtual ~DummyQStyleOptionGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9107,9 +9872,11 @@ public:
 class KQStyleOptionGraphicsItem : public QStyleOptionGraphicsItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionGraphicsItem *dummy;
 	KQStyleOptionGraphicsItem();
+	~KQStyleOptionGraphicsItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9126,6 +9893,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionViewItem();
+	virtual ~DummyQStyleOptionViewItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9137,9 +9905,11 @@ public:
 class KQStyleOptionViewItem : public QStyleOptionViewItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionViewItem *dummy;
 	KQStyleOptionViewItem();
+	~KQStyleOptionViewItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9156,6 +9926,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWhatsThisClickedEvent();
+	virtual ~DummyQWhatsThisClickedEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9167,9 +9938,11 @@ public:
 class KQWhatsThisClickedEvent : public QWhatsThisClickedEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWhatsThisClickedEvent *dummy;
 	KQWhatsThisClickedEvent(const QString href);
+	~KQWhatsThisClickedEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9186,6 +9959,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPicture();
+	virtual ~DummyQPicture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9197,9 +9971,11 @@ public:
 class KQPicture : public QPicture {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPicture *dummy;
 	KQPicture(int formatVersion);
+	~KQPicture();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9216,6 +9992,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQButtonGroup();
+	virtual ~DummyQButtonGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9227,9 +10004,11 @@ public:
 class KQButtonGroup : public QButtonGroup {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQButtonGroup *dummy;
 	KQButtonGroup(QObject* parent);
+	~KQButtonGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9255,6 +10034,7 @@ public:
 	knh_Func_t *ready_read_func;
 	knh_Func_t *state_changed_func;
 	DummyQFtp();
+	virtual ~DummyQFtp();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9275,9 +10055,11 @@ public slots:
 class KQFtp : public QFtp {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFtp *dummy;
 	KQFtp(QObject* parent);
+	~KQFtp();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9295,6 +10077,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLShader();
+	virtual ~DummyQGLShader();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9306,9 +10089,11 @@ public:
 class KQGLShader : public QGLShader {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLShader *dummy;
 	KQGLShader(QGLShader::ShaderType type, QObject* parent);
+	~KQGLShader();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9327,6 +10112,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *timeout_func;
 	DummyQTimer();
+	virtual ~DummyQTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9340,9 +10126,11 @@ public slots:
 class KQTimer : public QTimer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTimer *dummy;
 	KQTimer(QObject* parent);
+	~KQTimer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9360,6 +10148,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRadialGradient();
+	virtual ~DummyQRadialGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9371,9 +10160,11 @@ public:
 class KQRadialGradient : public QRadialGradient {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRadialGradient *dummy;
 	KQRadialGradient();
+	~KQRadialGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9391,6 +10182,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *activated_func;
 	DummyQSocketNotifier();
+	virtual ~DummyQSocketNotifier();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9404,9 +10196,11 @@ public slots:
 class KQSocketNotifier : public QSocketNotifier {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSocketNotifier *dummy;
 	KQSocketNotifier(int socket, QSocketNotifier::Type type, QObject* parent);
+	~KQSocketNotifier();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9424,6 +10218,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQLinearGradient();
+	virtual ~DummyQLinearGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9435,9 +10230,11 @@ public:
 class KQLinearGradient : public QLinearGradient {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLinearGradient *dummy;
 	KQLinearGradient();
+	~KQLinearGradient();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9454,6 +10251,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDynamicPropertyChangeEvent();
+	virtual ~DummyQDynamicPropertyChangeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9465,9 +10263,11 @@ public:
 class KQDynamicPropertyChangeEvent : public QDynamicPropertyChangeEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDynamicPropertyChangeEvent *dummy;
 	KQDynamicPropertyChangeEvent(const QByteArray name);
+	~KQDynamicPropertyChangeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9484,6 +10284,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQInputEvent();
+	virtual ~DummyQInputEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9495,9 +10296,10 @@ public:
 class KQInputEvent : public QInputEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQInputEvent *dummy;
-
+	~KQInputEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9515,6 +10317,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *new_connection_func;
 	DummyQTcpServer();
+	virtual ~DummyQTcpServer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9528,9 +10331,11 @@ public slots:
 class KQTcpServer : public QTcpServer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTcpServer *dummy;
 	KQTcpServer(QObject* parent);
+	~KQTcpServer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9551,6 +10356,7 @@ public:
 	knh_Func_t *started_func;
 	knh_Func_t *terminated_func;
 	DummyQThread();
+	virtual ~DummyQThread();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9566,9 +10372,11 @@ public slots:
 class KQThread : public QThread {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQThread *dummy;
 	KQThread(QObject* parent);
+	~KQThread();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9586,6 +10394,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebHistoryInterface();
+	virtual ~DummyQWebHistoryInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9597,9 +10406,11 @@ public:
 class KQWebHistoryInterface : public QWebHistoryInterface {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebHistoryInterface *dummy;
 	KQWebHistoryInterface(QObject* parent);
+	~KQWebHistoryInterface();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9618,6 +10429,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *about_to_quit_func;
 	DummyQCoreApplication();
+	virtual ~DummyQCoreApplication();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9631,9 +10443,11 @@ public slots:
 class KQCoreApplication : public QCoreApplication {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCoreApplication *dummy;
 	KQCoreApplication(int argc, char** argv);
+	~KQCoreApplication();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9651,6 +10465,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSpacerItem();
+	virtual ~DummyQSpacerItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9662,9 +10477,11 @@ public:
 class KQSpacerItem : public QSpacerItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSpacerItem *dummy;
 	KQSpacerItem(int w, int h, QSizePolicy::Policy hPolicy, QSizePolicy::Policy vPolicy);
+	~KQSpacerItem();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9681,6 +10498,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLFramebufferObject();
+	virtual ~DummyQGLFramebufferObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9692,9 +10510,11 @@ public:
 class KQGLFramebufferObject : public QGLFramebufferObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLFramebufferObject *dummy;
 	KQGLFramebufferObject(const QSize size, GLenum target);
+	~KQGLFramebufferObject();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9711,6 +10531,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextBlockFormat();
+	virtual ~DummyQTextBlockFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9722,9 +10543,11 @@ public:
 class KQTextBlockFormat : public QTextBlockFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextBlockFormat *dummy;
 	KQTextBlockFormat();
+	~KQTextBlockFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9741,6 +10564,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTranslator();
+	virtual ~DummyQTranslator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9752,9 +10576,11 @@ public:
 class KQTranslator : public QTranslator {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTranslator *dummy;
 	KQTranslator(QObject* parent);
+	~KQTranslator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9772,6 +10598,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSharedMemory();
+	virtual ~DummyQSharedMemory();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9783,9 +10610,11 @@ public:
 class KQSharedMemory : public QSharedMemory {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSharedMemory *dummy;
 	KQSharedMemory(const QString key, QObject* parent);
+	~KQSharedMemory();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9803,6 +10632,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextListFormat();
+	virtual ~DummyQTextListFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9814,9 +10644,11 @@ public:
 class KQTextListFormat : public QTextListFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextListFormat *dummy;
 	KQTextListFormat();
+	~KQTextListFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9835,6 +10667,7 @@ public:
 	knh_Func_t *activated_func;
 	knh_Func_t *activated_ambiguously_func;
 	DummyQShortcut();
+	virtual ~DummyQShortcut();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9849,9 +10682,11 @@ public slots:
 class KQShortcut : public QShortcut {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQShortcut *dummy;
 	KQShortcut(QWidget* parent);
+	~KQShortcut();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -9869,6 +10704,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDropEvent();
+	virtual ~DummyQDropEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9880,9 +10716,11 @@ public:
 class KQDropEvent : public QDropEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDropEvent *dummy;
 	KQDropEvent(const QPoint pos, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QDropEvent::Type type);
+	~KQDropEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9899,6 +10737,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionFrame();
+	virtual ~DummyQStyleOptionFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9910,9 +10749,11 @@ public:
 class KQStyleOptionFrame : public QStyleOptionFrame {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionFrame *dummy;
 	KQStyleOptionFrame();
+	~KQStyleOptionFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9929,6 +10770,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTabWidgetFrame();
+	virtual ~DummyQStyleOptionTabWidgetFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9940,9 +10782,11 @@ public:
 class KQStyleOptionTabWidgetFrame : public QStyleOptionTabWidgetFrame {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTabWidgetFrame *dummy;
 	KQStyleOptionTabWidgetFrame();
+	~KQStyleOptionTabWidgetFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -9968,6 +10812,7 @@ public:
 	knh_Func_t *undo_available_func;
 	knh_Func_t *undo_command_added_func;
 	DummyQTextDocument();
+	virtual ~DummyQTextDocument();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -9989,9 +10834,11 @@ public slots:
 class KQTextDocument : public QTextDocument {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextDocument *dummy;
 	KQTextDocument(QObject* parent);
+	~KQTextDocument();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10009,6 +10856,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionComboBox();
+	virtual ~DummyQStyleOptionComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10020,9 +10868,11 @@ public:
 class KQStyleOptionComboBox : public QStyleOptionComboBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionComboBox *dummy;
 	KQStyleOptionComboBox();
+	~KQStyleOptionComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10039,6 +10889,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionToolBoxV2();
+	virtual ~DummyQStyleOptionToolBoxV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10050,9 +10901,11 @@ public:
 class KQStyleOptionToolBoxV2 : public QStyleOptionToolBoxV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionToolBoxV2 *dummy;
 	KQStyleOptionToolBoxV2();
+	~KQStyleOptionToolBoxV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10070,6 +10923,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *item_changed_func;
 	DummyQStandardItemModel();
+	virtual ~DummyQStandardItemModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10083,9 +10937,11 @@ public slots:
 class KQStandardItemModel : public QStandardItemModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStandardItemModel *dummy;
 	KQStandardItemModel(QObject* parent);
+	~KQStandardItemModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10103,6 +10959,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneHelpEvent();
+	virtual ~DummyQGraphicsSceneHelpEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10114,9 +10971,10 @@ public:
 class KQGraphicsSceneHelpEvent : public QGraphicsSceneHelpEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneHelpEvent *dummy;
-
+	~KQGraphicsSceneHelpEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10133,6 +10991,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQBoxLayout();
+	virtual ~DummyQBoxLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10144,9 +11003,11 @@ public:
 class KQBoxLayout : public QBoxLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQBoxLayout *dummy;
 	KQBoxLayout(QBoxLayout::Direction dir, QWidget* parent);
+	~KQBoxLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10166,6 +11027,7 @@ public:
 	knh_Func_t *paint_requested_func;
 	knh_Func_t *preview_changed_func;
 	DummyQPrintPreviewWidget();
+	virtual ~DummyQPrintPreviewWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10180,9 +11042,11 @@ public slots:
 class KQPrintPreviewWidget : public QPrintPreviewWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrintPreviewWidget *dummy;
 	KQPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags);
+	~KQPrintPreviewWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10200,6 +11064,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTapAndHoldGesture();
+	virtual ~DummyQTapAndHoldGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10211,9 +11076,10 @@ public:
 class KQTapAndHoldGesture : public QTapAndHoldGesture {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTapAndHoldGesture *dummy;
-
+	~KQTapAndHoldGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10234,6 +11100,7 @@ public:
 	knh_Func_t *screen_count_changed_func;
 	knh_Func_t *work_area_resized_func;
 	DummyQDesktopWidget();
+	virtual ~DummyQDesktopWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10249,9 +11116,10 @@ public slots:
 class KQDesktopWidget : public QDesktopWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDesktopWidget *dummy;
-
+	~KQDesktopWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10275,6 +11143,7 @@ public:
 	knh_Func_t *text_changed_func;
 	knh_Func_t *text_edited_func;
 	DummyQLineEdit();
+	virtual ~DummyQLineEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10293,9 +11162,11 @@ public slots:
 class KQLineEdit : public QLineEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLineEdit *dummy;
 	KQLineEdit(QWidget* parent);
+	~KQLineEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10313,6 +11184,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsAnchorLayout();
+	virtual ~DummyQGraphicsAnchorLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10324,9 +11196,11 @@ public:
 class KQGraphicsAnchorLayout : public QGraphicsAnchorLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsAnchorLayout *dummy;
 	KQGraphicsAnchorLayout(QGraphicsLayoutItem* parent);
+	~KQGraphicsAnchorLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10343,6 +11217,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDoubleValidator();
+	virtual ~DummyQDoubleValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10354,9 +11229,11 @@ public:
 class KQDoubleValidator : public QDoubleValidator {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDoubleValidator *dummy;
 	KQDoubleValidator(QObject* parent);
+	~KQDoubleValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10374,6 +11251,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDirModel();
+	virtual ~DummyQDirModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10385,9 +11263,11 @@ public:
 class KQDirModel : public QDirModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDirModel *dummy;
 	KQDirModel(QObject* parent);
+	~KQDirModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10405,6 +11285,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneDragDropEvent();
+	virtual ~DummyQGraphicsSceneDragDropEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10416,9 +11297,10 @@ public:
 class KQGraphicsSceneDragDropEvent : public QGraphicsSceneDragDropEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneDragDropEvent *dummy;
-
+	~KQGraphicsSceneDragDropEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10435,6 +11317,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTouchEvent();
+	virtual ~DummyQTouchEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10446,9 +11329,11 @@ public:
 class KQTouchEvent : public QTouchEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTouchEvent *dummy;
 	KQTouchEvent(QEvent::Type eventType, QTouchEvent::DeviceType deviceType, Qt::KeyboardModifiers modifiers, Qt::TouchPointStates touchPointStates, const QList<QTouchEvent::TouchPoint> touchPoints);
+	~KQTouchEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10467,6 +11352,7 @@ public:
 	knh_Func_t *color_changed_func;
 	knh_Func_t *strength_changed_func;
 	DummyQGraphicsColorizeEffect();
+	virtual ~DummyQGraphicsColorizeEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10481,9 +11367,11 @@ public slots:
 class KQGraphicsColorizeEffect : public QGraphicsColorizeEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsColorizeEffect *dummy;
 	KQGraphicsColorizeEffect(QObject* parent);
+	~KQGraphicsColorizeEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10505,6 +11393,7 @@ public:
 	knh_Func_t *hovered_func;
 	knh_Func_t *triggered_func;
 	DummyQMenu();
+	virtual ~DummyQMenu();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10521,9 +11410,11 @@ public slots:
 class KQMenu : public QMenu {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMenu *dummy;
 	KQMenu(QWidget* parent);
+	~KQMenu();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10541,6 +11432,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFrame();
+	virtual ~DummyQFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10552,9 +11444,11 @@ public:
 class KQFrame : public QFrame {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFrame *dummy;
 	KQFrame(QWidget* parent, Qt::WindowFlags f);
+	~KQFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10572,6 +11466,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSignalTransition();
+	virtual ~DummyQSignalTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10583,9 +11478,11 @@ public:
 class KQSignalTransition : public QSignalTransition {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSignalTransition *dummy;
 	KQSignalTransition(QState* sourceState);
+	~KQSignalTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10603,6 +11500,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTabBarBaseV2();
+	virtual ~DummyQStyleOptionTabBarBaseV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10614,9 +11512,11 @@ public:
 class KQStyleOptionTabBarBaseV2 : public QStyleOptionTabBarBaseV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTabBarBaseV2 *dummy;
 	KQStyleOptionTabBarBaseV2();
+	~KQStyleOptionTabBarBaseV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10642,6 +11542,7 @@ public:
 	knh_Func_t *title_changed_func;
 	knh_Func_t *url_changed_func;
 	DummyQWebView();
+	virtual ~DummyQWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10663,9 +11564,11 @@ public slots:
 class KQWebView : public QWebView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebView *dummy;
 	KQWebView(QWidget* parent);
+	~KQWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10683,6 +11586,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRubberBand();
+	virtual ~DummyQRubberBand();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10694,9 +11598,11 @@ public:
 class KQRubberBand : public QRubberBand {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRubberBand *dummy;
 	KQRubberBand(QRubberBand::Shape s, QWidget* p);
+	~KQRubberBand();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10715,6 +11621,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsRectItem();
+	virtual ~DummyQGraphicsRectItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10726,9 +11633,11 @@ public:
 class KQGraphicsRectItem : public QGraphicsRectItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsRectItem *dummy;
 	KQGraphicsRectItem(QGraphicsItem* parent);
+	~KQGraphicsRectItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -10749,6 +11658,7 @@ public:
 	knh_Func_t *finished_func;
 	knh_Func_t *properties_assigned_func;
 	DummyQState();
+	virtual ~DummyQState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10763,9 +11673,11 @@ public slots:
 class KQState : public QState {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQState *dummy;
 	KQState(QState* parent);
+	~KQState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10785,6 +11697,7 @@ public:
 	knh_Func_t *icon_size_changed_func;
 	knh_Func_t *tool_button_style_changed_func;
 	DummyQMainWindow();
+	virtual ~DummyQMainWindow();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10799,9 +11712,11 @@ public slots:
 class KQMainWindow : public QMainWindow {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMainWindow *dummy;
 	KQMainWindow(QWidget* parent, Qt::WindowFlags flags);
+	~KQMainWindow();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10819,6 +11734,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAbstractListModel();
+	virtual ~DummyQAbstractListModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10830,9 +11746,11 @@ public:
 class KQAbstractListModel : public QAbstractListModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractListModel *dummy;
 	KQAbstractListModel(QObject* parent);
+	~KQAbstractListModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10850,6 +11768,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextTableCellFormat();
+	virtual ~DummyQTextTableCellFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10861,9 +11780,11 @@ public:
 class KQTextTableCellFormat : public QTextTableCellFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextTableCellFormat *dummy;
 	KQTextTableCellFormat();
+	~KQTextTableCellFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10882,6 +11803,7 @@ public:
 	knh_Func_t *opacity_changed_func;
 	knh_Func_t *opacity_mask_changed_func;
 	DummyQGraphicsOpacityEffect();
+	virtual ~DummyQGraphicsOpacityEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10896,9 +11818,11 @@ public slots:
 class KQGraphicsOpacityEffect : public QGraphicsOpacityEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsOpacityEffect *dummy;
 	KQGraphicsOpacityEffect(QObject* parent);
+	~KQGraphicsOpacityEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10916,6 +11840,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextFrame();
+	virtual ~DummyQTextFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10927,9 +11852,11 @@ public:
 class KQTextFrame : public QTextFrame {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextFrame *dummy;
 	KQTextFrame(QTextDocument* document);
+	~KQTextFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -10947,6 +11874,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneMoveEvent();
+	virtual ~DummyQGraphicsSceneMoveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10958,9 +11886,11 @@ public:
 class KQGraphicsSceneMoveEvent : public QGraphicsSceneMoveEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneMoveEvent *dummy;
 	KQGraphicsSceneMoveEvent();
+	~KQGraphicsSceneMoveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -10980,6 +11910,7 @@ public:
 	knh_Func_t *color_changed_func;
 	knh_Func_t *offset_changed_func;
 	DummyQGraphicsDropShadowEffect();
+	virtual ~DummyQGraphicsDropShadowEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -10995,9 +11926,11 @@ public slots:
 class KQGraphicsDropShadowEffect : public QGraphicsDropShadowEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsDropShadowEffect *dummy;
 	KQGraphicsDropShadowEffect(QObject* parent);
+	~KQGraphicsDropShadowEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11015,6 +11948,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQContextMenuEvent();
+	virtual ~DummyQContextMenuEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11026,9 +11960,11 @@ public:
 class KQContextMenuEvent : public QContextMenuEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQContextMenuEvent *dummy;
 	KQContextMenuEvent(QContextMenuEvent::Reason reason, const QPoint pos, const QPoint globalPos, Qt::KeyboardModifiers modifiers);
+	~KQContextMenuEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11045,6 +11981,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFinalState();
+	virtual ~DummyQFinalState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11056,9 +11993,11 @@ public:
 class KQFinalState : public QFinalState {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFinalState *dummy;
 	KQFinalState(QState* parent);
+	~KQFinalState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11080,6 +12019,7 @@ public:
 	knh_Func_t *help_requested_func;
 	knh_Func_t *rejected_func;
 	DummyQDialogButtonBox();
+	virtual ~DummyQDialogButtonBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11096,9 +12036,11 @@ public slots:
 class KQDialogButtonBox : public QDialogButtonBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDialogButtonBox *dummy;
 	KQDialogButtonBox(QWidget* parent);
+	~KQDialogButtonBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11116,6 +12058,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyledItemDelegate();
+	virtual ~DummyQStyledItemDelegate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11127,9 +12070,11 @@ public:
 class KQStyledItemDelegate : public QStyledItemDelegate {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyledItemDelegate *dummy;
 	KQStyledItemDelegate(QObject* parent);
+	~KQStyledItemDelegate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11147,6 +12092,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGridLayout();
+	virtual ~DummyQGridLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11158,9 +12104,11 @@ public:
 class KQGridLayout : public QGridLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGridLayout *dummy;
 	KQGridLayout(QWidget* parent);
+	~KQGridLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11178,6 +12126,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionProgressBarV2();
+	virtual ~DummyQStyleOptionProgressBarV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11189,9 +12138,11 @@ public:
 class KQStyleOptionProgressBarV2 : public QStyleOptionProgressBarV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionProgressBarV2 *dummy;
 	KQStyleOptionProgressBarV2();
+	~KQStyleOptionProgressBarV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11212,6 +12163,7 @@ public:
 	knh_Func_t *error_func;
 	knh_Func_t *state_changed_func;
 	DummyQLocalSocket();
+	virtual ~DummyQLocalSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11228,9 +12180,11 @@ public slots:
 class KQLocalSocket : public QLocalSocket {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLocalSocket *dummy;
 	KQLocalSocket(QObject* parent);
+	~KQLocalSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11253,6 +12207,7 @@ public:
 	knh_Func_t *y_scale_changed_func;
 	knh_Func_t *z_scale_changed_func;
 	DummyQGraphicsScale();
+	virtual ~DummyQGraphicsScale();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11270,9 +12225,11 @@ public slots:
 class KQGraphicsScale : public QGraphicsScale {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsScale *dummy;
 	KQGraphicsScale(QObject* parent);
+	~KQGraphicsScale();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11290,6 +12247,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsLinearLayout();
+	virtual ~DummyQGraphicsLinearLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11301,9 +12259,11 @@ public:
 class KQGraphicsLinearLayout : public QGraphicsLinearLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsLinearLayout *dummy;
 	KQGraphicsLinearLayout(QGraphicsLayoutItem* parent);
+	~KQGraphicsLinearLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11320,6 +12280,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAbstractProxyModel();
+	virtual ~DummyQAbstractProxyModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11331,9 +12292,11 @@ public:
 class KQAbstractProxyModel : public QAbstractProxyModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractProxyModel *dummy;
 	KQAbstractProxyModel(QObject* parent);
+	~KQAbstractProxyModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11355,6 +12318,7 @@ public:
 	knh_Func_t *current_page_changed_func;
 	knh_Func_t *selection_changed_func;
 	DummyQCalendarWidget();
+	virtual ~DummyQCalendarWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11371,9 +12335,11 @@ public slots:
 class KQCalendarWidget : public QCalendarWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCalendarWidget *dummy;
 	KQCalendarWidget(QWidget* parent);
+	~KQCalendarWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11397,6 +12363,7 @@ public:
 	knh_Func_t *slider_released_func;
 	knh_Func_t *value_changed_func;
 	DummyQAbstractSlider();
+	virtual ~DummyQAbstractSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11415,9 +12382,11 @@ public slots:
 class KQAbstractSlider : public QAbstractSlider {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractSlider *dummy;
 	KQAbstractSlider(QWidget* parent);
+	~KQAbstractSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11435,6 +12404,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRegExpValidator();
+	virtual ~DummyQRegExpValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11446,9 +12416,11 @@ public:
 class KQRegExpValidator : public QRegExpValidator {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRegExpValidator *dummy;
 	KQRegExpValidator(QObject* parent);
+	~KQRegExpValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11466,6 +12438,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAbstractTableModel();
+	virtual ~DummyQAbstractTableModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11477,9 +12450,11 @@ public:
 class KQAbstractTableModel : public QAbstractTableModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractTableModel *dummy;
 	KQAbstractTableModel(QObject* parent);
+	~KQAbstractTableModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11498,6 +12473,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *message_changed_func;
 	DummyQStatusBar();
+	virtual ~DummyQStatusBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11511,9 +12487,11 @@ public slots:
 class KQStatusBar : public QStatusBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStatusBar *dummy;
 	KQStatusBar(QWidget* parent);
+	~KQStatusBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11531,6 +12509,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQKeyEvent();
+	virtual ~DummyQKeyEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11542,9 +12521,11 @@ public:
 class KQKeyEvent : public QKeyEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQKeyEvent *dummy;
 	KQKeyEvent(QKeyEvent::Type type, int key, Qt::KeyboardModifiers modifiers, const QString text, bool autorep, ushort count);
+	~KQKeyEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11565,6 +12546,7 @@ public:
 	knh_Func_t *released_func;
 	knh_Func_t *toggled_func;
 	DummyQAbstractButton();
+	virtual ~DummyQAbstractButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11581,9 +12563,11 @@ public slots:
 class KQAbstractButton : public QAbstractButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractButton *dummy;
 	KQAbstractButton(QWidget* parent);
+	~KQAbstractButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11601,6 +12585,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTitleBar();
+	virtual ~DummyQStyleOptionTitleBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11612,9 +12597,11 @@ public:
 class KQStyleOptionTitleBar : public QStyleOptionTitleBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTitleBar *dummy;
 	KQStyleOptionTitleBar();
+	~KQStyleOptionTitleBar();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11631,6 +12618,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDragMoveEvent();
+	virtual ~DummyQDragMoveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11642,9 +12630,11 @@ public:
 class KQDragMoveEvent : public QDragMoveEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDragMoveEvent *dummy;
 	KQDragMoveEvent(const QPoint pos, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, QDragMoveEvent::Type type);
+	~KQDragMoveEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11662,6 +12652,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsPolygonItem();
+	virtual ~DummyQGraphicsPolygonItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11673,9 +12664,11 @@ public:
 class KQGraphicsPolygonItem : public QGraphicsPolygonItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsPolygonItem *dummy;
 	KQGraphicsPolygonItem(QGraphicsItem* parent);
+	~KQGraphicsPolygonItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -11695,6 +12688,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *edit_text_changed_func;
 	DummyQComboBox();
+	virtual ~DummyQComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11708,9 +12702,11 @@ public slots:
 class KQComboBox : public QComboBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQComboBox *dummy;
 	KQComboBox(QWidget* parent);
+	~KQComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11728,6 +12724,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPlainTextDocumentLayout();
+	virtual ~DummyQPlainTextDocumentLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11739,9 +12736,11 @@ public:
 class KQPlainTextDocumentLayout : public QPlainTextDocumentLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPlainTextDocumentLayout *dummy;
 	KQPlainTextDocumentLayout(QTextDocument* document);
+	~KQPlainTextDocumentLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11759,6 +12758,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextTableFormat();
+	virtual ~DummyQTextTableFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11770,9 +12770,11 @@ public:
 class KQTextTableFormat : public QTextTableFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextTableFormat *dummy;
 	KQTextTableFormat();
+	~KQTextTableFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11790,6 +12792,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *complete_changed_func;
 	DummyQWizardPage();
+	virtual ~DummyQWizardPage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11803,9 +12806,11 @@ public slots:
 class KQWizardPage : public QWizardPage {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWizardPage *dummy;
 	KQWizardPage(QWidget* parent);
+	~KQWizardPage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11823,6 +12828,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTabV2();
+	virtual ~DummyQStyleOptionTabV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11834,9 +12840,11 @@ public:
 class KQStyleOptionTabV2 : public QStyleOptionTabV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTabV2 *dummy;
 	KQStyleOptionTabV2();
+	~KQStyleOptionTabV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11853,6 +12861,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionSizeGrip();
+	virtual ~DummyQStyleOptionSizeGrip();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11864,9 +12873,11 @@ public:
 class KQStyleOptionSizeGrip : public QStyleOptionSizeGrip {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionSizeGrip *dummy;
 	KQStyleOptionSizeGrip();
+	~KQStyleOptionSizeGrip();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11889,6 +12900,7 @@ public:
 	knh_Func_t *proxy_authentication_required_func;
 	knh_Func_t *state_changed_func;
 	DummyQAbstractSocket();
+	virtual ~DummyQAbstractSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11907,9 +12919,11 @@ public slots:
 class KQAbstractSocket : public QAbstractSocket {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractSocket *dummy;
 	KQAbstractSocket(QAbstractSocket::SocketType socketType, QObject* parent);
+	~KQAbstractSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -11927,6 +12941,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionViewItemV2();
+	virtual ~DummyQStyleOptionViewItemV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11938,9 +12953,11 @@ public:
 class KQStyleOptionViewItemV2 : public QStyleOptionViewItemV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionViewItemV2 *dummy;
 	KQStyleOptionViewItemV2();
+	~KQStyleOptionViewItemV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -11960,6 +12977,7 @@ public:
 	knh_Func_t *link_hovered_func;
 	knh_Func_t *paint_func;
 	DummyQGraphicsTextItem();
+	virtual ~DummyQGraphicsTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -11974,9 +12992,11 @@ public slots:
 class KQGraphicsTextItem : public QGraphicsTextItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsTextItem *dummy;
 	KQGraphicsTextItem(QGraphicsItem* parent);
+	~KQGraphicsTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -11996,6 +13016,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsEllipseItem();
+	virtual ~DummyQGraphicsEllipseItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12007,9 +13028,11 @@ public:
 class KQGraphicsEllipseItem : public QGraphicsEllipseItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsEllipseItem *dummy;
 	KQGraphicsEllipseItem(QGraphicsItem* parent);
+	~KQGraphicsEllipseItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -12028,6 +13051,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionSpinBox();
+	virtual ~DummyQStyleOptionSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12039,9 +13063,11 @@ public:
 class KQStyleOptionSpinBox : public QStyleOptionSpinBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionSpinBox *dummy;
 	KQStyleOptionSpinBox();
+	~KQStyleOptionSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12058,6 +13084,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionToolButton();
+	virtual ~DummyQStyleOptionToolButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12069,9 +13096,11 @@ public:
 class KQStyleOptionToolButton : public QStyleOptionToolButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionToolButton *dummy;
 	KQStyleOptionToolButton();
+	~KQStyleOptionToolButton();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12088,6 +13117,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQBitmap();
+	virtual ~DummyQBitmap();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12099,9 +13129,11 @@ public:
 class KQBitmap : public QBitmap {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQBitmap *dummy;
 	KQBitmap();
+	~KQBitmap();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12118,6 +13150,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQNetworkDiskCache();
+	virtual ~DummyQNetworkDiskCache();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12129,9 +13162,11 @@ public:
 class KQNetworkDiskCache : public QNetworkDiskCache {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkDiskCache *dummy;
 	KQNetworkDiskCache(QObject* parent);
+	~KQNetworkDiskCache();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12151,6 +13186,7 @@ public:
 	knh_Func_t *clicked_func;
 	knh_Func_t *toggled_func;
 	DummyQGroupBox();
+	virtual ~DummyQGroupBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12165,9 +13201,11 @@ public slots:
 class KQGroupBox : public QGroupBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGroupBox *dummy;
 	KQGroupBox(QWidget* parent);
+	~KQGroupBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12185,6 +13223,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionGroupBox();
+	virtual ~DummyQStyleOptionGroupBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12196,9 +13235,11 @@ public:
 class KQStyleOptionGroupBox : public QStyleOptionGroupBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionGroupBox *dummy;
 	KQStyleOptionGroupBox();
+	~KQStyleOptionGroupBox();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12215,6 +13256,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWidgetAction();
+	virtual ~DummyQWidgetAction();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12226,9 +13268,11 @@ public:
 class KQWidgetAction : public QWidgetAction {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWidgetAction *dummy;
 	KQWidgetAction(QObject* parent);
+	~KQWidgetAction();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12249,6 +13293,7 @@ public:
 	knh_Func_t *tab_close_requested_func;
 	knh_Func_t *tab_moved_func;
 	DummyQTabBar();
+	virtual ~DummyQTabBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12264,9 +13309,11 @@ public slots:
 class KQTabBar : public QTabBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTabBar *dummy;
 	KQTabBar(QWidget* parent);
+	~KQTabBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12285,6 +13332,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsSimpleTextItem();
+	virtual ~DummyQGraphicsSimpleTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12296,9 +13344,11 @@ public:
 class KQGraphicsSimpleTextItem : public QGraphicsSimpleTextItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSimpleTextItem *dummy;
 	KQGraphicsSimpleTextItem(QGraphicsItem* parent);
+	~KQGraphicsSimpleTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -12317,6 +13367,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQEventTransition();
+	virtual ~DummyQEventTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12328,9 +13379,11 @@ public:
 class KQEventTransition : public QEventTransition {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQEventTransition *dummy;
 	KQEventTransition(QState* sourceState);
+	~KQEventTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12348,6 +13401,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHistoryState();
+	virtual ~DummyQHistoryState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12359,9 +13413,11 @@ public:
 class KQHistoryState : public QHistoryState {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHistoryState *dummy;
 	KQHistoryState(QState* parent);
+	~KQHistoryState();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12379,6 +13435,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQBuffer();
+	virtual ~DummyQBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12390,9 +13447,11 @@ public:
 class KQBuffer : public QBuffer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQBuffer *dummy;
 	KQBuffer(QObject* parent);
+	~KQBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12410,6 +13469,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLWidget();
+	virtual ~DummyQGLWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12421,9 +13481,11 @@ public:
 class KQGLWidget : public QGLWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLWidget *dummy;
 	KQGLWidget(QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f);
+	~KQGLWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12441,6 +13503,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQItemDelegate();
+	virtual ~DummyQItemDelegate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12452,9 +13515,11 @@ public:
 class KQItemDelegate : public QItemDelegate {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQItemDelegate *dummy;
 	KQItemDelegate(QObject* parent);
+	~KQItemDelegate();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12480,6 +13545,7 @@ public:
 	knh_Func_t *top_level_changed_func;
 	knh_Func_t *visibility_changed_func;
 	DummyQToolBar();
+	virtual ~DummyQToolBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12500,9 +13566,11 @@ public slots:
 class KQToolBar : public QToolBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQToolBar *dummy;
 	KQToolBar(const QString title, QWidget* parent);
+	~KQToolBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12520,6 +13588,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQIntValidator();
+	virtual ~DummyQIntValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12531,9 +13600,11 @@ public:
 class KQIntValidator : public QIntValidator {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQIntValidator *dummy;
 	KQIntValidator(QObject* parent);
+	~KQIntValidator();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12552,6 +13623,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *value_changed_func;
 	DummyQProgressBar();
+	virtual ~DummyQProgressBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12565,9 +13637,11 @@ public slots:
 class KQProgressBar : public QProgressBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQProgressBar *dummy;
 	KQProgressBar(QWidget* parent);
+	~KQProgressBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12585,6 +13659,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneResizeEvent();
+	virtual ~DummyQGraphicsSceneResizeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12596,9 +13671,11 @@ public:
 class KQGraphicsSceneResizeEvent : public QGraphicsSceneResizeEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneResizeEvent *dummy;
 	KQGraphicsSceneResizeEvent();
+	~KQGraphicsSceneResizeEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12615,6 +13692,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneMouseEvent();
+	virtual ~DummyQGraphicsSceneMouseEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12626,9 +13704,10 @@ public:
 class KQGraphicsSceneMouseEvent : public QGraphicsSceneMouseEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneMouseEvent *dummy;
-
+	~KQGraphicsSceneMouseEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12645,6 +13724,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTapGesture();
+	virtual ~DummyQTapGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12656,9 +13736,10 @@ public:
 class KQTapGesture : public QTapGesture {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTapGesture *dummy;
-
+	~KQTapGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12676,6 +13757,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWheelEvent();
+	virtual ~DummyQWheelEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12687,9 +13769,11 @@ public:
 class KQWheelEvent : public QWheelEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWheelEvent *dummy;
 	KQWheelEvent(const QPoint pos, int delta, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers, Qt::Orientation orient);
+	~KQWheelEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12711,6 +13795,7 @@ public:
 	knh_Func_t *top_level_changed_func;
 	knh_Func_t *visibility_changed_func;
 	DummyQDockWidget();
+	virtual ~DummyQDockWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12728,9 +13813,11 @@ public slots:
 class KQDockWidget : public QDockWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDockWidget *dummy;
 	KQDockWidget(const QString title, QWidget* parent, Qt::WindowFlags flags);
+	~KQDockWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12748,6 +13835,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSwipeGesture();
+	virtual ~DummyQSwipeGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12759,9 +13847,10 @@ public:
 class KQSwipeGesture : public QSwipeGesture {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSwipeGesture *dummy;
-
+	~KQSwipeGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12779,6 +13868,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQWebInspector();
+	virtual ~DummyQWebInspector();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12790,9 +13880,11 @@ public:
 class KQWebInspector : public QWebInspector {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebInspector *dummy;
 	KQWebInspector(QWidget* parent);
+	~KQWebInspector();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12810,6 +13902,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTabletEvent();
+	virtual ~DummyQTabletEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12821,9 +13914,11 @@ public:
 class KQTabletEvent : public QTabletEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTabletEvent *dummy;
 	KQTabletEvent(QTabletEvent::Type type, const QPoint pos, const QPoint globalPos, const QPointF hiResGlobalPos, int device, int pointerType, qreal pressure, int xTilt, int yTilt, qreal tangentialPressure, qreal rotation, int z, Qt::KeyboardModifiers keyState, qint64 uniqueID);
+	~KQTabletEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12842,6 +13937,7 @@ public:
 	knh_Func_t *about_to_activate_func;
 	knh_Func_t *window_state_changed_func;
 	DummyQMdiSubWindow();
+	virtual ~DummyQMdiSubWindow();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12856,9 +13952,11 @@ public slots:
 class KQMdiSubWindow : public QMdiSubWindow {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMdiSubWindow *dummy;
 	KQMdiSubWindow(QWidget* parent, Qt::WindowFlags flags);
+	~KQMdiSubWindow();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12876,6 +13974,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsGridLayout();
+	virtual ~DummyQGraphicsGridLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12887,9 +13986,11 @@ public:
 class KQGraphicsGridLayout : public QGraphicsGridLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsGridLayout *dummy;
 	KQGraphicsGridLayout(QGraphicsLayoutItem* parent);
+	~KQGraphicsGridLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12906,6 +14007,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAccessibleObject();
+	virtual ~DummyQAccessibleObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12917,9 +14019,11 @@ public:
 class KQAccessibleObject : public QAccessibleObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAccessibleObject *dummy;
 	KQAccessibleObject(QObject* object);
+	~KQAccessibleObject();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12936,6 +14040,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextBlockGroup();
+	virtual ~DummyQTextBlockGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12947,9 +14052,10 @@ public:
 class KQTextBlockGroup : public QTextBlockGroup {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextBlockGroup *dummy;
-
+	~KQTextBlockGroup();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -12967,6 +14073,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTabWidgetFrameV2();
+	virtual ~DummyQStyleOptionTabWidgetFrameV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -12978,9 +14085,11 @@ public:
 class KQStyleOptionTabWidgetFrameV2 : public QStyleOptionTabWidgetFrameV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTabWidgetFrameV2 *dummy;
 	KQStyleOptionTabWidgetFrameV2();
+	~KQStyleOptionTabWidgetFrameV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -12997,6 +14106,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionFrameV2();
+	virtual ~DummyQStyleOptionFrameV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13008,9 +14118,11 @@ public:
 class KQStyleOptionFrameV2 : public QStyleOptionFrameV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionFrameV2 *dummy;
 	KQStyleOptionFrameV2();
+	~KQStyleOptionFrameV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -13033,6 +14145,7 @@ public:
 	knh_Func_t *ssl_errors_func;
 	knh_Func_t *upload_progress_func;
 	DummyQNetworkReply();
+	virtual ~DummyQNetworkReply();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13051,9 +14164,10 @@ public slots:
 class KQNetworkReply : public QNetworkReply {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkReply *dummy;
-
+	~KQNetworkReply();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13071,6 +14185,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSplitterHandle();
+	virtual ~DummyQSplitterHandle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13082,9 +14197,11 @@ public:
 class KQSplitterHandle : public QSplitterHandle {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSplitterHandle *dummy;
 	KQSplitterHandle(Qt::Orientation orientation, QSplitter* parent);
+	~KQSplitterHandle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13105,6 +14222,7 @@ public:
 	knh_Func_t *font_database_changed_func;
 	knh_Func_t *last_window_closed_func;
 	DummyQApplication();
+	virtual ~DummyQApplication();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13120,9 +14238,11 @@ public slots:
 class KQApplication : public QApplication {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQApplication *dummy;
 	KQApplication(int argc, char** argv);
+	~KQApplication();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13140,6 +14260,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneHoverEvent();
+	virtual ~DummyQGraphicsSceneHoverEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13151,9 +14272,10 @@ public:
 class KQGraphicsSceneHoverEvent : public QGraphicsSceneHoverEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneHoverEvent *dummy;
-
+	~KQGraphicsSceneHoverEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -13173,6 +14295,7 @@ public:
 	knh_Func_t *finished_func;
 	knh_Func_t *rejected_func;
 	DummyQDialog();
+	virtual ~DummyQDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13188,9 +14311,11 @@ public slots:
 class KQDialog : public QDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDialog *dummy;
 	KQDialog(QWidget* parent, Qt::WindowFlags f);
+	~KQDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13204,12 +14329,14 @@ public:
 class DummyQGraphicsBlurEffect : public DummyQGraphicsEffect {
 	Q_OBJECT;
 public:
+	typedef QGraphicsBlurEffect::BlurHints BlurHints;
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *blur_hints_changed_func;
 	knh_Func_t *blur_radius_changed_func;
 	DummyQGraphicsBlurEffect();
+	virtual ~DummyQGraphicsBlurEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13217,16 +14344,18 @@ public:
 	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
 	void connection(QObject *o);
 public slots:
-	bool blurHintsChangedSlot(QGraphicsBlurEffect::BlurHints hints);
+	bool blurHintsChangedSlot(BlurHints hints);
 	bool blurRadiusChangedSlot(qreal radius);
 };
 
 class KQGraphicsBlurEffect : public QGraphicsBlurEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsBlurEffect *dummy;
 	KQGraphicsBlurEffect(QObject* parent);
+	~KQGraphicsBlurEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13244,6 +14373,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSizeGrip();
+	virtual ~DummyQSizeGrip();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13255,9 +14385,11 @@ public:
 class KQSizeGrip : public QSizeGrip {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSizeGrip *dummy;
 	KQSizeGrip(QWidget* parent);
+	~KQSizeGrip();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13275,6 +14407,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQProxyModel();
+	virtual ~DummyQProxyModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13286,9 +14419,11 @@ public:
 class KQProxyModel : public QProxyModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQProxyModel *dummy;
 	KQProxyModel(QObject* parent);
+	~KQProxyModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13306,6 +14441,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionSlider();
+	virtual ~DummyQStyleOptionSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13317,9 +14453,11 @@ public:
 class KQStyleOptionSlider : public QStyleOptionSlider {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionSlider *dummy;
 	KQStyleOptionSlider();
+	~KQStyleOptionSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -13337,6 +14475,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *message_changed_func;
 	DummyQSplashScreen();
+	virtual ~DummyQSplashScreen();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13350,9 +14489,11 @@ public slots:
 class KQSplashScreen : public QSplashScreen {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSplashScreen *dummy;
 	KQSplashScreen(const QPixmap pixmap, Qt::WindowFlags f);
+	~KQSplashScreen();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13372,6 +14513,7 @@ public:
 	knh_Func_t *hovered_func;
 	knh_Func_t *triggered_func;
 	DummyQMenuBar();
+	virtual ~DummyQMenuBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13386,9 +14528,11 @@ public slots:
 class KQMenuBar : public QMenuBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMenuBar *dummy;
 	KQMenuBar(QWidget* parent);
+	~KQMenuBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13407,6 +14551,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *editing_finished_func;
 	DummyQAbstractSpinBox();
+	virtual ~DummyQAbstractSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13420,9 +14565,11 @@ public slots:
 class KQAbstractSpinBox : public QAbstractSpinBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractSpinBox *dummy;
 	KQAbstractSpinBox(QWidget* parent);
+	~KQAbstractSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13440,6 +14587,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextImageFormat();
+	virtual ~DummyQTextImageFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13451,9 +14599,11 @@ public:
 class KQTextImageFormat : public QTextImageFormat {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextImageFormat *dummy;
 	KQTextImageFormat();
+	~KQTextImageFormat();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -13470,6 +14620,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQCommonStyle();
+	virtual ~DummyQCommonStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13481,9 +14632,11 @@ public:
 class KQCommonStyle : public QCommonStyle {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCommonStyle *dummy;
 	KQCommonStyle();
+	~KQCommonStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13504,6 +14657,7 @@ public:
 	knh_Func_t *axis_changed_func;
 	knh_Func_t *origin_changed_func;
 	DummyQGraphicsRotation();
+	virtual ~DummyQGraphicsRotation();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13519,9 +14673,11 @@ public slots:
 class KQGraphicsRotation : public QGraphicsRotation {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsRotation *dummy;
 	KQGraphicsRotation(QObject* parent);
+	~KQGraphicsRotation();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13539,6 +14695,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFormLayout();
+	virtual ~DummyQFormLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13550,9 +14707,11 @@ public:
 class KQFormLayout : public QFormLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFormLayout *dummy;
 	KQFormLayout(QWidget* parent);
+	~KQFormLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13570,6 +14729,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQFocusFrame();
+	virtual ~DummyQFocusFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13581,9 +14741,11 @@ public:
 class KQFocusFrame : public QFocusFrame {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFocusFrame *dummy;
 	KQFocusFrame(QWidget* parent);
+	~KQFocusFrame();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13607,6 +14769,7 @@ public:
 	knh_Func_t *started_func;
 	knh_Func_t *state_changed_func;
 	DummyQProcess();
+	virtual ~DummyQProcess();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13625,9 +14788,11 @@ public slots:
 class KQProcess : public QProcess {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQProcess *dummy;
 	KQProcess(QObject* parent);
+	~KQProcess();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13645,6 +14810,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneWheelEvent();
+	virtual ~DummyQGraphicsSceneWheelEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13656,9 +14822,10 @@ public:
 class KQGraphicsSceneWheelEvent : public QGraphicsSceneWheelEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneWheelEvent *dummy;
-
+	~KQGraphicsSceneWheelEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -13677,6 +14844,7 @@ public:
 	knh_Func_t *current_changed_func;
 	knh_Func_t *tab_close_requested_func;
 	DummyQTabWidget();
+	virtual ~DummyQTabWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13691,9 +14859,11 @@ public slots:
 class KQTabWidget : public QTabWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTabWidget *dummy;
 	KQTabWidget(QWidget* parent);
+	~KQTabWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13724,7 +14894,20 @@ public:
 	knh_Func_t *window_frame_event_func;
 	knh_Func_t *geometry_changed_func;
 	knh_Func_t *paint_func;
+	knh_RawPtr_t *changeEventPtr;
+	knh_RawPtr_t *closeEventPtr;
+	knh_RawPtr_t *grabKeyboardEventPtr;
+	knh_RawPtr_t *grabMouseEventPtr;
+	knh_RawPtr_t *hideEventPtr;
+	knh_RawPtr_t *moveEventPtr;
+	knh_RawPtr_t *polishEventPtr;
+	knh_RawPtr_t *resizeEventPtr;
+	knh_RawPtr_t *showEventPtr;
+	knh_RawPtr_t *ungrabKeyboardEventPtr;
+	knh_RawPtr_t *ungrabMouseEventPtr;
+	knh_RawPtr_t *windowFrameEventPtr;
 	DummyQGraphicsWidget();
+	virtual ~DummyQGraphicsWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13750,9 +14933,11 @@ public slots:
 class KQGraphicsWidget : public QGraphicsWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsWidget *dummy;
 	KQGraphicsWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
+	~KQGraphicsWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -13771,6 +14956,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPanGesture();
+	virtual ~DummyQPanGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13782,9 +14968,10 @@ public:
 class KQPanGesture : public QPanGesture {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPanGesture *dummy;
-
+	~KQPanGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13802,6 +14989,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMouseEvent();
+	virtual ~DummyQMouseEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13813,9 +15001,11 @@ public:
 class KQMouseEvent : public QMouseEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMouseEvent *dummy;
 	KQMouseEvent(QMouseEvent::Type type, const QPoint position, Qt::MouseButton button, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
+	~KQMouseEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -13833,6 +15023,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *window_activated_func;
 	DummyQWorkspace();
+	virtual ~DummyQWorkspace();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13846,9 +15037,11 @@ public slots:
 class KQWorkspace : public QWorkspace {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWorkspace *dummy;
 	KQWorkspace(QWidget* parent);
+	~KQWorkspace();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13867,6 +15060,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsPathItem();
+	virtual ~DummyQGraphicsPathItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13878,9 +15072,11 @@ public:
 class KQGraphicsPathItem : public QGraphicsPathItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsPathItem *dummy;
 	KQGraphicsPathItem(QGraphicsItem* parent);
+	~KQGraphicsPathItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -13899,6 +15095,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPinchGesture();
+	virtual ~DummyQPinchGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13910,9 +15107,10 @@ public:
 class KQPinchGesture : public QPinchGesture {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPinchGesture *dummy;
-
+	~KQPinchGesture();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -13930,6 +15128,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsSceneContextMenuEvent();
+	virtual ~DummyQGraphicsSceneContextMenuEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13941,9 +15140,10 @@ public:
 class KQGraphicsSceneContextMenuEvent : public QGraphicsSceneContextMenuEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsSceneContextMenuEvent *dummy;
-
+	~KQGraphicsSceneContextMenuEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -13965,6 +15165,7 @@ public:
 	knh_Func_t *page_added_func;
 	knh_Func_t *page_removed_func;
 	DummyQWizard();
+	virtual ~DummyQWizard();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -13982,9 +15183,11 @@ public slots:
 class KQWizard : public QWizard {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWizard *dummy;
 	KQWizard(QWidget* parent, Qt::WindowFlags flags);
+	~KQWizard();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14002,6 +15205,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSlider();
+	virtual ~DummyQSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14013,9 +15217,11 @@ public:
 class KQSlider : public QSlider {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSlider *dummy;
 	KQSlider(QWidget* parent);
+	~KQSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14034,6 +15240,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_requested_func;
 	DummyQPrintPreviewDialog();
+	virtual ~DummyQPrintPreviewDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14047,9 +15254,11 @@ public slots:
 class KQPrintPreviewDialog : public QPrintPreviewDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrintPreviewDialog *dummy;
 	KQPrintPreviewDialog(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags);
+	~KQPrintPreviewDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14067,6 +15276,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPushButton();
+	virtual ~DummyQPushButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14078,9 +15288,11 @@ public:
 class KQPushButton : public QPushButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPushButton *dummy;
 	KQPushButton(QWidget* parent);
+	~KQPushButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14098,6 +15310,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionFrameV3();
+	virtual ~DummyQStyleOptionFrameV3();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14109,9 +15322,11 @@ public:
 class KQStyleOptionFrameV3 : public QStyleOptionFrameV3 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionFrameV3 *dummy;
 	KQStyleOptionFrameV3();
+	~KQStyleOptionFrameV3();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -14128,6 +15343,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionTabV3();
+	virtual ~DummyQStyleOptionTabV3();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14139,9 +15355,11 @@ public:
 class KQStyleOptionTabV3 : public QStyleOptionTabV3 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionTabV3 *dummy;
 	KQStyleOptionTabV3();
+	~KQStyleOptionTabV3();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -14158,6 +15376,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQScrollBar();
+	virtual ~DummyQScrollBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14169,9 +15388,11 @@ public:
 class KQScrollBar : public QScrollBar {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQScrollBar *dummy;
 	KQScrollBar(QWidget* parent);
+	~KQScrollBar();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14189,6 +15410,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQProxyStyle();
+	virtual ~DummyQProxyStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14200,9 +15422,11 @@ public:
 class KQProxyStyle : public QProxyStyle {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQProxyStyle *dummy;
 	KQProxyStyle(QStyle* style);
+	~KQProxyStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14220,6 +15444,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAccessibleWidget();
+	virtual ~DummyQAccessibleWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14231,9 +15456,11 @@ public:
 class KQAccessibleWidget : public QAccessibleWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAccessibleWidget *dummy;
 	KQAccessibleWidget(QWidget* w, QAccessibleWidget::Role role, const QString name);
+	~KQAccessibleWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -14250,6 +15477,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextTable();
+	virtual ~DummyQTextTable();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14261,9 +15489,10 @@ public:
 class KQTextTable : public QTextTable {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextTable *dummy;
-
+	~KQTextTable();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14281,6 +15510,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTextList();
+	virtual ~DummyQTextList();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14292,9 +15522,10 @@ public:
 class KQTextList : public QTextList {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextList *dummy;
-
+	~KQTextList();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14314,6 +15545,7 @@ public:
 	knh_Func_t *link_activated_func;
 	knh_Func_t *link_hovered_func;
 	DummyQLabel();
+	virtual ~DummyQLabel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14328,9 +15560,11 @@ public slots:
 class KQLabel : public QLabel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLabel *dummy;
 	KQLabel(QWidget* parent, Qt::WindowFlags f);
+	~KQLabel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14349,6 +15583,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *current_changed_func;
 	DummyQToolBox();
+	virtual ~DummyQToolBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14362,9 +15597,11 @@ public slots:
 class KQToolBox : public QToolBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQToolBox *dummy;
 	KQToolBox(QWidget* parent, Qt::WindowFlags f);
+	~KQToolBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14382,6 +15619,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMotifStyle();
+	virtual ~DummyQMotifStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14393,9 +15631,11 @@ public:
 class KQMotifStyle : public QMotifStyle {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMotifStyle *dummy;
 	KQMotifStyle(bool useHighlightCols);
+	~KQMotifStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14413,6 +15653,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQRadioButton();
+	virtual ~DummyQRadioButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14424,9 +15665,11 @@ public:
 class KQRadioButton : public QRadioButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQRadioButton *dummy;
 	KQRadioButton(QWidget* parent);
+	~KQRadioButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14444,6 +15687,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDragEnterEvent();
+	virtual ~DummyQDragEnterEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14455,9 +15699,11 @@ public:
 class KQDragEnterEvent : public QDragEnterEvent {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDragEnterEvent *dummy;
 	KQDragEnterEvent(const QPoint point, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers);
+	~KQDragEnterEvent();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -14475,6 +15721,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *overflow_func;
 	DummyQLCDNumber();
+	virtual ~DummyQLCDNumber();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14488,9 +15735,11 @@ public slots:
 class KQLCDNumber : public QLCDNumber {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLCDNumber *dummy;
 	KQLCDNumber(QWidget* parent);
+	~KQLCDNumber();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14508,6 +15757,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQKeyEventTransition();
+	virtual ~DummyQKeyEventTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14519,9 +15769,11 @@ public:
 class KQKeyEventTransition : public QKeyEventTransition {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQKeyEventTransition *dummy;
 	KQKeyEventTransition(QState* sourceState);
+	~KQKeyEventTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14540,6 +15792,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *triggered_func;
 	DummyQToolButton();
+	virtual ~DummyQToolButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14553,9 +15806,11 @@ public slots:
 class KQToolButton : public QToolButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQToolButton *dummy;
 	KQToolButton(QWidget* parent);
+	~KQToolButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14573,6 +15828,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQErrorMessage();
+	virtual ~DummyQErrorMessage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14584,9 +15840,11 @@ public:
 class KQErrorMessage : public QErrorMessage {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQErrorMessage *dummy;
 	KQErrorMessage(QWidget* parent);
+	~KQErrorMessage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14605,6 +15863,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *state_changed_func;
 	DummyQCheckBox();
+	virtual ~DummyQCheckBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14618,9 +15877,11 @@ public slots:
 class KQCheckBox : public QCheckBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCheckBox *dummy;
 	KQCheckBox(QWidget* parent);
+	~KQCheckBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14638,7 +15899,9 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *viewport_event_func;
+	knh_RawPtr_t *viewportEventPtr;
 	DummyQAbstractScrollArea();
+	virtual ~DummyQAbstractScrollArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14651,9 +15914,11 @@ public:
 class KQAbstractScrollArea : public QAbstractScrollArea {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractScrollArea *dummy;
 	KQAbstractScrollArea(QWidget* parent);
+	~KQAbstractScrollArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14671,6 +15936,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDial();
+	virtual ~DummyQDial();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14682,9 +15948,11 @@ public:
 class KQDial : public QDial {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDial *dummy;
 	KQDial(QWidget* parent);
+	~KQDial();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14708,6 +15976,7 @@ public:
 	knh_Func_t *text_value_changed_func;
 	knh_Func_t *text_value_selected_func;
 	DummyQInputDialog();
+	virtual ~DummyQInputDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14726,9 +15995,11 @@ public slots:
 class KQInputDialog : public QInputDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQInputDialog *dummy;
 	KQInputDialog(QWidget* parent, Qt::WindowFlags flags);
+	~KQInputDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14746,6 +16017,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTcpSocket();
+	virtual ~DummyQTcpSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14757,9 +16029,11 @@ public:
 class KQTcpSocket : public QTcpSocket {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTcpSocket *dummy;
 	KQTcpSocket(QObject* parent);
+	~KQTcpSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14777,6 +16051,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQPageSetupDialog();
+	virtual ~DummyQPageSetupDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14788,9 +16063,11 @@ public:
 class KQPageSetupDialog : public QPageSetupDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPageSetupDialog *dummy;
 	KQPageSetupDialog(QPrinter* printer, QWidget* parent);
+	~KQPageSetupDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14810,6 +16087,7 @@ public:
 	knh_Func_t *color_selected_func;
 	knh_Func_t *current_color_changed_func;
 	DummyQColorDialog();
+	virtual ~DummyQColorDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14824,9 +16102,11 @@ public slots:
 class KQColorDialog : public QColorDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQColorDialog *dummy;
 	KQColorDialog(QWidget* parent);
+	~KQColorDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14844,6 +16124,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQMouseEventTransition();
+	virtual ~DummyQMouseEventTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14855,9 +16136,11 @@ public:
 class KQMouseEventTransition : public QMouseEventTransition {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMouseEventTransition *dummy;
 	KQMouseEventTransition(QState* sourceState);
+	~KQMouseEventTransition();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14878,6 +16161,7 @@ public:
 	knh_Func_t *date_time_changed_func;
 	knh_Func_t *time_changed_func;
 	DummyQDateTimeEdit();
+	virtual ~DummyQDateTimeEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14893,9 +16177,11 @@ public slots:
 class KQDateTimeEdit : public QDateTimeEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDateTimeEdit *dummy;
 	KQDateTimeEdit(QWidget* parent);
+	~KQDateTimeEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14913,6 +16199,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQVBoxLayout();
+	virtual ~DummyQVBoxLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14924,9 +16211,11 @@ public:
 class KQVBoxLayout : public QVBoxLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQVBoxLayout *dummy;
 	KQVBoxLayout();
+	~KQVBoxLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -14944,6 +16233,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionViewItemV3();
+	virtual ~DummyQStyleOptionViewItemV3();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14955,9 +16245,11 @@ public:
 class KQStyleOptionViewItemV3 : public QStyleOptionViewItemV3 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionViewItemV3 *dummy;
 	KQStyleOptionViewItemV3();
+	~KQStyleOptionViewItemV3();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -14975,6 +16267,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *current_font_changed_func;
 	DummyQFontComboBox();
+	virtual ~DummyQFontComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -14988,9 +16281,11 @@ public slots:
 class KQFontComboBox : public QFontComboBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFontComboBox *dummy;
 	KQFontComboBox(QWidget* parent);
+	~KQFontComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15008,6 +16303,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQUdpSocket();
+	virtual ~DummyQUdpSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15019,9 +16315,11 @@ public:
 class KQUdpSocket : public QUdpSocket {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUdpSocket *dummy;
 	KQUdpSocket(QObject* parent);
+	~KQUdpSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15040,6 +16338,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *button_clicked_func;
 	DummyQMessageBox();
+	virtual ~DummyQMessageBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15053,9 +16352,11 @@ public slots:
 class KQMessageBox : public QMessageBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMessageBox *dummy;
 	KQMessageBox(QWidget* parent);
+	~KQMessageBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15074,6 +16375,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *canceled_func;
 	DummyQProgressDialog();
+	virtual ~DummyQProgressDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15087,9 +16389,11 @@ public slots:
 class KQProgressDialog : public QProgressDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQProgressDialog *dummy;
 	KQProgressDialog(QWidget* parent, Qt::WindowFlags f);
+	~KQProgressDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15107,6 +16411,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQAbstractPrintDialog();
+	virtual ~DummyQAbstractPrintDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15118,9 +16423,11 @@ public:
 class KQAbstractPrintDialog : public QAbstractPrintDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractPrintDialog *dummy;
 	KQAbstractPrintDialog(QPrinter* printer, QWidget* parent);
+	~KQAbstractPrintDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15139,6 +16446,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *paint_func;
 	DummyQGraphicsProxyWidget();
+	virtual ~DummyQGraphicsProxyWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15150,9 +16458,11 @@ public:
 class KQGraphicsProxyWidget : public QGraphicsProxyWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsProxyWidget *dummy;
 	KQGraphicsProxyWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
+	~KQGraphicsProxyWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -15180,6 +16490,7 @@ public:
 	knh_Func_t *url_changed_func;
 	knh_Func_t *paint_func;
 	DummyQGraphicsWebView();
+	virtual ~DummyQGraphicsWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15200,9 +16511,11 @@ public slots:
 class KQGraphicsWebView : public QGraphicsWebView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsWebView *dummy;
 	KQGraphicsWebView(QGraphicsItem* parent);
+	~KQGraphicsWebView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
@@ -15221,6 +16534,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSpinBox();
+	virtual ~DummyQSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15232,9 +16546,11 @@ public:
 class KQSpinBox : public QSpinBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSpinBox *dummy;
 	KQSpinBox(QWidget* parent);
+	~KQSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15252,6 +16568,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDoubleSpinBox();
+	virtual ~DummyQDoubleSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15263,9 +16580,11 @@ public:
 class KQDoubleSpinBox : public QDoubleSpinBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDoubleSpinBox *dummy;
 	KQDoubleSpinBox(QWidget* parent);
+	~KQDoubleSpinBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15283,6 +16602,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQHBoxLayout();
+	virtual ~DummyQHBoxLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15294,9 +16614,11 @@ public:
 class KQHBoxLayout : public QHBoxLayout {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHBoxLayout *dummy;
 	KQHBoxLayout();
+	~KQHBoxLayout();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15315,6 +16637,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *splitter_moved_func;
 	DummyQSplitter();
+	virtual ~DummyQSplitter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15328,9 +16651,11 @@ public slots:
 class KQSplitter : public QSplitter {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSplitter *dummy;
 	KQSplitter(QWidget* parent);
+	~KQSplitter();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15350,6 +16675,7 @@ public:
 	knh_Func_t *current_font_changed_func;
 	knh_Func_t *font_selected_func;
 	DummyQFontDialog();
+	virtual ~DummyQFontDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15364,9 +16690,11 @@ public slots:
 class KQFontDialog : public QFontDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFontDialog *dummy;
 	KQFontDialog(QWidget* parent);
+	~KQFontDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15384,6 +16712,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQSortFilterProxyModel();
+	virtual ~DummyQSortFilterProxyModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15395,9 +16724,11 @@ public:
 class KQSortFilterProxyModel : public QSortFilterProxyModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSortFilterProxyModel *dummy;
 	KQSortFilterProxyModel(QObject* parent);
+	~KQSortFilterProxyModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15415,6 +16746,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQScrollArea();
+	virtual ~DummyQScrollArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15426,9 +16758,11 @@ public:
 class KQScrollArea : public QScrollArea {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQScrollArea *dummy;
 	KQScrollArea(QWidget* parent);
+	~KQScrollArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15451,6 +16785,7 @@ public:
 	knh_Func_t *peer_verify_error_func;
 	knh_Func_t *ssl_errors_func;
 	DummyQSslSocket();
+	virtual ~DummyQSslSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15468,9 +16803,11 @@ public slots:
 class KQSslSocket : public QSslSocket {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQSslSocket *dummy;
 	KQSslSocket(QObject* parent);
+	~KQSslSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15495,6 +16832,7 @@ public:
 	knh_Func_t *text_changed_func;
 	knh_Func_t *undo_available_func;
 	DummyQTextEdit();
+	virtual ~DummyQTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15514,9 +16852,11 @@ public slots:
 class KQTextEdit : public QTextEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextEdit *dummy;
 	KQTextEdit(QWidget* parent);
+	~KQTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15534,6 +16874,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionViewItemV4();
+	virtual ~DummyQStyleOptionViewItemV4();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15545,9 +16886,11 @@ public:
 class KQStyleOptionViewItemV4 : public QStyleOptionViewItemV4 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionViewItemV4 *dummy;
 	KQStyleOptionViewItemV4();
+	~KQStyleOptionViewItemV4();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 
@@ -15564,6 +16907,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQCommandLinkButton();
+	virtual ~DummyQCommandLinkButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15575,9 +16919,11 @@ public:
 class KQCommandLinkButton : public QCommandLinkButton {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCommandLinkButton *dummy;
 	KQCommandLinkButton(QWidget* parent);
+	~KQCommandLinkButton();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15595,6 +16941,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGraphicsView();
+	virtual ~DummyQGraphicsView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15606,9 +16953,11 @@ public:
 class KQGraphicsView : public QGraphicsView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsView *dummy;
 	KQGraphicsView(QWidget* parent);
+	~KQGraphicsView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15632,6 +16981,7 @@ public:
 	knh_Func_t *pressed_func;
 	knh_Func_t *viewport_entered_func;
 	DummyQAbstractItemView();
+	virtual ~DummyQAbstractItemView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15650,9 +17000,11 @@ public slots:
 class KQAbstractItemView : public QAbstractItemView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractItemView *dummy;
 	KQAbstractItemView(QWidget* parent);
+	~KQAbstractItemView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15670,6 +17022,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQCDEStyle();
+	virtual ~DummyQCDEStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15681,9 +17034,11 @@ public:
 class KQCDEStyle : public QCDEStyle {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQCDEStyle *dummy;
 	KQCDEStyle(bool useHighlightCols);
+	~KQCDEStyle();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15702,6 +17057,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *sub_window_activated_func;
 	DummyQMdiArea();
+	virtual ~DummyQMdiArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15715,9 +17071,11 @@ public slots:
 class KQMdiArea : public QMdiArea {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMdiArea *dummy;
 	KQMdiArea(QWidget* parent);
+	~KQMdiArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15744,6 +17102,7 @@ public:
 	knh_Func_t *undo_available_func;
 	knh_Func_t *update_request_func;
 	DummyQPlainTextEdit();
+	virtual ~DummyQPlainTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15765,9 +17124,11 @@ public slots:
 class KQPlainTextEdit : public QPlainTextEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPlainTextEdit *dummy;
 	KQPlainTextEdit(QWidget* parent);
+	~KQPlainTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15786,6 +17147,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *accepted_func;
 	DummyQPrintDialog();
+	virtual ~DummyQPrintDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15799,9 +17161,11 @@ public slots:
 class KQPrintDialog : public QPrintDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrintDialog *dummy;
 	KQPrintDialog(QPrinter* printer, QWidget* parent);
+	~KQPrintDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15819,6 +17183,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQDateEdit();
+	virtual ~DummyQDateEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15830,9 +17195,11 @@ public:
 class KQDateEdit : public QDateEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDateEdit *dummy;
 	KQDateEdit(QWidget* parent);
+	~KQDateEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15850,6 +17217,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTimeEdit();
+	virtual ~DummyQTimeEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15861,9 +17229,11 @@ public:
 class KQTimeEdit : public QTimeEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTimeEdit *dummy;
 	KQTimeEdit(QWidget* parent);
+	~KQTimeEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15882,6 +17252,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *update_preview_widget_func;
 	DummyQColumnView();
+	virtual ~DummyQColumnView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15895,9 +17266,11 @@ public slots:
 class KQColumnView : public QColumnView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQColumnView *dummy;
 	KQColumnView(QWidget* parent);
+	~KQColumnView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15920,6 +17293,7 @@ public:
 	knh_Func_t *history_changed_func;
 	knh_Func_t *source_changed_func;
 	DummyQTextBrowser();
+	virtual ~DummyQTextBrowser();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15937,9 +17311,11 @@ public slots:
 class KQTextBrowser : public QTextBrowser {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextBrowser *dummy;
 	KQTextBrowser(QWidget* parent);
+	~KQTextBrowser();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15957,6 +17333,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQTableView();
+	virtual ~DummyQTableView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -15968,9 +17345,11 @@ public:
 class KQTableView : public QTableView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTableView *dummy;
 	KQTableView(QWidget* parent);
+	~KQTableView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -15990,6 +17369,7 @@ public:
 	knh_Func_t *collapsed_func;
 	knh_Func_t *expanded_func;
 	DummyQTreeView();
+	virtual ~DummyQTreeView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -16004,9 +17384,11 @@ public slots:
 class KQTreeView : public QTreeView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTreeView *dummy;
 	KQTreeView(QWidget* parent);
+	~KQTreeView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -16035,6 +17417,7 @@ public:
 	knh_Func_t *section_resized_func;
 	knh_Func_t *sort_indicator_changed_func;
 	DummyQHeaderView();
+	virtual ~DummyQHeaderView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -16058,9 +17441,11 @@ public slots:
 class KQHeaderView : public QHeaderView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQHeaderView *dummy;
 	KQHeaderView(Qt::Orientation orientation, QWidget* parent);
+	~KQHeaderView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };
@@ -16088,6 +17473,7 @@ public:
 	knh_Func_t *item_pressed_func;
 	knh_Func_t *item_selection_changed_func;
 	DummyQTreeWidget();
+	virtual ~DummyQTreeWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -16110,9 +17496,11 @@ public slots:
 class KQTreeWidget : public QTreeWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTreeWidget *dummy;
 	KQTreeWidget(QWidget* parent);
+	~KQTreeWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

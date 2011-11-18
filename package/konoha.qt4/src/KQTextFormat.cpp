@@ -614,9 +614,18 @@ KMETHOD QTextFormat_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextFormat::DummyQTextFormat()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextFormat::~DummyQTextFormat()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextFormat::setSelf(knh_RawPtr_t *ptr)
@@ -677,10 +686,16 @@ void DummyQTextFormat::connection(QObject *o)
 
 KQTextFormat::KQTextFormat() : QTextFormat()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextFormat();
 }
 
+KQTextFormat::~KQTextFormat()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -725,17 +740,23 @@ KMETHOD QTextFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextFormat_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextFormat *qp = (KQTextFormat *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextFormat*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextFormat *qp = (KQTextFormat *)p->rawptr;
-//		KQTextFormat *qp = static_cast<KQTextFormat*>(p->rawptr);
+//		KQTextFormat *qp = (KQTextFormat *)p->rawptr;
+		KQTextFormat *qp = static_cast<KQTextFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -982,7 +1003,8 @@ static void QTextFormatPageBreakFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QTextFormat::PageBreakFlags *qp = (QTextFormat::PageBreakFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

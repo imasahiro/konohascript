@@ -190,9 +190,18 @@ KMETHOD QModelIndex_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQModelIndex::DummyQModelIndex()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQModelIndex::~DummyQModelIndex()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQModelIndex::setSelf(knh_RawPtr_t *ptr)
@@ -253,10 +262,16 @@ void DummyQModelIndex::connection(QObject *o)
 
 KQModelIndex::KQModelIndex() : QModelIndex()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQModelIndex();
 }
 
+KQModelIndex::~KQModelIndex()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QModelIndex_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -301,17 +316,23 @@ KMETHOD QModelIndex_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QModelIndex_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQModelIndex *qp = (KQModelIndex *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QModelIndex*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QModelIndex_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQModelIndex *qp = (KQModelIndex *)p->rawptr;
-//		KQModelIndex *qp = static_cast<KQModelIndex*>(p->rawptr);
+//		KQModelIndex *qp = (KQModelIndex *)p->rawptr;
+		KQModelIndex *qp = static_cast<KQModelIndex*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

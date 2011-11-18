@@ -189,9 +189,18 @@ KMETHOD QPaintDevice_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPaintDevice::DummyQPaintDevice()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPaintDevice::~DummyQPaintDevice()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPaintDevice::setSelf(knh_RawPtr_t *ptr)
@@ -250,6 +259,11 @@ void DummyQPaintDevice::connection(QObject *o)
 	}
 }
 
+KQPaintDevice::~KQPaintDevice()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPaintDevice_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -294,17 +308,23 @@ KMETHOD QPaintDevice_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPaintDevice_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPaintDevice *qp = (KQPaintDevice *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPaintDevice*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPaintDevice_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPaintDevice *qp = (KQPaintDevice *)p->rawptr;
-//		KQPaintDevice *qp = static_cast<KQPaintDevice*>(p->rawptr);
+//		KQPaintDevice *qp = (KQPaintDevice *)p->rawptr;
+		KQPaintDevice *qp = static_cast<KQPaintDevice*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

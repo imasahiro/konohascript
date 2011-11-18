@@ -111,6 +111,7 @@ KMETHOD QGraphicsScene_addItem(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
 	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
+		((KQGraphicsScene *)qp)->dummy->added_list->append(sfp[1].p);
 		qp->addItem(item);
 	}
 	RETURNvoid_();
@@ -785,6 +786,7 @@ KMETHOD QGraphicsScene_removeItem(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsScene *  qp = RawPtr_to(QGraphicsScene *, sfp[0]);
 	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
+		((KQGraphicsScene *)qp)->dummy->added_list->removeOne(sfp[1].p);
 		qp->removeItem(item);
 	}
 	RETURNvoid_();
@@ -1223,7 +1225,25 @@ KMETHOD QGraphicsScene_update(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsScene::DummyQGraphicsScene()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
+	contextMenuEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneContextMenuEvent);
+	dragEnterEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneDragDropEvent);
+	dragLeaveEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneDragDropEvent);
+	dragMoveEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneDragDropEvent);
+	dropEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneDragDropEvent);
+	focusInEventPtr = new_empty_QRawPtr(lctx, QFocusEvent);
+	focusOutEventPtr = new_empty_QRawPtr(lctx, QFocusEvent);
+	helpEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneHelpEvent);
+	inputMethodEventPtr = new_empty_QRawPtr(lctx, QInputMethodEvent);
+	keyPressEventPtr = new_empty_QRawPtr(lctx, QKeyEvent);
+	keyReleaseEventPtr = new_empty_QRawPtr(lctx, QKeyEvent);
+	mouseDoubleClickEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneMouseEvent);
+	mouseMoveEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneMouseEvent);
+	mousePressEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneMouseEvent);
+	mouseReleaseEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneMouseEvent);
+	wheelEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneWheelEvent);
 	context_menu_event_func = NULL;
 	drag_enter_event_func = NULL;
 	drag_leave_event_func = NULL;
@@ -1264,6 +1284,13 @@ DummyQGraphicsScene::DummyQGraphicsScene()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("scene-rect-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("selection-changed", NULL));
+}
+DummyQGraphicsScene::~DummyQGraphicsScene()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsScene::setSelf(knh_RawPtr_t *ptr)
@@ -1337,8 +1364,8 @@ bool DummyQGraphicsScene::contextMenuEventDummy(QGraphicsSceneContextMenuEvent* 
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneContextMenuEvent, contextMenuEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		contextMenuEventPtr->rawptr = contextMenuEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(contextMenuEventPtr)));
 		knh_Func_invoke(lctx, context_menu_event_func, lsfp, 2);
 		return true;
 	}
@@ -1351,8 +1378,8 @@ bool DummyQGraphicsScene::dragEnterEventDummy(QGraphicsSceneDragDropEvent* event
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneDragDropEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dragEnterEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dragEnterEventPtr)));
 		knh_Func_invoke(lctx, drag_enter_event_func, lsfp, 2);
 		return true;
 	}
@@ -1365,8 +1392,8 @@ bool DummyQGraphicsScene::dragLeaveEventDummy(QGraphicsSceneDragDropEvent* event
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneDragDropEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dragLeaveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dragLeaveEventPtr)));
 		knh_Func_invoke(lctx, drag_leave_event_func, lsfp, 2);
 		return true;
 	}
@@ -1379,8 +1406,8 @@ bool DummyQGraphicsScene::dragMoveEventDummy(QGraphicsSceneDragDropEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneDragDropEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dragMoveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dragMoveEventPtr)));
 		knh_Func_invoke(lctx, drag_move_event_func, lsfp, 2);
 		return true;
 	}
@@ -1393,8 +1420,8 @@ bool DummyQGraphicsScene::dropEventDummy(QGraphicsSceneDragDropEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneDragDropEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dropEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dropEventPtr)));
 		knh_Func_invoke(lctx, drop_event_func, lsfp, 2);
 		return true;
 	}
@@ -1407,8 +1434,8 @@ bool DummyQGraphicsScene::focusInEventDummy(QFocusEvent* focusEvent)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QFocusEvent, focusEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		focusInEventPtr->rawptr = focusEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(focusInEventPtr)));
 		knh_Func_invoke(lctx, focus_in_event_func, lsfp, 2);
 		return true;
 	}
@@ -1421,8 +1448,8 @@ bool DummyQGraphicsScene::focusOutEventDummy(QFocusEvent* focusEvent)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QFocusEvent, focusEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		focusOutEventPtr->rawptr = focusEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(focusOutEventPtr)));
 		knh_Func_invoke(lctx, focus_out_event_func, lsfp, 2);
 		return true;
 	}
@@ -1435,8 +1462,8 @@ bool DummyQGraphicsScene::helpEventDummy(QGraphicsSceneHelpEvent* helpEvent)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneHelpEvent, helpEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		helpEventPtr->rawptr = helpEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(helpEventPtr)));
 		knh_Func_invoke(lctx, help_event_func, lsfp, 2);
 		return true;
 	}
@@ -1449,8 +1476,8 @@ bool DummyQGraphicsScene::inputMethodEventDummy(QInputMethodEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QInputMethodEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		inputMethodEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(inputMethodEventPtr)));
 		knh_Func_invoke(lctx, input_method_event_func, lsfp, 2);
 		return true;
 	}
@@ -1463,8 +1490,8 @@ bool DummyQGraphicsScene::keyPressEventDummy(QKeyEvent* keyEvent)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QKeyEvent, keyEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		keyPressEventPtr->rawptr = keyEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(keyPressEventPtr)));
 		knh_Func_invoke(lctx, key_press_event_func, lsfp, 2);
 		return true;
 	}
@@ -1477,8 +1504,8 @@ bool DummyQGraphicsScene::keyReleaseEventDummy(QKeyEvent* keyEvent)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QKeyEvent, keyEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		keyReleaseEventPtr->rawptr = keyEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(keyReleaseEventPtr)));
 		knh_Func_invoke(lctx, key_release_event_func, lsfp, 2);
 		return true;
 	}
@@ -1491,8 +1518,8 @@ bool DummyQGraphicsScene::mouseDoubleClickEventDummy(QGraphicsSceneMouseEvent* m
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneMouseEvent, mouseEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mouseDoubleClickEventPtr->rawptr = mouseEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mouseDoubleClickEventPtr)));
 		knh_Func_invoke(lctx, mouse_double_click_event_func, lsfp, 2);
 		return true;
 	}
@@ -1505,8 +1532,8 @@ bool DummyQGraphicsScene::mouseMoveEventDummy(QGraphicsSceneMouseEvent* mouseEve
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneMouseEvent, mouseEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mouseMoveEventPtr->rawptr = mouseEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mouseMoveEventPtr)));
 		knh_Func_invoke(lctx, mouse_move_event_func, lsfp, 2);
 		return true;
 	}
@@ -1519,8 +1546,8 @@ bool DummyQGraphicsScene::mousePressEventDummy(QGraphicsSceneMouseEvent* mouseEv
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneMouseEvent, mouseEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mousePressEventPtr->rawptr = mouseEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mousePressEventPtr)));
 		knh_Func_invoke(lctx, mouse_press_event_func, lsfp, 2);
 		return true;
 	}
@@ -1533,8 +1560,8 @@ bool DummyQGraphicsScene::mouseReleaseEventDummy(QGraphicsSceneMouseEvent* mouse
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneMouseEvent, mouseEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mouseReleaseEventPtr->rawptr = mouseEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mouseReleaseEventPtr)));
 		knh_Func_invoke(lctx, mouse_release_event_func, lsfp, 2);
 		return true;
 	}
@@ -1547,8 +1574,8 @@ bool DummyQGraphicsScene::wheelEventDummy(QGraphicsSceneWheelEvent* wheelEvent)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneWheelEvent, wheelEvent);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		wheelEventPtr->rawptr = wheelEvent;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(wheelEventPtr)));
 		knh_Func_invoke(lctx, wheel_event_func, lsfp, 2);
 		return true;
 	}
@@ -1650,9 +1677,14 @@ knh_Object_t** DummyQGraphicsScene::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsScene::reftrace p->rawptr=[%p]\n", p->rawptr);
-
-	int list_size = 19;
+	int length = added_list->length();
+	int list_size = 36 + length;
 	KNH_ENSUREREF(ctx, list_size);
+
+	for (int i = 0; i < length; i++) {
+		knh_RawPtr_t *item = added_list->at(i);
+		KNH_ADDNNREF(ctx, item);
+	}
 	KNH_ADDNNREF(ctx, context_menu_event_func);
 	KNH_ADDNNREF(ctx, drag_enter_event_func);
 	KNH_ADDNNREF(ctx, drag_leave_event_func);
@@ -1672,6 +1704,22 @@ knh_Object_t** DummyQGraphicsScene::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	KNH_ADDNNREF(ctx, changed_func);
 	KNH_ADDNNREF(ctx, scene_rect_changed_func);
 	KNH_ADDNNREF(ctx, selection_changed_func);
+	KNH_ADDNNREF(ctx, contextMenuEventPtr);
+	KNH_ADDNNREF(ctx, dragEnterEventPtr);
+	KNH_ADDNNREF(ctx, dragLeaveEventPtr);
+	KNH_ADDNNREF(ctx, dragMoveEventPtr);
+	KNH_ADDNNREF(ctx, dropEventPtr);
+	KNH_ADDNNREF(ctx, focusInEventPtr);
+	KNH_ADDNNREF(ctx, focusOutEventPtr);
+	KNH_ADDNNREF(ctx, helpEventPtr);
+	KNH_ADDNNREF(ctx, inputMethodEventPtr);
+	KNH_ADDNNREF(ctx, keyPressEventPtr);
+	KNH_ADDNNREF(ctx, keyReleaseEventPtr);
+	KNH_ADDNNREF(ctx, mouseDoubleClickEventPtr);
+	KNH_ADDNNREF(ctx, mouseMoveEventPtr);
+	KNH_ADDNNREF(ctx, mousePressEventPtr);
+	KNH_ADDNNREF(ctx, mouseReleaseEventPtr);
+	KNH_ADDNNREF(ctx, wheelEventPtr);
 
 	KNH_SIZEREF(ctx);
 
@@ -1693,11 +1741,18 @@ void DummyQGraphicsScene::connection(QObject *o)
 
 KQGraphicsScene::KQGraphicsScene(QObject* parent) : QGraphicsScene(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsScene();
+	dummy->added_list = new QList<knh_RawPtr_t *>();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsScene::~KQGraphicsScene()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsScene_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1742,17 +1797,23 @@ KMETHOD QGraphicsScene_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsScene_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsScene *qp = (KQGraphicsScene *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsScene*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsScene_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsScene *qp = (KQGraphicsScene *)p->rawptr;
-//		KQGraphicsScene *qp = static_cast<KQGraphicsScene*>(p->rawptr);
+//		KQGraphicsScene *qp = (KQGraphicsScene *)p->rawptr;
+		KQGraphicsScene *qp = static_cast<KQGraphicsScene*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1928,7 +1989,8 @@ static void QGraphicsSceneSceneLayers_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QGraphicsScene::SceneLayers *qp = (QGraphicsScene::SceneLayers *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

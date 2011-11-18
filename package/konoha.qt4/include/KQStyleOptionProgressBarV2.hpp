@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionProgressBarV2();
+	virtual ~DummyQStyleOptionProgressBarV2();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQStyleOptionProgressBarV2 : public QStyleOptionProgressBarV2 {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionProgressBarV2 *dummy;
 	KQStyleOptionProgressBarV2();
+	~KQStyleOptionProgressBarV2();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

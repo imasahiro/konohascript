@@ -30,6 +30,7 @@ public:
 	knh_Func_t *unsupported_content_func;
 	knh_Func_t *window_close_requested_func;
 	DummyQWebPage();
+	virtual ~DummyQWebPage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -65,9 +66,11 @@ public slots:
 class KQWebPage : public QWebPage {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWebPage *dummy;
 	KQWebPage(QObject* parent);
+	~KQWebPage();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

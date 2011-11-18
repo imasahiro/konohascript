@@ -1,9 +1,18 @@
 
 DummyQTextBlockGroup::DummyQTextBlockGroup()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextBlockGroup::~DummyQTextBlockGroup()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextBlockGroup::setSelf(knh_RawPtr_t *ptr)
@@ -67,6 +76,11 @@ void DummyQTextBlockGroup::connection(QObject *o)
 	DummyQTextObject::connection(o);
 }
 
+KQTextBlockGroup::~KQTextBlockGroup()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextBlockGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -111,17 +125,23 @@ KMETHOD QTextBlockGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextBlockGroup_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextBlockGroup *qp = (KQTextBlockGroup *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+//			delete (QTextBlockGroup*)qp;
+//			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextBlockGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextBlockGroup *qp = (KQTextBlockGroup *)p->rawptr;
-//		KQTextBlockGroup *qp = static_cast<KQTextBlockGroup*>(p->rawptr);
+//		KQTextBlockGroup *qp = (KQTextBlockGroup *)p->rawptr;
+		KQTextBlockGroup *qp = static_cast<KQTextBlockGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -188,9 +188,18 @@ KMETHOD QTextInlineObject_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextInlineObject::DummyQTextInlineObject()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextInlineObject::~DummyQTextInlineObject()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextInlineObject::setSelf(knh_RawPtr_t *ptr)
@@ -251,10 +260,16 @@ void DummyQTextInlineObject::connection(QObject *o)
 
 KQTextInlineObject::KQTextInlineObject(int i, QTextEngine* e) : QTextInlineObject(i, e)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextInlineObject();
 }
 
+KQTextInlineObject::~KQTextInlineObject()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextInlineObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -299,17 +314,23 @@ KMETHOD QTextInlineObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextInlineObject_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextInlineObject *qp = (KQTextInlineObject *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextInlineObject*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextInlineObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextInlineObject *qp = (KQTextInlineObject *)p->rawptr;
-//		KQTextInlineObject *qp = static_cast<KQTextInlineObject*>(p->rawptr);
+//		KQTextInlineObject *qp = (KQTextInlineObject *)p->rawptr;
+		KQTextInlineObject *qp = static_cast<KQTextInlineObject*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

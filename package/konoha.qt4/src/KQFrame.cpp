@@ -193,9 +193,18 @@ KMETHOD QFrame_setMidLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQFrame::DummyQFrame()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQFrame::~DummyQFrame()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQFrame::setSelf(knh_RawPtr_t *ptr)
@@ -261,11 +270,17 @@ void DummyQFrame::connection(QObject *o)
 
 KQFrame::KQFrame(QWidget* parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQFrame();
 	dummy->connection((QObject*)this);
 }
 
+KQFrame::~KQFrame()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QFrame_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -310,17 +325,23 @@ KMETHOD QFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QFrame_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQFrame *qp = (KQFrame *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QFrame*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQFrame *qp = (KQFrame *)p->rawptr;
-//		KQFrame *qp = static_cast<KQFrame*>(p->rawptr);
+//		KQFrame *qp = (KQFrame *)p->rawptr;
+		KQFrame *qp = static_cast<KQFrame*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

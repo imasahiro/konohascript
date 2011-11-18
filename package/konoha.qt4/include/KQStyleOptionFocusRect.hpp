@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQStyleOptionFocusRect();
+	virtual ~DummyQStyleOptionFocusRect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQStyleOptionFocusRect : public QStyleOptionFocusRect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQStyleOptionFocusRect *dummy;
 	KQStyleOptionFocusRect();
+	~KQStyleOptionFocusRect();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

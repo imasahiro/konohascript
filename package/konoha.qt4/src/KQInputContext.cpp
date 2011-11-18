@@ -194,9 +194,18 @@ KMETHOD QInputContext_widgetDestroyed(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQInputContext::DummyQInputContext()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQInputContext::~DummyQInputContext()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQInputContext::setSelf(knh_RawPtr_t *ptr)
@@ -262,11 +271,17 @@ void DummyQInputContext::connection(QObject *o)
 
 KQInputContext::KQInputContext(QObject* parent) : QInputContext(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQInputContext();
 	dummy->connection((QObject*)this);
 }
 
+KQInputContext::~KQInputContext()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QInputContext_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -311,17 +326,23 @@ KMETHOD QInputContext_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QInputContext_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQInputContext *qp = (KQInputContext *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QInputContext*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QInputContext_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQInputContext *qp = (KQInputContext *)p->rawptr;
-//		KQInputContext *qp = static_cast<KQInputContext*>(p->rawptr);
+//		KQInputContext *qp = (KQInputContext *)p->rawptr;
+		KQInputContext *qp = static_cast<KQInputContext*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

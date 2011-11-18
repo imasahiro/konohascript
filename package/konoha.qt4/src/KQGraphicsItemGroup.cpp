@@ -73,6 +73,7 @@ KMETHOD QGraphicsItemGroup_addToGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
 	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
+		((KQGraphicsItemGroup *)qp)->dummy->added_list->append(sfp[1].p);
 		qp->addToGroup(item);
 	}
 	RETURNvoid_();
@@ -85,6 +86,7 @@ KMETHOD QGraphicsItemGroup_removeFromGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 	QGraphicsItemGroup *  qp = RawPtr_to(QGraphicsItemGroup *, sfp[0]);
 	if (qp) {
 		QGraphicsItem*  item = RawPtr_to(QGraphicsItem*, sfp[1]);
+		((KQGraphicsItemGroup *)qp)->dummy->added_list->removeOne(sfp[1].p);
 		qp->removeFromGroup(item);
 	}
 	RETURNvoid_();
@@ -137,11 +139,20 @@ void KQGraphicsItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
 DummyQGraphicsItemGroup::DummyQGraphicsItemGroup()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
+}
+DummyQGraphicsItemGroup::~DummyQGraphicsItemGroup()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsItemGroup::setSelf(knh_RawPtr_t *ptr)
@@ -192,6 +203,15 @@ knh_Object_t** DummyQGraphicsItemGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG
 {
 	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsItemGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
+	int length = added_list->length();
+	KNH_ENSUREREF(ctx, length);
+
+	for (int i = 0; i < length; i++) {
+		knh_RawPtr_t *item = added_list->at(i);
+		KNH_ADDNNREF(ctx, item);
+	}
+
+	KNH_SIZEREF(ctx);
 
 	tail_ = DummyQGraphicsItem::reftrace(ctx, p, tail_);
 
@@ -208,10 +228,17 @@ void DummyQGraphicsItemGroup::connection(QObject *o)
 
 KQGraphicsItemGroup::KQGraphicsItemGroup(QGraphicsItem* parent) : QGraphicsItemGroup(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsItemGroup();
+	dummy->added_list = new QList<knh_RawPtr_t *>();
 }
 
+KQGraphicsItemGroup::~KQGraphicsItemGroup()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsItemGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -256,17 +283,23 @@ KMETHOD QGraphicsItemGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsItemGroup_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsItemGroup *qp = (KQGraphicsItemGroup *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsItemGroup*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsItemGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsItemGroup *qp = (KQGraphicsItemGroup *)p->rawptr;
-//		KQGraphicsItemGroup *qp = static_cast<KQGraphicsItemGroup*>(p->rawptr);
+//		KQGraphicsItemGroup *qp = (KQGraphicsItemGroup *)p->rawptr;
+		KQGraphicsItemGroup *qp = static_cast<KQGraphicsItemGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

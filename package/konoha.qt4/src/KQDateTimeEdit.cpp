@@ -672,6 +672,8 @@ KMETHOD QDateTimeEdit_setTime(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDateTimeEdit::DummyQDateTimeEdit()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	date_changed_func = NULL;
 	date_time_changed_func = NULL;
@@ -681,6 +683,13 @@ DummyQDateTimeEdit::DummyQDateTimeEdit()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("date-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("date-time-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("time-changed", NULL));
+}
+DummyQDateTimeEdit::~DummyQDateTimeEdit()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDateTimeEdit::setSelf(knh_RawPtr_t *ptr)
@@ -776,8 +785,9 @@ knh_Object_t** DummyQDateTimeEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQDateTimeEdit::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 3;
+	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, date_changed_func);
 	KNH_ADDNNREF(ctx, date_time_changed_func);
 	KNH_ADDNNREF(ctx, time_changed_func);
@@ -802,11 +812,17 @@ void DummyQDateTimeEdit::connection(QObject *o)
 
 KQDateTimeEdit::KQDateTimeEdit(QWidget* parent) : QDateTimeEdit(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDateTimeEdit();
 	dummy->connection((QObject*)this);
 }
 
+KQDateTimeEdit::~KQDateTimeEdit()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDateTimeEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -851,17 +867,23 @@ KMETHOD QDateTimeEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDateTimeEdit_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDateTimeEdit *qp = (KQDateTimeEdit *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDateTimeEdit*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDateTimeEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDateTimeEdit *qp = (KQDateTimeEdit *)p->rawptr;
-//		KQDateTimeEdit *qp = static_cast<KQDateTimeEdit*>(p->rawptr);
+//		KQDateTimeEdit *qp = (KQDateTimeEdit *)p->rawptr;
+		KQDateTimeEdit *qp = static_cast<KQDateTimeEdit*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1040,7 +1062,8 @@ static void QDateTimeEditSections_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QDateTimeEdit::Sections *qp = (QDateTimeEdit::Sections *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

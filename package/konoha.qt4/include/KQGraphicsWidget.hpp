@@ -20,7 +20,20 @@ public:
 	knh_Func_t *window_frame_event_func;
 	knh_Func_t *geometry_changed_func;
 	knh_Func_t *paint_func;
+	knh_RawPtr_t *changeEventPtr;
+	knh_RawPtr_t *closeEventPtr;
+	knh_RawPtr_t *grabKeyboardEventPtr;
+	knh_RawPtr_t *grabMouseEventPtr;
+	knh_RawPtr_t *hideEventPtr;
+	knh_RawPtr_t *moveEventPtr;
+	knh_RawPtr_t *polishEventPtr;
+	knh_RawPtr_t *resizeEventPtr;
+	knh_RawPtr_t *showEventPtr;
+	knh_RawPtr_t *ungrabKeyboardEventPtr;
+	knh_RawPtr_t *ungrabMouseEventPtr;
+	knh_RawPtr_t *windowFrameEventPtr;
 	DummyQGraphicsWidget();
+	virtual ~DummyQGraphicsWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -46,9 +59,11 @@ public slots:
 class KQGraphicsWidget : public QGraphicsWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsWidget *dummy;
 	KQGraphicsWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags);
+	~KQGraphicsWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);

@@ -25,6 +25,7 @@ public:
 	knh_Func_t *rows_moved_func;
 	knh_Func_t *rows_removed_func;
 	DummyQAbstractItemModel();
+	virtual ~DummyQAbstractItemModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -55,9 +56,11 @@ public slots:
 class KQAbstractItemModel : public QAbstractItemModel {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractItemModel *dummy;
 	KQAbstractItemModel(QObject* parent);
+	~KQAbstractItemModel();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

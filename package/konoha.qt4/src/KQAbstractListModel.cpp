@@ -38,9 +38,18 @@ KMETHOD QAbstractListModel_index(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractListModel::DummyQAbstractListModel()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAbstractListModel::~DummyQAbstractListModel()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractListModel::setSelf(knh_RawPtr_t *ptr)
@@ -106,11 +115,17 @@ void DummyQAbstractListModel::connection(QObject *o)
 
 KQAbstractListModel::KQAbstractListModel(QObject* parent) : QAbstractListModel(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractListModel();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractListModel::~KQAbstractListModel()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractListModel_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -155,17 +170,23 @@ KMETHOD QAbstractListModel_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractListModel_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractListModel *qp = (KQAbstractListModel *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractListModel*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractListModel_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractListModel *qp = (KQAbstractListModel *)p->rawptr;
-//		KQAbstractListModel *qp = static_cast<KQAbstractListModel*>(p->rawptr);
+//		KQAbstractListModel *qp = (KQAbstractListModel *)p->rawptr;
+		KQAbstractListModel *qp = static_cast<KQAbstractListModel*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

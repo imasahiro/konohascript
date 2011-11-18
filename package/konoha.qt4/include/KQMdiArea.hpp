@@ -8,6 +8,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *sub_window_activated_func;
 	DummyQMdiArea();
+	virtual ~DummyQMdiArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -21,9 +22,11 @@ public slots:
 class KQMdiArea : public QMdiArea {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMdiArea *dummy;
 	KQMdiArea(QWidget* parent);
+	~KQMdiArea();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

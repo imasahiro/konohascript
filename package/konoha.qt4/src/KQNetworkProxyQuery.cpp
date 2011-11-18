@@ -237,9 +237,18 @@ KMETHOD QNetworkProxyQuery_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkProxyQuery::DummyQNetworkProxyQuery()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkProxyQuery::~DummyQNetworkProxyQuery()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkProxyQuery::setSelf(knh_RawPtr_t *ptr)
@@ -300,10 +309,16 @@ void DummyQNetworkProxyQuery::connection(QObject *o)
 
 KQNetworkProxyQuery::KQNetworkProxyQuery() : QNetworkProxyQuery()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkProxyQuery();
 }
 
+KQNetworkProxyQuery::~KQNetworkProxyQuery()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkProxyQuery_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -348,17 +363,23 @@ KMETHOD QNetworkProxyQuery_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkProxyQuery_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkProxyQuery *qp = (KQNetworkProxyQuery *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkProxyQuery*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkProxyQuery_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkProxyQuery *qp = (KQNetworkProxyQuery *)p->rawptr;
-//		KQNetworkProxyQuery *qp = static_cast<KQNetworkProxyQuery*>(p->rawptr);
+//		KQNetworkProxyQuery *qp = (KQNetworkProxyQuery *)p->rawptr;
+		KQNetworkProxyQuery *qp = static_cast<KQNetworkProxyQuery*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

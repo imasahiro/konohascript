@@ -427,6 +427,8 @@ KMETHOD QAbstractSocket_waitForDisconnected(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractSocket::DummyQAbstractSocket()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	connected_func = NULL;
 	disconnected_func = NULL;
@@ -442,6 +444,13 @@ DummyQAbstractSocket::DummyQAbstractSocket()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("host-found", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("proxy-authentication-required", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+}
+DummyQAbstractSocket::~DummyQAbstractSocket()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractSocket::setSelf(knh_RawPtr_t *ptr)
@@ -576,8 +585,9 @@ knh_Object_t** DummyQAbstractSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractSocket::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, connected_func);
 	KNH_ADDNNREF(ctx, disconnected_func);
 	KNH_ADDNNREF(ctx, error_func);
@@ -608,11 +618,17 @@ void DummyQAbstractSocket::connection(QObject *o)
 
 KQAbstractSocket::KQAbstractSocket(QAbstractSocket::SocketType socketType, QObject* parent) : QAbstractSocket(socketType, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractSocket();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractSocket::~KQAbstractSocket()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractSocket_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -657,17 +673,23 @@ KMETHOD QAbstractSocket_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractSocket_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractSocket *qp = (KQAbstractSocket *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractSocket*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractSocket *qp = (KQAbstractSocket *)p->rawptr;
-//		KQAbstractSocket *qp = static_cast<KQAbstractSocket*>(p->rawptr);
+//		KQAbstractSocket *qp = (KQAbstractSocket *)p->rawptr;
+		KQAbstractSocket *qp = static_cast<KQAbstractSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

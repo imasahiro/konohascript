@@ -460,9 +460,18 @@ KMETHOD QGLWidget_updateOverlayGL(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGLWidget::DummyQGLWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLWidget::~DummyQGLWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLWidget::setSelf(knh_RawPtr_t *ptr)
@@ -528,11 +537,17 @@ void DummyQGLWidget::connection(QObject *o)
 
 KQGLWidget::KQGLWidget(QWidget* parent, const QGLWidget* shareWidget, Qt::WindowFlags f) : QGLWidget(parent, shareWidget, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQGLWidget::~KQGLWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -577,17 +592,23 @@ KMETHOD QGLWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLWidget *qp = (KQGLWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLWidget *qp = (KQGLWidget *)p->rawptr;
-//		KQGLWidget *qp = static_cast<KQGLWidget*>(p->rawptr);
+//		KQGLWidget *qp = (KQGLWidget *)p->rawptr;
+		KQGLWidget *qp = static_cast<KQGLWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

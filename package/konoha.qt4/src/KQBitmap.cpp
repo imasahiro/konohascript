@@ -105,9 +105,18 @@ KMETHOD QBitmap_fromImage(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQBitmap::DummyQBitmap()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQBitmap::~DummyQBitmap()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQBitmap::setSelf(knh_RawPtr_t *ptr)
@@ -173,10 +182,16 @@ void DummyQBitmap::connection(QObject *o)
 
 KQBitmap::KQBitmap() : QBitmap()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQBitmap();
 }
 
+KQBitmap::~KQBitmap()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QBitmap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -221,17 +236,23 @@ KMETHOD QBitmap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QBitmap_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQBitmap *qp = (KQBitmap *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QBitmap*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QBitmap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQBitmap *qp = (KQBitmap *)p->rawptr;
-//		KQBitmap *qp = static_cast<KQBitmap*>(p->rawptr);
+//		KQBitmap *qp = (KQBitmap *)p->rawptr;
+		KQBitmap *qp = static_cast<KQBitmap*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

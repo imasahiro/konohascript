@@ -43,9 +43,18 @@ KMETHOD QMoveEvent_pos(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMoveEvent::DummyQMoveEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQMoveEvent::~DummyQMoveEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMoveEvent::setSelf(knh_RawPtr_t *ptr)
@@ -111,10 +120,16 @@ void DummyQMoveEvent::connection(QObject *o)
 
 KQMoveEvent::KQMoveEvent(const QPoint pos, const QPoint oldPos) : QMoveEvent(pos, oldPos)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMoveEvent();
 }
 
+KQMoveEvent::~KQMoveEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMoveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -159,17 +174,23 @@ KMETHOD QMoveEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMoveEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMoveEvent *qp = (KQMoveEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMoveEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMoveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMoveEvent *qp = (KQMoveEvent *)p->rawptr;
-//		KQMoveEvent *qp = static_cast<KQMoveEvent*>(p->rawptr);
+//		KQMoveEvent *qp = (KQMoveEvent *)p->rawptr;
+		KQMoveEvent *qp = static_cast<KQMoveEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

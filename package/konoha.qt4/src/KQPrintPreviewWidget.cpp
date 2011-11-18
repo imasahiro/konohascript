@@ -300,6 +300,8 @@ KMETHOD QPrintPreviewWidget_zoomOut(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPrintPreviewWidget::DummyQPrintPreviewWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	paint_requested_func = NULL;
 	preview_changed_func = NULL;
@@ -307,6 +309,13 @@ DummyQPrintPreviewWidget::DummyQPrintPreviewWidget()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("paint-requested", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("preview-changed", NULL));
+}
+DummyQPrintPreviewWidget::~DummyQPrintPreviewWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPrintPreviewWidget::setSelf(knh_RawPtr_t *ptr)
@@ -385,8 +394,9 @@ knh_Object_t** DummyQPrintPreviewWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRAR
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQPrintPreviewWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, paint_requested_func);
 	KNH_ADDNNREF(ctx, preview_changed_func);
 
@@ -409,11 +419,17 @@ void DummyQPrintPreviewWidget::connection(QObject *o)
 
 KQPrintPreviewWidget::KQPrintPreviewWidget(QPrinter* printer, QWidget* parent, Qt::WindowFlags flags) : QPrintPreviewWidget(printer, parent, flags)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPrintPreviewWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQPrintPreviewWidget::~KQPrintPreviewWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPrintPreviewWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -458,17 +474,23 @@ KMETHOD QPrintPreviewWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPrintPreviewWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPrintPreviewWidget *qp = (KQPrintPreviewWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPrintPreviewWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPrintPreviewWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPrintPreviewWidget *qp = (KQPrintPreviewWidget *)p->rawptr;
-//		KQPrintPreviewWidget *qp = static_cast<KQPrintPreviewWidget*>(p->rawptr);
+//		KQPrintPreviewWidget *qp = (KQPrintPreviewWidget *)p->rawptr;
+		KQPrintPreviewWidget *qp = static_cast<KQPrintPreviewWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

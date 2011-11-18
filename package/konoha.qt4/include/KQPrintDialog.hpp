@@ -8,6 +8,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *accepted_func;
 	DummyQPrintDialog();
+	virtual ~DummyQPrintDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -21,9 +22,11 @@ public slots:
 class KQPrintDialog : public QPrintDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPrintDialog *dummy;
 	KQPrintDialog(QPrinter* printer, QWidget* parent);
+	~KQPrintDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

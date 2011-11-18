@@ -35,9 +35,18 @@ KMETHOD QStyleOptionToolBoxV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionToolBoxV2::DummyQStyleOptionToolBoxV2()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionToolBoxV2::~DummyQStyleOptionToolBoxV2()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionToolBoxV2::setSelf(knh_RawPtr_t *ptr)
@@ -103,10 +112,16 @@ void DummyQStyleOptionToolBoxV2::connection(QObject *o)
 
 KQStyleOptionToolBoxV2::KQStyleOptionToolBoxV2() : QStyleOptionToolBoxV2()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionToolBoxV2();
 }
 
+KQStyleOptionToolBoxV2::~KQStyleOptionToolBoxV2()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionToolBoxV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -151,17 +166,23 @@ KMETHOD QStyleOptionToolBoxV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionToolBoxV2_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionToolBoxV2 *qp = (KQStyleOptionToolBoxV2 *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionToolBoxV2*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionToolBoxV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionToolBoxV2 *qp = (KQStyleOptionToolBoxV2 *)p->rawptr;
-//		KQStyleOptionToolBoxV2 *qp = static_cast<KQStyleOptionToolBoxV2*>(p->rawptr);
+//		KQStyleOptionToolBoxV2 *qp = (KQStyleOptionToolBoxV2 *)p->rawptr;
+		KQStyleOptionToolBoxV2 *qp = static_cast<KQStyleOptionToolBoxV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

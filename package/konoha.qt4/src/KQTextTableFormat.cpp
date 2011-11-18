@@ -137,9 +137,18 @@ KMETHOD QTextTableFormat_setHeaderRowCount(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextTableFormat::DummyQTextTableFormat()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextTableFormat::~DummyQTextTableFormat()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextTableFormat::setSelf(knh_RawPtr_t *ptr)
@@ -205,10 +214,16 @@ void DummyQTextTableFormat::connection(QObject *o)
 
 KQTextTableFormat::KQTextTableFormat() : QTextTableFormat()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextTableFormat();
 }
 
+KQTextTableFormat::~KQTextTableFormat()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextTableFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -253,17 +268,23 @@ KMETHOD QTextTableFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextTableFormat_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextTableFormat *qp = (KQTextTableFormat *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextTableFormat*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextTableFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextTableFormat *qp = (KQTextTableFormat *)p->rawptr;
-//		KQTextTableFormat *qp = static_cast<KQTextTableFormat*>(p->rawptr);
+//		KQTextTableFormat *qp = (KQTextTableFormat *)p->rawptr;
+		KQTextTableFormat *qp = static_cast<KQTextTableFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

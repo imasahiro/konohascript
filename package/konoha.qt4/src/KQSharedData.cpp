@@ -41,9 +41,18 @@ KMETHOD QSharedData_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSharedData::DummyQSharedData()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSharedData::~DummyQSharedData()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSharedData::setSelf(knh_RawPtr_t *ptr)
@@ -104,10 +113,16 @@ void DummyQSharedData::connection(QObject *o)
 
 KQSharedData::KQSharedData() : QSharedData()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSharedData();
 }
 
+KQSharedData::~KQSharedData()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSharedData_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -152,17 +167,23 @@ KMETHOD QSharedData_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSharedData_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSharedData *qp = (KQSharedData *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSharedData*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSharedData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSharedData *qp = (KQSharedData *)p->rawptr;
-//		KQSharedData *qp = static_cast<KQSharedData*>(p->rawptr);
+//		KQSharedData *qp = (KQSharedData *)p->rawptr;
+		KQSharedData *qp = static_cast<KQSharedData*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

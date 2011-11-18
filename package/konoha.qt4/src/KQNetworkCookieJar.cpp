@@ -56,9 +56,18 @@ KMETHOD QNetworkCookieJar_setCookiesFromUrl(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkCookieJar::DummyQNetworkCookieJar()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkCookieJar::~DummyQNetworkCookieJar()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkCookieJar::setSelf(knh_RawPtr_t *ptr)
@@ -124,11 +133,17 @@ void DummyQNetworkCookieJar::connection(QObject *o)
 
 KQNetworkCookieJar::KQNetworkCookieJar(QObject* parent) : QNetworkCookieJar(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkCookieJar();
 	dummy->connection((QObject*)this);
 }
 
+KQNetworkCookieJar::~KQNetworkCookieJar()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkCookieJar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -173,17 +188,23 @@ KMETHOD QNetworkCookieJar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkCookieJar_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkCookieJar *qp = (KQNetworkCookieJar *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkCookieJar*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkCookieJar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkCookieJar *qp = (KQNetworkCookieJar *)p->rawptr;
-//		KQNetworkCookieJar *qp = static_cast<KQNetworkCookieJar*>(p->rawptr);
+//		KQNetworkCookieJar *qp = (KQNetworkCookieJar *)p->rawptr;
+		KQNetworkCookieJar *qp = static_cast<KQNetworkCookieJar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

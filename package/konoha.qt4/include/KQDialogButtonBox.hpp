@@ -11,6 +11,7 @@ public:
 	knh_Func_t *help_requested_func;
 	knh_Func_t *rejected_func;
 	DummyQDialogButtonBox();
+	virtual ~DummyQDialogButtonBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +28,11 @@ public slots:
 class KQDialogButtonBox : public QDialogButtonBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQDialogButtonBox *dummy;
 	KQDialogButtonBox(QWidget* parent);
+	~KQDialogButtonBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -488,11 +488,20 @@ KMETHOD QCoreApplication_quit(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQCoreApplication::DummyQCoreApplication()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	about_to_quit_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("about-to-quit", NULL));
+}
+DummyQCoreApplication::~DummyQCoreApplication()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQCoreApplication::setSelf(knh_RawPtr_t *ptr)
@@ -556,8 +565,9 @@ knh_Object_t** DummyQCoreApplication::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQCoreApplication::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, about_to_quit_func);
 
 	KNH_SIZEREF(ctx);
@@ -578,11 +588,17 @@ void DummyQCoreApplication::connection(QObject *o)
 
 KQCoreApplication::KQCoreApplication(int argc, char** argv) : QCoreApplication(argc, argv)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQCoreApplication();
 	dummy->connection((QObject*)this);
 }
 
+KQCoreApplication::~KQCoreApplication()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QCoreApplication_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -627,17 +643,23 @@ KMETHOD QCoreApplication_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QCoreApplication_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQCoreApplication *qp = (KQCoreApplication *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QCoreApplication*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QCoreApplication_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQCoreApplication *qp = (KQCoreApplication *)p->rawptr;
-//		KQCoreApplication *qp = static_cast<KQCoreApplication*>(p->rawptr);
+//		KQCoreApplication *qp = (KQCoreApplication *)p->rawptr;
+		KQCoreApplication *qp = static_cast<KQCoreApplication*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

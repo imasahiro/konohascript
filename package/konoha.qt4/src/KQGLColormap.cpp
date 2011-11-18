@@ -168,9 +168,18 @@ KMETHOD QGLColormap_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGLColormap::DummyQGLColormap()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLColormap::~DummyQGLColormap()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLColormap::setSelf(knh_RawPtr_t *ptr)
@@ -231,10 +240,16 @@ void DummyQGLColormap::connection(QObject *o)
 
 KQGLColormap::KQGLColormap() : QGLColormap()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLColormap();
 }
 
+KQGLColormap::~KQGLColormap()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLColormap_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -279,17 +294,23 @@ KMETHOD QGLColormap_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLColormap_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLColormap *qp = (KQGLColormap *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLColormap*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLColormap_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLColormap *qp = (KQGLColormap *)p->rawptr;
-//		KQGLColormap *qp = static_cast<KQGLColormap*>(p->rawptr);
+//		KQGLColormap *qp = (KQGLColormap *)p->rawptr;
+		KQGLColormap *qp = static_cast<KQGLColormap*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

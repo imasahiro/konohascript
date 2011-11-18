@@ -23,9 +23,18 @@ KMETHOD QStyleOptionHeader_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionHeader::DummyQStyleOptionHeader()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionHeader::~DummyQStyleOptionHeader()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionHeader::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionHeader::connection(QObject *o)
 
 KQStyleOptionHeader::KQStyleOptionHeader() : QStyleOptionHeader()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionHeader();
 }
 
+KQStyleOptionHeader::~KQStyleOptionHeader()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionHeader_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionHeader_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionHeader_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionHeader *qp = (KQStyleOptionHeader *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionHeader*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionHeader_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionHeader *qp = (KQStyleOptionHeader *)p->rawptr;
-//		KQStyleOptionHeader *qp = static_cast<KQStyleOptionHeader*>(p->rawptr);
+//		KQStyleOptionHeader *qp = (KQStyleOptionHeader *)p->rawptr;
+		KQStyleOptionHeader *qp = static_cast<KQStyleOptionHeader*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

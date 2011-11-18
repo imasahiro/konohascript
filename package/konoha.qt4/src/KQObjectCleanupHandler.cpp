@@ -62,9 +62,18 @@ KMETHOD QObjectCleanupHandler_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQObjectCleanupHandler::DummyQObjectCleanupHandler()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQObjectCleanupHandler::~DummyQObjectCleanupHandler()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQObjectCleanupHandler::setSelf(knh_RawPtr_t *ptr)
@@ -130,11 +139,17 @@ void DummyQObjectCleanupHandler::connection(QObject *o)
 
 KQObjectCleanupHandler::KQObjectCleanupHandler() : QObjectCleanupHandler()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQObjectCleanupHandler();
 	dummy->connection((QObject*)this);
 }
 
+KQObjectCleanupHandler::~KQObjectCleanupHandler()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QObjectCleanupHandler_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -179,17 +194,23 @@ KMETHOD QObjectCleanupHandler_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QObjectCleanupHandler_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQObjectCleanupHandler *qp = (KQObjectCleanupHandler *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QObjectCleanupHandler*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QObjectCleanupHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQObjectCleanupHandler *qp = (KQObjectCleanupHandler *)p->rawptr;
-//		KQObjectCleanupHandler *qp = static_cast<KQObjectCleanupHandler*>(p->rawptr);
+//		KQObjectCleanupHandler *qp = (KQObjectCleanupHandler *)p->rawptr;
+		KQObjectCleanupHandler *qp = static_cast<KQObjectCleanupHandler*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

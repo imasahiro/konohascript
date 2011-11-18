@@ -13,6 +13,7 @@ public:
 	knh_Func_t *slider_released_func;
 	knh_Func_t *value_changed_func;
 	DummyQAbstractSlider();
+	virtual ~DummyQAbstractSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,11 @@ public slots:
 class KQAbstractSlider : public QAbstractSlider {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractSlider *dummy;
 	KQAbstractSlider(QWidget* parent);
+	~KQAbstractSlider();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

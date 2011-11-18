@@ -11,9 +11,18 @@ KMETHOD QHideEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQHideEvent::DummyQHideEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQHideEvent::~DummyQHideEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQHideEvent::setSelf(knh_RawPtr_t *ptr)
@@ -79,10 +88,16 @@ void DummyQHideEvent::connection(QObject *o)
 
 KQHideEvent::KQHideEvent() : QHideEvent()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQHideEvent();
 }
 
+KQHideEvent::~KQHideEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QHideEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -127,17 +142,23 @@ KMETHOD QHideEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QHideEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQHideEvent *qp = (KQHideEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QHideEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QHideEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQHideEvent *qp = (KQHideEvent *)p->rawptr;
-//		KQHideEvent *qp = static_cast<KQHideEvent*>(p->rawptr);
+//		KQHideEvent *qp = (KQHideEvent *)p->rawptr;
+		KQHideEvent *qp = static_cast<KQHideEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

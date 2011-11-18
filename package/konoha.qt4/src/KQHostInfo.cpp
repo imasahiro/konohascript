@@ -251,9 +251,18 @@ KMETHOD QHostInfo_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQHostInfo::DummyQHostInfo()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQHostInfo::~DummyQHostInfo()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQHostInfo::setSelf(knh_RawPtr_t *ptr)
@@ -314,10 +323,16 @@ void DummyQHostInfo::connection(QObject *o)
 
 KQHostInfo::KQHostInfo(int id) : QHostInfo(id)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQHostInfo();
 }
 
+KQHostInfo::~KQHostInfo()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QHostInfo_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -362,17 +377,23 @@ KMETHOD QHostInfo_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QHostInfo_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQHostInfo *qp = (KQHostInfo *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QHostInfo*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QHostInfo_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQHostInfo *qp = (KQHostInfo *)p->rawptr;
-//		KQHostInfo *qp = static_cast<KQHostInfo*>(p->rawptr);
+//		KQHostInfo *qp = (KQHostInfo *)p->rawptr;
+		KQHostInfo *qp = static_cast<KQHostInfo*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -312,6 +312,8 @@ KMETHOD QNetworkAccessManager_setProxyFactory(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkAccessManager::DummyQNetworkAccessManager()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	authentication_required_func = NULL;
 	finished_func = NULL;
@@ -325,6 +327,13 @@ DummyQNetworkAccessManager::DummyQNetworkAccessManager()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("network-accessible-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("proxy-authentication-required", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("ssl-errors", NULL));
+}
+DummyQNetworkAccessManager::~DummyQNetworkAccessManager()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkAccessManager::setSelf(knh_RawPtr_t *ptr)
@@ -461,8 +470,9 @@ knh_Object_t** DummyQNetworkAccessManager::reftrace(CTX ctx, knh_RawPtr_t *p FTR
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQNetworkAccessManager::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 5;
+	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, authentication_required_func);
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, network_accessible_changed_func);
@@ -491,11 +501,17 @@ void DummyQNetworkAccessManager::connection(QObject *o)
 
 KQNetworkAccessManager::KQNetworkAccessManager(QObject* parent) : QNetworkAccessManager(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkAccessManager();
 	dummy->connection((QObject*)this);
 }
 
+KQNetworkAccessManager::~KQNetworkAccessManager()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkAccessManager_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -540,17 +556,23 @@ KMETHOD QNetworkAccessManager_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkAccessManager_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkAccessManager *qp = (KQNetworkAccessManager *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkAccessManager*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkAccessManager_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkAccessManager *qp = (KQNetworkAccessManager *)p->rawptr;
-//		KQNetworkAccessManager *qp = static_cast<KQNetworkAccessManager*>(p->rawptr);
+//		KQNetworkAccessManager *qp = (KQNetworkAccessManager *)p->rawptr;
+		KQNetworkAccessManager *qp = static_cast<KQNetworkAccessManager*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

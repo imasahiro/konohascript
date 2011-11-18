@@ -411,11 +411,20 @@ KMETHOD QAbstractSpinBox_stepUp(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractSpinBox::DummyQAbstractSpinBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	editing_finished_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("editing-finished", NULL));
+}
+DummyQAbstractSpinBox::~DummyQAbstractSpinBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractSpinBox::setSelf(knh_RawPtr_t *ptr)
@@ -479,8 +488,9 @@ knh_Object_t** DummyQAbstractSpinBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractSpinBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, editing_finished_func);
 
 	KNH_SIZEREF(ctx);
@@ -501,11 +511,17 @@ void DummyQAbstractSpinBox::connection(QObject *o)
 
 KQAbstractSpinBox::KQAbstractSpinBox(QWidget* parent) : QAbstractSpinBox(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractSpinBox();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractSpinBox::~KQAbstractSpinBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractSpinBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -550,17 +566,23 @@ KMETHOD QAbstractSpinBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractSpinBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractSpinBox *qp = (KQAbstractSpinBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractSpinBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractSpinBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractSpinBox *qp = (KQAbstractSpinBox *)p->rawptr;
-//		KQAbstractSpinBox *qp = static_cast<KQAbstractSpinBox*>(p->rawptr);
+//		KQAbstractSpinBox *qp = (KQAbstractSpinBox *)p->rawptr;
+		KQAbstractSpinBox *qp = static_cast<KQAbstractSpinBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -738,7 +760,8 @@ static void QAbstractSpinBoxStepEnabled_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QAbstractSpinBox::StepEnabled *qp = (QAbstractSpinBox::StepEnabled *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

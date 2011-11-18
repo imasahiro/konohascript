@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLFramebufferObject();
+	virtual ~DummyQGLFramebufferObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQGLFramebufferObject : public QGLFramebufferObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLFramebufferObject *dummy;
 	KQGLFramebufferObject(const QSize size, GLenum target);
+	~KQGLFramebufferObject();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

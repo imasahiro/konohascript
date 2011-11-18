@@ -33,7 +33,34 @@ public:
 	knh_Func_t *tablet_event_func;
 	knh_Func_t *wheel_event_func;
 	knh_Func_t *custom_context_menu_requested_func;
+	knh_RawPtr_t *actionEventPtr;
+	knh_RawPtr_t *changeEventPtr;
+	knh_RawPtr_t *closeEventPtr;
+	knh_RawPtr_t *contextMenuEventPtr;
+	knh_RawPtr_t *dragEnterEventPtr;
+	knh_RawPtr_t *dragLeaveEventPtr;
+	knh_RawPtr_t *dragMoveEventPtr;
+	knh_RawPtr_t *dropEventPtr;
+	knh_RawPtr_t *enterEventPtr;
+	knh_RawPtr_t *focusInEventPtr;
+	knh_RawPtr_t *focusOutEventPtr;
+	knh_RawPtr_t *hideEventPtr;
+	knh_RawPtr_t *inputMethodEventPtr;
+	knh_RawPtr_t *keyPressEventPtr;
+	knh_RawPtr_t *keyReleaseEventPtr;
+	knh_RawPtr_t *leaveEventPtr;
+	knh_RawPtr_t *mouseDoubleClickEventPtr;
+	knh_RawPtr_t *mouseMoveEventPtr;
+	knh_RawPtr_t *mousePressEventPtr;
+	knh_RawPtr_t *mouseReleaseEventPtr;
+	knh_RawPtr_t *moveEventPtr;
+	knh_RawPtr_t *paintEventPtr;
+	knh_RawPtr_t *resizeEventPtr;
+	knh_RawPtr_t *showEventPtr;
+	knh_RawPtr_t *tabletEventPtr;
+	knh_RawPtr_t *wheelEventPtr;
 	DummyQWidget();
+	virtual ~DummyQWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -73,9 +100,11 @@ public slots:
 class KQWidget : public QWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQWidget *dummy;
 	KQWidget(QWidget* parent, Qt::WindowFlags f);
+	~KQWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

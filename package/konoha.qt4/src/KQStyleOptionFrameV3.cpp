@@ -35,9 +35,18 @@ KMETHOD QStyleOptionFrameV3_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionFrameV3::DummyQStyleOptionFrameV3()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionFrameV3::~DummyQStyleOptionFrameV3()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionFrameV3::setSelf(knh_RawPtr_t *ptr)
@@ -103,10 +112,16 @@ void DummyQStyleOptionFrameV3::connection(QObject *o)
 
 KQStyleOptionFrameV3::KQStyleOptionFrameV3() : QStyleOptionFrameV3()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionFrameV3();
 }
 
+KQStyleOptionFrameV3::~KQStyleOptionFrameV3()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionFrameV3_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -151,17 +166,23 @@ KMETHOD QStyleOptionFrameV3_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionFrameV3_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionFrameV3 *qp = (KQStyleOptionFrameV3 *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionFrameV3*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionFrameV3_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionFrameV3 *qp = (KQStyleOptionFrameV3 *)p->rawptr;
-//		KQStyleOptionFrameV3 *qp = static_cast<KQStyleOptionFrameV3*>(p->rawptr);
+//		KQStyleOptionFrameV3 *qp = (KQStyleOptionFrameV3 *)p->rawptr;
+		KQStyleOptionFrameV3 *qp = static_cast<KQStyleOptionFrameV3*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

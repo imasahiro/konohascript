@@ -300,9 +300,18 @@ KMETHOD QGraphicsLinearLayout_getStretchFactor(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsLinearLayout::DummyQGraphicsLinearLayout()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGraphicsLinearLayout::~DummyQGraphicsLinearLayout()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsLinearLayout::setSelf(knh_RawPtr_t *ptr)
@@ -368,10 +377,16 @@ void DummyQGraphicsLinearLayout::connection(QObject *o)
 
 KQGraphicsLinearLayout::KQGraphicsLinearLayout(QGraphicsLayoutItem* parent) : QGraphicsLinearLayout(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsLinearLayout();
 }
 
+KQGraphicsLinearLayout::~KQGraphicsLinearLayout()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsLinearLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -416,17 +431,23 @@ KMETHOD QGraphicsLinearLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsLinearLayout_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsLinearLayout *qp = (KQGraphicsLinearLayout *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsLinearLayout*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsLinearLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsLinearLayout *qp = (KQGraphicsLinearLayout *)p->rawptr;
-//		KQGraphicsLinearLayout *qp = static_cast<KQGraphicsLinearLayout*>(p->rawptr);
+//		KQGraphicsLinearLayout *qp = (KQGraphicsLinearLayout *)p->rawptr;
+		KQGraphicsLinearLayout *qp = static_cast<KQGraphicsLinearLayout*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

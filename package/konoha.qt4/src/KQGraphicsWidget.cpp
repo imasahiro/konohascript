@@ -783,7 +783,20 @@ void KQGraphicsWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 
 DummyQGraphicsWidget::DummyQGraphicsWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
+	changeEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	closeEventPtr = new_empty_QRawPtr(lctx, QCloseEvent);
+	grabKeyboardEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	grabMouseEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	hideEventPtr = new_empty_QRawPtr(lctx, QHideEvent);
+	moveEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneMoveEvent);
+	resizeEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneResizeEvent);
+	showEventPtr = new_empty_QRawPtr(lctx, QShowEvent);
+	ungrabKeyboardEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	ungrabMouseEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	windowFrameEventPtr = new_empty_QRawPtr(lctx, QEvent);
 	change_event_func = NULL;
 	close_event_func = NULL;
 	grab_keyboard_event_func = NULL;
@@ -814,6 +827,13 @@ DummyQGraphicsWidget::DummyQGraphicsWidget()
 	event_map->insert(map<string, knh_Func_t *>::value_type("window-frame-event", NULL));
 	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("geometry-changed", NULL));
+}
+DummyQGraphicsWidget::~DummyQGraphicsWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsWidget::setSelf(knh_RawPtr_t *ptr)
@@ -873,8 +893,8 @@ bool DummyQGraphicsWidget::changeEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		changeEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(changeEventPtr)));
 		knh_Func_invoke(lctx, change_event_func, lsfp, 2);
 		return true;
 	}
@@ -887,8 +907,8 @@ bool DummyQGraphicsWidget::closeEventDummy(QCloseEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QCloseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		closeEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(closeEventPtr)));
 		knh_Func_invoke(lctx, close_event_func, lsfp, 2);
 		return true;
 	}
@@ -901,8 +921,8 @@ bool DummyQGraphicsWidget::grabKeyboardEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		grabKeyboardEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(grabKeyboardEventPtr)));
 		knh_Func_invoke(lctx, grab_keyboard_event_func, lsfp, 2);
 		return true;
 	}
@@ -915,8 +935,8 @@ bool DummyQGraphicsWidget::grabMouseEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		grabMouseEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(grabMouseEventPtr)));
 		knh_Func_invoke(lctx, grab_mouse_event_func, lsfp, 2);
 		return true;
 	}
@@ -929,8 +949,8 @@ bool DummyQGraphicsWidget::hideEventDummy(QHideEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QHideEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		hideEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(hideEventPtr)));
 		knh_Func_invoke(lctx, hide_event_func, lsfp, 2);
 		return true;
 	}
@@ -943,8 +963,8 @@ bool DummyQGraphicsWidget::moveEventDummy(QGraphicsSceneMoveEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneMoveEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		moveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(moveEventPtr)));
 		knh_Func_invoke(lctx, move_event_func, lsfp, 2);
 		return true;
 	}
@@ -969,8 +989,8 @@ bool DummyQGraphicsWidget::resizeEventDummy(QGraphicsSceneResizeEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QGraphicsSceneResizeEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		resizeEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(resizeEventPtr)));
 		knh_Func_invoke(lctx, resize_event_func, lsfp, 2);
 		return true;
 	}
@@ -983,8 +1003,8 @@ bool DummyQGraphicsWidget::showEventDummy(QShowEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QShowEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		showEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(showEventPtr)));
 		knh_Func_invoke(lctx, show_event_func, lsfp, 2);
 		return true;
 	}
@@ -997,8 +1017,8 @@ bool DummyQGraphicsWidget::ungrabKeyboardEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		ungrabKeyboardEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(ungrabKeyboardEventPtr)));
 		knh_Func_invoke(lctx, ungrab_keyboard_event_func, lsfp, 2);
 		return true;
 	}
@@ -1011,8 +1031,8 @@ bool DummyQGraphicsWidget::ungrabMouseEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		ungrabMouseEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(ungrabMouseEventPtr)));
 		knh_Func_invoke(lctx, ungrab_mouse_event_func, lsfp, 2);
 		return true;
 	}
@@ -1025,8 +1045,8 @@ bool DummyQGraphicsWidget::windowFrameEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		windowFrameEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(windowFrameEventPtr)));
 		knh_Func_invoke(lctx, window_frame_event_func, lsfp, 2);
 		return true;
 	}
@@ -1094,8 +1114,9 @@ knh_Object_t** DummyQGraphicsWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 13;
+	int list_size = 26;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, change_event_func);
 	KNH_ADDNNREF(ctx, close_event_func);
 	KNH_ADDNNREF(ctx, grab_keyboard_event_func);
@@ -1109,6 +1130,19 @@ knh_Object_t** DummyQGraphicsWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	KNH_ADDNNREF(ctx, ungrab_mouse_event_func);
 	KNH_ADDNNREF(ctx, window_frame_event_func);
 	KNH_ADDNNREF(ctx, geometry_changed_func);
+	KNH_ADDNNREF(ctx, paint_func);
+	KNH_ADDNNREF(ctx, changeEventPtr);
+	KNH_ADDNNREF(ctx, closeEventPtr);
+	KNH_ADDNNREF(ctx, grabKeyboardEventPtr);
+	KNH_ADDNNREF(ctx, grabMouseEventPtr);
+	KNH_ADDNNREF(ctx, hideEventPtr);
+	KNH_ADDNNREF(ctx, moveEventPtr);
+	KNH_ADDNNREF(ctx, polishEventPtr);
+	KNH_ADDNNREF(ctx, resizeEventPtr);
+	KNH_ADDNNREF(ctx, showEventPtr);
+	KNH_ADDNNREF(ctx, ungrabKeyboardEventPtr);
+	KNH_ADDNNREF(ctx, ungrabMouseEventPtr);
+	KNH_ADDNNREF(ctx, windowFrameEventPtr);
 
 	KNH_SIZEREF(ctx);
 
@@ -1130,11 +1164,17 @@ void DummyQGraphicsWidget::connection(QObject *o)
 
 KQGraphicsWidget::KQGraphicsWidget(QGraphicsItem* parent, Qt::WindowFlags wFlags) : QGraphicsWidget(parent, wFlags)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsWidget::~KQGraphicsWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1179,17 +1219,23 @@ KMETHOD QGraphicsWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsWidget *qp = (KQGraphicsWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsWidget *qp = (KQGraphicsWidget *)p->rawptr;
-//		KQGraphicsWidget *qp = static_cast<KQGraphicsWidget*>(p->rawptr);
+//		KQGraphicsWidget *qp = (KQGraphicsWidget *)p->rawptr;
+		KQGraphicsWidget *qp = static_cast<KQGraphicsWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

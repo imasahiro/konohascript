@@ -156,9 +156,18 @@ KMETHOD QElapsedTimer_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQElapsedTimer::DummyQElapsedTimer()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQElapsedTimer::~DummyQElapsedTimer()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQElapsedTimer::setSelf(knh_RawPtr_t *ptr)
@@ -217,6 +226,11 @@ void DummyQElapsedTimer::connection(QObject *o)
 	}
 }
 
+KQElapsedTimer::~KQElapsedTimer()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QElapsedTimer_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -261,17 +275,23 @@ KMETHOD QElapsedTimer_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QElapsedTimer_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQElapsedTimer *qp = (KQElapsedTimer *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QElapsedTimer*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QElapsedTimer_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQElapsedTimer *qp = (KQElapsedTimer *)p->rawptr;
-//		KQElapsedTimer *qp = static_cast<KQElapsedTimer*>(p->rawptr);
+//		KQElapsedTimer *qp = (KQElapsedTimer *)p->rawptr;
+		KQElapsedTimer *qp = static_cast<KQElapsedTimer*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

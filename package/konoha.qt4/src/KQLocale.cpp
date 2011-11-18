@@ -966,9 +966,18 @@ KMETHOD QLocale_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLocale::DummyQLocale()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQLocale::~DummyQLocale()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLocale::setSelf(knh_RawPtr_t *ptr)
@@ -1029,10 +1038,16 @@ void DummyQLocale::connection(QObject *o)
 
 KQLocale::KQLocale() : QLocale()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLocale();
 }
 
+KQLocale::~KQLocale()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLocale_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1077,17 +1092,23 @@ KMETHOD QLocale_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLocale_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLocale *qp = (KQLocale *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLocale*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLocale_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLocale *qp = (KQLocale *)p->rawptr;
-//		KQLocale *qp = static_cast<KQLocale*>(p->rawptr);
+//		KQLocale *qp = (KQLocale *)p->rawptr;
+		KQLocale *qp = static_cast<KQLocale*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1722,7 +1743,8 @@ static void QLocaleNumberOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QLocale::NumberOptions *qp = (QLocale::NumberOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

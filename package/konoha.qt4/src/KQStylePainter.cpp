@@ -150,9 +150,18 @@ KMETHOD QStylePainter_style(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStylePainter::DummyQStylePainter()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStylePainter::~DummyQStylePainter()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStylePainter::setSelf(knh_RawPtr_t *ptr)
@@ -218,10 +227,16 @@ void DummyQStylePainter::connection(QObject *o)
 
 KQStylePainter::KQStylePainter() : QStylePainter()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStylePainter();
 }
 
+KQStylePainter::~KQStylePainter()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStylePainter_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -266,17 +281,23 @@ KMETHOD QStylePainter_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStylePainter_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStylePainter *qp = (KQStylePainter *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStylePainter*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStylePainter_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStylePainter *qp = (KQStylePainter *)p->rawptr;
-//		KQStylePainter *qp = static_cast<KQStylePainter*>(p->rawptr);
+//		KQStylePainter *qp = (KQStylePainter *)p->rawptr;
+		KQStylePainter *qp = static_cast<KQStylePainter*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

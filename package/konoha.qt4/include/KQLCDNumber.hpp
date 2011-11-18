@@ -8,6 +8,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *overflow_func;
 	DummyQLCDNumber();
+	virtual ~DummyQLCDNumber();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -21,9 +22,11 @@ public slots:
 class KQLCDNumber : public QLCDNumber {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQLCDNumber *dummy;
 	KQLCDNumber(QWidget* parent);
+	~KQLCDNumber();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

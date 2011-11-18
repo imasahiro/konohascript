@@ -144,9 +144,18 @@ KMETHOD QSpacerItem_changeSize(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSpacerItem::DummyQSpacerItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSpacerItem::~DummyQSpacerItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSpacerItem::setSelf(knh_RawPtr_t *ptr)
@@ -212,10 +221,16 @@ void DummyQSpacerItem::connection(QObject *o)
 
 KQSpacerItem::KQSpacerItem(int w, int h, QSizePolicy::Policy hPolicy, QSizePolicy::Policy vPolicy) : QSpacerItem(w, h, hPolicy, vPolicy)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSpacerItem();
 }
 
+KQSpacerItem::~KQSpacerItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSpacerItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -260,17 +275,23 @@ KMETHOD QSpacerItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSpacerItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSpacerItem *qp = (KQSpacerItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSpacerItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSpacerItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSpacerItem *qp = (KQSpacerItem *)p->rawptr;
-//		KQSpacerItem *qp = static_cast<KQSpacerItem*>(p->rawptr);
+//		KQSpacerItem *qp = (KQSpacerItem *)p->rawptr;
+		KQSpacerItem *qp = static_cast<KQSpacerItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

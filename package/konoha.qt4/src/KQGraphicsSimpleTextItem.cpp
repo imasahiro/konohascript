@@ -208,11 +208,20 @@ void KQGraphicsSimpleTextItem::paint(QPainter *painter, const QStyleOptionGraphi
 
 DummyQGraphicsSimpleTextItem::DummyQGraphicsSimpleTextItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
+}
+DummyQGraphicsSimpleTextItem::~DummyQGraphicsSimpleTextItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsSimpleTextItem::setSelf(knh_RawPtr_t *ptr)
@@ -279,10 +288,16 @@ void DummyQGraphicsSimpleTextItem::connection(QObject *o)
 
 KQGraphicsSimpleTextItem::KQGraphicsSimpleTextItem(QGraphicsItem* parent) : QGraphicsSimpleTextItem(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsSimpleTextItem();
 }
 
+KQGraphicsSimpleTextItem::~KQGraphicsSimpleTextItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsSimpleTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -327,17 +342,23 @@ KMETHOD QGraphicsSimpleTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsSimpleTextItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsSimpleTextItem *qp = (KQGraphicsSimpleTextItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsSimpleTextItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsSimpleTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsSimpleTextItem *qp = (KQGraphicsSimpleTextItem *)p->rawptr;
-//		KQGraphicsSimpleTextItem *qp = static_cast<KQGraphicsSimpleTextItem*>(p->rawptr);
+//		KQGraphicsSimpleTextItem *qp = (KQGraphicsSimpleTextItem *)p->rawptr;
+		KQGraphicsSimpleTextItem *qp = static_cast<KQGraphicsSimpleTextItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -12,9 +12,18 @@ KMETHOD QFinalState_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQFinalState::DummyQFinalState()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQFinalState::~DummyQFinalState()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQFinalState::setSelf(knh_RawPtr_t *ptr)
@@ -80,11 +89,17 @@ void DummyQFinalState::connection(QObject *o)
 
 KQFinalState::KQFinalState(QState* parent) : QFinalState(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQFinalState();
 	dummy->connection((QObject*)this);
 }
 
+KQFinalState::~KQFinalState()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QFinalState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -129,17 +144,23 @@ KMETHOD QFinalState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QFinalState_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQFinalState *qp = (KQFinalState *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QFinalState*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QFinalState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQFinalState *qp = (KQFinalState *)p->rawptr;
-//		KQFinalState *qp = static_cast<KQFinalState*>(p->rawptr);
+//		KQFinalState *qp = (KQFinalState *)p->rawptr;
+		KQFinalState *qp = static_cast<KQFinalState*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -13,6 +13,7 @@ public:
 	knh_Func_t *redo_text_changed_func;
 	knh_Func_t *undo_text_changed_func;
 	DummyQUndoStack();
+	virtual ~DummyQUndoStack();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,11 @@ public slots:
 class KQUndoStack : public QUndoStack {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQUndoStack *dummy;
 	KQUndoStack(QObject* parent);
+	~KQUndoStack();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

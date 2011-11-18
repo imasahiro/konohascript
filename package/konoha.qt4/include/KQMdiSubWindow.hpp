@@ -9,6 +9,7 @@ public:
 	knh_Func_t *about_to_activate_func;
 	knh_Func_t *window_state_changed_func;
 	DummyQMdiSubWindow();
+	virtual ~DummyQMdiSubWindow();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQMdiSubWindow : public QMdiSubWindow {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQMdiSubWindow *dummy;
 	KQMdiSubWindow(QWidget* parent, Qt::WindowFlags flags);
+	~KQMdiSubWindow();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

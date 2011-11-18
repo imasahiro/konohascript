@@ -784,6 +784,8 @@ KMETHOD QHeaderView_setOffsetToSectionPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQHeaderView::DummyQHeaderView()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	geometries_changed_func = NULL;
 	section_auto_resize_func = NULL;
@@ -809,6 +811,13 @@ DummyQHeaderView::DummyQHeaderView()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("section-pressed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("section-resized", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("sort-indicator-changed", NULL));
+}
+DummyQHeaderView::~DummyQHeaderView()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQHeaderView::setSelf(knh_RawPtr_t *ptr)
@@ -1019,8 +1028,9 @@ knh_Object_t** DummyQHeaderView::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQHeaderView::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 11;
+	int list_size = 12;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, geometries_changed_func);
 	KNH_ADDNNREF(ctx, section_auto_resize_func);
 	KNH_ADDNNREF(ctx, section_clicked_func);
@@ -1061,11 +1071,17 @@ void DummyQHeaderView::connection(QObject *o)
 
 KQHeaderView::KQHeaderView(Qt::Orientation orientation, QWidget* parent) : QHeaderView(orientation, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQHeaderView();
 	dummy->connection((QObject*)this);
 }
 
+KQHeaderView::~KQHeaderView()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QHeaderView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1110,17 +1126,23 @@ KMETHOD QHeaderView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QHeaderView_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQHeaderView *qp = (KQHeaderView *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QHeaderView*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QHeaderView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQHeaderView *qp = (KQHeaderView *)p->rawptr;
-//		KQHeaderView *qp = static_cast<KQHeaderView*>(p->rawptr);
+//		KQHeaderView *qp = (KQHeaderView *)p->rawptr;
+		KQHeaderView *qp = static_cast<KQHeaderView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

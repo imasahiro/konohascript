@@ -17,6 +17,7 @@ public:
 	knh_Func_t *item_pressed_func;
 	knh_Func_t *item_selection_changed_func;
 	DummyQTreeWidget();
+	virtual ~DummyQTreeWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -39,9 +40,11 @@ public slots:
 class KQTreeWidget : public QTreeWidget {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTreeWidget *dummy;
 	KQTreeWidget(QWidget* parent);
+	~KQTreeWidget();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

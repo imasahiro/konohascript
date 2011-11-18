@@ -484,6 +484,8 @@ KMETHOD QIODevice_write(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQIODevice::DummyQIODevice()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	about_to_close_func = NULL;
 	bytes_written_func = NULL;
@@ -495,6 +497,13 @@ DummyQIODevice::DummyQIODevice()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("bytes-written", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("read-channel-finished", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("ready-read", NULL));
+}
+DummyQIODevice::~DummyQIODevice()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQIODevice::setSelf(knh_RawPtr_t *ptr)
@@ -599,8 +608,9 @@ knh_Object_t** DummyQIODevice::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQIODevice::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, about_to_close_func);
 	KNH_ADDNNREF(ctx, bytes_written_func);
 	KNH_ADDNNREF(ctx, read_channel_finished_func);
@@ -627,11 +637,17 @@ void DummyQIODevice::connection(QObject *o)
 
 KQIODevice::KQIODevice() : QIODevice()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQIODevice();
 	dummy->connection((QObject*)this);
 }
 
+KQIODevice::~KQIODevice()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QIODevice_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -676,17 +692,23 @@ KMETHOD QIODevice_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QIODevice_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQIODevice *qp = (KQIODevice *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QIODevice*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QIODevice_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQIODevice *qp = (KQIODevice *)p->rawptr;
-//		KQIODevice *qp = static_cast<KQIODevice*>(p->rawptr);
+//		KQIODevice *qp = (KQIODevice *)p->rawptr;
+		KQIODevice *qp = static_cast<KQIODevice*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -864,7 +886,8 @@ static void QIODeviceOpenMode_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QIODevice::OpenMode *qp = (QIODevice::OpenMode *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

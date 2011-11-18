@@ -54,9 +54,18 @@ KMETHOD QPaintEvent_region(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPaintEvent::DummyQPaintEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPaintEvent::~DummyQPaintEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPaintEvent::setSelf(knh_RawPtr_t *ptr)
@@ -122,10 +131,16 @@ void DummyQPaintEvent::connection(QObject *o)
 
 KQPaintEvent::KQPaintEvent(const QRegion paintRegion) : QPaintEvent(paintRegion)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPaintEvent();
 }
 
+KQPaintEvent::~KQPaintEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPaintEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -170,17 +185,23 @@ KMETHOD QPaintEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPaintEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPaintEvent *qp = (KQPaintEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPaintEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPaintEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPaintEvent *qp = (KQPaintEvent *)p->rawptr;
-//		KQPaintEvent *qp = static_cast<KQPaintEvent*>(p->rawptr);
+//		KQPaintEvent *qp = (KQPaintEvent *)p->rawptr;
+		KQPaintEvent *qp = static_cast<KQPaintEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

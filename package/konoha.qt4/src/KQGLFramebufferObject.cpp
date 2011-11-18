@@ -295,9 +295,18 @@ KMETHOD QGLFramebufferObject_hasOpenGLFramebufferObjects(CTX ctx, knh_sfp_t *sfp
 
 DummyQGLFramebufferObject::DummyQGLFramebufferObject()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLFramebufferObject::~DummyQGLFramebufferObject()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLFramebufferObject::setSelf(knh_RawPtr_t *ptr)
@@ -363,10 +372,16 @@ void DummyQGLFramebufferObject::connection(QObject *o)
 
 KQGLFramebufferObject::KQGLFramebufferObject(const QSize size, GLenum target) : QGLFramebufferObject(size, target)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLFramebufferObject();
 }
 
+KQGLFramebufferObject::~KQGLFramebufferObject()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLFramebufferObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -411,17 +426,23 @@ KMETHOD QGLFramebufferObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLFramebufferObject_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLFramebufferObject *qp = (KQGLFramebufferObject *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLFramebufferObject*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLFramebufferObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLFramebufferObject *qp = (KQGLFramebufferObject *)p->rawptr;
-//		KQGLFramebufferObject *qp = static_cast<KQGLFramebufferObject*>(p->rawptr);
+//		KQGLFramebufferObject *qp = (KQGLFramebufferObject *)p->rawptr;
+		KQGLFramebufferObject *qp = static_cast<KQGLFramebufferObject*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

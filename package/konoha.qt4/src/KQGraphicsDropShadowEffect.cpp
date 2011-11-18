@@ -184,6 +184,8 @@ KMETHOD QGraphicsDropShadowEffect_setYOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsDropShadowEffect::DummyQGraphicsDropShadowEffect()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	blur_radius_changed_func = NULL;
 	color_changed_func = NULL;
@@ -193,6 +195,13 @@ DummyQGraphicsDropShadowEffect::DummyQGraphicsDropShadowEffect()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("blur-radius-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("color-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("offset-changed", NULL));
+}
+DummyQGraphicsDropShadowEffect::~DummyQGraphicsDropShadowEffect()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsDropShadowEffect::setSelf(knh_RawPtr_t *ptr)
@@ -287,8 +296,9 @@ knh_Object_t** DummyQGraphicsDropShadowEffect::reftrace(CTX ctx, knh_RawPtr_t *p
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsDropShadowEffect::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 3;
+	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, blur_radius_changed_func);
 	KNH_ADDNNREF(ctx, color_changed_func);
 	KNH_ADDNNREF(ctx, offset_changed_func);
@@ -313,11 +323,17 @@ void DummyQGraphicsDropShadowEffect::connection(QObject *o)
 
 KQGraphicsDropShadowEffect::KQGraphicsDropShadowEffect(QObject* parent) : QGraphicsDropShadowEffect(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsDropShadowEffect();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsDropShadowEffect::~KQGraphicsDropShadowEffect()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsDropShadowEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -362,17 +378,23 @@ KMETHOD QGraphicsDropShadowEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsDropShadowEffect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsDropShadowEffect *qp = (KQGraphicsDropShadowEffect *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsDropShadowEffect*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsDropShadowEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsDropShadowEffect *qp = (KQGraphicsDropShadowEffect *)p->rawptr;
-//		KQGraphicsDropShadowEffect *qp = static_cast<KQGraphicsDropShadowEffect*>(p->rawptr);
+//		KQGraphicsDropShadowEffect *qp = (KQGraphicsDropShadowEffect *)p->rawptr;
+		KQGraphicsDropShadowEffect *qp = static_cast<KQGraphicsDropShadowEffect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

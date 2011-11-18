@@ -1,9 +1,9 @@
 if(USE_QT4)
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
+set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g3")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g3")
 set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE DEBUG)
 

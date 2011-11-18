@@ -2,9 +2,9 @@
 KMETHOD QWebHistory_back(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		qp->back();
+		qp->q_self->back();
 	}
 	RETURNvoid_();
 }
@@ -13,9 +13,9 @@ KMETHOD QWebHistory_back(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_backItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		QWebHistoryItem ret_v = qp->backItem();
+		QWebHistoryItem ret_v = qp->q_self->backItem();
 		QWebHistoryItem *ret_v_ = new QWebHistoryItem(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -28,10 +28,10 @@ KMETHOD QWebHistory_backItem(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_backItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
 		int maxItems = Int_to(int, sfp[1]);
-		QList<QWebHistoryItem> ret_v = qp->backItems(maxItems);
+		QList<QWebHistoryItem> ret_v = qp->q_self->backItems(maxItems);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QWebHistoryItem"));
@@ -51,9 +51,9 @@ KMETHOD QWebHistory_backItems(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_canGoBack(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		bool ret_v = qp->canGoBack();
+		bool ret_v = qp->q_self->canGoBack();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -64,9 +64,9 @@ KMETHOD QWebHistory_canGoBack(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_canGoForward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		bool ret_v = qp->canGoForward();
+		bool ret_v = qp->q_self->canGoForward();
 		RETURNb_(ret_v);
 	} else {
 		RETURNb_(false);
@@ -77,9 +77,9 @@ KMETHOD QWebHistory_canGoForward(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		qp->clear();
+		qp->q_self->clear();
 	}
 	RETURNvoid_();
 }
@@ -88,9 +88,9 @@ KMETHOD QWebHistory_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_count(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		int ret_v = qp->count();
+		int ret_v = qp->q_self->count();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -101,9 +101,9 @@ KMETHOD QWebHistory_count(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_currentItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		QWebHistoryItem ret_v = qp->currentItem();
+		QWebHistoryItem ret_v = qp->q_self->currentItem();
 		QWebHistoryItem *ret_v_ = new QWebHistoryItem(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -116,9 +116,9 @@ KMETHOD QWebHistory_currentItem(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_currentItemIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		int ret_v = qp->currentItemIndex();
+		int ret_v = qp->q_self->currentItemIndex();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -129,9 +129,9 @@ KMETHOD QWebHistory_currentItemIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_forward(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		qp->forward();
+		qp->q_self->forward();
 	}
 	RETURNvoid_();
 }
@@ -140,9 +140,9 @@ KMETHOD QWebHistory_forward(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_forwardItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		QWebHistoryItem ret_v = qp->forwardItem();
+		QWebHistoryItem ret_v = qp->q_self->forwardItem();
 		QWebHistoryItem *ret_v_ = new QWebHistoryItem(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -155,10 +155,10 @@ KMETHOD QWebHistory_forwardItem(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_forwardItems(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
 		int maxItems = Int_to(int, sfp[1]);
-		QList<QWebHistoryItem> ret_v = qp->forwardItems(maxItems);
+		QList<QWebHistoryItem> ret_v = qp->q_self->forwardItems(maxItems);
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QWebHistoryItem"));
@@ -178,10 +178,10 @@ KMETHOD QWebHistory_forwardItems(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_goToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
 		const QWebHistoryItem  item = *RawPtr_to(const QWebHistoryItem *, sfp[1]);
-		qp->goToItem(item);
+		qp->q_self->goToItem(item);
 	}
 	RETURNvoid_();
 }
@@ -190,10 +190,10 @@ KMETHOD QWebHistory_goToItem(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
 		int i = Int_to(int, sfp[1]);
-		QWebHistoryItem ret_v = qp->itemAt(i);
+		QWebHistoryItem ret_v = qp->q_self->itemAt(i);
 		QWebHistoryItem *ret_v_ = new QWebHistoryItem(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
 		RETURN_(rptr);
@@ -206,9 +206,9 @@ KMETHOD QWebHistory_itemAt(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_items(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		QList<QWebHistoryItem> ret_v = qp->items();
+		QList<QWebHistoryItem> ret_v = qp->q_self->items();
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
 		knh_class_t cid = knh_getcid(ctx, STEXT("QWebHistoryItem"));
@@ -228,9 +228,9 @@ KMETHOD QWebHistory_items(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_getMaximumItemCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
-		int ret_v = qp->maximumItemCount();
+		int ret_v = qp->q_self->maximumItemCount();
 		RETURNi_(ret_v);
 	} else {
 		RETURNi_(0);
@@ -241,10 +241,10 @@ KMETHOD QWebHistory_getMaximumItemCount(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD QWebHistory_setMaximumItemCount(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
-	QWebHistory *  qp = RawPtr_to(QWebHistory *, sfp[0]);
+	KQWebHistory *  qp = RawPtr_to(KQWebHistory *, sfp[0]);
 	if (qp) {
 		int count = Int_to(int, sfp[1]);
-		qp->setMaximumItemCount(count);
+		qp->q_self->setMaximumItemCount(count);
 	}
 	RETURNvoid_();
 }
@@ -270,6 +270,8 @@ KMETHOD QWebHistory_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWebHistory::DummyQWebHistory()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
@@ -375,17 +377,23 @@ KMETHOD QWebHistory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWebHistory_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWebHistory *qp = (KQWebHistory *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+//			delete (QWebHistory*)qp;
+//			p->rawptr = NULL;
+		}
 	}
 }
 static void QWebHistory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWebHistory *qp = (KQWebHistory *)p->rawptr;
-//		KQWebHistory *qp = static_cast<KQWebHistory*>(p->rawptr);
+//		KQWebHistory *qp = (KQWebHistory *)p->rawptr;
+		KQWebHistory *qp = static_cast<KQWebHistory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

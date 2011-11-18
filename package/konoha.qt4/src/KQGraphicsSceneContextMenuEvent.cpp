@@ -74,9 +74,18 @@ KMETHOD QGraphicsSceneContextMenuEvent_screenPos(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsSceneContextMenuEvent::DummyQGraphicsSceneContextMenuEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGraphicsSceneContextMenuEvent::~DummyQGraphicsSceneContextMenuEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsSceneContextMenuEvent::setSelf(knh_RawPtr_t *ptr)
@@ -140,6 +149,11 @@ void DummyQGraphicsSceneContextMenuEvent::connection(QObject *o)
 	DummyQGraphicsSceneEvent::connection(o);
 }
 
+KQGraphicsSceneContextMenuEvent::~KQGraphicsSceneContextMenuEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsSceneContextMenuEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -184,17 +198,23 @@ KMETHOD QGraphicsSceneContextMenuEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RI
 static void QGraphicsSceneContextMenuEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneContextMenuEvent *qp = (KQGraphicsSceneContextMenuEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsSceneContextMenuEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsSceneContextMenuEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsSceneContextMenuEvent *qp = (KQGraphicsSceneContextMenuEvent *)p->rawptr;
-//		KQGraphicsSceneContextMenuEvent *qp = static_cast<KQGraphicsSceneContextMenuEvent*>(p->rawptr);
+//		KQGraphicsSceneContextMenuEvent *qp = (KQGraphicsSceneContextMenuEvent *)p->rawptr;
+		KQGraphicsSceneContextMenuEvent *qp = static_cast<KQGraphicsSceneContextMenuEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

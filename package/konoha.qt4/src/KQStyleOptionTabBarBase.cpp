@@ -23,9 +23,18 @@ KMETHOD QStyleOptionTabBarBase_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionTabBarBase::DummyQStyleOptionTabBarBase()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionTabBarBase::~DummyQStyleOptionTabBarBase()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionTabBarBase::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionTabBarBase::connection(QObject *o)
 
 KQStyleOptionTabBarBase::KQStyleOptionTabBarBase() : QStyleOptionTabBarBase()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionTabBarBase();
 }
 
+KQStyleOptionTabBarBase::~KQStyleOptionTabBarBase()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionTabBarBase_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionTabBarBase_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionTabBarBase_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabBarBase *qp = (KQStyleOptionTabBarBase *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionTabBarBase*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionTabBarBase_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionTabBarBase *qp = (KQStyleOptionTabBarBase *)p->rawptr;
-//		KQStyleOptionTabBarBase *qp = static_cast<KQStyleOptionTabBarBase*>(p->rawptr);
+//		KQStyleOptionTabBarBase *qp = (KQStyleOptionTabBarBase *)p->rawptr;
+		KQStyleOptionTabBarBase *qp = static_cast<KQStyleOptionTabBarBase*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

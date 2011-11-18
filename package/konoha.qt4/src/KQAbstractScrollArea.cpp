@@ -230,11 +230,21 @@ KMETHOD QAbstractScrollArea_getViewport(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractScrollArea::DummyQAbstractScrollArea()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
+	viewportEventPtr = new_empty_QRawPtr(lctx, QEvent);
 	viewport_event_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("viewport-event", NULL));
+}
+DummyQAbstractScrollArea::~DummyQAbstractScrollArea()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractScrollArea::setSelf(knh_RawPtr_t *ptr)
@@ -262,8 +272,8 @@ bool DummyQAbstractScrollArea::viewportEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		viewportEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(viewportEventPtr)));
 		knh_Func_invoke(lctx, viewport_event_func, lsfp, 2);
 		return true;
 	}
@@ -302,9 +312,11 @@ knh_Object_t** DummyQAbstractScrollArea::reftrace(CTX ctx, knh_RawPtr_t *p FTRAR
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractScrollArea::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, viewport_event_func);
+	KNH_ADDNNREF(ctx, viewportEventPtr);
 
 	KNH_SIZEREF(ctx);
 
@@ -323,11 +335,17 @@ void DummyQAbstractScrollArea::connection(QObject *o)
 
 KQAbstractScrollArea::KQAbstractScrollArea(QWidget* parent) : QAbstractScrollArea(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractScrollArea();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractScrollArea::~KQAbstractScrollArea()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractScrollArea_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -372,17 +390,23 @@ KMETHOD QAbstractScrollArea_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractScrollArea_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractScrollArea *qp = (KQAbstractScrollArea *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractScrollArea*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractScrollArea_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractScrollArea *qp = (KQAbstractScrollArea *)p->rawptr;
-//		KQAbstractScrollArea *qp = static_cast<KQAbstractScrollArea*>(p->rawptr);
+//		KQAbstractScrollArea *qp = (KQAbstractScrollArea *)p->rawptr;
+		KQAbstractScrollArea *qp = static_cast<KQAbstractScrollArea*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

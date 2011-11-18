@@ -704,6 +704,8 @@ KMETHOD QWebFrame_print(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWebFrame::DummyQWebFrame()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	contents_size_changed_func = NULL;
 	icon_changed_func = NULL;
@@ -899,8 +901,9 @@ knh_Object_t** DummyQWebFrame::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQWebFrame::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 9;
+	int list_size = 10;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, contents_size_changed_func);
 	KNH_ADDNNREF(ctx, icon_changed_func);
 	KNH_ADDNNREF(ctx, initial_layout_completed_func);
@@ -979,17 +982,23 @@ KMETHOD QWebFrame_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWebFrame_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWebFrame *qp = (KQWebFrame *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+//			delete (QWebFrame*)qp;
+//			p->rawptr = NULL;
+		}
 	}
 }
 static void QWebFrame_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWebFrame *qp = (KQWebFrame *)p->rawptr;
-//		KQWebFrame *qp = static_cast<KQWebFrame*>(p->rawptr);
+//		KQWebFrame *qp = (KQWebFrame *)p->rawptr;
+		KQWebFrame *qp = static_cast<KQWebFrame*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

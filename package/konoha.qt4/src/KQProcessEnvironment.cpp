@@ -134,9 +134,18 @@ KMETHOD QProcessEnvironment_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQProcessEnvironment::DummyQProcessEnvironment()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQProcessEnvironment::~DummyQProcessEnvironment()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQProcessEnvironment::setSelf(knh_RawPtr_t *ptr)
@@ -197,10 +206,16 @@ void DummyQProcessEnvironment::connection(QObject *o)
 
 KQProcessEnvironment::KQProcessEnvironment() : QProcessEnvironment()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQProcessEnvironment();
 }
 
+KQProcessEnvironment::~KQProcessEnvironment()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QProcessEnvironment_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -245,17 +260,23 @@ KMETHOD QProcessEnvironment_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QProcessEnvironment_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQProcessEnvironment *qp = (KQProcessEnvironment *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QProcessEnvironment*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QProcessEnvironment_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQProcessEnvironment *qp = (KQProcessEnvironment *)p->rawptr;
-//		KQProcessEnvironment *qp = static_cast<KQProcessEnvironment*>(p->rawptr);
+//		KQProcessEnvironment *qp = (KQProcessEnvironment *)p->rawptr;
+		KQProcessEnvironment *qp = static_cast<KQProcessEnvironment*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

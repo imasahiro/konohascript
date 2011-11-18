@@ -446,6 +446,8 @@ KMETHOD QMenu_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMenu::DummyQMenu()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	about_to_hide_func = NULL;
 	about_to_show_func = NULL;
@@ -457,6 +459,13 @@ DummyQMenu::DummyQMenu()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("about-to-show", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("hovered", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
+}
+DummyQMenu::~DummyQMenu()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMenu::setSelf(knh_RawPtr_t *ptr)
@@ -563,8 +572,9 @@ knh_Object_t** DummyQMenu::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQMenu::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, about_to_hide_func);
 	KNH_ADDNNREF(ctx, about_to_show_func);
 	KNH_ADDNNREF(ctx, hovered_func);
@@ -591,11 +601,17 @@ void DummyQMenu::connection(QObject *o)
 
 KQMenu::KQMenu(QWidget* parent) : QMenu(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMenu();
 	dummy->connection((QObject*)this);
 }
 
+KQMenu::~KQMenu()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMenu_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -640,17 +656,23 @@ KMETHOD QMenu_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMenu_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMenu *qp = (KQMenu *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMenu*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMenu_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMenu *qp = (KQMenu *)p->rawptr;
-//		KQMenu *qp = static_cast<KQMenu*>(p->rawptr);
+//		KQMenu *qp = (KQMenu *)p->rawptr;
+		KQMenu *qp = static_cast<KQMenu*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

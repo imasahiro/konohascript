@@ -270,9 +270,18 @@ KMETHOD QPaintEngineState_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPaintEngineState::DummyQPaintEngineState()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPaintEngineState::~DummyQPaintEngineState()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPaintEngineState::setSelf(knh_RawPtr_t *ptr)
@@ -331,6 +340,11 @@ void DummyQPaintEngineState::connection(QObject *o)
 	}
 }
 
+KQPaintEngineState::~KQPaintEngineState()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPaintEngineState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -375,17 +389,23 @@ KMETHOD QPaintEngineState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPaintEngineState_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPaintEngineState *qp = (KQPaintEngineState *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPaintEngineState*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPaintEngineState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPaintEngineState *qp = (KQPaintEngineState *)p->rawptr;
-//		KQPaintEngineState *qp = static_cast<KQPaintEngineState*>(p->rawptr);
+//		KQPaintEngineState *qp = (KQPaintEngineState *)p->rawptr;
+		KQPaintEngineState *qp = static_cast<KQPaintEngineState*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

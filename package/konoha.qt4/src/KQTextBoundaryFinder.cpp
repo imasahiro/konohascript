@@ -198,9 +198,18 @@ KMETHOD QTextBoundaryFinder_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextBoundaryFinder::DummyQTextBoundaryFinder()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextBoundaryFinder::~DummyQTextBoundaryFinder()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextBoundaryFinder::setSelf(knh_RawPtr_t *ptr)
@@ -261,10 +270,16 @@ void DummyQTextBoundaryFinder::connection(QObject *o)
 
 KQTextBoundaryFinder::KQTextBoundaryFinder() : QTextBoundaryFinder()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextBoundaryFinder();
 }
 
+KQTextBoundaryFinder::~KQTextBoundaryFinder()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextBoundaryFinder_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -309,17 +324,23 @@ KMETHOD QTextBoundaryFinder_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextBoundaryFinder_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextBoundaryFinder *qp = (KQTextBoundaryFinder *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextBoundaryFinder*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextBoundaryFinder_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextBoundaryFinder *qp = (KQTextBoundaryFinder *)p->rawptr;
-//		KQTextBoundaryFinder *qp = static_cast<KQTextBoundaryFinder*>(p->rawptr);
+//		KQTextBoundaryFinder *qp = (KQTextBoundaryFinder *)p->rawptr;
+		KQTextBoundaryFinder *qp = static_cast<KQTextBoundaryFinder*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -486,7 +507,8 @@ static void QTextBoundaryFinderBoundaryReasons_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QTextBoundaryFinder::BoundaryReasons *qp = (QTextBoundaryFinder::BoundaryReasons *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

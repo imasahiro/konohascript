@@ -106,9 +106,18 @@ KMETHOD QMouseEventTransition_setModifierMask(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMouseEventTransition::DummyQMouseEventTransition()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQMouseEventTransition::~DummyQMouseEventTransition()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMouseEventTransition::setSelf(knh_RawPtr_t *ptr)
@@ -174,11 +183,17 @@ void DummyQMouseEventTransition::connection(QObject *o)
 
 KQMouseEventTransition::KQMouseEventTransition(QState* sourceState) : QMouseEventTransition(sourceState)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMouseEventTransition();
 	dummy->connection((QObject*)this);
 }
 
+KQMouseEventTransition::~KQMouseEventTransition()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMouseEventTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -223,17 +238,23 @@ KMETHOD QMouseEventTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMouseEventTransition_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMouseEventTransition *qp = (KQMouseEventTransition *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMouseEventTransition*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMouseEventTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMouseEventTransition *qp = (KQMouseEventTransition *)p->rawptr;
-//		KQMouseEventTransition *qp = static_cast<KQMouseEventTransition*>(p->rawptr);
+//		KQMouseEventTransition *qp = (KQMouseEventTransition *)p->rawptr;
+		KQMouseEventTransition *qp = static_cast<KQMouseEventTransition*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

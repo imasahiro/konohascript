@@ -147,9 +147,18 @@ KMETHOD QNetworkAddressEntry_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkAddressEntry::DummyQNetworkAddressEntry()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkAddressEntry::~DummyQNetworkAddressEntry()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkAddressEntry::setSelf(knh_RawPtr_t *ptr)
@@ -210,10 +219,16 @@ void DummyQNetworkAddressEntry::connection(QObject *o)
 
 KQNetworkAddressEntry::KQNetworkAddressEntry() : QNetworkAddressEntry()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkAddressEntry();
 }
 
+KQNetworkAddressEntry::~KQNetworkAddressEntry()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkAddressEntry_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -258,17 +273,23 @@ KMETHOD QNetworkAddressEntry_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkAddressEntry_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkAddressEntry *qp = (KQNetworkAddressEntry *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkAddressEntry*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkAddressEntry_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkAddressEntry *qp = (KQNetworkAddressEntry *)p->rawptr;
-//		KQNetworkAddressEntry *qp = static_cast<KQNetworkAddressEntry*>(p->rawptr);
+//		KQNetworkAddressEntry *qp = (KQNetworkAddressEntry *)p->rawptr;
+		KQNetworkAddressEntry *qp = static_cast<KQNetworkAddressEntry*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

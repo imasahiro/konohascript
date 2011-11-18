@@ -16,6 +16,7 @@ public:
 	knh_Func_t *undo_available_func;
 	knh_Func_t *update_request_func;
 	DummyQPlainTextEdit();
+	virtual ~DummyQPlainTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -37,9 +38,11 @@ public slots:
 class KQPlainTextEdit : public QPlainTextEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQPlainTextEdit *dummy;
 	KQPlainTextEdit(QWidget* parent);
+	~KQPlainTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

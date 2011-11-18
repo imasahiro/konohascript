@@ -244,6 +244,8 @@ KMETHOD QTextBrowser_setSource(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextBrowser::DummyQTextBrowser()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	anchor_clicked_func = NULL;
 	backward_available_func = NULL;
@@ -257,6 +259,13 @@ DummyQTextBrowser::DummyQTextBrowser()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("forward-available", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("history-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("source-changed", NULL));
+}
+DummyQTextBrowser::~DummyQTextBrowser()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextBrowser::setSelf(knh_RawPtr_t *ptr)
@@ -378,8 +387,9 @@ knh_Object_t** DummyQTextBrowser::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTextBrowser::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 5;
+	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, anchor_clicked_func);
 	KNH_ADDNNREF(ctx, backward_available_func);
 	KNH_ADDNNREF(ctx, forward_available_func);
@@ -408,11 +418,17 @@ void DummyQTextBrowser::connection(QObject *o)
 
 KQTextBrowser::KQTextBrowser(QWidget* parent) : QTextBrowser(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextBrowser();
 	dummy->connection((QObject*)this);
 }
 
+KQTextBrowser::~KQTextBrowser()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextBrowser_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -457,17 +473,23 @@ KMETHOD QTextBrowser_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextBrowser_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextBrowser *qp = (KQTextBrowser *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextBrowser*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextBrowser_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextBrowser *qp = (KQTextBrowser *)p->rawptr;
-//		KQTextBrowser *qp = static_cast<KQTextBrowser*>(p->rawptr);
+//		KQTextBrowser *qp = (KQTextBrowser *)p->rawptr;
+		KQTextBrowser *qp = static_cast<KQTextBrowser*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -23,9 +23,18 @@ KMETHOD QStyleOptionViewItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionViewItem::DummyQStyleOptionViewItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionViewItem::~DummyQStyleOptionViewItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionViewItem::setSelf(knh_RawPtr_t *ptr)
@@ -91,10 +100,16 @@ void DummyQStyleOptionViewItem::connection(QObject *o)
 
 KQStyleOptionViewItem::KQStyleOptionViewItem() : QStyleOptionViewItem()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionViewItem();
 }
 
+KQStyleOptionViewItem::~KQStyleOptionViewItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionViewItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -139,17 +154,23 @@ KMETHOD QStyleOptionViewItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionViewItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionViewItem *qp = (KQStyleOptionViewItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionViewItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionViewItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionViewItem *qp = (KQStyleOptionViewItem *)p->rawptr;
-//		KQStyleOptionViewItem *qp = static_cast<KQStyleOptionViewItem*>(p->rawptr);
+//		KQStyleOptionViewItem *qp = (KQStyleOptionViewItem *)p->rawptr;
+		KQStyleOptionViewItem *qp = static_cast<KQStyleOptionViewItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -338,6 +338,8 @@ KMETHOD QToolBar_setToolButtonStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQToolBar::DummyQToolBar()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	action_triggered_func = NULL;
 	allowed_areas_changed_func = NULL;
@@ -357,6 +359,13 @@ DummyQToolBar::DummyQToolBar()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("tool-button-style-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("top-level-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("visibility-changed", NULL));
+}
+DummyQToolBar::~DummyQToolBar()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQToolBar::setSelf(knh_RawPtr_t *ptr)
@@ -522,8 +531,9 @@ knh_Object_t** DummyQToolBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQToolBar::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 8;
+	int list_size = 9;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, action_triggered_func);
 	KNH_ADDNNREF(ctx, allowed_areas_changed_func);
 	KNH_ADDNNREF(ctx, icon_size_changed_func);
@@ -558,11 +568,17 @@ void DummyQToolBar::connection(QObject *o)
 
 KQToolBar::KQToolBar(const QString title, QWidget* parent) : QToolBar(title, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQToolBar();
 	dummy->connection((QObject*)this);
 }
 
+KQToolBar::~KQToolBar()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QToolBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -607,17 +623,23 @@ KMETHOD QToolBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QToolBar_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQToolBar *qp = (KQToolBar *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QToolBar*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QToolBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQToolBar *qp = (KQToolBar *)p->rawptr;
-//		KQToolBar *qp = static_cast<KQToolBar*>(p->rawptr);
+//		KQToolBar *qp = (KQToolBar *)p->rawptr;
+		KQToolBar *qp = static_cast<KQToolBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

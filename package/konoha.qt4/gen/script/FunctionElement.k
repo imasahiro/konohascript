@@ -469,30 +469,43 @@ class FunctionElement {
 	String genBind(boolean make_rapper_class_flag, boolean have_private_destructor_flag) {
 //		if (class_name == "QWidget") print make_rapper_class_flag;
 		if (pureVirtualFlag) return "";
+
 		String bind = "";
-		bind += ("KMETHOD " + class_name + "_" + func_name + "(CTX ctx, knh_sfp_t *sfp _RIX)\n");
-		bind += "{\n";
-		bind += "\t(void)ctx;\n";
-		if (staticFlag) {
-			bind += "\tif (true) {\n";
-			bind += argumentFormat();
-			bind += callFuncFormat();
-			bind += returnFormat();
-			bind += "\n";
-		} else if (!constructorFlag) {
-			bind += "\t" + RawPtr_to("qp", (have_private_destructor_flag ? "K" : "") + class_name + " *", 0);
-//			bind += "\t" + RawPtr_to("qp", "K" + class_name + " *", 0);
-			bind += "\tif (qp) {\n";
-//			bind += "\tif (qp != NULL) {\n";
-			bind += argumentFormat();
-			bind += callFuncFormat(false, have_private_destructor_flag);
-			bind += returnFormat();
-			bind += "\n";
-		} else {
-			bind += argumentFormat();
-			bind += callFuncFormat(make_rapper_class_flag);
-			bind += returnFormat(make_rapper_class_flag);
-			if (class_name == "QApplication") return QApplicationNew();
+
+		switch (class_name) {
+		case "QApplication":
+			switch (func_name) {
+			case "new":
+				bind += QApplicationNew();
+				break;
+			case "exec":
+				bind += QApplicationExec();
+				break;
+			}
+			break;
+		default:
+			bind += ("KMETHOD " + class_name + "_" + func_name + "(CTX ctx, knh_sfp_t *sfp _RIX)\n");
+			bind += "{\n";
+			bind += "\t(void)ctx;\n";
+			if (staticFlag) {
+				bind += "\tif (true) {\n";
+				bind += argumentFormat();
+				bind += callFuncFormat();
+				bind += returnFormat();
+				bind += "\n";
+			} else if (!constructorFlag) {
+				bind += "\t" + RawPtr_to("qp", (have_private_destructor_flag ? "K" : "") + class_name + " *", 0);
+				bind += "\tif (qp) {\n";
+				bind += argumentFormat();
+				bind += callFuncFormat(false, have_private_destructor_flag);
+				bind += returnFormat();
+				bind += "\n";
+			} else {
+				bind += argumentFormat();
+				bind += callFuncFormat(make_rapper_class_flag);
+				bind += returnFormat(make_rapper_class_flag);
+//				if (class_name == "QApplication") return QApplicationNew();
+			}
 		}
 		return bind;
 	}

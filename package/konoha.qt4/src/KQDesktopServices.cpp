@@ -84,9 +84,18 @@ KMETHOD QDesktopServices_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDesktopServices::DummyQDesktopServices()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDesktopServices::~DummyQDesktopServices()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDesktopServices::setSelf(knh_RawPtr_t *ptr)
@@ -145,6 +154,11 @@ void DummyQDesktopServices::connection(QObject *o)
 	}
 }
 
+KQDesktopServices::~KQDesktopServices()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDesktopServices_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -189,17 +203,23 @@ KMETHOD QDesktopServices_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDesktopServices_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDesktopServices *qp = (KQDesktopServices *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDesktopServices*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDesktopServices_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDesktopServices *qp = (KQDesktopServices *)p->rawptr;
-//		KQDesktopServices *qp = static_cast<KQDesktopServices*>(p->rawptr);
+//		KQDesktopServices *qp = (KQDesktopServices *)p->rawptr;
+		KQDesktopServices *qp = static_cast<KQDesktopServices*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

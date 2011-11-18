@@ -76,9 +76,18 @@ KMETHOD QHistoryState_setHistoryType(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQHistoryState::DummyQHistoryState()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQHistoryState::~DummyQHistoryState()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQHistoryState::setSelf(knh_RawPtr_t *ptr)
@@ -144,11 +153,17 @@ void DummyQHistoryState::connection(QObject *o)
 
 KQHistoryState::KQHistoryState(QState* parent) : QHistoryState(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQHistoryState();
 	dummy->connection((QObject*)this);
 }
 
+KQHistoryState::~KQHistoryState()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QHistoryState_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -193,17 +208,23 @@ KMETHOD QHistoryState_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QHistoryState_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQHistoryState *qp = (KQHistoryState *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QHistoryState*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QHistoryState_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQHistoryState *qp = (KQHistoryState *)p->rawptr;
-//		KQHistoryState *qp = static_cast<KQHistoryState*>(p->rawptr);
+//		KQHistoryState *qp = (KQHistoryState *)p->rawptr;
+		KQHistoryState *qp = static_cast<KQHistoryState*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

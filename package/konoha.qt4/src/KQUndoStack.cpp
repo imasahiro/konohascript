@@ -321,6 +321,8 @@ KMETHOD QUndoStack_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQUndoStack::DummyQUndoStack()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	can_redo_changed_func = NULL;
 	can_undo_changed_func = NULL;
@@ -336,6 +338,13 @@ DummyQUndoStack::DummyQUndoStack()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("index-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("redo-text-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-text-changed", NULL));
+}
+DummyQUndoStack::~DummyQUndoStack()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQUndoStack::setSelf(knh_RawPtr_t *ptr)
@@ -472,8 +481,9 @@ knh_Object_t** DummyQUndoStack::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQUndoStack::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, can_redo_changed_func);
 	KNH_ADDNNREF(ctx, can_undo_changed_func);
 	KNH_ADDNNREF(ctx, clean_changed_func);
@@ -504,11 +514,17 @@ void DummyQUndoStack::connection(QObject *o)
 
 KQUndoStack::KQUndoStack(QObject* parent) : QUndoStack(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQUndoStack();
 	dummy->connection((QObject*)this);
 }
 
+KQUndoStack::~KQUndoStack()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QUndoStack_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -553,17 +569,23 @@ KMETHOD QUndoStack_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QUndoStack_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQUndoStack *qp = (KQUndoStack *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QUndoStack*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QUndoStack_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQUndoStack *qp = (KQUndoStack *)p->rawptr;
-//		KQUndoStack *qp = static_cast<KQUndoStack*>(p->rawptr);
+//		KQUndoStack *qp = (KQUndoStack *)p->rawptr;
+		KQUndoStack *qp = static_cast<KQUndoStack*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

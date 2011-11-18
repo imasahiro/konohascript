@@ -10,6 +10,7 @@ public:
 	knh_Func_t *link_hovered_func;
 	knh_Func_t *paint_func;
 	DummyQGraphicsTextItem();
+	virtual ~DummyQGraphicsTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -24,9 +25,11 @@ public slots:
 class KQGraphicsTextItem : public QGraphicsTextItem {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsTextItem *dummy;
 	KQGraphicsTextItem(QGraphicsItem* parent);
+	~KQGraphicsTextItem();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);

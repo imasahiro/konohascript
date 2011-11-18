@@ -35,9 +35,18 @@ KMETHOD QStyleOptionViewItemV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionViewItemV2::DummyQStyleOptionViewItemV2()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionViewItemV2::~DummyQStyleOptionViewItemV2()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionViewItemV2::setSelf(knh_RawPtr_t *ptr)
@@ -103,10 +112,16 @@ void DummyQStyleOptionViewItemV2::connection(QObject *o)
 
 KQStyleOptionViewItemV2::KQStyleOptionViewItemV2() : QStyleOptionViewItemV2()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionViewItemV2();
 }
 
+KQStyleOptionViewItemV2::~KQStyleOptionViewItemV2()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionViewItemV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -151,17 +166,23 @@ KMETHOD QStyleOptionViewItemV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionViewItemV2_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionViewItemV2 *qp = (KQStyleOptionViewItemV2 *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionViewItemV2*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionViewItemV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionViewItemV2 *qp = (KQStyleOptionViewItemV2 *)p->rawptr;
-//		KQStyleOptionViewItemV2 *qp = static_cast<KQStyleOptionViewItemV2*>(p->rawptr);
+//		KQStyleOptionViewItemV2 *qp = (KQStyleOptionViewItemV2 *)p->rawptr;
+		KQStyleOptionViewItemV2 *qp = static_cast<KQStyleOptionViewItemV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -328,7 +349,8 @@ static void QStyleOptionViewItemV2ViewItemFeatures_free(CTX ctx, knh_RawPtr_t *p
 	if (p->rawptr != NULL) {
 		QStyleOptionViewItemV2::ViewItemFeatures *qp = (QStyleOptionViewItemV2::ViewItemFeatures *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

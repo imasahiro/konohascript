@@ -446,6 +446,8 @@ KMETHOD QHttp_ignoreSslErrors(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQHttp::DummyQHttp()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	authentication_required_func = NULL;
 	data_read_progress_func = NULL;
@@ -471,6 +473,13 @@ DummyQHttp::DummyQHttp()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("response-header-received", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("ssl-errors", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+}
+DummyQHttp::~DummyQHttp()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQHttp::setSelf(knh_RawPtr_t *ptr)
@@ -695,8 +704,9 @@ knh_Object_t** DummyQHttp::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQHttp::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 11;
+	int list_size = 12;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, authentication_required_func);
 	KNH_ADDNNREF(ctx, data_read_progress_func);
 	KNH_ADDNNREF(ctx, data_send_progress_func);
@@ -737,11 +747,17 @@ void DummyQHttp::connection(QObject *o)
 
 KQHttp::KQHttp(QObject* parent) : QHttp(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQHttp();
 	dummy->connection((QObject*)this);
 }
 
+KQHttp::~KQHttp()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QHttp_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -786,17 +802,23 @@ KMETHOD QHttp_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QHttp_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQHttp *qp = (KQHttp *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QHttp*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QHttp_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQHttp *qp = (KQHttp *)p->rawptr;
-//		KQHttp *qp = static_cast<KQHttp*>(p->rawptr);
+//		KQHttp *qp = (KQHttp *)p->rawptr;
+		KQHttp *qp = static_cast<KQHttp*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

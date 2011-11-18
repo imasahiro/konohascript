@@ -150,9 +150,18 @@ KMETHOD QAbstractPrintDialog_toPage(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractPrintDialog::DummyQAbstractPrintDialog()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAbstractPrintDialog::~DummyQAbstractPrintDialog()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractPrintDialog::setSelf(knh_RawPtr_t *ptr)
@@ -218,11 +227,17 @@ void DummyQAbstractPrintDialog::connection(QObject *o)
 
 KQAbstractPrintDialog::KQAbstractPrintDialog(QPrinter* printer, QWidget* parent) : QAbstractPrintDialog(printer, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractPrintDialog();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractPrintDialog::~KQAbstractPrintDialog()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractPrintDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -267,17 +282,23 @@ KMETHOD QAbstractPrintDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractPrintDialog_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractPrintDialog *qp = (KQAbstractPrintDialog *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractPrintDialog*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractPrintDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractPrintDialog *qp = (KQAbstractPrintDialog *)p->rawptr;
-//		KQAbstractPrintDialog *qp = static_cast<KQAbstractPrintDialog*>(p->rawptr);
+//		KQAbstractPrintDialog *qp = (KQAbstractPrintDialog *)p->rawptr;
+		KQAbstractPrintDialog *qp = static_cast<KQAbstractPrintDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -459,7 +480,8 @@ static void QAbstractPrintDialogPrintDialogOptions_free(CTX ctx, knh_RawPtr_t *p
 	if (p->rawptr != NULL) {
 		QAbstractPrintDialog::PrintDialogOptions *qp = (QAbstractPrintDialog::PrintDialogOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

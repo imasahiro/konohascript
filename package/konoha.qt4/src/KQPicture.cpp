@@ -169,9 +169,18 @@ KMETHOD QPicture_size(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPicture::DummyQPicture()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPicture::~DummyQPicture()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPicture::setSelf(knh_RawPtr_t *ptr)
@@ -237,10 +246,16 @@ void DummyQPicture::connection(QObject *o)
 
 KQPicture::KQPicture(int formatVersion) : QPicture(formatVersion)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPicture();
 }
 
+KQPicture::~KQPicture()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPicture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -285,17 +300,23 @@ KMETHOD QPicture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPicture_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPicture *qp = (KQPicture *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPicture*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPicture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPicture *qp = (KQPicture *)p->rawptr;
-//		KQPicture *qp = static_cast<KQPicture*>(p->rawptr);
+//		KQPicture *qp = (KQPicture *)p->rawptr;
+		KQPicture *qp = static_cast<KQPicture*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

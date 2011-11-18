@@ -732,9 +732,18 @@ KMETHOD QGLFormat_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGLFormat::DummyQGLFormat()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLFormat::~DummyQGLFormat()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLFormat::setSelf(knh_RawPtr_t *ptr)
@@ -795,10 +804,16 @@ void DummyQGLFormat::connection(QObject *o)
 
 KQGLFormat::KQGLFormat() : QGLFormat()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLFormat();
 }
 
+KQGLFormat::~KQGLFormat()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -843,17 +858,23 @@ KMETHOD QGLFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLFormat_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLFormat *qp = (KQGLFormat *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLFormat*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLFormat *qp = (KQGLFormat *)p->rawptr;
-//		KQGLFormat *qp = static_cast<KQGLFormat*>(p->rawptr);
+//		KQGLFormat *qp = (KQGLFormat *)p->rawptr;
+		KQGLFormat *qp = static_cast<KQGLFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1034,7 +1055,8 @@ static void QGLFormatOpenGLVersionFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QGLFormat::OpenGLVersionFlags *qp = (QGLFormat::OpenGLVersionFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

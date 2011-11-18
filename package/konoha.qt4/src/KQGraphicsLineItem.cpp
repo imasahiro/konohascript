@@ -241,11 +241,20 @@ void KQGraphicsLineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
 DummyQGraphicsLineItem::DummyQGraphicsLineItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	paint_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
+}
+DummyQGraphicsLineItem::~DummyQGraphicsLineItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsLineItem::setSelf(knh_RawPtr_t *ptr)
@@ -312,10 +321,16 @@ void DummyQGraphicsLineItem::connection(QObject *o)
 
 KQGraphicsLineItem::KQGraphicsLineItem(QGraphicsItem* parent) : QGraphicsLineItem(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsLineItem();
 }
 
+KQGraphicsLineItem::~KQGraphicsLineItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsLineItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -360,17 +375,23 @@ KMETHOD QGraphicsLineItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsLineItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsLineItem *qp = (KQGraphicsLineItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsLineItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsLineItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsLineItem *qp = (KQGraphicsLineItem *)p->rawptr;
-//		KQGraphicsLineItem *qp = static_cast<KQGraphicsLineItem*>(p->rawptr);
+//		KQGraphicsLineItem *qp = (KQGraphicsLineItem *)p->rawptr;
+		KQGraphicsLineItem *qp = static_cast<KQGraphicsLineItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

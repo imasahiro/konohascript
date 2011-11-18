@@ -151,9 +151,18 @@ KMETHOD QAuthenticator_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAuthenticator::DummyQAuthenticator()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAuthenticator::~DummyQAuthenticator()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAuthenticator::setSelf(knh_RawPtr_t *ptr)
@@ -214,10 +223,16 @@ void DummyQAuthenticator::connection(QObject *o)
 
 KQAuthenticator::KQAuthenticator() : QAuthenticator()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAuthenticator();
 }
 
+KQAuthenticator::~KQAuthenticator()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAuthenticator_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -262,17 +277,23 @@ KMETHOD QAuthenticator_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAuthenticator_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAuthenticator *qp = (KQAuthenticator *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAuthenticator*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAuthenticator_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAuthenticator *qp = (KQAuthenticator *)p->rawptr;
-//		KQAuthenticator *qp = static_cast<KQAuthenticator*>(p->rawptr);
+//		KQAuthenticator *qp = (KQAuthenticator *)p->rawptr;
+		KQAuthenticator *qp = static_cast<KQAuthenticator*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -376,9 +376,18 @@ KMETHOD QProxyStyle_setBaseStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQProxyStyle::DummyQProxyStyle()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQProxyStyle::~DummyQProxyStyle()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQProxyStyle::setSelf(knh_RawPtr_t *ptr)
@@ -444,11 +453,17 @@ void DummyQProxyStyle::connection(QObject *o)
 
 KQProxyStyle::KQProxyStyle(QStyle* style) : QProxyStyle(style)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQProxyStyle();
 	dummy->connection((QObject*)this);
 }
 
+KQProxyStyle::~KQProxyStyle()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QProxyStyle_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -493,17 +508,23 @@ KMETHOD QProxyStyle_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QProxyStyle_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQProxyStyle *qp = (KQProxyStyle *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QProxyStyle*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QProxyStyle_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQProxyStyle *qp = (KQProxyStyle *)p->rawptr;
-//		KQProxyStyle *qp = static_cast<KQProxyStyle*>(p->rawptr);
+//		KQProxyStyle *qp = (KQProxyStyle *)p->rawptr;
+		KQProxyStyle *qp = static_cast<KQProxyStyle*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -147,9 +147,18 @@ KMETHOD QNetworkCacheMetaData_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkCacheMetaData::DummyQNetworkCacheMetaData()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkCacheMetaData::~DummyQNetworkCacheMetaData()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkCacheMetaData::setSelf(knh_RawPtr_t *ptr)
@@ -210,10 +219,16 @@ void DummyQNetworkCacheMetaData::connection(QObject *o)
 
 KQNetworkCacheMetaData::KQNetworkCacheMetaData() : QNetworkCacheMetaData()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkCacheMetaData();
 }
 
+KQNetworkCacheMetaData::~KQNetworkCacheMetaData()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkCacheMetaData_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -258,17 +273,23 @@ KMETHOD QNetworkCacheMetaData_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkCacheMetaData_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkCacheMetaData *qp = (KQNetworkCacheMetaData *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkCacheMetaData*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkCacheMetaData_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkCacheMetaData *qp = (KQNetworkCacheMetaData *)p->rawptr;
-//		KQNetworkCacheMetaData *qp = static_cast<KQNetworkCacheMetaData*>(p->rawptr);
+//		KQNetworkCacheMetaData *qp = (KQNetworkCacheMetaData *)p->rawptr;
+		KQNetworkCacheMetaData *qp = static_cast<KQNetworkCacheMetaData*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

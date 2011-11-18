@@ -9,6 +9,7 @@ public:
 	knh_Func_t *about_to_block_func;
 	knh_Func_t *awake_func;
 	DummyQAbstractEventDispatcher();
+	virtual ~DummyQAbstractEventDispatcher();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQAbstractEventDispatcher : public QAbstractEventDispatcher {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractEventDispatcher *dummy;
 	KQAbstractEventDispatcher(QObject* parent);
+	~KQAbstractEventDispatcher();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

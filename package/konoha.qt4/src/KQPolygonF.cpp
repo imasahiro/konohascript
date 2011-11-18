@@ -61,7 +61,7 @@ KMETHOD QPolygonF_boundingRect(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QRectF ret_v = qp->boundingRect();
 		QRectF *ret_v_ = new QRectF(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -76,7 +76,7 @@ KMETHOD QPolygonF_containsPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  point = *RawPtr_to(const QPointF *, sfp[1]);
 		Qt::FillRule fillRule = Int_to(Qt::FillRule, sfp[2]);
 		bool ret_v = qp->containsPoint(point, fillRule);
@@ -91,7 +91,7 @@ KMETHOD QPolygonF_intersected(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  r = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->intersected(r);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -107,7 +107,7 @@ KMETHOD QPolygonF_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		bool ret_v = qp->isClosed();
 		RETURNb_(ret_v);
 	} else {
@@ -120,7 +120,7 @@ KMETHOD QPolygonF_subtracted(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  r = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->subtracted(r);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -136,7 +136,7 @@ KMETHOD QPolygonF_toPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		QPolygon ret_v = qp->toPolygon();
 		QPolygon *ret_v_ = new QPolygon(ret_v);
 		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v_, NULL);
@@ -151,7 +151,7 @@ KMETHOD QPolygonF_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		qp->translate(offset);
 	}
@@ -164,7 +164,7 @@ KMETHOD QPolygonF_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		qp->translate(dx, dy);
@@ -177,7 +177,7 @@ KMETHOD QPolygonF_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPointF  offset = *RawPtr_to(const QPointF *, sfp[1]);
 		QPolygonF ret_v = qp->translated(offset);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -194,7 +194,7 @@ KMETHOD QPolygonF_translated(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		qreal dx = Float_to(qreal, sfp[1]);
 		qreal dy = Float_to(qreal, sfp[2]);
 		QPolygonF ret_v = qp->translated(dx, dy);
@@ -211,7 +211,7 @@ KMETHOD QPolygonF_united(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
 	QPolygonF *  qp = RawPtr_to(QPolygonF *, sfp[0]);
-	if (qp != NULL) {
+	if (qp) {
 		const QPolygonF  r = *RawPtr_to(const QPolygonF *, sfp[1]);
 		QPolygonF ret_v = qp->united(r);
 		QPolygonF *ret_v_ = new QPolygonF(ret_v);
@@ -225,9 +225,18 @@ KMETHOD QPolygonF_united(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPolygonF::DummyQPolygonF()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPolygonF::~DummyQPolygonF()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPolygonF::setSelf(knh_RawPtr_t *ptr)
@@ -273,6 +282,15 @@ bool DummyQPolygonF::signalConnect(knh_Func_t *callback_func, string str)
 	}
 }
 
+knh_Object_t** DummyQPolygonF::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+{
+	(void)ctx; (void)p; (void)tail_;
+//	fprintf(stderr, "DummyQPolygonF::reftrace p->rawptr=[%p]\n", p->rawptr);
+
+//	tail_ = DummyQVector::reftrace(ctx, p, tail_);
+
+	return tail_;
+}
 
 void DummyQPolygonF::connection(QObject *o)
 {
@@ -284,10 +302,16 @@ void DummyQPolygonF::connection(QObject *o)
 
 KQPolygonF::KQPolygonF() : QPolygonF()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQPolygonF();
 }
 
+KQPolygonF::~KQPolygonF()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPolygonF_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -329,47 +353,32 @@ KMETHOD QPolygonF_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD QPolygonF_append(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	KQPolygonF *qp = RawPtr_to(KQPolygonF *, sfp[0]);
-	QPointF value = *RawPtr_to(QPointF*, sfp[1]);
-	if (qp != NULL) {
-		qp->append(value);
-//		fprintf(stderr, "size = [%d]\n", qp->size());
-	}
-	RETURNvoid_();
-}
-
 static void QPolygonF_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
 	if (p->rawptr != NULL) {
 		KQPolygonF *qp = (KQPolygonF *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPolygonF*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPolygonF_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
-	(void)ctx; (void)p; (void)tail_;
-	int list_size = 0;
-	KNH_ENSUREREF(ctx, list_size);
-
 	if (p->rawptr != NULL) {
-		KQPolygonF *qp = (KQPolygonF *)p->rawptr;
-		(void)qp;
+//		KQPolygonF *qp = (KQPolygonF *)p->rawptr;
+		KQPolygonF *qp = static_cast<KQPolygonF*>(p->rawptr);
+		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
 
 static int QPolygonF_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 {
 	return (p1->rawptr == p2->rawptr ? 0 : 1);
-}
-
-KMETHOD QPolygonF_opLSFT(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	(*(QPolygonF*)(sfp[0].p)) << (*(QPointF*)(sfp[1].p));
-	RETURN_(sfp[0].p);
 }
 
 void KQPolygonF::setSelf(knh_RawPtr_t *ptr)

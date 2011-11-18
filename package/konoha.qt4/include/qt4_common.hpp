@@ -11,6 +11,7 @@
 #define new_RawPtrFromClass(CLASS, o) new_RawPtr(lctx, getClassTBL(CLASS), o)
 #include <map>
 #define new_QRawPtr(lctx, T, v) new_QRawPtr_(lctx, getClassTBL(T), v)
+#define new_empty_QRawPtr(lctx, T) new_QRawPtr_(lctx, getClassTBL(T), (void*)NULL)
 //#define QRawPtrNull_to(T, a) ((((a.p)->rawptr) != NULL) ? (*RawPtr_to(T, a)) : 0)
 
 #define initFlag(NAME, T, a) T NAME;QRawPtrNull_to(NAME, T, a);
@@ -20,7 +21,7 @@
 (NAME) = 0;														  \
 }
 
-
+#define G_MAGIC_NUM 39543
 
 // template<class T>
 // inline knh_RawPtr_t *new_QRawPtr(CTX lctx, T *v)

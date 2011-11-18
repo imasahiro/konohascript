@@ -9,6 +9,7 @@ public:
 	knh_Func_t *opacity_changed_func;
 	knh_Func_t *opacity_mask_changed_func;
 	DummyQGraphicsOpacityEffect();
+	virtual ~DummyQGraphicsOpacityEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQGraphicsOpacityEffect : public QGraphicsOpacityEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsOpacityEffect *dummy;
 	KQGraphicsOpacityEffect(QObject* parent);
+	~KQGraphicsOpacityEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

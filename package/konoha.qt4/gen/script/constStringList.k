@@ -50,8 +50,7 @@ UNUSED_CLASSES = [
 	"QSessionManager",
 	"QThreadStorage", "QTextOStream", "QTableWidget", "QTemporaryFile",
 	"QVector", "QVectorIterator", "QVariant", "QVarLengthArray",
-	"qwsSetCustomColors", "QWS", "QWeakPointer","QWSClient", "QWindows"
-//	"QWebFrame" /*have private destructor*/
+	"qwsSetCustomColors", "QWS", "QWeakPointer","QWSClient", "QWindows", "QWebSettings"
 	];
 
 UNUSED_METHOD = [ //these methods are final
@@ -161,7 +160,12 @@ RENAME_FUNCTION_LIST = [
 	];
 
 HAVE_PRIVATE_DESTRUCTOR_LIST = [
-	"QWebFrame"
+	"QWebFrame", "QWebHistory"//, "QWebSettings"
+	];
+
+HAVE_PROTECTED_DESTRUCTOR_LIST = [
+	"QAccessibleObject", "QAccessibleWidget",
+	"QTextBlockGroup", "QTextObject", "QTextCodec",
 	];
 
 HAVE_SCENE_EVENT_METHOD = [

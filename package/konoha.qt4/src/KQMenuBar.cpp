@@ -307,6 +307,8 @@ KMETHOD QMenuBar_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMenuBar::DummyQMenuBar()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	hovered_func = NULL;
 	triggered_func = NULL;
@@ -314,6 +316,13 @@ DummyQMenuBar::DummyQMenuBar()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("hovered", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
+}
+DummyQMenuBar::~DummyQMenuBar()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMenuBar::setSelf(knh_RawPtr_t *ptr)
@@ -394,8 +403,9 @@ knh_Object_t** DummyQMenuBar::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQMenuBar::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, hovered_func);
 	KNH_ADDNNREF(ctx, triggered_func);
 
@@ -418,11 +428,17 @@ void DummyQMenuBar::connection(QObject *o)
 
 KQMenuBar::KQMenuBar(QWidget* parent) : QMenuBar(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMenuBar();
 	dummy->connection((QObject*)this);
 }
 
+KQMenuBar::~KQMenuBar()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMenuBar_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -467,17 +483,23 @@ KMETHOD QMenuBar_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMenuBar_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMenuBar *qp = (KQMenuBar *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMenuBar*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMenuBar_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMenuBar *qp = (KQMenuBar *)p->rawptr;
-//		KQMenuBar *qp = static_cast<KQMenuBar*>(p->rawptr);
+//		KQMenuBar *qp = (KQMenuBar *)p->rawptr;
+		KQMenuBar *qp = static_cast<KQMenuBar*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

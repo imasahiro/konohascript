@@ -239,6 +239,8 @@ KMETHOD QNetworkSession_stop(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkSession::DummyQNetworkSession()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	closed_func = NULL;
 	error_func = NULL;
@@ -254,6 +256,13 @@ DummyQNetworkSession::DummyQNetworkSession()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("opened", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("preferred-configuration-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+}
+DummyQNetworkSession::~DummyQNetworkSession()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkSession::setSelf(knh_RawPtr_t *ptr)
@@ -387,8 +396,9 @@ knh_Object_t** DummyQNetworkSession::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQNetworkSession::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, closed_func);
 	KNH_ADDNNREF(ctx, error_func);
 	KNH_ADDNNREF(ctx, new_configuration_activated_func);
@@ -419,11 +429,17 @@ void DummyQNetworkSession::connection(QObject *o)
 
 KQNetworkSession::KQNetworkSession(const QNetworkConfiguration connectionConfig, QObject* parent) : QNetworkSession(connectionConfig, parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkSession();
 	dummy->connection((QObject*)this);
 }
 
+KQNetworkSession::~KQNetworkSession()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkSession_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -468,17 +484,23 @@ KMETHOD QNetworkSession_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkSession_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkSession *qp = (KQNetworkSession *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkSession*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkSession_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkSession *qp = (KQNetworkSession *)p->rawptr;
-//		KQNetworkSession *qp = static_cast<KQNetworkSession*>(p->rawptr);
+//		KQNetworkSession *qp = (KQNetworkSession *)p->rawptr;
+		KQNetworkSession *qp = static_cast<KQNetworkSession*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

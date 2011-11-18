@@ -16,9 +16,18 @@ KMETHOD QWindowStateChangeEvent_oldState(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWindowStateChangeEvent::DummyQWindowStateChangeEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQWindowStateChangeEvent::~DummyQWindowStateChangeEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWindowStateChangeEvent::setSelf(knh_RawPtr_t *ptr)
@@ -82,6 +91,11 @@ void DummyQWindowStateChangeEvent::connection(QObject *o)
 	DummyQEvent::connection(o);
 }
 
+KQWindowStateChangeEvent::~KQWindowStateChangeEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWindowStateChangeEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -126,17 +140,23 @@ KMETHOD QWindowStateChangeEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWindowStateChangeEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWindowStateChangeEvent *qp = (KQWindowStateChangeEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWindowStateChangeEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWindowStateChangeEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWindowStateChangeEvent *qp = (KQWindowStateChangeEvent *)p->rawptr;
-//		KQWindowStateChangeEvent *qp = static_cast<KQWindowStateChangeEvent*>(p->rawptr);
+//		KQWindowStateChangeEvent *qp = (KQWindowStateChangeEvent *)p->rawptr;
+		KQWindowStateChangeEvent *qp = static_cast<KQWindowStateChangeEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

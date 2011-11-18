@@ -59,9 +59,18 @@ KMETHOD QGenericArgument_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGenericArgument::DummyQGenericArgument()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGenericArgument::~DummyQGenericArgument()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGenericArgument::setSelf(knh_RawPtr_t *ptr)
@@ -122,10 +131,16 @@ void DummyQGenericArgument::connection(QObject *o)
 
 KQGenericArgument::KQGenericArgument(const char* name, const void* data) : QGenericArgument(name, data)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGenericArgument();
 }
 
+KQGenericArgument::~KQGenericArgument()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGenericArgument_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -170,17 +185,23 @@ KMETHOD QGenericArgument_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGenericArgument_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGenericArgument *qp = (KQGenericArgument *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGenericArgument*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGenericArgument_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGenericArgument *qp = (KQGenericArgument *)p->rawptr;
-//		KQGenericArgument *qp = static_cast<KQGenericArgument*>(p->rawptr);
+//		KQGenericArgument *qp = (KQGenericArgument *)p->rawptr;
+		KQGenericArgument *qp = static_cast<KQGenericArgument*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

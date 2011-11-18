@@ -265,9 +265,18 @@ KMETHOD QNetworkProxy_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkProxy::DummyQNetworkProxy()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkProxy::~DummyQNetworkProxy()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkProxy::setSelf(knh_RawPtr_t *ptr)
@@ -328,10 +337,16 @@ void DummyQNetworkProxy::connection(QObject *o)
 
 KQNetworkProxy::KQNetworkProxy() : QNetworkProxy()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkProxy();
 }
 
+KQNetworkProxy::~KQNetworkProxy()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkProxy_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -376,17 +391,23 @@ KMETHOD QNetworkProxy_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkProxy_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkProxy *qp = (KQNetworkProxy *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkProxy*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkProxy_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkProxy *qp = (KQNetworkProxy *)p->rawptr;
-//		KQNetworkProxy *qp = static_cast<KQNetworkProxy*>(p->rawptr);
+//		KQNetworkProxy *qp = (KQNetworkProxy *)p->rawptr;
+		KQNetworkProxy *qp = static_cast<KQNetworkProxy*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -557,7 +578,8 @@ static void QNetworkProxyCapabilities_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QNetworkProxy::Capabilities *qp = (QNetworkProxy::Capabilities *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

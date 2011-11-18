@@ -11,9 +11,18 @@ KMETHOD QCloseEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQCloseEvent::DummyQCloseEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQCloseEvent::~DummyQCloseEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQCloseEvent::setSelf(knh_RawPtr_t *ptr)
@@ -79,10 +88,16 @@ void DummyQCloseEvent::connection(QObject *o)
 
 KQCloseEvent::KQCloseEvent() : QCloseEvent()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQCloseEvent();
 }
 
+KQCloseEvent::~KQCloseEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QCloseEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -127,17 +142,23 @@ KMETHOD QCloseEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QCloseEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQCloseEvent *qp = (KQCloseEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QCloseEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QCloseEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQCloseEvent *qp = (KQCloseEvent *)p->rawptr;
-//		KQCloseEvent *qp = static_cast<KQCloseEvent*>(p->rawptr);
+//		KQCloseEvent *qp = (KQCloseEvent *)p->rawptr;
+		KQCloseEvent *qp = static_cast<KQCloseEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

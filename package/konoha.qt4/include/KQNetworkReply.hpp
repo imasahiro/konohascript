@@ -13,6 +13,7 @@ public:
 	knh_Func_t *ssl_errors_func;
 	knh_Func_t *upload_progress_func;
 	DummyQNetworkReply();
+	virtual ~DummyQNetworkReply();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,10 @@ public slots:
 class KQNetworkReply : public QNetworkReply {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQNetworkReply *dummy;
-
+	~KQNetworkReply();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

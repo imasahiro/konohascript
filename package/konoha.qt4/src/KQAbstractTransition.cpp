@@ -140,11 +140,20 @@ KMETHOD QAbstractTransition_getTargetStates(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractTransition::DummyQAbstractTransition()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	triggered_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
+}
+DummyQAbstractTransition::~DummyQAbstractTransition()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractTransition::setSelf(knh_RawPtr_t *ptr)
@@ -208,8 +217,9 @@ knh_Object_t** DummyQAbstractTransition::reftrace(CTX ctx, knh_RawPtr_t *p FTRAR
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractTransition::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, triggered_func);
 
 	KNH_SIZEREF(ctx);
@@ -230,11 +240,17 @@ void DummyQAbstractTransition::connection(QObject *o)
 
 KQAbstractTransition::KQAbstractTransition(QState* sourceState) : QAbstractTransition(sourceState)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractTransition();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractTransition::~KQAbstractTransition()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractTransition_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -279,17 +295,23 @@ KMETHOD QAbstractTransition_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractTransition_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractTransition *qp = (KQAbstractTransition *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractTransition*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractTransition_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractTransition *qp = (KQAbstractTransition *)p->rawptr;
-//		KQAbstractTransition *qp = static_cast<KQAbstractTransition*>(p->rawptr);
+//		KQAbstractTransition *qp = (KQAbstractTransition *)p->rawptr;
+		KQAbstractTransition *qp = static_cast<KQAbstractTransition*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

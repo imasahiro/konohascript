@@ -2998,7 +2998,35 @@ KMETHOD QWidget_updateOL(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWidget::DummyQWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
+	actionEventPtr = new_empty_QRawPtr(lctx, QActionEvent);
+	changeEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	closeEventPtr = new_empty_QRawPtr(lctx, QCloseEvent);
+	contextMenuEventPtr = new_empty_QRawPtr(lctx, QContextMenuEvent);
+	dragEnterEventPtr = new_empty_QRawPtr(lctx, QDragEnterEvent);
+	dragLeaveEventPtr = new_empty_QRawPtr(lctx, QDragLeaveEvent);
+	dragMoveEventPtr = new_empty_QRawPtr(lctx, QDragMoveEvent);
+	dropEventPtr = new_empty_QRawPtr(lctx, QDropEvent);
+	enterEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	focusInEventPtr = new_empty_QRawPtr(lctx, QFocusEvent);
+	focusOutEventPtr = new_empty_QRawPtr(lctx, QFocusEvent);
+	hideEventPtr = new_empty_QRawPtr(lctx, QHideEvent);
+	inputMethodEventPtr = new_empty_QRawPtr(lctx, QInputMethodEvent);
+	keyPressEventPtr = new_empty_QRawPtr(lctx, QKeyEvent);
+	keyReleaseEventPtr = new_empty_QRawPtr(lctx, QKeyEvent);
+	leaveEventPtr = new_empty_QRawPtr(lctx, QEvent);
+	mouseDoubleClickEventPtr = new_empty_QRawPtr(lctx, QMouseEvent);
+	mouseMoveEventPtr = new_empty_QRawPtr(lctx, QMouseEvent);
+	mousePressEventPtr = new_empty_QRawPtr(lctx, QMouseEvent);
+	mouseReleaseEventPtr = new_empty_QRawPtr(lctx, QMouseEvent);
+	moveEventPtr = new_empty_QRawPtr(lctx, QMoveEvent);
+	paintEventPtr = new_empty_QRawPtr(lctx, QPaintEvent);
+	resizeEventPtr = new_empty_QRawPtr(lctx, QResizeEvent);
+	showEventPtr = new_empty_QRawPtr(lctx, QShowEvent);
+	tabletEventPtr = new_empty_QRawPtr(lctx, QTabletEvent);
+	wheelEventPtr = new_empty_QRawPtr(lctx, QWheelEvent);
 	action_event_func = NULL;
 	change_event_func = NULL;
 	close_event_func = NULL;
@@ -3055,6 +3083,13 @@ DummyQWidget::DummyQWidget()
 	event_map->insert(map<string, knh_Func_t *>::value_type("tablet-event", NULL));
 	event_map->insert(map<string, knh_Func_t *>::value_type("wheel-event", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("custom-context-menu-requested", NULL));
+}
+DummyQWidget::~DummyQWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWidget::setSelf(knh_RawPtr_t *ptr)
@@ -3195,8 +3230,8 @@ bool DummyQWidget::actionEventDummy(QActionEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QActionEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		actionEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(actionEventPtr)));
 		knh_Func_invoke(lctx, action_event_func, lsfp, 2);
 		return true;
 	}
@@ -3209,8 +3244,8 @@ bool DummyQWidget::changeEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		changeEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(changeEventPtr)));
 		knh_Func_invoke(lctx, change_event_func, lsfp, 2);
 		return true;
 	}
@@ -3223,8 +3258,8 @@ bool DummyQWidget::closeEventDummy(QCloseEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QCloseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		closeEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(closeEventPtr)));
 		knh_Func_invoke(lctx, close_event_func, lsfp, 2);
 		return true;
 	}
@@ -3237,8 +3272,8 @@ bool DummyQWidget::contextMenuEventDummy(QContextMenuEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QContextMenuEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		contextMenuEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(contextMenuEventPtr)));
 		knh_Func_invoke(lctx, context_menu_event_func, lsfp, 2);
 		return true;
 	}
@@ -3251,8 +3286,8 @@ bool DummyQWidget::dragEnterEventDummy(QDragEnterEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDragEnterEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dragEnterEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dragEnterEventPtr)));
 		knh_Func_invoke(lctx, drag_enter_event_func, lsfp, 2);
 		return true;
 	}
@@ -3265,8 +3300,8 @@ bool DummyQWidget::dragLeaveEventDummy(QDragLeaveEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDragLeaveEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dragLeaveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dragLeaveEventPtr)));
 		knh_Func_invoke(lctx, drag_leave_event_func, lsfp, 2);
 		return true;
 	}
@@ -3279,8 +3314,8 @@ bool DummyQWidget::dragMoveEventDummy(QDragMoveEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDragMoveEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dragMoveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dragMoveEventPtr)));
 		knh_Func_invoke(lctx, drag_move_event_func, lsfp, 2);
 		return true;
 	}
@@ -3293,8 +3328,8 @@ bool DummyQWidget::dropEventDummy(QDropEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QDropEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		dropEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(dropEventPtr)));
 		knh_Func_invoke(lctx, drop_event_func, lsfp, 2);
 		return true;
 	}
@@ -3307,8 +3342,8 @@ bool DummyQWidget::enterEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		enterEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(enterEventPtr)));
 		knh_Func_invoke(lctx, enter_event_func, lsfp, 2);
 		return true;
 	}
@@ -3321,8 +3356,8 @@ bool DummyQWidget::focusInEventDummy(QFocusEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QFocusEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		focusInEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(focusInEventPtr)));
 		knh_Func_invoke(lctx, focus_in_event_func, lsfp, 2);
 		return true;
 	}
@@ -3335,8 +3370,8 @@ bool DummyQWidget::focusOutEventDummy(QFocusEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QFocusEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		focusOutEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(focusOutEventPtr)));
 		knh_Func_invoke(lctx, focus_out_event_func, lsfp, 2);
 		return true;
 	}
@@ -3349,8 +3384,8 @@ bool DummyQWidget::hideEventDummy(QHideEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QHideEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		hideEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(hideEventPtr)));
 		knh_Func_invoke(lctx, hide_event_func, lsfp, 2);
 		return true;
 	}
@@ -3363,8 +3398,8 @@ bool DummyQWidget::inputMethodEventDummy(QInputMethodEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QInputMethodEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		inputMethodEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(inputMethodEventPtr)));
 		knh_Func_invoke(lctx, input_method_event_func, lsfp, 2);
 		return true;
 	}
@@ -3377,8 +3412,8 @@ bool DummyQWidget::keyPressEventDummy(QKeyEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QKeyEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		keyPressEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(keyPressEventPtr)));
 		knh_Func_invoke(lctx, key_press_event_func, lsfp, 2);
 		return true;
 	}
@@ -3391,8 +3426,8 @@ bool DummyQWidget::keyReleaseEventDummy(QKeyEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QKeyEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		keyReleaseEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(keyReleaseEventPtr)));
 		knh_Func_invoke(lctx, key_release_event_func, lsfp, 2);
 		return true;
 	}
@@ -3405,8 +3440,8 @@ bool DummyQWidget::leaveEventDummy(QEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		leaveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(leaveEventPtr)));
 		knh_Func_invoke(lctx, leave_event_func, lsfp, 2);
 		return true;
 	}
@@ -3419,8 +3454,8 @@ bool DummyQWidget::mouseDoubleClickEventDummy(QMouseEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QMouseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mouseDoubleClickEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mouseDoubleClickEventPtr)));
 		knh_Func_invoke(lctx, mouse_double_click_event_func, lsfp, 2);
 		return true;
 	}
@@ -3433,8 +3468,8 @@ bool DummyQWidget::mouseMoveEventDummy(QMouseEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QMouseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mouseMoveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mouseMoveEventPtr)));
 		knh_Func_invoke(lctx, mouse_move_event_func, lsfp, 2);
 		return true;
 	}
@@ -3447,8 +3482,8 @@ bool DummyQWidget::mousePressEventDummy(QMouseEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QMouseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mousePressEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mousePressEventPtr)));
 		knh_Func_invoke(lctx, mouse_press_event_func, lsfp, 2);
 		return true;
 	}
@@ -3461,8 +3496,8 @@ bool DummyQWidget::mouseReleaseEventDummy(QMouseEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QMouseEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		mouseReleaseEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(mouseReleaseEventPtr)));
 		knh_Func_invoke(lctx, mouse_release_event_func, lsfp, 2);
 		return true;
 	}
@@ -3475,8 +3510,8 @@ bool DummyQWidget::moveEventDummy(QMoveEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QMoveEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		moveEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(moveEventPtr)));
 		knh_Func_invoke(lctx, move_event_func, lsfp, 2);
 		return true;
 	}
@@ -3489,8 +3524,8 @@ bool DummyQWidget::paintEventDummy(QPaintEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPaintEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		paintEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(paintEventPtr)));
 		knh_Func_invoke(lctx, paint_event_func, lsfp, 2);
 		return true;
 	}
@@ -3503,8 +3538,8 @@ bool DummyQWidget::resizeEventDummy(QResizeEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QResizeEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		resizeEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(resizeEventPtr)));
 		knh_Func_invoke(lctx, resize_event_func, lsfp, 2);
 		return true;
 	}
@@ -3517,8 +3552,8 @@ bool DummyQWidget::showEventDummy(QShowEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QShowEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		showEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(showEventPtr)));
 		knh_Func_invoke(lctx, show_event_func, lsfp, 2);
 		return true;
 	}
@@ -3531,8 +3566,8 @@ bool DummyQWidget::tabletEventDummy(QTabletEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QTabletEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		tabletEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(tabletEventPtr)));
 		knh_Func_invoke(lctx, tablet_event_func, lsfp, 2);
 		return true;
 	}
@@ -3545,8 +3580,8 @@ bool DummyQWidget::wheelEventDummy(QWheelEvent* event)
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QWheelEvent, event);
-		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
+		wheelEventPtr->rawptr = event;
+		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, (UPCAST(wheelEventPtr)));
 		knh_Func_invoke(lctx, wheel_event_func, lsfp, 2);
 		return true;
 	}
@@ -3629,8 +3664,9 @@ knh_Object_t** DummyQWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 27;
+	int list_size = 54;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, action_event_func);
 	KNH_ADDNNREF(ctx, change_event_func);
 	KNH_ADDNNREF(ctx, close_event_func);
@@ -3658,6 +3694,32 @@ knh_Object_t** DummyQWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	KNH_ADDNNREF(ctx, tablet_event_func);
 	KNH_ADDNNREF(ctx, wheel_event_func);
 	KNH_ADDNNREF(ctx, custom_context_menu_requested_func);
+	KNH_ADDNNREF(ctx, actionEventPtr);
+	KNH_ADDNNREF(ctx, changeEventPtr);
+	KNH_ADDNNREF(ctx, closeEventPtr);
+	KNH_ADDNNREF(ctx, contextMenuEventPtr);
+	KNH_ADDNNREF(ctx, dragEnterEventPtr);
+	KNH_ADDNNREF(ctx, dragLeaveEventPtr);
+	KNH_ADDNNREF(ctx, dragMoveEventPtr);
+	KNH_ADDNNREF(ctx, dropEventPtr);
+	KNH_ADDNNREF(ctx, enterEventPtr);
+	KNH_ADDNNREF(ctx, focusInEventPtr);
+	KNH_ADDNNREF(ctx, focusOutEventPtr);
+	KNH_ADDNNREF(ctx, hideEventPtr);
+	KNH_ADDNNREF(ctx, inputMethodEventPtr);
+	KNH_ADDNNREF(ctx, keyPressEventPtr);
+	KNH_ADDNNREF(ctx, keyReleaseEventPtr);
+	KNH_ADDNNREF(ctx, leaveEventPtr);
+	KNH_ADDNNREF(ctx, mouseDoubleClickEventPtr);
+	KNH_ADDNNREF(ctx, mouseMoveEventPtr);
+	KNH_ADDNNREF(ctx, mousePressEventPtr);
+	KNH_ADDNNREF(ctx, mouseReleaseEventPtr);
+	KNH_ADDNNREF(ctx, moveEventPtr);
+	KNH_ADDNNREF(ctx, paintEventPtr);
+	KNH_ADDNNREF(ctx, resizeEventPtr);
+	KNH_ADDNNREF(ctx, showEventPtr);
+	KNH_ADDNNREF(ctx, tabletEventPtr);
+	KNH_ADDNNREF(ctx, wheelEventPtr);
 
 	KNH_SIZEREF(ctx);
 
@@ -3679,11 +3741,17 @@ void DummyQWidget::connection(QObject *o)
 
 KQWidget::KQWidget(QWidget* parent, Qt::WindowFlags f) : QWidget(parent, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQWidget::~KQWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -3728,17 +3796,23 @@ KMETHOD QWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWidget *qp = (KQWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWidget *qp = (KQWidget *)p->rawptr;
-//		KQWidget *qp = static_cast<KQWidget*>(p->rawptr);
+//		KQWidget *qp = (KQWidget *)p->rawptr;
+		KQWidget *qp = static_cast<KQWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -3911,7 +3985,8 @@ static void QWidgetRenderFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QWidget::RenderFlags *qp = (QWidget::RenderFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

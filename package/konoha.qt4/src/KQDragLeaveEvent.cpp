@@ -11,9 +11,18 @@ KMETHOD QDragLeaveEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDragLeaveEvent::DummyQDragLeaveEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDragLeaveEvent::~DummyQDragLeaveEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDragLeaveEvent::setSelf(knh_RawPtr_t *ptr)
@@ -79,10 +88,16 @@ void DummyQDragLeaveEvent::connection(QObject *o)
 
 KQDragLeaveEvent::KQDragLeaveEvent() : QDragLeaveEvent()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDragLeaveEvent();
 }
 
+KQDragLeaveEvent::~KQDragLeaveEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDragLeaveEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -127,17 +142,23 @@ KMETHOD QDragLeaveEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDragLeaveEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDragLeaveEvent *qp = (KQDragLeaveEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDragLeaveEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDragLeaveEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDragLeaveEvent *qp = (KQDragLeaveEvent *)p->rawptr;
-//		KQDragLeaveEvent *qp = static_cast<KQDragLeaveEvent*>(p->rawptr);
+//		KQDragLeaveEvent *qp = (KQDragLeaveEvent *)p->rawptr;
+		KQDragLeaveEvent *qp = static_cast<KQDragLeaveEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

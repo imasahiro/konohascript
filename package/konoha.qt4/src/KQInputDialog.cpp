@@ -609,6 +609,8 @@ KMETHOD QInputDialog_getText(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQInputDialog::DummyQInputDialog()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	double_value_changed_func = NULL;
 	double_value_selected_func = NULL;
@@ -624,6 +626,13 @@ DummyQInputDialog::DummyQInputDialog()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("int-value-selected", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("text-value-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("text-value-selected", NULL));
+}
+DummyQInputDialog::~DummyQInputDialog()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQInputDialog::setSelf(knh_RawPtr_t *ptr)
@@ -762,8 +771,9 @@ knh_Object_t** DummyQInputDialog::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQInputDialog::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, double_value_changed_func);
 	KNH_ADDNNREF(ctx, double_value_selected_func);
 	KNH_ADDNNREF(ctx, int_value_changed_func);
@@ -794,11 +804,17 @@ void DummyQInputDialog::connection(QObject *o)
 
 KQInputDialog::KQInputDialog(QWidget* parent, Qt::WindowFlags flags) : QInputDialog(parent, flags)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQInputDialog();
 	dummy->connection((QObject*)this);
 }
 
+KQInputDialog::~KQInputDialog()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QInputDialog_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -843,17 +859,23 @@ KMETHOD QInputDialog_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QInputDialog_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQInputDialog *qp = (KQInputDialog *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QInputDialog*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QInputDialog_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQInputDialog *qp = (KQInputDialog *)p->rawptr;
-//		KQInputDialog *qp = static_cast<KQInputDialog*>(p->rawptr);
+//		KQInputDialog *qp = (KQInputDialog *)p->rawptr;
+		KQInputDialog *qp = static_cast<KQInputDialog*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1028,7 +1050,8 @@ static void QInputDialogInputDialogOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QInputDialog::InputDialogOptions *qp = (QInputDialog::InputDialogOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

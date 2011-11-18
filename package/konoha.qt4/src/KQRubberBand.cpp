@@ -106,9 +106,18 @@ KMETHOD QRubberBand_shape(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQRubberBand::DummyQRubberBand()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQRubberBand::~DummyQRubberBand()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQRubberBand::setSelf(knh_RawPtr_t *ptr)
@@ -174,11 +183,17 @@ void DummyQRubberBand::connection(QObject *o)
 
 KQRubberBand::KQRubberBand(QRubberBand::Shape s, QWidget* p) : QRubberBand(s, p)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQRubberBand();
 	dummy->connection((QObject*)this);
 }
 
+KQRubberBand::~KQRubberBand()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QRubberBand_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -223,17 +238,23 @@ KMETHOD QRubberBand_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QRubberBand_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQRubberBand *qp = (KQRubberBand *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QRubberBand*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QRubberBand_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQRubberBand *qp = (KQRubberBand *)p->rawptr;
-//		KQRubberBand *qp = static_cast<KQRubberBand*>(p->rawptr);
+//		KQRubberBand *qp = (KQRubberBand *)p->rawptr;
+		KQRubberBand *qp = static_cast<KQRubberBand*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

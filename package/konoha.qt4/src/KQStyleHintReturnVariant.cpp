@@ -11,9 +11,18 @@ KMETHOD QStyleHintReturnVariant_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleHintReturnVariant::DummyQStyleHintReturnVariant()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleHintReturnVariant::~DummyQStyleHintReturnVariant()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleHintReturnVariant::setSelf(knh_RawPtr_t *ptr)
@@ -79,10 +88,16 @@ void DummyQStyleHintReturnVariant::connection(QObject *o)
 
 KQStyleHintReturnVariant::KQStyleHintReturnVariant() : QStyleHintReturnVariant()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleHintReturnVariant();
 }
 
+KQStyleHintReturnVariant::~KQStyleHintReturnVariant()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleHintReturnVariant_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -127,17 +142,23 @@ KMETHOD QStyleHintReturnVariant_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleHintReturnVariant_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleHintReturnVariant *qp = (KQStyleHintReturnVariant *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleHintReturnVariant*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleHintReturnVariant_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleHintReturnVariant *qp = (KQStyleHintReturnVariant *)p->rawptr;
-//		KQStyleHintReturnVariant *qp = static_cast<KQStyleHintReturnVariant*>(p->rawptr);
+//		KQStyleHintReturnVariant *qp = (KQStyleHintReturnVariant *)p->rawptr;
+		KQStyleHintReturnVariant *qp = static_cast<KQStyleHintReturnVariant*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

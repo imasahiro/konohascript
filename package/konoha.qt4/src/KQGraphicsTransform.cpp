@@ -14,9 +14,18 @@ KMETHOD QGraphicsTransform_applyTo(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsTransform::DummyQGraphicsTransform()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGraphicsTransform::~DummyQGraphicsTransform()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsTransform::setSelf(knh_RawPtr_t *ptr)
@@ -82,11 +91,17 @@ void DummyQGraphicsTransform::connection(QObject *o)
 
 KQGraphicsTransform::KQGraphicsTransform(QObject* parent) : QGraphicsTransform(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsTransform();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsTransform::~KQGraphicsTransform()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsTransform_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -131,17 +146,23 @@ KMETHOD QGraphicsTransform_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsTransform_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsTransform *qp = (KQGraphicsTransform *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsTransform*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsTransform_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsTransform *qp = (KQGraphicsTransform *)p->rawptr;
-//		KQGraphicsTransform *qp = static_cast<KQGraphicsTransform*>(p->rawptr);
+//		KQGraphicsTransform *qp = (KQGraphicsTransform *)p->rawptr;
+		KQGraphicsTransform *qp = static_cast<KQGraphicsTransform*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

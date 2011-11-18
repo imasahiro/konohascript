@@ -145,9 +145,18 @@ KMETHOD QGLFramebufferObjectFormat_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGLFramebufferObjectFormat::DummyQGLFramebufferObjectFormat()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGLFramebufferObjectFormat::~DummyQGLFramebufferObjectFormat()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGLFramebufferObjectFormat::setSelf(knh_RawPtr_t *ptr)
@@ -208,10 +217,16 @@ void DummyQGLFramebufferObjectFormat::connection(QObject *o)
 
 KQGLFramebufferObjectFormat::KQGLFramebufferObjectFormat() : QGLFramebufferObjectFormat()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGLFramebufferObjectFormat();
 }
 
+KQGLFramebufferObjectFormat::~KQGLFramebufferObjectFormat()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGLFramebufferObjectFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -256,17 +271,23 @@ KMETHOD QGLFramebufferObjectFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGLFramebufferObjectFormat_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGLFramebufferObjectFormat *qp = (KQGLFramebufferObjectFormat *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGLFramebufferObjectFormat*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGLFramebufferObjectFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGLFramebufferObjectFormat *qp = (KQGLFramebufferObjectFormat *)p->rawptr;
-//		KQGLFramebufferObjectFormat *qp = static_cast<KQGLFramebufferObjectFormat*>(p->rawptr);
+//		KQGLFramebufferObjectFormat *qp = (KQGLFramebufferObjectFormat *)p->rawptr;
+		KQGLFramebufferObjectFormat *qp = static_cast<KQGLFramebufferObjectFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

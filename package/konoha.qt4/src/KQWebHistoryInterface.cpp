@@ -52,9 +52,18 @@ KMETHOD QWebHistoryInterface_setDefaultInterface(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWebHistoryInterface::DummyQWebHistoryInterface()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQWebHistoryInterface::~DummyQWebHistoryInterface()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWebHistoryInterface::setSelf(knh_RawPtr_t *ptr)
@@ -120,11 +129,17 @@ void DummyQWebHistoryInterface::connection(QObject *o)
 
 KQWebHistoryInterface::KQWebHistoryInterface(QObject* parent) : QWebHistoryInterface(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWebHistoryInterface();
 	dummy->connection((QObject*)this);
 }
 
+KQWebHistoryInterface::~KQWebHistoryInterface()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWebHistoryInterface_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -169,17 +184,23 @@ KMETHOD QWebHistoryInterface_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWebHistoryInterface_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWebHistoryInterface *qp = (KQWebHistoryInterface *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWebHistoryInterface*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWebHistoryInterface_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWebHistoryInterface *qp = (KQWebHistoryInterface *)p->rawptr;
-//		KQWebHistoryInterface *qp = static_cast<KQWebHistoryInterface*>(p->rawptr);
+//		KQWebHistoryInterface *qp = (KQWebHistoryInterface *)p->rawptr;
+		KQWebHistoryInterface *qp = static_cast<KQWebHistoryInterface*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

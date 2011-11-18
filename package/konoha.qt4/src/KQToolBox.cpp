@@ -296,11 +296,20 @@ KMETHOD QToolBox_setCurrentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQToolBox::DummyQToolBox()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	current_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("current-changed", NULL));
+}
+DummyQToolBox::~DummyQToolBox()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQToolBox::setSelf(knh_RawPtr_t *ptr)
@@ -365,8 +374,9 @@ knh_Object_t** DummyQToolBox::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQToolBox::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, current_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -387,11 +397,17 @@ void DummyQToolBox::connection(QObject *o)
 
 KQToolBox::KQToolBox(QWidget* parent, Qt::WindowFlags f) : QToolBox(parent, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQToolBox();
 	dummy->connection((QObject*)this);
 }
 
+KQToolBox::~KQToolBox()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QToolBox_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -436,17 +452,23 @@ KMETHOD QToolBox_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QToolBox_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQToolBox *qp = (KQToolBox *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QToolBox*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QToolBox_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQToolBox *qp = (KQToolBox *)p->rawptr;
-//		KQToolBox *qp = static_cast<KQToolBox*>(p->rawptr);
+//		KQToolBox *qp = (KQToolBox *)p->rawptr;
+		KQToolBox *qp = static_cast<KQToolBox*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

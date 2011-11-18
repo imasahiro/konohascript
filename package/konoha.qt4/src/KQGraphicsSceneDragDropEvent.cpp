@@ -168,9 +168,18 @@ KMETHOD QGraphicsSceneDragDropEvent_source(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsSceneDragDropEvent::DummyQGraphicsSceneDragDropEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGraphicsSceneDragDropEvent::~DummyQGraphicsSceneDragDropEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsSceneDragDropEvent::setSelf(knh_RawPtr_t *ptr)
@@ -234,6 +243,11 @@ void DummyQGraphicsSceneDragDropEvent::connection(QObject *o)
 	DummyQGraphicsSceneEvent::connection(o);
 }
 
+KQGraphicsSceneDragDropEvent::~KQGraphicsSceneDragDropEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsSceneDragDropEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -278,17 +292,23 @@ KMETHOD QGraphicsSceneDragDropEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsSceneDragDropEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsSceneDragDropEvent *qp = (KQGraphicsSceneDragDropEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsSceneDragDropEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsSceneDragDropEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsSceneDragDropEvent *qp = (KQGraphicsSceneDragDropEvent *)p->rawptr;
-//		KQGraphicsSceneDragDropEvent *qp = static_cast<KQGraphicsSceneDragDropEvent*>(p->rawptr);
+//		KQGraphicsSceneDragDropEvent *qp = (KQGraphicsSceneDragDropEvent *)p->rawptr;
+		KQGraphicsSceneDragDropEvent *qp = static_cast<KQGraphicsSceneDragDropEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

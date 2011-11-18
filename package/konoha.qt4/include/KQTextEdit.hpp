@@ -14,6 +14,7 @@ public:
 	knh_Func_t *text_changed_func;
 	knh_Func_t *undo_available_func;
 	DummyQTextEdit();
+	virtual ~DummyQTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -33,9 +34,11 @@ public slots:
 class KQTextEdit : public QTextEdit {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTextEdit *dummy;
 	KQTextEdit(QWidget* parent);
+	~KQTextEdit();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

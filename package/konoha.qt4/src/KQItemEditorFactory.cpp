@@ -98,9 +98,18 @@ KMETHOD QItemEditorFactory_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQItemEditorFactory::DummyQItemEditorFactory()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQItemEditorFactory::~DummyQItemEditorFactory()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQItemEditorFactory::setSelf(knh_RawPtr_t *ptr)
@@ -161,10 +170,16 @@ void DummyQItemEditorFactory::connection(QObject *o)
 
 KQItemEditorFactory::KQItemEditorFactory() : QItemEditorFactory()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQItemEditorFactory();
 }
 
+KQItemEditorFactory::~KQItemEditorFactory()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QItemEditorFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -209,17 +224,23 @@ KMETHOD QItemEditorFactory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QItemEditorFactory_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQItemEditorFactory *qp = (KQItemEditorFactory *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QItemEditorFactory*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QItemEditorFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQItemEditorFactory *qp = (KQItemEditorFactory *)p->rawptr;
-//		KQItemEditorFactory *qp = static_cast<KQItemEditorFactory*>(p->rawptr);
+//		KQItemEditorFactory *qp = (KQItemEditorFactory *)p->rawptr;
+		KQItemEditorFactory *qp = static_cast<KQItemEditorFactory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

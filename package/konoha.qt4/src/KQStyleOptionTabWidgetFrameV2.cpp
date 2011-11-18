@@ -35,9 +35,18 @@ KMETHOD QStyleOptionTabWidgetFrameV2_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQStyleOptionTabWidgetFrameV2::DummyQStyleOptionTabWidgetFrameV2()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQStyleOptionTabWidgetFrameV2::~DummyQStyleOptionTabWidgetFrameV2()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQStyleOptionTabWidgetFrameV2::setSelf(knh_RawPtr_t *ptr)
@@ -103,10 +112,16 @@ void DummyQStyleOptionTabWidgetFrameV2::connection(QObject *o)
 
 KQStyleOptionTabWidgetFrameV2::KQStyleOptionTabWidgetFrameV2() : QStyleOptionTabWidgetFrameV2()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQStyleOptionTabWidgetFrameV2();
 }
 
+KQStyleOptionTabWidgetFrameV2::~KQStyleOptionTabWidgetFrameV2()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QStyleOptionTabWidgetFrameV2_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -151,17 +166,23 @@ KMETHOD QStyleOptionTabWidgetFrameV2_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QStyleOptionTabWidgetFrameV2_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQStyleOptionTabWidgetFrameV2 *qp = (KQStyleOptionTabWidgetFrameV2 *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QStyleOptionTabWidgetFrameV2*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QStyleOptionTabWidgetFrameV2_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQStyleOptionTabWidgetFrameV2 *qp = (KQStyleOptionTabWidgetFrameV2 *)p->rawptr;
-//		KQStyleOptionTabWidgetFrameV2 *qp = static_cast<KQStyleOptionTabWidgetFrameV2*>(p->rawptr);
+//		KQStyleOptionTabWidgetFrameV2 *qp = (KQStyleOptionTabWidgetFrameV2 *)p->rawptr;
+		KQStyleOptionTabWidgetFrameV2 *qp = static_cast<KQStyleOptionTabWidgetFrameV2*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

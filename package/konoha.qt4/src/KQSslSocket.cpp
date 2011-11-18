@@ -942,6 +942,8 @@ KMETHOD QSslSocket_startServerEncryption(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSslSocket::DummyQSslSocket()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	encrypted_func = NULL;
 	encrypted_bytes_written_func = NULL;
@@ -955,6 +957,13 @@ DummyQSslSocket::DummyQSslSocket()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("mode-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("peer-verify-error", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("ssl-errors", NULL));
+}
+DummyQSslSocket::~DummyQSslSocket()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSslSocket::setSelf(knh_RawPtr_t *ptr)
@@ -1083,8 +1092,9 @@ knh_Object_t** DummyQSslSocket::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQSslSocket::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 5;
+	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, encrypted_func);
 	KNH_ADDNNREF(ctx, encrypted_bytes_written_func);
 	KNH_ADDNNREF(ctx, mode_changed_func);
@@ -1113,11 +1123,17 @@ void DummyQSslSocket::connection(QObject *o)
 
 KQSslSocket::KQSslSocket(QObject* parent) : QSslSocket(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSslSocket();
 	dummy->connection((QObject*)this);
 }
 
+KQSslSocket::~KQSslSocket()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSslSocket_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1162,17 +1178,23 @@ KMETHOD QSslSocket_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSslSocket_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSslSocket *qp = (KQSslSocket *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSslSocket*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSslSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSslSocket *qp = (KQSslSocket *)p->rawptr;
-//		KQSslSocket *qp = static_cast<KQSslSocket*>(p->rawptr);
+//		KQSslSocket *qp = (KQSslSocket *)p->rawptr;
+		KQSslSocket *qp = static_cast<KQSslSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

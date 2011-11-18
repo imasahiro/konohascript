@@ -9,6 +9,7 @@ public:
 	knh_Func_t *color_selected_func;
 	knh_Func_t *current_color_changed_func;
 	DummyQColorDialog();
+	virtual ~DummyQColorDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQColorDialog : public QColorDialog {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQColorDialog *dummy;
 	KQColorDialog(QWidget* parent);
+	~KQColorDialog();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

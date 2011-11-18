@@ -427,6 +427,8 @@ void KQGraphicsTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
 DummyQGraphicsTextItem::DummyQGraphicsTextItem()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	link_activated_func = NULL;
 	link_hovered_func = NULL;
@@ -436,6 +438,13 @@ DummyQGraphicsTextItem::DummyQGraphicsTextItem()
 	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("link-activated", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("link-hovered", NULL));
+}
+DummyQGraphicsTextItem::~DummyQGraphicsTextItem()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsTextItem::setSelf(knh_RawPtr_t *ptr)
@@ -517,10 +526,12 @@ knh_Object_t** DummyQGraphicsTextItem::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsTextItem::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, link_activated_func);
 	KNH_ADDNNREF(ctx, link_hovered_func);
+	KNH_ADDNNREF(ctx, paint_func);
 
 	KNH_SIZEREF(ctx);
 
@@ -541,11 +552,17 @@ void DummyQGraphicsTextItem::connection(QObject *o)
 
 KQGraphicsTextItem::KQGraphicsTextItem(QGraphicsItem* parent) : QGraphicsTextItem(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsTextItem();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsTextItem::~KQGraphicsTextItem()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsTextItem_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -590,17 +607,23 @@ KMETHOD QGraphicsTextItem_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsTextItem_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsTextItem *qp = (KQGraphicsTextItem *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsTextItem*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsTextItem_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsTextItem *qp = (KQGraphicsTextItem *)p->rawptr;
-//		KQGraphicsTextItem *qp = static_cast<KQGraphicsTextItem*>(p->rawptr);
+//		KQGraphicsTextItem *qp = (KQGraphicsTextItem *)p->rawptr;
+		KQGraphicsTextItem *qp = static_cast<KQGraphicsTextItem*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

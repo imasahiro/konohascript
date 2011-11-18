@@ -64,6 +64,8 @@ KMETHOD QGraphicsColorizeEffect_setStrength(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsColorizeEffect::DummyQGraphicsColorizeEffect()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	color_changed_func = NULL;
 	strength_changed_func = NULL;
@@ -71,6 +73,13 @@ DummyQGraphicsColorizeEffect::DummyQGraphicsColorizeEffect()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("color-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("strength-changed", NULL));
+}
+DummyQGraphicsColorizeEffect::~DummyQGraphicsColorizeEffect()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsColorizeEffect::setSelf(knh_RawPtr_t *ptr)
@@ -150,8 +159,9 @@ knh_Object_t** DummyQGraphicsColorizeEffect::reftrace(CTX ctx, knh_RawPtr_t *p F
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsColorizeEffect::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, color_changed_func);
 	KNH_ADDNNREF(ctx, strength_changed_func);
 
@@ -174,11 +184,17 @@ void DummyQGraphicsColorizeEffect::connection(QObject *o)
 
 KQGraphicsColorizeEffect::KQGraphicsColorizeEffect(QObject* parent) : QGraphicsColorizeEffect(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsColorizeEffect();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsColorizeEffect::~KQGraphicsColorizeEffect()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsColorizeEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -223,17 +239,23 @@ KMETHOD QGraphicsColorizeEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsColorizeEffect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsColorizeEffect *qp = (KQGraphicsColorizeEffect *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsColorizeEffect*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsColorizeEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsColorizeEffect *qp = (KQGraphicsColorizeEffect *)p->rawptr;
-//		KQGraphicsColorizeEffect *qp = static_cast<KQGraphicsColorizeEffect*>(p->rawptr);
+//		KQGraphicsColorizeEffect *qp = (KQGraphicsColorizeEffect *)p->rawptr;
+		KQGraphicsColorizeEffect *qp = static_cast<KQGraphicsColorizeEffect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

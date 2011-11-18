@@ -35,9 +35,18 @@ KMETHOD QAbstractFileEngineHandler_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractFileEngineHandler::DummyQAbstractFileEngineHandler()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQAbstractFileEngineHandler::~DummyQAbstractFileEngineHandler()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractFileEngineHandler::setSelf(knh_RawPtr_t *ptr)
@@ -98,10 +107,16 @@ void DummyQAbstractFileEngineHandler::connection(QObject *o)
 
 KQAbstractFileEngineHandler::KQAbstractFileEngineHandler() : QAbstractFileEngineHandler()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractFileEngineHandler();
 }
 
+KQAbstractFileEngineHandler::~KQAbstractFileEngineHandler()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractFileEngineHandler_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -146,17 +161,23 @@ KMETHOD QAbstractFileEngineHandler_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractFileEngineHandler_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractFileEngineHandler *qp = (KQAbstractFileEngineHandler *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractFileEngineHandler*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractFileEngineHandler_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractFileEngineHandler *qp = (KQAbstractFileEngineHandler *)p->rawptr;
-//		KQAbstractFileEngineHandler *qp = static_cast<KQAbstractFileEngineHandler*>(p->rawptr);
+//		KQAbstractFileEngineHandler *qp = (KQAbstractFileEngineHandler *)p->rawptr;
+		KQAbstractFileEngineHandler *qp = static_cast<KQAbstractFileEngineHandler*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -146,9 +146,18 @@ KMETHOD QUndoCommand_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQUndoCommand::DummyQUndoCommand()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQUndoCommand::~DummyQUndoCommand()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQUndoCommand::setSelf(knh_RawPtr_t *ptr)
@@ -209,10 +218,16 @@ void DummyQUndoCommand::connection(QObject *o)
 
 KQUndoCommand::KQUndoCommand(QUndoCommand* parent) : QUndoCommand(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQUndoCommand();
 }
 
+KQUndoCommand::~KQUndoCommand()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QUndoCommand_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -257,17 +272,23 @@ KMETHOD QUndoCommand_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QUndoCommand_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQUndoCommand *qp = (KQUndoCommand *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QUndoCommand*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QUndoCommand_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQUndoCommand *qp = (KQUndoCommand *)p->rawptr;
-//		KQUndoCommand *qp = static_cast<KQUndoCommand*>(p->rawptr);
+//		KQUndoCommand *qp = (KQUndoCommand *)p->rawptr;
+		KQUndoCommand *qp = static_cast<KQUndoCommand*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

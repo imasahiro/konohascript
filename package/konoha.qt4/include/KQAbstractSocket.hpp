@@ -13,6 +13,7 @@ public:
 	knh_Func_t *proxy_authentication_required_func;
 	knh_Func_t *state_changed_func;
 	DummyQAbstractSocket();
+	virtual ~DummyQAbstractSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,11 @@ public slots:
 class KQAbstractSocket : public QAbstractSocket {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQAbstractSocket *dummy;
 	KQAbstractSocket(QAbstractSocket::SocketType socketType, QObject* parent);
+	~KQAbstractSocket();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

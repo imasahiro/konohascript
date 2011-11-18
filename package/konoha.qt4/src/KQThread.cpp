@@ -185,6 +185,8 @@ KMETHOD QThread_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQThread::DummyQThread()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	finished_func = NULL;
 	started_func = NULL;
@@ -194,6 +196,13 @@ DummyQThread::DummyQThread()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("finished", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("started", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("terminated", NULL));
+}
+DummyQThread::~DummyQThread()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQThread::setSelf(knh_RawPtr_t *ptr)
@@ -283,8 +292,9 @@ knh_Object_t** DummyQThread::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQThread::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 3;
+	int list_size = 4;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, started_func);
 	KNH_ADDNNREF(ctx, terminated_func);
@@ -309,11 +319,17 @@ void DummyQThread::connection(QObject *o)
 
 KQThread::KQThread(QObject* parent) : QThread(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQThread();
 	dummy->connection((QObject*)this);
 }
 
+KQThread::~KQThread()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QThread_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -358,17 +374,23 @@ KMETHOD QThread_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QThread_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQThread *qp = (KQThread *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QThread*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QThread_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQThread *qp = (KQThread *)p->rawptr;
-//		KQThread *qp = static_cast<KQThread*>(p->rawptr);
+//		KQThread *qp = (KQThread *)p->rawptr;
+		KQThread *qp = static_cast<KQThread*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

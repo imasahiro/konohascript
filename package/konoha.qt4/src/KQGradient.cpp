@@ -122,9 +122,18 @@ KMETHOD QGradient_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGradient::DummyQGradient()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQGradient::~DummyQGradient()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGradient::setSelf(knh_RawPtr_t *ptr)
@@ -183,6 +192,11 @@ void DummyQGradient::connection(QObject *o)
 	}
 }
 
+KQGradient::~KQGradient()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGradient_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -227,17 +241,23 @@ KMETHOD QGradient_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGradient_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGradient *qp = (KQGradient *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGradient*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGradient_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGradient *qp = (KQGradient *)p->rawptr;
-//		KQGradient *qp = static_cast<KQGradient*>(p->rawptr);
+//		KQGradient *qp = (KQGradient *)p->rawptr;
+		KQGradient *qp = static_cast<KQGradient*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

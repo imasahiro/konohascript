@@ -9,6 +9,7 @@ public:
 	knh_Func_t *collapsed_func;
 	knh_Func_t *expanded_func;
 	DummyQTreeView();
+	virtual ~DummyQTreeView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQTreeView : public QTreeView {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQTreeView *dummy;
 	KQTreeView(QWidget* parent);
+	~KQTreeView();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

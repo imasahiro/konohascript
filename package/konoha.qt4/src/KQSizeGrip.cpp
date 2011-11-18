@@ -39,9 +39,18 @@ KMETHOD QSizeGrip_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSizeGrip::DummyQSizeGrip()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSizeGrip::~DummyQSizeGrip()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSizeGrip::setSelf(knh_RawPtr_t *ptr)
@@ -107,11 +116,17 @@ void DummyQSizeGrip::connection(QObject *o)
 
 KQSizeGrip::KQSizeGrip(QWidget* parent) : QSizeGrip(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSizeGrip();
 	dummy->connection((QObject*)this);
 }
 
+KQSizeGrip::~KQSizeGrip()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSizeGrip_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -156,17 +171,23 @@ KMETHOD QSizeGrip_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSizeGrip_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSizeGrip *qp = (KQSizeGrip *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSizeGrip*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSizeGrip_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSizeGrip *qp = (KQSizeGrip *)p->rawptr;
-//		KQSizeGrip *qp = static_cast<KQSizeGrip*>(p->rawptr);
+//		KQSizeGrip *qp = (KQSizeGrip *)p->rawptr;
+		KQSizeGrip *qp = static_cast<KQSizeGrip*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -232,11 +232,20 @@ KMETHOD QWizardPage_validatePage(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQWizardPage::DummyQWizardPage()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	complete_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("complete-changed", NULL));
+}
+DummyQWizardPage::~DummyQWizardPage()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQWizardPage::setSelf(knh_RawPtr_t *ptr)
@@ -300,8 +309,9 @@ knh_Object_t** DummyQWizardPage::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQWizardPage::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, complete_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -322,11 +332,17 @@ void DummyQWizardPage::connection(QObject *o)
 
 KQWizardPage::KQWizardPage(QWidget* parent) : QWizardPage(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQWizardPage();
 	dummy->connection((QObject*)this);
 }
 
+KQWizardPage::~KQWizardPage()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QWizardPage_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -371,17 +387,23 @@ KMETHOD QWizardPage_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QWizardPage_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQWizardPage *qp = (KQWizardPage *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QWizardPage*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QWizardPage_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQWizardPage *qp = (KQWizardPage *)p->rawptr;
-//		KQWizardPage *qp = static_cast<KQWizardPage*>(p->rawptr);
+//		KQWizardPage *qp = (KQWizardPage *)p->rawptr;
+		KQWizardPage *qp = static_cast<KQWizardPage*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -186,6 +186,8 @@ KMETHOD QDockWidget_getWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDockWidget::DummyQDockWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	allowed_areas_changed_func = NULL;
 	dock_location_changed_func = NULL;
@@ -199,6 +201,13 @@ DummyQDockWidget::DummyQDockWidget()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("features-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("top-level-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("visibility-changed", NULL));
+}
+DummyQDockWidget::~DummyQDockWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDockWidget::setSelf(knh_RawPtr_t *ptr)
@@ -321,8 +330,9 @@ knh_Object_t** DummyQDockWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQDockWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 5;
+	int list_size = 6;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, allowed_areas_changed_func);
 	KNH_ADDNNREF(ctx, dock_location_changed_func);
 	KNH_ADDNNREF(ctx, features_changed_func);
@@ -351,11 +361,17 @@ void DummyQDockWidget::connection(QObject *o)
 
 KQDockWidget::KQDockWidget(const QString title, QWidget* parent, Qt::WindowFlags flags) : QDockWidget(title, parent, flags)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDockWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQDockWidget::~KQDockWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDockWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -400,17 +416,23 @@ KMETHOD QDockWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDockWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDockWidget *qp = (KQDockWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDockWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDockWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDockWidget *qp = (KQDockWidget *)p->rawptr;
-//		KQDockWidget *qp = static_cast<KQDockWidget*>(p->rawptr);
+//		KQDockWidget *qp = (KQDockWidget *)p->rawptr;
+		KQDockWidget *qp = static_cast<KQDockWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -586,7 +608,8 @@ static void QDockWidgetDockWidgetFeatures_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QDockWidget::DockWidgetFeatures *qp = (QDockWidget::DockWidgetFeatures *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

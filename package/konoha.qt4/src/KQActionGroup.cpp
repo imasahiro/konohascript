@@ -146,6 +146,8 @@ KMETHOD QActionGroup_setVisible(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQActionGroup::DummyQActionGroup()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	hovered_func = NULL;
 	triggered_func = NULL;
@@ -153,6 +155,13 @@ DummyQActionGroup::DummyQActionGroup()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("hovered", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("triggered", NULL));
+}
+DummyQActionGroup::~DummyQActionGroup()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQActionGroup::setSelf(knh_RawPtr_t *ptr)
@@ -233,8 +242,9 @@ knh_Object_t** DummyQActionGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQActionGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, hovered_func);
 	KNH_ADDNNREF(ctx, triggered_func);
 
@@ -257,11 +267,17 @@ void DummyQActionGroup::connection(QObject *o)
 
 KQActionGroup::KQActionGroup(QObject* parent) : QActionGroup(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQActionGroup();
 	dummy->connection((QObject*)this);
 }
 
+KQActionGroup::~KQActionGroup()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QActionGroup_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -306,17 +322,23 @@ KMETHOD QActionGroup_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QActionGroup_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQActionGroup *qp = (KQActionGroup *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QActionGroup*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QActionGroup_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQActionGroup *qp = (KQActionGroup *)p->rawptr;
-//		KQActionGroup *qp = static_cast<KQActionGroup*>(p->rawptr);
+//		KQActionGroup *qp = (KQActionGroup *)p->rawptr;
+		KQActionGroup *qp = static_cast<KQActionGroup*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

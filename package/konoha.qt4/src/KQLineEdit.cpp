@@ -805,6 +805,8 @@ KMETHOD QLineEdit_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLineEdit::DummyQLineEdit()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	cursor_position_changed_func = NULL;
 	editing_finished_func = NULL;
@@ -820,6 +822,13 @@ DummyQLineEdit::DummyQLineEdit()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("selection-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("text-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("text-edited", NULL));
+}
+DummyQLineEdit::~DummyQLineEdit()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLineEdit::setSelf(knh_RawPtr_t *ptr)
@@ -954,8 +963,9 @@ knh_Object_t** DummyQLineEdit::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQLineEdit::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, cursor_position_changed_func);
 	KNH_ADDNNREF(ctx, editing_finished_func);
 	KNH_ADDNNREF(ctx, return_pressed_func);
@@ -986,11 +996,17 @@ void DummyQLineEdit::connection(QObject *o)
 
 KQLineEdit::KQLineEdit(QWidget* parent) : QLineEdit(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLineEdit();
 	dummy->connection((QObject*)this);
 }
 
+KQLineEdit::~KQLineEdit()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLineEdit_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1035,17 +1051,23 @@ KMETHOD QLineEdit_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLineEdit_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLineEdit *qp = (KQLineEdit *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLineEdit*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLineEdit_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLineEdit *qp = (KQLineEdit *)p->rawptr;
-//		KQLineEdit *qp = static_cast<KQLineEdit*>(p->rawptr);
+//		KQLineEdit *qp = (KQLineEdit *)p->rawptr;
+		KQLineEdit *qp = static_cast<KQLineEdit*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

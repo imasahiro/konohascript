@@ -172,6 +172,8 @@ KMETHOD QAbstractEventDispatcher_instance(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractEventDispatcher::DummyQAbstractEventDispatcher()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	about_to_block_func = NULL;
 	awake_func = NULL;
@@ -179,6 +181,13 @@ DummyQAbstractEventDispatcher::DummyQAbstractEventDispatcher()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("about-to-block", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("awake", NULL));
+}
+DummyQAbstractEventDispatcher::~DummyQAbstractEventDispatcher()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractEventDispatcher::setSelf(knh_RawPtr_t *ptr)
@@ -255,8 +264,9 @@ knh_Object_t** DummyQAbstractEventDispatcher::reftrace(CTX ctx, knh_RawPtr_t *p 
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractEventDispatcher::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, about_to_block_func);
 	KNH_ADDNNREF(ctx, awake_func);
 
@@ -279,11 +289,17 @@ void DummyQAbstractEventDispatcher::connection(QObject *o)
 
 KQAbstractEventDispatcher::KQAbstractEventDispatcher(QObject* parent) : QAbstractEventDispatcher(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractEventDispatcher();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractEventDispatcher::~KQAbstractEventDispatcher()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractEventDispatcher_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -328,17 +344,23 @@ KMETHOD QAbstractEventDispatcher_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractEventDispatcher_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractEventDispatcher *qp = (KQAbstractEventDispatcher *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractEventDispatcher*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractEventDispatcher_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractEventDispatcher *qp = (KQAbstractEventDispatcher *)p->rawptr;
-//		KQAbstractEventDispatcher *qp = static_cast<KQAbstractEventDispatcher*>(p->rawptr);
+//		KQAbstractEventDispatcher *qp = (KQAbstractEventDispatcher *)p->rawptr;
+		KQAbstractEventDispatcher *qp = static_cast<KQAbstractEventDispatcher*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

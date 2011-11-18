@@ -9,6 +9,7 @@ public:
 	knh_Func_t *clicked_func;
 	knh_Func_t *toggled_func;
 	DummyQGroupBox();
+	virtual ~DummyQGroupBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -23,9 +24,11 @@ public slots:
 class KQGroupBox : public QGroupBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGroupBox *dummy;
 	KQGroupBox(QWidget* parent);
+	~KQGroupBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

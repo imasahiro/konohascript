@@ -482,6 +482,8 @@ KMETHOD QProcess_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQProcess::DummyQProcess()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	error_func = NULL;
 	finished_func = NULL;
@@ -497,6 +499,13 @@ DummyQProcess::DummyQProcess()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("ready-read-standard-output", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("started", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("state-changed", NULL));
+}
+DummyQProcess::~DummyQProcess()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQProcess::setSelf(knh_RawPtr_t *ptr)
@@ -629,8 +638,9 @@ knh_Object_t** DummyQProcess::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQProcess::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 6;
+	int list_size = 7;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, error_func);
 	KNH_ADDNNREF(ctx, finished_func);
 	KNH_ADDNNREF(ctx, ready_read_standard_error_func);
@@ -661,11 +671,17 @@ void DummyQProcess::connection(QObject *o)
 
 KQProcess::KQProcess(QObject* parent) : QProcess(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQProcess();
 	dummy->connection((QObject*)this);
 }
 
+KQProcess::~KQProcess()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QProcess_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -710,17 +726,23 @@ KMETHOD QProcess_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QProcess_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQProcess *qp = (KQProcess *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QProcess*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QProcess_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQProcess *qp = (KQProcess *)p->rawptr;
-//		KQProcess *qp = static_cast<KQProcess*>(p->rawptr);
+//		KQProcess *qp = (KQProcess *)p->rawptr;
+		KQProcess *qp = static_cast<KQProcess*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -8,6 +8,7 @@ public:
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *current_font_changed_func;
 	DummyQFontComboBox();
+	virtual ~DummyQFontComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -21,9 +22,11 @@ public slots:
 class KQFontComboBox : public QFontComboBox {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQFontComboBox *dummy;
 	KQFontComboBox(QWidget* parent);
+	~KQFontComboBox();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -4,10 +4,12 @@ void clicked(QGraphicsScene scene, QGraphicsSceneMouseEvent event) {
 	print "clicked";
 	print event.scenePos().x;
 	print event.scenePos().y;
+	gc();
 }
 
 void time() {
 	print "timer";
+	gc();
 }
 
 QApplication app = new QApplication(0, NULL);

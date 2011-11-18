@@ -981,6 +981,8 @@ KMETHOD QTextDocument_undo(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextDocument::DummyQTextDocument()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	block_count_changed_func = NULL;
 	contents_change_func = NULL;
@@ -1002,6 +1004,13 @@ DummyQTextDocument::DummyQTextDocument()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("redo-available", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-available", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("undo-command-added", NULL));
+}
+DummyQTextDocument::~DummyQTextDocument()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextDocument::setSelf(knh_RawPtr_t *ptr)
@@ -1178,8 +1187,9 @@ knh_Object_t** DummyQTextDocument::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTextDocument::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 9;
+	int list_size = 10;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, block_count_changed_func);
 	KNH_ADDNNREF(ctx, contents_change_func);
 	KNH_ADDNNREF(ctx, contents_changed_func);
@@ -1216,11 +1226,17 @@ void DummyQTextDocument::connection(QObject *o)
 
 KQTextDocument::KQTextDocument(QObject* parent) : QTextDocument(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextDocument();
 	dummy->connection((QObject*)this);
 }
 
+KQTextDocument::~KQTextDocument()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextDocument_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -1265,17 +1281,23 @@ KMETHOD QTextDocument_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextDocument_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextDocument *qp = (KQTextDocument *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextDocument*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextDocument_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextDocument *qp = (KQTextDocument *)p->rawptr;
-//		KQTextDocument *qp = static_cast<KQTextDocument*>(p->rawptr);
+//		KQTextDocument *qp = (KQTextDocument *)p->rawptr;
+		KQTextDocument *qp = static_cast<KQTextDocument*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -1457,7 +1479,8 @@ static void QTextDocumentFindFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QTextDocument::FindFlags *qp = (QTextDocument::FindFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

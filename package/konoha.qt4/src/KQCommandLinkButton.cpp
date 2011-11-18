@@ -65,9 +65,18 @@ KMETHOD QCommandLinkButton_setDescription(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQCommandLinkButton::DummyQCommandLinkButton()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQCommandLinkButton::~DummyQCommandLinkButton()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQCommandLinkButton::setSelf(knh_RawPtr_t *ptr)
@@ -133,11 +142,17 @@ void DummyQCommandLinkButton::connection(QObject *o)
 
 KQCommandLinkButton::KQCommandLinkButton(QWidget* parent) : QCommandLinkButton(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQCommandLinkButton();
 	dummy->connection((QObject*)this);
 }
 
+KQCommandLinkButton::~KQCommandLinkButton()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QCommandLinkButton_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -182,17 +197,23 @@ KMETHOD QCommandLinkButton_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QCommandLinkButton_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQCommandLinkButton *qp = (KQCommandLinkButton *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QCommandLinkButton*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QCommandLinkButton_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQCommandLinkButton *qp = (KQCommandLinkButton *)p->rawptr;
-//		KQCommandLinkButton *qp = static_cast<KQCommandLinkButton*>(p->rawptr);
+//		KQCommandLinkButton *qp = (KQCommandLinkButton *)p->rawptr;
+		KQCommandLinkButton *qp = static_cast<KQCommandLinkButton*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

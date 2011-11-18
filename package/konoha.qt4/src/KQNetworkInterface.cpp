@@ -205,9 +205,18 @@ KMETHOD QNetworkInterface_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQNetworkInterface::DummyQNetworkInterface()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQNetworkInterface::~DummyQNetworkInterface()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQNetworkInterface::setSelf(knh_RawPtr_t *ptr)
@@ -268,10 +277,16 @@ void DummyQNetworkInterface::connection(QObject *o)
 
 KQNetworkInterface::KQNetworkInterface() : QNetworkInterface()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQNetworkInterface();
 }
 
+KQNetworkInterface::~KQNetworkInterface()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QNetworkInterface_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -316,17 +331,23 @@ KMETHOD QNetworkInterface_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QNetworkInterface_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQNetworkInterface *qp = (KQNetworkInterface *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QNetworkInterface*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QNetworkInterface_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQNetworkInterface *qp = (KQNetworkInterface *)p->rawptr;
-//		KQNetworkInterface *qp = static_cast<KQNetworkInterface*>(p->rawptr);
+//		KQNetworkInterface *qp = (KQNetworkInterface *)p->rawptr;
+		KQNetworkInterface *qp = static_cast<KQNetworkInterface*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -492,7 +513,8 @@ static void QNetworkInterfaceInterfaceFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QNetworkInterface::InterfaceFlags *qp = (QNetworkInterface::InterfaceFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

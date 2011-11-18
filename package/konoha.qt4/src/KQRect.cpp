@@ -846,9 +846,18 @@ KMETHOD QRect_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQRect::DummyQRect()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQRect::~DummyQRect()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQRect::setSelf(knh_RawPtr_t *ptr)
@@ -909,10 +918,16 @@ void DummyQRect::connection(QObject *o)
 
 KQRect::KQRect() : QRect()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQRect();
 }
 
+KQRect::~KQRect()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QRect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -957,17 +972,23 @@ KMETHOD QRect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QRect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQRect *qp = (KQRect *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QRect*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QRect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQRect *qp = (KQRect *)p->rawptr;
-//		KQRect *qp = static_cast<KQRect*>(p->rawptr);
+//		KQRect *qp = (KQRect *)p->rawptr;
+		KQRect *qp = static_cast<KQRect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

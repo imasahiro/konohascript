@@ -592,9 +592,18 @@ KMETHOD QTableView_showRow(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTableView::DummyQTableView()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTableView::~DummyQTableView()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTableView::setSelf(knh_RawPtr_t *ptr)
@@ -660,11 +669,17 @@ void DummyQTableView::connection(QObject *o)
 
 KQTableView::KQTableView(QWidget* parent) : QTableView(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTableView();
 	dummy->connection((QObject*)this);
 }
 
+KQTableView::~KQTableView()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTableView_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -709,17 +724,23 @@ KMETHOD QTableView_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTableView_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTableView *qp = (KQTableView *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTableView*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTableView_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTableView *qp = (KQTableView *)p->rawptr;
-//		KQTableView *qp = static_cast<KQTableView*>(p->rawptr);
+//		KQTableView *qp = (KQTableView *)p->rawptr;
+		KQTableView *qp = static_cast<KQTableView*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

@@ -102,11 +102,20 @@ KMETHOD QSplashScreen_showMessage(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSplashScreen::DummyQSplashScreen()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	message_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("message-changed", NULL));
+}
+DummyQSplashScreen::~DummyQSplashScreen()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSplashScreen::setSelf(knh_RawPtr_t *ptr)
@@ -172,8 +181,9 @@ knh_Object_t** DummyQSplashScreen::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQSplashScreen::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, message_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -194,11 +204,17 @@ void DummyQSplashScreen::connection(QObject *o)
 
 KQSplashScreen::KQSplashScreen(const QPixmap pixmap, Qt::WindowFlags f) : QSplashScreen(pixmap, f)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSplashScreen();
 	dummy->connection((QObject*)this);
 }
 
+KQSplashScreen::~KQSplashScreen()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSplashScreen_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -243,17 +259,23 @@ KMETHOD QSplashScreen_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSplashScreen_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSplashScreen *qp = (KQSplashScreen *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSplashScreen*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSplashScreen_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSplashScreen *qp = (KQSplashScreen *)p->rawptr;
-//		KQSplashScreen *qp = static_cast<KQSplashScreen*>(p->rawptr);
+//		KQSplashScreen *qp = (KQSplashScreen *)p->rawptr;
+		KQSplashScreen *qp = static_cast<KQSplashScreen*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

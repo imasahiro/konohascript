@@ -267,9 +267,18 @@ KMETHOD QTabletEvent_z(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTabletEvent::DummyQTabletEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTabletEvent::~DummyQTabletEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTabletEvent::setSelf(knh_RawPtr_t *ptr)
@@ -335,10 +344,16 @@ void DummyQTabletEvent::connection(QObject *o)
 
 KQTabletEvent::KQTabletEvent(QTabletEvent::Type type, const QPoint pos, const QPoint globalPos, const QPointF hiResGlobalPos, int device, int pointerType, qreal pressure, int xTilt, int yTilt, qreal tangentialPressure, qreal rotation, int z, Qt::KeyboardModifiers keyState, qint64 uniqueID) : QTabletEvent(type, pos, globalPos, hiResGlobalPos, device, pointerType, pressure, xTilt, yTilt, tangentialPressure, rotation, z, keyState, uniqueID)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTabletEvent();
 }
 
+KQTabletEvent::~KQTabletEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTabletEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -383,17 +398,23 @@ KMETHOD QTabletEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTabletEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTabletEvent *qp = (KQTabletEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTabletEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTabletEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTabletEvent *qp = (KQTabletEvent *)p->rawptr;
-//		KQTabletEvent *qp = static_cast<KQTabletEvent*>(p->rawptr);
+//		KQTabletEvent *qp = (KQTabletEvent *)p->rawptr;
+		KQTabletEvent *qp = static_cast<KQTabletEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

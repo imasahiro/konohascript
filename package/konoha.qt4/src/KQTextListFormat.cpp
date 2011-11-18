@@ -61,9 +61,18 @@ KMETHOD QTextListFormat_getStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTextListFormat::DummyQTextListFormat()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTextListFormat::~DummyQTextListFormat()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTextListFormat::setSelf(knh_RawPtr_t *ptr)
@@ -129,10 +138,16 @@ void DummyQTextListFormat::connection(QObject *o)
 
 KQTextListFormat::KQTextListFormat() : QTextListFormat()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTextListFormat();
 }
 
+KQTextListFormat::~KQTextListFormat()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTextListFormat_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -177,17 +192,23 @@ KMETHOD QTextListFormat_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTextListFormat_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTextListFormat *qp = (KQTextListFormat *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTextListFormat*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTextListFormat_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTextListFormat *qp = (KQTextListFormat *)p->rawptr;
-//		KQTextListFormat *qp = static_cast<KQTextListFormat*>(p->rawptr);
+//		KQTextListFormat *qp = (KQTextListFormat *)p->rawptr;
+		KQTextListFormat *qp = static_cast<KQTextListFormat*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

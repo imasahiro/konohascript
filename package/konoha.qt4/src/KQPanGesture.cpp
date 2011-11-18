@@ -95,9 +95,18 @@ KMETHOD QPanGesture_setOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPanGesture::DummyQPanGesture()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPanGesture::~DummyQPanGesture()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPanGesture::setSelf(knh_RawPtr_t *ptr)
@@ -161,6 +170,11 @@ void DummyQPanGesture::connection(QObject *o)
 	DummyQGesture::connection(o);
 }
 
+KQPanGesture::~KQPanGesture()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPanGesture_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -205,17 +219,23 @@ KMETHOD QPanGesture_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPanGesture_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPanGesture *qp = (KQPanGesture *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPanGesture*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPanGesture_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPanGesture *qp = (KQPanGesture *)p->rawptr;
-//		KQPanGesture *qp = static_cast<KQPanGesture*>(p->rawptr);
+//		KQPanGesture *qp = (KQPanGesture *)p->rawptr;
+		KQPanGesture *qp = static_cast<KQPanGesture*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

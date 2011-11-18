@@ -10,6 +10,7 @@ public:
 	knh_Func_t *color_changed_func;
 	knh_Func_t *offset_changed_func;
 	DummyQGraphicsDropShadowEffect();
+	virtual ~DummyQGraphicsDropShadowEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -25,9 +26,11 @@ public slots:
 class KQGraphicsDropShadowEffect : public QGraphicsDropShadowEffect {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGraphicsDropShadowEffect *dummy;
 	KQGraphicsDropShadowEffect(QObject* parent);
+	~KQGraphicsDropShadowEffect();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

@@ -101,9 +101,18 @@ KMETHOD QPrintEngine_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQPrintEngine::DummyQPrintEngine()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQPrintEngine::~DummyQPrintEngine()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQPrintEngine::setSelf(knh_RawPtr_t *ptr)
@@ -162,6 +171,11 @@ void DummyQPrintEngine::connection(QObject *o)
 	}
 }
 
+KQPrintEngine::~KQPrintEngine()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QPrintEngine_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -206,17 +220,23 @@ KMETHOD QPrintEngine_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QPrintEngine_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQPrintEngine *qp = (KQPrintEngine *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QPrintEngine*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QPrintEngine_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQPrintEngine *qp = (KQPrintEngine *)p->rawptr;
-//		KQPrintEngine *qp = static_cast<KQPrintEngine*>(p->rawptr);
+//		KQPrintEngine *qp = (KQPrintEngine *)p->rawptr;
+		KQPrintEngine *qp = static_cast<KQPrintEngine*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

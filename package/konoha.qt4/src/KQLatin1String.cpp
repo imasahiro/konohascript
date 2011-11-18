@@ -44,9 +44,18 @@ KMETHOD QLatin1String_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLatin1String::DummyQLatin1String()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQLatin1String::~DummyQLatin1String()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLatin1String::setSelf(knh_RawPtr_t *ptr)
@@ -107,10 +116,16 @@ void DummyQLatin1String::connection(QObject *o)
 
 KQLatin1String::KQLatin1String(const char* str) : QLatin1String(str)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLatin1String();
 }
 
+KQLatin1String::~KQLatin1String()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLatin1String_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -155,17 +170,23 @@ KMETHOD QLatin1String_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLatin1String_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLatin1String *qp = (KQLatin1String *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLatin1String*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLatin1String_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLatin1String *qp = (KQLatin1String *)p->rawptr;
-//		KQLatin1String *qp = static_cast<KQLatin1String*>(p->rawptr);
+//		KQLatin1String *qp = (KQLatin1String *)p->rawptr;
+		KQLatin1String *qp = static_cast<KQLatin1String*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

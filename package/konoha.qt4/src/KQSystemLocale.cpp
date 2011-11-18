@@ -61,9 +61,18 @@ KMETHOD QSystemLocale_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQSystemLocale::DummyQSystemLocale()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQSystemLocale::~DummyQSystemLocale()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQSystemLocale::setSelf(knh_RawPtr_t *ptr)
@@ -124,10 +133,16 @@ void DummyQSystemLocale::connection(QObject *o)
 
 KQSystemLocale::KQSystemLocale() : QSystemLocale()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQSystemLocale();
 }
 
+KQSystemLocale::~KQSystemLocale()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QSystemLocale_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -172,17 +187,23 @@ KMETHOD QSystemLocale_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QSystemLocale_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQSystemLocale *qp = (KQSystemLocale *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QSystemLocale*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QSystemLocale_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQSystemLocale *qp = (KQSystemLocale *)p->rawptr;
-//		KQSystemLocale *qp = static_cast<KQSystemLocale*>(p->rawptr);
+//		KQSystemLocale *qp = (KQSystemLocale *)p->rawptr;
+		KQSystemLocale *qp = static_cast<KQSystemLocale*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

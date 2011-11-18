@@ -125,9 +125,18 @@ KMETHOD QByteArrayMatcher_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQByteArrayMatcher::DummyQByteArrayMatcher()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQByteArrayMatcher::~DummyQByteArrayMatcher()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQByteArrayMatcher::setSelf(knh_RawPtr_t *ptr)
@@ -188,10 +197,16 @@ void DummyQByteArrayMatcher::connection(QObject *o)
 
 KQByteArrayMatcher::KQByteArrayMatcher() : QByteArrayMatcher()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQByteArrayMatcher();
 }
 
+KQByteArrayMatcher::~KQByteArrayMatcher()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QByteArrayMatcher_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -236,17 +251,23 @@ KMETHOD QByteArrayMatcher_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QByteArrayMatcher_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQByteArrayMatcher *qp = (KQByteArrayMatcher *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QByteArrayMatcher*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QByteArrayMatcher_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQByteArrayMatcher *qp = (KQByteArrayMatcher *)p->rawptr;
-//		KQByteArrayMatcher *qp = static_cast<KQByteArrayMatcher*>(p->rawptr);
+//		KQByteArrayMatcher *qp = (KQByteArrayMatcher *)p->rawptr;
+		KQByteArrayMatcher *qp = static_cast<KQByteArrayMatcher*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

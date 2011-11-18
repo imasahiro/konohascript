@@ -10,7 +10,11 @@ public:
 	knh_Func_t *custom_event_func;
 	knh_Func_t *timer_event_func;
 	knh_Func_t *destroyed_func;
+	knh_RawPtr_t *childEventPtr;
+	knh_RawPtr_t *customEventPtr;
+	knh_RawPtr_t *timerEventPtr;
 	DummyQObject();
+	virtual ~DummyQObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -27,9 +31,11 @@ public slots:
 class KQObject : public QObject {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQObject *dummy;
 	KQObject(QObject* parent);
+	~KQObject();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

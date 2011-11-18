@@ -298,9 +298,18 @@ KMETHOD QRegExp_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQRegExp::DummyQRegExp()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQRegExp::~DummyQRegExp()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQRegExp::setSelf(knh_RawPtr_t *ptr)
@@ -361,10 +370,16 @@ void DummyQRegExp::connection(QObject *o)
 
 KQRegExp::KQRegExp() : QRegExp()
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQRegExp();
 }
 
+KQRegExp::~KQRegExp()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QRegExp_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -409,17 +424,23 @@ KMETHOD QRegExp_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QRegExp_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQRegExp *qp = (KQRegExp *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QRegExp*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QRegExp_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQRegExp *qp = (KQRegExp *)p->rawptr;
-//		KQRegExp *qp = static_cast<KQRegExp*>(p->rawptr);
+//		KQRegExp *qp = (KQRegExp *)p->rawptr;
+		KQRegExp *qp = static_cast<KQRegExp*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

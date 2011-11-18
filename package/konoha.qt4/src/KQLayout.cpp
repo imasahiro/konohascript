@@ -491,9 +491,18 @@ KMETHOD QLayout_closestAcceptableSize(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQLayout::DummyQLayout()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQLayout::~DummyQLayout()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQLayout::setSelf(knh_RawPtr_t *ptr)
@@ -568,11 +577,17 @@ void DummyQLayout::connection(QObject *o)
 
 KQLayout::KQLayout(QWidget* parent) : QLayout(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQLayout();
 	dummy->connection((QObject*)this);
 }
 
+KQLayout::~KQLayout()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -617,17 +632,23 @@ KMETHOD QLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QLayout_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQLayout *qp = (KQLayout *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QLayout*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQLayout *qp = (KQLayout *)p->rawptr;
-//		KQLayout *qp = static_cast<KQLayout*>(p->rawptr);
+//		KQLayout *qp = (KQLayout *)p->rawptr;
+		KQLayout *qp = static_cast<KQLayout*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

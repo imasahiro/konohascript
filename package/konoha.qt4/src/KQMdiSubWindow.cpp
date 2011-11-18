@@ -221,6 +221,8 @@ KMETHOD QMdiSubWindow_showSystemMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMdiSubWindow::DummyQMdiSubWindow()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	about_to_activate_func = NULL;
 	window_state_changed_func = NULL;
@@ -228,6 +230,13 @@ DummyQMdiSubWindow::DummyQMdiSubWindow()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("about-to-activate", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("window-state-changed", NULL));
+}
+DummyQMdiSubWindow::~DummyQMdiSubWindow()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMdiSubWindow::setSelf(knh_RawPtr_t *ptr)
@@ -308,8 +317,9 @@ knh_Object_t** DummyQMdiSubWindow::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQMdiSubWindow::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, about_to_activate_func);
 	KNH_ADDNNREF(ctx, window_state_changed_func);
 
@@ -332,11 +342,17 @@ void DummyQMdiSubWindow::connection(QObject *o)
 
 KQMdiSubWindow::KQMdiSubWindow(QWidget* parent, Qt::WindowFlags flags) : QMdiSubWindow(parent, flags)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQMdiSubWindow();
 	dummy->connection((QObject*)this);
 }
 
+KQMdiSubWindow::~KQMdiSubWindow()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMdiSubWindow_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -381,17 +397,23 @@ KMETHOD QMdiSubWindow_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMdiSubWindow_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMdiSubWindow *qp = (KQMdiSubWindow *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMdiSubWindow*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMdiSubWindow_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMdiSubWindow *qp = (KQMdiSubWindow *)p->rawptr;
-//		KQMdiSubWindow *qp = static_cast<KQMdiSubWindow*>(p->rawptr);
+//		KQMdiSubWindow *qp = (KQMdiSubWindow *)p->rawptr;
+		KQMdiSubWindow *qp = static_cast<KQMdiSubWindow*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -563,7 +585,8 @@ static void QMdiSubWindowSubWindowOptions_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QMdiSubWindow::SubWindowOptions *qp = (QMdiSubWindow::SubWindowOptions *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

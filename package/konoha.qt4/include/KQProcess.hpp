@@ -13,6 +13,7 @@ public:
 	knh_Func_t *started_func;
 	knh_Func_t *state_changed_func;
 	DummyQProcess();
+	virtual ~DummyQProcess();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -31,9 +32,11 @@ public slots:
 class KQProcess : public QProcess {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQProcess *dummy;
 	KQProcess(QObject* parent);
+	~KQProcess();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool event(QEvent *event);
 };

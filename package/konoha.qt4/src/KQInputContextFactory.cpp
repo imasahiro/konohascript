@@ -62,9 +62,18 @@ KMETHOD QInputContextFactory_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQInputContextFactory::DummyQInputContextFactory()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQInputContextFactory::~DummyQInputContextFactory()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQInputContextFactory::setSelf(knh_RawPtr_t *ptr)
@@ -123,6 +132,11 @@ void DummyQInputContextFactory::connection(QObject *o)
 	}
 }
 
+KQInputContextFactory::~KQInputContextFactory()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QInputContextFactory_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -167,17 +181,23 @@ KMETHOD QInputContextFactory_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QInputContextFactory_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQInputContextFactory *qp = (KQInputContextFactory *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QInputContextFactory*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QInputContextFactory_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQInputContextFactory *qp = (KQInputContextFactory *)p->rawptr;
-//		KQInputContextFactory *qp = static_cast<KQInputContextFactory*>(p->rawptr);
+//		KQInputContextFactory *qp = (KQInputContextFactory *)p->rawptr;
+		KQInputContextFactory *qp = static_cast<KQInputContextFactory*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

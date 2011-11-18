@@ -12,9 +12,18 @@ KMETHOD QTcpSocket_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTcpSocket::DummyQTcpSocket()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQTcpSocket::~DummyQTcpSocket()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTcpSocket::setSelf(knh_RawPtr_t *ptr)
@@ -80,11 +89,17 @@ void DummyQTcpSocket::connection(QObject *o)
 
 KQTcpSocket::KQTcpSocket(QObject* parent) : QTcpSocket(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTcpSocket();
 	dummy->connection((QObject*)this);
 }
 
+KQTcpSocket::~KQTcpSocket()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTcpSocket_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -129,17 +144,23 @@ KMETHOD QTcpSocket_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTcpSocket_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTcpSocket *qp = (KQTcpSocket *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTcpSocket*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTcpSocket_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTcpSocket *qp = (KQTcpSocket *)p->rawptr;
-//		KQTcpSocket *qp = static_cast<KQTcpSocket*>(p->rawptr);
+//		KQTcpSocket *qp = (KQTcpSocket *)p->rawptr;
+		KQTcpSocket *qp = static_cast<KQTcpSocket*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

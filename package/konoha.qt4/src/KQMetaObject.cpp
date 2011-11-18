@@ -494,9 +494,18 @@ KMETHOD QMetaObject_parents(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQMetaObject::DummyQMetaObject()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQMetaObject::~DummyQMetaObject()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQMetaObject::setSelf(knh_RawPtr_t *ptr)
@@ -555,6 +564,11 @@ void DummyQMetaObject::connection(QObject *o)
 	}
 }
 
+KQMetaObject::~KQMetaObject()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QMetaObject_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -599,17 +613,23 @@ KMETHOD QMetaObject_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QMetaObject_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQMetaObject *qp = (KQMetaObject *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QMetaObject*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QMetaObject_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQMetaObject *qp = (KQMetaObject *)p->rawptr;
-//		KQMetaObject *qp = static_cast<KQMetaObject*>(p->rawptr);
+//		KQMetaObject *qp = (KQMetaObject *)p->rawptr;
+		KQMetaObject *qp = static_cast<KQMetaObject*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

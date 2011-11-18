@@ -69,11 +69,20 @@ KMETHOD QGraphicsEffect_update(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQGraphicsEffect::DummyQGraphicsEffect()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	enabled_changed_func = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("enabled-changed", NULL));
+}
+DummyQGraphicsEffect::~DummyQGraphicsEffect()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQGraphicsEffect::setSelf(knh_RawPtr_t *ptr)
@@ -138,8 +147,9 @@ knh_Object_t** DummyQGraphicsEffect::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsEffect::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 1;
+	int list_size = 2;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, enabled_changed_func);
 
 	KNH_SIZEREF(ctx);
@@ -160,11 +170,17 @@ void DummyQGraphicsEffect::connection(QObject *o)
 
 KQGraphicsEffect::KQGraphicsEffect(QObject* parent) : QGraphicsEffect(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsEffect();
 	dummy->connection((QObject*)this);
 }
 
+KQGraphicsEffect::~KQGraphicsEffect()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QGraphicsEffect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -209,17 +225,23 @@ KMETHOD QGraphicsEffect_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QGraphicsEffect_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQGraphicsEffect *qp = (KQGraphicsEffect *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QGraphicsEffect*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QGraphicsEffect_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQGraphicsEffect *qp = (KQGraphicsEffect *)p->rawptr;
-//		KQGraphicsEffect *qp = static_cast<KQGraphicsEffect*>(p->rawptr);
+//		KQGraphicsEffect *qp = (KQGraphicsEffect *)p->rawptr;
+		KQGraphicsEffect *qp = static_cast<KQGraphicsEffect*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
@@ -396,7 +418,8 @@ static void QGraphicsEffectChangeFlags_free(CTX ctx, knh_RawPtr_t *p)
 	if (p->rawptr != NULL) {
 		QGraphicsEffect::ChangeFlags *qp = (QGraphicsEffect::ChangeFlags *)p->rawptr;
 		(void)qp;
-		//delete qp;
+		delete qp;
+		p->rawptr = NULL;
 	}
 }
 

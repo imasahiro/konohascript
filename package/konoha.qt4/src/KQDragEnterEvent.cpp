@@ -16,9 +16,18 @@ KMETHOD QDragEnterEvent_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQDragEnterEvent::DummyQDragEnterEvent()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	event_map = new map<string, knh_Func_t *>();
 	slot_map = new map<string, knh_Func_t *>();
+}
+DummyQDragEnterEvent::~DummyQDragEnterEvent()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQDragEnterEvent::setSelf(knh_RawPtr_t *ptr)
@@ -84,10 +93,16 @@ void DummyQDragEnterEvent::connection(QObject *o)
 
 KQDragEnterEvent::KQDragEnterEvent(const QPoint point, Qt::DropActions actions, const QMimeData* data, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers) : QDragEnterEvent(point, actions, data, buttons, modifiers)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQDragEnterEvent();
 }
 
+KQDragEnterEvent::~KQDragEnterEvent()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QDragEnterEvent_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -132,17 +147,23 @@ KMETHOD QDragEnterEvent_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QDragEnterEvent_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQDragEnterEvent *qp = (KQDragEnterEvent *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QDragEnterEvent*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QDragEnterEvent_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQDragEnterEvent *qp = (KQDragEnterEvent *)p->rawptr;
-//		KQDragEnterEvent *qp = static_cast<KQDragEnterEvent*>(p->rawptr);
+//		KQDragEnterEvent *qp = (KQDragEnterEvent *)p->rawptr;
+		KQDragEnterEvent *qp = static_cast<KQDragEnterEvent*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

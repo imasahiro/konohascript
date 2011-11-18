@@ -7,6 +7,7 @@ public:
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	DummyQGLBuffer();
+	virtual ~DummyQGLBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 	bool eventDispatcher(QEvent *event);
 	bool addEvent(knh_Func_t *callback_func, std::string str);
@@ -18,9 +19,11 @@ public:
 class KQGLBuffer : public QGLBuffer {
 //	Q_OBJECT;
 public:
+	int magic_num;
 	knh_RawPtr_t *self;
 	DummyQGLBuffer *dummy;
 	KQGLBuffer();
+	~KQGLBuffer();
 	void setSelf(knh_RawPtr_t *ptr);
 };
 

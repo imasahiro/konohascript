@@ -160,6 +160,8 @@ KMETHOD QAbstractTextDocumentLayout_setPaintDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQAbstractTextDocumentLayout::DummyQAbstractTextDocumentLayout()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	document_size_changed_func = NULL;
 	page_count_changed_func = NULL;
@@ -171,6 +173,13 @@ DummyQAbstractTextDocumentLayout::DummyQAbstractTextDocumentLayout()
 	slot_map->insert(map<string, knh_Func_t *>::value_type("page-count-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("update", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("update-block", NULL));
+}
+DummyQAbstractTextDocumentLayout::~DummyQAbstractTextDocumentLayout()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQAbstractTextDocumentLayout::setSelf(knh_RawPtr_t *ptr)
@@ -280,8 +289,9 @@ knh_Object_t** DummyQAbstractTextDocumentLayout::reftrace(CTX ctx, knh_RawPtr_t 
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQAbstractTextDocumentLayout::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 4;
+	int list_size = 5;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, document_size_changed_func);
 	KNH_ADDNNREF(ctx, page_count_changed_func);
 	KNH_ADDNNREF(ctx, update_func);
@@ -308,11 +318,17 @@ void DummyQAbstractTextDocumentLayout::connection(QObject *o)
 
 KQAbstractTextDocumentLayout::KQAbstractTextDocumentLayout(QTextDocument* document) : QAbstractTextDocumentLayout(document)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQAbstractTextDocumentLayout();
 	dummy->connection((QObject*)this);
 }
 
+KQAbstractTextDocumentLayout::~KQAbstractTextDocumentLayout()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QAbstractTextDocumentLayout_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -357,17 +373,23 @@ KMETHOD QAbstractTextDocumentLayout_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QAbstractTextDocumentLayout_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQAbstractTextDocumentLayout *qp = (KQAbstractTextDocumentLayout *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QAbstractTextDocumentLayout*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QAbstractTextDocumentLayout_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQAbstractTextDocumentLayout *qp = (KQAbstractTextDocumentLayout *)p->rawptr;
-//		KQAbstractTextDocumentLayout *qp = static_cast<KQAbstractTextDocumentLayout*>(p->rawptr);
+//		KQAbstractTextDocumentLayout *qp = (KQAbstractTextDocumentLayout *)p->rawptr;
+		KQAbstractTextDocumentLayout *qp = static_cast<KQAbstractTextDocumentLayout*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }

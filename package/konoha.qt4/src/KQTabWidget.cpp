@@ -594,6 +594,8 @@ KMETHOD QTabWidget_setCurrentWidget(CTX ctx, knh_sfp_t *sfp _RIX)
 
 DummyQTabWidget::DummyQTabWidget()
 {
+	CTX lctx = knh_getCurrentContext();
+	(void)lctx;
 	self = NULL;
 	current_changed_func = NULL;
 	tab_close_requested_func = NULL;
@@ -601,6 +603,13 @@ DummyQTabWidget::DummyQTabWidget()
 	slot_map = new map<string, knh_Func_t *>();
 	slot_map->insert(map<string, knh_Func_t *>::value_type("current-changed", NULL));
 	slot_map->insert(map<string, knh_Func_t *>::value_type("tab-close-requested", NULL));
+}
+DummyQTabWidget::~DummyQTabWidget()
+{
+	delete event_map;
+	delete slot_map;
+	event_map = NULL;
+	slot_map = NULL;
 }
 
 void DummyQTabWidget::setSelf(knh_RawPtr_t *ptr)
@@ -679,8 +688,9 @@ knh_Object_t** DummyQTabWidget::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 //	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQTabWidget::reftrace p->rawptr=[%p]\n", p->rawptr);
 
-	int list_size = 2;
+	int list_size = 3;
 	KNH_ENSUREREF(ctx, list_size);
+
 	KNH_ADDNNREF(ctx, current_changed_func);
 	KNH_ADDNNREF(ctx, tab_close_requested_func);
 
@@ -703,11 +713,17 @@ void DummyQTabWidget::connection(QObject *o)
 
 KQTabWidget::KQTabWidget(QWidget* parent) : QTabWidget(parent)
 {
+	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQTabWidget();
 	dummy->connection((QObject*)this);
 }
 
+KQTabWidget::~KQTabWidget()
+{
+	delete dummy;
+	dummy = NULL;
+}
 KMETHOD QTabWidget_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	(void)ctx;
@@ -752,17 +768,23 @@ KMETHOD QTabWidget_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
 static void QTabWidget_free(CTX ctx, knh_RawPtr_t *p)
 {
 	(void)ctx;
+	if (!exec_flag) return;
 	if (p->rawptr != NULL) {
 		KQTabWidget *qp = (KQTabWidget *)p->rawptr;
-		(void)qp;
-		//delete qp;
+		if (qp->magic_num == G_MAGIC_NUM) {
+			delete qp;
+			p->rawptr = NULL;
+		} else {
+			delete (QTabWidget*)qp;
+			p->rawptr = NULL;
+		}
 	}
 }
 static void QTabWidget_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 {
 	if (p->rawptr != NULL) {
-		KQTabWidget *qp = (KQTabWidget *)p->rawptr;
-//		KQTabWidget *qp = static_cast<KQTabWidget*>(p->rawptr);
+//		KQTabWidget *qp = (KQTabWidget *)p->rawptr;
+		KQTabWidget *qp = static_cast<KQTabWidget*>(p->rawptr);
 		qp->dummy->reftrace(ctx, p, tail_);
 	}
 }
