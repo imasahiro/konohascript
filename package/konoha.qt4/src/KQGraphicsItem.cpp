@@ -2637,6 +2637,11 @@ DummyQGraphicsItem::DummyQGraphicsItem()
 	CTX lctx = knh_getCurrentContext();
 	(void)lctx;
 	self = NULL;
+	density = 0.0f;
+	restitution = 0.0f;
+	friction = 0.0f;
+	isStatic = true;
+
 	contextMenuEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneContextMenuEvent);
 	dragEnterEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneDragDropEvent);
 	dragLeaveEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneDragDropEvent);

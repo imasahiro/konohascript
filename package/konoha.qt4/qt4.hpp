@@ -4657,6 +4657,12 @@ class DummyQGraphicsItem {
 //	Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+	float density;
+	float restitution;
+	float friction;
+	bool bullet;
+	bool isStatic;
+
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *context_menu_event_func;
