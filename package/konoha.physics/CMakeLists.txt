@@ -1,0 +1,57 @@
+if(USE_PHYSICS)
+cmake_minimum_required(VERSION 2.6)
+
+set(CMAKE_C_FLAGS_RELEASE "-Wall -O0 -g3")
+set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O0 -g3")
+set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
+set(CMAKE_BUILD_TYPE DEBUG)
+
+# it must be configured
+
+project(physics)
+find_package(Qt4 REQUIRED)
+set(PACKAGE_SOURCE_CODE
+	physics.cpp
+	moc_physics.cxx
+	)
+
+set(PACKAGE_SCRIPT_CODE qt4.k)
+set(PACKAGE_EXTRA_LIBRARY
+	${QT_QTCORE_LIBRARY}
+	${QT_QTGUI_LIBRARY}
+	)
+
+set(PACKAGE_HEADERS physics.hpp)
+qt4_wrap_cpp(PACKAGE_HEADERS_MOC ${PACKAGE_HEADERS})
+
+include(${QT_USE_FILE})
+
+find_path(HAVE_BOX2D Box2D/Box2D.h PATHS ${include_locations})
+if(HAVE_BOX2D)
+    add_definitions(-DGAM_USING_BOX2D=1)
+    include_directories(${HAVE_BOX2D}/Box2D)
+endif()
+
+set(PACKAGE_NAME    ${PROJECT_NAME})
+set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+set(PACKAGE_STRING  ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
+set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
+
+set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR}
+		${KONOHA_INCLUDE_DIRS} ${PACKAGE_INCLUDE_DIR})
+include_directories(${INCLUDE_DIRS})
+
+add_definitions(-D_SETUP)
+add_definitions(${QT_DEFINITIONS})
+
+add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE} ${PACKAGE_HEADERS_MOC})
+set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
+target_link_libraries(${PACKAGE_NAME} konoha)
+target_link_libraries(${PACKAGE_NAME} ${PACKAGE_EXTRA_LIBRARY} Box2D)
+
+install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+
+endif(USE_PHYSICS)
