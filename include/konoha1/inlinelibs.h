@@ -45,13 +45,15 @@ static inline knh_bool_t knh_bytes_equalsIgnoreCase(knh_bytes_t v1, knh_bytes_t 
 	return (v1.len == v2.len && knh_strncasecmp(v1.text, v2.text, v1.len) == 0);
 }
 
-static inline int knh_bytes_startsWith(knh_bytes_t v1, knh_bytes_t v2)
+#define knh_bytes_startsWith(t, T)   knh_bytes_startsWith_(t, STEXT(T))
+static inline int knh_bytes_startsWith_(knh_bytes_t v1, knh_bytes_t v2)
 {
 	if(v1.len < v2.len) return 0;
 	return (knh_strncmp(v1.text, v2.text, v2.len) == 0);
 }
 
-static inline knh_bool_t knh_bytes_endsWith(knh_bytes_t v1, knh_bytes_t v2)
+#define knh_bytes_endsWith(t, T)   knh_bytes_endsWith_(t, STEXT(T))
+static inline knh_bool_t knh_bytes_endsWith_(knh_bytes_t v1, knh_bytes_t v2)
 {
 	if(v1.len < v2.len) return 0;
 	knh_text_t *p = v1.text + (v1.len-v2.len);

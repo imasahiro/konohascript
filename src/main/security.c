@@ -395,7 +395,7 @@ void knh_askSecurityAlert(CTX ctx)
 //knh_bool_t knh_isTrustedPath(CTX ctx, knh_bytes_t path)
 //{
 //	DBG_P("check: %s", (char*)path.buf);
-//	if(knh_bytes_startsWith(path, STEXT("http:"))) {
+//	if(knh_bytes_startsWith_(path, STEXT("http:"))) {
 //		return 0;
 //	}
 //	return (secureMode != 1);

@@ -197,8 +197,8 @@ struct knh_String_t {
 #define S_totext(s)           ((s)->str.text)
 #define S_size(s)             ((s)->str.len)
 #define S_equals(s, b)        knh_bytes_equals(S_tobytes(s), b)
-#define S_startsWith(s, b)    knh_bytes_startsWith(S_tobytes(s), b)
-#define S_endsWith(s, b)      knh_bytes_endsWith(S_tobytes(s), b)
+#define S_startsWith(s, b)    knh_bytes_startsWith_(S_tobytes(s), b)
+#define S_endsWith(s, b)      knh_bytes_endsWith_(S_tobytes(s), b)
 
 /* ------------------------------------------------------------------------ */
 //## class Bytes Object;
@@ -229,8 +229,8 @@ struct knh_Bytes_t {
 #define BA_totext(o)    (o)->bu.text
 
 #define B_equals(b, t)        (knh_bytes_strcmp(b, STEXT(t)) == 0)
-#define B_startsWith(b, t)    knh_bytes_startsWith(b, STEXT(t))
-#define B_endsWith(b, t)      knh_bytes_endsWith(b, STEXT(t))
+#define B_startsWith(b, t)    knh_bytes_startsWith_(b, STEXT(t))
+#define B_endsWith(b, t)      knh_bytes_endsWith_(b, STEXT(t))
 
 /* ------------------------------------------------------------------------ */
 //## class Pointer Object;
@@ -349,6 +349,7 @@ struct knh_Array_t {
 		struct knh_Method_t        **methods;
 		struct knh_TypeMap_t       **trans;
 		struct knh_Token_t         **tokens;
+		struct knh_Expr_t          **exprs;
 		struct knh_Term_t          **terms;
 		struct knh_StmtExpr_t      **stmts;
 	};
@@ -500,6 +501,7 @@ struct knh_ParamArray_t {
 //## flag Method Message        10 DP(%s)->flag is set * *;
 //## flag Method Restricted     11 DP(%s)->flag is set * *;
 //## flag Method FastCall       12 DP(%s)->flag is set * *;
+//## flag Method Polymorphic    13 DP(%s)->flag is set * *;
 
 typedef struct knh_Method_t knh_Method_t;
 
@@ -516,7 +518,10 @@ typedef struct {
 		struct knh_Method_t     *proceed;      // during typing, asm
 	};
 	struct knh_Array_t *paramsNULL;
-	struct knh_Term_t *tsource;
+	union {
+		struct knh_Term_t *tsource;
+		struct knh_Token_t *tcode;
+	};
 	knh_uri_t      uri;   knh_uri_t      domain;
 	knh_uintptr_t  count;
 } knh_MethodEX_t;
@@ -877,37 +882,50 @@ typedef knh_uintptr_t knh_io_t;
 #define K_STREAM_FD        4
 #define K_STREAM_NET       5
 
-typedef struct knh_StreamDPI_t {
+typedef struct knh_io2_t knh_io2_t;
+
+struct knh_io2_t {
+	union {
+		int  fd;
+		void *handler;
+		FILE *fp;
+		struct knh_Bytes_t *baNC;
+	};
+	void *handler2; // NULL
+	int  isRunning;
+	char  *buffer;
+	size_t bufsiz;
+	size_t top; size_t tail;
+	knh_bool_t (*_read)(CTX, struct knh_io2_t *);
+	size_t     (*_write)(CTX, struct knh_io2_t *, const char *buf, size_t bufsiz);
+	void       (*_close)(CTX, struct knh_io2_t *);
+
+	knh_bool_t (*_blockread)(CTX, struct knh_io2_t *);
+	knh_bool_t (*_unblockread)(CTX, struct knh_io2_t *);
+	size_t     (*_blockwrite)(CTX, struct knh_io2_t *, const char *buf, size_t bufsiz);
+	size_t     (*_unblockwrite)(CTX, struct knh_io2_t *, const char *buf, size_t bufsiz);
+	const char *DBG_NAME;  // unnecessary for free
+};
+
+typedef struct knh_PathDPI_t {
 	int type;
 	const char   *name;
 	size_t       wbufsiz;  // write bufsize
 	knh_bool_t   (*existsSPI)(CTX, struct knh_Path_t *);
 	void         (*ospath)(CTX, struct knh_Path_t *, struct knh_NameSpace_t *);
 	// stream
-	knh_io_t     (*fopenSPI)(CTX, struct knh_Path_t*, const char *, knh_DictMap_t *);
-	knh_io_t     (*wopenSPI)(CTX, struct knh_Path_t*, const char *, knh_DictMap_t *);
-	knh_intptr_t (*freadSPI)(CTX, knh_io_t, char *, size_t);
-	knh_intptr_t (*fwriteSPI)(CTX, knh_io_t, const char *, size_t);
-	void         (*fcloseSPI)(CTX, knh_io_t);
-	knh_bool_t   (*info)(CTX, knh_io_t, knh_Object_t *);
-	int          (*fgetcSPI)(CTX, knh_io_t);
-	knh_bool_t   (*fgetlineSPI)(CTX, knh_io_t, knh_Bytes_t *);
-	int          (*feofSPI)(CTX, knh_io_t);
-	void         (*fflushSPI)(CTX, knh_io_t);
-
-	// query
-//	knh_qconn_t*  (*qopen)(CTX, struct knh_Path_t*, knh_DictMap_t *);
-//	void          (*qclose)(CTX, struct knh_Path_t*, knh_qconn_t *);
+	knh_io2_t*   (*io2openNULL)(CTX, struct knh_Path_t*, const char *, knh_DictMap_t *);
 	knh_Fitrnext  qnextData;
-} knh_StreamDPI_t;
+} knh_PathDPI_t;
+
 
 #ifdef USE_STRUCT_Path
 struct knh_Path_t {
 	knh_hObject_t h;
-	const char               *ospath;
-	size_t                    asize;
-	struct knh_String_t      *urn;
-	const struct knh_StreamDPI_t   *dpi;
+	const char                  *ospath;
+	size_t                       asize;
+	struct knh_String_t          *urn;
+	const struct knh_PathDPI_t   *dpi;
 };
 #endif
 
@@ -918,25 +936,18 @@ struct knh_Path_t {
 #define KNH_STDOUT         (ctx->out)
 #define KNH_STDERR         (ctx->err)
 
+#define knh_InputStream_getc(ctx, in)          io2_getc(ctx, (in)->io2)
+#define knh_InputStream_readLine(ctx, in)      io2_readLine(ctx, (in)->io2, (in)->decNULL)
+#define knh_InputStream_close(ctx, in)         io2_close(ctx, (in)->io2)
+
 typedef struct knh_InputStream_t knh_InputStream_t;
 #ifdef USE_STRUCT_InputStream
-typedef struct {
-	knh_Path_t *path;
-	knh_io_t fio;
-	union {
-		struct knh_Bytes_t  *ba;
-		struct knh_String_t *str;
-	};
-	size_t pos;  size_t posend;
-	size_t stat_size;
-} knh_InputStreamEX_t;
-
 struct knh_InputStream_t {
 	knh_hObject_t h;
-	knh_InputStreamEX_t *b;
-	knh_uline_t  uline;
-	const struct knh_StreamDPI_t  *dpi;
-	struct knh_StringDecoder_t*    decNULL;
+	knh_io2_t *io2;
+	knh_uline_t uline;
+	knh_Path_t *path;
+	struct knh_StringDecoder_t* decNULL;
 };
 #endif
 
@@ -947,29 +958,20 @@ struct knh_InputStream_t {
 //## flag OutputStream UTF8           3 - has set * *;
 
 typedef struct knh_OutputStream_t knh_OutputStream_t;
-#ifdef USE_STRUCT_OutputStream
-typedef struct {
-	knh_Path_t* path;
-	knh_io_t fio;
-	struct knh_Bytes_t *ba;
-	size_t stat_size;
-	knh_String_t*  NEWLINE;
-	knh_String_t*  TAB;
-	knh_short_t    indent;
-} knh_OutputStreamEX_t;
 
+#ifdef USE_STRUCT_OutputStream
 struct knh_OutputStream_t {
 	knh_hObject_t h;
-	knh_OutputStreamEX_t *b;
-	knh_uline_t  uline;
-	const struct knh_StreamDPI_t *dpi;
+	knh_io2_t *io2;
+	struct knh_Path_t *path;
+	struct knh_Bytes_t *bufferNULL;
 	struct knh_StringEncoder_t* encNULL;
 };
 #endif
 
 #define knh_putc(ctx, w, ch)       knh_OutputStream_putc(ctx, w, ch)
 #define knh_write(ctx, w, s)       knh_OutputStream_write(ctx, w, s)
-#define knh_flush(ctx, w)          knh_OutputStream_flush(ctx, w, 0)
+#define knh_flush(ctx, w)          knh_OutputStream_flush(ctx, w)
 #define knh_write_delim(ctx, w)    knh_write_ascii(ctx, w, ", ")
 #define knh_write_dots(ctx, w)     knh_write_ascii(ctx, w, "...")
 #define knh_write_delimdots(ctx, w)     knh_write_ascii(ctx, w, ", ...")
@@ -1075,7 +1077,7 @@ struct knh_Assurance_t {
 //## class Block Object;
 //## @Singleton class Lang Object;
 
-typedef knh_ushort_t   knh_sugar_t;
+typedef knh_short_t   knh_sugar_t;
 typedef knh_ushort_t   knh_expr_t;
 
 typedef enum {
@@ -1100,15 +1102,6 @@ typedef enum {
 	TK_BLOCK,
 } knh_token_t ;
 
-typedef enum {
-	STMT_DONE,
-	STMT_ERR,
-	STMT_DECL,
-	STMT_IF,
-	STMT_WHILE,
-	STMT_USER,
-} knh_stmt_t;
-
 typedef struct knh_Token_t knh_Token_t;
 #ifdef USE_STRUCT_Token
 struct knh_Token_t {
@@ -1123,9 +1116,13 @@ struct knh_Token_t {
 };
 #endif
 
-#define SUGAR_SYNTAX    0
-#define SUGAR_BINARY    1
-#define SUGAR_STATEMENT 2
+#define SUGAR_TOKEN     0
+#define SUGAR_DECL      1
+#define SUGAR_STMT      2
+#define SUGAR_EXPR      3
+#define SUGAR_TYPE      4
+#define SUGAR_UNINARY   5
+#define SUGAR_BINARY    6
 
 typedef struct knh_Sugar_t knh_Sugar_t;
 #ifdef USE_STRUCT_Sugar
@@ -1137,14 +1134,13 @@ struct knh_Sugar_t {
 };
 #endif
 
-#define EXPR_USER            0
-#define TERM_TOKEN           1
+#define UEXPR_USER_DEFINED   0
+#define UEXPR_TOKEN          1
 #define TERM_TYPE            2
-#define TERM_CONST           3
-#define TERM_FUNCVAR         4
-#define TERM_BLOCKVAR        5
-#define TERM_FUNCFIELD       6
-#define TERM_BLOCKFIELD      7
+#define UEXPR_METHOD_CALL    3
+
+#define TEXPR_CONST          4
+#define TEXPR_METHOD_CALL    (TEXPR_CONST+1)
 
 typedef struct knh_Expr_t knh_Expr_t;
 #ifdef USE_STRUCT_Expr
@@ -1169,7 +1165,7 @@ typedef struct knh_Stmt_t knh_Stmt_t;
 #ifdef USE_STRUCT_Stmt
 struct knh_Stmt_t {
 	knh_hObject_t h;
-	knh_stmt_t stmt;
+	knh_uline_t uline;
 	struct knh_Stmt_t      *key;
 	struct knh_Block_t     *parent;
 	struct knh_DictMap_t   *clauseDictMap;
@@ -1184,6 +1180,9 @@ struct knh_Block_t {
 	struct knh_Array_t   *blocks;
 };
 #endif
+
+typedef struct knh_Gamma_t knh_Gamma_t;
+
 
 typedef struct knh_Lang_t knh_Lang_t;
 #ifdef USE_STRUCT_Lang

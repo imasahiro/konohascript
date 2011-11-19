@@ -600,7 +600,7 @@ static void knh_shell(CTX ctx)
 {
 	void *shell_status = NULL;
 	BEGIN_LOCAL(ctx, lsfp, 2);
-	LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
+//	LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
 	{
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_showWelcome(ctx, cwb->w);
@@ -610,6 +610,7 @@ static void knh_shell(CTX ctx)
 	}
 	while(1) {
 		{
+			knh_InputStream_t *bin = NULL;
 			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_status_t status = readstmt(ctx, cwb);
 			if(status == K_BREAK) {
@@ -629,14 +630,12 @@ static void knh_shell(CTX ctx)
 				CWB_close(cwb);
 				continue;
 			}
-			knh_Bytes_clear(DP(bin)->ba, 0);
-			knh_Bytes_write(ctx, DP(bin)->ba, CWB_tobytes(cwb));
-			CWB_close(cwb);
+			bin = new_BytesInputStream(ctx, CWB_totext(ctx, cwb), CWB_size(cwb));
+			KNH_SETv(ctx, lsfp[0].o, bin);
+			SP(bin)->uline = 1;
+			knh_beval(ctx, bin);
 		}
-		knh_InputStream_setpos(ctx, bin, 0, BA_size(DP(bin)->ba));
-		SP(bin)->uline = 1; // always line1
-		knh_beval(ctx, bin);
-		knh_OutputStream_flush(ctx, ctx->out, 1);
+		knh_OutputStream_flush(ctx, ctx->out);
 		if(ctx->isEvaled == 1) {
 			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_write_Object(ctx, cwb->w, ctx->evaled, FMT_dump);

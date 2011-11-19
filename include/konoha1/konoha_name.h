@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      800
+#define K_REVISION                      819
 #endif
-#define K_BUILDID                       1187
+#define K_BUILDID                       1189
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -724,6 +724,9 @@
 #define FLAG_Method_FastCall ((knh_flag_t)(1<<12))
 #define Method_isFastCall(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_FastCall))
 #define Method_setFastCall(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_FastCall,b)
+#define FLAG_Method_Polymorphic ((knh_flag_t)(1<<13))
+#define Method_isPolymorphic(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Polymorphic))
+#define Method_setPolymorphic(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Polymorphic,b)
 #define FLAG_TypeMap_Interface FLAG_Object_Local1
 #define TypeMap_isInterface(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface))
 #define TypeMap_setInterface(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface,b)

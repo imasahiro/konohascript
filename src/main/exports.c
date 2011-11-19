@@ -324,7 +324,7 @@ static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
 //	knh_NameSpace_setLinkClass(ctx, ns, B(scheme), ClassTBL(cid));
 //}
 
-static void knh_addStreamDPI(CTX ctx, const char *scheme, const knh_StreamDPI_t *d)
+static void knh_addStreamDPI(CTX ctx, const char *scheme, const knh_PathDPI_t *d)
 {
 	knh_DictSet_set(ctx, ctx->share->streamDpiDictSet, new_T(scheme), (knh_uintptr_t)d);
 }

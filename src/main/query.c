@@ -125,11 +125,11 @@ static ITRNEXT SQLITE3_nextData(CTX ctx, knh_sfp_t *sfp _RIX)
 	return SQLITE3_next(ctx, sfp, nextData, K_RIX);
 }
 
-static const knh_StreamDPI_t STREAM_SQLITE3 = {
+static const knh_PathDPI_t STREAM_SQLITE3 = {
 	K_STREAM_NET, "NOFILE", K_PAGESIZE,
-	NOFILE_exists, NOFILE_ospath,
-	NOFILE_open, NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close,
-	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
+	NOFILE_exists, NOFILE_ospath, NOFILE_openNULL,
+//	NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close,
+//	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
 	SQLITE3_nextData,
 };
 

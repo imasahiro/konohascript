@@ -862,9 +862,6 @@ typedef struct {
 typedef struct {
 	size_t                      usedMemorySize;
 	size_t                      maxMemoryUsage;
-//	size_t                      usedObjectSize;
-//	size_t                      gcBoundary;
-//	size_t                      maxObjectUsage;
 	long                        gcObjectCount;
 	knh_uint64_t markingTime;   // marking time [ms]
 	knh_uint64_t sweepingTime;  // sweeping time [ms]

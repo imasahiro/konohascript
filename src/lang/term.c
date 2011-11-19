@@ -1058,11 +1058,11 @@ static int Term_addURN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *i
 		knh_bytes_t t = CWB_tobytes(cwb);
 		knh_term_t tt = TT_URN;
 #ifdef K_USING_SEMANTICS
-		if(knh_bytes_startsWith(t, STEXT("int:")) || knh_bytes_startsWith(t, STEXT("float:"))) {
+		if(knh_bytes_startsWith_(t, STEXT("int:")) || knh_bytes_startsWith_(t, STEXT("float:"))) {
 			t.ubuf[0] = toupper(t.utext[0]);
 		}
 #endif
-		if(knh_bytes_startsWith(t, STEXT("new:"))) {
+		if(knh_bytes_startsWith_(t, STEXT("new:"))) {
 			tt = TT_NEW;
 		}
 		Term_addBuf(ctx, tk, cwb, (isupper(t.utext[0])) ? TT_UNAME : TT_URN, ch);
@@ -1402,7 +1402,7 @@ static void Term_toBRACE(CTX ctx, knh_Term_t *tk, int isEXPANDING)
 	if(S_size(tk->text) > 0) {
 		knh_sfp_t *lsfp = knh_stack_local(ctx, 1);
 		int sfpidx_ = lsfp - ctx->stack;
-		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_StringInputStream(ctx, (tk)->text));
+		LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_BytesInputStream(ctx, S_totext((tk)->text), S_size((tk)->text)));
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
 		TT_(tk) = TT_BRACE;
 		in->uline = tk->uline;

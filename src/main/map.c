@@ -910,7 +910,7 @@ K_USE_FASTDMAP(knh_uint64_t ukey;)
 		knh_ndata_t    nkey;
 	};
 	union {
-		Object           *value;
+		Object         *value;
 		knh_ndata_t    nvalue;
 	};
 } knh_dentry_t;

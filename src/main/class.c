@@ -2559,7 +2559,7 @@ static KMETHOD Class_query(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_class_t cid = (knh_class_t)i;
 		const knh_ClassTBL_t *ct = ClassTBL(cid);
 		DBG_P("lname=%s", S_totext(ct->lname));
-		if(!knh_bytes_startsWith(S_tobytes(ct->lname), q)) continue;
+		if(!knh_bytes_startsWith_(S_tobytes(ct->lname), q)) continue;
 		knh_Array_add(ctx, ca, new_Type(ctx, cid));
 	}
 	RETURN_(ca);

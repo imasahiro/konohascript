@@ -51,7 +51,7 @@ static void CWB_nzenvkey(CTX ctx, CWB_t *cwb, knh_bytes_t t)
 
 knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key)
 {
-	if(knh_bytes_startsWith(key, STEXT("env."))) {
+	if(knh_bytes_startsWith_(key, STEXT("env."))) {
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		CWB_nzenvkey(ctx, cwb, knh_bytes_last(key, 4));
 		char *v = knh_getenv(CWB_totext(ctx, cwb));
@@ -196,11 +196,11 @@ knh_fieldn_t knh_getfnq(CTX ctx, knh_bytes_t tname, knh_fieldn_t def)
 	if(idx > 0) {
 		tname = knh_bytes_first(tname, idx);
 	}
-	else if(knh_bytes_startsWith(tname, STEXT("super."))) {
+	else if(knh_bytes_startsWith_(tname, STEXT("super."))) {
 		mask = (def == FN_NONAME) ? 0 : K_FLAG_FN_SUPER;
 		tname = knh_bytes_last(tname, 6);
 	}
-	else if(!knh_bytes_endsWith(tname, STEXT("__"))) {
+	else if(!knh_bytes_endsWith_(tname, STEXT("__"))) {
 		if(tname.utext[0] == '_' && def != FN_NONAME) {
 			mask = K_FLAG_FN_U1;
 			tname = knh_bytes_last(tname, 1);
@@ -325,10 +325,10 @@ static knh_bytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, knh_b
 	return path;
 }
 
-const knh_StreamDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_PathDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
 {
 	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
-	return (const knh_StreamDPI_t *)knh_DictSet_get(ctx, ctx->share->streamDpiDictSet, hpath);
+	return (const knh_PathDPI_t *)knh_DictSet_get(ctx, ctx->share->streamDpiDictSet, hpath);
 }
 
 const knh_MapDPI_t *knh_NameSpace_getMapDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)

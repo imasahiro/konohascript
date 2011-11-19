@@ -429,7 +429,7 @@ void loadPolicy(CTX ctx)
 	knh_String_t *s = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
 	CWB_write(ctx, cwb, S_tobytes(s));
 	CWB_write(ctx, cwb, STEXT("/policy"));
-	knh_InputStream_t *is = new_InputStreamNULL(ctx, new_Path(ctx, CWB_newString0(ctx, cwb)), "r");
+	knh_InputStream_t *is = new_InputStream(ctx, NULL, new_Path(ctx, CWB_newString0(ctx, cwb)));
 
 	if (is == NULL) {
 		DBG_P("policy file not found. All @Restricted annotated method is rescricted");
@@ -907,7 +907,7 @@ void konoha_ginit(int argc, const char **argv)
 					if(optstr[0] == '-') {
 						n--; optstr = NULL;
 					}
-					if(knh_bytes_endsWith(B(optstr), STEXT(".k"))) {
+					if(knh_bytes_endsWith_(B(optstr), STEXT(".k"))) {
 						break;
 					}
 				}

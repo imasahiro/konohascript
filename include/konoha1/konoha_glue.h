@@ -130,7 +130,7 @@ typedef struct knh_LoaderAPI_t {
 	/* namespace */
 //	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
 //	void (*addLinkClass)(CTX, knh_NameSpace_t *ns, const char*, knh_class_t cid);
-	void (*addStreamDPI)(CTX, const char*, const knh_StreamDPI_t *);
+	void (*addStreamDPI)(CTX, const char*, const knh_PathDPI_t *);
 //	void (*addQueryDPI)(CTX, const char *, const knh_QueryDPI_t *);
 	void (*addMapDPI)(CTX,   const char *, const knh_MapDPI_t*);
 	void (*addConverterDPI)(CTX, const char *, const knh_ConverterDPI_t*, const knh_ConverterDPI_t*);
@@ -158,10 +158,11 @@ typedef void (*knh_Fconstdef)(CTX, knh_class_t, const knh_LoaderAPI_t*);
 #define Boolean_to(T, a)           ((T)a.bvalue)
 #define Int_to(T, a)               ((T)a.ivalue)
 #define Float_to(T, a)             ((T)a.fvalue)
+#define Int_to2(T, a, def)         ((a.ivalue != 0)   ? (T)a.ivalue : (def))
+#define Float_to2(T, a, def)       ((a.fvalue != 0.0) ? (T)a.fvalue : (def))
 #define String_to(T, a)            ((T)S_totext(a.s))
 #define StringNull_to(T, a, def)   ((T)(IS_bString(a.o) ? S_totext(a.s) : def))
 #define RawPtr_to(T, a)            ((T)((a.p)->rawptr))
-//#define RawPtrNull_to(T, a, def)   (IS_bRawPtr(a.o) ? ((T)((a.p)->rawptr)) : (def))
 #define Class_tocid(a)             ((a.c)->cid)
 
 /* ------------------------------------------------------------------------ */

@@ -44,6 +44,27 @@ extern "C" {
 #endif
 
 /* ------------------------------------------------------------------------ */
+/* [Initailize Object] */
+
+static knh_InputStream_t *new_InputStreamStdIn(CTX ctx, knh_String_t *enc)
+{
+	knh_io2_t *io2 = new_io2(ctx, 0, 0);
+	return new_InputStream(ctx, io2, new_Path(ctx, TS_DEVSTDIN));
+}
+
+static knh_OutputStream_t *new_OutputStreamStdOut(CTX ctx, knh_String_t *enc)
+{
+	knh_io2_t *io2 = new_io2(ctx, 1, 4096);
+	return new_OutputStream(ctx, io2, new_Path(ctx, TS_DEVSTDOUT));
+}
+
+static knh_OutputStream_t *new_OutputStreamStdErr(CTX ctx, knh_String_t *enc)
+{
+	knh_io2_t *io2 = new_io2(ctx, 2, 0);
+	return new_OutputStream(ctx, io2, new_Path(ctx, TS_DEVSTDERR));
+}
+
+/* ------------------------------------------------------------------------ */
 /* [ContextTable] */
 
 static knh_context_t* new_hcontext(CTX ctx0)
@@ -306,9 +327,9 @@ static knh_context_t* new_RootContext(void)
 	KNH_INITv(share->rconvDpiDictSet, new_DictSet0(ctx, 0, 1/*isCaseMap*/, "convDpiDictSet"));
 
 	KNH_INITv(share->enc,   new_T(knh_getSystemEncoding()));
-	KNH_INITv(share->in,    new_InputStreamSTDIO(ctx, stdin, share->enc));
-	KNH_INITv(share->out,   new_OutputStreamSTDIO(ctx, stdout, share->enc));
-	KNH_INITv(share->err,   new_OutputStreamSTDIO(ctx, stderr, share->enc));
+	KNH_INITv(share->in,    new_InputStreamStdIn(ctx, share->enc));
+	KNH_INITv(share->out,   new_OutputStreamStdOut(ctx, share->enc));
+	KNH_INITv(share->err,   new_OutputStreamStdErr(ctx, share->enc));
 
 	KNH_INITv(share->props, new_DictMap0(ctx, 20, 1/*isCaseMap*/, "System.props"));
 	KNH_INITv(share->nameDictCaseSet, new_DictSet0(ctx, K_TFIELD_SIZE + 10, 1/*isCaseMap*/, "System.nameDictSet"));

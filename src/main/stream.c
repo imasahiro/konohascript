@@ -34,7 +34,7 @@ extern "C" {
 #include"commons.h"
 
 //#ifdef HAVE_LIBCURL
-#define K_USING_CURL 1
+//#define K_USING_CURL 1
 //#endif
 
 /* ************************************************************************ */
@@ -162,6 +162,427 @@ knh_Array_t *knh_PathDir_toArray(CTX ctx, knh_Path_t *path)
 /* ------------------------------------------------------------------------ */
 /* K_DPI_STREAM */
 
+static size_t io2_writeNOP(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+{
+	return 0;
+}
+static knh_bool_t io2_readNOP(CTX ctx, knh_io2_t *io2)
+{
+	return 0;
+}
+static void io2_closeNOP(CTX ctx, knh_io2_t *io2)
+{
+}
+
+static knh_bool_t io2_readFILE(CTX ctx, knh_io2_t *io2)
+{
+	if(io2->bufsiz == 0) {
+		io2->bufsiz = K_PAGESIZE;
+		io2->buffer = KNH_MALLOC(ctx, io2->bufsiz);
+	}
+	size_t size = fread(io2->buffer, 1, io2->bufsiz, io2->fp);
+	if(size == 0) {
+		int tf = 1;
+		if(ferror(io2->fp)) {
+			knh_ldata_t ldata[] = {LOG_p("fp", io2->fp), LOG_s("path", io2->DBG_NAME), LOG_END};
+			KNH_NTRACE(ctx, "fread", K_PERROR, ldata);
+			tf = 0;
+		}
+		io2->_close(ctx, io2);
+		return 0;
+	}
+	else {
+		io2->top = 0;
+		io2->tail = size;
+		return 1;
+	}
+}
+
+static size_t io2_writeFILE(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+{
+	fflush(io2->fp);
+	ssize_t size = fwrite(buf, 1, bufsiz, io2->fp);
+	if(size == 0) {
+		if(ferror(io2->fp)) {
+			knh_ldata_t ldata[] = {LOG_i("fp", io2->fp), LOG_s("path", io2->DBG_NAME), LOG_END};
+			KNH_NTRACE(ctx, "fwrite", K_PERROR, ldata);
+		}
+		io2->_close(ctx, io2);
+		return 0;
+	}
+	fflush(io2->fp);
+	return size;
+}
+
+static void io2_closeFILE(CTX ctx, knh_io2_t *io2)
+{
+	DBG_ASSERT(io2->isRunning == 1);
+	fclose(io2->fp);
+	io2->isRunning = 0;
+}
+
+knh_io2_t* new_FILE(CTX ctx, FILE *fp, size_t bufsiz)
+{
+	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	io2->fp  = fp;
+	io2->isRunning = 1;
+	io2->bufsiz = bufsiz;
+	if(bufsiz > 0) {
+		io2->buffer = KNH_MALLOC(ctx, bufsiz);
+	}
+	io2->top  = 0;
+	io2->tail = 0;
+	io2->_close         = io2_closeFILE;
+	io2->_blockread     = io2_readFILE;
+	io2->_unblockread   = io2_readFILE;
+	io2->_read          = io2_readFILE;
+	io2->_blockwrite    = io2_writeFILE;
+	io2->_unblockwrite  = io2_writeFILE;
+	io2->_write         = io2_writeFILE;
+	return io2;
+}
+
+static knh_bool_t io2_blockread(CTX ctx, knh_io2_t *io2)
+{
+	if(io2->bufsiz == 0) {
+		io2->bufsiz = K_PAGESIZE;
+		io2->buffer = KNH_MALLOC(ctx, io2->bufsiz);
+	}
+	int fd = io2->fd;
+	ssize_t size = read(fd, io2->buffer, io2->bufsiz);
+	if(size == -1) {
+		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
+		KNH_NTRACE(ctx, "read", K_PERROR, ldata);
+		io2->_close(ctx, io2);
+		return 0;
+	}
+	else {
+		io2->top = 0;
+		io2->tail = size;
+		if(size == 0) {
+			io2->_close(ctx, io2);
+		}
+		return 1;
+	}
+}
+
+static knh_bool_t io2_unblockread(CTX ctx, knh_io2_t *io2)
+{
+	int fd = io2->fd;
+	fd_set fds;
+	FD_ZERO(&fds);
+	FD_SET(fd, &fds);
+	int rc = select(fd + 1, &fds, NULL, NULL, NULL);
+	if(rc != -1) {
+		if(FD_ISSET((int)fd,&fds)) {
+			return io2->_blockread(ctx, io2);
+		}
+		knh_bzero(io2->buffer, io2->bufsiz);
+		io2->top  = 0;
+		io2->tail = 0;
+		return 1;
+	}
+	{
+		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
+		KNH_NTRACE(ctx, "select", K_PERROR, ldata);
+	}
+	return 0;
+}
+
+static size_t io2_blockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+{
+	int fd = io2->fd;
+	ssize_t size = write(fd, buf, bufsiz);
+	if(size == -1) {
+		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
+		KNH_NTRACE(ctx, "write", K_PERROR, ldata);
+		io2->_close(ctx, io2);
+	}
+	return 0;
+}
+
+static size_t io2_unblockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t size)
+{
+	int fd = io2->fd;
+	fd_set fds;
+	FD_ZERO(&fds);
+	FD_SET(fd, &fds);
+	int rc = select(fd + 1, NULL, &fds, NULL, NULL);
+	if(rc != -1) {
+		if(FD_ISSET((int)fd,&fds)) {
+			return io2->_blockwrite(ctx, io2, buf, size);
+		}
+		return 0;
+	}
+	{
+		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
+		KNH_NTRACE(ctx, "select", K_PERROR, ldata);
+	}
+	return 0;
+}
+
+static void io2_closeFD(CTX ctx, knh_io2_t *io2)
+{
+	DBG_ASSERT(io2->isRunning == 1);
+	close(io2->fd);
+	io2->isRunning = 0;
+}
+
+knh_io2_t* new_io2(CTX ctx, int fd, size_t bufsiz)
+{
+	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	io2->handler  = NULL;
+	io2->handler2 = NULL;
+	io2->fd = fd;
+	io2->isRunning = 1;
+	io2->bufsiz = bufsiz;
+	if(bufsiz > 0) {
+		io2->buffer = KNH_MALLOC(ctx, bufsiz);
+	}
+	io2->top  = 0;
+	io2->tail = 0;
+	io2->_close         = io2_closeFD;
+	io2->_blockread     = io2_blockread;
+	io2->_unblockread   = io2_unblockread;
+	io2->_read          = io2_blockread;
+	io2->_blockwrite    = io2_blockwrite;
+	io2->_unblockwrite  = io2_unblockwrite;
+	io2->_write         = io2_blockwrite;
+	return io2;
+}
+
+knh_io2_t* new_io2ReadBuffer(CTX ctx, const char *buf, size_t bufsiz)
+{
+	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	io2->handler  = NULL;
+	io2->handler2 = NULL;
+	io2->fd = -1;
+	io2->isRunning = 0;
+	io2->buffer = KNH_MALLOC(ctx, bufsiz);
+	knh_memcpy(io2->buffer, buf, bufsiz);
+	io2->bufsiz = bufsiz;
+	io2->top  = 0;
+	io2->tail = bufsiz;
+	io2->_close         = io2_close;
+	io2->_blockread     = io2_readNOP;
+	io2->_unblockread   = io2_readNOP;
+	io2->_read          = io2_readNOP;
+	io2->_blockwrite    = io2_writeNOP;
+	io2->_unblockwrite  = io2_writeNOP;
+	io2->_write         = io2_writeNOP;
+	return io2;
+}
+
+static size_t io2_writeBytes(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+{
+	knh_Bytes_write2(ctx, io2->baNC, buf, bufsiz);
+	return bufsiz;
+}
+
+static void io2_closeBytes(CTX ctx, knh_io2_t *io2)
+{
+	io2->_blockwrite    = io2_writeNOP;
+	io2->_unblockwrite  = io2_writeNOP;
+	io2->_write         = io2_writeNOP;
+	io2->isRunning = 0;
+}
+
+knh_io2_t* new_io2WriteBuffer(CTX ctx, knh_Bytes_t *ba)
+{
+	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	io2->baNC  = ba;
+	io2->isRunning = 1;
+	io2->buffer = NULL;
+	io2->bufsiz = 0;
+	io2->top  = 0;
+	io2->tail = 0;
+	io2->_close         = io2_closeBytes;
+	io2->_blockread     = io2_readNOP;
+	io2->_unblockread   = io2_readNOP;
+	io2->_read          = io2_readNOP;
+	io2->_blockwrite    = io2_writeBytes;
+	io2->_unblockwrite  = io2_writeBytes;
+	io2->_write         = io2_writeBytes;
+	return io2;
+}
+
+knh_io2_t *io2_null(void)
+{
+	static knh_io2_t io2_dummy = {
+			{0}, NULL
+	};
+	io2_dummy._close = io2_closeNOP;
+	io2_dummy._read  = io2_readNOP;
+	io2_dummy._write = io2_writeNOP;
+	return &io2_dummy;
+}
+
+void io2_free(CTX ctx, knh_io2_t *io2)
+{
+	if(io2->isRunning == 1) {
+		io2->_close(ctx, io2);
+	}
+	if(io2->bufsiz > 0) {
+		KNH_FREE(ctx, io2->buffer, io2->bufsiz);
+		io2->bufsiz = 0;
+		io2->buffer = NULL;
+		io2->top = 0;
+		io2->tail = 0;
+	}
+	if(io2 != io2_null()) {
+		KNH_FREE(ctx, io2, sizeof(knh_io2_t));
+	}
+}
+
+void io2_close(CTX ctx, knh_io2_t *io2)
+{
+	if(io2->isRunning == 1) {
+		io2->_close(ctx, io2);
+		io2->top  = 0;
+		io2->tail = 0;
+	}
+}
+
+knh_bool_t io2_isClosed(CTX ctx, knh_io2_t *io2)
+{
+	return (io2->isRunning == 0 && io2->top >= io2->tail);
+}
+
+int io2_getc(CTX ctx, knh_io2_t *io2)
+{
+	int ch = EOF;
+	if(io2->top < io2->tail) {
+		ch = io2->buffer[io2->top];
+		io2->top += 1;
+	}
+	else if(io2->isRunning) {
+		io2->_read(ctx, io2);
+		if(io2->top < io2->tail) {
+			ch = io2->buffer[io2->top];
+			io2->top += 1;
+		}
+	}
+	return ch;
+}
+
+size_t io2_read(CTX ctx, knh_io2_t *io2, char *buf, size_t bufsiz)
+{
+	size_t rsize = 0;
+	while(bufsiz > 0) {
+		long remsiz = io2->tail - io2->top;
+		if(remsiz > 0) {
+			if(remsiz <= bufsiz) {
+				knh_memcpy(buf, io2->buffer + io2->top, bufsiz);
+				io2->top += bufsiz;
+				rsize += bufsiz;
+				return rsize;
+			}
+			else {
+				knh_memcpy(buf, io2->buffer + io2->top, remsiz);
+				buf    += remsiz;
+				rsize  += remsiz;
+				bufsiz -= remsiz;
+			}
+		}
+		if(!io2->isRunning) break;
+		io2->_read(ctx, io2);
+	}
+	return rsize;
+}
+
+static knh_String_t *CWB_newLine(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *dec)
+{
+	if(CWB_size(cwb) > 0) {
+		if(cwb->ba->bu.buf[cwb->ba->bu.len - 1] == '\r') {
+			cwb->ba->bu.buf[cwb->ba->bu.len - 1] = 0;
+			cwb->ba->bu.len =- 1;
+			if(CWB_size(cwb) == 0) return TS_EMPTY;
+		}
+		if(dec == NULL) {
+			return CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
+		}
+		else {
+			return CWB_newStringDECODE(ctx, cwb, dec);
+		}
+	}
+	return TS_EMPTY;
+}
+
+knh_String_t* io2_readLine(CTX ctx, knh_io2_t *io2, knh_StringDecoder_t *dec)
+{
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	while(io2->isRunning) {
+		size_t i, start, hasUTF8 = 0;
+		if(!(io2->top < io2->tail)) {
+			io2->_read(ctx, io2);
+		}
+		start = io2->top;
+		for(i = io2->top; i < io2->tail; i++) {
+			int ch = ((unsigned char*)io2->buffer)[i];
+			if(ch == '\n') {
+				knh_Bytes_write2(ctx, cwb->ba, (const char*)io2->buffer + start, i - start);
+				io2->top = i + 1;
+				return CWB_newLine(ctx, cwb, hasUTF8 ? dec : NULL);
+			}
+			if(ch > 127) hasUTF8 = 1;
+		}
+	}
+	if(io2->top < io2->tail) {
+		knh_Bytes_write2(ctx, cwb->ba, (const char*)io2->buffer + io2->top, io2->tail - io2->top);
+		io2->top  = 0;
+		io2->tail = 0;
+		return CWB_newLine(ctx, cwb, dec);
+	}
+	return KNH_TNULL(String);
+}
+
+void io2_readAll(CTX ctx, knh_io2_t *io2, knh_Bytes_t *ba)
+{
+	while(io2->isRunning == 1) {
+		if(!(io2->top < io2->tail)) {
+			io2->_read(ctx, io2);
+		}
+		if(io2->tail > io2->top) {
+			knh_Bytes_write2(ctx, ba, (const char*)io2->buffer + io2->top, io2->tail - io2->top);
+			io2->top  = 0;
+			io2->tail = 0;
+		}
+	}
+}
+
+void io2_flush(CTX ctx, knh_io2_t *io2)
+{
+	if(io2->bufsiz > 0 && io2->tail > 0) {
+		io2->_write(ctx, io2, io2->buffer, io2->tail);
+		io2->tail = 0;
+	}
+}
+
+size_t io2_write(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+{
+	if(io2->bufsiz > 0) {
+		if(io2->tail + bufsiz < io2->bufsiz) {
+			knh_memcpy(io2->buffer + io2->tail, buf, bufsiz);
+			io2->tail += bufsiz;
+			return bufsiz;
+		}
+		io2->_write(ctx, io2, io2->buffer, io2->tail);
+		io2->tail = 0;
+		if(bufsiz < io2->bufsiz) {
+			knh_memcpy(io2->buffer, buf, bufsiz);
+			io2->tail += bufsiz;
+			return bufsiz;
+		}
+	}
+	return io2->_write(ctx, io2, buf, bufsiz);
+}
+
+size_t io2_writeMultiByteChar(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz, knh_StringEncoder_t *enc)
+{
+	KNH_TODO("enc");
+	return io2->_write(ctx, io2, buf, bufsiz);
+}
+
 knh_bool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
 {
 	return 0;
@@ -171,61 +592,15 @@ void NOFILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 	path->ospath ="";
 	path->asize = 0;
 }
-knh_io_t NOFILE_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+knh_io2_t* NOFILE_openNULL(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
 {
-	return IO_NULL;
-}
-knh_intptr_t NOFILE_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
-{
-	return 0;  // read nothing. this means that we reach the end of the stream.
-}
-knh_intptr_t NOFILE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
-{
-	DBG_ASSERT(fd != IO_BUF);
-	return bufsiz;
-}
-static knh_intptr_t BYTE_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
-{
-	DBG_ASSERT(fd == IO_BUF);
-	return 0; // write nothing. this means that we are unable to clear buffer
-}
-void NOFILE_close(CTX ctx, knh_io_t fd)
-{
-}
-knh_bool_t NOFILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
-{
-	return 0;
-}
-void NOFILE_flush(CTX ctx, knh_io_t fd)
-{
-}
-knh_bool_t NOFILE_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
-{
-	return 0;
-}
-int NOFILE_feof(CTX ctx, knh_io_t fd)
-{
-	return 1;
-}
-int NOFILE_getc(CTX ctx, knh_io_t fd)
-{
-	return -1;
+	return NULL;
 }
 
-static const knh_StreamDPI_t STREAM_NOFILE = {
+static const knh_PathDPI_t STREAM_NOFILE = {
 	K_STREAM_NULL, "NOFILE", K_PAGESIZE,
-	NOFILE_exists, NOFILE_ospath,
-	NOFILE_open, NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close,
-	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
+	NOFILE_exists, NOFILE_ospath, NOFILE_openNULL,
 };
-
-static const knh_StreamDPI_t STREAM_BYTE = {
-	K_STREAM_INMEMORY, "BYTE", K_OUTBUF_MAXSIZ,
-	NOFILE_exists, NOFILE_ospath,
-	NOFILE_open, NOFILE_open, NOFILE_read, BYTE_write, NOFILE_close, // FIXME
-	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
-};
-
 
 static knh_bool_t FILE_exists(CTX ctx, knh_Path_t *path)
 {
@@ -250,55 +625,16 @@ static void FILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 	}
 	CWB_close(cwb);
 }
-static knh_io_t FILE_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+static knh_io2_t* FILE_openNULL(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
 {
-	return (knh_io_t)fopen(path->ospath, mode);
-}
-static knh_intptr_t FILE_read(CTX ctx, knh_io_t fio, char *buf, size_t bufsiz)
-{
-	return fread(buf, 1, bufsiz, (FILE*)fio);
-}
-static knh_intptr_t FILE_write(CTX ctx, knh_io_t fio, const char *buf, size_t bufsiz)
-{
-	knh_intptr_t ssize = fwrite(buf, 1, bufsiz, (FILE*)fio);
-	fflush((FILE*)fio);
-	return ssize;
-}
-static void FILE_close(CTX ctx, knh_io_t fd)
-{
-	fclose((FILE*)fd);
-}
-static knh_bool_t FILE_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
-{
-	return 0;
+	FILE *fp = fopen(path->ospath, mode);
+	if(fp != NULL) return new_FILE(ctx, fp, 4096);
+	return NULL;
 }
 
-static void FILE_flush(CTX ctx, knh_io_t fd)
-{
-	fflush((FILE*)fd);
-}
-
-static knh_bool_t FILE_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
-{
-	KNH_TODO("FILE_readline");
-	return 0;
-}
-
-static int FILE_feof(CTX ctx, knh_io_t fd)
-{
-	return feof((FILE*)fd);
-}
-
-static int FILE_getc(CTX ctx, knh_io_t fd)
-{
-	return fgetc((FILE*)fd);
-}
-
-static const knh_StreamDPI_t STREAM_FILE = {
+static const knh_PathDPI_t STREAM_FILE = {
 	K_STREAM_FILE, "file", K_OUTBUF_MAXSIZ,
-	FILE_exists, FILE_ospath,
-	FILE_open, FILE_open, FILE_read, FILE_write, FILE_close,
-	FILE_info, FILE_getc, FILE_readline, FILE_feof, FILE_flush,
+	FILE_exists, FILE_ospath, FILE_openNULL,
 };
 
 static void SCRIPT_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
@@ -310,22 +646,9 @@ static void SCRIPT_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 	CWB_close(cwb);
 }
 
-static const knh_StreamDPI_t STREAM_SCRIPT = {
+static const knh_PathDPI_t STREAM_SCRIPT = {
 	K_STREAM_FILE, "script", K_OUTBUF_MAXSIZ,
-	FILE_exists, SCRIPT_ospath,
-	FILE_open, FILE_open, FILE_read, FILE_write, FILE_close,
-	FILE_info, FILE_getc, FILE_readline, FILE_feof, FILE_flush,
-};
-
-static knh_bool_t STDIO_exists(CTX ctx, knh_Path_t *path)
-{
-	return 1;
-}
-static const knh_StreamDPI_t STREAM_STDIO = {
-	K_STREAM_STDIO, "stdio", K_OUTBUF_MAXSIZ,
-	STDIO_exists, NOFILE_ospath,
-	NOFILE_open, NOFILE_open, FILE_read, FILE_write, NOFILE_close,
-	FILE_info, FILE_getc, FILE_readline, FILE_feof, FILE_flush,
+	FILE_exists, SCRIPT_ospath, FILE_openNULL,
 };
 
 /* ------------------------------------------------------------------------ */
@@ -499,307 +822,154 @@ static int use_buffer(curl_t *cp, int want)
 	return 0;
 }
 
-static knh_intptr_t CURL_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
-{
-	curl_t *cp = (curl_t*)fd;
-	fill_buffer(cp, bufsiz, 1);
-	if(!cp->buffer_pos) return 0;
-	/* ensure only available data is considered */
-	if(cp->buffer_pos < bufsiz) bufsiz = cp->buffer_pos;
-	/* xfer data to caller */
-	memcpy(buf, cp->buffer, bufsiz);
-	use_buffer(cp, bufsiz);
-	return bufsiz;
-}
+//static knh_intptr_t CURL_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+//{
+//	curl_t *cp = (curl_t*)fd;
+//	fill_buffer(cp, bufsiz, 1);
+//	if(!cp->buffer_pos) return 0;
+//	/* ensure only available data is considered */
+//	if(cp->buffer_pos < bufsiz) bufsiz = cp->buffer_pos;
+//	/* xfer data to caller */
+//	memcpy(buf, cp->buffer, bufsiz);
+//	use_buffer(cp, bufsiz);
+//	return bufsiz;
+//}
+//
+//static knh_bool_t CURL_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
+//{
+//	curl_t *cp = (curl_t*)fd;
+//	int ret = 0;
+//	while(1) {
+//		int i, prev = 0;
+//		fill_buffer(cp, K_PAGESIZE, 1);
+//		if(!cp->buffer_pos) return ret;
+//		for(i = 0; i < cp->buffer_pos; i++) {
+//			int ch = cp->buffer[i];
+//			if(ch == '\n') {
+//				if(prev == '\r') {
+//					knh_Bytes_write2(ctx, ba, cp->buffer, i-1); /* Windows */
+//				}
+//				else {
+//					knh_Bytes_write2(ctx, ba, cp->buffer, i);   /* UNIX */
+//				}
+//				use_buffer(cp, i);
+//				return 1;
+//			}
+//			if(prev == '\r' /*&& ch != '\n'*/) { /* OLD MAC */
+//				knh_Bytes_write2(ctx, ba, cp->buffer, i-1);
+//				use_buffer(cp, i);
+//				return 1;
+//			}
+//			prev = ch;
+//		}
+//		ret = 1;
+//		knh_Bytes_write2(ctx, ba, cp->buffer, cp->buffer_pos);
+//		use_buffer(cp, cp->buffer_pos);
+//	}
+//}
+//
+//static void CURL_close(CTX ctx, knh_io_t fd)
+//{
+//	curl_t *cp = (curl_t*)fd;
+//	curl_multi_remove_handle(cp->multi_handle, cp->curl);
+//	curl_easy_cleanup(cp->curl);
+//	if(cp->buffer) free(cp->buffer);
+//	knh_free(ctx, cp, sizeof(curl_t));
+//}
+//
+//static int CURL_feof(CTX ctx, knh_io_t fd)
+//{
+//	curl_t *cp = (curl_t*)fd;
+//	int ret = 0;
+//	if((cp->buffer_pos == 0) && (!cp->still_running)) {
+//		ret = 1;
+//	}
+//	return ret;
+//}
+//
+//static int CURL_getc(CTX ctx, knh_io_t fd)
+//{
+//	curl_t *file = (curl_t*)fd;
+//	if(!file->buffer_pos || file->buffer_pos < file->buffer_len)
+//		fill_buffer(file, K_PAGESIZE, 1);
+//	return file->buffer[file->buffer_pos++];
+//}
+//
+//static knh_intptr_t CURL_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+//{
+//	return 0;
+//}
+//
+//static void CURL_flush(CTX ctx, knh_io_t fd)
+//{
+//
+//}
 
-static knh_bool_t CURL_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
-{
-	curl_t *cp = (curl_t*)fd;
-	int ret = 0;
-	while(1) {
-		int i, prev = 0;
-		fill_buffer(cp, K_PAGESIZE, 1);
-		if(!cp->buffer_pos) return ret;
-		for(i = 0; i < cp->buffer_pos; i++) {
-			int ch = cp->buffer[i];
-			if(ch == '\n') {
-				if(prev == '\r') {
-					knh_Bytes_write2(ctx, ba, cp->buffer, i-1); /* Windows */
-				}
-				else {
-					knh_Bytes_write2(ctx, ba, cp->buffer, i);   /* UNIX */
-				}
-				use_buffer(cp, i);
-				return 1;
-			}
-			if(prev == '\r' /*&& ch != '\n'*/) { /* OLD MAC */
-				knh_Bytes_write2(ctx, ba, cp->buffer, i-1);
-				use_buffer(cp, i);
-				return 1;
-			}
-			prev = ch;
-		}
-		ret = 1;
-		knh_Bytes_write2(ctx, ba, cp->buffer, cp->buffer_pos);
-		use_buffer(cp, cp->buffer_pos);
-	}
-}
-
-static void CURL_close(CTX ctx, knh_io_t fd)
-{
-	curl_t *cp = (curl_t*)fd;
-	curl_multi_remove_handle(cp->multi_handle, cp->curl);
-	curl_easy_cleanup(cp->curl);
-	if(cp->buffer) free(cp->buffer);
-	knh_free(ctx, cp, sizeof(curl_t));
-}
-
-static int CURL_feof(CTX ctx, knh_io_t fd)
-{
-	curl_t *cp = (curl_t*)fd;
-	int ret = 0;
-	if((cp->buffer_pos == 0) && (!cp->still_running)) {
-		ret = 1;
-	}
-	return ret;
-}
-
-static int CURL_getc(CTX ctx, knh_io_t fd)
-{
-	curl_t *file = (curl_t*)fd;
-	if(!file->buffer_pos || file->buffer_pos < file->buffer_len)
-		fill_buffer(file, K_PAGESIZE, 1);
-	return file->buffer[file->buffer_pos++];
-}
-
-static knh_intptr_t CURL_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
-{
-	return 0;
-}
-
-static void CURL_flush(CTX ctx, knh_io_t fd)
-{
-
-}
-
-const knh_StreamDPI_t STREAM_CURL = {
+const knh_PathDPI_t STREAM_CURL = {
 	K_STREAM_NET, "curl", K_PAGESIZE,
 	CURL_exists,
 	CURL_ospath,
 	CURL_open,
-	NULL/*CURL_wopen*/,
-	CURL_read,
-	CURL_write,
-	CURL_close,
-	CURL_info,
-	CURL_getc,
-	CURL_readline,
-	CURL_feof,
-	CURL_flush,
+//	CURL_read,
+//	CURL_write,
+//	CURL_close,
+//	CURL_info,
+//	CURL_getc,
+//	CURL_readline,
+//	CURL_feof,
+//	CURL_flush,
 };
 
 #endif/*K_USING_CURL*/
 
-/* ------------------------------------------------------------------------ */
-
-KNHAPI2(knh_InputStream_t*) new_InputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path)
-{
-	knh_InputStream_t* in = new_(InputStream);
-	DP(in)->fio  = fio;
-	if(fio == IO_NULL) {
-		dpi = NULL;
-		knh_Object_toNULL(ctx, in);
-	}
-	else {
-		KNH_ASSERT(DP(in)->ba->bu.len == 0);
-		knh_Bytes_expands(ctx, DP(in)->ba, K_STREAM_BUFSIZ);
-	}
-	in->dpi = (dpi == NULL) ? &STREAM_FILE : dpi;
-	KNH_SETv(ctx, DP(in)->path, path);
-	DP(in)->path->dpi = dpi;
-	return in;
-}
-
-KNHAPI2(knh_OutputStream_t*) new_OutputStreamDPI(CTX ctx, knh_io_t fio, const knh_StreamDPI_t *dpi, knh_Path_t *path)
-{
-	knh_OutputStream_t* w = new_(OutputStream);
-	DP(w)->fio = fio;
-	if(fio == IO_NULL) {
-		dpi = NULL;
-		knh_Object_toNULL(ctx, w);
-	}
-	w->dpi = (dpi == NULL) ? &STREAM_FILE : dpi;
-	KNH_SETv(ctx, DP(w)->path, path);
-	DP(w)->path->dpi = dpi;
-	return w;
-}
-
-knh_InputStream_t *new_InputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
-{
-	return new_InputStreamDPI(ctx, (knh_io_t)stdin, &STREAM_STDIO, new_Path(ctx, TS_DEVSTDIN));
-}
-
-knh_OutputStream_t *new_OutputStreamSTDIO(CTX ctx, FILE *fp, knh_String_t *enc)
-{
-	KNH_ASSERT(fp == stdout || fp == stderr);
-	knh_OutputStream_t* o = new_OutputStreamDPI(ctx, (knh_io_t)fp, &STREAM_STDIO, new_Path(ctx, (fp == stdout) ? TS_DEVSTDOUT : TS_DEVSTDERR));
-	OutputStream_setAutoFlush(o, 1);
-	return o;
-}
-
-const knh_StreamDPI_t *knh_getDefaultStreamDPI(void)
-{
-	return &STREAM_NOFILE;
-}
-
-const knh_StreamDPI_t *knh_getByteStreamDPI(void)
-{
-	return &STREAM_BYTE;
-}
-
-const knh_StreamDPI_t *knh_getDefaultPathStreamDPI(void)
+const knh_PathDPI_t *knh_getDefaultPathStreamDPI(void)
 {
 	return &STREAM_FILE;
 }
 
-knh_bool_t knh_isFILEStreamDPI(const knh_StreamDPI_t *dpi)
-{
-	return (dpi == &STREAM_FILE);
-}
-
-KNHAPI2(knh_InputStream_t*) new_InputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)
-{
-	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, mode, NULL);
-	if(fd != IO_NULL) {
-		return new_InputStreamDPI(ctx, fd, pth->dpi, pth);
-	}
-	return NULL;
-}
-
-knh_InputStream_t* new_BytesInputStream(CTX ctx, knh_Bytes_t *ba)
-{
-	knh_InputStream_t* in = new_(InputStream);
-	DBG_ASSERT(ba != ctx->bufa);
-	DP(in)->fio = IO_BUF;
-	KNH_SETv(ctx, DP(in)->ba, ba);
-	DP(in)->posend = ba->bu.len;
-	return in;
-}
-
-knh_InputStream_t* new_StringInputStream(CTX ctx, knh_String_t *str)
-{
-	knh_InputStream_t* in = new_(InputStream);
-	DBG_ASSERT(IS_String(str));
-	DP(in)->fio = IO_BUF;
-	KNH_SETv(ctx, DP(in)->str, str);
-	DP(in)->pos   = 0;
-	DP(in)->posend = S_size(str);
-	return in;
-}
-
-void knh_InputStream_setpos(CTX ctx, knh_InputStream_t *in, size_t s, size_t e)
-{
-	DBG_ASSERT(e <= BA_size(DP(in)->ba));
-	DBG_ASSERT(s <= e);
-	DP(in)->pos   = s;
-	DP(in)->posend = e;
-	DP(in)->fio = IO_BUF;
-	in->dpi = knh_getByteStreamDPI();
-}
-
 /* ------------------------------------------------------------------------ */
 
-static int readbuf(CTX ctx, knh_InputStream_t *in, knh_Bytes_t *ba)
+KNHAPI2(knh_InputStream_t*) new_InputStream(CTX ctx, knh_io2_t *io2, knh_Path_t *path)
 {
-	if(IS_Bytes(ba)) {
-		long ssize = in->dpi->freadSPI(ctx, DP(in)->fio, ba->bu.buf, ba->dim->capacity);
-		if(ssize > 0) {
-			DP(in)->stat_size += ssize;
-			DP(in)->pos = 0;
-			DP(in)->posend = ssize;
-			return 1;
-		}
-	}
-	knh_InputStream_close(ctx, in);
-	return 0;
-}
-
-int knh_InputStream_getc(CTX ctx, knh_InputStream_t *in)
-{
-	knh_Bytes_t *ba = DP(in)->ba;
-	if(!(DP(in)->pos < DP(in)->posend)) {
-		if(DP(in)->fio == IO_NULL || readbuf(ctx, in, ba) == 0) {
-			return EOF;
-		}
-	}
-	int ch = ba->bu.ubuf[DP(in)->pos++];
-	if(ch == '\n') {
-		in->uline += 1;
-	}
-	return ch;
-}
-
-knh_String_t* knh_InputStream_readLine(CTX ctx, knh_InputStream_t *in)
-{
-	knh_Bytes_t *ba = DP(in)->ba;
-	if(!(DP(in)->pos < DP(in)->posend)) {
-		if(DP(in)->fio == IO_NULL || readbuf(ctx, in, ba) == 0) {
-			return KNH_TNULL(String);
-		}
-	}
-	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	while(1) {
-		if(!(DP(in)->pos < DP(in)->posend)) {
-			if(DP(in)->fio == IO_NULL || readbuf(ctx, in, ba) == 0) {
-				knh_InputStream_close(ctx, in);
-				if(CWB_size(cwb) == 0) {
-					return KNH_TNULL(String);
-				}
-				goto L_TOSTRING;
+	knh_InputStream_t* in = new_(InputStream);
+	in->io2 = io2;
+	if(path != NULL) {
+		KNH_SETv(ctx, in->path, path);
+		io2->DBG_NAME = S_totext(path->urn);
+		if(io2 == NULL) {
+			io2 = path->dpi->io2openNULL(ctx, path, "r", NULL);
+			if(io2 == NULL) {
+				io2 = io2_null();
+				knh_Object_toNULL(ctx, in);
 			}
+			in->io2 = io2;
 		}
-		size_t i, pos = DP(in)->pos, posend = DP(in)->posend;
-		knh_uchar_t *p = ba->bu.ubuf;
-		for(i = pos; i < posend; i++) {
-			int ch = p[i];
-			if(ch == '\n') {
-				DP(in)->pos = i + 1;
-				knh_bytes_t buf = {{ba->bu.text + pos}, i - pos};
-				knh_Bytes_write(ctx, cwb->ba, buf);
-				goto L_TOSTRING;
+	}
+	return in;
+}
+
+knh_InputStream_t* new_BytesInputStream(CTX ctx, const char *buf, size_t bufsiz)
+{
+	return new_InputStream(ctx, new_io2ReadBuffer(ctx, buf, bufsiz), NULL);
+}
+
+KNHAPI2(knh_OutputStream_t*) new_OutputStream(CTX ctx,  knh_io2_t *io2, knh_Path_t *path)
+{
+	knh_OutputStream_t* w = new_(OutputStream);
+	w->io2 = io2;
+	if(path != NULL) {
+		KNH_SETv(ctx, w->path, path);
+		io2->DBG_NAME = S_totext(path->urn);
+		if(io2 == NULL) {
+			io2 = path->dpi->io2openNULL(ctx, path, "a", NULL);
+			if(io2 == NULL) {
+				io2 = io2_null();
+				knh_Object_toNULL(ctx, w);
 			}
-		}
-		{
-			/* TODO(imasahiro) TEST (FileSize >= 4096) */
-			knh_bytes_t buf = {{ba->bu.text + pos}, posend - pos};
-			DP(in)->pos = posend;
-			knh_Bytes_write(ctx, cwb->ba, buf);
+			w->io2 = io2;
 		}
 	}
-	L_TOSTRING:;
-	if(in->decNULL == NULL) {
-		return CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
-	}
-	else {
-		return CWB_newStringDECODE(ctx, cwb, in->decNULL);
-	}
-}
-
-void knh_InputStream_close(CTX ctx, knh_InputStream_t *in)
-{
-	if(DP(in)->fio != IO_NULL) {
-		in->dpi->fcloseSPI(ctx, DP(in)->fio);
-		if(DP(in)->fio != IO_BUF) {
-			knh_Bytes_dispose(ctx, DP(in)->ba);
-		}
-		DP(in)->fio = IO_NULL;
-		in->dpi = knh_getDefaultStreamDPI();
-	}
-}
-
-knh_bool_t knh_InputStream_isClosed(CTX ctx, knh_InputStream_t *in)
-{
-	return (DP(in)->fio == IO_NULL);
+	return w;
 }
 
 void knh_InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t *c)
@@ -820,94 +990,6 @@ void knh_InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecode
 	}
 }
 
-/* ------------------------------------------------------------------------ */
-/* [OutputStream] */
-
-KNHAPI2(knh_OutputStream_t*) new_OutputStreamNULL(CTX ctx, knh_Path_t *pth, const char *mode)
-{
-	knh_io_t fd = pth->dpi->wopenSPI(ctx, pth, mode, NULL);
-	if(fd != IO_NULL) {
-		return new_OutputStreamDPI(ctx, fd, pth->dpi, pth);
-	}
-	return NULL;
-}
-
-KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba)
-{
-	knh_OutputStream_t* w = new_(OutputStream);
-	DP(w)->fio = IO_BUF;
-	w->dpi = knh_getByteStreamDPI();
-	KNH_SETv(ctx, DP(w)->ba, ba);
-	return w;
-}
-
-/* ------------------------------------------------------------------------ */
-/* [methods] */
-
-KNHAPI2(void) knh_OutputStream_flush(CTX ctx, knh_OutputStream_t *w, int isNEWLINE)
-{
-	knh_Bytes_t *ba = DP(w)->ba;
-	if(ba->bu.len > 0) {
-		if(w->encNULL != NULL && OutputStream_hasUTF8(w)) {
-			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-			knh_StringEncoder_t *c = w->encNULL;
-			knh_bytes_t t = BA_tobytes(ba);
-			KNH_ASSERT(ba != cwb->ba);
-			c->dpi->enc(ctx, c->conv, t.text, t.len, cwb->ba);
-			ba = cwb->ba;
-			if(w->dpi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
-				knh_Bytes_clear(DP(w)->ba, 0);
-			}
-			CWB_close(cwb);
-			OutputStream_setUTF8(w, 0);
-		}
-		else if(w->dpi->fwriteSPI(ctx, DP(w)->fio, (ba)->bu.text, (ba)->bu.len) > 0) {
-			knh_Bytes_clear(ba, 0);
-		}
-	}
-}
-
-KNHAPI2(void) knh_OutputStream_putc(CTX ctx, knh_OutputStream_t *w, int ch)
-{
-	knh_Bytes_t *ba = DP(w)->ba;
-	knh_uchar_t ubuf[8] = {ch};
-	knh_bytes_t t = {{(const char*)ubuf}, 1};
-	knh_Bytes_write(ctx, ba, t);
-	DP(w)->stat_size++;
-}
-
-KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf)
-{
-	knh_Bytes_t *ba = DP(w)->ba;
-	knh_Bytes_write(ctx, ba, buf);
-	if(ba->bu.len > w->dpi->wbufsiz) {
-		knh_OutputStream_flush(ctx, w, 0);
-	}
-}
-
-void knh_OutputStream_clear(CTX ctx, knh_OutputStream_t *w)
-{
-	knh_Bytes_clear(DP(w)->ba, 0);
-}
-
-void knh_OutputStream_close(CTX ctx, knh_OutputStream_t *w)
-{
-	if(DP(w)->fio != IO_NULL) {
-		knh_OutputStream_flush(ctx, w, 1);
-		w->dpi->fcloseSPI(ctx, DP(w)->fio);
-		if(DP(w)->fio != IO_BUF) {
-			knh_Bytes_dispose(ctx, DP(w)->ba);
-		}
-		DP(w)->fio = IO_NULL;
-		w->dpi = knh_getDefaultStreamDPI();
-	}
-}
-
-knh_bool_t knh_OutputStream_isClosed(knh_OutputStream_t *w)
-{
-	return (DP(w)->fio == IO_NULL);
-}
-
 void knh_OutputStream_setCharset(CTX ctx, knh_OutputStream_t *w, knh_StringEncoder_t *c)
 {
 	if(w->encNULL == NULL) {
@@ -918,33 +1000,59 @@ void knh_OutputStream_setCharset(CTX ctx, knh_OutputStream_t *w, knh_StringEncod
 	}
 }
 
+KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba)
+{
+	knh_OutputStream_t *w = new_OutputStream(ctx, new_io2WriteBuffer(ctx, ba), NULL);
+	KNH_INITv(w->bufferNULL, ba);
+	return w;
+}
+
+KNHAPI2(void) knh_OutputStream_flush(CTX ctx, knh_OutputStream_t *w)
+{
+	io2_flush(ctx, w->io2);
+}
+
+KNHAPI2(void) knh_OutputStream_putc(CTX ctx, knh_OutputStream_t *w, int ch)
+{
+	char buf[8] = {ch};
+	io2_write(ctx, w->io2, buf, 1);
+}
+
+KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf)
+{
+	io2_write(ctx, w->io2, buf.text, buf.len);
+}
+
+KNHAPI2(void) knh_OutputStream_p(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf)
+{
+	if(w->encNULL != NULL) {
+		size_t i;
+		for(i = 0; i < buf.len; i++) {
+			int ch = buf.ubuf[i];
+			if(ch > 127) {
+				io2_writeMultiByteChar(ctx, w->io2, buf.text, buf.len, w->encNULL);
+				return;
+			}
+		}
+	}
+	io2_write(ctx, w->io2, buf.text, buf.len);
+}
+
 /* ------------------------------------------------------------------------ */
 /* [knh_write] */
 
-KNHAPI2(void) knh_write_BOL(CTX ctx, knh_OutputStream_t *w)
-{
-	knh_intptr_t i, n = DP(w)->indent;
-	if(!OutputStream_isBOL(w)) {
-		knh_write_EOL(ctx, w);
-	}
-	for(i = 0; i < n; i++) {
-		knh_Bytes_write(ctx, DP(w)->ba, S_tobytes(DP(w)->TAB));
-	}
-	OutputStream_setBOL(w, 0);
-}
-
 KNHAPI2(void) knh_write_EOL(CTX ctx, knh_OutputStream_t *w)
 {
-	knh_Bytes_write(ctx, DP(w)->ba, S_tobytes(DP(w)->NEWLINE));
+	io2_write(ctx, w->io2, K_OSLINEFEED, sizeof(K_OSLINEFEED));
 	if(OutputStream_isAutoFlush(w)) {
-		knh_OutputStream_flush(ctx, w, 1);
+		io2_flush(ctx, w->io2);
 	}
-	OutputStream_setBOL(w, 1);
+	//OutputStream_setBOL(w, 1);
 }
 
 KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w)
 {
-	knh_Bytes_write(ctx, DP(w)->ba, S_tobytes(DP(w)->TAB));
+	io2_write(ctx, w->io2, "\t", 1);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -953,35 +1061,35 @@ KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w)
 void knh_write_bool(CTX ctx, knh_OutputStream_t *w, int b)
 {
 	knh_bytes_t t = (b) ? STEXT("true") : STEXT("false");
-	knh_Bytes_write(ctx, DP(w)->ba, t);
+	io2_write(ctx, w->io2, t.text, t.len);
 }
 
 void knh_write_ptr(CTX ctx, knh_OutputStream_t *w, void *ptr)
 {
 	char buf[K_INT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), "%p", ptr);
-	knh_Bytes_write(ctx, DP(w)->ba, B(buf));
+	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
 void knh_write_dfmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_intptr_t n)
 {
 	char buf[K_INT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
-	knh_Bytes_write(ctx, DP(w)->ba, B(buf));
+	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
 void knh_write_ifmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_int_t n)
 {
 	char buf[K_INT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
-	knh_Bytes_write(ctx, DP(w)->ba, B(buf));
+	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
 void knh_write_ffmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_float_t n)
 {
 	char buf[K_FLOAT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
-	knh_Bytes_write(ctx, DP(w)->ba, B(buf));
+	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
 void knh_write_flag(CTX ctx, knh_OutputStream_t *w, knh_flag_t flag)
@@ -993,33 +1101,27 @@ void knh_write_flag(CTX ctx, knh_OutputStream_t *w, knh_flag_t flag)
 	for(i = 0; i < 16; i++) {
 		if(i > 0 && i % 8 == 0) {
 			ubuf[0] = ' ';
-			knh_Bytes_write(ctx, DP(w)->ba, t);
+			io2_write(ctx, w->io2, t.text, 1);
 		}
 		ubuf[0] = ((f & flag) == f) ? '1' : '0';
-		knh_Bytes_write(ctx, DP(w)->ba, t);
+		io2_write(ctx, w->io2, t.text, 1);
 		f = f >> 1;
 	}
 }
 
 KNHAPI2(void) knh_write_ascii(CTX ctx, knh_OutputStream_t *w, const char *text)
 {
-	knh_bytes_t t;
-	t.text = text; t.len = knh_strlen(text);
-	knh_Bytes_write(ctx, DP(w)->ba, t);
+	io2_write(ctx, w->io2, text, knh_strlen(text));
 }
 
 KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8)
 {
-	if(hasUTF8 && w->encNULL != NULL && !OutputStream_hasUTF8(w)) {
-		size_t i;
-		for(i = 0; i < t.len; i++) {
-			if(t.ubuf[i] > 127) {
-				OutputStream_setUTF8(w, 1);
-				break;
-			}
-		}
+	if(hasUTF8 && w->encNULL != NULL) {
+		io2_writeMultiByteChar(ctx, w->io2, t.text, t.len, w->encNULL);
 	}
-	knh_Bytes_write(ctx, DP(w)->ba, t);
+	else {
+		io2_write(ctx, w->io2, t.text, t.len);
+	}
 }
 
 /* ------------------------------------------------------------------------ */
@@ -1379,26 +1481,28 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 
 static KMETHOD InputStream_getByte(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNi_(knh_InputStream_getc(ctx, sfp[0].in));
+	RETURNi_(io2_getc(ctx, (sfp[0].in)->io2));
 }
+
+// Bytes InputStream.read(Bytes buf, size_t size);
 
 static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[1].ba;
-	knh_bytes_t buf = BA_tobytes(ba);
-	size_t offset = Int_to(size_t,sfp[2]);
-	size_t len    = Int_to(size_t,sfp[3]);
-	if(unlikely(offset > buf.len)) {
-		THROW_OutOfRange(ctx, sfp, offset, buf.len);
+	if(IS_NULL(ba)) {
+		ba = new_Bytes(ctx, NULL, 4096);
+		KNH_SETv(ctx, sfp[1].ba, ba);
+		io2_readAll(ctx, (sfp[0].in)->io2, ba);
 	}
-	buf = knh_bytes_last(buf, offset);
-	if(len != 0) {
-		knh_Bytes_ensureSize(ctx, ba, offset + len);  // DONT USE ensureSize
-		BA_size(ba) += len;
-		buf.len = len;
-		buf.ubuf = ba->bu.ubuf;
+	else {
+		size_t len = Int_to2(size_t, sfp[3], ba->dim->capacity);
+		if(!(len < ba->dim->capacity)) {
+			THROW_OutOfRange(ctx, sfp, len, ba->dim->capacity);
+		}
+		len = io2_read(ctx, (sfp[0].in)->io2, ba->bu.buf, len);
+		ba->bu.len = len;
 	}
-	RETURNi_(knh_InputStream_read(ctx, sfp[0].in, (char*)buf.ubuf, buf.len));
+	RETURN_(ba);
 }
 
 static KMETHOD InputStream_eachLine(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1406,7 +1510,7 @@ static KMETHOD InputStream_eachLine(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_sfp_t *thissfp = sfp + 2 + K_CALLDELTA;
 	//knh_Method_t *mtd = knh_Func_preset(ctx, sfp[1].fo, thissfp);
 	while(1) {
-		knh_String_t *line = knh_InputStream_readLine(ctx, sfp[0].in);
+		knh_String_t *line = io2_readLine(ctx, (sfp[0].in)->io2, (sfp[0].in)->decNULL);
 		if(IS_NULL(line)) break;
 		KNH_SETv(ctx, thissfp[1].o, line);
 		knh_Func_invoke(ctx, sfp[1].fo, sfp+2, 1);
@@ -1418,7 +1522,7 @@ static KMETHOD InputStream_eachLine(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static KMETHOD InputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNb_(knh_InputStream_isClosed(ctx, sfp[0].in));
+	RETURNb_(io2_isClosed(ctx, (sfp[0].in)->io2));
 }
 
 static KMETHOD InputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1431,21 +1535,12 @@ static KMETHOD OutputStream_putByte(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_putc(ctx, w, (int)(sfp[1].ivalue));
-	if(DP(w)->ba->bu.len > w->dpi->wbufsiz) {
-		knh_OutputStream_flush(ctx, w, 0);
-	}
 	RETURNvoid_();
 }
 
 static KMETHOD OutputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNb_(knh_OutputStream_isClosed(sfp[0].w));
-}
-
-static KMETHOD OutputStream_clearBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
-{
-	knh_Bytes_clear(DP(sfp[0].w)->ba, 0);
-	RETURNvoid_();
+	RETURNb_(io2_isClosed(ctx, (sfp[0].in)->io2));
 }
 
 static KMETHOD OutputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -1470,7 +1565,6 @@ static knh_FuncData_t FuncData[] = {
 	FuncData(InputStream_setCharset),
 	FuncData(OutputStream_putByte),
 	FuncData(OutputStream_isClosed),
-	FuncData(OutputStream_clearBuffer),
 	FuncData(OutputStream_setCharset),
 	FuncData(System_addHistory),
 	{NULL, NULL},

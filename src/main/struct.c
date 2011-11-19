@@ -2276,23 +2276,14 @@ static void InputStream_init(CTX ctx, knh_RawPtr_t *o)
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
 	in->uline = 1;
 	in->decNULL = NULL;
-	knh_InputStreamEX_t *b = knh_bodymalloc(ctx, InputStream);
-	in->dpi = knh_getDefaultStreamDPI();
-	b->fio = IO_BUF;
-	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
-	KNH_INITv(b->path, ctx->share->cwdPath);
-	b->pos = 0; b->posend = 0;
-	b->stat_size = 0;
-	in->b = b;
+	in->io2 = io2_null();
+	KNH_INITv(in->path, ctx->share->cwdPath);
 }
 
 static void InputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
-	knh_InputStreamEX_t *b = DP(in);
-	KNH_ADDREF(ctx, b->ba);
-	KNH_ADDREF(ctx, b->path);
-	KNH_ADDREF(b->mon, KNH_NULL);
+	KNH_ADDREF(ctx,   in->path);
 	KNH_ADDNNREF(ctx, in->decNULL);
 	KNH_SIZEREF(ctx);
 }
@@ -2300,18 +2291,13 @@ static void InputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 static void InputStream_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
-	knh_InputStreamEX_t *b = DP(in);
-	if(b->fio != IO_NULL) {
-		in->dpi->fcloseSPI(ctx, b->fio);
-		b->fio = IO_NULL;
-	}
-	knh_bodyfree(ctx, b, InputStream);
+	io2_free(ctx, in->io2);
 }
 
 static void InputStream_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-	knh_InputStream_t *ins = (knh_InputStream_t*)o;
-	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ins)->path->urn), !String_isASCII(DP(ins)->path->urn));
+	knh_InputStream_t *in = (knh_InputStream_t*)o;
+	knh_write_quote(ctx, w, '\'', S_tobytes(in->path->urn), !String_isASCII(in->path->urn));
 }
 
 static const knh_ClassDef_t InputStreamDef = {
@@ -2319,7 +2305,7 @@ static const knh_ClassDef_t InputStreamDef = {
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, InputStream_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"InputStream", CFLAG_InputStream, sizeof(knh_InputStreamEX_t), NULL,
+	"InputStream", CFLAG_InputStream, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 
@@ -2329,48 +2315,31 @@ static const knh_ClassDef_t InputStreamDef = {
 static void OutputStream_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
-	knh_OutputStreamEX_t *b = knh_bodymalloc(ctx, OutputStream);
-	w->dpi = knh_getDefaultStreamDPI();
-	b->fio = IO_NULL;
-	KNH_INITv(b->ba, new_Bytes(ctx, "stream", 0));
-	KNH_INITv(b->path, ctx->share->cwdPath);
-	b->stat_size = 0;
-	KNH_INITv(b->NEWLINE, TS_EOL);
-	KNH_INITv(b->TAB, TS_TAB);
-	b->indent = 0;
+	w->io2 = io2_null();
+	KNH_INITv(w->path, ctx->share->cwdPath);
 	w->encNULL = NULL;
-	w->uline = 0;
-	w->b = b;
-	OutputStream_setBOL(w,1);
+	w->bufferNULL = NULL;
 }
 
 static void OutputStream_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
-	knh_OutputStreamEX_t *b = DP(w);
-	KNH_ADDREF(ctx, (b->ba));
 	KNH_ADDNNREF(ctx, (w->encNULL));
-	KNH_ADDREF(ctx, (b->path));
-	KNH_ADDREF(ctx, (b->NEWLINE));
-	KNH_ADDREF(ctx, (b->TAB));
+	KNH_ADDNNREF(ctx, (w->bufferNULL));
+	KNH_ADDREF(ctx, (w->path));
 	KNH_SIZEREF(ctx);
 }
 
 static void OutputStream_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_OutputStream_t *w = (knh_OutputStream_t*)o;
-	knh_OutputStreamEX_t *b = DP(w);
-	if(b->fio != IO_NULL) {
-		w->dpi->fcloseSPI(ctx, b->fio);
-		b->fio = IO_NULL;
-	}
-	knh_bodyfree(ctx, b, OutputStream);
+	io2_free(ctx, w->io2);
 }
 
 static void OutputStream_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
 	knh_OutputStream_t *ous = (knh_OutputStream_t*)o;
-	knh_write_quote(ctx, w, '\'', S_tobytes(DP(ous)->path->urn) , !String_isASCII(DP(ous)->path->urn));
+	knh_write_quote(ctx, w, '\'', S_tobytes(ous->path->urn) , !String_isASCII(ous->path->urn));
 }
 
 static const knh_ClassDef_t OutputStreamDef = {
@@ -2378,7 +2347,7 @@ static const knh_ClassDef_t OutputStreamDef = {
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, OutputStream_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
-	"OutputStream", CFLAG_OutputStream, sizeof(knh_OutputStreamEX_t), NULL,
+	"OutputStream", CFLAG_OutputStream, 0, NULL,
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
 };
 

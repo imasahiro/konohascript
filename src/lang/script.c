@@ -71,7 +71,7 @@ knh_class_t knh_NameSpace_getcid(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t sname
 
 knh_bool_t knh_NameSpace_isInsideScope(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid)
 {
-	return (knh_bytes_startsWith(S_tobytes(ClassTBL(cid)->lname), S_tobytes(DP(ns)->nsname)));
+	return (knh_bytes_startsWith_(S_tobytes(ClassTBL(cid)->lname), S_tobytes(DP(ns)->nsname)));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -205,7 +205,7 @@ static void *knh_open_ffilink(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t libname)
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, libname);
 	knh_buff_trim(ctx, cwb->ba, cwb->pos, '.');
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
-	if(p == NULL && !knh_bytes_startsWith(libname, STEXT("lib"))) {
+	if(p == NULL && !knh_bytes_startsWith_(libname, STEXT("lib"))) {
 		CWB_clear(cwb, 0);
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT("lib"));
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, libname);
@@ -300,7 +300,7 @@ static void INCLUDE_file(CTX ctx, knh_StmtExpr_t *stmt)
 static void INCLUDE_eval(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_Term_t *tkPATH = tkNN(stmt, 0);
-	if(IS_bString(tkPATH->text) && knh_bytes_startsWith(S_tobytes(tkPATH->text), STEXT("lib:"))) {
+	if(IS_bString(tkPATH->text) && knh_bytes_startsWith_(S_tobytes(tkPATH->text), STEXT("lib:"))) {
 		INCLUDE_ffilink(ctx, stmt, K_GMANS, S_tobytes(tkPATH->text));
 	}
 	else {
@@ -364,7 +364,7 @@ knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 				knh_uri_t uri = knh_getURI(ctx, CWB_tobytes(cwb));
 				KNH_SETv(ctx, newscr->ns->path, new_Path(ctx, knh_buff_newRealPathString(ctx, cwb->ba, cwb->pos)));
 				/* */
-				knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL, newscr->ns->path);
+				knh_InputStream_t *in = new_InputStream(ctx, new_FILE(ctx, fp, 256), newscr->ns->path);
 				ULINE_setURI(in->uline, uri);
 				DBG_P("rpath='%s'", newscr->ns->path->ospath);
 				scr = ctx->gma->scr;
@@ -398,7 +398,7 @@ static void NameSpace_setDPI(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t pkgname, 
 	for(i = 0; i < size; i++) {
 		knh_String_t *name = knh_DictSet_keyAt(ds, i);
 		knh_bytes_t key = S_tobytes(name);
-		if(key.text[pkgname.len] == '.' && knh_bytes_startsWith(key, pkgname)) {
+		if(key.text[pkgname.len] == '.' && knh_bytes_startsWith_(key, pkgname)) {
 			knh_bytes_t t = knh_bytes_last(key, pkgname.len+1);
 			if(knh_bytes_index(t, '.') == -1) {
 				knh_DictMap_set(ctx, DP(ns)->name2dpiNameDictMapNULL, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_POOLALWAYS), name);
@@ -443,7 +443,7 @@ static int StmtUSINGCLASS_eval(CTX ctx, knh_StmtExpr_t *stmt, size_t n)
 				if(ClassTBL(cid)->lname == NULL) continue;
 				if(class_isPrivate(cid) && C_isGenerics(cid)) continue;
 				knh_bytes_t cname = S_tobytes(ClassTBL(cid)->lname);
-				if(cname.utext[pkgname.len] == '.' && isupper(cname.utext[pkgname.len+1]) && knh_bytes_startsWith(cname, pkgname)) {
+				if(cname.utext[pkgname.len] == '.' && isupper(cname.utext[pkgname.len+1]) && knh_bytes_startsWith_(cname, pkgname)) {
 					NameSpace_setcid(ctx, ns, ClassTBL(cid)->sname, (knh_class_t)cid);
 				}
 			}
@@ -920,13 +920,7 @@ knh_bool_t knh_beval(CTX ctx, knh_InputStream_t *in)
 
 KNHAPI2(knh_bool_t) knh_eval(CTX ctx, const char *script, knh_OutputStream_t *w)
 {
-//	KNH_NOTE("gma->src=%p, nsname=%s", ctx->gma->scr, S_totext(DP(ctx->gma->scr->ns)->nsname));
-//	KNH_NOTE("gma->src=%p, nsname=%s", ctx->share->script, S_totext(DP(ctx->share->script->ns)->nsname));
-//	KNH_ASSERT(ctx->gma->scr == ctx->share->script);
-	//fprintf(stderr, "gma=%p, share=%p\n", ctx->gma->scr, ctx->share->script);
-	// KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, KNH_NULL);
-
-	knh_InputStream_t *bin = new_StringInputStream(ctx, new_String(ctx, script));
+	knh_InputStream_t *bin = new_BytesInputStream(ctx, script, knh_strlen(script));
 	SP(bin)->uline = 1; // always line1
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
 	knh_bool_t tf = knh_beval(ctx, bin);
@@ -1005,19 +999,19 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 {
 	BEGIN_LOCAL(ctx, lsfp, 3);
 	knh_status_t status = K_BREAK;
-	knh_Bytes_t *ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
-	LOCAL_NEW(ctx, lsfp, 1, knh_InputStream_t*, bin, new_BytesInputStream(ctx, ba));
-	KNH_SETv(ctx, lsfp[0].o, in);
+	LOCAL_NEW(ctx, lsfp, 0, knh_Bytes_t*, ba, new_Bytes(ctx, "chunk", K_PAGESIZE));
+	KNH_SETv(ctx, lsfp[1].o, in);
 	do {
 		int linenum = 0;
 		knh_Bytes_clear(ba, 0);
-		if(!knh_InputStream_isClosed(ctx, in)) {
+		if(!io2_isClosed(ctx, in->io2)) {
 			status = K_CONTINUE;
 			linenum = readchunk(ctx, in, ba);
 		}
 		if(!bytes_isempty(ba->bu)) {
 			knh_uri_t uri = ULINE_uri(in->uline);
-			knh_InputStream_setpos(ctx, bin, 0, BA_size(ba));
+			knh_InputStream_t *bin = new_BytesInputStream(ctx, BA_totext(ba), BA_size(ba));
+			KNH_SETv(ctx, lsfp[2].o, bin);
 			bin->uline = linenum;
 			ULINE_setURI(bin->uline, uri);
 			DBG_(if(knh_isVerboseLang()) {
@@ -1028,7 +1022,7 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 		}
 	} while(BA_size(ba) > 0 && status == K_CONTINUE);
 	if(!knh_isCompileOnly(ctx)) {
-		knh_ldata_t ldata[] = {LOG_s("urn", S_totext(DP(in)->path->urn)), LOG_END};
+		knh_ldata_t ldata[] = {LOG_s("urn", S_totext(in->path->urn)), LOG_END};
 		KNH_NTRACE(ctx, "konoha:load", K_NOTICE, ldata);
 	}
 	END_LOCAL(ctx, lsfp);
@@ -1037,10 +1031,9 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in)
 
 knh_status_t knh_load(CTX ctx, knh_Path_t *pth)
 {
-	knh_io_t fd = pth->dpi->fopenSPI(ctx, pth, "r", NULL);
-	//DBG_P("dpi->name=%s, fd=%d, ospath=%s", pth->dpi->name, fd, pth->ospath);
-	if(fd != IO_NULL) {
-		knh_InputStream_t *in = new_InputStreamDPI(ctx, fd, pth->dpi, pth);
+	knh_io2_t *io2 = pth->dpi->io2openNULL(ctx, pth, "r", NULL);
+	if(io2 != NULL) {
+		knh_InputStream_t *in = new_InputStream(ctx, io2, pth);
 		knh_uri_t uri = knh_getURI(ctx, S_tobytes(pth->urn));
 		ULINE_setURI(in->uline, uri);
 		KNH_SETv(ctx, (K_GMANS)->path, pth);
@@ -1053,7 +1046,7 @@ knh_status_t knh_load(CTX ctx, knh_Path_t *pth)
 
 static void knh_buff_addStartPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_bytes_t path)
 {
-	if(!knh_isfile(ctx, path.text) && !knh_bytes_endsWith(path, STEXT(".k"))) {
+	if(!knh_isfile(ctx, path.text) && !knh_bytes_endsWith_(path, STEXT(".k"))) {
 		knh_String_t *s = knh_getPropertyNULL(ctx, STEXT("konoha.script.path"));
 		if(s != NULL) {
 			knh_buff_addospath(ctx, ba, pos, 0, S_tobytes(s));
@@ -1085,7 +1078,7 @@ knh_status_t knh_startScript(CTX ctx, const char *path)
 		if(fp != NULL) {
 			knh_uri_t uri = knh_getURI(ctx, CWB_tobytes(cwb));
 			KNH_SETv(ctx, ns->path, new_Path(ctx, knh_buff_newRealPathString(ctx, cwb->ba, cwb->pos)));
-			knh_InputStream_t *in = new_InputStreamDPI(ctx, (knh_io_t)fp, NULL, ns->path);
+			knh_InputStream_t *in = new_InputStream(ctx, new_FILE(ctx, fp, 256), ns->path);
 			ULINE_setURI(in->uline, uri);
 			status = knh_InputStream_load(ctx, in);
 		}
