@@ -37,7 +37,7 @@
 #include "ast.h"
 #include "decl.h"
 #include "typecheck.h"
-#include "build.h"
+//#include "build.h"
 
 #ifdef __cplusplus
 extern "C" {
