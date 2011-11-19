@@ -74,7 +74,7 @@ static const knh_ClassDef_t TokenDef = {
 static void Sugar_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Sugar_t *sgr = (knh_Sugar_t*)o;
-	sgr->sugar = SUGAR_SYNTAX;
+	sgr->sugar = SUGAR_TOKEN;
 	KNH_INITv(sgr->key, TS_EMPTY);
 	KNH_INITv(sgr->rules, new_Array0(ctx, 0));
 }
@@ -117,7 +117,7 @@ static const knh_ClassDef_t SugarDef = {
 static void Expr_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Expr_t *expr = (knh_Expr_t*)o;
-	expr->expr       =   EXPR_USER;
+	expr->expr       =   UEXPR_USER_DEFINED;
 	expr->type       =   TYPE_var;
 	expr->index      =   0;
 	expr->xindex     =   0;
@@ -153,7 +153,7 @@ static const knh_ClassDef_t ExprDef = {
 static void Stmt_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
-	stmt->stmt      =   STMT_DONE;
+	stmt->uline      =   0;
 	KNH_INITv(stmt->key,    TS_EMPTY);
 	KNH_INITv(stmt->parent, KNH_NULL);
 	KNH_INITv(stmt->clauseDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, NULL));

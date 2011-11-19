@@ -153,6 +153,40 @@ static void ERROR_NotFoundCloseToken(CTX ctx, knh_Token_t *tk, int closech)
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "'%s' is not closed with '%s'", S_totext(tk->text), buf);
 }
 
+static knh_bool_t ERROR_SyntaxError(CTX ctx, knh_uline_t uline)
+{
+	knh_perror(ctx, ERR_, uline, 0, "syntax error");
+	return 0;
+}
+
+static knh_bool_t ERROR_TokenError(CTX ctx, knh_Token_t *tk)
+{
+	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "syntax error: token '%s' is unavailable", S_totext(tk->text));
+	return 0;
+}
+
+static knh_bool_t ERROR_TokenMustBe(CTX ctx, knh_Token_t *tk, const char *token)
+{
+	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "syntax error: '%s' must be %s", S_totext(tk->text), token);
+	return 0;
+}
+
+static knh_Expr_t *ERROR_TokenUndefinedMethod(CTX ctx, knh_Token_t *tk, knh_class_t cid)
+{
+	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "undefined method: %T.%s", cid, S_totext(tk->text));
+	return NULL;
+}
+
+void WARN_TokenMuchBetter(CTX ctx, knh_Token_t *tk, const char *token)
+{
+	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "%s is much better than %s", S_totext(tk->text), token);
+}
+
+void WARN_TokenOverflow(CTX ctx, knh_Token_t *tk)
+{
+	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "%s is overflow", S_totext(tk->text));
+}
+
 
 #ifdef __cplusplus
 }

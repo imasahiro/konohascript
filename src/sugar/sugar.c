@@ -33,79 +33,29 @@
 
 #include "perror.h"
 #include "token.h"
+#include "stmt.h"
+#include "ast.h"
+#include "decl.h"
+#include "typecheck.h"
+#include "build.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-/* ------------------------------------------------------------------------ */
-
-//void knh_NameSpace_loadAlias(CTX ctx, knh_Lang_t *lol, const char *rule, const char *alias)
-//{
-//	if(DP(lol)->tokenRulesNULL == NULL) {
-//		KNH_INITv(DP(lol)->tokenRulesNULL, new_DictMap0(ctx, 0, 0, NULL));
-//	}
-//	knh_DictMap_set(ctx, DP(lol)->aliasRulesNULL, new_T(rule), (knh_Object_t*)new_T(alias));
-//}
-//
-//void knh_NameSpace_loadSyntaxSugar(CTX ctx, knh_Lang_t *lol, const char *rules, void *func)
-//{
-//	if(DP(lol)->syntaxRulesNULL == NULL) {
-//		KNH_INITv(DP(lol)->syntaxRulesNULL, new_Array0(ctx, 0));
-//	}
-//	knh_Sugar_t *sugar = new_(Sugar);
-//	KNH_SETv(ctx, sugar->rules, new_Array0(ctx, 0));
-//	KNH_SETv(ctx, sugar->action, new_RawPtr(ctx, ClassTBL(CLASS_Tdynamic), func));
-//	knh_Array_add(ctx, DP(ns)->syntaxRulesNULL, sugar);
-//	tenv_t tenvbuf = {
-//		0,
-//		sugar->rules,
-//		{rules}, rules,
-//		ctx->bufa,
-//		BA_size(ctx->bufa),
-//		3,
-//	};
-//	parse(ctx, &tenvbuf, 0);
-//}
-//
-//void knh_NameSpace_loadStatementSugar(CTX ctx, knh_Lang_t *lol, const char *rules, knh_stmt_t stmt, void *func)
-//{
-//	if(DP(ns)->statementRulesNULL == NULL) {
-//		KNH_INITv(DP(ns)->statementRulesNULL, new_Array0(ctx, 0));
-//	}
-//	knh_Sugar_t *sugar = new_(Sugar);
-//	knh_Array_add(ctx, DP(ns)->statementRulesNULL, sugar);
-//	sugar->optnum = (knh_ushort_t)stmt;
-//	KNH_SETv(ctx, sugar->rules, new_Array0(ctx, 0));
-//	if(func != NULL) {
-//		KNH_SETv(ctx, sugar->action, new_RawPtr(ctx, ClassTBL(CLASS_Tdynamic), func));
-//	}
-//	tenv_t tenvbuf = {
-//		0,
-//		sugar->rules,
-//		{rules}, rules,
-//		ctx->bufa,
-//		BA_size(ctx->bufa),
-//		3,
-//	};
-//	parse(ctx, &tenvbuf, 0);
-//}
 
 /* ------------------------------------------------------------------------ */
 /* [term] */
 
 struct stmtsugar_t {
 	const char *rule;
-	knh_stmt_t stmt;
 	void *func;
 } stmtsugar_t;
 
-static struct stmtsugar_t stmtsugars[] = {
-	{"\"if\" \"(\" cond: expr \")\" then: block [\"else\" else: block]", STMT_IF, NULL},
-	{"\"while\" \"(\" cond: expr \")\" block", STMT_WHILE, NULL},
-	{NULL, STMT_DONE, NULL},
-};
+//static struct stmtsugar_t stmtsugars[] = {
+//	{"\"if\" \"(\" cond: expr \")\" then: block [\"else\" else: block]", STMT_IF, NULL},
+//	{"\"while\" \"(\" cond: expr \")\" block", STMT_WHILE, NULL},
+//	{NULL, STMT_DONE, NULL},
+//};
 
 static knh_IntData_t TokenConstInt[] = {
 	{"CODE", TK_CODE},
