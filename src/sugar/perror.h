@@ -43,9 +43,9 @@ extern "C" {
 
 static void write_eline(CTX ctx, knh_OutputStream_t *w, knh_uline_t uline, int lpos)
 {
-	knh_uri_t uri = ULINE_uri(uline);
-	knh_uintptr_t line = ULINE_line(uline);
-	if(uline != 0 && uri != URI_unknown && line != 0) {
+	if(uline != 0 /*&& uri != URI_unknown && line != 0*/) {
+		knh_uri_t uri = ULINE_uri(uline);
+		knh_uintptr_t line = ULINE_line(uline);
 		knh_putc(ctx, w, '(');
 		knh_write_ascii(ctx, w, knh_sfile(FILENAME__(uri)));
 		knh_putc(ctx, w, ':');
@@ -94,11 +94,11 @@ static void knh_vperror(CTX ctx, int level, knh_uline_t uline, int lpos, const c
 	}
 }
 
-static void knh_perror(CTX ctx, int level, knh_uline_t uline, int lpos, const char *fmt, ...)
+void knh_perror(CTX ctx, int level, knh_uline_t uline, int lpos, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	knh_vperror(ctx, level, lpos, uline, fmt, ap);
+	knh_vperror(ctx, level, uline, lpos, fmt, ap);
 	va_end(ap);
 }
 

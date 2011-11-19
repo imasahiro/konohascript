@@ -610,7 +610,6 @@ static void knh_shell(CTX ctx)
 	}
 	while(1) {
 		{
-			knh_InputStream_t *bin = NULL;
 			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			knh_status_t status = readstmt(ctx, cwb);
 			if(status == K_BREAK) {
@@ -630,10 +629,15 @@ static void knh_shell(CTX ctx)
 				CWB_close(cwb);
 				continue;
 			}
-			bin = new_BytesInputStream(ctx, CWB_totext(ctx, cwb), CWB_size(cwb));
+#ifdef K_USING_SUGAR
+			knh_String_t *script = CWB_newString(ctx, cwb, 0);
+			KNH_SETv(ctx, lsfp[0].o, script);
+			knh_beval2(ctx, S_totext(script), 1);
+#else
+			knh_InputStream_t *bin = new_BytesInputStream(ctx, CWB_totext(ctx, cwb), CWB_size(cwb));
 			KNH_SETv(ctx, lsfp[0].o, bin);
-			SP(bin)->uline = 1;
-			knh_beval(ctx, bin);
+			knh_beval(ctx, bin, 1);
+#endif
 		}
 		knh_OutputStream_flush(ctx, ctx->out);
 		if(ctx->isEvaled == 1) {

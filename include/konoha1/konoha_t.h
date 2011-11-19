@@ -1124,6 +1124,7 @@ typedef struct knh_context_t {
 	struct knh_Object_t             *evaled;
 	knh_bool_t                       isEvaled;
 	struct knh_Array_t              *errmsgs;
+	struct knh_Array_t              *gcstack;
 
 	/* cache */
 	knh_mtdcache_t              *mtdcache;
@@ -1189,6 +1190,9 @@ typedef struct knh_context_t {
 #define SAFEPOINT_MONITOR    (1<<2)
 #define SAFEPOINT_SETMONITOR(ctx)     WCTX(ctx)->safepoint |= SAFEPOINT_MONITOR
 
+#define INIT_GCSTACK(ctx)         size_t gcstack_ = knh_Array_size(ctx->gcstack)
+#define PUSH_GCSTACK(ctx, o)      knh_Array_add(ctx, ctx->gcstack, o)
+#define RESET_GCSTACK(ctx)        knh_Array_clear(ctx, ctx->gcstack, gcstack_)
 
 /* ------------------------------------------------------------------------ */
 /* logdata */

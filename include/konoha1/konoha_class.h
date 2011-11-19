@@ -945,7 +945,7 @@ typedef struct knh_InputStream_t knh_InputStream_t;
 struct knh_InputStream_t {
 	knh_hObject_t h;
 	knh_io2_t *io2;
-	knh_uline_t uline;
+//	knh_uline_t uline;
 	knh_Path_t *path;
 	struct knh_StringDecoder_t* decNULL;
 };

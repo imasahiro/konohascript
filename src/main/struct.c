@@ -2274,7 +2274,6 @@ static const knh_ClassDef_t PathDef = {
 static void InputStream_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_InputStream_t *in = (knh_InputStream_t*)o;
-	in->uline = 1;
 	in->decNULL = NULL;
 	in->io2 = io2_null();
 	KNH_INITv(in->path, ctx->share->cwdPath);

@@ -138,6 +138,7 @@ static void CommonContext_init(CTX ctx, knh_context_t *o)
 	KNH_INITv(o->e, KNH_NULL);
 	KNH_INITv(o->evaled, KNH_NULL);
 	KNH_INITv(o->errmsgs, new_Array0(ctx, 0));
+	KNH_INITv(o->gcstack, new_Array0(ctx, 0));
 #ifndef K_USING_STRINGPOOL
 	KNH_INITv(o->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "Context.symbolDictMap"));
 #endif
@@ -155,6 +156,7 @@ static knh_Object_t** CommonContext_reftrace(CTX ctx, knh_context_t *ctxo FTRARG
 	KNH_ADDREF(ctx, ctxo->e);
 	KNH_ADDREF(ctx, ctxo->evaled);
 	KNH_ADDREF(ctx, ctxo->errmsgs);
+	KNH_ADDREF(ctx, ctxo->gcstack);
 	KNH_ADDREF(ctx, (ctxo->script));
 	KNH_ADDREF(ctx, (ctxo->enc));
 	KNH_ADDREF(ctx, (ctxo->in));

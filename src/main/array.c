@@ -118,10 +118,14 @@ KNHAPI2(void) knh_Array_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)
 void knh_Array_clear(CTX ctx, knh_Array_t *a, size_t n)
 {
 	if(!Array_isNDATA(a)) {
+#ifdef K_USING_RCGC
 		size_t i;
 		for(i = n; i < a->size; i++) {
 			KNH_FINALv(ctx, a->list[i]);
 		}
+#else
+		knh_bzero(a->list + n, sizeof(void*) * (a->size - n));
+#endif
 	}
 	a->size = n;
 }

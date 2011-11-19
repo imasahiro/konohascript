@@ -3654,6 +3654,7 @@ static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 //	fprintf(stderr, "RETURN VALUE: '%s'\n", CLASS__(sfp[4].c->cid));
 	knh_Script_t *scr = ctx->gma->scr;
 	knh_NameSpace_t *ns = K_GMANS;
+	knh_class_t tcid = sfp[4].c->cid;
 	if(scr != sfp[2].scr) {
 		KNH_SETv(ctx, ctx->gma->scr, sfp[2].scr);
 		sfp[2].scr = scr;
@@ -3664,9 +3665,12 @@ static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->evaled, KNH_NULL);
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
+#ifdef K_USING_SUGAR
+	knh_beval2(ctx, S_totext(sfp[1].s), 1);
+#else
 	knh_InputStream_t *bin = new_BytesInputStream(ctx, S_totext(sfp[1].s), S_size(sfp[1].s));
-	knh_class_t tcid = sfp[4].c->cid;
-	knh_beval(ctx, bin);
+	knh_beval(ctx, bin, 1);
+#endif
 	scr = ctx->gma->scr;
 	ns = K_GMANS;
 	if(scr != sfp[2].scr) {

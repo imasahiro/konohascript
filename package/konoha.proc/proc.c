@@ -114,53 +114,6 @@ static knh_io_t PROC_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictM
 	return IO_NULL;
 }
 
-static knh_intptr_t PROC_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
-{
-	int ret = read(fd, buf, bufsiz);
-	knh_ldata_t ldata[] = {LOG_END};
-	KNH_NTRACE(ctx, "read", (ret == -1) ? K_PERROR : K_OK, ldata);
-	return (knh_intptr_t)ret;
-}
-
-static knh_intptr_t PROC_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
-{
-	return write(fd, buf, bufsiz);
-}
-
-static void PROC_close(CTX ctx, knh_io_t fd)
-{
-	errno = 0;
-	if (fd != IO_NULL && close(fd)) {
-		DBG_P("PROC_close failed");
-	}
-}
-
-static knh_bool_t PROC_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
-{
-	return 0;
-}
-
-static int PROC_getc(CTX ctx, knh_io_t fd)
-{
-	KNH_TODO("PROC_getc");
-	return -1;
-}
-
-static knh_bool_t PROC_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
-{
-	KNH_TODO("PROC_readline");
-	return 0;
-}
-
-static int PROC_feof(CTX ctx, knh_io_t fd)
-{
-	KNH_TODO("PROC_feof");
-	return 1;
-}
-
-static void PROC_flush(CTX ctx, knh_io_t fd)
-{
-}
 
 static const knh_PathDPI_t STREAM_PROC = {
 	K_STREAM_FD,     // type
@@ -168,16 +121,6 @@ static const knh_PathDPI_t STREAM_PROC = {
 	K_OUTBUF_MAXSIZ, // wbufsiz
 	PROC_exists,     // existsSPI
 	NULL,            // ospath
-	PROC_open,       // fopenSPI
-	PROC_open,       // wopenSPI
-	PROC_read,       // freadSPI
-	PROC_write,      // fwriteSPI
-	PROC_close,      // fcloseSPI
-	PROC_info,       // info
-	PROC_getc,       // fgetcSPI
-	PROC_readline,   // fgetlineSPI
-	PROC_feof,       // feofSPI
-	PROC_flush       // fflushSPI
 };
 
 static inline CWB_t *CWB_open(CTX ctx, CWB_t *cwb)

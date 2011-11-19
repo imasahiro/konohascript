@@ -250,11 +250,9 @@ static void addSymbol(CTX ctx, tenv_t *tenv, size_t s, size_t e)
 				return;
 			}
 		}
-		else {
-			knh_String_t *text = new_String2(ctx, CLASS_String, tenv->s + s, (e-s), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
-			knh_token_t ttype = (isupper(S_totext(text)[0])) ? TK_USYMBOL : TK_SYMBOL;
-			addToken(ctx, tenv, new_Token(ctx, ttype, tenv->uline, lpos(tenv, tenv->s + s), text, DUMMY));
-		}
+		knh_String_t *text = new_String2(ctx, CLASS_String, tenv->s + s, (e-s), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
+		knh_token_t ttype = (isupper(S_totext(text)[0])) ? TK_USYMBOL : TK_SYMBOL;
+		addToken(ctx, tenv, new_Token(ctx, ttype, tenv->uline, lpos(tenv, tenv->s + s), text, DUMMY));
 	}
 }
 
@@ -552,6 +550,8 @@ static void parse(CTX ctx, tenv_t *tenv, int pol)
 
 	L_NEWTOKEN:;
 	tok_start = pos;
+	//DBG_P("tenv->line=%d, %s", tok_start, tenv->line + tok_start);
+
 	while((ch = tenv->line[pos++]) != 0) {
 		switch(ch) {
 		case '\n':

@@ -81,69 +81,14 @@ DEFAPI(void) defSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->free = Socket_free;
 }
 
-static knh_bool_t SOCKET_exists(CTX ctx, knh_Path_t *pth)
-{
-	return 0; // dummy
-}
-static knh_io_t SOCKET_open(CTX ctx, knh_Path_t *pth, const char *mode, knh_DictMap_t *conf)
-{
-	return IO_NULL; // Always opened by external
-}
-static knh_intptr_t SOCKET_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
-{
-	fd_set  fds;
-	FD_ZERO(&fds);
-	FD_SET((int)fd, &fds);
-	select((int)fd + 1, &fds, NULL, NULL, NULL);
-	if(FD_ISSET((int)fd,&fds)) {
-		//	return recv((int)fd, buf, bufsiz, MSG_PEEK | MSG_DONTWAIT);
-		return recv((int)fd, buf, bufsiz, 0);
-	}
-	return 0;
-}
-static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
-{
-	return send((int)fd, buf, bufsiz, 0);
-}
-static void SOCKET_close(CTX ctx, knh_io_t fd)
-{
-	close((int)fd);
-}
-
-static knh_bool_t SOCKET_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
-{
-	return 0;
-}
-
-static void SOCKET_flush(CTX ctx, knh_io_t fd)
-{
-	//flush((int)fd);
-}
-
-static knh_bool_t SOCKET_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
-{
-	KNH_TODO("SOCKET_readline");
-	return 0;
-}
-
-static int SOCKET_feof(CTX ctx, knh_io_t fd)
-{
-	KNH_TODO("SOCKET_feof");
-	return 1;
-}
-
-static int SOCKET_getc(CTX ctx, knh_io_t fd)
-{
-	KNH_TODO("SOCKET_getc");
-	return -1;
-}
-
-static knh_PathDPI_t SOCKET_DSPI = {
-	K_STREAM_NET, "socket",  K_OUTBUF_MAXSIZ,
-	SOCKET_exists, NULL, SOCKET_open,
-//	SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
-//	SOCKET_info, SOCKET_getc, SOCKET_readline, SOCKET_feof, SOCKET_flush,
-};
+//static knh_bool_t SOCKET_exists(CTX ctx, knh_Path_t *pth)
+//{
+//	return 0; // dummy
+//}
+//static knh_io2_t* SOCKET_open(CTX ctx, knh_Path_t *pth, const char *mode, knh_DictMap_t *conf)
+//{
+//	return NULL; // Always opened by external
+//}
 
 static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port)
 {

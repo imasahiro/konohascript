@@ -118,6 +118,30 @@ static KMETHOD Lang_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 	parse(ctx, &tenvbuf, 0);
 }
 
+// only used in term.c
+knh_Array_t* new_TokenArray(CTX ctx, const char *text, knh_uline_t uline)
+{
+	knh_Array_t *a = (knh_Array_t*)new_Array0(ctx, 0);
+	PUSH_GCSTACK(ctx, a);
+	tenv_t tenvbuf = {
+		uline,
+		a,
+		{text}, text,
+		ctx->bufa,
+		BA_size(ctx->bufa),
+		3,/*tabsize*/
+		ctx->share->corelang,
+	};
+	DBG_ASSERT(!(BA_totext(ctx->bufa) <= text && text < BA_totext(ctx->bufa) + BA_size(ctx->bufa)));
+	parse(ctx, &tenvbuf, 0);
+	size_t i;
+	for(i = 0; i < knh_Array_size(a); i++) {
+		knh_Token_t *tk = a->tokens[i];
+		fprintf(stdout, "TOKEN(%d): %d %d '%s'\n", (int)i, (knh_short_t)tk->uline, (int)tk->token, S_totext(tk->text));
+	}
+	return a;
+}
+
 // @Static Block Lang.newBlock(String script, int uline, NameSpace _)
 
 static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
@@ -191,8 +215,6 @@ static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 //	RETURNb_(1);
 //}
 
-
-
 static KMETHOD Token_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
@@ -250,7 +272,8 @@ static knh_FuncData_t FuncData[] = {
 	FuncData(Token_error),
 	FuncData(Token_warn),
 	FuncData(Token_info),
-
+	FuncData(Lang_evalMethodDecl),
+	FuncData(Lang_evalSugarDecl),
 	{NULL, NULL},
 };
 
