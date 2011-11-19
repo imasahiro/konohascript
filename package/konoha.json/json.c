@@ -541,7 +541,7 @@ static knh_type_t json_unpackTo(CTX ctx, const char *buf, size_t size, knh_sfp_t
 	}
 	return type;
 }
-//[{"hello" : "world"}, {"key0" : {"hello" : "world"}}]
+
 static void *json_init(CTX ctx, knh_packer_t *pk)
 {
 	return pk;
@@ -549,7 +549,7 @@ static void *json_init(CTX ctx, knh_packer_t *pk)
 
 static void json_flushfree(CTX ctx, knh_packer_t *pk)
 {
-	knh_OutputStream_flush(ctx, pk->w, 0); /* TODO need flush? */
+	knh_OutputStream_flush(ctx, pk->w); /* TODO need flush? */
 }
 
 #define W(pkp) (((knh_packer_t*)pkp)->w)
@@ -616,7 +616,7 @@ static void json_map_end(CTX ctx, void *pkp)
 {
 	knh_putc(ctx, W(pkp), '}');
 }
-
+#undef W
 
 static const knh_PackSPI_t pack = {
 	"json",
@@ -661,11 +661,7 @@ KMETHOD InputStream_readJson(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_InputStream_t *in = sfp[0].in;
 	const knh_PackSPI_t *packspi = &pack;
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	char buf[K_PAGESIZE];
-	long ssize = 0;
-	while((ssize = in->dpi->freadSPI(ctx, DP(in)->fio, buf, sizeof(buf))) > 0) {
-		knh_Bytes_write2(ctx, cwb->ba, buf, ssize);
-	}
+	io2_readAll(ctx, in->io2, cwb->ba);
 	knh_bytes_t blob = CWB_tobytes(cwb);
 	knh_type_t type = packspi->unpack(ctx, blob.text, blob.len, sfp+2);
 	CWB_close(cwb);
