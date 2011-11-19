@@ -52,7 +52,6 @@ typedef struct {
 	int port;
 } knh_Socket_t ;
 
-
 typedef struct {
 	knh_io_t sd;
 	int port;
@@ -92,8 +91,15 @@ static knh_io_t SOCKET_open(CTX ctx, knh_Path_t *pth, const char *mode, knh_Dict
 }
 static knh_intptr_t SOCKET_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
 {
-	return recv((int)fd, buf, bufsiz, 0);
-  //	return recv((int)fd, buf, bufsiz, MSG_PEEK | MSG_DONTWAIT);
+	fd_set  fds;
+	FD_ZERO(&fds);
+	FD_SET((int)fd, &fds);
+	select((int)fd + 1, &fds, NULL, NULL, NULL);
+	if(FD_ISSET((int)fd,&fds)) {
+		//	return recv((int)fd, buf, bufsiz, MSG_PEEK | MSG_DONTWAIT);
+		return recv((int)fd, buf, bufsiz, 0);
+	}
+	return 0;
 }
 static knh_intptr_t SOCKET_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
 {
@@ -132,11 +138,11 @@ static int SOCKET_getc(CTX ctx, knh_io_t fd)
 	return -1;
 }
 
-static knh_StreamDPI_t SOCKET_DSPI = {
+static knh_PathDPI_t SOCKET_DSPI = {
 	K_STREAM_NET, "socket",  K_OUTBUF_MAXSIZ,
-	SOCKET_exists, NULL,
-	SOCKET_open, SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
-	SOCKET_info, SOCKET_getc, SOCKET_readline, SOCKET_feof, SOCKET_flush,
+	SOCKET_exists, NULL, SOCKET_open,
+//	SOCKET_open, SOCKET_read, SOCKET_write, SOCKET_close,
+//	SOCKET_info, SOCKET_getc, SOCKET_readline, SOCKET_feof, SOCKET_flush,
 };
 
 static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port)
@@ -201,14 +207,14 @@ KMETHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 KMETHOD Socket_getInputStream(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	RETURN_(new_InputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
+	RETURN_(new_InputStream(ctx, new_io2(ctx, so->sd, 256), KNH_TNULL(Path)));
 }
 
 //## OutputStream Socket.getOutputStream();
 KMETHOD Socket_getOutputStream(CTX ctx, knh_sfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
-	RETURN_(new_OutputStreamDPI(ctx, so->sd, &SOCKET_DSPI, KNH_TNULL(Path)));
+	RETURN_(new_OutputStream(ctx, new_io2(ctx, so->sd, 256), KNH_TNULL(Path)));
 }
 
 //## void Socket.close();

@@ -99,7 +99,7 @@ KMETHOD Curl_setOpt(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	CURL* curl = RawPtr_to(CURL*, sfp[0]);
 	long curlopt = Int_to(long, sfp[1]);
-	FILE* fp = NULL;
+//	FILE* fp = NULL;
 	knh_String_t* str = NULL;
 	knh_Bytes_t* bytes = NULL;
 	switch(curlopt) {
@@ -219,12 +219,13 @@ KMETHOD Curl_setOpt(CTX ctx, knh_sfp_t *sfp _RIX)
 	case CURLOPT_INFILE:
 	case CURLOPT_STDERR:
 	case CURLOPT_WRITEHEADER:
-		if(IS_OutputStream(sfp[2].o)) {
-			fp = (FILE*)DP(sfp[2].w)->fio;
-			curl_easy_setopt(curl, curlopt, fp);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
-		}
-		else if(IS_String(sfp[2].o)){
+////		if(IS_OutputStream(sfp[2].o)) {
+////			fp = (FILE*)DP(sfp[2].w)->fio;
+////			curl_easy_setopt(curl, curlopt, fp);
+////			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+////		}
+//		else
+		if(IS_String(sfp[2].o)){
 			//TODO
 			//write result to sfp[2] as String
 			str = (knh_String_t*)sfp[2].o;

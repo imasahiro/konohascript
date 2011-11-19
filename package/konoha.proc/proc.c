@@ -162,7 +162,7 @@ static void PROC_flush(CTX ctx, knh_io_t fd)
 {
 }
 
-static const knh_StreamDPI_t STREAM_PROC = {
+static const knh_PathDPI_t STREAM_PROC = {
 	K_STREAM_FD,     // type
 	"proc",          // name
 	K_OUTBUF_MAXSIZ, // wbufsiz
@@ -266,6 +266,7 @@ static void trapPIPE (int sig, siginfo_t *si, void *ptr)
 #include <fcntl.h>
 #include <signal.h>
 //## @Native Proc Proc.new(String[] args, Map<String, String> env);
+
 KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
@@ -362,21 +363,24 @@ KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Proc_getInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
-	RETURN_(new_InputStreamDPI(ctx, sp->in, &STREAM_PROC, KNH_TNULL(Path)));
+	KNH_TODO(__FUNCTION__);
+//	RETURN_(new_InputStream(ctx, sp->in, &STREAM_PROC, KNH_TNULL(Path)));
 }
 
 //## @Native OutputStream Proc.getOutputStream();
 KMETHOD Proc_getOutputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
-	RETURN_(new_OutputStreamDPI(ctx, sp->out, &STREAM_PROC, KNH_TNULL(Path)));
+	KNH_TODO(__FUNCTION__);
+//	RETURN_(new_OutputStream(ctx, sp->out, &STREAM_PROC, KNH_TNULL(Path)));
 }
 
 //## @Native InputStream Proc.getErrorInputStream();
 KMETHOD Proc_getErrorInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
-	RETURN_(new_InputStreamDPI(ctx, sp->err, &STREAM_PROC, KNH_TNULL(Path)));
+	KNH_TODO(__FUNCTION__);
+	//	RETURN_(new_InputStream(ctx, sp->err, &STREAM_PROC, KNH_TNULL(Path)));
 }
 
 //## @Native void Proc.terminate();

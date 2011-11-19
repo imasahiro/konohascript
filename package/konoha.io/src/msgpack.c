@@ -61,7 +61,7 @@ static void msgpack_flushfree(CTX ctx, knh_packer_t *pk)
 	msgpack_sbuffer *sbuffer = pk->sbuffer;
 	knh_bytes_t t = {{sbuffer->data}, sbuffer->size};
 	knh_OutputStream_write(ctx, pk->w, t);
-	knh_OutputStream_flush(ctx, pk->w, 0); /* TODO need flush? */
+	knh_OutputStream_flush(ctx, pk->w); /* TODO need flush? */
 	msgpack_sbuffer_free(pk->sbuffer);
 	msgpack_packer_free(pk->pk);
 }
@@ -268,11 +268,7 @@ KMETHOD InputStream_readMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_InputStream_t *in = sfp[0].in;
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	char buf[K_PAGESIZE];
-	long ssize = 0;
-	while((ssize = in->dpi->freadSPI(ctx, DP(in)->fio, buf, sizeof(buf))) > 0) {
-		knh_Bytes_write2(ctx, cwb->ba, buf, ssize);
-	}
+	io2_readAll(ctx, in->io2, cwb->ba);
 	knh_bytes_t blob = CWB_tobytes(cwb);
 	knh_type_t type = packspi->unpack(ctx, blob.text, blob.len, sfp+2);
 	CWB_close(ctx, cwb);

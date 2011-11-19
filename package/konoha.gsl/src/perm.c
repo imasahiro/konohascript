@@ -106,7 +106,7 @@ KMETHOD GslPerm_data(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *res = new_Array(ctx, CLASS_Int, 0);
 	int i;
 	for(i = 0; i < psize; i++){
-	knh_Array_add(ctx, res, data[i]);
+		knh_Array_add(ctx, res, data[i]);
 	}
 	RETURN_(res);
 }
@@ -164,12 +164,13 @@ KMETHOD GslPerm_mul(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native int GslPerm.fprintf(OutputStream stream, string formatter);
 KMETHOD GslPerm_fprintf(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	const gsl_permutation *p = RawPtr_to(const gsl_permutation *, sfp[0]);
-	knh_OutputStream_t *w = sfp[1].w;
-	knh_OutputStream_flush(ctx, w, 0);
-	const char *format = String_to(const char *, sfp[2]);
-	FILE *file = (FILE*)DP(w)->fio;
-	gsl_permutation_fprintf(file, p, format);
+//	const gsl_permutation *p = RawPtr_to(const gsl_permutation *, sfp[0]);
+//	knh_OutputStream_t *w = sfp[1].w;
+//	knh_OutputStream_flush(ctx, w);
+//	const char *format = String_to(const char *, sfp[2]);
+//	FILE *file = (FILE*)DP(w)->fio;
+//	gsl_permutation_fprintf(file, p, format);
+	KNH_TODO("FILE pointer is not always given."); // by kimio
 	RETURNvoid_();
 }
 
