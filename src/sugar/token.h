@@ -60,7 +60,7 @@ static inline int lpos(tenv_t *tenv, const char *s)
 	return (tenv->bol == NULL) ? -1 : s - tenv->bol;
 }
 
-static knh_Token_t *new_Token(CTX ctx, knh_token_t token, knh_uline_t uline, int lpos, knh_String_t *text, int dummy)
+static knh_Token_t *new_Token(CTX ctx, knh_token_t token, knh_uline_t uline, int lpos, knh_String_t *text)
 {
 	knh_Token_t *tk = new_(Token);
 	tk->token = token;
@@ -157,7 +157,7 @@ static int addURN(CTX ctx, tenv_t *tenv, size_t pos, size_t tok_start, int skip)
 	if(!skip) {
 		const char *s = tenv->s + tok_start;
 		knh_String_t *text = new_String2(ctx, CLASS_String, s, ((pos-1)-tok_start), pol);
-		addToken(ctx, tenv, new_Token(ctx, TK_URN, tenv->uline, lpos(tenv, s), text, DUMMY));
+		addToken(ctx, tenv, new_Token(ctx, TK_URN, tenv->uline, lpos(tenv, s), text));
 	}
 	return pos-1;
 }
@@ -173,7 +173,7 @@ static size_t addBlock(CTX ctx, tenv_t *tenv, size_t pos, int lpos)
 			level--;
 			if(level == 0) {
 				knh_String_t *text = new_String2(ctx, CLASS_String, tenv->s + tok_start, ((pos-1)-tok_start), K_SPOLICY_POOLNEVER);
-				addToken(ctx, tenv, new_Token(ctx, TK_CODE, uline, lpos, text, DUMMY));
+				addToken(ctx, tenv, new_Token(ctx, TK_CODE, uline, lpos, text));
 				return pos;
 			}
 		}
@@ -251,8 +251,14 @@ static void addSymbol(CTX ctx, tenv_t *tenv, size_t s, size_t e)
 			}
 		}
 		knh_String_t *text = new_String2(ctx, CLASS_String, tenv->s + s, (e-s), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
-		knh_token_t ttype = (isupper(S_totext(text)[0])) ? TK_USYMBOL : TK_SYMBOL;
-		addToken(ctx, tenv, new_Token(ctx, ttype, tenv->uline, lpos(tenv, tenv->s + s), text, DUMMY));
+		int topch = S_totext(text)[0];
+		knh_token_t ttype = (isupper(topch)) ? TK_USYMBOL : TK_SYMBOL;
+		if(!isalpha(topch)) ttype = TK_OPERATOR;
+		knh_Token_t *tk = new_Token(ctx, ttype, tenv->uline, lpos(tenv, tenv->s + s), text);
+		if(S_size(text) == 1) {
+			tk->topch = topch;
+		}
+		addToken(ctx, tenv, tk);
 	}
 }
 
@@ -303,7 +309,7 @@ static size_t addQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 				size_t len = BA_size(tenv->buf) - tenv->bufhead;
 				knh_String_t *text = new_String2(ctx, CLASS_String, s1, len, 0);
 				knh_token_t ttype = (quote == '"') ? TK_TEXT : TK_STEXT;
-				addToken(ctx, tenv, new_Token(ctx, ttype, uline, lpos(tenv, qs), text, DUMMY));
+				addToken(ctx, tenv, new_Token(ctx, ttype, uline, lpos(tenv, qs), text));
 				knh_Bytes_clear(tenv->buf, tenv->bufhead);
 				return pos;
 			}
@@ -340,7 +346,7 @@ static size_t addRawQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 			if(!isTriple || (pos-3 >= tok_start && tenv->line[pos-2] == quote && tenv->line[pos-3] == quote)) {
 				knh_String_t *text = new_String2(ctx, CLASS_String, tenv->s + tok_start, (pos-1)-tok_start, 0);
 				knh_type_t ttype = (quote == '"') ? TK_TEXT : TK_STEXT;
-				addToken(ctx, tenv, new_Token(ctx, ttype, uline, lpos(tenv, tenv->s + tok_start), text, DUMMY));
+				addToken(ctx, tenv, new_Token(ctx, ttype, uline, lpos(tenv, tenv->s + tok_start), text));
 				return pos;
 			}
 		}
@@ -420,7 +426,7 @@ static int addOperator(CTX ctx, tenv_t *tenv, int tok_start)
 	{
 		const char *s = tenv->s + tok_start;
 		knh_String_t *text = new_String2(ctx, CLASS_String, s, (pos-1)-tok_start, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
-		knh_Token_t *tk = new_Token(ctx, TK_OPERATOR, tenv->uline, lpos(tenv, s), text, DUMMY);
+		knh_Token_t *tk = new_Token(ctx, TK_OPERATOR, tenv->uline, lpos(tenv, s), text);
 		if(S_size(text) == 1) {
 			tk->topch = S_totext(text)[0];
 		}
@@ -440,7 +446,7 @@ static int addMetaName(CTX ctx, tenv_t *tenv, int tok_start)
 	{
 		const char *s = tenv->s + tok_start;
 		knh_String_t *text = new_String2(ctx, CLASS_String, s, (pos-1)-tok_start, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
-		addToken(ctx, tenv, new_Token(ctx, TK_META, tenv->uline, lpos(tenv, s), text, DUMMY));
+		addToken(ctx, tenv, new_Token(ctx, TK_META, tenv->uline, lpos(tenv, s), text));
 	}
 	return pos - 1;
 }
@@ -456,7 +462,7 @@ static int addPropName(CTX ctx, tenv_t *tenv, int tok_start)
 	{
 		const char *s = tenv->s + tok_start;
 		knh_String_t *text = new_String2(ctx, CLASS_String, s, (pos-1)-tok_start, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
-		addToken(ctx, tenv, new_Token(ctx, TK_PROP, tenv->uline, lpos(tenv, s), text, DUMMY));
+		addToken(ctx, tenv, new_Token(ctx, TK_PROP, tenv->uline, lpos(tenv, s), text));
 	}
 	return pos - 1;
 }
@@ -494,7 +500,7 @@ static size_t addNumber(CTX ctx, tenv_t *tenv, int tok_start)
 		size_t len = BA_size(tenv->buf) - tenv->bufhead;
 		knh_String_t *text = new_String2(ctx, CLASS_String, s1, len, K_SPOLICY_ASCII);
 		int ttype = (dot == 0) ? TK_INT : TK_FLOAT;
-		addToken(ctx, tenv, new_Token(ctx, ttype, tenv->uline, lpos(tenv, s), text, DUMMY));
+		addToken(ctx, tenv, new_Token(ctx, ttype, tenv->uline, lpos(tenv, s), text));
 		knh_Bytes_clear(tenv->buf, tenv->bufhead);
 	}
 	return pos-1;
@@ -518,7 +524,7 @@ static size_t addWhiteSpace(CTX ctx, tenv_t *tenv, size_t pos)
 		ch = tenv->line[pos++];
 	}
 	while(ch == ' ' || ch == '\t');
-	addToken(ctx, tenv, new_Token(ctx, TK_WHITESPACE, tenv->uline, lpos(tenv, tenv->s + tok_start), TS_EMPTY, DUMMY));
+	addToken(ctx, tenv, new_Token(ctx, TK_WHITESPACE, tenv->uline, lpos(tenv, tenv->s + tok_start), TS_EMPTY));
 	return pos-1;
 }
 
@@ -538,7 +544,7 @@ static size_t addNewLine(CTX ctx, tenv_t *tenv, size_t pos, int pol)
 		break;
 	}
 	if(FLAG_is(pol, _INDENT)) {
-		addToken(ctx, tenv, new_Token(ctx, TK_INDENT, tenv->uline, c, TS_EMPTY, DUMMY));
+		addToken(ctx, tenv, new_Token(ctx, TK_INDENT, tenv->uline, c, TS_EMPTY));
 	}
 	return pos - 1;
 }
@@ -569,7 +575,7 @@ static void parse(CTX ctx, tenv_t *tenv, int pol)
 			goto L_NEWTOKEN;
 
 		case '{':
-			if(!FLAG_is(pos, _UNFOLD)) {
+			if(FLAG_is(pos, _UNFOLD)) {
 				addSymbol(ctx, tenv, tok_start, pos-1);
 				pos = addBlock(ctx, tenv, pos, lpos(tenv, tenv->s + (pos - 1)));
 				goto L_NEWTOKEN;

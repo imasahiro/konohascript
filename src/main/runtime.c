@@ -519,6 +519,7 @@ static knh_status_t readstmt(CTX ctx, CWB_t *cwb)
 		ctx->spi->add_history(p);
 	}
 	fputs(TERM_EBOLD(ctx), stdout);
+	fflush(stdout);
 	return status;
 }
 

@@ -1138,8 +1138,11 @@ struct knh_Sugar_t {
 #define UEXPR_TOKEN          1
 #define TERM_TYPE            2
 #define UEXPR_METHOD_CALL    3
+#define UEXPR_CALL           4
+#define UEXPR_BINARY         5
+#define UEXPR_GETTER         6
 
-#define TEXPR_CONST          4
+#define TEXPR_CONST          10
 #define TEXPR_METHOD_CALL    (TEXPR_CONST+1)
 
 typedef struct knh_Expr_t knh_Expr_t;

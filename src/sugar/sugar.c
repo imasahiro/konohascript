@@ -133,12 +133,8 @@ knh_Array_t* new_TokenArray(CTX ctx, const char *text, knh_uline_t uline)
 		ctx->share->corelang,
 	};
 	DBG_ASSERT(!(BA_totext(ctx->bufa) <= text && text < BA_totext(ctx->bufa) + BA_size(ctx->bufa)));
-	parse(ctx, &tenvbuf, 0);
-	size_t i;
-	for(i = 0; i < knh_Array_size(a); i++) {
-		knh_Token_t *tk = a->tokens[i];
-		fprintf(stdout, "TOKEN(%d): %d %d '%s'\n", (int)i, (knh_short_t)tk->uline, (int)tk->token, S_totext(tk->text));
-	}
+	parse(ctx, &tenvbuf, _TOPLEVEL);
+	dumpTokenArray(ctx, a, 0, knh_Array_size(a));
 	return a;
 }
 
@@ -159,21 +155,10 @@ static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 		3,/*tabsize*/
 		lang,
 	};
-	parse(ctx, &tenvbuf, 0);
+	parse(ctx, &tenvbuf, _TOPLEVEL);
 	RETURN_(new_Block(ctx, a, 0, knh_Array_size(a), lang, sfp[3].ns));
 }
 
-//// boolean Lang.evalSugarDecl(Stmt stmt, NameSpace _);
-//
-//static KMETHOD Lang_evalSugarDecl(CTX ctx, knh_sfp_t *sfp _RIX)
-//{
-//	knh_Stmt_t *stmt = sfp[1].stmt;
-//	knh_String_t *key = Stmt_getStringNULL(ctx, "sugarname");
-//	knh_Array_t *a = Stmt_getConst(ctx, "tokens");
-//	knh_Sugar_t *sgr;
-//
-//}
-//
 //// void boolean Lang_evalBlock(Block block, NameSpace _);
 //
 //static KMETHOD Block_eval(CTX ctx, knh_sfp_t *sfp _RIX)
