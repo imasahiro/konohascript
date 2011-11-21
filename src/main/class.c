@@ -431,9 +431,7 @@ void knh_setClassDef(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassDef_t *cdef)
 	if(cdef->getDefaultNull != NULL) {
 		ct->fdefnull = cdef->getDefaultNull;
 	}
-#ifdef K_USING_BMGC
-	ct->struct_size = cdef->struct_size;
-#endif
+	ct->struct_size = cdef->c_struct_size;
 }
 
 /* ------------------------------------------------------------------------ */

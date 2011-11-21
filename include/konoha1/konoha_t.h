@@ -427,6 +427,9 @@ typedef struct knh_Object_t {
 
 #define SP(o)               (o)
 #define DP(o)               ((o)->b)
+#ifdef K_USING_BMGC
+#define DP(o)               (&(o)->b)
+#endif
 #define _(s)          s
 
 #define knh_bodycpy(o, s) \
