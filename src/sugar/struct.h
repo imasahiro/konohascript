@@ -65,7 +65,7 @@ static const knh_ClassDef_t TokenDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Token", CFLAG_Token, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Token), 0,
 };
 
 /* --------------- */
@@ -108,7 +108,7 @@ static const knh_ClassDef_t SugarDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Sugar", CFLAG_Sugar, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Sugar), 0,
 };
 
 /* --------------- */
@@ -144,7 +144,7 @@ static const knh_ClassDef_t ExprDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Expr", CFLAG_Expr, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Expr), 0,
 };
 
 /* --------------- */
@@ -179,7 +179,7 @@ static const knh_ClassDef_t StmtDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Stmt", CFLAG_Stmt, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Stmt), 0,
 };
 
 /* --------------- */
@@ -212,7 +212,7 @@ static const knh_ClassDef_t BlockDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Block", CFLAG_Block, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Block), 0,
 };
 
 static void Lang_init(CTX ctx, knh_RawPtr_t *o)
@@ -257,6 +257,6 @@ static const knh_ClassDef_t LangDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Lang", CFLAG_Lang, sizeof(knh_LangEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Lang), 0,
 };
 

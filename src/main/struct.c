@@ -162,7 +162,8 @@ static void DEFAULT_wdata(CTX ctx, knh_RawPtr_t *o, void *pkr, const knh_PackSPI
 #define DEFAULT_3 NULL
 #define DEFAULT_4 NULL
 #define DEFAULT_5 NULL
-#define DEFAULT_6 NULL
+//#define DEFAULT_6 NULL
+#define SIZE_OF_T(T) (sizeof(knh_##T##_t))
 
 static const knh_ClassDef_t TvoidDef = {
 	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
@@ -170,7 +171,7 @@ static const knh_ClassDef_t TvoidDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"void", CFLAG_Tvoid, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 };
 
 static const knh_ClassDef_t TvarDef = {
@@ -179,7 +180,7 @@ static const knh_ClassDef_t TvarDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"var", CFLAG_Tvar, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 };
 
 static const knh_ClassDef_t TdynamicDef = {
@@ -188,7 +189,7 @@ static const knh_ClassDef_t TdynamicDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"dynamic", CFLAG_Tvar, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 };
 
 const knh_ClassDef_t* knh_getDefaultClassDef(void)
@@ -436,7 +437,7 @@ static const knh_ClassDef_t ObjectDef = {
 	ObjectField_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 	"Object", CFLAG_Object, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 };
 
 static void ObjectFieldN_init(CTX ctx, knh_RawPtr_t *o)
@@ -530,7 +531,7 @@ static const knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
-		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+		NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 	},
 	{
 		ObjectField_init, ObjectField_initcopy, ObjectField1_reftrace, ObjectField_free,
@@ -538,7 +539,7 @@ static const knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
-		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+		NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 	},
 	{
 		ObjectField_init, ObjectField_initcopy, ObjectField2_reftrace, ObjectField_free,
@@ -546,7 +547,7 @@ static const knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
-		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+		NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 	},
 	{
 		ObjectField_init, ObjectField_initcopy, ObjectField3_reftrace, ObjectField_free,
@@ -554,7 +555,7 @@ static const knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
-		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+		NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 	},
 	{
 		ObjectField_init, ObjectField_initcopy, ObjectField4_reftrace, ObjectField_free,
@@ -562,13 +563,14 @@ static const knh_ClassDef_t ObjectNDef[] = {
 		ObjectField_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 		DEFAULT_findTypeMapNULL, Object_wdata, DEFAULT_2, DEFAULT_3,
 		"Object", CFLAG_Object, 0, NULL,
-		NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+		NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 	}
 };
 
 void knh_ClassTBL_setObjectCSPI(CTX ctx, knh_ClassTBL_t *ct)
 {
 	size_t c, i;
+	ct->struct_size = sizeof(void*) * ct->fsize;
 	for(c = 0; c < ct->fsize; c++) {
 		if(ct->fields[c].israw == 1) break;
 	}
@@ -593,7 +595,7 @@ static const knh_ClassDef_t CppObjectDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"dynamic", 0, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Object), 0,
 };
 
 const knh_ClassDef_t* knh_getCppClassDef(void)
@@ -709,7 +711,7 @@ static const knh_ClassDef_t BooleanDef = {
 	ObjectField_getkey, NDATA_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, Boolean_wdata, DEFAULT_2, DEFAULT_3,
 	"Boolean", CFLAG_Boolean, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Boolean), 0,
 };
 
 static const knh_ClassDef_t NumberDef = {
@@ -718,7 +720,7 @@ static const knh_ClassDef_t NumberDef = {
 	ObjectField_getkey, NDATA_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Number", CFLAG_Number, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Number), 0,
 };
 
 static const knh_ClassDef_t IntDef = {
@@ -727,7 +729,7 @@ static const knh_ClassDef_t IntDef = {
 	ObjectField_getkey, NDATA_hashCode, Int_toint, Int_tofloat,
 	DEFAULT_findTypeMapNULL, Int_wdata, DEFAULT_2, DEFAULT_3,
 	"Int", CFLAG_Int, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Int), 0,
 };
 
 static const knh_ClassDef_t FloatDef = {
@@ -736,7 +738,7 @@ static const knh_ClassDef_t FloatDef = {
 	ObjectField_getkey, NDATA_hashCode, Float_toint, Float_tofloat,
 	DEFAULT_findTypeMapNULL, Float_wdata, DEFAULT_2, DEFAULT_3,
 	"Float", CFLAG_Float, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Float), 0,
 };
 
 /* --------------- */
@@ -820,7 +822,7 @@ static const knh_ClassDef_t DateDef = {
 	DEFAULT_getkey, Date_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, Date_wdata, DEFAULT_2, DEFAULT_3,
 	"Date", CFLAG_Date, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Date), 0,
 };
 
 
@@ -896,7 +898,7 @@ static const knh_ClassDef_t StringDef = {
 	String_getkey, String_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, String_wdata, DEFAULT_2, DEFAULT_3,
 	"String", CFLAG_String, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(String), 0,
 };
 
 /* --------------- */
@@ -1012,7 +1014,7 @@ static const knh_ClassDef_t BytesDef = {
 	DEFAULT_getkey, Bytes_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Bytes", CFLAG_Bytes, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Bytes), 0,
 };
 
 /* --------------- */
@@ -1064,7 +1066,7 @@ static const knh_ClassDef_t PointerDef = {
 	DEFAULT_getkey, Pointer_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Pointer", CFLAG_Pointer, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Pointer), 0,
 };
 
 /* --------------------------------------------------------------------------*/
@@ -1118,7 +1120,7 @@ static const knh_ClassDef_t TupleDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Tuple", 0, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Tuple), 0,
 };
 
 /* --------------- */
@@ -1166,7 +1168,7 @@ static const knh_ClassDef_t RangeDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Range", CFLAG_Range, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Range), 0,
 };
 
 /* --------------- */
@@ -1352,7 +1354,7 @@ static const knh_ClassDef_t ArrayDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, Array_wdata, DEFAULT_2, DEFAULT_3,
 	"Array", CFLAG_Array, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Array), 0,
 };
 
 /* --------------- */
@@ -1432,7 +1434,7 @@ static const knh_ClassDef_t IteratorDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Iterator", CFLAG_Iterator, sizeof(knh_IteratorEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Iterator), 0,
 };
 
 /* --------------- */
@@ -1559,7 +1561,7 @@ static const knh_ClassDef_t MapDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, Map_wdata, DEFAULT_2, DEFAULT_3,
 	"Map", CFLAG_Map, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Map), 0,
 };
 
 /* --------------- */
@@ -1595,7 +1597,7 @@ static const knh_ClassDef_t ClassDef = {
 	Class_getkey, Class_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Class", CFLAG_Class, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Class), 0,
 };
 
 /* --------------- */
@@ -1646,7 +1648,7 @@ static const knh_ClassDef_t ParamArrayDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"ParamArray", CFLAG_ParamArray, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(ParamArray), 0,
 };
 
 /* --------------- */
@@ -1734,7 +1736,7 @@ static const knh_ClassDef_t MethodDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Method", CFLAG_Method, sizeof(knh_MethodEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Method), 0,
 };
 
 /* --------------- */
@@ -1771,7 +1773,7 @@ static const knh_ClassDef_t TypeMapDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"TypeMap", CFLAG_TypeMap, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(TypeMap), 0,
 };
 
 /* --------------- */
@@ -1840,7 +1842,7 @@ static const knh_ClassDef_t FuncDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Func", CFLAG_Func, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Func), 0,
 };
 
 /* --------------- */
@@ -1899,7 +1901,7 @@ static const knh_ClassDef_t ThunkDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Thunk", CFLAG_Thunk, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Thunk), 0,
 };
 
 /* --------------- */
@@ -1958,7 +1960,7 @@ static const knh_ClassDef_t ExceptionDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Exception", CFLAG_Exception, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Exception), 0,
 };
 
 /* --------------- */
@@ -1986,7 +1988,7 @@ static const knh_ClassDef_t ExceptionHandlerDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"ExceptionHandler", CFLAG_ExceptionHandler, sizeof(knh_ExceptionHandlerEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(ExceptionHandler), 0,
 };
 
 /* --------------- */
@@ -2039,7 +2041,7 @@ static const knh_ClassDef_t RegexDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Regex", CFLAG_Regex, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Regex), 0,
 };
 
 /* --------------- */
@@ -2085,7 +2087,7 @@ static const knh_ClassDef_t ConverterDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Converter", CFLAG_Converter, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Converter), 0,
 };
 
 static const knh_ClassDef_t StringEncoderDef = {
@@ -2094,7 +2096,7 @@ static const knh_ClassDef_t StringEncoderDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"StringEncoder", CFLAG_StringEncoder, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(StringEncoder), 0,
 };
 
 static const knh_ClassDef_t StringDecoderDef = {
@@ -2103,7 +2105,7 @@ static const knh_ClassDef_t StringDecoderDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"StringDecoder", CFLAG_StringDecoder, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(StringDecoder), 0,
 };
 
 static const knh_ClassDef_t StringConverterDef = {
@@ -2112,7 +2114,7 @@ static const knh_ClassDef_t StringConverterDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"StringConverter", CFLAG_StringConverter, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(StringConverter), 0,
 };
 
 /* --------------- */
@@ -2222,7 +2224,7 @@ static const knh_ClassDef_t SemanticsDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Semantics", CFLAG_Semantics, sizeof(knh_SemanticsEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Semantics), 0,
 };
 
 /* Path */
@@ -2265,7 +2267,7 @@ static const knh_ClassDef_t PathDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Path", CFLAG_Path, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Path), 0,
 };
 
 /* --------------- */
@@ -2305,7 +2307,7 @@ static const knh_ClassDef_t InputStreamDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"InputStream", CFLAG_InputStream, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(InputStream), 0,
 };
 
 /* --------------- */
@@ -2347,7 +2349,7 @@ static const knh_ClassDef_t OutputStreamDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"OutputStream", CFLAG_OutputStream, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(OutputStream), 0,
 };
 
 /* --------------- */
@@ -2374,7 +2376,7 @@ static const knh_ClassDef_t ViewDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"View", CFLAG_View, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(View), 0,
 };
 
 /* --------------- */
@@ -2438,7 +2440,7 @@ static const knh_ClassDef_t ScriptDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Script", CFLAG_Script, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Script), 0,
 };
 
 /* --------------- */
@@ -2497,7 +2499,7 @@ static const knh_ClassDef_t NameSpaceDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"NameSpace", CFLAG_NameSpace, sizeof(knh_NameSpaceEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(NameSpace), 0,
 };
 
 /* --------------- */
@@ -2515,7 +2517,7 @@ static const knh_ClassDef_t SystemDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"System", CFLAG_System, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(System), 0,
 };
 
 /* --------------- */
@@ -2542,7 +2544,7 @@ static const knh_ClassDef_t ContextDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Context", CFLAG_Context, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Context), 0,
 };
 
 
@@ -2605,7 +2607,7 @@ static const knh_ClassDef_t AssuranceDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Assurance", CFLAG_Assurance, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Assurance), 0,
 };
 
 
@@ -2749,7 +2751,7 @@ static const knh_ClassDef_t TermDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Term", CFLAG_Term, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Term), 0,
 };
 
 /* --------------- */
@@ -2849,7 +2851,7 @@ static const knh_ClassDef_t StmtExprDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"StmtExpr", CFLAG_StmtExpr, sizeof(knh_StmtEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(StmtExpr), 0,
 };
 
 /* GammaBuilder */
@@ -2903,7 +2905,7 @@ static const knh_ClassDef_t GammaBuilderDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"GammaBuilder", CFLAG_GammaBuilder, sizeof(knh_GammaBuilderEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(GammaBuilder), 0,
 };
 
 /* --------------- */
@@ -2945,7 +2947,7 @@ static const knh_ClassDef_t BasicBlockDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"BasicBlock", CFLAG_BasicBlock, sizeof(knh_BasicBlockEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(BasicBlock), 0,
 };
 
 /* --------------- */
@@ -2996,7 +2998,7 @@ static const knh_ClassDef_t KonohaCodeDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"KonohaCode", CFLAG_KonohaCode, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(KonohaCode), 0,
 };
 
 static const knh_ClassDef_t ImmutableDef = {
@@ -3005,7 +3007,7 @@ static const knh_ClassDef_t ImmutableDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Immutable", CFLAG_Immutable, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Immutable), 0,
 };
 
 static const knh_ClassDef_t KindOfDef = {
@@ -3014,7 +3016,7 @@ static const knh_ClassDef_t KindOfDef = {
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"KindOf", CFLAG_KonohaCode, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6, 0,
+	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(KindOf), 0,
 };
 
 /* --------------- */

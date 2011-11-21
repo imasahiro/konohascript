@@ -773,7 +773,8 @@ typedef struct knh_ClassDef_t {
 	knh_Fdefnull            getDefaultNull;
 	void *RESERVED4;
 	void *RESERVED5;
-	void *RESERVED6;
+	//void *RESERVED6;
+	size_t c_struct_size;
 	size_t asize;           /* set it to zero usually */
 } knh_ClassDef_t;
 
@@ -815,9 +816,7 @@ typedef struct knh_ClassTBL_t {
 	size_t subclass;
 	size_t count;
 	size_t total;
-#ifdef K_USING_BMGC
 	size_t struct_size;
-#endif
 } knh_ClassTBL_t;
 
 #define C_bcid(c)           ClassTBL(c)->bcid
