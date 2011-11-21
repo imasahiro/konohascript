@@ -66,6 +66,8 @@ assure "SubClass" {
 	Triangle t = new Triangle(80, 60);
 	print "Rectangle", r.area
 	print "Triangle", t.area
+	assure r.area == 4800;
+	assure t.area == 2400;
 }
 
 
