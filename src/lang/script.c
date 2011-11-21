@@ -240,22 +240,40 @@ static void INCLUDE_ffilink(CTX ctx, knh_StmtExpr_t *stmt, knh_NameSpace_t *ns, 
 
 static void NameSpace_beginINCLUDE(CTX ctx, knh_NameSpace_t *newns, knh_NameSpace_t *oldns)
 {
-	knh_NameSpaceEX_t *tb = newns->b;
+	knh_NameSpaceEX_t *tb = DP(newns);
 	void *tdlhdr = newns->gluehdr;
+#ifdef K_USING_BMGC
+	knh_NameSpaceEX_t tmp;
+	knh_memcpy(&tmp, tb, sizeof(knh_NameSpaceEX_t));
+	knh_memcpy(DP(newns), DP(oldns), sizeof(knh_NameSpaceEX_t));
+	knh_memcpy(DP(oldns), &tmp, sizeof(knh_NameSpaceEX_t));
+	newns->gluehdr = oldns->gluehdr;
+	oldns->gluehdr = tdlhdr;
+#else
 	newns->b = oldns->b;
 	newns->gluehdr = oldns->gluehdr;
 	oldns->b = tb;
 	oldns->gluehdr = tdlhdr;
+#endif
 }
 
 static void NameSpace_endINCLUDE(CTX ctx, knh_NameSpace_t *newns, knh_NameSpace_t *oldns)
 {
-	knh_NameSpaceEX_t *tb = newns->b;
+	knh_NameSpaceEX_t *tb = DP(newns);
 	void *tdlhdr = newns->gluehdr;
+#ifdef K_USING_BMGC
+	knh_NameSpaceEX_t tmp;
+	knh_memcpy(&tmp, tb, sizeof(knh_NameSpaceEX_t));
+	knh_memcpy(DP(newns), DP(oldns), sizeof(knh_NameSpaceEX_t));
+	knh_memcpy(DP(oldns), &tmp, sizeof(knh_NameSpaceEX_t));
+	newns->gluehdr = oldns->gluehdr;
+	oldns->gluehdr = tdlhdr;
+#else
 	newns->b = oldns->b;
 	newns->gluehdr = oldns->gluehdr;
 	oldns->b = tb;
 	oldns->gluehdr = tdlhdr;
+#endif
 }
 
 knh_bool_t knh_NameSpace_include(CTX ctx, knh_NameSpace_t *ns, knh_Path_t *pth)

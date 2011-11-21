@@ -289,7 +289,7 @@ typedef struct {
 
 struct knh_Iterator_t {
 	knh_hObject_t h;
-	knh_IteratorEX_t *b;
+	knh_IteratorEX_t KNH_EX_REF b;
 	knh_Fitrnext fnext_1;
 };
 #endif
@@ -528,7 +528,7 @@ typedef struct {
 
 struct knh_Method_t {
 	knh_hObject_t        h;
-	knh_MethodEX_t      *b;
+	knh_MethodEX_t KNH_EX_REF b;
 	knh_class_t          cid;   knh_methodn_t  mn;
 	knh_Fmethod          fcall_1;
 	struct knh_opline_t *pc_start;
@@ -672,7 +672,7 @@ typedef struct knh_ExceptionHandler_t knh_ExceptionHandler_t;
 #ifdef K_INTERNAL
 struct knh_ExceptionHandler_t {
 	knh_hObject_t h;
-	knh_ExceptionHandlerEX_t *b;
+	knh_ExceptionHandlerEX_t KNH_EX_REF b;
 	knh_intptr_t espidx;
 	struct knh_ExceptionHandler_t *parentNC;
 	struct knh_Array_t *stacklist;
@@ -852,7 +852,7 @@ struct knh_SemanticsEX_t {
 
 struct knh_Semantics_t {
 	knh_hObject_t h;
-	knh_SemanticsEX_t *b;
+	knh_SemanticsEX_t KNH_EX_REF b;
 };
 #endif
 
@@ -1010,7 +1010,7 @@ typedef struct knh_NameSpaceEX_t {
 
 struct knh_NameSpace_t {
 	knh_hObject_t h;
-	knh_NameSpaceEX_t *b;
+	knh_NameSpaceEX_t KNH_EX_REF b;
 	struct knh_NameSpace_t   *parentNULL;
 	knh_Path_t               *path;
 	void                     *gluehdr;
@@ -1200,7 +1200,7 @@ typedef struct knh_LangEX_t {
 
 struct knh_Lang_t {
 	knh_hObject_t h;
-	knh_LangEX_t *b;
+	knh_LangEX_t KNH_EX_REF b;
 	struct knh_String_t  *name;
 	struct knh_Lang_t    *parentNULL;
 	struct knh_Array_t   *gcbuf;   // gc buffer
@@ -1341,9 +1341,16 @@ typedef struct {
 
 struct knh_StmtExpr_t {
 	knh_hObject_t h;
-	knh_StmtEX_t *b;
+#ifdef K_USING_BMGC
+	void *unused;
 	knh_uline_t uline;                 // Term
 	knh_type_t type; knh_term_t  stt;  // Term
+	knh_StmtEX_t KNH_EX_REF b;
+#else
+	knh_StmtEX_t KNH_EX_REF b;
+	knh_uline_t uline;                 // Term
+	knh_type_t type; knh_term_t  stt;  // Term
+#endif
 	union {
 		struct knh_Term_t**  terms;
 		struct knh_Term_t** tokens;
@@ -1421,8 +1428,14 @@ typedef struct knh_GammaBuilderEX_t {
 
 struct knh_GammaBuilder_t {
 	knh_hObject_t h;
-	knh_GammaBuilderEX_t *b;
+#ifdef K_USING_BMGC
+	void *unused;
 	knh_uline_t uline;         // same as Term
+	knh_GammaBuilderEX_t KNH_EX_REF b;
+#else
+	knh_GammaBuilderEX_t KNH_EX_REF b;
+	knh_uline_t uline;         // same as Term
+#endif
 	knh_Script_t *scr;
 };
 #endif
@@ -1517,7 +1530,7 @@ typedef struct knh_BasicBlockEX_t {
 
 struct knh_BasicBlock_t {
 	knh_hObject_t h;
-	knh_BasicBlockEX_t *b;
+	knh_BasicBlockEX_t KNH_EX_REF b;
 	struct knh_Array_t *listNC;
 	struct knh_BasicBlock_t *nextNC;
 	struct knh_BasicBlock_t *jumpNC;

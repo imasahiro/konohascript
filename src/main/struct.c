@@ -59,8 +59,12 @@ extern "C" {
 #define K_INCLUDE_BUILTINAPI
 #include "dspi.c"
 
+#ifdef K_USING_BMGC
+#define knh_bodyfree(ctx, p, C)
+#else
 #define knh_bodymalloc(ctx, C)   (knh_##C##EX_t*)KNH_MALLOC(ctx, sizeof(knh_##C##EX_t))
 #define knh_bodyfree(ctx, p, C)  KNH_FREE(ctx, p, sizeof(knh_##C##EX_t))
+#endif
 
 /* ------------------------------------------------------------------------ */
 /* DEFAULT */
@@ -1373,7 +1377,13 @@ static ITRNEXT Fitrnext_single(CTX ctx, knh_sfp_t *sfp _RIX)
 static void Iterator_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Iterator_t *itr = (knh_Iterator_t*)o;
-	knh_IteratorEX_t *b = knh_bodymalloc(ctx, Iterator);
+	knh_IteratorEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP(itr);
+#else
+	b = knh_bodymalloc(ctx, Iterator);
+	itr->b = b;
+#endif
 	itr->fnext_1  =  Fitrnext_single;
 	KNH_INITv(b->source, KNH_NULL);
 	b->mtdNULL  =  NULL;
@@ -1381,7 +1391,6 @@ static void Iterator_init(CTX ctx, knh_RawPtr_t *o)
 	b->m.index  = 0;
 	b->m.max    = 0;
 	b->m.nfree = NULL;
-	itr->b = b;
 }
 
 static void Iterator_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
@@ -1396,7 +1405,9 @@ static void Iterator_free(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Iterator_t *itr = (knh_Iterator_t*)o;
 	knh_Iterator_close(ctx, itr);
+#ifndef K_USING_BMGC
 	knh_bodyfree(ctx, itr->b, Iterator);
+#endif
 }
 
 static void Iterator_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
@@ -1657,7 +1668,13 @@ static const knh_ClassDef_t ParamArrayDef = {
 static void Method_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Method_t *mtd = (knh_Method_t*)o;
-	knh_MethodEX_t *b = knh_bodymalloc(ctx, Method);
+	knh_MethodEX_t *b;
+#ifndef K_USING_BMGC
+	b = knh_bodymalloc(ctx, Method);
+	mtd->b = b;
+#else
+	b = DP(mtd);
+#endif
 	KNH_INITv(b->mp, KNH_NULVAL(CLASS_ParamArray));
 	KNH_INITv(b->kcode, KNH_NULL);
 	KNH_INITv(b->tsource, KNH_NULL);
@@ -1665,7 +1682,6 @@ static void Method_init(CTX ctx, knh_RawPtr_t *o)
 //	b->flag   = 0;
 //	b->delta  = 0;
 //	b->uri  = 0;  b->domain = 0;
-	mtd->b = b;
 }
 
 static void Method_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
@@ -1681,9 +1697,11 @@ static void Method_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 
 static void BODY_free(CTX ctx, knh_RawPtr_t *o)
 {
+#ifndef K_USING_BMGC
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	DBG_ASSERT(ct->cdef->struct_size > 0);
 	KNH_FREE(ctx, o->rawptr, ct->cdef->struct_size);
+#endif
 }
 
 static void Method_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
@@ -1796,7 +1814,7 @@ static void Func_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Func_t *fo = (knh_Func_t*)o;
 	const knh_ClassTBL_t *t = O_cTBL(o);
-	const knh_Method_t *mtd;
+	knh_Method_t *mtd;
 	if(t->defnull == NULL) {
 		mtd = new_Method(ctx, 0, O_cid(o), MN_LAMBDA, Fmethod_funcRTYPE);
 		KNH_SETv(ctx, DP(mtd)->mp, t->cparam);
@@ -1969,9 +1987,14 @@ static const knh_ClassDef_t ExceptionDef = {
 static void ExceptionHandler_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_ExceptionHandler_t *hdr = (knh_ExceptionHandler_t*)o;
-	knh_ExceptionHandlerEX_t *b = knh_bodymalloc(ctx, ExceptionHandler);
-	knh_bzero(b, sizeof(knh_ExceptionHandlerEX_t));
+	knh_ExceptionHandlerEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP(hdr);
+#else
+	b = knh_bodymalloc(ctx, ExceptionHandler);
 	o->rawptr = b;
+#endif
+	knh_bzero(b, sizeof(knh_ExceptionHandlerEX_t));
 	KNH_INITv(hdr->stacklist, new_Array0(ctx, 0));
 }
 
@@ -2162,7 +2185,13 @@ static int knh_fscmp__default(knh_Semantics_t *u, knh_bytes_t v1, knh_bytes_t v2
 
 static void Semantics_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_SemanticsEX_t *b = knh_bodymalloc(ctx, Semantics);
+	knh_SemanticsEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP((knh_Semantics_t*)o);
+#else
+	b = knh_bodymalloc(ctx, Semantics);
+	o->rawptr = b;
+#endif
 	// common
 	b->flag = 0;
 	b->ucid  = 0;
@@ -2200,7 +2229,6 @@ static void Semantics_init(CTX ctx, knh_RawPtr_t *o)
 	b->bytelen = 0;
 	KNH_INITv(b->pattern, KNH_NULL);
 //	KNH_INITv(b->vocabDictIdx, KNH_NULL);
-	o->rawptr = b;
 }
 
 static void Semantics_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
@@ -2449,7 +2477,13 @@ static const knh_ClassDef_t ScriptDef = {
 static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_NameSpace_t *ns = (knh_NameSpace_t*)o;
-	knh_NameSpaceEX_t *b = knh_bodymalloc(ctx, NameSpace);
+	knh_NameSpaceEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP(ns);
+#else
+	b = knh_bodymalloc(ctx, NameSpace);
+	ns->b = b;
+#endif
 	knh_bzero(b, sizeof(knh_NameSpaceEX_t));
 	KNH_INITv(b->nsname, TS_main);
 	KNH_INITv(ns->path, ctx->share->cwdPath);
@@ -2460,7 +2494,6 @@ static void NameSpace_init(CTX ctx, knh_RawPtr_t *o)
 	b->constDictCaseMapNULL = NULL;
 	b->formattersNULL       = NULL;
 	b->methodsNULL          = NULL;
-	ns->b = b;
 	ns->gluehdr = NULL;
 }
 
@@ -2760,8 +2793,13 @@ static const knh_ClassDef_t TermDef = {
 static void StmtExpr_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_StmtExpr_t *stmt = (knh_StmtExpr_t*)o;
-	knh_StmtEX_t *b = knh_bodymalloc(ctx, Stmt);
+	knh_StmtEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP(stmt);
+#else
+	b = knh_bodymalloc(ctx, Stmt);
 	o->rawptr = b;
+#endif
 	SP(stmt)->uline = 0;
 	SP(stmt)->stt   = STT_DONE;
 	SP(stmt)->type = TYPE_var;
@@ -2858,7 +2896,13 @@ static const knh_ClassDef_t StmtExprDef = {
 
 static void GammaBuilder_init(CTX ctx, knh_RawPtr_t *o)
 {
-	knh_GammaBuilderEX_t *b = knh_bodymalloc(ctx, GammaBuilder);
+	knh_GammaBuilderEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP((knh_GammaBuilder_t*)o);
+#else
+	b = knh_bodymalloc(ctx, GammaBuilder);
+	o->rawptr = b;
+#endif
 	knh_bzero(b, sizeof(knh_GammaBuilderEX_t));
 	b->cflag = FLAG_GammaBuilder_InlineFunction | FLAG_GammaBuilder_TailRecursion;
 	KNH_INITv(b->mtd, KNH_NULL);
@@ -2867,7 +2911,6 @@ static void GammaBuilder_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(b->insts, new_Array0(ctx, 0));
 	KNH_INITv(b->errmsgs, new_Array0(ctx, 0));
 	KNH_INITv(b->finallyStmt, KNH_NULL);
-	o->rawptr = b;
 	KNH_INITv(((knh_GammaBuilder_t*)o)->scr, ctx->script);
 }
 
@@ -2914,8 +2957,10 @@ static const knh_ClassDef_t GammaBuilderDef = {
 static void BasicBlock_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_BasicBlock_t *bb = (knh_BasicBlock_t*)o;
+#ifndef K_USING_BMGC
 	bb->b = knh_bodymalloc(ctx, BasicBlock);
-	knh_bzero(bb->b, sizeof(knh_BasicBlockEX_t));
+#endif
+	knh_bzero(DP(bb), sizeof(knh_BasicBlockEX_t));
 	bb->listNC  = NULL;
 	bb->nextNC  = NULL;
 	bb->jumpNC  = NULL;

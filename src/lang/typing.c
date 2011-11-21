@@ -4197,7 +4197,14 @@ static knh_Term_t* METHOD_typing(CTX ctx, knh_StmtExpr_t *stmtM)
 		}
 		else if(knh_StmtMETA_is(ctx, stmtM, "Around")) {
 			knh_Method_t *promtd = new_Method(ctx, DP(mtd)->flag, mtd_cid, mn, NULL);
+#ifdef K_USING_BMGC
+			knh_MethodEX_t temp;
+			knh_memcpy(&temp, DP(mtd), sizeof(knh_MethodEX_t));
+			knh_memcpy(DP(mtd), DP(promtd), sizeof(knh_MethodEX_t));
+			knh_memcpy(DP(promtd), &temp, sizeof(knh_MethodEX_t));
+#else
 			knh_MethodEX_t *temp = mtd->b; mtd->b = promtd->b; promtd->b = temp;
+#endif
 			promtd->fcall_1 = mtd->fcall_1;
 			promtd->pc_start = mtd->pc_start; // copied from mtd => promtd
 			KNH_SETv(ctx, DP(mtd)->mp, mp);

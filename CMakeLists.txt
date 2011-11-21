@@ -346,6 +346,11 @@ option(USE_QT "Using qt package" OFF)
 
 option(USE_QT4 "Using qt4 package" OFF)
 
+option(USE_BMGC "Use BMGC" OFF)
+if(USE_BMGC)
+	add_definitions(-DK_USING_BMGC=1)
+endif(USE_BMGC)
+
 if(MINGW)
 	find_library(HAVE_LIBCURLDLL NAMES curldll)
 	if(HAVE_LIBCURLDLL)

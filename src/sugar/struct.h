@@ -218,12 +218,17 @@ static const knh_ClassDef_t BlockDef = {
 static void Lang_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Lang_t *lang = (knh_Lang_t*)o;
-	knh_LangEX_t *b = knh_bodymalloc(ctx, Lang);
+	knh_LangEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP(lang);
+#else
+	b = knh_bodymalloc(ctx, Lang);
+	lang->b = b;
+#endif
 	knh_bzero(b, sizeof(knh_LangEX_t));
 	lang->parentNULL       = NULL;
 	KNH_INITv(lang->name,  TS_EMPTY);
 	KNH_INITv(lang->gcbuf, new_Array0(ctx, 0));
-	lang->b = b;
 }
 
 static void Lang_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)

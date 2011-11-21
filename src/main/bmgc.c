@@ -1504,7 +1504,7 @@ knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o)
             uintptr_t bpidx, bpmask;
             BITPTR_INIT_(bpidx, bpmask, index);
             bitmap_t *bm = SEG_BITMAP_N(seg, 0, bpidx);
-            if (!BM_TEST(*bm, bpmask)) {
+            if (BM_TEST(*bm, bpmask)) {
                 return true;
             }
         }

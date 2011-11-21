@@ -8,6 +8,6 @@ find ./ac -maxdepth 2 -name '*.k' | while read utest; do
 	konoha -l "+$logfile" $utest || echo "[SEGV] FAILED $utest" >> $logfile
 done
 
-egrep -i "\[ac\] FAILED" $logfile
+egrep -i "\] FAILED" $logfile
 echo "see furthermore information in $logfile"
 

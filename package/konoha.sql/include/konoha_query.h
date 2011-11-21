@@ -97,7 +97,7 @@ typedef struct {
 
 typedef struct knh_ResultSet_t {
 	knh_hObject_t h;
-	knh_ResultSetEX_t *b;
+	knh_ResultSetEX_t KNH_EX_REF b;
 } knh_ResultSet_t;
 
 /* ------------------------------------------------------------------------ */

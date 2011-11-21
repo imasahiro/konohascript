@@ -420,6 +420,8 @@ knh_io2_t *io2_null(void)
 void io2_free(CTX ctx, knh_io2_t *io2)
 {
 	if(io2->isRunning == 1) {
+		// TODO(@imasahiro) need flush
+		//io2_flush(ctx, io2);
 		io2->_close(ctx, io2);
 	}
 	if(io2->bufsiz > 0) {
@@ -526,6 +528,7 @@ knh_String_t* io2_readLine(CTX ctx, knh_io2_t *io2, knh_StringDecoder_t *dec)
 			}
 			if(ch > 127) hasUTF8 = 1;
 		}
+		io2->top = i;
 	}
 	if(io2->top < io2->tail) {
 		knh_Bytes_write2(ctx, cwb->ba, (const char*)io2->buffer + io2->top, io2->tail - io2->top);
@@ -1043,7 +1046,7 @@ KNHAPI2(void) knh_OutputStream_p(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf
 
 KNHAPI2(void) knh_write_EOL(CTX ctx, knh_OutputStream_t *w)
 {
-	io2_write(ctx, w->io2, K_OSLINEFEED, sizeof(K_OSLINEFEED));
+	io2_write(ctx, w->io2, K_OSLINEFEED, knh_strlen(K_OSLINEFEED));
 	if(OutputStream_isAutoFlush(w)) {
 		io2_flush(ctx, w->io2);
 	}

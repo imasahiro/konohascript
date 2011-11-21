@@ -475,7 +475,13 @@ void mysql_qcurfree(knh_qcur_t* qcur)
 static void ResultSet_init(CTX ctx, knh_RawPtr_t *po)
 {
 	knh_ResultSet_t *o = (knh_ResultSet_t *)po;
-	knh_ResultSetEX_t *b = (knh_ResultSetEX_t*)KNH_MALLOC(ctx, sizeof(knh_ResultSet_t));
+	knh_ResultSetEX_t *b;
+#ifdef K_USING_BMGC
+	b = DP(o);
+#else
+	b = (knh_ResultSetEX_t*)KNH_MALLOC(ctx, sizeof(knh_ResultSet_t));
+	o->b = b;
+#endif
 	b->qcur = NULL;
 	b->column_size = 0;
 	b->column = NULL;
@@ -483,7 +489,6 @@ static void ResultSet_init(CTX ctx, knh_RawPtr_t *po)
 	KNH_INITv(b->conn, KNH_NULL);
 	b->qcurfree = NULL;
 	b->count = 0;
-	o->b = b;
 }
 
 static void ResultSet_free(CTX ctx, knh_RawPtr_t *po)

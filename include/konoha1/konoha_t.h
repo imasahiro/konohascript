@@ -425,8 +425,15 @@ typedef struct knh_Object_t {
 
 #define K_FASTMALLOC_SIZE     sizeof(knh_Object_t)
 
+#ifndef K_USING_BMGC
 #define SP(o)               (o)
 #define DP(o)               ((o)->b)
+#define KNH_EX_REF          *
+#else
+#define SP(o)               (o)
+#define DP(o)               (&(o)->b)
+#define KNH_EX_REF
+#endif
 #define _(s)          s
 
 #define knh_bodycpy(o, s) \
