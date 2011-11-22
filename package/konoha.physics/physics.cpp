@@ -199,6 +199,14 @@ KMETHOD QWorld_add(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+KMETHOD QWorld_remove(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QWorld *world = RawPtr_to(QWorld *, sfp[0]);
+	KQGraphicsItem *i = RawPtr_to(KQGraphicsItem *, sfp[1]);
+	if (world) world->remove(i);
+	RETURNvoid_();
+}
+
 KMETHOD QWorld_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QWorld *world = RawPtr_to(QWorld *, sfp[0]);

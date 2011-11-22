@@ -26,6 +26,7 @@ class QGearJoint extends QGraphicsLineItem;
 QWorld QWorld.new(QGraphicsScene scene);
 void QWorld.setGravity(float x, float y);
 void QWorld.add(QGraphicsItem item);
+void QWorld.remove(QGraphicsItem item);
 void QWorld.start();
 void QWorld.showDebugDraw();
 void QWorld.addEvent(String event_name, dynamic func);

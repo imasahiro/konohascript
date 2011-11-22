@@ -2,10 +2,20 @@ using konoha.qt4.*;
 using konoha.physics.*;
 include "sample/util.k";
 
+QWorld world;
+QGraphicsScene scene;
+
+void mousePressEvent(QGraphicsItem i, QGraphicsSceneMouseEvent event)
+{
+	scene.removeItem(i);
+	world.remove(i);//joint : auto delete
+}
+
 void addDistanceJoint(QGraphicsScene scene, QWorld world)
 {
 	QGraphicsRectItem r1 = new_StaticRect(100, 100, 50, 50);
 	QGraphicsRectItem r2 = new_DynamicRect(100, 200, 50, 50);
+	r1.addEvent("mouse-press-event", mousePressEvent);
 	r2.setDraggable(true);
 	scene.addItem(r1);
 	scene.addItem(r2);
@@ -21,6 +31,7 @@ void addRevoluteJoint(QGraphicsScene scene, QWorld world)
 {
 	QGraphicsRectItem r1 = new_StaticRect(300, 100, 50, 50);
 	QGraphicsRectItem r2 = new_DynamicRect(300, 200, 50, 50);
+	r1.addEvent("mouse-press-event", mousePressEvent);
 	r2.setDraggable(true);
 	scene.addItem(r1);
 	scene.addItem(r2);
@@ -36,6 +47,7 @@ void addPrismaticJoint(QGraphicsScene scene, QWorld world)
 {
 	QGraphicsRectItem r1 = new_StaticRect(100, 300, 50, 50);
 	QGraphicsRectItem r2 = new_DynamicRect(100, 400, 50, 50);
+	r1.addEvent("mouse-press-event", mousePressEvent);
 	r2.setDraggable(true);
 	scene.addItem(r1);
 	scene.addItem(r2);
@@ -66,11 +78,11 @@ void addPulleyJoint(QGraphicsScene scene, QWorld world)
 }
 
 QApplication app = new ();
-QGraphicsScene scene = new ();
+scene = new ();
 QRectF r = new QRectF();
 r.setRect(0, 0, 600, 600);
 scene.setSceneRect(r);
-QWorld world = new (scene);
+world = new (scene);
 
 addDistanceJoint(scene, world);
 addRevoluteJoint(scene, world);

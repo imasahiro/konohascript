@@ -93,6 +93,7 @@ public:
 	void setGravity(float x, float y);
 	void timerEvent(QTimerEvent *event);
 	void add(knh_class_t cid, QGraphicsItem *i);
+	void remove(KQGraphicsItem *i);
 	void start(void);
 public slots:
 	void dragBeginSlot(QGraphicsSceneMouseEvent *event);

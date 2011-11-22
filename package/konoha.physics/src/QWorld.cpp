@@ -470,6 +470,19 @@ void QWorld::add(knh_class_t cid, QGraphicsItem *i)
 	}
 }
 
+void QWorld::remove(KQGraphicsItem *i)
+{
+	b2Body *body = static_cast<b2Body *>(i->dummy->body);
+	if (body) {
+		b2JointEdge *jointList = body->GetJointList();
+		b2Joint *joint = jointList->joint;
+		KQData *data = static_cast<KQData *>(joint->GetUserData());
+		scene->removeItem(data->i);
+		world->DestroyJoint(joint);
+		world->DestroyBody(body);
+	}
+}
+
 void QWorld::start(void)
 {
 	if (!timer_id) {
