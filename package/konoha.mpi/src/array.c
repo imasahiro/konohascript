@@ -267,9 +267,11 @@ static void knh_MPI_Array_p(CTX ctx, knh_OutputStream_t *out, knh_RawPtr_t *o, i
 
 void knh_MPI_initArrayPrintFunc(CTX ctx)
 {
+#ifdef K_USING_MACOSX_
 	const knh_ClassTBL_t* tbl = ClassTBL(CLASS_Array);
-	knh_ClassDef_t *cdefbuf = (knh_ClassDef_t*)tbl->cdef;
-	cdefbuf->p = knh_MPI_Array_p;
+	knh_ClassDef_t *ArrayDef = (knh_ClassDef_t*)tbl->cdef;
+	ArrayDef->p = knh_MPI_Array_p;
+#endif
 }
 
 /* ------------------------------------------------------------------------ */
@@ -476,4 +478,3 @@ KMETHOD Array_trans(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	RETURN_(ret);
 }
-

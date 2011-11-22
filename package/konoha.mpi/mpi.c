@@ -114,7 +114,7 @@ static const knh_ClassDef_t MPIRequestDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-#else
+#else /* ifdef _KNH_ON_T2K */
 
 DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 {
@@ -158,29 +158,6 @@ static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
 	knh_addClassConst(ctx, cid, new_String(ctx, "WORLD"), (knh_Object_t*)world);
 }
 
-#ifndef _KNH_ON_T2K
-
-static void knh_MPI_initSelf(CTX ctx, knh_class_t cid)
-{
-	MPIC(self, new_O(MPIComm, cid));
-	MPIC_COMM(self) = MPI_COMM_SELF;
-	MPI_Comm_rank(MPIC_COMM(self), &MPIC_RANK(self));
-	MPI_Comm_size(MPIC_COMM(self), &MPIC_SIZE(self));
-	knh_addClassConst(ctx, cid, new_String(ctx, "SELF"), (knh_Object_t*)self);
-}
-
-static void knh_MPI_initParent(CTX ctx, knh_class_t cid)
-{
-	MPIC(parent, new_O(MPIComm, cid));
-	if (MPI_Comm_get_parent(&MPIC_COMM(parent)) == MPI_SUCCESS) {
-		MPI_Comm_rank(MPIC_COMM(parent), &MPIC_RANK(parent));
-		MPI_Comm_size(MPIC_COMM(parent), &MPIC_SIZE(parent));
-		knh_addClassConst(ctx, cid, new_String(ctx, "PARENT"), (knh_Object_t*)parent);
-	}
-}
-
-#endif
-
 static knh_IntData_t MPIConstOp[] = {
 	{"MAX",  (knh_int_t)MPI_MAX},
 	{"MIN",  (knh_int_t)MPI_MIN},
@@ -206,10 +183,26 @@ static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
 	}
 }
 
-void knh_MPI_initArrayFuncData(CTX ctx);
-void knh_MPI_initArrayPrintFunc(CTX ctx);
-
 #ifndef _KNH_ON_T2K
+
+static void knh_MPI_initSelf(CTX ctx, knh_class_t cid)
+{
+	MPIC(self, new_O(MPIComm, cid));
+	MPIC_COMM(self) = MPI_COMM_SELF;
+	MPI_Comm_rank(MPIC_COMM(self), &MPIC_RANK(self));
+	MPI_Comm_size(MPIC_COMM(self), &MPIC_SIZE(self));
+	knh_addClassConst(ctx, cid, new_String(ctx, "SELF"), (knh_Object_t*)self);
+}
+
+static void knh_MPI_initParent(CTX ctx, knh_class_t cid)
+{
+	MPIC(parent, new_O(MPIComm, cid));
+	if (MPI_Comm_get_parent(&MPIC_COMM(parent)) == MPI_SUCCESS) {
+		MPI_Comm_rank(MPIC_COMM(parent), &MPIC_RANK(parent));
+		MPI_Comm_size(MPIC_COMM(parent), &MPIC_SIZE(parent));
+		knh_addClassConst(ctx, cid, new_String(ctx, "PARENT"), (knh_Object_t*)parent);
+	}
+}
 
 DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
@@ -224,10 +217,12 @@ DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 
 DEFAPI(void) constMPIData(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
+	;
 }
 
 DEFAPI(void) constMPIRequest(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 {
+	;
 }
 
 DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
@@ -257,11 +252,15 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 
 #endif /* _SETUP */
 
-#else /* _KNH_ON_T2K */
+#else /* ifndef _KNH_ON_T2K */
 
 /**
  * @T2K src/main/struct.c:knh_loadScriptSystemData
  */
+
+void knh_MPI_initArrayFuncData(CTX ctx);
+void knh_MPI_initArrayPrintFunc(CTX ctx);
+
 void knh_initMPI(CTX ctx)
 {
 	knh_MPI_initArrayFuncData(ctx);

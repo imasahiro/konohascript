@@ -23,10 +23,11 @@ include "lib:gluelink";
 /* MPI-1 Basic API */
 
 @Native class MPIComm;
-@Native int    MPIComm.getRank();
-@Native int    MPIComm.getSize();
-@Native String MPIComm.getProcessorName();
-@Native int    MPIComm.barrier();
+@Native int     MPIComm.getRank();
+@Native int     MPIComm.getSize();
+@Native String  MPIComm.getProcessorName();
+@Native int     MPIComm.barrier();
+@Native MPIComm MPIComm.create(int[] ranks);
 
 @Native class MPIData;
 @Native MPIData : (int i);
