@@ -234,6 +234,9 @@ DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 
 #ifdef _SETUP
 
+void knh_MPI_initArrayFuncData(CTX ctx);
+void knh_MPI_initArrayPrintFunc(CTX ctx);
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
