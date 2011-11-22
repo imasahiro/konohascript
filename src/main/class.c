@@ -825,7 +825,7 @@ knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t)
 
 #define RTYPE_set(t)    TYPE_void
 
-knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, knh_fieldn_t fn1)
+knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, ksymbol_t fn1)
 {
 	knh_ParamArray_t *pa = new_ParamArray(ctx);
 	knh_ParamArray_addParam(ctx, pa, p1, fn1);
@@ -868,7 +868,7 @@ void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p)
 	pa->psize += 1;
 }
 
-void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, knh_fieldn_t fn)
+void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, ksymbol_t fn)
 {
 	knh_param_t p = {type, fn};
 	knh_ParamArray_add(ctx, pa, p);
@@ -1177,7 +1177,7 @@ static KMETHOD Fmethod_xgetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	if(Object_isXData(sfp[0].o) || O_cTBL(sfp[0].o)->xdataidx != -1) {
-		knh_fieldn_t fn = DP(mtd)->delta;
+		ksymbol_t fn = DP(mtd)->delta;
 		knh_String_t *n = knh_getFieldName(ctx, fn);
 		knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
 		Object *v = knh_DictMap_getNULL(ctx, m, S_tobytes(n));
@@ -1193,7 +1193,7 @@ static KMETHOD Fmethod_xngetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	if(Object_isXData(sfp[0].o) || O_cTBL(sfp[0].o)->xdataidx != -1) {
-		knh_fieldn_t fn = DP(mtd)->delta;
+		ksymbol_t fn = DP(mtd)->delta;
 		knh_String_t *n = knh_getFieldName(ctx, fn);
 		knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
 		Object *v = knh_DictMap_getNULL(ctx, m, S_tobytes(n));
@@ -1207,7 +1207,7 @@ static KMETHOD Fmethod_xngetter(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Fmethod_xsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
-	knh_fieldn_t fn = DP(mtd)->delta;
+	ksymbol_t fn = DP(mtd)->delta;
 	knh_String_t *n = knh_getFieldName(ctx, fn);
 	knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
 	knh_DictMap_set(ctx, m, n, sfp[1].o);
@@ -1217,7 +1217,7 @@ static KMETHOD Fmethod_xsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD Fmethod_xnsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
-	knh_fieldn_t  fn = DP(mtd)->delta;
+	ksymbol_t  fn = DP(mtd)->delta;
 	knh_String_t  *n = knh_getFieldName(ctx, fn);
 	knh_DictMap_t *m = knh_Object_getXData(ctx, sfp[0].o);
 	knh_type_t p1 = knh_ParamArray_get(DP(mtd)->mp, 0)->type;
@@ -1225,7 +1225,7 @@ static KMETHOD Fmethod_xnsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNd_(sfp[1].ndata);
 }
 
-void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, knh_fieldn_t fn)
+void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, ksymbol_t fn)
 {
 	knh_Fmethod f = (IS_Tunbox(type)) ? Fmethod_xngetter : Fmethod_xgetter;
 	knh_Method_t *mtd = new_Method(ctx, 0, ct->cid, (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_toGETTER(fn), f);
@@ -1243,7 +1243,7 @@ void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, 
 knh_Method_t *knh_NameSpace_addXSetter(CTX ctx, knh_NameSpace_t *ns, const knh_ClassTBL_t *ct, knh_type_t type, knh_methodn_t mn_setter)
 {
 	if(FLAG_is(ct->cflag, FLAG_Class_Expando)) {
-		knh_fieldn_t fn = FN_UNMASK(mn_setter);
+		ksymbol_t fn = FN_UNMASK(mn_setter);
 		knh_methodn_t mn = (type == CLASS_Boolean) ? MN_toISBOOL(fn) : MN_toGETTER(fn);
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, ns, ct->cid, mn);
 		if(mtd == NULL) {
@@ -1362,7 +1362,7 @@ knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *ct, knh
 	}
 	if(MN_isSETTER(mn)) {
 		knh_index_t idx;
-		knh_fieldn_t fn = MN_toFN(mn);
+		ksymbol_t fn = MN_toFN(mn);
 		for(idx = (knh_index_t)ct->fsize - 1; idx >= 0 ; idx--) {
 			knh_fields_t *cf = ct->fields + idx;
 			if(cf->fn == fn) {
@@ -1381,7 +1381,7 @@ knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *ct, knh
 	}
 	if(MN_isGETTER(mn) || MN_isISBOOL(mn)) {
 		knh_index_t idx;
-		knh_fieldn_t fn = MN_toFN(mn);
+		ksymbol_t fn = MN_toFN(mn);
 		for(idx = (knh_index_t)ct->fsize - 1; idx >= 0 ; idx--) {
 			knh_fields_t *cf = ct->fields + idx;
 			if(cf->fn == fn) {
@@ -2474,7 +2474,7 @@ static KMETHOD Object_invokeMethod(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static knh_bool_t ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, knh_String_t *name)
 {
-	knh_fieldn_t fn = knh_getmn(ctx, S_tobytes(name), FN_NEWID);  // FIXME: NOIZE
+	ksymbol_t fn = knh_getmn(ctx, S_tobytes(name), FN_NEWID);  // FIXME: NOIZE
 	knh_Method_t *mtd = knh_ClassTBL_findMethodNULL(ctx, ct, MN_toSETTER(fn), 0);
 	if(mtd != NULL) {
 		LANG_LOG("already defined setter: %s.%s", S_totext(ct->lname), S_totext(name));
@@ -2638,7 +2638,7 @@ static KMETHOD Method_getParamNames(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *ma = new_Array(ctx, CLASS_String, pa->psize);
 	size_t i;
 	for(i = 0; i < pa->psize; i++) {
-		knh_fieldn_t fn = knh_ParamArray_get(pa, i)->fn;
+		ksymbol_t fn = knh_ParamArray_get(pa, i)->fn;
 		knh_Array_add(ctx, ma, knh_getFieldName(ctx, fn));
 	}
 	RETURN_(ma);

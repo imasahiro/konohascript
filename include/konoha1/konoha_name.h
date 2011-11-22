@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      833
+#define K_REVISION                      831
 #endif
-#define K_BUILDID                       1190
+#define K_BUILDID                       1192
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */

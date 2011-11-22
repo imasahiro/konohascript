@@ -464,7 +464,7 @@ typedef void (*knh_Fwritecid)(CTX ctx, struct knh_OutputStream_t *w, knh_class_t
 //## flag ParamArray RVAR   2 - is set * *;
 
 typedef struct knh_param_t {
-	knh_type_t    type;  knh_fieldn_t  fn;
+	knh_type_t    type;  ksymbol_t  fn;
 } knh_param_t;
 
 typedef struct knh_ParamArray_t knh_ParamArray_t;
@@ -1386,7 +1386,7 @@ typedef struct knh_GammaBuilder_t knh_GammaBuilder_t;
 typedef knh_short_t knh_gint_t;
 typedef struct {
 	knh_flag_t    flag;  knh_term_t    ucnt;
-	knh_type_t    type;  knh_fieldn_t  fn;
+	knh_type_t    type;  ksymbol_t  fn;
 	union {
 		knh_Term_t   *tkIDX;
 	};

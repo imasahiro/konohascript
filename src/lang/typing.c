@@ -368,9 +368,9 @@ static void Stmt_insert_(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_Term_t *tm
 
 #define Term_fn(ctx, tk) FN_UNMASK(Term_fnq(ctx, tk))
 
-knh_fieldn_t Term_fnq(CTX ctx, knh_Term_t *tk)
+ksymbol_t Term_fnq(CTX ctx, knh_Term_t *tk)
 {
-	knh_fieldn_t fn = FN_;
+	ksymbol_t fn = FN_;
 	if(TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME) {
 		fn = knh_getfnq(ctx, TK_tobytes(tk), FN_NEWID);
 	}
@@ -654,7 +654,7 @@ static knh_Term_t *GammaBuilder_add(CTX ctx, knh_flag_t flag, knh_Term_t *tkT, k
 {
 	knh_index_t idx = 0;
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
-	knh_fieldn_t fn = Term_fn(ctx, tkN);
+	ksymbol_t fn = Term_fn(ctx, tkN);
 	knh_type_t type = (tkT)->cid;
 
 	if(FLAG_is(op, GF_UNIQUE)) {
@@ -702,7 +702,7 @@ static knh_Term_t *GammaBuilder_add(CTX ctx, knh_flag_t flag, knh_Term_t *tkT, k
 	return tkN;
 }
 
-static knh_Term_t *GammaBuilder_addLVAR(CTX ctx, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn, int ucnt)
+static knh_Term_t *GammaBuilder_addLVAR(CTX ctx, knh_flag_t flag, knh_type_t type, ksymbol_t fn, int ucnt)
 {
 	knh_index_t idx = DP(ctx->gma)->gsize;
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
@@ -719,7 +719,7 @@ static knh_Term_t *GammaBuilder_addLVAR(CTX ctx, knh_flag_t flag, knh_type_t typ
 	return gf[idx].tkIDX;
 }
 
-static knh_Term_t *GammaBuilder_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn, int ucnt)
+static knh_Term_t *GammaBuilder_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t type, ksymbol_t fn, int ucnt)
 {
 	knh_index_t idx = DP(ctx->gma)->fvarsize;
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
@@ -745,10 +745,10 @@ static knh_Term_t *GammaBuilder_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t typ
 	return gf[idx].tkIDX;
 }
 
-static knh_Term_t* GammaBuilder_rindexFNQ(CTX ctx, knh_GammaBuilder_t *gma, knh_fieldn_t fnq, int ucnt)
+static knh_Term_t* GammaBuilder_rindexFNQ(CTX ctx, knh_GammaBuilder_t *gma, ksymbol_t fnq, int ucnt)
 {
 	knh_index_t idx;
-	knh_fieldn_t fn = FN_UNMASK(fnq);
+	ksymbol_t fn = FN_UNMASK(fnq);
 	knh_gamma2_t *gf = DP(gma)->gf;
 	for(idx = DP(gma)->gsize - 1; idx >= 0; idx--) {
 		if(gf[idx].fn == fn) {
@@ -760,9 +760,9 @@ static knh_Term_t* GammaBuilder_rindexFNQ(CTX ctx, knh_GammaBuilder_t *gma, knh_
 	return NULL;
 }
 
-static knh_fields_t* class_rindexFNQ(CTX ctx, knh_class_t cid, knh_fieldn_t fnq, knh_index_t *n)
+static knh_fields_t* class_rindexFNQ(CTX ctx, knh_class_t cid, ksymbol_t fnq, knh_index_t *n)
 {
-	knh_fieldn_t fn = FN_UNMASK(fnq);
+	ksymbol_t fn = FN_UNMASK(fnq);
 	const knh_ClassTBL_t *t = ClassTBL(cid);
 	knh_index_t idx;
 	for(idx = (knh_index_t)t->fsize - 1; idx >= 0 ; idx--) {
@@ -804,7 +804,7 @@ static knh_Func_t * new_StaticFunc(CTX ctx, knh_class_t cid, knh_Method_t *mtd);
 
 static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, knh_type_t reqt, knh_flag_t op)
 {
-	knh_fieldn_t fnq = Term_fnq(ctx, tkN);
+	ksymbol_t fnq = Term_fnq(ctx, tkN);
 	DBG_ASSERT(fnq != FN_NONAME);
 	if(FN_isU1(fnq) || FN_isSUPER(fnq)) goto L_FIELD;  /* _name */
 	if(FN_isU2(fnq)) {
@@ -1522,7 +1522,7 @@ static knh_Term_t *Term_typing(CTX ctx, knh_Term_t *tk, knh_type_t tcid)
 /* ------------------------------------------------------------------------ */
 /* STMT */
 
-static knh_type_t Method_lookupVariableType(CTX ctx, knh_Method_t *mtd, knh_fieldn_t fn)
+static knh_type_t Method_lookupVariableType(CTX ctx, knh_Method_t *mtd, ksymbol_t fn)
 {
 	size_t i;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
@@ -1533,7 +1533,7 @@ static knh_type_t Method_lookupVariableType(CTX ctx, knh_Method_t *mtd, knh_fiel
 	return TYPE_var;
 }
 
-static knh_type_t Class_lookupVariableType(CTX ctx, knh_class_t cid, knh_fieldn_t fn)
+static knh_type_t Class_lookupVariableType(CTX ctx, knh_class_t cid, ksymbol_t fn)
 {
 	knh_index_t idx;
 	knh_fields_t *cf = class_rindexFNQ(ctx, cid, fn, &idx);
@@ -1562,7 +1562,7 @@ static knh_type_t GammaBuilder_lookupVariableType(CTX ctx, knh_Term_t *tkN, knh_
 {
 	knh_type_t itype = TYPE_var;  // if not found
 	knh_class_t this_cid = DP(ctx->gma)->this_cid;
-	knh_fieldn_t fn = Term_fn(ctx, tkN);
+	ksymbol_t fn = Term_fn(ctx, tkN);
 	if(FLAG_is(op, _VFINDTHIS)) {
 		itype = Class_lookupVariableType(ctx, this_cid, fn);
 	}
@@ -1652,7 +1652,7 @@ static knh_fields_t *ClassTBL_expandFields(CTX ctx, knh_ClassTBL_t *ct)
 	return ct->fields;
 }
 
-static void class_addField(CTX ctx, knh_class_t cid, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn)
+static void class_addField(CTX ctx, knh_class_t cid, knh_flag_t flag, knh_type_t type, ksymbol_t fn)
 {
 	knh_ClassTBL_t *t = varClassTBL(cid);
 	knh_fields_t *cf = t->fields;
@@ -1734,7 +1734,7 @@ static void ObjectField_add(CTX ctx, knh_class_t this_cid, knh_Object_t **v, siz
 
 //#define k_goodbsize(n)   (k_goodsize((n) * sizeof(void*)) / sizeof(void*))
 
-static knh_index_t Script_addField(CTX ctx, knh_Script_t *scr, knh_flag_t flag, knh_type_t type, knh_fieldn_t fn)
+static knh_index_t Script_addField(CTX ctx, knh_Script_t *scr, knh_flag_t flag, knh_type_t type, ksymbol_t fn)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(scr);
 	size_t fsize = ct->fsize, fcapacity = ct->fcapacity;
@@ -1755,7 +1755,7 @@ static knh_Term_t *DECLSCRIPT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_Term_t *tkN = tkNN(stmt, 1);
 	if(TT_(tkT) != TT_ERR) {
 		knh_Script_t *scr = K_GMASCR;
-		knh_fieldn_t fn = Term_fn(ctx, tkN);
+		ksymbol_t fn = Term_fn(ctx, tkN);
 		const knh_ClassTBL_t *t = O_cTBL(scr);
 		knh_index_t idx = -1;
 		for(idx = (knh_index_t)t->fsize - 1; idx >= 0 ; idx--) {
@@ -1808,7 +1808,7 @@ static knh_Term_t *TNAME_infer(CTX ctx, knh_Term_t *tkN, knh_StmtExpr_t *stmt, s
 	TYPING(ctx, stmt, n, TYPE_var, _NOCHECK|_NOVOID);
 	knh_type_t type = Tn_type(stmt, n);
 	INFO_Typing(ctx, "", TK_tobytes(tkN), type);
-	knh_fieldn_t fn = Term_fn(ctx, tkN);
+	ksymbol_t fn = Term_fn(ctx, tkN);
 	if(IS_SCRIPTLEVEL(ctx)) {
 		knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 		knh_Term_toTYPED(ctx, tkN, TT_FIELD, type, idx);
@@ -1880,7 +1880,7 @@ static void Stmt_setESPIDX(CTX ctx, knh_StmtExpr_t *stmt)
 
 static void LET_addVAR(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t type, knh_Term_t *tkN)
 {
-	knh_fieldn_t fn = Term_fn(ctx, tkN);
+	ksymbol_t fn = Term_fn(ctx, tkN);
 	DBG_P("script level=%d", IS_SCRIPTLEVEL(ctx));
 	if(IS_SCRIPTLEVEL(ctx)) {
 		knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
@@ -1979,7 +1979,7 @@ static knh_Term_t *SELECT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 		if(TT_(tkN) != TT_NAME) {
 			return ERROR_text(ctx, "unsupported token for selector" K_TRACEPOINT);
 		}
-		knh_fieldn_t fn = Term_fn(ctx, tkN);
+		ksymbol_t fn = Term_fn(ctx, tkN);
 		knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, cid, MN_toGETTER(fn));
 		if(mtd == NULL) {
 			mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, cid, MN_toISBOOL(fn));
@@ -2639,7 +2639,7 @@ static knh_Term_t* func_typingNULL(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t re
 		}
 	}
 	{ /* 2. searching local variable of Func */
-		knh_fieldn_t fn = Term_fn(ctx, tkF);
+		ksymbol_t fn = Term_fn(ctx, tkF);
 		tkIDX = GammaBuilder_rindexFNQ(ctx, ctx->gma, fn, 0);
 		if(tkIDX != NULL && IS_Tfunc(tkIDX->type)) {
 			GammaBuilder_rindexFNQ(ctx, ctx->gma, fn, 1);  // use count
@@ -2756,7 +2756,7 @@ static knh_Term_t* NEWPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t n
 static knh_Term_t* FIELD_typing(CTX ctx, knh_class_t cid, knh_StmtExpr_t *stmt, size_t n)
 {
 	knh_Term_t *tkK = tkNN(stmt, n); DBG_ASSERT(IS_String(tkK->text));
-	knh_fieldn_t fn = knh_getfnq(ctx, S_tobytes(tkK->text), FN_NEWID);
+	ksymbol_t fn = knh_getfnq(ctx, S_tobytes(tkK->text), FN_NEWID);
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, cid, MN_toSETTER(fn));
 	if(mtd == NULL) {
 		TYPING_UntypedExpr(ctx, stmt, n+1);
@@ -3902,7 +3902,7 @@ static knh_Term_t* FOREACH1_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_class_t itrcid = CLASS_unknown;
 	knh_Term_t *tkT = TTYPE_typing(ctx, tkNN(stmtDECL, 0), TYPE_var);
 	knh_Term_t *tkN = tkNN(stmtDECL, 1);
-	knh_fieldn_t fn = Term_fn(ctx, tkN);
+	ksymbol_t fn = Term_fn(ctx, tkN);
 	knh_class_t p1 = tkT->cid;
 	if(p1 == TYPE_var) {  // foreach(s from in..) ;
 		knh_Term_t *tkN2 = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | _USEDCOUNT);
@@ -3959,7 +3959,7 @@ static knh_Term_t* TRY_typing(CTX ctx, knh_StmtExpr_t *stmt, int needsReturn)
 		DBG_ASSERT(IS_StmtExpr(stmtCATCH));
 		if(STT_(stmtCATCH) == STT_CATCH) {
 			BEGIN_BLOCK(stmt, esp2);
-			knh_fieldn_t fn = Term_fn(ctx, tkNN(stmtCATCH, 1));
+			ksymbol_t fn = Term_fn(ctx, tkNN(stmtCATCH, 1));
 			knh_Term_t *tkIDX = GammaBuilder_addLVAR(ctx, 0, TYPE_Exception, fn, 1/*ucnt*/);
 			KNH_SETv(ctx, tkNN(stmtCATCH, 1), tkIDX);
 			Stmt_setESPIDX(ctx, stmtCATCH);

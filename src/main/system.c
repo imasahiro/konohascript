@@ -36,6 +36,8 @@
 extern "C" {
 #endif
 
+#define K_SYMBOL_MAXSIZ   128
+
 /* ------------------------------------------------------------------------ */
 /* [properties] */
 
@@ -126,7 +128,7 @@ int knh_addClassConst(CTX ctx, knh_class_t cid, knh_String_t* name, Object *valu
 /* ------------------------------------------------------------------------ */
 /* [tfieldn, tmethodn] */
 
-knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
+ksymbol_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 {
 	size_t n = knh_Map_size(ctx->share->nameDictCaseSet);
 	if(n == ctx->share->namecapacity) {
@@ -139,16 +141,34 @@ knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 		KNH_DIE("too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)K_FLAG_MN_SETTER);
 	}
 	f(ctx, ctx->share->nameDictCaseSet, s, n + 1);
-	return (knh_fieldn_t)(n);
+	return (ksymbol_t)(n);
 }
 
-static knh_fieldn_t knh_getname(CTX ctx, knh_bytes_t n, knh_fieldn_t def)
+static ksymbol_t addSymbol(CTX ctx, knh_bytes_t t)
+{
+	char symbuf[K_SYMBOL_MAXSIZ];
+	size_t i, pos = 0;
+	int toLower = isupper(t.buf[0]) ? 1 : 0;
+	for(i = 0; i < t.len; i++) {
+		int ch = t.buf[i];
+		if(ch == '_') {
+			toLower = 1; continue;
+		}
+		if(toLower) symbuf[pos] = tolower(ch); else symbuf[pos] = ch;
+		pos++;
+		if(pos < sizeof(symbuf) - 2) break;
+	}
+	symbuf[pos] = 0;
+	return knh_addname(ctx, new_String2(ctx, CLASS_String, (const char*)symbuf, pos, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
+}
+
+static ksymbol_t getSymbol(CTX ctx, knh_bytes_t n, ksymbol_t def)
 {
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	knh_index_t idx = knh_DictSet_index(ctx->share->nameDictCaseSet, n);
 	if(idx == -1) {
 		if(def == FN_NEWID) {
-			idx = knh_addname(ctx, new_String2(ctx, CLASS_String, n.text, n.len, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
+			idx = addSymbol(ctx, n);
 		}
 		else {
 			idx = def - MN_OPSIZE;
@@ -158,10 +178,10 @@ static knh_fieldn_t knh_getname(CTX ctx, knh_bytes_t n, knh_fieldn_t def)
 		idx = knh_DictSet_valueAt(ctx->share->nameDictCaseSet, idx) - 1;
 	}
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-	return (knh_fieldn_t)idx + MN_OPSIZE;
+	return (ksymbol_t)idx + MN_OPSIZE;
 }
 
-static knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
+static knh_nameinfo_t *knh_getnameinfo(CTX ctx, ksymbol_t fn)
 {
 	size_t n = (FN_UNMASK(fn) - MN_OPSIZE);
 	DBG_(
@@ -176,7 +196,7 @@ static knh_nameinfo_t *knh_getnameinfo(CTX ctx, knh_fieldn_t fn)
 
 const char* knh_getopMethodName(knh_methodn_t mn);
 
-KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn)
+KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, ksymbol_t fn)
 {
 	fn = FN_UNMASK(fn);
 	if(fn < MN_OPSIZE) {
@@ -189,9 +209,9 @@ KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn)
 
 /* ------------------------------------------------------------------------ */
 
-knh_fieldn_t knh_getfnq(CTX ctx, knh_bytes_t tname, knh_fieldn_t def)
+ksymbol_t knh_getfnq(CTX ctx, knh_bytes_t tname, ksymbol_t def)
 {
-	knh_fieldn_t mask = 0;
+	ksymbol_t mask = 0;
 	knh_index_t idx = knh_bytes_index(tname, ':');
 	if(idx > 0) {
 		tname = knh_bytes_first(tname, idx);
@@ -213,7 +233,7 @@ knh_fieldn_t knh_getfnq(CTX ctx, knh_bytes_t tname, knh_fieldn_t def)
 			tname = knh_bytes_last(tname, 1);
 		}
 	}
-	return knh_getname(ctx, tname, def) | mask;
+	return getSymbol(ctx, tname, def) | mask;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -232,7 +252,7 @@ static knh_bytes_t knh_bytes_skipFMTOPT(knh_bytes_t t)
 
 knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def)
 {
-	knh_fieldn_t mask = 0;
+	ksymbol_t mask = 0;
 	if(tname.utext[0] == 'o' && tname.utext[1] == 'p') {
 		knh_methodn_t mn = MN_opNOT;
 		for(; mn <= MN_opNEG; mn++) {
@@ -258,7 +278,7 @@ knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def)
 		tname = knh_bytes_last(tname, 3);
 		if(def != MN_NONAME) mask |= K_FLAG_MN_SETTER;
 	}
-	return knh_getname(ctx, tname, def) | mask;
+	return getSymbol(ctx, tname, def) | mask;
 }
 
 /* ------------------------------------------------------------------------ */

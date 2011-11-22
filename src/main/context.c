@@ -802,6 +802,7 @@ void konoha_close(konoha_t konoha)
 #ifdef K_USING_RCGC
 	knh_context_reftrace(ctx, (knh_context_t*)ctx, ctx->ref_buf);
 #endif
+	knh_flush(ctx, KNH_STDOUT); // flush before ending
 	{
 		knh_ldata_t ldata[] = {LOG_u("gc_count", ctx->stat->gcCount),
 				LOG_u("marking_time:ms", ctx->stat->markingTime),

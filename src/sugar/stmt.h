@@ -153,9 +153,9 @@ static knh_class_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh
 
 //define Term_fn(ctx, tk) FN_UNMASK(Term_fnq(ctx, tk))
 //
-//knh_fieldn_t Term_fnq(CTX ctx, knh_Term_t *tk)
+//ksymbol_t Term_fnq(CTX ctx, knh_Term_t *tk)
 //{
-//	knh_fieldn_t fn = FN_;
+//	ksymbol_t fn = FN_;
 //	if(TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME) {
 //		fn = knh_getfnq(ctx, TK_tobytes(tk), FN_NEWID);
 //	}
@@ -188,7 +188,7 @@ static knh_class_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh
 //	return (tk)->mn;
 //}
 
-static knh_fieldn_t Stmt_getfn_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_fieldn_t deffn)
+static ksymbol_t Stmt_getfn_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, ksymbol_t deffn)
 {
 	return deffn;
 }

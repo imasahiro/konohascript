@@ -355,14 +355,14 @@ void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 {
 	GammaBuilder_perror(ctx, KC_EWARN, _("%s overflow: %B"), floatorint, t);
 }
-void WARN_Unused(CTX ctx, knh_Term_t *tk, knh_fieldn_t fn)
+void WARN_Unused(CTX ctx, knh_Term_t *tk, ksymbol_t fn)
 {
 	knh_uline_t uline = ctx->gma->uline;
 	ctx->gma->uline = tk->uline;
 	GammaBuilder_perror(ctx, KC_DWARN, _("unused %N"), fn);
 	ctx->gma->uline = uline;
 }
-knh_Term_t* ERROR_AlreadyDefinedType(CTX ctx, knh_fieldn_t fn, knh_type_t type)
+knh_Term_t* ERROR_AlreadyDefinedType(CTX ctx, ksymbol_t fn, knh_type_t type)
 {
 	return GammaBuilder_perror(ctx, KC_TERROR, _("already defined: previous type %T %N"), type, fn);
 }

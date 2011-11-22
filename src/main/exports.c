@@ -159,8 +159,8 @@ static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d,
 	for(i = 0; i < psize+rsize; i++) {
 		knh_type_t type = (data[0] < _MAX || (TYPE_This <= data[0] && data[0] <= TYPE_T3)) ?
 			(knh_type_t)data[0] : knh_NameSpace_gettype(ctx, K_GMANS, knh_data_tobytes(data[0]));
-		knh_fieldn_t fn = (data[1] < _MAX) ?
-			(knh_fieldn_t)data[1] : knh_getfnq(ctx, knh_data_tobytes(data[1]), FN_NEWID);
+		ksymbol_t fn = (data[1] < _MAX) ?
+			(ksymbol_t)data[1] : knh_getfnq(ctx, knh_data_tobytes(data[1]), FN_NEWID);
 		knh_param_t p = {type, fn};
 		knh_ParamArray_add(ctx, pa, p);
 		data += 2;

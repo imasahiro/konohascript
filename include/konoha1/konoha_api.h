@@ -69,7 +69,7 @@ KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int 
 KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...);
 KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str);
 KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value);
-KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, knh_fieldn_t fn);
+KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, ksymbol_t fn);
 #endif
 
 typedef struct knh_api2_t {
@@ -91,7 +91,7 @@ typedef struct knh_api2_t {
 	knh_RawPtr_t* (*new_ReturnCppObject)(CTX ctx, knh_sfp_t *sfp, void *rawptr, knh_Frawfree pfree);
 	knh_String_t* (*CWB_newString)(CTX ctx, CWB_t *cwb, int pol);
 	knh_String_t*  (*DictMap_keyAt)(knh_DictMap_t *m, size_t n);
-	knh_String_t*  (*getFieldName)(CTX ctx, knh_fieldn_t fn);
+	knh_String_t*  (*getFieldName)(CTX ctx, ksymbol_t fn);
 	knh_String_t* (*new_String)(CTX ctx, const char *str);
 	knh_TypeMap_t*  (*findTypeMapNULL)(CTX ctx, knh_class_t scid0, knh_class_t tcid0);
 	knh_TypeMap_t* (*new_TypeMap)(CTX ctx, knh_flag_t flag, knh_class_t scid, knh_class_t tcid, knh_Ftypemap func);
@@ -139,7 +139,7 @@ typedef struct knh_api2_t {
 	void  (*write_utf8)(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8);
 } knh_api2_t;
 	
-#define K_API2_CRC32 ((size_t)-344632187)
+#define K_API2_CRC32 ((size_t)849853371)
 #ifdef K_DEFINE_API2
 static const knh_api2_t* getapi2(void) {
 	static const knh_api2_t DATA_API2 = {
@@ -342,8 +342,8 @@ knh_Term_t* ERROR_RequiredParameter(CTX ctx);
 void WARN_WrongTypeParam(CTX ctx, knh_class_t cid);
 void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type);
 void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t);
-void WARN_Unused(CTX ctx, knh_Term_t *tk, knh_fieldn_t fn);
-knh_Term_t* ERROR_AlreadyDefinedType(CTX ctx, knh_fieldn_t fn, knh_type_t type);
+void WARN_Unused(CTX ctx, knh_Term_t *tk, ksymbol_t fn);
+knh_Term_t* ERROR_AlreadyDefinedType(CTX ctx, ksymbol_t fn, knh_type_t type);
 knh_Term_t* ErrorTooManyVariables(CTX ctx);
 void WARN_UseDefaultValue(CTX ctx, const char *whatis, knh_type_t type);
 void WarningNoFmt(CTX ctx, const char *fmt);
@@ -415,7 +415,7 @@ knh_Term_t* knh_Term_toCID(CTX ctx, knh_Term_t *tk, knh_class_t cid);
 knh_Term_t* knh_Term_toTYPED(CTX ctx, knh_Term_t *tk, knh_term_t tt, knh_type_t type, knh_short_t nn);
 knh_Term_t* new_TermTYPED(CTX ctx, knh_term_t tt, knh_type_t type, knh_short_t nn);
 knh_bool_t StmtMETA_is_(CTX ctx, knh_StmtExpr_t *stmt, knh_bytes_t name);
-knh_fieldn_t Term_fnq(CTX ctx, knh_Term_t *tk);
+ksymbol_t Term_fnq(CTX ctx, knh_Term_t *tk);
 knh_class_t knh_Term_cid(CTX ctx, knh_Term_t *tk, knh_type_t reqt);
 void knh_GammaBuilder_init(CTX ctx);
 knh_bool_t typingFunction(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB);
@@ -485,9 +485,9 @@ knh_class_t knh_class_P2(CTX ctx, knh_class_t bcid, knh_type_t p1, knh_type_t p2
 knh_bool_t knh_ParamArray_hasTypeVar(knh_ParamArray_t *pa);
 void knh_ParamArray_tocid(CTX ctx, knh_ParamArray_t *pa, knh_class_t this_cid, knh_ParamArray_t *npa);
 knh_ParamArray_t *new_ParamArrayR0(CTX ctx, knh_type_t t);
-knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, knh_fieldn_t fn1);
+knh_ParamArray_t *new_ParamArrayP1(CTX ctx, knh_type_t rtype, knh_type_t p1, ksymbol_t fn1);
 void knh_ParamArray_add(CTX ctx, knh_ParamArray_t *pa, knh_param_t p);
-void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, knh_fieldn_t fn);
+void knh_ParamArray_addParam(CTX ctx, knh_ParamArray_t *pa, knh_type_t type, ksymbol_t fn);
 void knh_ParamArray_addReturnType(CTX ctx, knh_ParamArray_t *pa, knh_type_t type);
 knh_bool_t knh_ParamArray_equalsType(knh_ParamArray_t *pa, knh_ParamArray_t *pa2);
 void knh_Method_setFunc(CTX ctx, knh_Method_t *mtd, knh_Fmethod func);
@@ -496,7 +496,7 @@ knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_
 knh_index_t knh_Method_indexOfGetterField(knh_Method_t *o);
 knh_index_t knh_Method_indexOfSetterField(knh_Method_t *o);
 knh_DictMap_t* knh_Object_getXData(CTX ctx, knh_Object_t *o);
-void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, knh_fieldn_t fn);
+void knh_ClassTBL_addXField(CTX ctx, const knh_ClassTBL_t *ct, knh_type_t type, ksymbol_t fn);
 knh_Method_t *knh_NameSpace_addXSetter(CTX ctx, knh_NameSpace_t *ns, const knh_ClassTBL_t *ct, knh_type_t type, knh_methodn_t mn_setter);
 void knh_ClassTBL_addMethod(CTX ctx, const knh_ClassTBL_t *t, knh_Method_t *mtd, int isCHECK);
 knh_Method_t* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *ct, knh_methodn_t mn, int isGEN);
@@ -756,8 +756,8 @@ knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key);
 void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value);
 Object *knh_getClassConstNULL(CTX ctx, knh_class_t cid, knh_bytes_t name);
 int knh_addClassConst(CTX ctx, knh_class_t cid, knh_String_t* name, Object *value);
-knh_fieldn_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f);
-knh_fieldn_t knh_getfnq(CTX ctx, knh_bytes_t tname, knh_fieldn_t def);
+ksymbol_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f);
+ksymbol_t knh_getfnq(CTX ctx, knh_bytes_t tname, ksymbol_t def);
 knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def);
 const char* knh_getmnname(CTX ctx, knh_methodn_t mn);
 knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t);

@@ -3074,7 +3074,7 @@ typedef struct {
 
 typedef struct {
 	const char *name;
-	knh_fieldn_t fn;
+	ksymbol_t fn;
 } knh_FieldNameData0_t ;
 
 
@@ -3146,7 +3146,7 @@ static void knh_loadScriptFieldNameData0(CTX ctx, knh_FieldNameData0_t *data)
 	while(data->name != NULL) {
 		knh_String_t *name = new_T(data->name);
 #if defined(K_USING_DEBUG)
-		knh_fieldn_t fn = knh_addname(ctx, name, knh_DictSet_append);
+		ksymbol_t fn = knh_addname(ctx, name, knh_DictSet_append);
 		DBG_ASSERT(fn == data->fn - MN_OPSIZE);
 #else
 		knh_addname(ctx, name, knh_DictSet_append);

@@ -117,7 +117,7 @@ static KMETHOD Object_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 //	size_t i, ac = knh_stack_argc(ctx, v);
 //	for(i = 0; i < ac; i+= 2) {
 //		if(IS_bString(v[i].s)) {
-//			knh_fieldn_t fn = knh_getfnq(ctx, S_tobytes(v[i].s), FN_NONAME);
+//			ksymbol_t fn = knh_getfnq(ctx, S_tobytes(v[i].s), FN_NONAME);
 //			if(fn == FN_NONAME) continue;
 //			knh_index_t idx = knh_Class_queryField(ctx, cid, fn);
 //			if(idx == -1) continue;

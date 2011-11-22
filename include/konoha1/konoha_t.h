@@ -344,11 +344,11 @@ typedef knh_ushort_t       knh_event_t;    /* knh_event_t */
 
 /* ------------------------------------------------------------------------ */
 
-typedef knh_ushort_t          knh_fieldn_t;
+typedef knh_ushort_t          ksymbol_t;
 typedef knh_ushort_t          knh_methodn_t;
 
-#define FN_NONAME    ((knh_fieldn_t)-1)
-#define FN_NEWID     ((knh_fieldn_t)-2)
+#define FN_NONAME    ((ksymbol_t)-1)
+#define FN_NEWID     ((ksymbol_t)-2)
 #define FN_return    FN_
 
 #define MN_NONAME    ((knh_methodn_t)-1)
@@ -685,7 +685,7 @@ typedef struct {
 	knh_flag_t    flag  ;
 	knh_short_t   israw ;
 	knh_type_t    type  ;
-	knh_fieldn_t  fn    ;
+	ksymbol_t  fn    ;
 } knh_fields_t ;
 
 #define TFMT_s      0

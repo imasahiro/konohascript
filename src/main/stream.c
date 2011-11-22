@@ -1249,7 +1249,7 @@ typedef struct {
 		knh_bytes_t   bvalue;
 		knh_class_t     cid;
 		knh_type_t      type;
-		knh_fieldn_t    fn;
+		ksymbol_t    fn;
 		knh_methodn_t   mn;
 	};
 } knh_valist_t;
@@ -1335,7 +1335,7 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 		case VA_OBJECT:
 			args[i].ovalue = (Object*)va_arg(ap, Object*); break;
 		case VA_FIELDN:
-			args[i].fn = (knh_fieldn_t)va_arg(ap, int/*knh_fieldn_t*/); break;
+			args[i].fn = (ksymbol_t)va_arg(ap, int/*ksymbol_t*/); break;
 		case VA_METHODN:
 			args[i].mn = (knh_methodn_t)va_arg(ap, int/*knh_methodn_t*/); break;
 		case VA_CLASS:

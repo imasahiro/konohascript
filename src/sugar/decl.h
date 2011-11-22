@@ -230,7 +230,7 @@ static knh_ParamArray_t *Block_newMethodParam(CTX ctx, knh_Block_t *params, knh_
 	for(i = 0; i < psize; i++) {
 		knh_Stmt_t *stmt = (knh_Stmt_t*)params->blocks->list[i];
 		knh_class_t cid  = Stmt_getcid(ctx, stmt, "type", ns, CLASS_unknown);
-		knh_fieldn_t fn  = Stmt_getfn(ctx, stmt, "name", FN_);
+		ksymbol_t fn  = Stmt_getfn(ctx, stmt, "name", FN_);
 		knh_ParamArray_addParam(ctx, pa, cid, fn);
 	}
 	return pa;
