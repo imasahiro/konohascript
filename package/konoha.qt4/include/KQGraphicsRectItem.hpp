@@ -1,7 +1,7 @@
 #ifndef QGRAPHICSRECTITEM
 #define QGRAPHICSRECTITEM
 class DummyQGraphicsRectItem : public DummyQAbstractGraphicsShapeItem {
-//	Q_OBJECT;
+	//Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
 	std::map<std::string, knh_Func_t *> *event_map;
@@ -31,5 +31,3 @@ public:
 };
 
 #endif //QGRAPHICSRECTITEM
-
-

@@ -1,15 +1,42 @@
 #ifndef QGRAPHICSITEM
 #define QGRAPHICSITEM
+
+class PKGConnector : public QObject {
+	Q_OBJECT;
+public:
+	PKGConnector() {}
+	void emitDragBeginSignal(QGraphicsSceneMouseEvent *event) {
+		emit dragBeginSignal(event);
+	}
+
+	void emitDragMoveSignal(QGraphicsSceneMouseEvent *event) {
+		emit dragMoveSignal(event);
+	}
+
+	void emitDragEndSignal(QGraphicsSceneMouseEvent *event) {
+		emit dragEndSignal(event);
+	}
+
+signals:
+	void dragBeginSignal(QGraphicsSceneMouseEvent *event);
+	void dragMoveSignal(QGraphicsSceneMouseEvent *event);
+	void dragEndSignal(QGraphicsSceneMouseEvent *event);
+};
+
 class DummyQGraphicsItem {
-//	Q_OBJECT;
+	//Q_OBJECT;
 public:
 	knh_RawPtr_t *self;
+//========== for physics package ==========//
 	float density;
 	float restitution;
 	float friction;
 	bool bullet;
 	bool isStatic;
-
+	bool draggable;
+	void *body;
+	PKGConnector *pkgconnector;
+//========================================//
 	std::map<std::string, knh_Func_t *> *event_map;
 	std::map<std::string, knh_Func_t *> *slot_map;
 	knh_Func_t *context_menu_event_func;
@@ -81,7 +108,7 @@ public:
 };
 
 class KQGraphicsItem : public QGraphicsItem {
-//	Q_OBJECT;
+	//Q_OBJECT;
 public:
 	int magic_num;
 	knh_RawPtr_t *self;

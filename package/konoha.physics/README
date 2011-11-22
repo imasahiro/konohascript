@@ -1,0 +1,11 @@
+#How to Library Install
+
+$ cd lib
+$ tar -zxvf box2d.tar.gz
+$ cd Box2D/Build
+$ cmake ../
+$ make && make install //install Box2D v2.1.2
+
+#How to execute sample
+$ konoha sample/sample.k
+$ konoha sample/joint.k

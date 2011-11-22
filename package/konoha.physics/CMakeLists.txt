@@ -1,9 +1,9 @@
 if(USE_PHYSICS)
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_C_FLAGS_RELEASE "-Wall -O0 -g3")
+set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O0 -g3")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE DEBUG)
 
@@ -11,8 +11,13 @@ set(CMAKE_BUILD_TYPE DEBUG)
 
 project(physics)
 find_package(Qt4 REQUIRED)
+set(QT_USE_QTOPENGL TRUE)
+
 set(PACKAGE_SOURCE_CODE
 	physics.cpp
+	src/QWorld.cpp
+	src/QJoint.cpp
+	src/DebugDraw.cpp
 	moc_physics.cxx
 	)
 
@@ -20,6 +25,7 @@ set(PACKAGE_SCRIPT_CODE qt4.k)
 set(PACKAGE_EXTRA_LIBRARY
 	${QT_QTCORE_LIBRARY}
 	${QT_QTGUI_LIBRARY}
+	${QT_QTOPENGL_LIBRARY}
 	)
 
 set(PACKAGE_HEADERS physics.hpp)
@@ -32,6 +38,11 @@ if(HAVE_BOX2D)
     add_definitions(-DGAM_USING_BOX2D=1)
     include_directories(${HAVE_BOX2D}/Box2D)
 endif()
+
+find_package(OpenGL REQUIRED)
+if (NOT OPENGL_FOUND)
+   message(ERROR "OpenGL not found!!")
+endif(NOT OPENGL_FOUND)
 
 set(PACKAGE_NAME    ${PROJECT_NAME})
 set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
@@ -49,7 +60,7 @@ add_definitions(${QT_DEFINITIONS})
 add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE} ${PACKAGE_HEADERS_MOC})
 set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
 target_link_libraries(${PACKAGE_NAME} konoha)
-target_link_libraries(${PACKAGE_NAME} ${PACKAGE_EXTRA_LIBRARY} Box2D)
+target_link_libraries(${PACKAGE_NAME} ${PACKAGE_EXTRA_LIBRARY} ${OPENGL_LIBRARIES} Box2D)
 
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})

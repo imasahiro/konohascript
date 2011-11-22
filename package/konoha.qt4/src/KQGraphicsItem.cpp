@@ -2641,6 +2641,9 @@ DummyQGraphicsItem::DummyQGraphicsItem()
 	restitution = 0.0f;
 	friction = 0.0f;
 	isStatic = true;
+	draggable = false;
+	body = NULL;
+	pkgconnector = new PKGConnector();
 
 	contextMenuEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneContextMenuEvent);
 	dragEnterEventPtr = new_empty_QRawPtr(lctx, QGraphicsSceneDragDropEvent);
@@ -2982,6 +2985,7 @@ bool DummyQGraphicsItem::mouseDoubleClickEventDummy(QGraphicsSceneMouseEvent* ev
 
 bool DummyQGraphicsItem::mouseMoveEventDummy(QGraphicsSceneMouseEvent* event)
 {
+	if (draggable) pkgconnector->emitDragMoveSignal(event);
 	if (mouse_move_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
@@ -2996,6 +3000,7 @@ bool DummyQGraphicsItem::mouseMoveEventDummy(QGraphicsSceneMouseEvent* event)
 
 bool DummyQGraphicsItem::mousePressEventDummy(QGraphicsSceneMouseEvent* event)
 {
+	if (draggable) pkgconnector->emitDragBeginSignal(event);
 	if (mouse_press_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
@@ -3005,11 +3010,12 @@ bool DummyQGraphicsItem::mousePressEventDummy(QGraphicsSceneMouseEvent* event)
 		knh_Func_invoke(lctx, mouse_press_event_func, lsfp, 2);
 		return true;
 	}
-	return false;
+	return true;//false;
 }
 
 bool DummyQGraphicsItem::mouseReleaseEventDummy(QGraphicsSceneMouseEvent* event)
 {
+	if (draggable) pkgconnector->emitDragEndSignal(event);
 	if (mouse_release_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
 		knh_sfp_t *lsfp = lctx->esp;
@@ -3249,7 +3255,7 @@ bool KQGraphicsItem::sceneEvent(QEvent *event)
 		QGraphicsItem::sceneEvent(event);
 		return false;
 	}
-//	QGraphicsItem::sceneEvent(event);
+	//QGraphicsItem::sceneEvent(event);
 	return true;
 }
 
