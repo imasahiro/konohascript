@@ -39,6 +39,41 @@ KMETHOD QGraphicsItem_setDensity(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+KMETHOD QGraphicsItem_applyForce(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KQGraphicsItem *i = RawPtr_to(KQGraphicsItem *, sfp[0]);
+	QPointF *force = RawPtr_to(QPointF *, sfp[1]);
+	QPointF *pos = RawPtr_to(QPointF *, sfp[2]);
+	if (i && i->dummy->body) {
+		b2Body *body = static_cast<b2Body *>(i->dummy->body);
+		body->ApplyForce(b2Vec2(force->x(), force->y()), b2Vec2(pos->x()/PTM_RATIO, pos->y()/PTM_RATIO));
+	}
+	RETURNvoid_();
+}
+
+KMETHOD QGraphicsItem_applyTorque(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KQGraphicsItem *i = RawPtr_to(KQGraphicsItem *, sfp[0]);
+	float torque = Float_to(float, sfp[1]);
+	if (i && i->dummy->body) {
+		b2Body *body = static_cast<b2Body *>(i->dummy->body);
+		body->ApplyTorque(torque);
+	}
+	RETURNvoid_();
+}
+
+KMETHOD QGraphicsItem_setXForm(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	KQGraphicsItem *i = RawPtr_to(KQGraphicsItem *, sfp[0]);
+	QPointF *pos = RawPtr_to(QPointF *, sfp[1]);
+	float angle = Float_to(float, sfp[2]);
+	if (i && i->dummy->body) {
+		b2Body *body = static_cast<b2Body *>(i->dummy->body);
+		body->SetTransform(b2Vec2(pos->x()/PTM_RATIO, pos->y()/PTM_RATIO), -1 * angle);
+	}
+	RETURNvoid_();
+}
+
 KMETHOD QGraphicsItem_getDensity(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	KQGraphicsItem *i = RawPtr_to(KQGraphicsItem *, sfp[0]);
@@ -145,6 +180,15 @@ KMETHOD QWorld_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	QWorld *world = new QWorld(scene);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, world, NULL);
 	RETURN_(p);
+}
+
+KMETHOD QWorld_setGravity(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QWorld *world = RawPtr_to(QWorld *, sfp[0]);
+	float x = Float_to(float, sfp[1]);
+	float y = Float_to(float, sfp[2]);
+	if (world) world->setGravity(x, y);
+	RETURNvoid_();
 }
 
 KMETHOD QWorld_add(CTX ctx, knh_sfp_t *sfp _RIX)

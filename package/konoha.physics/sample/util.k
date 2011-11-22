@@ -1,3 +1,35 @@
+QGraphicsRectItem new_StaticRect(int x, int y, int width, int height)
+{
+	QGraphicsRectItem rect = new ();
+	QRectF r = new QRectF();
+	r.setRect(x, y, width, height);
+	rect.setRect(r);
+	QBrush brush = new QBrush();
+	brush.setStyle(1);
+	QColor syan = new QColor();
+	syan.setNamedColor("#00ffff");
+	brush.setColor(syan);
+	rect.setBrush(brush);
+	return rect;
+}
+
+QGraphicsRectItem new_DynamicRect(int x, int y, int width, int height)
+{
+	QGraphicsRectItem rect = new ();
+	QRectF r = new QRectF();
+	r.setRect(x, y, width, height);
+	rect.setRect(r);
+	QBrush brush = new QBrush();
+	brush.setStyle(1);
+	QColor syan = new QColor();
+	syan.setNamedColor("#00ffff");
+	brush.setColor(syan);
+	rect.setBrush(brush);
+
+	rect.setDensity(1);
+	rect.setRestitution(0);
+	return rect;
+}
 
 QFont new_QFont(String font_name, int style, int font_size)
 {

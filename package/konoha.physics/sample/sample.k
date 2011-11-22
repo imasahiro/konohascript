@@ -46,14 +46,29 @@ QGraphicsSimpleTextItem new_DynamicText(String text, QFont font, String color_na
 	return ret;
 }
 
+String getRandomColor()
+{
+	String ret = "#";
+	for (int i = 0; i < 3; i++) {
+		int r = Int.random(155);
+		ret += "%x"(100 + r);
+	}
+	return ret;
+}
+
 void beginContactEvent(QGraphicsItem a, QGraphicsItem b)
 {
-	print "begin contact : (" + a.class + ", " + b.class + ")";
+	//print "begin contact : (" + a.class + ", " + b.class + ")";
+	if (a.class == QGraphicsEllipseItem) {
+		((QGraphicsEllipseItem)a).setBrush(new_QBrush(new_QColor(getRandomColor())));
+	} else if (b.class == QGraphicsEllipseItem) {
+		((QGraphicsEllipseItem)b).setBrush(new_QBrush(new_QColor(getRandomColor())));
+	}
 }
 
 void endContactEvent(QGraphicsItem a, QGraphicsItem b)
 {
-	print "begin contact : (" + a.class + ", " + b.class + ")";
+	//print "begin contact : (" + a.class + ", " + b.class + ")";
 }
 
 void main(String[] args)

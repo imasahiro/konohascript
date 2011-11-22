@@ -19,8 +19,12 @@ class QGearJoint extends QGraphicsLineItem;
 @Public @Native boolean QGraphicsItem.isStatic(void);
 @Public @Native void QGraphicsItem.setDraggable(boolean b);
 @Public @Native boolean QGraphicsItem.isDraggable(void);
+@Public @Native void QGraphicsItem.applyForce(QPointF force, QPointF pos);
+@Public @Native void QGraphicsItem.applyTorque(float torque);
+@Public @Native void QGraphicsItem.setXForm(QPointF pos, float angle);
 
 QWorld QWorld.new(QGraphicsScene scene);
+void QWorld.setGravity(float x, float y);
 void QWorld.add(QGraphicsItem item);
 void QWorld.start();
 void QWorld.showDebugDraw();

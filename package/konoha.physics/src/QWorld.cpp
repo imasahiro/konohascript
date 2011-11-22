@@ -218,6 +218,7 @@ void QWorld::timerEvent(QTimerEvent *event)
 		//fprintf(stderr, "================== end ====================\n");
 //		delete vec_list;
 	}
+	scene->update();
 }
 
 void QWorld::dragBeginSlot(QGraphicsSceneMouseEvent *event)
