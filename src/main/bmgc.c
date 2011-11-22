@@ -1007,7 +1007,6 @@ static void DBG_CHECK_OBJECT(Heap *h, knh_Object_t *o, size_t request_size, bool
 #endif
 
 #if GCDEBUG
-static bool DBG_CHECK_OBJECT_IN_HEAP(knh_Object_t *o, Heap *h) CC_UNUSED;
 static bool DBG_CHECK_OBJECT_IN_SEGMENT(knh_Object_t *o, Segment *seg)
 {
     knh_Object_t *s = (knh_Object_t *) seg->managed_heap;
@@ -1216,7 +1215,6 @@ static void BMGC_dump(GCInfo *info)
     gc_info("\n");
 }
 
-static bool DBG_CHECK_BITMAP(Segment *seg, bitmap_t *bm) CC_UNUSED;
 static bool DBG_CHECK_BITMAP(Segment *seg, bitmap_t *bm)
 {
     bitmap_t *b0 = (bitmap_t *)seg->base[0];

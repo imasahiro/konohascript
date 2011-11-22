@@ -4,12 +4,12 @@
  ***************************************************************************/
 
 class Person {
-  String name;
-  int age;
-  Person(String name, age) {
-    this.name = name;
-    _age = age;
-  }
+	String name;
+	int age;
+	Person(String name, age) {
+		this.name = name;
+		_age = age;
+	}
 }
 
 assure "Class" {
@@ -66,8 +66,8 @@ assure "SubClass" {
 	Triangle t = new Triangle(80, 60);
 	print "Rectangle", r.area
 	print "Triangle", t.area
-	assure r.area == 4800;
-	assure t.area == 2400;
+	assert r.area == 4800;
+	assert t.area == 2400;
 }
 
 

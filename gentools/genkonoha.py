@@ -3,6 +3,7 @@
 
 import os, os.path, sys
 import time, binascii
+import re
 
 ####
 # print 
@@ -734,8 +735,9 @@ def svnrev():
     t = f.read()
     print t
     f.close()
-    t = t.split('\n')[4].split(":")[1].strip();
-    return int(t) + 1
+    # t = t.split('\n')[4].split(":")[1].strip();
+    n = re.search('Revision: (\d+)', t).groups()[0];
+    return int(n) + 1
 
 def write_name_h(f, data):
     write_chapter(f, 'MACROS')
