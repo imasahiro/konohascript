@@ -1046,7 +1046,7 @@ KNHAPI2(void) knh_OutputStream_p(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf
 
 KNHAPI2(void) knh_write_EOL(CTX ctx, knh_OutputStream_t *w)
 {
-	io2_write(ctx, w->io2, K_OSLINEFEED, knh_strlen(K_OSLINEFEED));
+	io2_write(ctx, w->io2, K_OSLINEFEED, sizeof(K_OSLINEFEED) - 1);
 	if(OutputStream_isAutoFlush(w)) {
 		io2_flush(ctx, w->io2);
 	}

@@ -229,12 +229,7 @@ static int nextT(toks_t *toks, int n)
 	return toks->eol;
 }
 
-void static ERROR_SyntaxErrorRule(CTX ctx, knh_Token_t *rule, toks_t *toks)
-{
-
-}
-
-void static ERROR_NotTerm(CTX ctx, knh_Token_t *tk, toks_t *toks)
+static void ERROR_SyntaxErrorRule(CTX ctx, knh_Token_t *rule, toks_t *toks)
 {
 
 }
@@ -611,7 +606,48 @@ static knh_Expr_t *new_SugarExpr(CTX ctx, knh_Sugar_t *sgr, toks_t *toks)
 	return expr;
 }
 
-// sugar NewTuple ::= "(" exprN ")"
+//static knh_bool_t matchExprLeftRule(CTX ctx, toks_t *rule, toks_t *toks)
+//{
+//	toks_t sub;
+//	while(hasN(rule, 0)) {
+//		if(isSymbolRule(rule)) {  // "is"
+//			if(matchSymbolRule(rule, toks)) {
+//			}
+//			incN(rule, 1);
+//		}
+//		else if(isTermRule(rule)) {  // term
+//			if(!matchTermRule(rule, toks)) {
+//				if(toks->status == _Deterministic) {
+//					ERROR_SyntaxErrorRule(toks->ctx, tkN(rule, 0), toks);
+//					toks->status = FoundError;
+//				}
+//				return 0;
+//			}
+//			incN(rule, 1);
+//		}
+//		else if(isDeterministic(rule)) {
+//			toks->status = _Deterministic;
+//			incN(rule, 1);
+//		}
+//		else if(isOptionalRule(rule)) {
+//			int rollback = toks->cur;
+//			subBetween(&sub, rule, '[', ']');
+//			if(!matchLeft(&sub, toks)) {
+//				toks->cur = rollback;
+//				rule->cur = sub.eol + 1;
+//				knh_Token_t *tk = tkN(rule, 0);
+//				if(tk->topch == '*') incN(rule, 1);
+//			}
+//			else {
+//				int start = rule->cur;
+//				rule->cur = sub.eol + 1;
+//				knh_Token_t *tk = tkN(rule, 0);
+//				if(tk->topch == '*') rule->cur = start;
+//			}
+//		}
+//	}
+//	return 1;
+//}
 
 static knh_Expr_t* matchSugarExpr(CTX ctx, toks_t *toks)
 {
@@ -635,6 +671,12 @@ static knh_Expr_t* matchSugarExpr(CTX ctx, toks_t *toks)
 		}
 		lang = lang->parentNULL;
 	}
+	return NULL;
+}
+static knh_Expr_t *ERROR_NotTerm(CTX ctx, knh_Token_t *tk, toks_t *toks)
+{
+	knh_perror(ctx, 0, tk->uline, tk->lpos, "not valid term: %s", S_totext(tk->text));
+	toks->status = FoundError;
 	return NULL;
 }
 
@@ -812,6 +854,9 @@ static int findBinaryOperator(toks_t *toks)
 	return idx;
 }
 
+//sugar SizeExpr  ::= "|" expr "|"
+//sugar IndexExpr ::= expr "[" expr "]"
+
 static knh_Expr_t* matchExpr(CTX ctx, toks_t *toks)
 {
 	int idx = findBinaryOperator(toks);
@@ -853,7 +898,7 @@ static knh_Expr_t* matchBlock(CTX ctx, toks_t *toks)
 			BA_size(ctx->bufa),
 			3,
 			toks->lang,
-			1
+			_TOPLEVEL,
 		};
 		parse(ctx, &tenvbuf, _METHOD);
 		bk = new_Block(ctx, toks->list, toks_listsize, knh_Array_size(toks->list), toks->lang, toks->ns);

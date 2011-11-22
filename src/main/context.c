@@ -55,7 +55,9 @@ static knh_InputStream_t *new_InputStreamStdIn(CTX ctx, knh_String_t *enc)
 static knh_OutputStream_t *new_OutputStreamStdOut(CTX ctx, knh_String_t *enc)
 {
 	knh_io2_t *io2 = new_io2(ctx, 1, 4096);
-	return new_OutputStream(ctx, io2, new_Path(ctx, TS_DEVSTDOUT));
+	knh_OutputStream_t *w = new_OutputStream(ctx, io2, new_Path(ctx, TS_DEVSTDOUT));
+	OutputStream_setAutoFlush(w, 1);
+	return w;
 }
 
 static knh_OutputStream_t *new_OutputStreamStdErr(CTX ctx, knh_String_t *enc)
