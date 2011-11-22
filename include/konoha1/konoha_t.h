@@ -1232,6 +1232,18 @@ typedef struct knh_context_t {
 	KNH_NTRACE(ctx, event, pe, ldata);  \
 	knh_nthrow(ctx, sfp, fault, ldata); \
 
+#define KNH_LOGDATA(...) { __VA_ARGS__, LOG_END}
+#define KNH_NTRACE2(ctx, event, pe, L) do {\
+	knh_ldata_t ldata[] = L;\
+	KNH_NTRACE(ctx, event, pe, ldata);\
+} while (0)
+#define KNH_NTHROW2(ctx, sfp, fault, event, pe, L) do {\
+	knh_ldata_t ldata[] = L;\
+	KNH_NTRACE(ctx, event, pe, ldata);  \
+	knh_nthrow(ctx, sfp, fault, ldata); \
+} while (0)
+
+
 #define FLAG_TRACE_FAILED 1
 #define FLAG_TRACE_ERRNO  (1<<1)
 #define FLAG_TRACE_ALWAYS (1<<2)

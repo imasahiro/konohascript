@@ -45,15 +45,15 @@
 /* memory config */
 #define ONE ((uintptr_t)1)
 #define SEGMENT_SIZE (128 * KB_)
-#define HEAP_KLASS_MIN  6 /* 1 <<  6 == 64 */
-#define HEAP_KLASS_MAX 12 /* 1 << 12 == 4096 */
-#define HEAP_DEFAULT_SEGPOOL_SIZE (128)/* 128 * SEGMENT_SIZE(128k) = 16MB*/
-#define MIN_ALIGN (ONE << HEAP_KLASS_MIN)
+#define SUBHEAP_KLASS_MIN  6 /* 1 <<  6 == 64 */
+#define SUBHEAP_KLASS_MAX 12 /* 1 << 12 == 4096 */
+#define SUBHEAP_DEFAULT_SEGPOOL_SIZE (128)/* 128 * SEGMENT_SIZE(128k) = 16MB*/
+#define MIN_ALIGN (ONE << SUBHEAP_KLASS_MIN)
 #define SEGMENT_LEVEL 3
 
 #define KlassBlockSize(klass) (ONE << klass)
-#define HEAP_KLASS_SIZE_MIN KlassBlockSize(HEAP_KLASS_MIN)
-#define HEAP_KLASS_SIZE_MAX KlassBlockSize(HEAP_KLASS_MAX)
+#define SUBHEAP_KLASS_SIZE_MIN KlassBlockSize(SUBHEAP_KLASS_MIN)
+#define SUBHEAP_KLASS_SIZE_MAX KlassBlockSize(SUBHEAP_KLASS_MAX)
 #define BITMAP_FULL ((uintptr_t)(-1))
 #define ALIGN(x,n)  (((x)+((n)-1))&(~((n)-1)))
 #define PTR_SIZE (sizeof(void*))
@@ -79,7 +79,7 @@
 #define prefetch_(addr, rw, locality) __builtin_prefetch(addr, rw, locality)
 
 #define for_each_heap(H, I, HEAPS) \
-    for (I = HEAP_KLASS_MIN, H = (HEAPS)+I; I <= HEAP_KLASS_MAX; ++H, ++I)
+    for (I = SUBHEAP_KLASS_MIN, H = (HEAPS)+I; I <= SUBHEAP_KLASS_MAX; ++H, ++I)
 
 static inline void *do_malloc(size_t size);
 static inline void *do_realloc(void *ptr, size_t oldSize, size_t newSize);
@@ -151,16 +151,16 @@ static inline void ARRAY_##T##_dispose(ARRAY(T) *a) {\
 
 
 /* struct gc */
-#define GCDATA(ctx) ((GCInfo*)(ctx)->freeObjectList)
+#define GCDATA(ctx) ((HeapManager*)((ctx)->freeObjectList))
 
-struct Heap;
+struct SubHeap;
 struct Segment;
 union  AllocationBlock;
 struct HeapManager;
 
 typedef void BlkPtr;
 typedef uintptr_t bitmap_t;
-typedef struct Heap Heap;
+typedef struct SubHeap SubHeap;
 typedef struct Segment Segment;
 typedef struct HeapManager HeapManager;
 typedef union  AllocationBlock AllocationBlock;
@@ -177,7 +177,7 @@ typedef struct AllocationPointer {
     BlkPtr *blkptr;
 } AllocationPointer;
 
-struct Heap {
+struct SubHeap {
     AllocationPointer p;
     int heap_klass;
     int isFull;
@@ -194,7 +194,7 @@ DEF_ARRAY_T_OP(size_t);
 DEF_ARRAY_T_OP(VoidPtr);
 
 struct HeapManager {
-    Heap heaps[HEAP_KLASS_MAX+1];
+    SubHeap heaps[SUBHEAP_KLASS_MAX+1];
     Segment *segmentList;
     ARRAY(SegmentPtr) segment_pool_a;
     ARRAY(size_t)     segment_size_a;
@@ -224,10 +224,10 @@ typedef struct BlockHeader {
 
 typedef struct gc_stat {
     size_t total_object;
-    size_t object_count[HEAP_KLASS_MAX+1];
+    size_t object_count[SUBHEAP_KLASS_MAX+1];
     size_t gc_count;
-    size_t marked[HEAP_KLASS_MAX+1];
-    size_t collected[HEAP_KLASS_MAX+1];
+    size_t marked[SUBHEAP_KLASS_MAX+1];
+    size_t collected[SUBHEAP_KLASS_MAX+1];
     size_t markingTime;
     size_t sweepingTime;
     size_t current_request_size;
@@ -274,7 +274,7 @@ union AllocationBlock {
     _BLOCK_(2048);_BLOCK_(4096);
 };
 
-#define SEGMENT_BLOCK_COUNT(n) ((n >= HEAP_KLASS_MIN)?(SEGMENT_SIZE / KlassBlockSize(n ) - 1):0)
+#define SEGMENT_BLOCK_COUNT(n) ((n >= SUBHEAP_KLASS_MIN)?(SEGMENT_SIZE / KlassBlockSize(n ) - 1):0)
 static const size_t SegmentBlockCount[] = {
     0, 0, 0,
     SEGMENT_BLOCK_COUNT(3 ), SEGMENT_BLOCK_COUNT(4 ),
@@ -547,10 +547,10 @@ static inline void do_free(void *ptr, size_t size)
 }
 
 /* bmgc */
-static knh_Object_t *bm_malloc_internal(CTX, GCInfo *gcinfo, size_t n);
-void *bm_malloc(CTX, knh_gcinfo_t *gcinfo, size_t n);
-void *bm_realloc(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t os, size_t ns);
-void bm_free(CTX, knh_gcinfo_t *gcinfo, void *ptr, size_t n);
+static knh_Object_t *bm_malloc_internal(CTX, HeapManager *mng, size_t n);
+void *bm_malloc(CTX ctx, size_t n);
+void *bm_realloc(CTX ctx, void *ptr, size_t os, size_t ns);
+void bm_free(CTX ctx, void *ptr, size_t n);
 static void BMGC_dump(GCInfo *info);
 static void bitmapMarkingGC(CTX ctx, GCInfo *gcinfo);
 #if GCDEBUG
@@ -558,7 +558,7 @@ static void dumpBM(uintptr_t bm) CC_UNUSED;
 #endif
 static void HeapManager_init(CTX ctx, HeapManager *mng, size_t heap_size);
 static void HeapManager_delete(CTX ctx, HeapManager *mng);
-static void heap_final_free(CTX ctx, HeapManager *mng);
+static void HeapManager_final_free(CTX ctx, HeapManager *mng);
 static inline void bmgc_Object_free(CTX ctx, knh_Object_t *o);
 
 static GCInfo *BMGC_init(CTX ctx)
@@ -567,7 +567,7 @@ static GCInfo *BMGC_init(CTX ctx)
 #ifdef GCSTAT
     global_gc_stat.fp = fopen("KONOHA_BMGC_INFO", "a");
 #endif
-    size_t default_size = HEAP_DEFAULT_SEGPOOL_SIZE;
+    size_t default_size = SUBHEAP_DEFAULT_SEGPOOL_SIZE;
 #ifdef GC_CONFIG
     char *poolsize = knh_getenv("KONOHA_DEFAULT_MEMPOOL_SIZE");
     if (poolsize) {
@@ -583,7 +583,7 @@ static GCInfo *BMGC_init(CTX ctx)
 static void BMGC_exit(CTX ctx, GCInfo *gcinfo)
 {
     HeapManager *mng = (HeapManager *) gcinfo;
-    heap_final_free(ctx, mng);
+    HeapManager_final_free(ctx, mng);
     HeapManager_delete(ctx, mng);
     do_free(mng, sizeof(*mng));
     DBG_CHECK_MALLOCED_SIZE();
@@ -618,7 +618,7 @@ static Segment *allocSegment(HeapManager *mng, int klass)
     }
     return seg;
 }
-static void findBlockOfLastSegment(Segment *seg, Heap *h, size_t size)
+static void findBlockOfLastSegment(Segment *seg, SubHeap *h, size_t size)
 {
     const AllocationBlock *blk = seg->blk;
     BlockHeader *head = (BlockHeader *) blk;
@@ -628,7 +628,7 @@ static void findBlockOfLastSegment(Segment *seg, Heap *h, size_t size)
     h->p.blkptr = (AllocationBlock*)((char*)blk+(size));
 }
 
-static bool newSegment(HeapManager *mng, Heap *h)
+static bool newSegment(HeapManager *mng, SubHeap *h)
 {
     size_t klass = h->heap_klass;
     Segment *seg = allocSegment(mng, klass);
@@ -655,19 +655,19 @@ static bool newSegment(HeapManager *mng, Heap *h)
     return true;
 }
 
-static inline Segment *freelist_pop(Heap *h)
+static inline Segment *freelist_pop(SubHeap *h)
 {
     Segment *seg = h->freelist;
     h->freelist = seg->next;
     return seg;
 }
 
-static inline bool freelist_isEmpty(Heap *h)
+static inline bool freelist_isEmpty(SubHeap *h)
 {
     return (h->freelist == NULL);
 }
 
-static bool fetchSegment(Heap *h, size_t klass)
+static bool fetchSegment(SubHeap *h, size_t klass)
 {
     Segment *seg;
     if (freelist_isEmpty(h))
@@ -680,7 +680,7 @@ static bool fetchSegment(Heap *h, size_t klass)
 
 static bool findNextFreeBlock(AllocationPointer *p);
 
-static bool nextSegment(HeapManager *mng, Heap *h, AllocationPointer *p)
+static bool nextSegment(HeapManager *mng, SubHeap *h, AllocationPointer *p)
 {
     Segment *seg;
     while (h->freelist != NULL) {
@@ -715,7 +715,7 @@ static void BitPtr0_inc(AllocationPointer *p)
     BP(p, 0).mask = (bpmask << 1) | rot;
 }
 
-static void inc(AllocationPointer *p, Heap *h)
+static void inc(AllocationPointer *p, SubHeap *h)
 {
     int size = KlassBlockSize(h->heap_klass);
     p->blkptr = (AllocationBlock*)((char*)p->blkptr+size);
@@ -812,7 +812,7 @@ static bool findNextFreeBlock(AllocationPointer *p)
     return true;
 }
 
-static void *tryAlloc(HeapManager *mng, Heap *h)
+static void *tryAlloc(HeapManager *mng, SubHeap *h)
 {
     AllocationPointer *p = &h->p;
     void *temp;
@@ -830,7 +830,7 @@ static void *tryAlloc(HeapManager *mng, Heap *h)
 }
 
 #define HEAP_SEGMENTLIST_INIT_SIZE 16
-static bool Heap_init(HeapManager *mng, Heap *h, int klass)
+static bool Heap_init(HeapManager *mng, SubHeap *h, int klass)
 {
     size_t i;
 
@@ -847,7 +847,7 @@ static bool Heap_init(HeapManager *mng, Heap *h, int klass)
     return true;
 }
 
-static void Heap_dispose(Heap *h)
+static void Heap_dispose(SubHeap *h)
 {
     if (h->seglist) {
         do_free(h->seglist, sizeof(Segment**)*h->seglist_max);
@@ -918,6 +918,7 @@ static void HeapManager_expandHeap(CTX ctx, HeapManager *mng, size_t list_size)
 static void HeapManager_init(CTX ctx, HeapManager *mng, size_t list_size)
 {
     size_t i;
+    SubHeap *h;
     ARRAY_init(size_t,  &mng->heap_size_a);
     ARRAY_init(VoidPtr, &mng->managed_heap_a);
     ARRAY_init(VoidPtr, &mng->managed_heap_end_a);
@@ -925,7 +926,7 @@ static void HeapManager_init(CTX ctx, HeapManager *mng, size_t list_size)
     ARRAY_init(size_t, &mng->segment_size_a);
 
     HeapManager_expandHeap(ctx, mng, list_size);
-    for (i = HEAP_KLASS_MIN; i <= HEAP_KLASS_MAX; i++) {
+    for_each_heap(h, i, mng->heaps) {
         Heap_init(mng, (mng->heaps+i), i);
     }
 }
@@ -935,8 +936,8 @@ static void HeapManager_delete(CTX ctx, HeapManager *mng)
     size_t i;
     Segment *x;
     void *p;
-
-    for (i = HEAP_KLASS_MIN; i <= HEAP_KLASS_MAX; i++) {
+    SubHeap *h;
+    for_each_heap(h, i, mng->heaps) {
         Heap_dispose(mng->heaps+i);
     }
 
@@ -956,10 +957,10 @@ static void HeapManager_delete(CTX ctx, HeapManager *mng)
     ARRAY_dispose(VoidPtr, &mng->managed_heap_end_a);
 }
 
-static Heap *findSubHeapBySize(HeapManager *mng, size_t n)
+static SubHeap *findSubHeapBySize(HeapManager *mng, size_t n)
 {
     size_t klass = SizeToKlass(n);
-    DBG_ASSERT(n <= HEAP_KLASS_SIZE_MAX);
+    DBG_ASSERT(n <= SUBHEAP_KLASS_SIZE_MAX);
     DBG_ASSERT(n != 0);
     return &(mng->heaps)[klass];
 }
@@ -972,7 +973,7 @@ static Heap *findSubHeapBySize(HeapManager *mng, size_t n)
 #endif
 
 #if GCDEBUG
-static bool CHECK_OBJECT(Heap *h, knh_Object_t *o, size_t request_size)
+static bool CHECK_OBJECT(SubHeap *h, knh_Object_t *o, size_t request_size)
 {
     short *gcinfo = (short*) &o->h.gcinfo;
     if (gcinfo[0] > 0) {
@@ -989,7 +990,7 @@ static bool CHECK_OBJECT(Heap *h, knh_Object_t *o, size_t request_size)
 #endif
 
 #if GCDEBUG
-static void DBG_CHECK_OBJECT(Heap *h, knh_Object_t *o, size_t request_size, bool write)
+static void DBG_CHECK_OBJECT(SubHeap *h, knh_Object_t *o, size_t request_size, bool write)
 {
     short *gcinfo = (short*) &o->h.gcinfo;
     if (CHECK_OBJECT(h, o, request_size)) {
@@ -1014,7 +1015,7 @@ static bool DBG_CHECK_OBJECT_IN_SEGMENT(knh_Object_t *o, Segment *seg)
     return (s < o && o < e);
 }
 
-static bool DBG_CHECK_OBJECT_IN_HEAP(knh_Object_t *o, Heap *h)
+static bool DBG_CHECK_OBJECT_IN_HEAP(knh_Object_t *o, SubHeap *h)
 {
     Segment *seg = h->p.seg;
     if (DBG_CHECK_OBJECT_IN_SEGMENT(o, seg))
@@ -1034,18 +1035,16 @@ static void deferred_sweep(CTX ctx, knh_Object_t *o)
     CLEAR_GCINFO(o);
 }
 
-static knh_Object_t *bm_malloc_internal(CTX ctx, GCInfo *gcinfo, size_t n)
+static knh_Object_t *bm_malloc_internal(CTX ctx, HeapManager *mng, size_t n)
 {
-
     knh_Object_t *temp = NULL;
-    Heap *h;
-    HeapManager *mng = (HeapManager *) gcinfo;
+    SubHeap *h;
 
     DBG_ASSERT(n != 0);
 #if GCDEBUG
     global_gc_stat.current_request_size = n;
 #endif
-    if (n > HEAP_KLASS_SIZE_MAX)
+    if (n > SUBHEAP_KLASS_SIZE_MAX)
         return do_malloc(n);
     h = findSubHeapBySize(mng, n);
     temp = tryAlloc(mng, h);
@@ -1069,7 +1068,7 @@ static knh_Object_t *bm_malloc_internal(CTX ctx, GCInfo *gcinfo, size_t n)
     return temp;
 }
 
-static void clearAllBitMapsAndCount(HeapManager *mng, Heap *h)
+static void clearAllBitMapsAndCount(HeapManager *mng, SubHeap *h)
 {
     size_t i;
 
@@ -1116,10 +1115,10 @@ static void b0_final_sweep(CTX ctx, bitmap_t bm, size_t idx, Segment *seg)
     }
 }
 
-static void heap_final_free(CTX ctx, HeapManager *mng)
+static void HeapManager_final_free(CTX ctx, HeapManager *mng)
 {
     size_t i, j;
-    Heap *h;
+    SubHeap *h;
     for_each_heap(h, j, mng->heaps) {
         clearAllBitMapsAndCount(mng, h);
         for (i = 0; i < h->seglist_size; i++) {
@@ -1167,7 +1166,7 @@ enum heap_dump_mode {
     HEAP_DUMP_VERBOSE
 };
 
-static void Heap_dump(const Heap *h, enum heap_dump_mode mode)
+static void Heap_dump(const SubHeap *h, enum heap_dump_mode mode)
 {
     gc_info("klass[%2d] object_count=%lu segment_list=(%d) ",
             h->heap_klass, global_gc_stat.object_count[h->heap_klass],
@@ -1204,12 +1203,12 @@ static void BMGC_dump(GCInfo *info)
     gc_info("********************************");
     gc_info("total allocated object count=%lu",
             global_gc_stat.total_object);
-    for (i = HEAP_KLASS_MIN; i <= HEAP_KLASS_MAX; i++) {
+    for (i = SUBHEAP_KLASS_MIN; i <= SUBHEAP_KLASS_MAX; i++) {
     }
     //gc_info("HeapManager=%p segment_pool_size=%lu",
     //        mng, mng->segment_pool_size);
-    for (i = HEAP_KLASS_MIN; i <= HEAP_KLASS_MAX; i++) {
-        Heap *h = mng->heaps + i;
+    for (i = SUBHEAP_KLASS_MIN; i <= SUBHEAP_KLASS_MAX; i++) {
+        SubHeap *h = mng->heaps + i;
         Heap_dump(h, HEAP_DUMP_INFO);
     }
     gc_info("\n");
@@ -1229,7 +1228,7 @@ static void BMGC_dump(GCInfo *info) {}
 static void bmgc_gc_init(CTX ctx, HeapManager *mng)
 {
     size_t i;
-    Heap *h;
+    SubHeap *h;
 
     STAT_(ctx->stat->markedObject = 0;)
     BMGC_dump(mng);
@@ -1325,14 +1324,15 @@ static void bmgc_gc_mark(CTX ctx, HeapManager *mng, int needsCStackTrace)
     ostack_free(ctx, ostack);
 }
 
-void *bm_malloc(CTX ctx, knh_gcinfo_t *gcinfo, size_t n)
+void *bm_malloc(CTX ctx, size_t n)
 {
-    return (void *) bm_malloc_internal(ctx, gcinfo, n);
+    HeapManager *mng = GCDATA(ctx);
+    return (void *) bm_malloc_internal(ctx, mng, n);
 }
 
-void bm_free(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t n)
+void bm_free(CTX ctx, void *ptr, size_t n)
 {
-    if (n <= HEAP_KLASS_SIZE_MAX) {
+    if (n <= SUBHEAP_KLASS_SIZE_MAX) {
         knh_Object_t *o = (knh_Object_t *) ptr;
         Segment *seg;
         uintptr_t bpidx, bpmask, index, klass;
@@ -1351,14 +1351,15 @@ void bm_free(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t n)
     }
 }
 
-void *bm_realloc(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t os, size_t ns)
+void *bm_realloc(CTX ctx, void *ptr, size_t os, size_t ns)
 {
+    HeapManager *mng = GCDATA(ctx);
     if(os <= K_FASTMALLOC_SIZE) {
-        void *newptr = (void *) bm_malloc_internal(ctx, gcinfo, ns);
+        void *newptr = (void *) bm_malloc_internal(ctx, mng, ns);
         if(os > 0) {
             do_memcpy(newptr, ptr, os);
             do_bzero((char*)newptr + os, ns - os);
-            bm_free(ctx, gcinfo, ptr, os);
+            bm_free(ctx, ptr, os);
         }
         else {
             DBG_ASSERT(ptr == NULL);
@@ -1382,7 +1383,7 @@ void *bm_realloc(CTX ctx, knh_gcinfo_t *gcinfo, void *ptr, size_t os, size_t ns)
     tail  = &e->next;\
 } while (0)
 
-static bool rearrangeSegList(CTX ctx, Heap *h, size_t klass)
+static bool rearrangeSegList(CTX ctx, SubHeap *h, size_t klass)
 {
     size_t i, count_dead = 0;
     Segment *unfilled = NULL, **unfilled_tail = &unfilled;
@@ -1407,13 +1408,13 @@ static void bmgc_gc_sweep(CTX ctx, HeapManager *mng)
 {
     bool isFull = false;
     size_t i;
-    Heap *h;
+    SubHeap *h;
 
     for_each_heap(h, i, mng->heaps) {
         isFull |= rearrangeSegList(ctx, h, i);
     }
     if (isFull) {
-        HeapManager_expandHeap(ctx, mng, HEAP_DEFAULT_SEGPOOL_SIZE*2);
+        HeapManager_expandHeap(ctx, mng, SUBHEAP_DEFAULT_SEGPOOL_SIZE*2);
         for_each_heap(h, i, mng->heaps) {
             if (h->isFull)
                 newSegment(mng, h);
@@ -1436,7 +1437,7 @@ static void bitmapMarkingGC(CTX ctx, GCInfo *info)
 
     bmgc_gc_sweep(ctx, mng);
 #ifdef GCSTAT
-    Heap *h;
+    SubHeap *h;
     for_each_heap(h, i, mng->heaps) {
         marked    += global_gc_stat.marked[i];
         collected += global_gc_stat.collected[i];
@@ -1489,7 +1490,7 @@ knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o)
     HeapManager *mng = (HeapManager*) GCDATA(ctx);
 
     size_t i;
-    if ((uintptr_t) o % KlassBlockSize(HEAP_KLASS_MIN) != 0)
+    if ((uintptr_t) o % KlassBlockSize(SUBHEAP_KLASS_MIN) != 0)
         return false;
     FOR_EACH_ARRAY_(mng->managed_heap_a, i) {
         knh_Object_t *s = (knh_Object_t *) ARRAY_n(mng->managed_heap_a, i);
@@ -1564,6 +1565,20 @@ void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
     MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
     KNH_SETv(ctx, sfp[c].o, o);
 }
+
+static void stat_report_memory_usage(CTX ctx)
+{
+    /* stat instance object */
+    size_t sizeClassTBL = ctx->share->sizeClassTBL;
+    for (size_t i = 0; i < sizeClassTBL; ++i) {
+        const knh_ClassTBL_t *ct = ClassTBL(i);
+        if (ct->count) {
+            fprintf(stderr, "%s\n");
+            ((knh_ClassTBL_t*)ct)->count;
+        }
+    }
+}
+
 
 /* ------------------------------------------------------------------------ */
 
