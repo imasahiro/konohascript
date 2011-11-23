@@ -69,8 +69,8 @@ typedef struct {
 #define MPID_WCHK(d) \
 	{\
 		if (knh_MPIData_getCapacity(d) == -1) {\
-			knh_ldata_t ldata[] = {LOG_p("unwritable data", d), LOG_END};\
-			KNH_NTHROW(ctx, sfp, "Script!!", "MPIData unwritable", K_FAILED, ldata);\
+			KNH_NTHROW2(ctx, sfp, "Script!!", "MPIData unwritable", K_FAILED, \
+					KNH_LDATA(LOG_p("unwritable data", d)));\
 		}\
 	}
 #define MPID_CCHK(d, c) \

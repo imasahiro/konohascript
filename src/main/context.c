@@ -109,18 +109,15 @@ static knh_context_t* new_hcontext(CTX ctx0)
 		if(ptrace == NULL) {
 			ptrace = "$(setenv " K_DEOS_TRACE ")";
 		}
-		knh_ldata_t ldata[] = {
-			LOG_s("parent", ptrace),
+		KNH_NTRACE2(ctx, "konoha:newtrace", K_NOTICE, KNH_LDATA(
+					LOG_s("parent", ptrace),
 #if defined(K_USING_POSIX_)
-			LOG_u("ppid", getppid()),
+					LOG_u("ppid", getppid())
 #endif /* !defined(K_USING_POSIX_) */
-			LOG_END
-		};
-		KNH_NTRACE(ctx, "konoha:newtrace", K_NOTICE, ldata);
+					));
 	}
 	else {
-		knh_ldata_t ldata[] = {LOG_s("parent", ctx0->trace), LOG_u("seq", ctx0->seq), LOG_END};
-		KNH_NTRACE(ctx, "konoha:newtrace", K_NOTICE, ldata);
+		KNH_NTRACE2(ctx, "konoha:newtrace", K_NOTICE, KNH_LDATA(LOG_s("parent", ctx0->trace), LOG_u("seq", ctx0->seq)));
 	}
 	return ctx;
 }
@@ -795,8 +792,9 @@ void konoha_close(konoha_t konoha)
 	CTX ctx = (knh_context_t*)konoha;
 	check_allThreadExit(ctx);
 	if(ctx->share->threadCounter > 1) {
-		knh_ldata_t ldata[] = {LOG_msg("stil threads running"), LOG_i("threads", ctx->share->threadCounter), LOG_END};
-		KNH_NTRACE(ctx, "konoha:close", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "konoha:close", K_FAILED,
+				KNH_LDATA(LOG_msg("stil threads running"),
+					LOG_i("threads", ctx->share->threadCounter)));
 		return;
 	}
 #ifdef K_USING_RCGC
@@ -804,11 +802,11 @@ void konoha_close(konoha_t konoha)
 #endif
 	knh_flush(ctx, KNH_STDOUT); // flush before ending
 	{
-		knh_ldata_t ldata[] = {LOG_u("gc_count", ctx->stat->gcCount),
+		KNH_NTRACE2(ctx, "stat:konoha:gc", K_NOTICE,
+				KNH_LDATA(LOG_u("gc_count", ctx->stat->gcCount),
 				LOG_u("marking_time:ms", ctx->stat->markingTime),
 				LOG_u("sweeping_time:ms", ctx->stat->sweepingTime),
-				LOG_u("gc_time:ms", ctx->stat->gcTime), LOG_END};
-		KNH_NTRACE(ctx, "stat:konoha:gc", K_NOTICE, ldata);
+				LOG_u("gc_time:ms", ctx->stat->gcTime)));
 	}
 	((knh_context_t*)ctx)->bufa = NULL; // necessary for KNH_SYSLOG
 	knh_Context_free(ctx, (knh_context_t*)ctx);

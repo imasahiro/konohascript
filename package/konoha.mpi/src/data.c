@@ -69,8 +69,7 @@ TYPEMAP MPIData_int__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	MPID(data, sfp[1].o);
 	if (MPID_DCID(data) != CLASS_Array || MPID_TYPE(data) != MPI_LONG) {
-		knh_ldata_t ldata[] = {LOG_s("content class", SAFECLASS__(ctx, MPID_DCID(data))), LOG_END};
-		KNH_NTHROW(ctx, sfp, "Script!!", "invalid type casting", K_FAILED, ldata);
+		KNH_NTHROW2(ctx, sfp, "Script!!", "invalid type casting", K_FAILED, KNH_LDATA(LOG_s("content class", SAFECLASS__(ctx, MPID_DCID(data)))));
 	}
 	RETURN_(data->a);
 }
@@ -79,8 +78,7 @@ TYPEMAP MPIData_float__(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	MPID(data, sfp[1].o);
 	if (MPID_DCID(data) != CLASS_Array || MPID_TYPE(data) != MPI_DOUBLE) {
-		knh_ldata_t ldata[] = {LOG_s("content class", SAFECLASS__(ctx, MPID_DCID(data))), LOG_END};
-		KNH_NTHROW(ctx, sfp, "Script!!", "invalid type casting", K_FAILED, ldata);
+		KNH_NTHROW2(ctx, sfp, "Script!!", "invalid type casting", K_FAILED, KNH_LDATA(LOG_s("content class", SAFECLASS__(ctx, MPID_DCID(data)))));
 	}
 	RETURN_(data->a);
 }
@@ -89,8 +87,7 @@ TYPEMAP MPIData_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	MPID(data, sfp[1].o);
 	if (MPID_DCID(data) != CLASS_Bytes || MPID_TYPE(data) != MPI_CHAR) {
-		knh_ldata_t ldata[] = {LOG_s("content class", SAFECLASS__(ctx, MPID_DCID(data))), LOG_END};
-		KNH_NTHROW(ctx, sfp, "Script!!", "invalid type casting", K_FAILED, ldata);
+		KNH_NTHROW2(ctx, sfp, "Script!!", "invalid type casting", K_FAILED, KNH_LDATA(LOG_s("content class", SAFECLASS__(ctx, MPID_DCID(data)))));
 	}
 	RETURN_(data->ba);
 }
@@ -224,9 +221,8 @@ KMETHOD MPIData_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 	MPID_DCID(newdata) = MPID_DCID(data);
 	int ofs = Int_to(int, sfp[1]);
 	if (ofs < 0 || MPID_SIZE(data) < ofs) {
-		knh_ldata_t ldata[] = {LOG_i("offset", ofs), LOG_END};
 		ofs = 0;
-		KNH_NTHROW(ctx, sfp, "Script!!", "invalid offset value", K_FAILED, ldata);
+		KNH_NTHROW2(ctx, sfp, "Script!!", "invalid offset value", K_FAILED, KNH_LDATA(LOG_i("offset", ofs)));
 	}
 	MPID_POFS(newdata) = MPID_POFS(data) + ofs;
 	RETURN_(newdata);

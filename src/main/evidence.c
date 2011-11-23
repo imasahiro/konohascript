@@ -576,7 +576,7 @@ static void trapSIGINT(int sig RECARG)
 //#endif /* defined(K_USING_MINGW_) */
 //		KNH_NTRACE(ctx, "konoha:signal", K_NOTICE, ldata);
 		KNH_NTRACE2(ctx, "konoha:signal", K_NOTICE,
-				KNH_LOGDATA(LOG_i("sender_pid", si->si_pid), LOG_i("sender_uid", si->si_uid)));
+				KNH_LDATA(LOG_i("sender_pid", si->si_pid), LOG_i("sender_uid", si->si_uid)));
 	}
 	_Exit(0);
 }
@@ -671,19 +671,21 @@ static void trapBUS(int sig RECARG)
 #endif
 
 #if defined(K_USING_MINGW_)
-#define KNH_SIGNAL(T, handler) \
-	if(SIG_ERR == signal(T, handler)) { \
-		knh_ldata_t ldata[] = {LOG_i("signal", T), LOG_END}; \
-		KNH_NTRACE(ctx, "signal", K_PERROR, ldata); \
+#define KNH_SIGNAL(T, handler) do {      \
+	if(SIG_ERR == signal(T, handler)) {    \
+		KNH_NTRACE2(ctx, "signal", K_PERROR, \
+				KNH_LDATA(LOG_i("signal", T)));  \
 	} \
+} while (0)
 
 #else
-#define KNH_SIGACTION(T, sa, sa_orig, n)                       \
+#define KNH_SIGACTION(T, sa, sa_orig, n) do {                \
 	if(T < n  && sigaction(T, sa, sa_orig + T) != 0 ) {        \
-		knh_ldata_t ldata[] = {LOG_i("signal", T), LOG_END};          \
-		KNH_NTRACE(ctx, "sigaction", K_PERROR, ldata);        \
+		KNH_NTRACE2(ctx, "sigaction", K_PERROR, \
+				KNH_LDATA(LOG_i("signal", T)));        \
 	}                                                          \
 	knh_bzero(sa, sizeof(struct sigaction));                   \
+} while (0)
 
 #endif /* defined(K_USING_MINGW_) */
 
@@ -739,11 +741,12 @@ static void knh_setsignal(CTX ctx, void *block, size_t n)
 #if defined(K_USING_MINGW_)
 #define KNH_SIGACTION2(T, sa_orig, n) KNH_SIGNAL(T, SIG_DFL)
 #else
-#define KNH_SIGACTION2(T, sa_orig, n)                          \
+#define KNH_SIGACTION2(T, sa_orig, n) do {                   \
 	if(T < n  && sigaction(T, sa_orig + T, NULL) != 0 ) {      \
-		knh_ldata_t ldata[] = {LOG_i("signal", T), LOG_END};   \
-		KNH_NTRACE(ctx, "sigaction", K_PERROR, ldata);         \
-	}                                                          \
+		KNH_NTRACE2(ctx, "sigaction", K_PERROR, \
+				KNH_LDATA(LOG_i("signal", T)));     \
+	}                                         \
+} while (0)
 
 #endif /* defined(K_USING_MINGW_) */
 
@@ -1525,33 +1528,28 @@ void knh_dtrace(CTX ctx, const char *event, int pe, knh_DictMap_t *data)
 
 void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {
-	knh_ldata_t ldata[] = {LOG_msg(msg), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Panic!!", "konoha", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, "Panic!!", "konoha", K_FAILED, KNH_LDATA(LOG_msg(msg)));
 }
 void THROW_OutOfMemory(CTX ctx, size_t size)
 {
-	knh_ldata_t ldata[] = {LOG_u("requested_size:bytes", size), LOG_u("used_size", ctx->stat->usedMemorySize), LOG_END};
-	KNH_NTHROW(ctx, NULL, "OutOfMemory!!", "malloc", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, NULL, "OutOfMemory!!", "malloc", K_FAILED, KNH_LDATA(LOG_u("requested_size:bytes", size), LOG_u("used_size", ctx->stat->usedMemorySize)));
 }
 void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp)
 {
-	knh_ldata_t ldata[] = {LOG_msg("stack overflow"), LOG_u("stacksize", (ctx->esp - ctx->stack)), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!", "konoha:stack", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, "Script!!", "konoha:stack", K_FAILED,
+			KNH_LDATA(LOG_msg("stack overflow"), LOG_u("stacksize", (ctx->esp - ctx->stack))));
 }
 void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg)
 {
-	knh_ldata_t ldata[] = {LOG_msg(msg), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!", "arithmetic_operator", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, "Script!!", "arithmetic_operator", K_FAILED, KNH_LDATA(LOG_msg(msg)));
 }
 KNHAPI2(void) THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
 {
-	knh_ldata_t ldata[] = {LOG_msg("out of array range"), LOG_i("index", n), LOG_i("arraysize", max), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!", "array_indexing", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, "Script!!", "array_indexing", K_FAILED, KNH_LDATA(LOG_msg("out of array range"), LOG_i("index", n), LOG_i("arraysize", max)));
 }
 void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t reqt, knh_type_t type)
 {
-	knh_ldata_t ldata[] = {LOG_t("requested_type", reqt), LOG_t("given_type", type), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!: Type Error", "konoha:type", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, "Script!!: Type Error", "konoha:type", K_FAILED, KNH_LDATA(LOG_t("requested_type", reqt), LOG_t("given_type", type)));
 }
 void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn)
 {
@@ -1563,8 +1561,7 @@ void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t 
 	knh_printf(ctx, cwb->w, "%C.%M", cid, mn);
 	knh_snprintf(mname, sizeof(mname), "%s", CWB_totext(ctx, cwb));
 	CWB_close(cwb);
-	knh_ldata_t ldata[] = {LOG_msg(msg), LOG_s("method", mname), LOG_END};
-	KNH_NTHROW(ctx, sfp, msg, "konoha:type", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, msg, "konoha:type", K_FAILED, KNH_LDATA(LOG_msg(msg), LOG_s("method", mname)));
 }
 void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid)
 {
@@ -1576,8 +1573,7 @@ void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, k
 	knh_printf(ctx, cwb->w, "%C.%M", cid, mn);
 	knh_snprintf(mname, sizeof(mname), "%s", CWB_totext(ctx, cwb));
 	CWB_close(cwb);
-	knh_ldata_t ldata[] = {LOG_msg(msg), LOG_s("method", mname), LOG_i("argument", n), LOG_t("requested_type", reqt), LOG_t("given_type", cid), LOG_END};
-	KNH_NTHROW(ctx, sfp, msg, "konoha:type", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, msg, "konoha:type", K_FAILED, KNH_LDATA(LOG_msg(msg), LOG_s("method", mname), LOG_i("argument", n), LOG_t("requested_type", reqt), LOG_t("given_type", cid)));
 }
 
 /* ------------------------------------------------------------------------ */

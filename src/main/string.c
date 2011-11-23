@@ -511,9 +511,8 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 {
 	knh_iconv_t rc = ctx->spi->iconv_openSPI(to, from);
 	if(rc == (knh_iconv_t)-1){
-		knh_ldata_t ldata[] = {LOG_msg("unknown codec"), LOG_s("spi", ctx->spi->iconvspi),
-			LOG_s("from", from), LOG_s("to", to), LOG_END};
-		KNH_NTRACE(ctx, "iconv_open", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "iconv_open", K_FAILED, KNH_LDATA(LOG_msg("unknown codec"),
+					LOG_s("spi", ctx->spi->iconvspi), LOG_s("from", from), LOG_s("to", to)));
 		return NULL;
 	}
 	return (knh_conv_t*)rc;
@@ -531,8 +530,7 @@ static knh_bool_t strconv(CTX ctx, knh_conv_t *iconvp, const char *text, size_t 
 		size_t rc = ctx->spi->iconvSPI(cd, &ibuf, &ilen, &obuf, &olen);
 		olen = sizeof(buffer) - olen; rsize += olen;
 		if(rc == (size_t)-1 && errno == EILSEQ) {
-			knh_ldata_t ldata[] = {LOG_msg("invalid sequence"), LOG_s("spi", ctx->spi->iconvspi), LOG_END};
-			KNH_NTRACE(ctx, "iconv", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "iconv", K_FAILED, KNH_LDATA(LOG_msg("invalid sequence"), LOG_s("spi", ctx->spi->iconvspi)));
 			return 0;
 		}
 		bbuf.len = olen;

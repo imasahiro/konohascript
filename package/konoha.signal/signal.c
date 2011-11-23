@@ -116,8 +116,7 @@ KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
 		sa.sa_handler = signal_handler;
 		sa.sa_flags = SA_RESTART;
 		if (sigaction(signum, &sa, NULL) < 0) {
-			knh_ldata_t ldata[] = {LOG_i("signal", signum), LOG_END};
-			KNH_NTRACE(ctx, "sigaction", K_PERROR, ldata);
+			KNH_NTRACE2(ctx, "sigaction", K_PERROR, KNH_LDATA(LOG_i("signal", signum)));
 		}
 		if(ctx->sighandlers[signum] != NULL) {
 			KNH_SETv(ctx, ctx->sighandlers[signum], sfp[2].fo);
@@ -132,8 +131,9 @@ KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Signal_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int pe = (kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) ? K_PERROR : K_OK;
-	knh_ldata_t ldata[] = {LOG_i("pid", Int_to(int, sfp[1])), LOG_i("signal", Int_to(int, sfp[2])), LOG_END};
-	KNH_NTRACE(ctx, "kill", pe, ldata);
+	KNH_NTRACE2(ctx, "kill", pe, KNH_LDATA(
+				LOG_i("pid", Int_to(int, sfp[1])), LOG_i("signal", Int_to(int, sfp[2]))
+				));
 	RETURNb_(pe == K_OK);
 }
 
@@ -141,8 +141,7 @@ KMETHOD Signal_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Signal_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int pe = (raise(Int_to(int, sfp[1])) == -1) ? K_PERROR : K_OK;
-	knh_ldata_t ldata[] = {LOG_i("signal", Int_to(int, sfp[1])), LOG_END};
-	KNH_NTRACE(ctx, "raise", pe, ldata);
+	KNH_NTRACE2(ctx, "raise", pe, KNH_LDATA(LOG_i("signal", Int_to(int, sfp[1]))));
 	RETURNb_(pe == K_OK);
 }
 

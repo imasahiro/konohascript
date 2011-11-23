@@ -61,8 +61,7 @@ void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype 
 		rsize = sizeof(knh_float_t) * vlen;
 	}
 	else {
-		knh_ldata_t ldata[] = {LOG_i("unsupported datatype", *dtype), LOG_END};
-		KNH_NTHROW(lctx, lsfp, "Script!!", "MPI_Reduce failed", K_FAILED, ldata);
+		KNH_NTHROW2(lctx, lsfp, "Script!!", "MPI_Reduce failed", K_FAILED, KNH_LDATA(LOG_i("unsupported datatype", *dtype)));
 		CLOSURE_end(return);
 	}
 	knh_MPIData_t *o1 = new_func(lctx, ivec, vlen);
@@ -91,8 +90,7 @@ KMETHOD MPIOp_new(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 	}
 	KNH_MPI_OP_NULL(op);
-	knh_ldata_t ldata[] = {LOG_p("MPI_User_function", func), LOG_END};
-	KNH_NTHROW(ctx, sfp, "Script!!", "MPIOp_new failed", K_FAILED, ldata);
+	KNH_NTHROW2(ctx, sfp, "Script!!", "MPIOp_new failed", K_FAILED, KNH_LDATA(LOG_p("MPI_User_function", func)));
 	L_RET:;
 	RETURN_(op);
 }

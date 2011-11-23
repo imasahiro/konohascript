@@ -172,8 +172,7 @@ KMETHOD Curl_setOpt(CTX ctx, knh_sfp_t *sfp _RIX)
 			curl_easy_setopt(curl, curlopt, Int_to(long, sfp[2]));
 		}
 		else {
-			knh_ldata_t ldata[] = {LOG_msg("TypeError"), LOG_END};
-			KNH_NTRACE(ctx, "Curl.setOpt", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "Curl.setOpt", K_FAILED, KNH_LDATA(LOG_msg("TypeError")));
 		}
 		break;
 	}
@@ -210,8 +209,7 @@ KMETHOD Curl_setOpt(CTX ctx, knh_sfp_t *sfp _RIX)
 			curl_easy_setopt(curl, curlopt, String_to(char*,sfp[2]));
 		}
 		else {
-			knh_ldata_t ldata[] = {LOG_msg("TypeError"), LOG_END};
-			KNH_NTRACE(ctx, "Curl.setOpt", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "Curl.setOpt", K_FAILED, KNH_LDATA(LOG_msg("TypeError")));
 		}
 		break;
 	}
@@ -243,8 +241,7 @@ KMETHOD Curl_setOpt(CTX ctx, knh_sfp_t *sfp _RIX)
 			//if(knh_Context_isStrict(ctx)) {
 			//KNH_THROW__T(ctx, "Type!!: data must be OutputStream");
 			//}
-			knh_ldata_t ldata[] = {LOG_msg("TypeError"), LOG_END};
-			KNH_NTRACE(ctx, "Curl.setOpt", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "Curl.setOpt", K_FAILED, KNH_LDATA(LOG_msg("TypeError")));
 		}
 		break;
 //				case CURLOPT_WRITEFUNCTION: {
@@ -255,8 +252,7 @@ KMETHOD Curl_setOpt(CTX ctx, knh_sfp_t *sfp _RIX)
 //					break;
 //				}
 	default: {
-		knh_ldata_t ldata[] = {LOG_i("curlopt", curlopt), LOG_END};
-		KNH_NTRACE(ctx, "Curl.setOpt:UnsupportedOption", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "Curl.setOpt:UnsupportedOption", K_FAILED, KNH_LDATA(LOG_i("curlopt", curlopt)));
 		break;
 	}
 	}
@@ -269,8 +265,7 @@ KMETHOD Curl_perform(CTX ctx, knh_sfp_t *sfp _RIX)
 	CURL* curl = RawPtr_to(CURL*, sfp[0]);
 	CURLcode res = curl_easy_perform(curl);
 	if ( res != CURLE_OK ){
-		knh_ldata_t ldata[] = {LOG_i("CURLcode", res), LOG_s("error", curl_easy_strerror(res)), LOG_END};
-		KNH_NTRACE(ctx, "Curl.perform", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "Curl.perform", K_FAILED, KNH_LDATA(LOG_i("CURLcode", res), LOG_s("error", curl_easy_strerror(res))));
 	}
 	RETURNb_((res == CURLE_OK));
 }
@@ -309,8 +304,7 @@ KMETHOD Curl_getInfo(CTX ctx, knh_sfp_t *sfp _RIX)
 			RETURN_(new_String(ctx, strptr));
 			break;
 		default: {
-			knh_ldata_t ldata[] = {LOG_i("curlinfo", curlinfo), LOG_END};
-			KNH_NTRACE(ctx, "curl_easy_getinfo", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "curl_easy_getinfo", K_FAILED, KNH_LDATA(LOG_i("curlinfo", curlinfo)));
 			break;
 		}
 		}

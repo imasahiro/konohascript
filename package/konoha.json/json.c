@@ -529,10 +529,8 @@ static knh_type_t json_unpackTo(CTX ctx, const char *buf, size_t size, knh_sfp_t
 		json_tokener *tok = json_tokener_new();
 		json_object *json = json_tokener_parse_ex(tok, buf, size);
 		if (tok->err != json_tokener_success) {
-			knh_ldata_t ldata[] = {
-				LOG_i("json_tokener_error", tok->err), 
-				LOG_END};
-			KNH_NTRACE(ctx, "json_unpack", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "json_unpack", K_FAILED,
+					KNH_LDATA(LOG_i("json_tokener_error", tok->err)));
 		} else {
 			type = json_read(ctx, json, sfp);
 			json_object_put(json);

@@ -184,8 +184,7 @@ static knh_bool_t io2_readFILE(CTX ctx, knh_io2_t *io2)
 	if(size == 0) {
 		int tf = 1;
 		if(ferror(io2->fp)) {
-			knh_ldata_t ldata[] = {LOG_p("fp", io2->fp), LOG_s("path", io2->DBG_NAME), LOG_END};
-			KNH_NTRACE(ctx, "fread", K_PERROR, ldata);
+			KNH_NTRACE2(ctx, "fread", K_PERROR, KNH_LDATA(LOG_p("fp", io2->fp), LOG_s("path", io2->DBG_NAME)));
 			tf = 0;
 		}
 		io2->_close(ctx, io2);
@@ -204,8 +203,7 @@ static size_t io2_writeFILE(CTX ctx, knh_io2_t *io2, const char *buf, size_t buf
 	ssize_t size = fwrite(buf, 1, bufsiz, io2->fp);
 	if(size == 0) {
 		if(ferror(io2->fp)) {
-			knh_ldata_t ldata[] = {LOG_i("fp", io2->fp), LOG_s("path", io2->DBG_NAME), LOG_END};
-			KNH_NTRACE(ctx, "fwrite", K_PERROR, ldata);
+			KNH_NTRACE2(ctx, "fwrite", K_PERROR, KNH_LDATA(LOG_i("fp", io2->fp), LOG_s("path", io2->DBG_NAME)));
 		}
 		io2->_close(ctx, io2);
 		return 0;
@@ -251,8 +249,7 @@ static knh_bool_t io2_blockread(CTX ctx, knh_io2_t *io2)
 	int fd = io2->fd;
 	ssize_t size = read(fd, io2->buffer, io2->bufsiz);
 	if(size == -1) {
-		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
-		KNH_NTRACE(ctx, "read", K_PERROR, ldata);
+		KNH_NTRACE2(ctx, "read", K_PERROR, KNH_LDATA(LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME)));
 		io2->_close(ctx, io2);
 		return 0;
 	}
@@ -283,8 +280,7 @@ static knh_bool_t io2_unblockread(CTX ctx, knh_io2_t *io2)
 		return 1;
 	}
 	{
-		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
-		KNH_NTRACE(ctx, "select", K_PERROR, ldata);
+		KNH_NTRACE2(ctx, "select", K_PERROR, KNH_LDATA(LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME)));
 	}
 	return 0;
 }
@@ -294,8 +290,7 @@ static size_t io2_blockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t bu
 	int fd = io2->fd;
 	ssize_t size = write(fd, buf, bufsiz);
 	if(size == -1) {
-		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
-		KNH_NTRACE(ctx, "write", K_PERROR, ldata);
+		KNH_NTRACE2(ctx, "write", K_PERROR, KNH_LDATA(LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME)));
 		io2->_close(ctx, io2);
 	}
 	return 0;
@@ -315,8 +310,7 @@ static size_t io2_unblockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t 
 		return 0;
 	}
 	{
-		knh_ldata_t ldata[] = {LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME), LOG_END};
-		KNH_NTRACE(ctx, "select", K_PERROR, ldata);
+		KNH_NTRACE2(ctx, "select", K_PERROR, KNH_LDATA(LOG_i("fd", fd), LOG_s("path", io2->DBG_NAME)));
 	}
 	return 0;
 }

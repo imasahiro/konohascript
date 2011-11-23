@@ -900,8 +900,7 @@ static void LOG_regex(CTX ctx, knh_sfp_t *sfp, int res, knh_Regex_t *re, const c
 {
 	char ebuf[512] = {0};
 	if (re->spi->regerror(res, re->reg, ebuf, 512) > 0) {
-		knh_ldata_t ldata[] = {LOG_s("driver", re->spi->name), LOG_s("pattern", S_totext(re->pattern)), LOG_s("text", str), LOG_msg(ebuf), LOG_END};
-		KNH_NTRACE(ctx, "regex", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "regex", K_FAILED, KNH_LDATA(LOG_s("driver", re->spi->name), LOG_s("pattern", S_totext(re->pattern)), LOG_s("text", str), LOG_msg(ebuf)));
 	}
 }
 
@@ -3228,8 +3227,7 @@ static KMETHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
 	if(fmt.len != 0) {
-		knh_ldata_t ldata[] = {LOG_msg("invalid format"), LOG_s("format", fmt.text), LOG_END};
-		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "konoha:format", K_FAILED, KNH_LDATA(LOG_msg("invalid format"), LOG_s("format", fmt.text)));
 	}
 	fmt = STEXT("%d");
 	goto L_RETRY;
@@ -3252,8 +3250,7 @@ static KMETHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
 	if(fmt.len != 0) {
-		knh_ldata_t ldata[] = {LOG_msg("invalid format"), LOG_s("format", fmt.text), LOG_END};
-		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "konoha:format", K_FAILED, KNH_LDATA(LOG_msg("invalid format"), LOG_s("format", fmt.text)));
 	}
 	fmt = STEXT("%f");
 	goto L_RETRY;
@@ -3273,8 +3270,7 @@ static KMETHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
 	if(fmt.len != 0) {
-		knh_ldata_t ldata[] = {LOG_msg("invalid format"), LOG_s("format", fmt.text), LOG_END};
-		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "konoha:format", K_FAILED, KNH_LDATA(LOG_msg("invalid format"), LOG_s("format", fmt.text)));
 	}
 	RETURN_(sfp[0].s);
 }
@@ -3365,8 +3361,7 @@ knh_String_t *knh_View_getQuery(CTX ctx, knh_View_t *view)
 
 static void THROW_Undefined(CTX ctx, knh_sfp_t *sfp, const char *whatis, const char *what)
 {
-//	knh_ldata_t ldata[] = {LOG_s("driver", what), LOG_END};
-//	KNH_NTHROW("Undefined", "Script!!");
+//	KNH_NTHROW(ctx, sfp, "Script!!", "Undefined", KNH_LDATA(LOG_s("driver", what)));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -3545,8 +3540,7 @@ static KMETHOD System_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int status = IS_NULL(sfp[1].o) ? 0 : Int_to(size_t, sfp[1]);
-	knh_ldata_t ldata[] = {LOG_i("user_specified_status", status), LOG_END};
-	KNH_NTRACE(ctx, "exit", K_NOTICE, ldata);
+	KNH_NTRACE2(ctx, "exit", K_NOTICE, KNH_LDATA(LOG_i("user_specified_status", status)));
 	exit(status);
 }
 

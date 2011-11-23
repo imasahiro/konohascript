@@ -119,15 +119,15 @@ KMETHOD Actor_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_bytes_t host_port = knh_bytes_next(S_tobytes(sfp[1].s), ':');
 	knh_index_t idx = knh_bytes_index(host_port, ':');
 	if (idx == -1) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
-		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "konoha:format", K_FAILED,
+				KNH_LDATA(LOG_s("path", host_port.text), LOG_s("type", "Actor")));
 		knh_Object_toNULL(ctx, sfp[0].o);
 		RETURN_(sfp[0].o);
 	}
 	knh_int_t port;
 	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_s("type", "Actor"), LOG_END};
-		KNH_NTRACE(ctx, "konoha:format", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "konoha:format", K_FAILED,
+				KNH_LDATA(LOG_s("path", host_port.text), LOG_s("type", "Actor")));
 		knh_Object_toNULL(ctx, sfp[0].o);
 		RETURN_(sfp[0].o);
 	}

@@ -63,8 +63,7 @@ KMETHOD Pasori_new(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	nfc_device_t *pnd = nfc_connect(NULL);
 	if (pnd == NULL) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "nfc_connect", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "nfc_connect", K_FAILED, KNH_LDATA0);
 		knh_Object_toNULL(ctx, sfp[0].o);
 		RETURN_(sfp[0].o);
 	}
@@ -88,8 +87,7 @@ KMETHOD Pasori_readId(CTX ctx, knh_sfp_t *sfp _RIX)
 	res = nfc_initiator_poll_target(pnd, mod, modSize, uiPollNr, uiPeriod, &nt);
 	while (res == 0) {
 		{
-			knh_ldata_t ldata[] = {LOG_i("res", res), LOG_END};
-			KNH_NTRACE(ctx, "nfc_initiator_poll_target", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "nfc_initiator_poll_target", K_FAILED, KNH_LDATA(LOG_i("res", res)));
 		}
 		res = nfc_initiator_poll_target(pnd, mod, modSize, uiPollNr, uiPeriod, &nt);
 	}

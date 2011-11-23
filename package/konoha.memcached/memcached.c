@@ -97,36 +97,33 @@ KMETHOD Memcache_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	mcd->st = memcached_create(NULL);
 	if (mcd->st == NULL) {
 		// failed
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTHROW(ctx, sfp, "Memcache!!", "memcached_create", K_FAILED, ldata);
+		KNH_NTHROW2(ctx, sfp, "Memcache!!", "memcached_create", K_FAILED, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_create", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_create", K_OK, KNH_LDATA0);
 	}
 	// second, connect to server
 	memcached_server_list_st servers;
 	memcached_return_t rc;
 	servers = memcached_server_list_append(NULL, host, port, &rc);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("host", host), 
-							   LOG_i("port", port), 
-							   LOG_i("return_t", rc),
-							   LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-							   LOG_END};
-		KNH_NTRACE(ctx, "memcached_server_list_append", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_server_list_append", K_FAILED, KNH_LDATA(
+					LOG_s("host", host),
+					LOG_i("port", port),  LOG_i("return_t", rc),
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 		goto L_RETURN;
 	}
 	rc = memcached_server_push(mcd->st, servers);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("host", host), 
-							   LOG_i("port", port), 
-							   LOG_i("return_t", rc),
-							   LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-							   LOG_END};
-		KNH_NTRACE(ctx, "memcached_server_push", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_server_push", K_FAILED, KNH_LDATA(
+					LOG_s("host", host), 
+					LOG_i("port", port), 
+					LOG_i("return_t", rc),
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	memcached_server_list_free(servers);
- L_RETURN:
+L_RETURN:
 	RETURN_(sfp[0].o);
 }
 
@@ -137,8 +134,7 @@ KMETHOD Memcache_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //	knh_bytes_t host_port = knh_bytes_next(S_tobyte(sfp[1].s), ':');
 //	knh_index_t idx = knh_bytes_index(host_port, ':');
 //	if (idx == -1) {
-//		knh_ldata_t ldata[] = {LOG_s{"path", host_port.text), LOG_s("type", "Memcache"), LOG_END};
-//		KNH_NTRACE(ctx, "konoha:link", K_FAILED, ldata);
+//		KNH_NTRACE2(ctx, "konoha:link", K_FAILED, KNH_LDATA(LOG_s{"path", host_port.text), LOG_s("type", "Memcache")));
 //		knh_Object_toNULL(ctx, sfp[0].o);
 //		RETURN_(sfp[0].o);
 //	}
@@ -162,16 +158,14 @@ KMETHOD Memcache_increment(CTX ctx, knh_sfp_t *sfp _RIX)
 		memcached_increment(mcd->st, key, key_length, offset, &value);
 	if(rc == MEMCACHED_SUCCESS) {
 		// key is
-		 knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_increment", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_increment", K_OK, KNH_LDATA0);
 		RETURNi_((int)value);
 	} else {
 		// its might be error
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc),
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_increment", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_increment", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc),
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 		RETURN_(KNH_NULL);
 	}
 }
@@ -191,16 +185,14 @@ KMETHOD Memcache_decrement(CTX ctx, knh_sfp_t *sfp _RIX)
 		memcached_decrement(mcd->st, key, key_length, offset, &value);
 	if(rc == MEMCACHED_SUCCESS) {
 		// key is
-		 knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_increment", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_increment", K_OK, KNH_LDATA0);
 		RETURNi_((int)value);
 	} else {
 		// its might be error
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc),
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_increment", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_increment", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc),
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 		RETURN_(KNH_NULL);
 	}
 }
@@ -220,16 +212,13 @@ KMETHOD Memcache_delete(CTX ctx, knh_sfp_t *sfp _RIX)
 		memcached_delete(mcd->st, key, key_length, expiration_sec);
 	if (rc == MEMCACHED_SUCCESS) {
 		// key is 
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_delete", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_delete", K_OK, KNH_LDATA0);
 	} else {
 		// its might be error
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_delete", K_FAILED, ldata);
-
+		KNH_NTRACE2(ctx, "memcached_delete", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
@@ -245,18 +234,16 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	time_t expiration_sec = Int_to(time_t, sfp[3]);
 	memcached_return_t rc = 
 		memcached_delete_by_key(mcd->st, group_key, group_key_length,
-								key, key_length, expiration_sec);
+				key, key_length, expiration_sec);
 	if (rc == MEMCACHED_SUCCESS) {
 		// key is 
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_delete_by_key", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_delete_by_key", K_OK, KNH_LDATA0);
 	} else {
 		// its might be error
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_delete_by_key", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_delete_by_key", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
@@ -275,15 +262,13 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 //		memcached_exist(mcd->st, key, key_length);
 //	if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND) {
 //		// key is exists
-//		knh_ldata_t ldata[] = {LOG_END};
-//		KNH_NTRACE(ctx, "memcached_exist", K_OK, ldata);
+//		KNH_NTRACE2(ctx, "memcached_exist", K_OK, KNH_LDATA0);
 //	} else {
 //		// its might be error
-//		knh_ldata_t ldata[] = {
+//		KNH_NTRACE2(ctx, "memcached_exist", K_FAILED, KNH_LDATA(
 //			LOG_i("return_t", rc), 
-//			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-//			LOG_END};
-//		KNH_NTRACE(ctx, "memcached_exist", K_FAILED, ldata);
+//			LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+//		));
 //	}
 //	RETURNb_(rc == MEMCACHED_SUCCESS);
 //}
@@ -321,14 +306,12 @@ KMETHOD Memcache_flushBuffers (CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	memcached_return_t rc = memcached_flush_buffers(mcd->st);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_flush_buffers", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_flush_buffers", K_FAILED, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_flush_buffers", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_flush_buffers", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
@@ -343,14 +326,12 @@ KMETHOD Memcache_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 	time_t expiration_sec = Int_to(time_t, sfp[1]);
 	memcached_return_t rc = memcached_flush(mcd->st, expiration_sec);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_flush", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_flush", K_FAILED, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_flush", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_flush", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
@@ -368,16 +349,14 @@ KMETHOD Memcache_get(CTX ctx, knh_sfp_t *sfp _RIX)
 	memcached_return_t rc;
 	char *value = memcached_get(mcd->st, key, key_length, &value_length, &flags, &rc);
 	if(rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_get", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_get", K_OK, KNH_LDATA0);
 		RETURN_(new_String(ctx, value));   //Ignore flags.
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_get", K_FAILED, ldata);
-		RETURN_(KNH_NULL);
+		KNH_NTRACE2(ctx, "memcached_get", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
+		RETURN_(KNH_TNULL(String));
 	}
 }
 
@@ -400,11 +379,10 @@ KMETHOD Memcache_mGet(CTX ctx, knh_sfp_t *sfp _RIX)
 	if (rc != MEMCACHED_SUCCESS) {
 		goto L_ERR;
 	}
-	knh_ldata_t ldata[] = {LOG_END};
-	KNH_NTRACE(ctx, "memcached_mget", K_OK, ldata);
+	KNH_NTRACE2(ctx, "memcached_mget", K_OK, KNH_LDATA0);
 	knh_Array_t *ret = new_Array(ctx, CLASS_String, number_of_keys);
 	memcached_result_st *result = &mcd->st->result;
-//	memcached_result_create(mcd->st, result);
+	//	memcached_result_create(mcd->st, result);
 	while(1) {
 		result = memcached_fetch_result(mcd->st, result, &rc);
 		if(rc == MEMCACHED_END) break;
@@ -415,13 +393,12 @@ KMETHOD Memcache_mGet(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	memcached_result_free(result);
 	RETURN_(ret);
-L_ERR:;
+	L_ERR:;
 	{
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_mget", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_mget", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 		RETURN_(KNH_NULL);
 	}
 }
@@ -439,15 +416,13 @@ KMETHOD Memcache_getByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	memcached_return_t rc;
 	char *value = memcached_get_by_key(mcd->st, group_key, group_key_length, key, key_length, &value_length, &flags, &rc);
 	if(rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_get_by_key", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_get_by_key", K_OK, KNH_LDATA0);
 		RETURN_(new_String(ctx, value));   //Ignore flags.
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_get_by_key", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_get_by_key", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 		RETURN_(KNH_NULL);
 	}
 }
@@ -473,8 +448,7 @@ KMETHOD Memcache_mGetByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	if (rc != MEMCACHED_SUCCESS) {
 		goto L_ERR;
 	}
-	knh_ldata_t ldata[] = {LOG_END};
-	KNH_NTRACE(ctx, "memcached_mgetByKey", K_OK, ldata);
+	KNH_NTRACE2(ctx, "memcached_mgetByKey", K_OK, KNH_LDATA0);
 	knh_Array_t *ret = new_Array(ctx, CLASS_String, number_of_keys);
 	memcached_result_st *result = &mcd->st->result;
 	while(1) {
@@ -489,11 +463,10 @@ KMETHOD Memcache_mGetByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ret);
 L_ERR:;
 	{
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_mgetByKey", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_mgetByKey", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 		RETURN_(KNH_NULL);
 	}
 }
@@ -515,16 +488,14 @@ KMETHOD Memcache_set (CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
 		memcached_set(mcd->st, key, key_length, value, value_length, 
-					  expiration_sec, flags);
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_set", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_set", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_set", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_set", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNvoid_();
 }
@@ -541,16 +512,14 @@ KMETHOD Memcache_add (CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
 		memcached_add(mcd->st, key, key_length, value, value_length,
-					  expiration_sec, flags);
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_add", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_add", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_add", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_add", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNvoid_();
 }
@@ -567,16 +536,14 @@ KMETHOD Memcache_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
 		memcached_replace(mcd->st, key, key_length, value, value_length, 
-						  expiration_sec, flags);
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_replace", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_replace", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_replace", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_replace", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNvoid_();
 }
@@ -595,17 +562,15 @@ KMETHOD Memcache_setByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
 		memcached_set_by_key(mcd->st, group_key, group_key_length, 
-								 key, key_length, value, value_length, 
-								 expiration_sec, flags);
+				key, key_length, value, value_length, 
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_set_by_key", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_set_by_key", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_set_by_key", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_set_by_key", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNvoid_();
 }
@@ -624,17 +589,15 @@ KMETHOD Memcache_addByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
 		memcached_add_by_key(mcd->st, group_key, group_key_length, 
-								 key, key_length, value, value_length, 
-								 expiration_sec, flags);
+				key, key_length, value, value_length, 
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_add_by_key", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_add_by_key", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_add_by_key", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_add_by_key", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNvoid_();
 }
@@ -653,17 +616,15 @@ KMETHOD Memcache_replaceByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
 		memcached_replace_by_key(mcd->st, group_key, group_key_length, 
-								 key, key_length, value, value_length, 
-								 expiration_sec, flags);
+				key, key_length, value, value_length, 
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_replace_by_key", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_replace_by_key", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_replace_by_key", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_replace_by_key", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNvoid_();
 }
@@ -683,16 +644,14 @@ KMETHOD Memcache_prepend(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
 		memcached_prepend(mcd->st, key, key_length, value, value_length, 
-						  expiration_sec, flags);
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_prepend", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_prepend", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_prepend", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_prepend", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
@@ -710,16 +669,14 @@ KMETHOD Memcache_append(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
 		memcached_append(mcd->st, key, key_length, value, value_length, 
-						  expiration_sec, flags);
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_append", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_append", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_append", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_append", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
@@ -738,17 +695,15 @@ KMETHOD Memcache_prependByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
 		memcached_prepend_by_key(mcd->st, group_key, group_key_length, 
-								 key, key_length, value, value_length, 
-								 expiration_sec, flags);
+				key, key_length, value, value_length, 
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_prepend_by_key", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_prepend_by_key", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_prepend_by_key", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_prepend_by_key", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNvoid_();
 }
@@ -767,17 +722,15 @@ KMETHOD Memcache_appendByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
 		memcached_append_by_key(mcd->st, group_key, group_key_length, 
-								 key, key_length, value, value_length, 
-								 expiration_sec, flags);
+				key, key_length, value, value_length, 
+				expiration_sec, flags);
 	if (rc == MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "memcached_append_by_key", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memcached_append_by_key", K_OK, KNH_LDATA0);
 	} else {
-		knh_ldata_t ldata[] = {
-			LOG_i("return_t", rc), 
-			LOG_s("memcached_err", memcached_strerror(mcd->st, rc)),
-			LOG_END};
-		KNH_NTRACE(ctx, "memcached_append_by_key", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_append_by_key", K_FAILED, KNH_LDATA(
+					LOG_i("return_t", rc), 
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
 	}
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
@@ -819,18 +772,15 @@ static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kn
 	knh_bytes_t host, host_port = knh_bytes_next(B(path), ':');
 	knh_index_t idx = knh_bytes_index(host_port, ':');
 	if (idx == -1) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_END};
-		KNH_NTRACE(ctx, "memc_init", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memc_init", K_FAILED, KNH_LDATA(LOG_s("path", host_port.text)));
 		return NULL;
 	} else {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_END};
-		KNH_NTRACE(ctx, "memc_init", K_OK, ldata);
+		KNH_NTRACE2(ctx, "memc_init", K_OK, KNH_LDATA(LOG_s("path", host_port.text)));
 	}
 	host = knh_bytes_first(host_port, idx);
 	knh_int_t port;
 	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
-		knh_ldata_t ldata[] = {LOG_s("path", host_port.text), LOG_END};
-		KNH_NTRACE(ctx, "memc_init", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memc_init", K_FAILED, KNH_LDATA(LOG_s("path", host_port.text)));
 		return NULL;
 	}
 	memcached_st *st = memcached_create(NULL);
@@ -838,15 +788,16 @@ static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kn
 	host.buf[host.len] = '\0';
 	servers = memcached_server_list_append(NULL, host.text, port, &rc);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("host", host.text), LOG_i("port", port), LOG_s("error", memcached_strerror(st, rc)), LOG_END};
-		KNH_NTRACE(ctx, "memcached_server_list_append", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memcached_server_list_append", K_FAILED,
+				KNH_LDATA(LOG_s("host", host.text), LOG_i("port", port),
+					LOG_s("error", memcached_strerror(st, rc))));
 		return NULL;
 	}
 	host.buf[host.len] = tmp;
 	rc = memcached_server_push(st, servers);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("host", host.text), LOG_i("port", port), LOG_s("error", memcached_strerror(st, rc)), LOG_END};
-		KNH_NTRACE(ctx, "memc_init", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memc_init", K_FAILED, KNH_LDATA(LOG_s("host", host.text),
+					LOG_i("port", port), LOG_s("error", memcached_strerror(st, rc))));
 		return NULL;
 	}
 	memcached_server_list_free(servers);
@@ -888,8 +839,8 @@ static knh_bool_t memc_get(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t 
 	uint32_t flags;
 	const char *val = memcached_get(memc->st, S_totext(key), S_size(key), &vlen, &flags, &rc);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("key", S_totext(key)), LOG_s("error", memcached_strerror(memc->st, rc)), LOG_END};
-		KNH_NTRACE(ctx, "memc_get", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memc_get", K_FAILED, KNH_LDATA(LOG_s("key", S_totext(key)),
+					LOG_s("error", memcached_strerror(memc->st, rc))));
 		return 0;
 	}
 	if (string_isprint(val, vlen)) {
@@ -910,8 +861,9 @@ static void memc_remove(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
 	knh_String_t *key =ksfp[0].s;
 	rc = memcached_delete(memc->st, S_totext(key), S_size(key), 0);
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("key", S_totext(key)), LOG_s("error", memcached_strerror(memc->st, rc)), LOG_END};
-		KNH_NTRACE(ctx, "memc_remove", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memc_remove", K_FAILED,
+				KNH_LDATA(LOG_s("key", S_totext(key)),
+					LOG_s("error", memcached_strerror(memc->st, rc))));
 	}
 }
 
@@ -947,15 +899,15 @@ static void memc_set(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 		knh_Bytes_t *val = kvsfp[1].ba;
 		rc = knh_memcached_set(memc->st, S_totext(key), S_size(key), BA_totext(val), BA_size(val), 0, 0);
 	} else {
-		knh_ldata_t ldata[] = {LOG_msg("unknown value type"), LOG_END};
-		KNH_NTRACE(ctx, "memc_set", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memc_set", K_FAILED, KNH_LDATA(LOG_msg("unknown value type")));
 		return;
 	}
 	if (rc != MEMCACHED_SUCCESS) {
-		knh_ldata_t ldata[] = {LOG_s("key", S_totext(key)),
-			LOG_s("val", IS_String(kvsfp[1].o) ? S_totext(kvsfp[1].s) : BA_totext(kvsfp[1].ba)),
-			LOG_s("error", memcached_strerror(memc->st, rc)), LOG_END};
-		KNH_NTRACE(ctx, "memc_set", K_FAILED, ldata);
+		KNH_NTRACE2(ctx, "memc_set", K_FAILED, KNH_LDATA(
+					LOG_s("key", S_totext(key)),
+					LOG_s("val", IS_String(kvsfp[1].o) ? S_totext(kvsfp[1].s) : BA_totext(kvsfp[1].ba)),
+					LOG_s("error", memcached_strerror(memc->st, rc))
+					));
 		return;
 	}
 }
@@ -981,8 +933,7 @@ static knh_bool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_
 		callbacks[0] = &dumper;
 		rc = memcached_dump(memc->st, callbacks, memc, 1);
 		if (rc != MEMCACHED_SUCCESS) {
-			knh_ldata_t ldata[] = {LOG_s("error", memcached_strerror(memc->st, rc)), LOG_END};
-			KNH_NTRACE(ctx, "memc_next", K_FAILED, ldata);
+			KNH_NTRACE2(ctx, "memc_next", K_FAILED, KNH_LDATA(LOG_s("error", memcached_strerror(memc->st, rc))));
 			return 0;
 		}
 	}

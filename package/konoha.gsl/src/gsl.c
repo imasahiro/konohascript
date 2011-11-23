@@ -40,9 +40,10 @@ extern "C" {
 
 static void knh_gsl_error_handler(const char *reason, const char *file, int line, int gsl_errno)
 {
-	knh_ldata_t ldata[] = {LOG_s("reason", reason), LOG_s("file", file), LOG_i("line", line), 
-		LOG_i("gsl_errno", gsl_errno), LOG_s("gsl_strerror", gsl_strerror(gsl_errno)), LOG_END};
-	KNH_NTRACE(knh_getCurrentContext(), "gsl_error", K_FAILED, ldata);
+	KNH_NTRACE2(knh_getCurrentContext(), "gsl_error", K_FAILED,
+			KNH_LDATA(LOG_s("reason", reason), LOG_s("file", file),
+				LOG_i("line", line), LOG_i("gsl_errno", gsl_errno),
+				LOG_s("gsl_strerror", gsl_strerror(gsl_errno))));
 }
 
 /* ------------------------------------------------------------------------ */

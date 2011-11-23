@@ -45,65 +45,6 @@ extern knh_QueryDSPI_t DB__mysql;
 /* ======================================================================== */
 /* [private function] */
 /* ------------------------------------------------------------------------ */
-/* [inlinelibs] */
-
-static inline CWB_t *CWB_open(CTX ctx, CWB_t *cwb)
-{
-	cwb->ba = ctx->bufa;
-	cwb->w  = ctx->bufw;
-	cwb->pos = BA_size(cwb->ba);
-	return cwb;
-}
-
-static inline void CWB_close0(CWB_t *cwb)
-{
-	size_t pos = cwb->pos - 1;
-	DBG_ASSERT(cwb->pos > 0);
-	DBG_ASSERT(cwb->ba->bu.buf[pos] == 0);
-	knh_Bytes_clear(cwb->ba, pos);
-	cwb->ba = NULL;
-	cwb->w = NULL;
-	cwb->pos = 0;
-}
-
-static inline void CWB_close(CWB_t *cwb)
-{
-	knh_Bytes_clear(cwb->ba, cwb->pos);
-}
-
-static inline knh_String_t *CWB_newString0(CTX ctx, CWB_t *cwb)
-{
-	knh_String_t *s = TS_EMPTY;
-	if(cwb->pos < (cwb->ba)->bu.len) {
-		s = new_String2(ctx, CLASS_String, (cwb->ba)->bu.text + cwb->pos, (cwb->ba)->bu.len - cwb->pos, 0);
-	}
-	CWB_close0(cwb);
-	return s;
-}
-
-static inline knh_bytes_t CWB_tobytes(CWB_t *cwb)
-{
-	knh_bytes_t t;
-	t.text = (cwb->ba)->bu.text + cwb->pos;
-	t.len  = (cwb->ba)->bu.len + cwb->pos;
-	return t;
-}
-
-static inline knh_bytes_t knh_bytes_first(knh_bytes_t t, knh_intptr_t loc)
-{
-	knh_bytes_t t2 = {{t.text}, loc};
-	return t2;
-}
-
-static inline size_t knh_bytes_index(knh_bytes_t v, int ch)
-{
-	size_t i;
-	for (i = 0; i < v.len; i++) {
-		if (v.utext[i] == ch) return (knh_index_t)i;
-	}
-	return -1;
-}
-/* ------------------------------------------------------------------------ */
 /* K_DSPI_QUERY */
 
 static void NOP_qfree(knh_qcur_t *qcur)

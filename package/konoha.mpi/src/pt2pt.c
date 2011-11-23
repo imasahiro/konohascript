@@ -36,8 +36,7 @@ KMETHOD MPIComm_recv(CTX ctx, knh_sfp_t *sfp _RIX)
 			count = rcount;
 		}
 	} else {
-		knh_ldata_t ldata[] = {LOG_i("source rank", src_rank), LOG_i("message tag", tag), LOG_END};
-		KNH_NTHROW(ctx, sfp, "Script!!", "MPI_Probe failed", K_FAILED, ldata);
+		KNH_NTHROW2(ctx, sfp, "Script!!", "MPI_Probe failed", K_FAILED, KNH_LDATA(LOG_i("source rank", src_rank), LOG_i("message tag", tag)));
 		count = 0;
 	}
 	int inc = 0;

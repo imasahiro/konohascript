@@ -155,8 +155,7 @@ KMETHOD GslMulti_next(CTX ctx, knh_sfp_t *sfp _RIX)
 	if (res == GSL_SUCCESS) {
 		RETURN_(new_ReturnRawPtr(ctx, sfp, dest));
 	} else {
-		knh_ldata_t ldata [] = {LOG_s("msg", gsl_strerror(GSL_FAILURE)), LOG_END};
-		KNH_NTRACE(ctx, "gsl.multiset", K_NOTICE, ldata);
+		KNH_NTRACE2(ctx, "gsl.multiset", K_NOTICE, KNH_LDATA(LOG_s("msg", gsl_strerror(GSL_FAILURE))));
 		RETURN_(KNH_NULL);
 	}
 }
@@ -173,8 +172,7 @@ KMETHOD GslMulti_prev(CTX ctx, knh_sfp_t *sfp _RIX)
 	if (res == GSL_SUCCESS) {
 		RETURN_(new_ReturnRawPtr(ctx, sfp, dest));
 	} else {
-		knh_ldata_t ldata [] = {LOG_s("msg", gsl_strerror(GSL_FAILURE)), LOG_END};
-		KNH_NTRACE(ctx, "gsl.multiset", K_NOTICE, ldata);
+		KNH_NTRACE2(ctx, "gsl.multiset", K_NOTICE, KNH_LDATA(LOG_s("msg", gsl_strerror(GSL_FAILURE))));
 		RETURN_(KNH_NULL);
 	}
 

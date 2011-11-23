@@ -306,10 +306,7 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 		idx = knh_Array_size(ctx->share->urns);
 		knh_DictSet_set(ctx, ctx->share->urnDictSet, s, idx);
 		knh_Array_add(ctx, ctx->share->urns, s);
-		{
-			knh_ldata_t ldata[] = {LOG_s("urn", S_totext(s)), LOG_i("uri", idx), LOG_END};
-			KNH_NTRACE(ctx, "konoha:newuri", K_OK, ldata);
-		}
+		KNH_NTRACE2(ctx, "konoha:newuri", K_OK, KNH_LDATA(LOG_s("urn", S_totext(s)), LOG_i("uri", idx)));
 	}
 	else {
 		idx = knh_DictSet_valueAt(ctx->share->urnDictSet, idx);

@@ -109,10 +109,10 @@ static knh_bool_t PROC_exists(CTX ctx, knh_Path_t *path)
 	return 0;
 }
 
-static knh_io_t PROC_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
-{
-	return IO_NULL;
-}
+//static knh_io_t PROC_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+//{
+//	return IO_NULL;
+//}
 
 
 static const knh_PathDPI_t STREAM_PROC = {
@@ -181,8 +181,7 @@ static void child(CTX ctx, knh_sfp_t *sfp, knh_Array_t *args, knh_DictMap_t *env
 	errno = 0;
 	if (execve(cargs[0], cargs, cenv) == -1) {
 		// [TODO] export log in detail
-		knh_ldata_t ldata[] = {LOG_s("file", cargs[0]), LOG_END};
-		KNH_NTRACE(ctx, "execvc", K_PERROR, ldata);
+		KNH_NTRACE2(ctx, "execvc", K_PERROR, KNH_LDATA(LOG_s("file", cargs[0])));
 		_Exit(EXIT_FAILURE);
 	}
 	CWB_close(ctx, cwb);
@@ -195,8 +194,7 @@ static void trapPIPE (int sig, siginfo_t *si, void *ptr)
 {
 	CTX ctx = knh_getCurrentContext();
 	if (ctx != NULL) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTRACE(ctx, "tarpChild", K_NOTICE, ldata);
+		KNH_NTRACE2(ctx, "tarpChild", K_NOTICE, KNH_LDATA0);
 	}
 	printf("SIGPIPE caught\n");
 	_Exit(EXIT_FAILURE);
@@ -231,26 +229,23 @@ KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 	if (sigaction(SIGPIPE, &sa, &sa_old) < 0) {
 		//set trapPIPE
-		knh_ldata_t ldata[] = {LOG_i("signal", SIGPIPE), LOG_END};
-		KNH_NTHROW(ctx, sfp, "Proc!!", "sigaction", K_PERROR, ldata);
+		KNH_NTHROW2(ctx, sfp, "Proc!!", "sigaction", K_PERROR, KNH_LDATA(LOG_i("signal", SIGPIPE)));
 		knh_Object_toNULL(ctx, sp);
 		RETURN_(sp);
 	}
 	if (pipe(fd1) < 0 || pipe(fd2) < 0 || pipe(fd3)) {
 		//error
-		knh_ldata_t ldata[] = {
-			LOG_i("fd1[0]", fd1[R]), LOG_i("fd1[1]", fd1[W]),
-			LOG_i("fd2[0]", fd2[R]), LOG_i("fd2[1]", fd2[W]),
-			LOG_i("fd3[0]", fd3[R]), LOG_i("fd3[1]", fd3[W]),
-			LOG_END};
-		KNH_NTHROW(ctx, sfp, "Proc!!", "pipe", K_PERROR, ldata);
+		KNH_NTHROW2(ctx, sfp, "Proc!!", "pipe", K_PERROR, KNH_LDATA(
+					LOG_i("fd1[0]", fd1[R]), LOG_i("fd1[1]", fd1[W]),
+					LOG_i("fd2[0]", fd2[R]), LOG_i("fd2[1]", fd2[W]),
+					LOG_i("fd3[0]", fd3[R]), LOG_i("fd3[1]", fd3[W])
+					));
 		knh_Object_toNULL(ctx, sp);
 		RETURN_(sp);
 	}
 	errno = 0; // to detect fork error, reset errno
 	if ((pid = fork()) < 0) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTHROW(ctx, sfp, "Proc!!", "fork", K_PERROR, ldata);
+		KNH_NTHROW2(ctx, sfp, "Proc!!", "fork", K_PERROR, KNH_LDATA0);
 		knh_Object_toNULL(ctx, sp);
 		RETURN_(sp);
 	} else if (pid > 0) {
@@ -305,25 +300,25 @@ KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Native InputStream Proc.getInputStream();
 KMETHOD Proc_getInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
 	KNH_TODO(__FUNCTION__);
-//	RETURN_(new_InputStream(ctx, sp->in, &STREAM_PROC, KNH_TNULL(Path)));
+	//knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
+	//RETURN_(new_InputStream(ctx, sp->in, &STREAM_PROC, KNH_TNULL(Path)));
 }
 
 //## @Native OutputStream Proc.getOutputStream();
 KMETHOD Proc_getOutputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
 	KNH_TODO(__FUNCTION__);
-//	RETURN_(new_OutputStream(ctx, sp->out, &STREAM_PROC, KNH_TNULL(Path)));
+	//knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
+	//RETURN_(new_OutputStream(ctx, sp->out, &STREAM_PROC, KNH_TNULL(Path)));
 }
 
 //## @Native InputStream Proc.getErrorInputStream();
 KMETHOD Proc_getErrorInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
 	KNH_TODO(__FUNCTION__);
-	//	RETURN_(new_InputStream(ctx, sp->err, &STREAM_PROC, KNH_TNULL(Path)));
+	//knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
+	//RETURN_(new_InputStream(ctx, sp->err, &STREAM_PROC, KNH_TNULL(Path)));
 }
 
 //## @Native void Proc.terminate();
@@ -353,8 +348,7 @@ KMETHOD Proc_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 	ret = waitpid(sp->pid, &status, 0);
 	Proc_free(ctx, (knh_RawPtr_t *)sp);
 	if (ret == -1) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTHROW(ctx, sfp, "System!!", "waitpid", K_PERROR, ldata);
+		KNH_NTHROW2(ctx, sfp, "System!!", "waitpid", K_PERROR, KNH_LDATA0);
 	} else {
 		DBG_P("ret=%d", ret);
 		DBG_P("WIFEXITED=%s", WIFEXITED(status) ? "true" : "false");
@@ -377,8 +371,7 @@ KMETHOD Proc_isAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 	errno = 0;
 	ret = waitpid(sp->pid, &status, WNOHANG);
 	if (ret == -1) {
-		knh_ldata_t ldata[] = {LOG_END};
-		KNH_NTHROW(ctx, sfp, "System!!", "waitpid", K_PERROR, ldata);
+		KNH_NTHROW2(ctx, sfp, "System!!", "waitpid", K_PERROR, KNH_LDATA0);
 	} else {
 		if (ret != 0) {
 			// process died close fds

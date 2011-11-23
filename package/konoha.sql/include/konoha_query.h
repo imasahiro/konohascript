@@ -39,6 +39,7 @@ extern "C" {
 //
 #define K_INTERNAL
 #include <konoha1.h>
+#include <konoha1/inlinelibs.h>
 
 #define K_USING_MYSQL
 
@@ -182,15 +183,6 @@ typedef struct _knh_QueryDPI_t {
 //#define ResultSet_setName   ResultSetDef.setName
 //#define ResultSet_setText   ResultSetDef.setText
 /* ------------------------------------------------------------------------ */
-/* [inlinelibs] */
-
-static inline knh_bytes_t new_bytes2(const char *text, size_t len)
-{
-	knh_bytes_t v;
-	v.text = text;
-	v.len = len;
-	return v;
-}
 
 #ifdef __cplusplus
 }

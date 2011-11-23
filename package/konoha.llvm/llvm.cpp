@@ -2126,8 +2126,7 @@ KMETHOD DynamicLibrary_loadLibraryPermanently(CTX ctx, knh_sfp_t *sfp _RIX)
 	std::string ErrMsg;
 	knh_bool_t ret = sys::DynamicLibrary::LoadLibraryPermanently(libname, &ErrMsg);
 	if (ret == 0) {
-		knh_ldata_t ldata[] = {LOG_s("libname", libname), LOG_msg(ErrMsg.c_str()), LOG_sfp, LOG_END};
-		KNH_NTRACE(ctx, "LoadLibraryPermanently", K_FAILED, ldata);
+		KNH_NTRACE(ctx, "LoadLibraryPermanently", K_FAILED, KNH_LDATA(LOG_s("libname", libname), LOG_msg(ErrMsg.c_str())));
 	}
 	RETURNb_(ret);
 }
