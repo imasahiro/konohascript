@@ -55,6 +55,7 @@ class Charset extends String;
 @Public @Native @Static Class[] Class.query(String path);
 @Public @Native int Class.getClassTablePtr();
 @Public @Native Object Class.getNullValue();
+@Public @Native @Const Class[] Object.getFieldClasses();
 @Public @Native Class Class.getP1();
 
 @Public @Native Method Method.opLINK(String path, NameSpace _);

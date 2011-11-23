@@ -1,4 +1,3 @@
-#!/usr/local/bin/konoha
 
 using konoha.compiler.*;
 using konoha.math.*;

@@ -190,10 +190,25 @@ KMETHOD Method_getMethodClass(CTX ctx, knh_sfp_t *sfp _RIX)
     knh_Method_t *mtd = sfp[0].mtd;
 	RETURN_(new_Type(ctx, mtd->cid));
 }
+//## Array<Class> Class.getFieldClasses()
+KMETHOD Object_getFieldClasses(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+    int i = 0;
+    knh_Class_t *c = sfp[0].c;
+    const knh_ClassTBL_t *cTBL = c->h.cTBL;
+    knh_Array_t *res = new_Array(ctx, CLASS_Class, 0);
+    if (cTBL != NULL) {
+    fprintf(stderr, "%d\n", cTBL->fsize);
+        for (; i < cTBL->fsize; i++) {
+            knh_Array_add(ctx, res, new_Type(ctx, cTBL->fields[i].type));
+        }
+    }
+    RETURN_(res);
+}
 //## int Object.getPtr() {
 KMETHOD Object_getPtr(CTX ctx, knh_sfp_t *sfp _RIX)
 {
-	RETURNi_((knh_int_t)sfp[0].o);
+    RETURNi_((knh_int_t)sfp[0].o);
 }
 
 ///* ------------------------------------------------------------------------ */

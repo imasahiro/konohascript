@@ -2011,7 +2011,6 @@ KMETHOD StructType_create(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-
 //## NativeFunction ExecutionEngine.getPointerToFunction(Module m, Function func);
 KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, knh_sfp_t *sfp _RIX)
 {
