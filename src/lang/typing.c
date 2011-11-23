@@ -1306,7 +1306,7 @@ static knh_Term_t *FMTCALL_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_bytes_t t = S_tobytes((tkFMT)->text);
 	knh_StmtExpr_t *stmtHEAD = NULL, *stmtTAIL = NULL, *stmtW;
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_uline_t uline = tkFMT->uline;
+	kuline_t uline = tkFMT->uline;
 	size_t i = 0, s = 0;
 	while(i < t.len) {
 		for(;i < t.len; i++) {

@@ -39,7 +39,7 @@ extern "C" {
 #define knh_String_equals(STR, T)   (knh_bytes_equals(S_tobytes(STR), STEXT(T)))
 
 typedef struct {
-	knh_uline_t uline;
+	kuline_t uline;
 	knh_Array_t *list;
 	union {
 		const char *s;
@@ -60,7 +60,7 @@ static inline int lpos(tenv_t *tenv, const char *s)
 	return (tenv->bol == NULL) ? -1 : s - tenv->bol;
 }
 
-static knh_Token_t *new_Token(CTX ctx, knh_token_t token, knh_uline_t uline, int lpos, knh_String_t *text)
+static knh_Token_t *new_Token(CTX ctx, ktoken_t token, kuline_t uline, int lpos, knh_String_t *text)
 {
 	knh_Token_t *tk = new_(Token);
 	tk->token = token;
@@ -166,7 +166,7 @@ static size_t addBlock(CTX ctx, tenv_t *tenv, size_t pos, int lpos)
 {
 	int c, this_indent = 0, ch, prev = '{', level = 1;
 	size_t tok_start = pos;
-	knh_uline_t uline = tenv->uline;
+	kuline_t uline = tenv->uline;
 	while((ch = tenv->line[pos++]) != 0) {
 		L_STARTLINE:;
 		if(ch == '}' && prev != '\\') {
@@ -252,7 +252,7 @@ static void addSymbol(CTX ctx, tenv_t *tenv, size_t s, size_t e)
 		}
 		knh_String_t *text = new_String2(ctx, CLASS_String, tenv->s + s, (e-s), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
 		int topch = S_totext(text)[0];
-		knh_token_t ttype = (isupper(topch)) ? TK_USYMBOL : TK_SYMBOL;
+		ktoken_t ttype = (isupper(topch)) ? TK_USYMBOL : TK_SYMBOL;
 		if(!isalpha(topch)) ttype = TK_OPERATOR;
 		knh_Token_t *tk = new_Token(ctx, ttype, tenv->uline, lpos(tenv, tenv->s + s), text);
 		if(S_size(text) == 1) {
@@ -276,7 +276,7 @@ static size_t addQuoteEsc(CTX ctx, tenv_t *tenv, size_t pos)
 static size_t addQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 {
 	int ch, isTriple = 0;
-	knh_uline_t uline = tenv->uline;
+	kuline_t uline = tenv->uline;
 	const char *qs = tenv->s - 1;
 	if(tenv->line[pos] == quote && tenv->line[pos+1] == quote) {
 		if(tenv->line[pos+2] == '\n') pos += 3; else pos += 2;
@@ -308,7 +308,7 @@ static size_t addQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 				const char *s1 = BA_totext(tenv->buf) + tenv->bufhead;
 				size_t len = BA_size(tenv->buf) - tenv->bufhead;
 				knh_String_t *text = new_String2(ctx, CLASS_String, s1, len, 0);
-				knh_token_t ttype = (quote == '"') ? TK_TEXT : TK_STEXT;
+				ktoken_t ttype = (quote == '"') ? TK_TEXT : TK_STEXT;
 				addToken(ctx, tenv, new_Token(ctx, ttype, uline, lpos(tenv, qs), text));
 				knh_Bytes_clear(tenv->buf, tenv->bufhead);
 				return pos;
@@ -325,7 +325,7 @@ static size_t addQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 static size_t addRawQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 {
 	int ch, isTriple = 0;
-	knh_uline_t uline = tenv->uline;
+	kuline_t uline = tenv->uline;
 	if(tenv->line[pos] == quote && tenv->line[pos+1] == quote) {
 		if(tenv->line[pos+2] == '\n') pos += 3; else pos += 2;
 		isTriple = 1;

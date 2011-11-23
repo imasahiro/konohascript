@@ -273,7 +273,7 @@ knh_event_t knh_geteid(CTX ctx, knh_bytes_t t)
 /* ------------------------------------------------------------------------ */
 /* [Exception.new] */
 
-knh_Exception_t* new_Error(CTX ctx, knh_uline_t uline, knh_String_t *emsg)
+knh_Exception_t* new_Error(CTX ctx, kuline_t uline, knh_String_t *emsg)
 {
 	knh_Exception_t* e = new_(Exception);
 	KNH_SETv(ctx, e->emsg, emsg);

@@ -405,7 +405,7 @@ typedef struct knh_DictMap_t {
 	knh_hObject_t h;
 	knh_mapptr_t     *mapptr;
 	const struct knh_MapDPI_t *spi;
-	knh_uline_t uline;
+	kuline_t uline;
 } knh_DictMap_t;
 
 #define new_DictMap0(ctx, N, F, NAME)      new_DictMap0_(ctx, N, F, NAME)
@@ -622,7 +622,7 @@ typedef struct knh_Exception_t knh_Exception_t;
 struct knh_Exception_t {
 	knh_hObject_t h;
 	knh_String_t   *emsg;
-	knh_uline_t     uline;
+	kuline_t     uline;
 
 	knh_Array_t*    tracesNULL;
 };
@@ -945,7 +945,7 @@ typedef struct knh_InputStream_t knh_InputStream_t;
 struct knh_InputStream_t {
 	knh_hObject_t h;
 	knh_io2_t *io2;
-//	knh_uline_t uline;
+//	kuline_t uline;
 	knh_Path_t *path;
 	struct knh_StringDecoder_t* decNULL;
 };
@@ -1077,8 +1077,8 @@ struct knh_Assurance_t {
 //## class Block Object;
 //## @Singleton class Lang Object;
 
-typedef knh_short_t   knh_sugar_t;
-typedef knh_ushort_t   knh_expr_t;
+typedef knh_short_t    ksugar_t;
+typedef knh_ushort_t   kexpr_t;
 
 typedef enum {
 	TK_NONE,
@@ -1100,18 +1100,18 @@ typedef enum {
 	TK_EXPR,
 	TK_STMT,
 	TK_BLOCK,
-} knh_token_t ;
+} ktoken_t ;
 
 typedef struct knh_Token_t knh_Token_t;
 #ifdef USE_STRUCT_Token
 struct knh_Token_t {
 	knh_hObject_t h;
-	knh_token_t token;
+	ktoken_t token;
 	union {
 		struct knh_String_t *text;
 		struct knh_Expr_t *expr;
 	};
-	knh_uline_t  uline;
+	kuline_t     uline;
 	knh_ushort_t lpos; knh_short_t  topch;
 };
 #endif
@@ -1128,7 +1128,7 @@ typedef struct knh_Sugar_t knh_Sugar_t;
 #ifdef USE_STRUCT_Sugar
 struct knh_Sugar_t {
 	knh_hObject_t h;
-	knh_sugar_t sugar;  knh_short_t optnum;
+	ksugar_t sugar;  knh_short_t optnum;
 	struct knh_String_t *key;
 	struct knh_Array_t  *rules;
 };
@@ -1136,20 +1136,21 @@ struct knh_Sugar_t {
 
 #define UEXPR_USER_DEFINED   0
 #define UEXPR_TOKEN          1
-#define TERM_TYPE            2
-#define UEXPR_METHOD_CALL    3
+#define UEXPR_METHOD_CALL    2
+#define UEXPR_NEW            3
 #define UEXPR_CALL           4
 #define UEXPR_BINARY         5
 #define UEXPR_GETTER         6
 
-#define TEXPR_CONST          10
-#define TEXPR_METHOD_CALL    (TEXPR_CONST+1)
+#define TEXPR_TYPE           10
+#define TEXPR_CONST          (TEXPR_TYPE+1)
+#define TEXPR_METHOD_CALL    (TEXPR_TYPE+2)
 
 typedef struct knh_Expr_t knh_Expr_t;
 #ifdef USE_STRUCT_Expr
 struct knh_Expr_t {
 	knh_hObject_t h;
-	knh_expr_t expr; knh_type_t type;
+	kexpr_t kexpr; knh_type_t type;
 	knh_Token_t *token;
 	union {
 		struct knh_Array_t *cons;  // (expr).x
@@ -1168,7 +1169,7 @@ typedef struct knh_Stmt_t knh_Stmt_t;
 #ifdef USE_STRUCT_Stmt
 struct knh_Stmt_t {
 	knh_hObject_t h;
-	knh_uline_t uline;
+	kuline_t uline;
 	struct knh_Stmt_t      *key;
 	struct knh_Block_t     *parent;
 	struct knh_DictMap_t   *clauseDictMap;
@@ -1251,7 +1252,7 @@ typedef knh_ushort_t   knh_term_t;
 //struct knh_Term_t {
 //	knh_hObject_t h;
 //	void *ref;
-//	knh_uline_t uline;                   //Term
+//	kuline_t uline;                   //Term
 //	knh_type_t type; knh_term_t  tt;     //Term
 //};
 //#endif
@@ -1271,7 +1272,7 @@ struct knh_Term_t {
 		struct knh_Term_t   *tkIDX;
 		struct knh_Int_t     *num;
 	};
-	knh_uline_t uline;                  // Term
+	kuline_t uline;                  // Term
 	knh_type_t type; knh_term_t  tt;    // Term
 	knh_flag_t flag0;
 	union {
@@ -1343,12 +1344,12 @@ struct knh_StmtExpr_t {
 	knh_hObject_t h;
 #ifdef K_USING_BMGC
 	void *unused;
-	knh_uline_t uline;                 // Term
+	kuline_t uline;                 // Term
 	knh_type_t type; knh_term_t  stt;  // Term
 	knh_StmtEX_t KNH_EX_REF b;
 #else
 	knh_StmtEX_t KNH_EX_REF b;
-	knh_uline_t uline;                 // Term
+	kuline_t uline;                 // Term
 	knh_type_t type; knh_term_t  stt;  // Term
 #endif
 	union {
@@ -1430,11 +1431,11 @@ struct knh_GammaBuilder_t {
 	knh_hObject_t h;
 #ifdef K_USING_BMGC
 	void *unused;
-	knh_uline_t uline;         // same as Term
+	kuline_t uline;         // same as Term
 	knh_GammaBuilderEX_t KNH_EX_REF b;
 #else
 	knh_GammaBuilderEX_t KNH_EX_REF b;
-	knh_uline_t uline;         // same as Term
+	kuline_t uline;         // same as Term
 #endif
 	knh_Script_t *scr;
 };

@@ -31,7 +31,7 @@
 /* ------------------------------------------------------------------------ */
 /* You are aggreed to use konoha under the following License */
 
-#define K_UNDER_GPL      3
+#define K_UNDER_GPL       3
 #define K_PREVIEW         1   // when released, comment this out
 
 #ifdef K_UNDER_GPL

@@ -119,7 +119,7 @@ static KMETHOD Lang_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 // only used in term.c
-knh_Array_t* new_TokenArray(CTX ctx, const char *text, knh_uline_t uline)
+knh_Array_t* new_TokenArray(CTX ctx, const char *text, kuline_t uline)
 {
 	knh_Array_t *a = (knh_Array_t*)new_Array0(ctx, 0);
 	PUSH_GCSTACK(ctx, a);
@@ -147,7 +147,7 @@ static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = new_Array(ctx, CLASS_Token, 0);
 	KNH_SETv(ctx, sfp[4].o, a);
 	tenv_t tenvbuf = {
-		sfp[2].ivalue == 0 ? 1 : (knh_uline_t)sfp[2].ivalue,
+		sfp[2].ivalue == 0 ? 1 : (kuline_t)sfp[2].ivalue,
 		a,
 		{S_totext(sfp[1].s)}, S_totext(sfp[1].s),
 		ctx->bufa,

@@ -89,7 +89,7 @@ static knh_Expr_t* MethodStaticCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t 
 {
 	knh_Array_t *cons = expr->cons;
 	size_t i, csize = knh_Array_size(cons);
-	expr->expr = TEXPR_METHOD_CALL;
+	expr->kexpr = TEXPR_METHOD_CALL;
 	for(i = 2; i < csize; i++) {
 		knh_Expr_t *e = Expr_typeCheck(ctx, cons->exprs[i], gma, TYPE_Object);
 		if(e == NULL) {
@@ -106,7 +106,7 @@ static knh_Expr_t* MethodDynamicCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t
 {
 	knh_Array_t *cons = expr->cons;
 	size_t i, csize = knh_Array_size(cons);
-	expr->expr = TEXPR_METHOD_CALL;
+	expr->kexpr = TEXPR_METHOD_CALL;
 	for(i = 2; i < csize; i++) {
 		knh_Expr_t *e = Expr_typeCheck(ctx, cons->exprs[i], gma, TYPE_Object);
 		if(e == NULL) return e;
@@ -123,7 +123,7 @@ static knh_Expr_t* Expr_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, knh_cl
 {
 	DBG_ASSERT(expr->type != TYPE_var);
 	knh_Expr_t *e = expr;
-	switch(expr->expr) {
+	switch(expr->kexpr) {
 	case UEXPR_TOKEN:       e = Term_type(ctx, expr, gma, reqt);       break;
 	case UEXPR_METHOD_CALL: e = MethodCall_type(ctx, expr, gma, reqt); break;
 /*	case UEXPR_FUNC_CALL:   e = FuncCall_type(ctx, expr, gma, reqt);   break; */

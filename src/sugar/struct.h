@@ -117,7 +117,7 @@ static const knh_ClassDef_t SugarDef = {
 static void Expr_init(CTX ctx, knh_RawPtr_t *o)
 {
 	knh_Expr_t *expr = (knh_Expr_t*)o;
-	expr->expr       =   UEXPR_USER_DEFINED;
+	expr->kexpr       =   UEXPR_USER_DEFINED;
 	expr->type       =   TYPE_var;
 	expr->index      =   0;
 	expr->xindex     =   0;
@@ -135,7 +135,55 @@ static void Expr_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 
 static void Expr_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-
+	knh_Expr_t *expr = (knh_Expr_t*)o;
+	int i, kexpr = (int)expr->kexpr;
+	switch(kexpr) {
+	// untyped
+	case UEXPR_TOKEN: {
+		knh_write(ctx, w, S_tobytes(expr->token->text));
+	}
+	break;
+	case UEXPR_METHOD_CALL:
+	case UEXPR_CALL:
+	case UEXPR_BINARY:
+	case UEXPR_GETTER: {
+		knh_putc(ctx, w, '(');
+		for(i = 0; i < knh_Array_size(expr->cons); i++) {
+			if(i > 0) knh_putc(ctx, w, ' ');
+			knh_write_Object(ctx, w, expr->cons->list[i], FMT_line);
+		}
+		knh_putc(ctx, w, ')');
+	}
+	break;
+	// typed
+	case TEXPR_TYPE: {
+		knh_write(ctx, w, STEXT("[TYPE]"));
+		knh_write_type(ctx, w, expr->cid);
+	}
+	break;
+	case TEXPR_CONST: {
+		knh_write(ctx, w, STEXT("[CONST]"));
+		knh_write_Object(ctx, w, expr->data, FMT_line);
+	}
+	break;
+	case TEXPR_METHOD_CALL: {
+		knh_write(ctx, w, STEXT("[CALL]"));
+		knh_putc(ctx, w, '(');
+		for(i = 0; i < knh_Array_size(expr->cons); i++) {
+			if(i > 0) knh_putc(ctx, w, ' ');
+			knh_write_Object(ctx, w, expr->cons->list[i], FMT_line);
+		}
+		knh_putc(ctx, w, ')');
+	}
+	break;
+	default:
+		knh_write(ctx, w, STEXT("**UNSET kexpr="));
+		knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)kexpr);
+	}
+	if(expr->type != TYPE_var) {
+		knh_putc(ctx, w, ':');
+		knh_write_type(ctx, w, expr->type);
+	}
 }
 
 static const knh_ClassDef_t ExprDef = {
@@ -170,7 +218,12 @@ static void Stmt_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 
 static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 {
-
+	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	knh_write_Object(ctx, w, UPCAST(stmt->key), FMT_line);
+	if(IS_FMTdump(level)) {
+		knh_write_EOL(ctx, w); knh_write_TAB(ctx, w);
+		knh_write_Object(ctx, w, UPCAST(stmt->clauseDictMap), level);
+	}
 }
 
 static const knh_ClassDef_t StmtDef = {

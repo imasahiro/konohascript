@@ -357,7 +357,7 @@ void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t)
 }
 void WARN_Unused(CTX ctx, knh_Term_t *tk, ksymbol_t fn)
 {
-	knh_uline_t uline = ctx->gma->uline;
+	kuline_t uline = ctx->gma->uline;
 	ctx->gma->uline = tk->uline;
 	GammaBuilder_perror(ctx, KC_DWARN, _("unused %N"), fn);
 	ctx->gma->uline = uline;

@@ -40,7 +40,7 @@ extern "C" {
 #define Expr_setConst(ctx, expr, data)  Expr_setConst_(ctx, expr, UPCAST(data))
 static knh_Expr_t *Expr_setConst_(CTX ctx, knh_Expr_t *expr, knh_Object_t *data)
 {
-	expr->expr = TEXPR_CONST;
+	expr->kexpr = TEXPR_CONST;
 	KNH_SETv(ctx, expr->data, data);
 	expr->type = O_cid(data);
 	return expr;
@@ -51,7 +51,7 @@ static knh_Expr_t* Expr_typeCheck(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, k
 static knh_Object_t *Expr_getConst(CTX ctx, knh_Expr_t *expr, knh_class_t cid)
 {
 	if(Expr_typeCheck(ctx, expr, NULL, cid)) {
-		if(expr->expr == TEXPR_CONST) {
+		if(expr->kexpr == TEXPR_CONST) {
 			return expr->data;
 		}
 	}
@@ -134,18 +134,18 @@ static knh_class_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh
 //	if(expr == NULL) {
 //		return defcid;
 //	}
-//	if(expr->expr == UEXPR_TOKEN) {
+//	if(expr->kexpr == UEXPR_TOKEN) {
 //		knh_class_t cid = knh_NameSpace_getcid(ctx, ns, S_tobytes(expr->token->text));
 //		if(cid == CLASS_unknown) {
 //			ERROR_TokenUndefined(ctx, tk, "class");
 //			ERROR_TokenAlternativeClass(ctx, tk, defcid);
 //			cid = defcid;
 //		}
-//		expr->expr = EXPR_TYPE;
+//		expr->kexpr = EXPR_TYPE;
 //		expr->cid = cid;
 //	}
-//	DBG_ASSERT(expr->expr == EXPR_TYPE);
-//	if(expr->expr == EXPR_TYPE) {
+//	DBG_ASSERT(expr->kexpr == EXPR_TYPE);
+//	if(expr->kexpr == EXPR_TYPE) {
 //		return expr->cid;
 //	}
 	return defcid;
@@ -199,13 +199,13 @@ static knh_methodn_t Stmt_getmn_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, kn
 //	if(expr == NULL) {
 //		return defmn;
 //	}
-//	if(expr->expr == UEXPR_TOKEN) {
+//	if(expr->kexpr == UEXPR_TOKEN) {
 //		knh_methodn_t mn = knh_getmn(ctx, TK_tobytes(tk), defmn);
-//		expr->expr = EXPR_METHOD;
+//		expr->kexpr = EXPR_METHOD;
 //		expr->mn   = mn;
 //	}
-//	DBG_ASSERT(expr->expr == EXPR_METHOD);
-//	if(expr->expr == EXPR_METHOD) {
+//	DBG_ASSERT(expr->kexpr == EXPR_METHOD);
+//	if(expr->kexpr == EXPR_METHOD) {
 //		return expr->mn;
 //	}
 	return defmn;

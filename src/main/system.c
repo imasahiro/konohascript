@@ -157,10 +157,10 @@ static ksymbol_t addSymbol(CTX ctx, knh_bytes_t t)
 		symbuf[pos] = (toLower) ? tolower(ch) : ch;
 		toLower = 0;
 		pos++;
-		if(pos > sizeof(symbuf) - 2) break;
+		if(!(pos < sizeof(symbuf) - 2)) break;
 	}
 	symbuf[pos] = 0;
-	DBG_P("symbuf='%s' %d", symbuf, pos);
+	DBG_P("symbuf='%s', t='%s'", symbuf, t.buf);
 	return knh_addname(ctx, new_String2(ctx, CLASS_String, (const char*)symbuf, pos, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
 }
 

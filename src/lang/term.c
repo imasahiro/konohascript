@@ -38,7 +38,7 @@
 extern "C" {
 #endif
 
-void knh_perror(CTX ctx, int level, knh_uline_t uline, int lpos, const char *fmt, ...);
+void knh_perror(CTX ctx, int level, kuline_t uline, int lpos, const char *fmt, ...);
 
 /* ------------------------------------------------------------------------ */
 /* [term] */
@@ -228,7 +228,7 @@ static knh_term_t TT_ch(int ch)
 	return TT_ERR;
 }
 
-static void TermB_setline(knh_Term_t *tkB, knh_uline_t uline)
+static void TermB_setline(knh_Term_t *tkB, kuline_t uline)
 {
 	knh_Term_t *tk = IS_Array((tkB)->data) ? (tkB)->list->terms[knh_Array_size((tkB)->list) - 1] : (tkB)->token;
 	tk->uline = uline;
@@ -329,7 +329,7 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
 		if(TT_(tkPREV) == TT_CODE) {
 			knh_bytes_t t = S_tobytes(tkPREV->text);
 			size_t i;
-			knh_uline_t uline = tkPREV->uline;
+			kuline_t uline = tkPREV->uline;
 			for(i = 0; i < t.len; i++) {
 				if(t.buf[i] == '\n') uline++;
 			}
@@ -650,7 +650,7 @@ static void Term_addBuf(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_term_t tt, int
 	}
 }
 
-static void InputStream_skipLINE(CTX ctx, knh_InputStream_t *in, knh_uline_t *ul)
+static void InputStream_skipLINE(CTX ctx, knh_InputStream_t *in, kuline_t *ul)
 {
 	int ch;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -661,7 +661,7 @@ static void InputStream_skipLINE(CTX ctx, knh_InputStream_t *in, knh_uline_t *ul
 	}
 }
 
-static void InputStream_skipBLOCKCOMMENT(CTX ctx, knh_InputStream_t *in, knh_uline_t *ul, knh_Bytes_t *ba)
+static void InputStream_skipBLOCKCOMMENT(CTX ctx, knh_InputStream_t *in, kuline_t *ul, knh_Bytes_t *ba)
 {
 	int ch, prev = 0, level = 1;
 	if(ba != NULL) {
@@ -699,7 +699,7 @@ static knh_bool_t Bytes_isTripleQuote(knh_Bytes_t *ba, int quote)
 	return 0;
 }
 
-static void Bytes_addESC(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, knh_uline_t *ul)
+static void Bytes_addESC(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kuline_t *ul)
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == 'n') ch = '\n';
@@ -709,7 +709,7 @@ static void Bytes_addESC(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, knh_ul
 	knh_Bytes_putc(ctx, ba, ch);
 }
 
-static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, knh_uline_t *ul, int quote, int skip, int isRAW, int isTQUOTE)
+static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kuline_t *ul, int quote, int skip, int isRAW, int isTQUOTE)
 {
 	if(isRAW == 1) {
 		int prev = quote;
@@ -762,7 +762,7 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, knh_
 	}
 }
 
-static int Term_addQUOTE(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul, int quote, int isRAW)
+static int Term_addQUOTE(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul, int quote, int isRAW)
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == '\n') ul[0] += 1;
@@ -797,7 +797,7 @@ static int Term_addQUOTE(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t
 		knh_term_t tt = TT_ch(quote);
 		if(tt == TT_TSTR) tt = TT_STR;
 		Bytes_addQUOTE(ctx, cwb->ba, in, ul, quote, '\n'/*skip*/, isRAW, 1/*isTQUOTE*/);
-		knh_uline_t uline = ul[0];
+		kuline_t uline = ul[0];
 		ch = knh_InputStream_getc(ctx, in);
 		Term_addBuf(ctx, tkB, cwb, tt, ch);
 		TermB_setline(tkB, uline); Term_setSAMELINE(tkB, 1); /* ... hoge """ <<< EOL; */
@@ -806,7 +806,7 @@ static int Term_addQUOTE(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t
 }
 
 
-static int Term_addREGEX(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul, int ch0)
+static int Term_addREGEX(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul, int ch0)
 {
 	int prev = 0;
 	int ch = (ch0 == 0) ? knh_InputStream_getc(ctx, in) : ch0;
@@ -929,7 +929,7 @@ static int bytes_isOPR(knh_bytes_t t, int ch)
 	return 0;
 }
 
-static int Term_addOPR(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul, int ch)
+static int Term_addOPR(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul, int ch)
 {
 	if(ch == '/') {
 		ch = knh_InputStream_getc(ctx, in);
@@ -971,7 +971,7 @@ static int Term_addOPR(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *
 	return ch;
 }
 
-static int Term_addMETAN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul)
+static int Term_addMETAN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul)
 {
 	int ch;
 	Term_addBuf(ctx, tk, cwb, TT_UNTYPED, '@');
@@ -990,7 +990,7 @@ static int Term_addMETAN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t 
 	return ch;
 }
 
-static int Term_addPROPN(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul)
+static int Term_addPROPN(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul)
 {
 	int ch;
 	Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, '$');
@@ -1009,7 +1009,7 @@ static int Term_addPROPN(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t
 	return ch;
 }
 
-static int Term_addURN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul)
+static int Term_addURN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul)
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == ':') {  /* hoge:: */
@@ -1059,7 +1059,7 @@ static int Term_addURN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *i
 	return ch;
 }
 
-static int Term_addNUM(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul, int ch)
+static int Term_addNUM(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul, int ch)
 {
 	int prev = 0, dot = 0;
 	L_ADD:;
@@ -1091,7 +1091,7 @@ static int Term_addNUM(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *i
 	return ch;
 }
 
-static void Term_addBLOCKERR(CTX ctx, knh_Term_t *tkB, knh_InputStream_t *in, knh_uline_t *ul, int ch)
+static void Term_addBLOCKERR(CTX ctx, knh_Term_t *tkB, knh_InputStream_t *in, kuline_t *ul, int ch)
 {
 	const char *block = "indent";
 	if(ch == ')') block = ")";
@@ -1101,7 +1101,7 @@ static void Term_addBLOCKERR(CTX ctx, knh_Term_t *tkB, knh_InputStream_t *in, kn
 	TermBlock_add(ctx, tkB, ERROR_Block(ctx, block));
 }
 
-static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, knh_uline_t *ul, int end)
+static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kuline_t *ul, int end)
 {
 	int prev = 0, ch;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -1115,7 +1115,7 @@ static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, knh_ul
 	}
 }
 
-static void Term_addBLOCK(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, knh_uline_t *ul, int block_indent)
+static void Term_addBLOCK(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kuline_t *ul, int block_indent)
 {
 	int c, this_indent = 0, ch, prev = '{', level = 1;
 	Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, '{');
@@ -1189,7 +1189,7 @@ static void Term_addBLOCK(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_
 	Term_addBLOCKERR(ctx, tkB, in, ul, 0);
 }
 
-static int InputStream_skipMultiByteChar(CTX ctx, knh_InputStream_t *in, knh_uline_t *ul, int ch)
+static int InputStream_skipMultiByteChar(CTX ctx, knh_InputStream_t *in, kuline_t *ul, int ch)
 {
 	char buf[8] = {ch, 0};
 	int i, size = knh_utf8len(ch);
@@ -1208,7 +1208,7 @@ static int InputStream_skipMultiByteChar(CTX ctx, knh_InputStream_t *in, knh_uli
 	}
 }
 
-static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, knh_uline_t *ul, knh_Term_t *tkB)
+static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, kuline_t *ul, knh_Term_t *tkB)
 {
 	int ch;
 	int block_indent = 0, block_line = 0;
@@ -1553,7 +1553,7 @@ static int TokenArray_parseTerm(CTX ctx, knh_Array_t *a, int s, knh_Term_t *tkB,
 
 #ifdef K_USING_SUGAR
 
-knh_Array_t* new_TokenArray(CTX ctx, const char *text, knh_uline_t uline);
+knh_Array_t* new_TokenArray(CTX ctx, const char *text, kuline_t uline);
 
 static void Term_toBRACE(CTX ctx, knh_Term_t *tk, int isEXPANDING)
 {
@@ -1584,7 +1584,7 @@ static void Term_toBRACE(CTX ctx, knh_Term_t *tk, int isEXPANDING)
                 LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_BytesInputStream(ctx, S_totext((tk)->text), S_size((tk)->text)));
                 KNH_SETv(ctx, (tk)->data, KNH_NULL);
                 TT_(tk) = TT_BRACE;
-                knh_uline_t uline = tk->uline;
+                kuline_t uline = tk->uline;
                 InputStream_parseTerm(ctx, in, &uline, tk);
                 DBG_(
                 if(knh_isVerboseLang() && ULINE_uri(uline) == URI_EVAL) {
@@ -3698,7 +3698,7 @@ static knh_StmtExpr_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 
 #ifdef K_USING_SUGAR
 
-knh_StmtExpr_t *knh_parseStmt(CTX ctx, const char *script, knh_uline_t uline)
+knh_StmtExpr_t *knh_parseStmt(CTX ctx, const char *script, kuline_t uline)
 {
 	knh_StmtExpr_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	rVALUE->uline	= uline;
@@ -3735,7 +3735,7 @@ knh_StmtExpr_t *knh_parseStmt(CTX ctx, const char *script, knh_uline_t uline)
 }
 #else
 
-knh_StmtExpr_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in, knh_uline_t *ul)
+knh_StmtExpr_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in, kuline_t *ul)
 {
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	DBG_ASSERT(ul[0] != 0);
@@ -3769,7 +3769,7 @@ knh_StmtExpr_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in, knh_ul
 
 /* ------------------------------------------------------------------------ */
 
-knh_StmtExpr_t *knh_Term_parseStmt(CTX ctx, knh_uline_t uline, knh_Term_t *tk)
+knh_StmtExpr_t *knh_Term_parseStmt(CTX ctx, kuline_t uline, knh_Term_t *tk)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	//DBG_P("uline=%d, tk->uline=%d src='''%s'''", (knh_short_t)uline, (knh_short_t)tk->uline, S_totext(tk->text));
@@ -3793,7 +3793,7 @@ knh_StmtExpr_t *knh_Term_parseStmt(CTX ctx, knh_uline_t uline, knh_Term_t *tk)
 	return rVALUE;
 }
 
-knh_StmtExpr_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, knh_uline_t uline)
+knh_StmtExpr_t *knh_bytes_parseStmt(CTX ctx, knh_bytes_t expr, kuline_t uline)
 {
 	ctx->gma->uline = uline;
 	BEGIN_LOCAL(ctx, lsfp, 2);

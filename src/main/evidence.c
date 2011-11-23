@@ -944,7 +944,7 @@ static void knh_write_cline(CTX ctx, knh_OutputStream_t *w, const char *file, kn
 	knh_putc(ctx, w, ' ');
 }
 
-void knh_write_uline(CTX ctx, knh_OutputStream_t *w, knh_uline_t uline)
+void knh_write_uline(CTX ctx, knh_OutputStream_t *w, kuline_t uline)
 {
 	knh_uri_t uri = ULINE_uri(uline);
 	knh_uintptr_t line = ULINE_line(uline);
@@ -953,7 +953,7 @@ void knh_write_uline(CTX ctx, knh_OutputStream_t *w, knh_uline_t uline)
 	}
 }
 
-void knh_write_mline(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn, knh_uline_t uline)
+void knh_write_mline(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn, kuline_t uline)
 {
 	knh_uri_t uri = ULINE_uri(uline);
 	knh_uintptr_t line = ULINE_line(uline);
@@ -989,7 +989,7 @@ static void readuline(FILE *fp, char *buf, size_t bufsiz)
 	buf[p] = 0;
 }
 
-static const char* knh_readuline(CTX ctx, knh_uline_t uline, char *buf, size_t bufsiz)
+static const char* knh_readuline(CTX ctx, kuline_t uline, char *buf, size_t bufsiz)
 {
 	knh_uri_t uri = ULINE_uri(uline);
 	size_t line = ULINE_line(uline);
@@ -1033,7 +1033,7 @@ static knh_bool_t isCalledMethod(CTX ctx, knh_sfp_t *sfp)
 	return 0;
 }
 
-static knh_uline_t sfp_uline(CTX ctx, knh_sfp_t *sfp)
+static kuline_t sfp_uline(CTX ctx, knh_sfp_t *sfp)
 {
 	knh_opline_t *pc = sfp[K_PCIDX].pc;
 	DBG_ASSERT(isCalledMethod(ctx, sfp + K_MTDIDX));
@@ -1046,7 +1046,7 @@ static knh_uline_t sfp_uline(CTX ctx, knh_sfp_t *sfp)
 	}
 }
 
-static knh_uline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
+static kuline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
 {
 	if(sfp != NULL) {
 		DBG_ASSERT(isCalledMethod(ctx, sfp + K_MTDIDX));
@@ -1089,7 +1089,7 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 	if((mtd)->mn != MN_LAMBDA) {
 		int i = 0, psize = knh_Method_psize(mtd);
-		knh_uline_t uline = knh_stack_uline(ctx, sfp);
+		kuline_t uline = knh_stack_uline(ctx, sfp);
 		knh_write_uline(ctx, cwb->w, uline);
 		knh_write_type(ctx, cwb->w, (mtd)->cid);
 		knh_putc(ctx, cwb->w, '.');
@@ -1153,7 +1153,7 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 KNHAPI2(void) knh_nthrow(CTX ctx, knh_sfp_t *sfp, const char *fault, knh_ldata_t *ldata)
 {
 	if(ctx->ehdrNC != NULL) {
-		knh_uline_t uline = knh_stack_uline(ctx, sfp);
+		kuline_t uline = knh_stack_uline(ctx, sfp);
 		knh_Exception_t *e =
 			new_Error(ctx, uline, new_String2(ctx, CLASS_String, fault, strlen(fault), K_SPOLICY_ASCII | K_SPOLICY_POOLALWAYS));
 		CTX_setThrowingException(ctx, e);
@@ -1161,7 +1161,7 @@ KNHAPI2(void) knh_nthrow(CTX ctx, knh_sfp_t *sfp, const char *fault, knh_ldata_t
 	}
 }
 
-static knh_Exception_t* new_Assertion(CTX ctx, knh_uline_t uline)
+static knh_Exception_t* new_Assertion(CTX ctx, kuline_t uline)
 {
 	knh_Exception_t* e = new_(Exception);
 	char buf[256] = {'A', 's', 's', 'e', 'r', 't', 'i', 'o', 'n', '!', '!', ':', ' '};
@@ -1177,7 +1177,7 @@ static knh_Exception_t* new_Assertion(CTX ctx, knh_uline_t uline)
 	return e;
 }
 
-void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, knh_uline_t uline)
+void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, kuline_t uline)
 {
 	CTX_setThrowingException(ctx, new_Assertion(ctx, uline));
 	knh_throw(ctx, sfp, start);
@@ -1185,7 +1185,7 @@ void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, knh_uline_t uline)
 
 //void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, const char *emsg, const knh_logdata_t *data, size_t datasize)
 //{
-//	knh_uline_t uline = 0;
+//	kuline_t uline = 0;
 //	KNH_ASSERT(ctx->bufa != NULL);
 //	if(op > 0 || isVerbose) {
 //		CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
