@@ -546,12 +546,15 @@ void knh_PleaseLetUsKnowYourOS(CTX ctx, const char *msg, const char *file, int l
 /* [signal] */
 
 // http://www.ibm.com/developerworks/jp/linux/library/l-sigdebug/index.html
-
 #if defined(K_USING_MINGW_)
-static void record_signal(CTX ctx, int sn)
+#define RECDATA
+#define RECARG
 #else
-static void record_signal(CTX ctx, int sn , siginfo_t* si, void *sigdata)
-#endif /* defined(K_USING_MINGW_) */
+#define RECDATA , si, sc
+#define RECARG , siginfo_t* si, void *sc
+#endif
+
+static void record_signal(CTX ctx, int sn RECARG)
 {
 #if defined(K_USING_MINGW_)
 	fprintf(stderr, "signal number = %d", sn);
@@ -561,30 +564,24 @@ static void record_signal(CTX ctx, int sn , siginfo_t* si, void *sigdata)
 #endif /* defined(K_USING_MINGW_) */
 }
 
-#if defined(K_USING_MINGW_)
-static void trapSIGINT(int sig)
-#else
-static void trapSIGINT(int sig, siginfo_t* si, void *sc)
-#endif /* defined(K_USING_MINGW_) */
+static void trapSIGINT(int sig RECARG)
 {
 	CTX ctx = knh_getCurrentContext();
-//	record_signal(ctx, sig, si, sc);
+//	record_signal(ctx, sig RECDATA);
 	if(ctx != NULL) {
-#if defined(K_USING_MINGW_)
-		knh_ldata_t ldata[] = {LOG_END};
-#else
-		knh_ldata_t ldata[] = {LOG_i("sender_pid", si->si_pid), LOG_i("sender_uid", si->si_uid), LOG_END};
-#endif /* defined(K_USING_MINGW_) */
-		KNH_NTRACE(ctx, "konoha:signal", K_NOTICE, ldata);
+//#if defined(K_USING_MINGW_)
+//		knh_ldata_t ldata[] = {LOG_END};
+//#else
+//		knh_ldata_t ldata[] = {LOG_i("sender_pid", si->si_pid), LOG_i("sender_uid", si->si_uid), LOG_END};
+//#endif /* defined(K_USING_MINGW_) */
+//		KNH_NTRACE(ctx, "konoha:signal", K_NOTICE, ldata);
+		KNH_NTRACE2(ctx, "konoha:signal", K_NOTICE,
+				KNH_LOGDATA(LOG_i("sender_pid", si->si_pid), LOG_i("sender_uid", si->si_uid)));
 	}
 	_Exit(0);
 }
 
-#if defined(K_USING_MINGW_)
-static void trapSIGFPE(int sig)
-#else
-static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
-#endif /* defined(K_USING_MINGW_) */
+static void trapSIGFPE(int sig RECARG)
 {
 	static const char *emsg[] = {
 			/* FPE_NOOP	  0*/ "SIGFPE",
@@ -597,11 +594,7 @@ static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
 			/* FPE_INTDIV	7	*/ "integer divide by zero",
 			/* FPE_INTOVF	8	*/ "integer overflow"};
 	CTX ctx = knh_getCurrentContext();
-#if defined(K_USING_MINGW_)
-	record_signal(ctx, sig);
-#else
-	record_signal(ctx, sig, si, sc);
-#endif /* defined(K_USING_MINGW_) */
+	record_signal(ctx, sig RECDATA);
 	if(ctx != NULL) {
 #if defined(K_USING_MINGW_)
 		int si_code = 0;
@@ -613,17 +606,11 @@ static void trapSIGFPE(int sig, siginfo_t* si, void *sc)
 }
 
 #ifndef K_USING_DEBUG
-#if defined(K_USING_MINGW_)
-static void trapSEGV(int sig)
-#else
-static void trapSEGV(int sig, siginfo_t* si, void* sc)
-#endif /* defined(K_USING_MINGW_) */
+static void trapSEGV(int sig RECARG)
 {
 	CTX ctx = knh_getCurrentContext();
-#if defined(K_USING_MINGW_)
-	record_signal(ctx, sig);
-#else
-	record_signal(ctx, sig, si, sc);
+	record_signal(ctx, sig RECDATA);
+#if !defined(K_USING_MINGW_)
 	if (si->si_code == SEGV_ACCERR) {
 		void* address = (void*)si->si_addr;
 		fprintf(stderr, "address=%p\n", address);
@@ -636,11 +623,7 @@ static void trapSEGV(int sig, siginfo_t* si, void* sc)
 	_Exit(EX_SOFTWARE);
 }
 
-#if defined(K_USING_MINGW_)
-static void trapILL(int sig)
-#else
-static void trapILL(int sig, siginfo_t* si, void* sc)
-#endif /* defined(K_USING_MINGW_) */
+static void trapILL(int sig RECARG)
 {
 	static const char *emsg[] = {
 			/* FPE_NOOP	  0*/ "SIGILL",
@@ -653,11 +636,7 @@ static void trapILL(int sig, siginfo_t* si, void* sc)
 			/* 	7	*/ "coprocessor error",
 			/* 	8	*/ "internal stack error"};
 	CTX ctx = knh_getCurrentContext();
-#if defined(K_USING_MINGW_)
-	record_signal(ctx, sig);
-#else
-	record_signal(ctx, sig, si, sc);
-#endif /* defined(K_USING_MINGW_) */
+	record_signal(ctx, sig RECDATA);
 	if(ctx != NULL) {
 #if defined(K_USING_MINGW_)
 		int si_code = 0;
@@ -671,7 +650,7 @@ static void trapILL(int sig, siginfo_t* si, void* sc)
 }
 
 #if !defined(K_USING_MINGW_)
-static void trapBUS(int sig, siginfo_t* si, void* sc)
+static void trapBUS(int sig RECARG)
 {
 	static const char *emsg[] = {
 			/* BUS_NOOP	  0*/ "BUS_NOOP",
@@ -679,7 +658,7 @@ static void trapBUS(int sig, siginfo_t* si, void* sc)
 			/* BUS_ADRERR 2*/ "nonexistent physical address",
 			/* BUS_OBJERR 3*/ "object-specific HW error"};
 	CTX ctx = knh_getCurrentContext();
-	record_signal(ctx, sig, si, sc);
+	record_signal(ctx, sig RECDATA);
 	if(ctx != NULL) {
 		int si_code = (si->si_code < 4) ? si->si_code : 1;
 		WCTX(ctx)->signal = sig;
