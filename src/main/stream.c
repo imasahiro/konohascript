@@ -454,7 +454,7 @@ int io2_getc(CTX ctx, knh_io2_t *io2)
 {
 	int ch = EOF;
 	if(io2->top < io2->tail) {
-		ch = io2->buffer[io2->top];
+		ch = (knh_uchar_t)io2->buffer[io2->top];
 		io2->top += 1;
 	}
 	else if(io2->isRunning) {
