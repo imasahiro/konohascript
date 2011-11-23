@@ -37,7 +37,7 @@ include "lib:gluelink";
 @Public @Native void InputStream.setCharset(StringDecoder c);
 @Public @Native void OutputStream.putByte(Int ch);
 @Public @Native boolean OutputStream.isClosed();
-@Public @Native void OutputStream.clearBuffer();
+//@Public @Native void OutputStream.clearBuffer();
 @Public @Native void OutputStream.setCharset(StringEncoder c);
 
 // message pack 

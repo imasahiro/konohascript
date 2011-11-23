@@ -3,11 +3,11 @@
 using konoha.math.*;
 using konoha.io.*;
 
-WIDTH = 256
-HEIGHT = 256
+WIDTH  = 256;
+HEIGHT = 256;
 
-NSUBSAMPLES = 2
-NAO_SAMPLES = 8
+NSUBSAMPLES = 2;
+NAO_SAMPLES = 8;
 
 class Vec {
     double x;

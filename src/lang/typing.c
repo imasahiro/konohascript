@@ -4201,11 +4201,13 @@ static knh_Term_t* METHOD_typing(CTX ctx, knh_StmtExpr_t *stmtM)
 		DBG_P("OVERRIDING %s.%s", CLASS__(mtd->cid), MN__(mtd->mn));
 		if(mtd->cid != mtd_cid && (Method_isPrivate(mtd) || mn == MN_new)) {
 			mtd = NULL;
+			goto L_CheckScope;
 		}
 		if(Method_isOverload(mtd) && knh_StmtMETA_is(ctx, stmtM, "Overload")) {
 			mtd = NULL;
 		}
 	}
+L_CheckScope:;
 	if(!knh_NameSpace_isInsideScope(ctx, K_GMANS, mtd_cid)) {
 		if(!knh_StmtMETA_is(ctx, stmtM, "Public")) {
 			flag |= FLAG_Method_Private;
