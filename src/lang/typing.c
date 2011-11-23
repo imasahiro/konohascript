@@ -2315,6 +2315,93 @@ static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t t
 	return CALL_toCONST(ctx, stmt, mtd);
 }
 
+static void NameSpace_lookupMethods(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_methodn_t mn, knh_Method_t **mlists, size_t remaining)
+{
+	size_t i;
+	while(ns != NULL) {
+		if(DP(ns)->methodsNULL != NULL) {
+			knh_Array_t *methods = DP(ns)->methodsNULL;
+			for(i = 0; i < knh_Array_size(methods); i++) {
+				knh_Method_t *mtd = methods->methods[i];
+				if(mtd->cid == cid && mtd->mn == mn) {
+					mlists[0] = mtd;
+					mlists++;
+					remaining--;
+					if(remaining == 0) return ;
+				}
+			}
+		}
+		ns = ns->parentNULL;
+	}
+	{
+		const knh_ClassTBL_t *p , *t0 = ClassTBL(cid);
+		do {
+			size_t i;
+			knh_Array_t *a = t0->methods;
+			for(i = 0; i < knh_Array_size(a); i++) {
+				knh_Method_t *mtd = a->methods[i];
+				if((mtd)->mn == mn) {
+					mlists[0] = mtd;
+					mlists++;
+					remaining--;
+					if(remaining == 0) return ;
+				}
+			}
+			p = t0;
+			t0 = t0->supTBL;
+		}
+		while(p != t0);
+	}
+}
+
+static knh_Term_t* OLCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid, knh_class_t new_cid, knh_Method_t *mtd0)
+{
+	size_t i, size = DP(stmt)->size;
+	knh_Method_t *mlists[32] = {NULL}, **mp = mlists;
+	knh_Method_t *tmtd = NULL;
+	NameSpace_lookupMethods(ctx, K_GMANS, mtd0->cid, mtd0->mn, mlists, 30);
+	for(i = 2; i < size; i++) {
+		TYPING_UntypedExpr(ctx, stmt, i);
+	}
+	while(*mp != NULL) {
+		knh_Method_t *mtd = mp[0];
+		knh_ParamArray_t *pa = DP(mtd)->mp;
+		if(size - 2 == pa->psize) {
+			int status = 0;
+			for(i = 0; i < pa->psize; i++) {
+				size_t n = i + 2;
+				knh_param_t* p = knh_ParamArray_get(pa, i);
+				knh_type_t param_reqt = knh_type_tocid(ctx, p->type, new_cid);
+				knh_type_t type = Tn_type(stmt, n);
+				if(type == param_reqt || ClassTBL_isa_(ctx, ClassTBL(type), ClassTBL(param_reqt)) || param_reqt == TYPE_dynamic) {
+					continue;
+				}
+				knh_TypeMap_t *tmr =knh_findTypeMapNULL(ctx, type, param_reqt);
+				if(tmr != NULL && TypeMap_isSemantic(tmr)) {
+					status = 1; // needs type coerusion
+					continue;
+				}
+				status = 2; break;
+			}
+			if(status == 0) {
+				knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(pa), new_cid);
+				Stmt_typed(ctx, stmt, rtype);
+				KNH_SETv(ctx, tkNN(stmt, 0)->data, mtd);
+				return CALL_toCONST(ctx, stmt, mtd);
+			}
+			if(status == 1 && tmtd != NULL) {
+				tmtd = mtd;
+			}
+		}
+		mp++;
+	}
+	if(tmtd != NULL) {
+		KNH_SETv(ctx, tkNN(stmt, 0)->data, tmtd);
+		return CALLPARAMs_typing(ctx, stmt, tcid, new_cid, tmtd);
+	}
+	return ERROR_Unsupported(ctx, "no matched method", mtd0->cid, NULL);
+}
+
 static inline knh_int_t Tn_int(knh_StmtExpr_t *stmt, size_t n)
 {
 	knh_Term_t *tk = tkNN(stmt, n);
@@ -2355,6 +2442,9 @@ static knh_Term_t* CALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t tcid)
 			Stmt_boxAll(ctx, stmt, 1, 2, mtd->cid);
 		}
 		Term_setMethod(ctx, tkM, mn, mtd);
+		if(Method_isOverload(mtd)) {
+			return OLCALLPARAMs_typing(ctx, stmt, tcid, mtd_cid, mtd);
+		}
 		return CALLPARAMs_typing(ctx, stmt, tcid, mtd_cid, mtd);
 	}
 	else {
@@ -2741,7 +2831,10 @@ static knh_Term_t* NEWPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t n
 	Term_setMethod(ctx, tkNN(stmt, 0), mn, mtd);
 	knh_Term_toCID(ctx, tkNN(stmt, 1), new_cid);
 	tkRES->type = new_cid;
-	if(needsTypingPARAMs) {
+	if(Method_isOverload(mtd)) {
+		tkRES = OLCALLPARAMs_typing(ctx, stmt, new_cid, new_cid, mtd);
+	}
+	else if(needsTypingPARAMs) {
 		tkRES = CALLPARAMs_typing(ctx, stmt, new_cid, new_cid, mtd);
 	}
 	else {
@@ -4087,7 +4180,6 @@ static knh_Term_t* knh_StmtMTD_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_
 	return TM(stmt);
 }
 
-
 static knh_Term_t* METHOD_typing(CTX ctx, knh_StmtExpr_t *stmtM)
 {
 	knh_class_t mtd_cid = METHOD_cid(ctx, stmtM);
@@ -4110,6 +4202,9 @@ static knh_Term_t* METHOD_typing(CTX ctx, knh_StmtExpr_t *stmtM)
 		if(mtd->cid != mtd_cid && (Method_isPrivate(mtd) || mn == MN_new)) {
 			mtd = NULL;
 		}
+		if(Method_isOverload(mtd) && knh_StmtMETA_is(ctx, stmtM, "Overload")) {
+			mtd = NULL;
+		}
 	}
 	if(!knh_NameSpace_isInsideScope(ctx, K_GMANS, mtd_cid)) {
 		if(!knh_StmtMETA_is(ctx, stmtM, "Public")) {
@@ -4119,6 +4214,9 @@ static knh_Term_t* METHOD_typing(CTX ctx, knh_StmtExpr_t *stmtM)
 	if(mtd == NULL) {  // newly defined method
 		size_t i;
 		mtd = new_Method(ctx, flag, mtd_cid, mn, NULL);
+		if(knh_StmtMETA_is(ctx, stmtM, "Overload")) {
+			Method_setOverload(mtd, 1);
+		}
 		knh_NameSpace_addMethod(ctx, mtd_cid, mtd);
 //		DP(mtd)->uri = ULINE_uri(stmtM->uline);
 //		Term_setCONST(ctx, tkNN(stmtM, 2/*method*/), mtd);

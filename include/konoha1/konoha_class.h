@@ -501,7 +501,7 @@ struct knh_ParamArray_t {
 //## flag Method Message        10 DP(%s)->flag is set * *;
 //## flag Method Restricted     11 DP(%s)->flag is set * *;
 //## flag Method FastCall       12 DP(%s)->flag is set * *;
-//## flag Method Polymorphic    13 DP(%s)->flag is set * *;
+//## flag Method Overload       13 DP(%s)->flag is set * *;
 
 typedef struct knh_Method_t knh_Method_t;
 
