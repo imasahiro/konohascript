@@ -576,7 +576,12 @@ static void trapSIGINT(int sig RECARG)
 //#endif /* defined(K_USING_MINGW_) */
 //		KNH_NTRACE(ctx, "konoha:signal", K_NOTICE, ldata);
 		KNH_NTRACE2(ctx, "konoha:signal", K_NOTICE,
-				KNH_LDATA(LOG_i("sender_pid", si->si_pid), LOG_i("sender_uid", si->si_uid)));
+#if defined(K_USING_MINGW_)
+				KNH_LDATA0
+#else
+				KNH_LDATA(LOG_i("sender_pid", si->si_pid), LOG_i("sender_uid", si->si_uid))
+#endif
+		);
 	}
 	_Exit(0);
 }

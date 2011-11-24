@@ -110,9 +110,9 @@ static knh_context_t* new_hcontext(CTX ctx0)
 			ptrace = "$(setenv " K_DEOS_TRACE ")";
 		}
 		KNH_NTRACE2(ctx, "konoha:newtrace", K_NOTICE, KNH_LDATA(
-					LOG_s("parent", ptrace),
+					LOG_s("parent", ptrace)
 #if defined(K_USING_POSIX_)
-					LOG_u("ppid", getppid())
+					, LOG_u("ppid", getppid())
 #endif /* !defined(K_USING_POSIX_) */
 					));
 	}
