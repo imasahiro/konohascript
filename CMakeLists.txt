@@ -375,6 +375,7 @@ set_target_properties(konoha1 PROPERTIES OUTPUT_NAME konoha)
 
 if(USE_CTEST)
 	include(CTest)
+	message(STATUS "*** Enable CTest Option ***")
 	add_definitions(-fprofile-arcs -ftest-coverage)
 	target_link_libraries(konoha -fprofile-arcs)
 endif(USE_CTEST)
