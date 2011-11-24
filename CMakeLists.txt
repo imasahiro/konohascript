@@ -373,6 +373,12 @@ add_executable(konoha1 ${KONOHA_BIN})
 target_link_libraries(konoha1 konoha)
 set_target_properties(konoha1 PROPERTIES OUTPUT_NAME konoha)
 
+if(USE_CTEST)
+	include(CTest)
+	add_definitions(-fprofile-arcs -ftest-coverage)
+	target_link_libraries(konoha -fprofile-arcs)
+endif(USE_CTEST)
+
 file(GLOB dirs "${CMAKE_CURRENT_SOURCE_DIR}/package/konoha.*")
 foreach(dir ${dirs})
 	add_subdirectory(${dir})
