@@ -2782,7 +2782,15 @@ static knh_Term_t* func_typingNULL(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t re
 	DBG_ASSERT(mtd != NULL);
 	STT_(stmt) = STT_CALL;
 	Term_setMethod(ctx, tkF, mn, mtd);
-	return CALLPARAMs_typing(ctx, stmt, reqt, mtd_cid, mtd);
+	{
+		knh_Term_t *tkRES;
+		if(Method_isOverload(mtd)) {
+			tkRES = OLCALLPARAMs_typing(ctx, stmt, reqt, mtd_cid, mtd);
+		} else {
+			tkRES = CALLPARAMs_typing(ctx, stmt, reqt, mtd_cid, mtd);
+		}
+		return tkRES;
+	}
 }
 
 static knh_Term_t* FUNCCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
