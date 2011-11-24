@@ -489,9 +489,9 @@ size_t io2_read(CTX ctx, knh_io2_t *io2, char *buf, size_t bufsiz)
 static knh_String_t *CWB_newLine(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *dec)
 {
 	if(CWB_size(cwb) > 0) {
-		if(cwb->ba->bu.buf[cwb->ba->bu.len - 1] == '\r') {
-			cwb->ba->bu.buf[cwb->ba->bu.len - 1] = 0;
-			cwb->ba->bu.len =- 1;
+		if(cwb->ba->bu.buf[BA_size(cwb->ba) - 1] == '\r') {
+			cwb->ba->bu.buf[BA_size(cwb->ba) - 1] = 0;
+			BA_size(cwb->ba) -= 1;
 			if(CWB_size(cwb) == 0) return TS_EMPTY;
 		}
 		if(dec == NULL) {
