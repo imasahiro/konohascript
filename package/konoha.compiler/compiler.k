@@ -293,8 +293,7 @@ class K_Inst {
         /* const value (not named) */
         if (kvalue == null) {
             return dynName;
-        }
-        if (kvalue.type == Int) {
+        } else if (kvalue.type == Int) {
             res += "ival" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Float) {
             res += "fval" + kvalue.idx + "_" + defidx;
@@ -312,8 +311,11 @@ class K_Inst {
             res += "ins" + kvalue.idx;
         } else if (kvalue.type == Script) {
             res += "script" + kvalue.idx;
-        } else {
+        } else if (kvalue.type == Object) {
             res += "obj" + kvalue.idx;
+        }
+        else {
+
         }
         return res;
     }

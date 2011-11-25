@@ -194,11 +194,10 @@ KMETHOD Method_getMethodClass(CTX ctx, knh_sfp_t *sfp _RIX)
 KMETHOD Object_getFieldClasses(CTX ctx, knh_sfp_t *sfp _RIX)
 {
     int i = 0;
-    knh_Class_t *c = sfp[0].c;
-    const knh_ClassTBL_t *cTBL = c->h.cTBL;
+    knh_Object_t *o = sfp[0].o;
+    const knh_ClassTBL_t *cTBL = o->h.cTBL;
     knh_Array_t *res = new_Array(ctx, CLASS_Class, 0);
     if (cTBL != NULL) {
-    fprintf(stderr, "%d\n", cTBL->fsize);
         for (; i < cTBL->fsize; i++) {
             knh_Array_add(ctx, res, new_Type(ctx, cTBL->fields[i].type));
         }
