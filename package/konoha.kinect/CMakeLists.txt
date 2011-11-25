@@ -1,0 +1,83 @@
+if(USE_KINECT)
+cmake_minimum_required(VERSION 2.6)
+
+set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
+set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
+set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
+set(CMAKE_BUILD_TYPE DEBUG)
+
+# it must be configured
+
+project(kinect)
+find_package(Qt4 REQUIRED)
+set(QT_USE_QTOPENGL TRUE)
+
+set(PACKAGE_SOURCE_CODE
+	kinect.cpp
+	moc_kinect.cxx
+	)
+
+set(PACKAGE_SCRIPT_CODE kinect.k)
+set(PACKAGE_EXTRA_LIBRARY
+	${QT_QTCORE_LIBRARY}
+	${QT_QTGUI_LIBRARY}
+	${QT_QTOPENGL_LIBRARY}
+	)
+
+set(PACKAGE_HEADERS kinect.hpp)
+qt4_wrap_cpp(PACKAGE_HEADERS_MOC ${PACKAGE_HEADERS})
+
+include(${QT_USE_FILE})
+
+find_path(HAVE_OPENCV opencv/cv.h PATHS ${include_locations})
+if(HAVE_OPENCV)
+    add_definitions(-DGAM_USING_OPENCV=1)
+    include_directories(${HAVE_OPENCV}/opencv)
+    include_directories(${HAVE_OPENCV}/opencv2)
+endif()
+
+find_path(HAVE_OPENNI ni/XnOpenNI.h PATHS ${include_locations})
+if(HAVE_OPENNI)
+    add_definitions(-DGAM_USING_OPENNI=1)
+    include_directories(${HAVE_OPENNI}/ni)
+endif()
+
+find_path(HAVE_NITE nite/XnVNite.h PATHS ${include_locations})
+if(HAVE_NITE)
+    add_definitions(-DGAM_USING_NITE=1)
+    include_directories(${HAVE_NITE}/nite)
+endif()
+
+set(NITE_LIBRARIES -lXnVCNITE -lXnVNite)
+
+find_package(OpenGL REQUIRED)
+if (NOT OPENGL_FOUND)
+   message(ERROR "OpenGL not found!!")
+endif(NOT OPENGL_FOUND)
+
+set(PACKAGE_NAME    ${PROJECT_NAME})
+set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+set(PACKAGE_STRING  ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
+set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
+
+set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR}
+		${KONOHA_INCLUDE_DIRS} ${PACKAGE_INCLUDE_DIR})
+include_directories(${INCLUDE_DIRS})
+
+add_definitions(-D_SETUP)
+add_definitions(${QT_DEFINITIONS})
+
+add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE} ${PACKAGE_HEADERS_MOC})
+set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
+target_link_libraries(${PACKAGE_NAME} konoha)
+target_link_libraries(${PACKAGE_NAME} ${PACKAGE_EXTRA_LIBRARY}
+opencv_calib3d opencv_core opencv_features2d opencv_flann opencv_gpu
+opencv_highgui opencv_imgproc opencv_legacy opencv_ml
+opencv_objdetect opencv_ts opencv_video OpenNI ${NITE_LIBRARIES})
+
+install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+
+endif(USE_PHYSICS)
