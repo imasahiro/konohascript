@@ -57,6 +57,15 @@ QBrush new_QBrush(QColor c)
 	return brush;
 }
 
+QPen new_QPen(String name, int width)
+{
+	QPen pen = new QPen();
+	QBrush brush = new_QBrush(new_QColor(name));
+	pen.setBrush(brush);
+	pen.setWidth(2);
+	return pen;
+}
+
 QPointF new_QPointF(int x, int y)
 {
 	QPointF p = new QPointF();

@@ -7,6 +7,7 @@ class QRevoluteJoint extends QGraphicsLineItem;
 class QPrismaticJoint extends QGraphicsLineItem;
 class QPulleyJoint extends QGraphicsPathItem;
 class QGearJoint extends QGraphicsLineItem;
+class QGraphicsComplexItem extends QGraphicsItemGroup;
 
 @Public @Native void QGraphicsItem.setDensity(float density);
 @Public @Native float QGraphicsItem.getDensity(void);
@@ -22,6 +23,9 @@ class QGearJoint extends QGraphicsLineItem;
 @Public @Native void QGraphicsItem.applyForce(QPointF force, QPointF pos);
 @Public @Native void QGraphicsItem.applyTorque(float torque);
 @Public @Native void QGraphicsItem.setXForm(QPointF pos, float angle);
+
+QGraphicsComplexItem QGraphicsComplexItem.new(Array<QPointF> pts);
+void QGraphicsComplexItem.setBrush(QBrush b);
 
 QWorld QWorld.new(QGraphicsScene scene);
 void QWorld.setGravity(float x, float y);

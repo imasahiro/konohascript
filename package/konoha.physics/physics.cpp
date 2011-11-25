@@ -7,6 +7,7 @@ unsigned int CLASS_QGraphicsTextItem;
 unsigned int CLASS_QGraphicsSimpleTextItem;
 unsigned int CLASS_QGraphicsItemGroup;
 unsigned int CLASS_QGraphicsLineItem;
+unsigned int CLASS_QGraphicsComplexItem;
 unsigned int CLASS_QDistanceJoint;
 unsigned int CLASS_QRevoluteJoint;
 unsigned int CLASS_QPrismaticJoint;
@@ -360,6 +361,35 @@ KMETHOD QGearJoint_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	CLASS_QGearJoint = GET_CID(QGearJoint);
 	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, j, NULL);
 	RETURN_(p);
+}
+
+KMETHOD QGraphicsComplexItem_new(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	CLASS_QGraphicsComplexItem = GET_CID(QGraphicsComplexItem);
+	knh_Array_t *a = sfp[1].a;
+	size_t size = knh_Array_size(a);
+	if (size < 3) {
+		RETURN_(KNH_NULL);
+	} else {
+		QList<QPointF> pts;
+		for (size_t i = 0; i < size; i++) {
+			knh_RawPtr_t *p = (knh_RawPtr_t *)a->list[i];
+			QPointF *pt = static_cast<QPointF *>(p->rawptr);
+			pts << *pt;
+		}
+		QGraphicsComplexItem *i = new QGraphicsComplexItem(pts);
+		knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, i, NULL);
+		i->setSelf(p);
+		RETURN_(p);
+	}
+}
+
+KMETHOD QGraphicsComplexItem_setBrush(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QGraphicsComplexItem *i = RawPtr_to(QGraphicsComplexItem *, sfp[0]);
+	QBrush *b = RawPtr_to(QBrush *, sfp[1]);
+	if (i) i->setBrush(*b);
+	RETURNvoid_();
 }
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *)

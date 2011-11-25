@@ -23,6 +23,7 @@ QContact::QContact(void)
 	simple_text_body = new_RawPtrFromClass(lctx, QGraphicsSimpleTextItem, NULL);
 	text_body = new_RawPtrFromClass(lctx, QGraphicsTextItem, NULL);
 	pixmap_body = new_RawPtrFromClass(lctx, QGraphicsPixmapItem, NULL);
+	complex_body = new_RawPtrFromClass(lctx, QGraphicsComplexItem, NULL);
 	begin_contact_event_func = NULL;
 	end_contact_event_func = NULL;
 }
@@ -40,6 +41,8 @@ knh_RawPtr_t *QContact::getRawPtrFromCID(knh_class_t cid)
 		ret = text_body;
 	} else if (cid == CLASS_QGraphicsPixmapItem) {
 		ret = pixmap_body;
+	} else if (cid == CLASS_QGraphicsComplexItem) {
+		ret = complex_body;
 	} else {
 	}
 	return ret;
@@ -170,11 +173,11 @@ void QWorld::timerEvent(QTimerEvent *event)
 				b2Vec2 posA = b->GetPosition();
 				QGraphicsItem *i = data->i;
 				i->setPos(posA.x * PTM_RATIO, posA.y * PTM_RATIO);
-//				if (data->tag() == GamComplexItemTag) {
-//					i->setRotation(b->GetAngle() * 360.0 / (2 * M_PI));
-//				} else {
-				i->setRotation(-1 * b->GetAngle() * 360.0 / (2 * M_PI));
-//				}
+				if (data->cid == CLASS_QGraphicsComplexItem) {
+					i->setRotation(b->GetAngle() * 360.0 / (2 * M_PI));
+				} else {
+					i->setRotation(-1 * b->GetAngle() * 360.0 / (2 * M_PI));
+				}
 //				if (data->tag() == GamWobbleItemTag) {
 //					wobbleEffect(data->idx, b, vec_list);
 //					continue;
@@ -450,7 +453,10 @@ void QWorld::add(knh_class_t cid, QGraphicsItem *i)
 
 	} else if (cid == CLASS_QGraphicsLineItem) {
 
-	} else if (cid == CLASS_QDistanceJoint) {
+	} else if (cid == CLASS_QGraphicsComplexItem) {
+		((QGraphicsComplexItem *)i)->addToWorld(this);
+		dragConnect(this, (KQGraphicsItemGroup *)i);
+	}  else if (cid == CLASS_QDistanceJoint) {
 		QDistanceJoint *j = (QDistanceJoint *)i;
 		j->addToWorld(this);
 	} else if (cid == CLASS_QRevoluteJoint) {
@@ -475,10 +481,12 @@ void QWorld::remove(KQGraphicsItem *i)
 	b2Body *body = static_cast<b2Body *>(i->dummy->body);
 	if (body) {
 		b2JointEdge *jointList = body->GetJointList();
-		b2Joint *joint = jointList->joint;
-		KQData *data = static_cast<KQData *>(joint->GetUserData());
-		scene->removeItem(data->i);
-		world->DestroyJoint(joint);
+		if (jointList) {
+			b2Joint *joint = jointList->joint;
+			KQData *data = static_cast<KQData *>(joint->GetUserData());
+			scene->removeItem(data->i);
+			world->DestroyJoint(joint);
+		}
 		world->DestroyBody(body);
 	}
 }

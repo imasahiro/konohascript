@@ -14,8 +14,14 @@ find_package(Qt4 REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 
 set(PACKAGE_SOURCE_CODE
+	lib/triangle/src/assert.cpp
+	lib/triangle/src/del_impl.cpp
+	lib/triangle/src/main.cpp
 	physics.cpp
 	src/QWorld.cpp
+	src/KQGraphicsItem.cpp
+	src/KQGraphicsItemGroup.cpp
+	src/QGraphicsComplexItem.cpp
 	src/QJoint.cpp
 	src/DebugDraw.cpp
 	moc_physics.cxx
@@ -32,6 +38,8 @@ set(PACKAGE_HEADERS physics.hpp)
 qt4_wrap_cpp(PACKAGE_HEADERS_MOC ${PACKAGE_HEADERS})
 
 include(${QT_USE_FILE})
+
+add_definitions(-DREDUCED -DANSI_DECLARATORS -DTRILIBRARY -DCDT_ONLY)
 
 find_path(HAVE_BOX2D Box2D/Box2D.h PATHS ${include_locations})
 if(HAVE_BOX2D)
@@ -52,8 +60,9 @@ set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
 		${CMAKE_CURRENT_SOURCE_DIR}/include  ${CMAKE_CURRENT_BINARY_DIR}
 		${KONOHA_INCLUDE_DIRS} ${PACKAGE_INCLUDE_DIR})
-include_directories(${INCLUDE_DIRS})
 
+set(INCLUDE_DIRS ${INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/lib/triangle/include/)
+include_directories(${INCLUDE_DIRS})
 add_definitions(-D_SETUP)
 add_definitions(${QT_DEFINITIONS})
 

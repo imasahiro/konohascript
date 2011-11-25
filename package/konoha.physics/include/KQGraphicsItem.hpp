@@ -1,22 +1,10 @@
-#ifndef QGRAPHICSITEM
-#define QGRAPHICSITEM
-
 class PKGConnector : public QObject {
 	Q_OBJECT;
 public:
-	PKGConnector() {}
-	void emitDragBeginSignal(QGraphicsSceneMouseEvent *event) {
-		emit dragBeginSignal(event);
-	}
-
-	void emitDragMoveSignal(QGraphicsSceneMouseEvent *event) {
-		emit dragMoveSignal(event);
-	}
-
-	void emitDragEndSignal(QGraphicsSceneMouseEvent *event) {
-		emit dragEndSignal(event);
-	}
-
+	PKGConnector();
+	void emitDragBeginSignal(QGraphicsSceneMouseEvent *event);
+	void emitDragMoveSignal(QGraphicsSceneMouseEvent *event);
+	void emitDragEndSignal(QGraphicsSceneMouseEvent *event);
 signals:
 	void dragBeginSignal(QGraphicsSceneMouseEvent *event);
 	void dragMoveSignal(QGraphicsSceneMouseEvent *event);
@@ -119,7 +107,4 @@ public:
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
-
-#endif //QGRAPHICSITEM
-
 
