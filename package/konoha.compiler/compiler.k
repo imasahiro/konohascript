@@ -162,6 +162,9 @@ String getTypeName(Class type) {
     if (type == Array) {
         return "Array";
     }
+    if (type == Script) {
+        return "Script";
+    }
     if (type == System) {
         return "System";
     }
@@ -329,7 +332,7 @@ class K_MOV extends K_Inst {
         this.idx = idx;
     }
     @Override void dump() {
-        OUT << "\t" + getName() + " = mov " + op.inst0.getName() + " @nonssa" << EOL;
+        OUT << "\t" + getName() + " = mov " + getTypeName(type) + " " + op.inst0.getName() + " @nonssa" << EOL;
     }
 }
 K_Value K_Function.getKValue(int idx, Class type);
@@ -483,7 +486,7 @@ class K_Function {
         if (isStatic == 1) {
         OUT << "def " + getTypeName(retTy)  + " " + mtdName + " ( ";
         } else if (|funcargs| > 0) {
-            OUT << "def " + getTypeName(retTy) + " " + funcargs[0].getName() + "." + mtdName + " ( ";
+            OUT << "def " + getTypeName(retTy) + " " + mtdName + " " + funcargs[0].getName()  + " ( ";
         }
         String str = "";
         for (int i = 1 - isStatic; i < |funcargs|; i++) {
@@ -1393,10 +1396,11 @@ void Compiler.init(Method mtd) {
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
         return;
-    } else if (mtd.isStatic() && gamma_hasFIELD()) {
+    }
+    if (mtd.isStatic() && gamma_hasFIELD()) {
         K_Value kval = kfunc.getKValue(0, Script);
         K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
-        kfunc.funcargs.add(inst);
+        kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(0, inst);
     }
 
@@ -1406,7 +1410,7 @@ void Compiler.init(Method mtd) {
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
     }
-    for (int i = 0; i < |paramsclass|; i++) {
+    for (int i =  0; i < |paramsclass|; i++) {
         Class j = paramsclass[i];
         K_Value kvalue = kfunc.getKValue(i+1, j);
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
