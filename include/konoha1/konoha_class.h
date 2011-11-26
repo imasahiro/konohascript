@@ -405,7 +405,7 @@ typedef struct knh_DictMap_t {
 	knh_hObject_t h;
 	knh_mapptr_t     *mapptr;
 	const struct knh_MapDPI_t *spi;
-	kuline_t uline;
+	kline_t uline;
 } knh_DictMap_t;
 
 #define new_DictMap0(ctx, N, F, NAME)      new_DictMap0_(ctx, N, F, NAME)
@@ -622,7 +622,7 @@ typedef struct knh_Exception_t knh_Exception_t;
 struct knh_Exception_t {
 	knh_hObject_t h;
 	knh_String_t   *emsg;
-	kuline_t     uline;
+	kline_t     uline;
 
 	knh_Array_t*    tracesNULL;
 };
@@ -945,7 +945,7 @@ typedef struct knh_InputStream_t knh_InputStream_t;
 struct knh_InputStream_t {
 	knh_hObject_t h;
 	knh_io2_t *io2;
-//	kuline_t uline;
+//	kline_t uline;
 	knh_Path_t *path;
 	struct knh_StringDecoder_t* decNULL;
 };
@@ -1111,7 +1111,7 @@ struct knh_Token_t {
 		struct knh_String_t *text;
 		struct knh_Expr_t *expr;
 	};
-	kuline_t     uline;
+	kline_t     uline;
 	knh_ushort_t lpos; knh_short_t  topch;
 };
 #endif
@@ -1169,7 +1169,7 @@ typedef struct knh_Stmt_t knh_Stmt_t;
 #ifdef USE_STRUCT_Stmt
 struct knh_Stmt_t {
 	knh_hObject_t h;
-	kuline_t uline;
+	kline_t uline;
 	struct knh_Stmt_t      *key;
 	struct knh_Block_t     *parent;
 	struct knh_DictMap_t   *clauseDictMap;
@@ -1252,7 +1252,7 @@ typedef knh_ushort_t   knh_term_t;
 //struct knh_Term_t {
 //	knh_hObject_t h;
 //	void *ref;
-//	kuline_t uline;                   //Term
+//	kline_t uline;                   //Term
 //	knh_type_t type; knh_term_t  tt;     //Term
 //};
 //#endif
@@ -1272,7 +1272,7 @@ struct knh_Term_t {
 		struct knh_Term_t   *tkIDX;
 		struct knh_Int_t     *num;
 	};
-	kuline_t uline;                  // Term
+	kline_t uline;                  // Term
 	knh_type_t type; knh_term_t  tt;    // Term
 	knh_flag_t flag0;
 	union {
@@ -1344,12 +1344,12 @@ struct knh_StmtExpr_t {
 	knh_hObject_t h;
 #ifdef K_USING_BMGC
 	void *unused;
-	kuline_t uline;                 // Term
+	kline_t uline;                 // Term
 	knh_type_t type; knh_term_t  stt;  // Term
 	knh_StmtEX_t KNH_EX_REF b;
 #else
 	knh_StmtEX_t KNH_EX_REF b;
-	kuline_t uline;                 // Term
+	kline_t uline;                 // Term
 	knh_type_t type; knh_term_t  stt;  // Term
 #endif
 	union {
@@ -1431,11 +1431,11 @@ struct knh_GammaBuilder_t {
 	knh_hObject_t h;
 #ifdef K_USING_BMGC
 	void *unused;
-	kuline_t uline;         // same as Term
+	kline_t uline;         // same as Term
 	knh_GammaBuilderEX_t KNH_EX_REF b;
 #else
 	knh_GammaBuilderEX_t KNH_EX_REF b;
-	kuline_t uline;         // same as Term
+	kline_t uline;         // same as Term
 #endif
 	knh_Script_t *scr;
 };

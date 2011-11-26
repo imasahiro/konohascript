@@ -119,7 +119,7 @@ static KMETHOD Lang_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 // only used in term.c
-knh_Array_t* new_TokenArray(CTX ctx, const char *text, kuline_t uline)
+knh_Array_t* new_TokenArray(CTX ctx, const char *text, kline_t uline)
 {
 	knh_Array_t *a = (knh_Array_t*)new_Array0(ctx, 0);
 	PUSH_GCSTACK(ctx, a);
@@ -147,7 +147,7 @@ static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_Array_t *a = new_Array(ctx, CLASS_Token, 0);
 	KNH_SETv(ctx, sfp[4].o, a);
 	tenv_t tenvbuf = {
-		sfp[2].ivalue == 0 ? 1 : (kuline_t)sfp[2].ivalue,
+		sfp[2].ivalue == 0 ? 1 : (kline_t)sfp[2].ivalue,
 		a,
 		{S_totext(sfp[1].s)}, S_totext(sfp[1].s),
 		ctx->bufa,
@@ -242,6 +242,117 @@ static KMETHOD Token_info(CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_perror(ctx, INFO_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
 }
 
+
+/* ------------------------------------------------------------------------ */
+
+static kline_t readQuote(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes_t *ba, int quote)
+{
+	int ch, prev = quote;
+	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+		if(ch == '\r') continue;
+		knh_Bytes_putc(ctx, ba, ch);
+		if(ch == '\n') line++;
+		if(ch == quote && prev != '\\') {
+			return line;
+		}
+		prev = ch;
+	}
+	return line;
+}
+
+static kline_t readComment(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes_t *ba)
+{
+	int ch, prev = 0, level = 1;
+	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+		if(ch == '\r') continue;
+		knh_Bytes_putc(ctx, ba, ch);
+		if(ch == '\n') line++;
+		if(prev == '*' && ch == '/') level--;
+		if(prev == '/' && ch == '*') level++;
+		if(level == 0) return line;
+		prev = ch;
+	}
+	return line;
+}
+
+static kline_t readChunk(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes_t *ba)
+{
+	int ch;
+	int prev = 0, isBLOCK = 0;
+	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
+		if(ch == '\r') continue;
+		if(ch == '\n') line++;
+		knh_Bytes_putc(ctx, ba, ch);
+		if(prev == '/' && ch == '*') {
+			line = readComment(ctx, in, line, ba);
+			continue;
+		}
+		if(ch == '\'' || ch == '"' || ch == '`') {
+			line = readQuote(ctx, in, line, ba, ch);
+			continue;
+		}
+		if(isBLOCK != 1 && prev == '\n' && ch == '\n') {
+			break;
+		}
+		if(prev == '{') {
+			isBLOCK = 1;
+		}
+		if(prev == '\n' && ch == '}') {
+			isBLOCK = 0;
+		}
+		prev = ch;
+	}
+	return line;
+}
+
+static int isempty(knh_bytes_t t)
+{
+	size_t i;
+	for(i = 0; i < t.len; i++) {
+		if(!isspace(t.utext[i])) return 0;
+	}
+	return 1;
+}
+
+static void readFile(CTX ctx, knh_Path_t *path)
+{
+	knh_io2_t *io2 = path->dpi->io2openNULL(ctx, path, "r", NULL);
+	INIT_GCSTACK(ctx);
+	if(io2 != NULL) {
+		knh_InputStream_t *in = new_InputStream(ctx, io2, path);
+		PUSH_GCSTACK(ctx, in);
+		kline_t uline = 1;
+		knh_uri_t uri = knh_getURI(ctx, S_tobytes(path->urn));
+		ULINE_setURI(uline, uri);
+		knh_Bytes_t*ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
+		PUSH_GCSTACK(ctx, ba);
+		kline_t linenum = uline;
+		do {
+			knh_Bytes_clear(ba, 0);
+			if(!io2_isClosed(ctx, in->io2)) {
+				uline = linenum;
+				linenum = readChunk(ctx, in, linenum, ba);
+			}
+			if(!isempty(ba->bu)) {
+				DBG_(if(knh_isVerboseLang()) {
+					fprintf(stderr, "\n>>>--------------------------------\n");
+					fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
+				});
+				//status  = (knh_status_t)knh_beval2(ctx, knh_Bytes_ensureZero(ctx, ba), uline);
+			}
+		} while(BA_size(ba) > 0);
+	}
+	RESET_GCSTACK(ctx);
+}
+
+// @Static void Lang.load(Path path)
+
+static KMETHOD Lang_load(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	readFile(ctx, sfp[1].pth);
+	RETURNvoid_();
+}
+
 // sugar tokens "=>" uname;
 
 #define FuncData(X) {#X , X}
@@ -259,6 +370,7 @@ static knh_FuncData_t FuncData[] = {
 	FuncData(Token_info),
 	FuncData(Lang_evalMethodDecl),
 	FuncData(Lang_evalSugarDecl),
+	FuncData(Lang_load),
 	{NULL, NULL},
 };
 

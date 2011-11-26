@@ -65,7 +65,7 @@ static knh_bool_t checkSugarRule(CTX ctx, knh_Array_t *rules)
 	return 1;
 }
 
-static knh_bool_t checkSizeEq(CTX ctx, kuline_t uline, size_t size, size_t eq)
+static knh_bool_t checkSizeEq(CTX ctx, kline_t uline, size_t size, size_t eq)
 {
 	if(size == eq) {
 		return 1;
@@ -73,7 +73,7 @@ static knh_bool_t checkSizeEq(CTX ctx, kuline_t uline, size_t size, size_t eq)
 	return ERROR_SyntaxError(ctx, uline);
 }
 
-static knh_bool_t Lang_addSugar(CTX ctx, knh_Lang_t *lang, knh_Sugar_t *sgr, kuline_t uline)
+static knh_bool_t Lang_addSugar(CTX ctx, knh_Lang_t *lang, knh_Sugar_t *sgr, kline_t uline)
 {
 	knh_Array_t *rules = sgr->rules;
 	size_t size = knh_Array_size(rules);
@@ -119,7 +119,7 @@ static knh_bool_t Lang_addSugar(CTX ctx, knh_Lang_t *lang, knh_Sugar_t *sgr, kul
 	return 0;
 }
 
-static knh_bool_t NameSpace_checkMethodAddition(CTX ctx, knh_NameSpace_t *ns, knh_Method_t *mtd, kuline_t uline)
+static knh_bool_t NameSpace_checkMethodAddition(CTX ctx, knh_NameSpace_t *ns, knh_Method_t *mtd, kline_t uline)
 {
 	knh_ClassTBL_addMethod(ctx, ClassTBL(mtd->cid), mtd, 0);
 	return 1;

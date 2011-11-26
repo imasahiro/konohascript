@@ -39,7 +39,7 @@ extern "C" {
 #define knh_String_equals(STR, T)   (knh_bytes_equals(S_tobytes(STR), STEXT(T)))
 
 typedef struct {
-	kuline_t uline;
+	kline_t uline;
 	knh_Array_t *list;
 	union {
 		const char *s;
@@ -60,7 +60,7 @@ static inline int lpos(tenv_t *tenv, const char *s)
 	return (tenv->bol == NULL) ? -1 : s - tenv->bol;
 }
 
-static knh_Token_t *new_Token(CTX ctx, ktoken_t token, kuline_t uline, int lpos, knh_String_t *text)
+static knh_Token_t *new_Token(CTX ctx, ktoken_t token, kline_t uline, int lpos, knh_String_t *text)
 {
 	knh_Token_t *tk = new_(Token);
 	tk->token = token;
@@ -166,7 +166,7 @@ static size_t addBlock(CTX ctx, tenv_t *tenv, size_t pos, int lpos)
 {
 	int c, this_indent = 0, ch, prev = '{', level = 1;
 	size_t tok_start = pos;
-	kuline_t uline = tenv->uline;
+	kline_t uline = tenv->uline;
 	while((ch = tenv->line[pos++]) != 0) {
 		L_STARTLINE:;
 		if(ch == '}' && prev != '\\') {
@@ -276,7 +276,7 @@ static size_t addQuoteEsc(CTX ctx, tenv_t *tenv, size_t pos)
 static size_t addQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 {
 	int ch, isTriple = 0;
-	kuline_t uline = tenv->uline;
+	kline_t uline = tenv->uline;
 	const char *qs = tenv->s - 1;
 	if(tenv->line[pos] == quote && tenv->line[pos+1] == quote) {
 		if(tenv->line[pos+2] == '\n') pos += 3; else pos += 2;
@@ -325,7 +325,7 @@ static size_t addQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 static size_t addRawQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 {
 	int ch, isTriple = 0;
-	kuline_t uline = tenv->uline;
+	kline_t uline = tenv->uline;
 	if(tenv->line[pos] == quote && tenv->line[pos+1] == quote) {
 		if(tenv->line[pos+2] == '\n') pos += 3; else pos += 2;
 		isTriple = 1;

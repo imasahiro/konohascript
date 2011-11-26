@@ -471,11 +471,11 @@ typedef knh_ushort_t              knh_uri_t;
 #define URI__(uri) S_totext(knh_getURN(ctx, uri))
 #define FILENAME__(uri) knh_sfile(URI__(uri))
 
-typedef knh_uintptr_t             kuline_t;
-#define new_ULINE(uri, line)       ((((kuline_t)uri) << (sizeof(knh_uri_t) * 8)) | ((knh_ushort_t)line))
-#define ULINE_setURI(line, uri)    line |= (((kuline_t)uri) << (sizeof(knh_uri_t) * 8))
+typedef knh_uintptr_t             kline_t;
+#define new_ULINE(uri, line)       ((((kline_t)uri) << (sizeof(knh_uri_t) * 8)) | ((knh_ushort_t)line))
+#define ULINE_setURI(line, uri)    line |= (((kline_t)uri) << (sizeof(knh_uri_t) * 8))
 #define ULINE_uri(line)            ((knh_uri_t)(line >> (sizeof(knh_uri_t) * 8)))
-#define ULINE_line(line)           (line & (kuline_t)((knh_uri_t)-1))
+#define ULINE_line(line)           (line & (kline_t)((knh_uri_t)-1))
 
 /* ------------------------------------------------------------------------ */
 /* Thread */

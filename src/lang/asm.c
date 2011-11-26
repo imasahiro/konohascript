@@ -2564,7 +2564,7 @@ static void _PRINTh(CTX ctx, knh_sfp_t *sfp, knh_OutputStream_t *w, struct klr_P
 	knh_write_ascii(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
 	if(FLAG_is(flag, K_FLAG_PF_BOL)) {
 		if(FLAG_is(flag, K_FLAG_PF_LINE)) {
-			kuline_t uline = op->line;
+			kline_t uline = op->line;
 			knh_Method_t *mtd = sfp[-1].mtdNC;
 			DBG_ASSERT(IS_Method(mtd));
 			ULINE_setURI(uline, DP(mtd)->uri);
@@ -2647,7 +2647,7 @@ static void _PRINTb(CTX ctx, knh_sfp_t *sfp, struct klr_P_t *op)
 	_PRINTln(ctx, sfp, w, op);
 }
 
-void knh_PRINT(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kuline_t uline, knh_String_t *msg, knh_Object_t *o)
+void knh_PRINT(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kline_t uline, knh_String_t *msg, knh_Object_t *o)
 {
 	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
 	knh_OutputStream_t *w = KNH_STDOUT;
@@ -2656,7 +2656,7 @@ void knh_PRINT(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kuline_t uline, knh_Str
 	_PRINTln(ctx, sfp, w, &op);
 }
 
-void knh_PRINTi(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kuline_t uline, knh_String_t *msg, knh_int_t n)
+void knh_PRINTi(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kline_t uline, knh_String_t *msg, knh_int_t n)
 {
 	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
 	knh_OutputStream_t *w = KNH_STDOUT;
@@ -2665,7 +2665,7 @@ void knh_PRINTi(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kuline_t uline, knh_St
 	_PRINTln(ctx, sfp, w, &op);
 }
 
-void knh_PRINTf(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kuline_t uline, knh_String_t *msg, knh_float_t f)
+void knh_PRINTf(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kline_t uline, knh_String_t *msg, knh_float_t f)
 {
 	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
 	knh_OutputStream_t *w = KNH_STDOUT;
@@ -2674,7 +2674,7 @@ void knh_PRINTf(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kuline_t uline, knh_St
 	_PRINTln(ctx, sfp, w, &op);
 }
 
-void knh_PRINTb(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kuline_t uline, knh_String_t *msg, knh_bool_t b)
+void knh_PRINTb(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, kline_t uline, knh_String_t *msg, knh_bool_t b)
 {
 	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
 	knh_OutputStream_t *w = KNH_STDOUT;

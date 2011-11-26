@@ -9,7 +9,7 @@ typemap.add(["knh_int_t",           "ASMCODE_TYPE_INT64"]);
 typemap.add(["knh_uint_t",          "ASMCODE_TYPE_INT64"]);
 typemap.add(["knh_ndata_t",         "ASMCODE_TYPE_INT64"]);
 typemap.add(["size_t",              "ASMCODE_TYPE_LONG"]);
-typemap.add(["kuline_t",         "ASMCODE_TYPE_LONG"]);
+typemap.add(["kline_t",         "ASMCODE_TYPE_LONG"]);
 typemap.add(["char[16]",            "ASMCODE_TYPE_VEC16"]);
 typemap.add(["knh_flag_t",          "ASMCODE_TYPE_SHORT"]);
 typemap.add(["knh_ushort_t",        "ASMCODE_TYPE_SHORT"]);

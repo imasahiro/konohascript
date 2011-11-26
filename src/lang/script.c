@@ -380,7 +380,7 @@ knh_status_t knh_loadPackage(CTX ctx, knh_bytes_t pkgname)
 				knh_Script_setNSName(ctx, newscr, pname);
 				knh_DictMap_set(ctx, dmap, pname, newscr);
 				knh_uri_t uri = knh_getURI(ctx, CWB_tobytes(cwb));
-				kuline_t uline = 1;
+				kline_t uline = 1;
 				ULINE_setURI(uline, uri);
 				KNH_SETv(ctx, newscr->ns->path, new_Path(ctx, knh_buff_newRealPathString(ctx, cwb->ba, cwb->pos)));
 				/* */
@@ -926,7 +926,7 @@ static void StmtITR_eval(CTX ctx, knh_StmtExpr_t *stmtITR)
 
 #ifdef K_USING_SUGAR
 
-knh_bool_t knh_beval2(CTX ctx, const char *script, kuline_t uline)
+knh_bool_t knh_beval2(CTX ctx, const char *script, kline_t uline)
 {
 	knh_bool_t tf;
 	INIT_GCSTACK(ctx);
@@ -939,7 +939,7 @@ knh_bool_t knh_beval2(CTX ctx, const char *script, kuline_t uline)
 }
 
 #else
-knh_bool_t knh_beval(CTX ctx, knh_InputStream_t *in, kuline_t uline)
+knh_bool_t knh_beval(CTX ctx, knh_InputStream_t *in, kline_t uline)
 {
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	knh_bool_t tf;
@@ -954,7 +954,7 @@ knh_bool_t knh_beval(CTX ctx, knh_InputStream_t *in, kuline_t uline)
 
 #endif
 
-KNHAPI2(knh_bool_t) knh_eval(CTX ctx, const char *script, kuline_t uline, knh_OutputStream_t *w)
+KNHAPI2(knh_bool_t) knh_eval(CTX ctx, const char *script, kline_t uline, knh_OutputStream_t *w)
 {
 #ifdef K_USING_SUGAR
 	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
@@ -974,7 +974,6 @@ KNHAPI2(knh_bool_t) knh_eval(CTX ctx, const char *script, kuline_t uline, knh_Ou
 
 }
 
-
 /* ------------------------------------------------------------------------ */
 
 static int bytes_isempty(knh_bytes_t t)
@@ -986,7 +985,7 @@ static int bytes_isempty(knh_bytes_t t)
 	return 1;
 }
 
-static kuline_t Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int quote, kuline_t line)
+static kline_t Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, int quote, kline_t line)
 {
 	int ch, prev = quote;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -1001,7 +1000,7 @@ static kuline_t Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, 
 	return line;
 }
 
-static kuline_t Bytes_addCOMMENT(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kuline_t line)
+static kline_t Bytes_addCOMMENT(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kline_t line)
 {
 	int ch, prev = 0, level = 1;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -1016,7 +1015,7 @@ static kuline_t Bytes_addCOMMENT(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in
 	return line;
 }
 
-static kuline_t readchunk(CTX ctx, knh_InputStream_t *in, kuline_t line, knh_Bytes_t *ba)
+static kline_t readchunk(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes_t *ba)
 {
 	int ch;
 	int prev = 0, isBLOCK = 0;
@@ -1047,12 +1046,12 @@ static kuline_t readchunk(CTX ctx, knh_InputStream_t *in, kuline_t line, knh_Byt
 }
 
 #ifdef K_USING_SUGAR
-knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, kuline_t uline)
+knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, kline_t uline)
 {
 	knh_status_t status = K_BREAK;
 	knh_Bytes_t*ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 	PUSH_GCSTACK(ctx, ba);
-	kuline_t linenum = uline;
+	kline_t linenum = uline;
 	do {
 		knh_Bytes_clear(ba, 0);
 		if(!io2_isClosed(ctx, in->io2)) {
@@ -1074,13 +1073,13 @@ knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, kuline_t uline
 	return status;
 }
 #else
-knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, kuline_t uline)
+knh_status_t knh_InputStream_load(CTX ctx, knh_InputStream_t *in, kline_t uline)
 {
 	BEGIN_LOCAL(ctx, lsfp, 3);
 	knh_status_t status = K_BREAK;
 	LOCAL_NEW(ctx, lsfp, 0, knh_Bytes_t*, ba, new_Bytes(ctx, "chunk", K_PAGESIZE));
 	KNH_SETv(ctx, lsfp[1].o, in);
-	kuline_t linenum = uline;
+	kline_t linenum = uline;
 	do {
 		knh_Bytes_clear(ba, 0);
 		if(!io2_isClosed(ctx, in->io2)) {
@@ -1110,7 +1109,7 @@ knh_status_t knh_load(CTX ctx, knh_Path_t *pth)
 {
 	knh_io2_t *io2 = pth->dpi->io2openNULL(ctx, pth, "r", NULL);
 	if(io2 != NULL) {
-		kuline_t uline = 1;
+		kline_t uline = 1;
 		knh_InputStream_t *in = new_InputStream(ctx, io2, pth);
 		knh_uri_t uri = knh_getURI(ctx, S_tobytes(pth->urn));
 		ULINE_setURI(uline, uri);
@@ -1143,7 +1142,7 @@ knh_status_t knh_startScript(CTX ctx, const char *path)
 	knh_status_t status = K_BREAK;
 	KONOHA_BEGIN(ctx);
 	knh_NameSpace_t *ns = K_GMANS;
-	kuline_t uline = 1;
+	kline_t uline = 1;
 	if(path[0] == '-' && path[1] == 0) {
 		knh_InputStream_t *in = KNH_STDIN;
 		knh_uri_t uri = knh_getURI(ctx, STEXT("stdin"));

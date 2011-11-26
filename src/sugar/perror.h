@@ -41,7 +41,7 @@ extern "C" {
 #define INFO_  2
 #define DEBUG_ 3
 
-static void write_eline(CTX ctx, knh_OutputStream_t *w, kuline_t uline, int lpos)
+static void write_eline(CTX ctx, knh_OutputStream_t *w, kline_t uline, int lpos)
 {
 	if(uline != 0 /*&& uri != URI_unknown && line != 0*/) {
 		knh_uri_t uri = ULINE_uri(uline);
@@ -59,7 +59,7 @@ static void write_eline(CTX ctx, knh_OutputStream_t *w, kuline_t uline, int lpos
 	}
 }
 
-static void knh_vperror(CTX ctx, int level, kuline_t uline, int lpos, const char *fmt, va_list ap)
+static void knh_vperror(CTX ctx, int level, kline_t uline, int lpos, const char *fmt, va_list ap)
 {
 	int isPRINT = 0;
 	const char *emsg = "(unknown) ";
@@ -94,7 +94,7 @@ static void knh_vperror(CTX ctx, int level, kuline_t uline, int lpos, const char
 	}
 }
 
-void knh_perror(CTX ctx, int level, kuline_t uline, int lpos, const char *fmt, ...)
+void knh_perror(CTX ctx, int level, kline_t uline, int lpos, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -120,7 +120,7 @@ static knh_String_t* knh_strerror(CTX ctx, int kerrno)
 	return NULL;
 }
 
-static void DEBUG_TokenAlias(CTX ctx, kuline_t uline, int lpos, knh_bytes_t t, knh_String_t *alias)
+static void DEBUG_TokenAlias(CTX ctx, kline_t uline, int lpos, knh_bytes_t t, knh_String_t *alias)
 {
 	if(CTX_isDebug(ctx)) {
 		char buf[256] = {0};
@@ -131,14 +131,14 @@ static void DEBUG_TokenAlias(CTX ctx, kuline_t uline, int lpos, knh_bytes_t t, k
 	}
 }
 
-static void WARN_LiteralMustCloseWith(CTX ctx, kuline_t uline, int lpos, int quote)
+static void WARN_LiteralMustCloseWith(CTX ctx, kline_t uline, int lpos, int quote)
 {
 	char buf[8];
 	knh_snprintf(buf, sizeof(buf), "%c", quote);
 	knh_perror(ctx, WARN_, uline, lpos, "Literal must close with %s", buf);
 }
 
-static void IGNORE_UnxpectedMultiByteChar(CTX ctx, kuline_t uline, int lpos, char *text, size_t len)
+static void IGNORE_UnxpectedMultiByteChar(CTX ctx, kline_t uline, int lpos, char *text, size_t len)
 {
 	int ch = text[len];
 	text[len] = 0;
@@ -153,7 +153,7 @@ static void ERROR_NotFoundCloseToken(CTX ctx, knh_Token_t *tk, int closech)
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "'%s' is not closed with '%s'", S_totext(tk->text), buf);
 }
 
-static knh_bool_t ERROR_SyntaxError(CTX ctx, kuline_t uline)
+static knh_bool_t ERROR_SyntaxError(CTX ctx, kline_t uline)
 {
 	knh_perror(ctx, ERR_, uline, 0, "syntax error");
 	return 0;
