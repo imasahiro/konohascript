@@ -56,8 +56,8 @@ static void knh_mysql_perror(CTX ctx, MYSQL *db, int r)
 /* ------------------------------------------------------------------------ */
 // url mysql://uname:passwd@host:port/dbname
 
-//static knh_qconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
-knh_qconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
+//static kconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
+kconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
 {
 	char *puser, user[MYSQL_USER_MAXLEN+1] = {0};
 	char *ppass, pass[MYSQL_PASS_MAXLEN+1] = {0}; // temporary defined
@@ -86,7 +86,7 @@ knh_qconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
 	//	mysql_close(db);
 	//	db = NULL;
 	//}
-	return (knh_qconn_t*)db;
+	return (kconn_t*)db;
 }
 /* ------------------------------------------------------------------------ */
 
@@ -139,8 +139,8 @@ int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 }
 /* ------------------------------------------------------------------------ */
 
-//static knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
-knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
+//static knh_qcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
+knh_qcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
 {
 	MYSQL_RES *res = NULL;
 	MYSQL *db = (MYSQL*)hdr;
@@ -179,7 +179,7 @@ knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t
 				MYSQL_FIELD *field = NULL;
 				while((field = mysql_fetch_field(res))) {
 					DP(rs)->column[i].dbtype = field->type;
-					knh_String_t *s = new_String(ctx, field->name);
+					kString *s = new_String(ctx, field->name);
 					ResultSet_setName(ctx, rs, i, s);
 					i++;
 				}
@@ -190,8 +190,8 @@ knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t
 }
 /* ------------------------------------------------------------------------ */
 
-//static void MYSQL_qclose(CTX ctx, knh_qconn_t *hdr)
-void MYSQL_qclose(CTX ctx, knh_qconn_t *hdr)
+//static void MYSQL_qclose(CTX ctx, kconn_t *hdr)
+void MYSQL_qclose(CTX ctx, kconn_t *hdr)
 {
 	mysql_close((MYSQL*)hdr);
 }

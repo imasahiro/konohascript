@@ -40,12 +40,12 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-static void GslMulti_init(CTX ctx, knh_RawPtr_t *po)
+static void GslMulti_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void GslMulti_free(CTX ctx, knh_RawPtr_t *po)
+static void GslMulti_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		gsl_multiset_free((gsl_multiset *)po->rawptr);
@@ -53,7 +53,7 @@ static void GslMulti_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defGslMulti(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defGslMulti(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "GslMulti";
 	cdef->init = GslMulti_init;
@@ -65,7 +65,7 @@ KMETHOD GslMulti_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t n = Int_to(size_t, sfp[1]);
 	size_t k = Int_to(size_t, sfp[2]);
-	knh_RawPtr_t *p = sfp[0].p;
+	kRawPtr *p = sfp[0].p;
 	p->rawptr = gsl_multiset_calloc(n, k);
 	RETURN_(p);
 }
@@ -94,7 +94,7 @@ KMETHOD GslMulti_copy(CTX ctx, ksfp_t *sfp _RIX)
 	size_t k = gsl_multiset_k(src);
 	gsl_multiset *dest = gsl_multiset_alloc(n, k);
 	gsl_multiset_memcpy(dest, src);
-	knh_RawPtr_t *res = new_ReturnRawPtr(ctx, sfp, dest);
+	kRawPtr *res = new_ReturnRawPtr(ctx, sfp, dest);
 	RETURN_(res);
 }
 
@@ -129,7 +129,7 @@ KMETHOD GslMulti_getData(CTX ctx, ksfp_t *sfp _RIX)
 	size_t *data = gsl_multiset_data(c);
 	size_t k = gsl_multiset_k(c);
 	int i = 0;
-	knh_Array_t *res = new_Array(ctx, CLASS_Int, 0);
+	kArray *res = new_Array(ctx, CLASS_Int, 0);
 	for (; i < k; i++) {
 		knh_Array_add(ctx, res, data[i]);
 	}

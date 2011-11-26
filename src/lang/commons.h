@@ -35,7 +35,7 @@ extern "C" {
 #define K_SYSVAL_MAX    9
 
 #define STT_isExpr(stt)   ((STT_LET <= stt && stt <= STT_CALL1) || stt == STT_FUNCTION)
-const char* TT__(knh_term_t tt);
+const char* TT__(kterm_t tt);
 #define Term__(tk)          TT__((tk)->tt)
 #define Stmt__(stmt)      TT__((stmt)->stt)
 
@@ -79,7 +79,7 @@ const char* TT__(knh_term_t tt);
 
 /* ------------------------------------------------------------------------ */
 
-#define TM(o)             ((knh_Term_t*)o)
+#define TM(o)             ((kTerm*)o)
 
 #define TT_(tk)        SP(tk)->tt
 #define TT_isSTR(tt)   (tt == TT_STR || tt == TT_TSTR || tt == TT_ESTR)

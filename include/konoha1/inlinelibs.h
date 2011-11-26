@@ -173,9 +173,9 @@ static inline void CWB_close0(CWB_t *cwb)
 	cwb->pos = 0;
 }
 
-static inline knh_String_t *CWB_newString0(CTX ctx, CWB_t *cwb)
+static inline kString *CWB_newString0(CTX ctx, CWB_t *cwb)
 {
-	knh_String_t *s = TS_EMPTY;
+	kString *s = TS_EMPTY;
 	if(cwb->pos < (cwb->ba)->bu.len) {
 		s = new_String2(ctx, CLASS_String, (cwb->ba)->bu.text + cwb->pos, (cwb->ba)->bu.len - cwb->pos, 0);
 	}

@@ -41,12 +41,12 @@ extern "C" {
 /* ======================================================================== */
 // [PRIVATE FUNCTIONS]
 
-static void Pasori_init(CTX ctx, knh_RawPtr_t *po)
+static void Pasori_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void Pasori_free(CTX ctx, knh_RawPtr_t *po)
+static void Pasori_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		nfc_disconnect((nfc_device_t *)po->rawptr);
@@ -64,7 +64,7 @@ KMETHOD Pasori_new(CTX ctx, ksfp_t *sfp _RIX)
 	nfc_device_t *pnd = nfc_connect(NULL);
 	if (pnd == NULL) {
 		KNH_NTRACE2(ctx, "nfc_connect", K_FAILED, KNH_LDATA0);
-		knh_Object_toNULL(ctx, sfp[0].o);
+		kObjectoNULL(ctx, sfp[0].o);
 		RETURN_(sfp[0].o);
 	}
 	RETURN_(new_ReturnRawPtr(ctx, sfp, pnd));
@@ -102,7 +102,7 @@ KMETHOD Pasori_readId(CTX ctx, ksfp_t *sfp _RIX)
 /* ======================================================================== */
 // [DEFAPIS]
 
-DEFAPI(void) defPasori(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defPasori(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->init = Pasori_init;
 	cdef->free = Pasori_free;

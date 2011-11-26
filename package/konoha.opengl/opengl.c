@@ -11223,11 +11223,11 @@ KMETHOD GL_gluUnProject4(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD GL_glutInit(CTX ctx, ksfp_t *sfp _RIX)
 {
     /* FIXED */
-    knh_Array_t *a = sfp[1].a;
+    kArray *a = sfp[1].a;
     int i, argc = knh_Array_size(a);
     char** argv = (char **) alloca(sizeof(char**) * argc);
     for (i = 0; i < argc; ++i) {
-        knh_String_t *s = (knh_String_t *) knh_Array_n(a, i);
+        kString *s = (kString *) knh_Array_n(a, i);
         argv[i] = (char *) S_totext(s);
     }
     glutInit(&argc, argv);

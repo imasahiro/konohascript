@@ -163,13 +163,13 @@
 #define FLAG_Class              KNH_MAGICFLAG(CFLAG_Class)
 
 /* ------------------------------------------------------------------------ */
-/* ParamArray */
-#define CLASS_ParamArray        ((kclass_t)17)
-#define IS_ParamArray(o)        (O_cid(o) == CLASS_ParamArray)
-#define IS_bParamArray(o)       (O_bcid(o) == CLASS_ParamArray)
-#define TYPE_ParamArray         CLASS_ParamArray
-#define CFLAG_ParamArray        ((kflag_t)FLAG_Class_Immutable|FLAG_Class_Private)
-#define FLAG_ParamArray         KNH_MAGICFLAG(CFLAG_ParamArray)
+/* Param */
+#define CLASS_Param        ((kclass_t)17)
+#define IS_Param(o)        (O_cid(o) == CLASS_Param)
+#define IS_bParam(o)       (O_bcid(o) == CLASS_Param)
+#define TYPE_Param         CLASS_Param
+#define CFLAG_Param        ((kflag_t)FLAG_Class_Immutable|FLAG_Class_Private)
+#define FLAG_Param         KNH_MAGICFLAG(CFLAG_Param)
 
 /* ------------------------------------------------------------------------ */
 /* Method */
@@ -504,7 +504,7 @@
 #define USE_STRUCT_Array
 #define USE_STRUCT_Map
 #define USE_STRUCT_Class
-#define USE_STRUCT_ParamArray
+#define USE_STRUCT_Param
 #define USE_STRUCT_Method
 #define USE_STRUCT_TypeMap
 #define USE_STRUCT_Func
@@ -677,12 +677,12 @@
 #define FLAG_Class_TypeVariable ((kflag_t)(1<<9))
 #define class_isTypeVariable(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_TypeVariable))
 #define class_setTypeVariable(o,b) TFLAG_set(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_TypeVariable,b)
-#define FLAG_ParamArray_VARGs FLAG_Object_Local1
-#define ParamArray_isVARGs(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_VARGs))
-#define ParamArray_setVARGs(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_VARGs,b)
-#define FLAG_ParamArray_RVAR FLAG_Object_Local2
-#define ParamArray_isRVAR(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_RVAR))
-#define ParamArray_setRVAR(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_RVAR,b)
+#define FLAG_Param_VARGs FLAG_Object_Local1
+#define Param_isVARGs(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Param_VARGs))
+#define Param_setVARGs(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Param_VARGs,b)
+#define FLAG_Param_RVAR FLAG_Object_Local2
+#define Param_isRVAR(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Param_RVAR))
+#define Param_setRVAR(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Param_RVAR,b)
 #define FLAG_Method_Private ((kflag_t)(1<<0))
 #define Method_isPrivate(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Private))
 #define Method_isPublic(o)  (!TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Private))
@@ -767,14 +767,14 @@
 #define OutputStream_hasUTF8(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8))
 #define OutputStream_setUTF8(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8,b)
 #define FLAG_Context_Debug ((kflag_t)(1<<1))
-#define CTX_isDebug(o)  (TFLAG_is(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug))
-#define CTX_setDebug(o,b) TFLAG_set(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug,b)
+#define CTX_isDebug(o)  (TFLAG_is(kflag_t,((kcontext_t*)o)->flag,FLAG_Context_Debug))
+#define CTX_setDebug(o,b) TFLAG_set(kflag_t,((kcontext_t*)o)->flag,FLAG_Context_Debug,b)
 #define FLAG_Context_CompileOnly ((kflag_t)(1<<2))
-#define CTX_isCompileOnly(o)  (TFLAG_is(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly))
-#define CTX_setCompileOnly(o,b) TFLAG_set(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly,b)
+#define CTX_isCompileOnly(o)  (TFLAG_is(kflag_t,((kcontext_t*)o)->flag,FLAG_Context_CompileOnly))
+#define CTX_setCompileOnly(o,b) TFLAG_set(kflag_t,((kcontext_t*)o)->flag,FLAG_Context_CompileOnly,b)
 #define FLAG_Context_Interactive ((kflag_t)(1<<3))
-#define CTX_isInteractive(o)  (TFLAG_is(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive))
-#define CTX_setInteractive(o,b) TFLAG_set(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive,b)
+#define CTX_isInteractive(o)  (TFLAG_is(kflag_t,((kcontext_t*)o)->flag,FLAG_Context_Interactive))
+#define CTX_setInteractive(o,b) TFLAG_set(kflag_t,((kcontext_t*)o)->flag,FLAG_Context_Interactive,b)
 #define FLAG_Assurance_CheckedIn FLAG_Object_Local1
 #define Assurance_isCheckedIn(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn))
 #define Assurance_setCheckedIn(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn,b)

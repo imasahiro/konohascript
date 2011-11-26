@@ -363,7 +363,7 @@ char *knh_format_utf8(char *buf, size_t bufsiz, kuint_t ucs4)
 /* ------------------------------------------------------------------------ */
 /* [String] */
 
-static void knh_String_checkASCII(knh_String_t *o)
+static void knh_String_checkASCII(kString *o)
 {
 	unsigned char ch = 0;
 	long len = S_size(o);
@@ -437,19 +437,19 @@ static kbool_t checkStringPooling(const char *text, size_t len)
 }
 
 
-knh_String_t* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, int policy)
+kString* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, int policy)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	int isPooling = 0;
 #ifdef K_USING_STRINGPOOL
-	if(!TFLAG_is(int, policy, K_SPOLICY_POOLNEVER) && ct->constPoolMapNULL != NULL) {
-		knh_String_t *s = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, text, len);
+	if(!TFLAG_is(int, policy, SPOL_POOLNEVER) && ct->constPoolMapNULL != NULL) {
+		kString *s = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, text, len);
 		if(s != NULL) return s;
 		isPooling = 1;
 	}
 #endif
-	knh_String_t *s = (knh_String_t*)new_hObject_(ctx, ct);
-	if(TFLAG_is(int, policy, K_SPOLICY_TEXT)) {
+	kString *s = (kString*)new_hObject_(ctx, ct);
+	if(TFLAG_is(int, policy, SPOL_TEXT)) {
 		s->str.text = text;
 		s->str.len = len;
 		s->hashCode = 0;
@@ -469,17 +469,17 @@ knh_String_t* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, i
 		s->str.ubuf[len] = '\0';
 		s->hashCode = 0;
 	}
-	if(TFLAG_is(int, policy, K_SPOLICY_ASCII)) {
+	if(TFLAG_is(int, policy, SPOL_ASCII)) {
 		String_setASCII(s, 1);
 	}
-	else if(TFLAG_is(int, policy, K_SPOLICY_UTF8)) {
+	else if(TFLAG_is(int, policy, SPOL_UTF8)) {
 		String_setASCII(s, 0);
 	}
 	else {
 		knh_String_checkASCII(s);
 	}
 	if(isPooling) {
-		if(!TFLAG_is(int, policy, K_SPOLICY_POOLALWAYS)) {
+		if(!TFLAG_is(int, policy, SPOL_POOLALWAYS)) {
 			if(!checkStringPooling(s->str.text, s->str.len)) {
 				return s; // not pooling
 			}
@@ -492,7 +492,7 @@ knh_String_t* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, i
 	return s;
 }
 
-KNHAPI2(knh_String_t*) new_String(CTX ctx, const char *str)
+KNHAPI2(kString*) new_String(CTX ctx, const char *str)
 {
 	if(str == NULL) {
 		return KNH_TNULL(String);
@@ -518,7 +518,7 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 	return (knh_conv_t*)rc;
 }
 
-static kbool_t strconv(CTX ctx, knh_conv_t *iconvp, const char *text, size_t len, knh_Bytes_t *to)
+static kbool_t strconv(CTX ctx, knh_conv_t *iconvp, const char *text, size_t len, kBytes *to)
 {
 	char buffer[4096], *ibuf = (char*)text;
 	size_t ilen = len, rsize = 0;//, ilen_prev = ilen;
@@ -554,7 +554,7 @@ static knh_ConverterDPI_t SCONV = {
 	NULL
 };
 
-knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, kbytes_t t)
+kStringDecoder* new_StringDecoderNULL(CTX ctx, kbytes_t t)
 {
 	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
 		return KNH_TNULL(StringDecoder);
@@ -562,7 +562,7 @@ knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, kbytes_t t)
 	else {
 		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
 		if(id != (knh_iconv_t)(-1)) {
-			knh_StringDecoder_t *c = new_(StringDecoder);
+			kStringDecoder *c = new_(StringDecoder);
 			c->conv = (knh_conv_t*)id;
 			c->dpi = &SCONV;
 			return c;
@@ -571,7 +571,7 @@ knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, kbytes_t t)
 	return NULL;
 }
 
-knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, kbytes_t t)
+kStringEncoder* new_StringEncoderNULL(CTX ctx, kbytes_t t)
 {
 	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
 		return KNH_TNULL(StringEncoder);
@@ -579,7 +579,7 @@ knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, kbytes_t t)
 	else {
 		knh_iconv_t id = ctx->spi->iconv_openSPI(K_ENCODING, t.text);
 		if(id != (knh_iconv_t)(-1)) {
-			knh_StringEncoder_t *c = new_(StringEncoder);
+			kStringEncoder *c = new_(StringEncoder);
 			c->conv = (knh_conv_t*)id;
 			c->dpi = &SCONV;
 			return c;
@@ -590,14 +590,14 @@ knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, kbytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *CWB_newStringDECODE(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *c)
+kString *CWB_newStringDECODE(CTX ctx, CWB_t *cwb, kStringDecoder *c)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
-	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, CWB_newString(ctx, cwb, 0));
+	LOCAL_NEW(ctx, lsfp, 0, kString*, s, CWB_newString(ctx, cwb, 0));
 	if(!String_isASCII(s)) {
 		kbytes_t t = S_tobytes(s);
 		c->dpi->dec(ctx, c->conv, t.text, t.len, cwb->ba);
-		s = CWB_newString(ctx, cwb, K_SPOLICY_UTF8);
+		s = CWB_newString(ctx, cwb, SPOL_UTF8);
 		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
 	}
 	END_LOCAL(ctx, lsfp);
@@ -624,9 +624,9 @@ int knh_bytes_strcasecmp(kbytes_t v1, kbytes_t v2)
 /* ------------------------------------------------------------------------ */
 /* regex */
 
-static knh_regex_t* strregex_malloc(CTX ctx, knh_String_t *pattern)
+static kregex_t* strregex_malloc(CTX ctx, kString *pattern)
 {
-	return (knh_regex_t*)pattern;
+	return (kregex_t*)pattern;
 }
 static int strregex_parsecflags(CTX ctx, const char *opt)
 {
@@ -636,23 +636,23 @@ static int strregex_parseeflags(CTX ctx, const char *opt)
 {
 	return 0;
 }
-static int strregex_nmatchsize(CTX ctx, knh_regex_t *reg)
+static int strregex_nmatchsize(CTX ctx, kregex_t *reg)
 {
 	return 1;
 }
-static int strregex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
+static int strregex_regcomp(CTX ctx, kregex_t *reg, const char *pattern, int cflags)
 {
 	return 0;
 }
-static size_t strregex_regerror(int errcode, knh_regex_t *reg, char *ebuf, size_t ebuf_size)
+static size_t strregex_regerror(int errcode, kregex_t *reg, char *ebuf, size_t ebuf_size)
 {
 	ebuf[0] = 0;
 	return 0;
 }
-static int strregex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int flags)
+static int strregex_regexec(CTX ctx, kregex_t *reg, const char *str, size_t nmatch, kregmatch_t p[], int flags)
 {
 	size_t e = 0;
-	knh_String_t *ptn = (knh_String_t*)reg;
+	kString *ptn = (kString*)reg;
 	const char *po = strstr(str, S_totext(ptn));
 	if(po != NULL) {
 		p[e].rm_so = po - str;
@@ -669,7 +669,7 @@ static int strregex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t n
 	return (po) ? 0 : -1;
 }
 
-static void strregex_regfree(CTX ctx, knh_regex_t *reg) { }
+static void strregex_regfree(CTX ctx, kregex_t *reg) { }
 
 static const knh_RegexSPI_t REGEX_STR = {
 	"strregex",
@@ -685,7 +685,7 @@ const knh_RegexSPI_t* knh_getStrRegexSPI(void)
 	return &REGEX_STR;
 }
 
-kbool_t Regex_isSTRREGEX(knh_Regex_t *re)
+kbool_t Regex_isSTRREGEX(kRegex *re)
 {
 	return (re->spi == &REGEX_STR);
 }
@@ -804,25 +804,25 @@ typedef struct {
 } PCRE_regex_t;
 
 
-static knh_regex_t* pcre_regmalloc(CTX ctx, knh_String_t* s)
+static kregex_t* pcre_regmalloc(CTX ctx, kString* s)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*) KNH_MALLOC(ctx,sizeof(PCRE_regex_t));
-	return (knh_regex_t *) preg;
+	return (kregex_t *) preg;
 }
 
-static void pcre_regfree(CTX ctx, knh_regex_t *reg)
+static void pcre_regfree(CTX ctx, kregex_t *reg)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
 	_pcre_free(preg->re);
 	KNH_FREE(ctx, preg, sizeof(PCRE_regex_t));
 }
 
-static int pcre_nmatchsize(CTX ctx, knh_regex_t *reg)
+static int pcre_nmatchsize(CTX ctx, kregex_t *reg)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
 	int capsize = 0;
 	if (_pcre_fullinfo(preg->re, NULL, PCRE_INFO_CAPTURECOUNT, &capsize) != 0) {
-		return K_REGEX_MATCHSIZE;
+		return KREGEX_MATCHSIZE;
 	}
 	return capsize + 1;
 }
@@ -866,21 +866,21 @@ static int pcre_parseeflags(CTX ctx, const char *option)
 	return eflags;
 }
 
-static size_t pcre_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsize)
+static size_t pcre_regerror(int res, kregex_t *reg, char *ebuf, size_t ebufsize)
 {
 	PCRE_regex_t *pcre = (PCRE_regex_t*)reg;
 	snprintf(ebuf, ebufsize, "[%d]: %s", pcre->erroffset, pcre->err);
 	return (pcre->err != NULL) ? strlen(pcre->err) : 0;
 }
 
-static int pcre_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
+static int pcre_regcomp(CTX ctx, kregex_t *reg, const char *pattern, int cflags)
 {
 	PCRE_regex_t* preg = (PCRE_regex_t*)reg;
 	preg->re = _pcre_compile(pattern, cflags, &preg->err, &preg->erroffset, NULL);
 	return (preg->re != NULL) ? 0 : -1;
 }
 
-static int pcre_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflags)
+static int pcre_regexec(CTX ctx, kregex_t *reg, const char *str, size_t nmatch, kregmatch_t p[], int eflags)
 {
 	PCRE_regex_t *preg = (PCRE_regex_t*)reg;
 	int res, nm_count, nvector[nmatch*3];
@@ -955,14 +955,14 @@ typedef struct {
 	re2::RE2 *r;
 } RE2_regex_t;
 
-static knh_regex_t* re2_regex_malloc(CTX ctx, knh_String_t* s)
+static kregex_t* re2_regex_malloc(CTX ctx, kString* s)
 {
 	RE2_regex_t *reg = (RE2_regex_t*)KNH_MALLOC(ctx, sizeof(RE2_regex_t));
 	reg->r = NULL;
-	return (knh_regex_t*)reg;
+	return (kregex_t*)reg;
 }
 
-static void re2_regex_regfree(CTX ctx, knh_regex_t *reg)
+static void re2_regex_regfree(CTX ctx, kregex_t *reg)
 {
 	RE2_regex_t *re = (RE2_regex_t*)reg;
 	if (re->r != NULL) {
@@ -972,7 +972,7 @@ static void re2_regex_regfree(CTX ctx, knh_regex_t *reg)
 	KNH_FREE(ctx, reg, sizeof(RE2_regex_t));
 }
 
-static size_t re2_regex_regerror(int res, knh_regex_t *reg, char *ebuf, size_t ebufsize)
+static size_t re2_regex_regerror(int res, kregex_t *reg, char *ebuf, size_t ebufsize)
 {
 	re2::RE2 *r = static_cast<re2::RE2*>(((RE2_regex_t*)reg)->r);
 	const char *err = (*r).error().c_str();
@@ -1001,7 +1001,7 @@ static int re2_regex_parsecflags(CTX ctx, const char *option)
 	return cflags;
 }
 
-static int re2_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflags)
+static int re2_regex_regcomp(CTX ctx, kregex_t *reg, const char *pattern, int cflags)
 {
 	RE2_regex_t* re = (RE2_regex_t*)reg;
 	re2::RE2::Options opt;
@@ -1022,7 +1022,7 @@ static int re2_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int
 	return ((*(re->r)).ok()) ? 0 : 1;
 }
 
-static int re2_regex_nmatchsize(CTX ctx, knh_regex_t *reg)
+static int re2_regex_nmatchsize(CTX ctx, kregex_t *reg)
 {
 	re2::RE2 *r = static_cast<re2::RE2*>(((RE2_regex_t*)reg)->r);
 	return 1 + (*r).NumberOfCapturingGroups(); // patern + groups
@@ -1040,7 +1040,7 @@ static int re2_regex_parseeflags(CTX ctx, const char *option)
 	return eflags;
 }
 
-static int re2_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflags)
+static int re2_regex_regexec(CTX ctx, kregex_t *reg, const char *str, size_t nmatch, kregmatch_t p[], int eflags)
 {
 	re2::RE2 *r = static_cast<re2::RE2*>(((RE2_regex_t*)reg)->r);
 	re2::StringPiece base(str);
@@ -1140,12 +1140,12 @@ typedef struct {
 	OnigErrorInfo *einfo;
 } ONIG_regex_t;
 
-static knh_regex_t* onig_regex_malloc(CTX ctx, knh_String_t *s)
+static kregex_t* onig_regex_malloc(CTX ctx, kString *s)
 {
 	ONIG_regex_t *r = (ONIG_regex_t*)KNH_MALLOC(ctx, sizeof(ONIG_regex_t));
 	r->einfo = NULL;
 	r->reg = NULL;
-	return (knh_regex_t*) r;
+	return (kregex_t*) r;
 }
 
 static int onig_regex_parse_cflags(CTX ctx, const char *option)
@@ -1181,13 +1181,13 @@ static int onig_regex_parse_eflags(CTX ctx, const char *option)
 	return eflags;
 }
 
-static size_t onig_regex_regerror(int res, knh_regex_t *reg, char* ebuf, size_t ebuf_size)
+static size_t onig_regex_regerror(int res, kregex_t *reg, char* ebuf, size_t ebuf_size)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	return _onig_error_code_to_str((OnigUChar*)ebuf, res, oreg->einfo);
 }
 
-static int onig_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, int cflag)
+static int onig_regex_regcomp(CTX ctx, kregex_t *reg, const char *pattern, int cflag)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	OnigUChar* upatt = (OnigUChar*) pattern;
@@ -1196,7 +1196,7 @@ static int onig_regex_regcomp(CTX ctx, knh_regex_t *reg, const char *pattern, in
 	return (cmp == ONIG_NORMAL) ? 0 : 1;
 }
 
-static int onig_regex_nmatchsize(CTX ctx, knh_regex_t *reg)
+static int onig_regex_nmatchsize(CTX ctx, kregex_t *reg)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	int cap = _onig_number_of_captures(oreg->reg);
@@ -1205,7 +1205,7 @@ static int onig_regex_nmatchsize(CTX ctx, knh_regex_t *reg)
 
 static int knh_regex_onig_setNames(const OnigUChar* name, const OnigUChar* name_end, int num_of_group, int* num_of_group_list, OnigRegex reg, void *arg)
 {
-	knh_regmatch_t *p = (knh_regmatch_t*)arg;
+	kregmatch_t *p = (kregmatch_t*)arg;
 	int i, len = name_end - name;
 	for (i = 0; i < num_of_group; i++) {
 		int j = num_of_group_list[i];
@@ -1215,7 +1215,7 @@ static int knh_regex_onig_setNames(const OnigUChar* name, const OnigUChar* name_
 	return 0;
 }
 
-static int onig_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t nmatch, knh_regmatch_t p[], int eflag)
+static int onig_regex_regexec(CTX ctx, kregex_t *reg, const char *str, size_t nmatch, kregmatch_t p[], int eflag)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	OnigUChar *head = (OnigUChar*)str;
@@ -1236,7 +1236,7 @@ static int onig_regex_regexec(CTX ctx, knh_regex_t *reg, const char *str, size_t
 	return (res >= 0) ? 0 : res; /* >=0: not error(matched bytes), <0:error */
 }
 
-static void onig_regex_regfree(CTX ctx, knh_regex_t *reg)
+static void onig_regex_regfree(CTX ctx, kregex_t *reg)
 {
 	ONIG_regex_t *oreg = (ONIG_regex_t*)reg;
 	OnigRegex r = oreg->reg;

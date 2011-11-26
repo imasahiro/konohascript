@@ -124,7 +124,7 @@ KMETHOD GslMath_frexp(CTX ctx, ksfp_t *sfp _RIX)
 	double x = Float_to(double, sfp[1]);
 	int e;
 	double f = gsl_frexp(x, &e);
-	knh_Tuple_t *t = (knh_Tuple_t*)new_ReturnObject(ctx, sfp);
+	kTuple *t = (kTuple*)new_ReturnObject(ctx, sfp);
 	t->ffields[0] = (kfloat_t)f;
 	t->ifields[1] = (kint_t)e;
 	RETURN_(t);
@@ -197,7 +197,7 @@ KMETHOD GslMath_fcmp(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNi_(gsl_fcmp(Float_to(double, sfp[1]), Float_to(double, sfp[2]), Float_to(double, sfp[3])));
 }
 
-DEFAPI(void) defGslMath(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defGslMath(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "GslMath";
 }

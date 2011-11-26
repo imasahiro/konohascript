@@ -28,30 +28,30 @@
 //
 //#include"commons.h"
 //
-//#define VERTEX(n)       ((knh_BasicBlock_t*)knh_Array_n(vertex, n))
-//#define ANCESTOR(bb)    ((knh_BasicBlock_t*)Array_BB(ancestor, bb))
+//#define VERTEX(n)       ((kBasicBlock*)knh_Array_n(vertex, n))
+//#define ANCESTOR(bb)    ((kBasicBlock*)Array_BB(ancestor, bb))
 //#define SEMI(bb)        IArray_n(semi, DFN(bb))
-//#define BEST(bb)        ((knh_BasicBlock_t*)Array_BB(best, bb))
-//#define IDOM(bb)        ((knh_BasicBlock_t*)Array_BB(idom, bb))
-//#define SAMEDOM(bb)     ((knh_BasicBlock_t*)Array_BB(samedom, bb))
-//#define BUCKET(bb)      ((knh_Array_t*)Array_BB(bucket, bb))
-//#define PRED(bb)        ((knh_Array_t*)Array_BB(pred, bb))
-//#define DF(bb)          ((knh_Array_t*)Array_BB(df, bb))
-//#define DEFSITES(n)     ((knh_Array_t*)knh_Array_n(defsites, n))
-//#define APHI(n)         ((knh_Array_t*)knh_Array_n(Aphi, n))
-//#define STACK(n)        ((knh_Array_t*)knh_Array_n(stack, IArray_n(origidx, n)))
-//#define AORIG(n)        ((knh_Array_t*)knh_Array_n(Aorig, n))
-//#define PCC(n)          ((knh_Array_t*)knh_Array_n(pcc, n))
-//#define UNM(n)          ((knh_Array_t*)knh_Array_n(unm, n))
-//#define LIVEIN(n)       ((knh_Array_t*)knh_Array_n(liveIn, n))
-//#define LIVEOUT(n)      ((knh_Array_t*)knh_Array_n(liveOut, n))
+//#define BEST(bb)        ((kBasicBlock*)Array_BB(best, bb))
+//#define IDOM(bb)        ((kBasicBlock*)Array_BB(idom, bb))
+//#define SAMEDOM(bb)     ((kBasicBlock*)Array_BB(samedom, bb))
+//#define BUCKET(bb)      ((kArray*)Array_BB(bucket, bb))
+//#define PRED(bb)        ((kArray*)Array_BB(pred, bb))
+//#define DF(bb)          ((kArray*)Array_BB(df, bb))
+//#define DEFSITES(n)     ((kArray*)knh_Array_n(defsites, n))
+//#define APHI(n)         ((kArray*)knh_Array_n(Aphi, n))
+//#define STACK(n)        ((kArray*)knh_Array_n(stack, IArray_n(origidx, n)))
+//#define AORIG(n)        ((kArray*)knh_Array_n(Aorig, n))
+//#define PCC(n)          ((kArray*)knh_Array_n(pcc, n))
+//#define UNM(n)          ((kArray*)knh_Array_n(unm, n))
+//#define LIVEIN(n)       ((kArray*)knh_Array_n(liveIn, n))
+//#define LIVEOUT(n)      ((kArray*)knh_Array_n(liveOut, n))
 //#define DFN(bb)         (DP(bb)->id)
 //#define Array_BB(a, bb) knh_Array_n(a, DFN(bb))
 //#define TOP(a)          IArray_n(a, knh_Array_size(a) - 1)
 //#define PARENT(bb)      knh_BasicBlock_getParent(vertex, bb)
 //#define PUSH(a, n)      IArray_add(ctx, a, n)
 //#define PRINT_AR(fp, msg, o) \
-//		fprintf(fp, msg, (o != KNH_NULL) ? (int)DFN((knh_BasicBlock_t*)o) : (-1))
+//		fprintf(fp, msg, (o != KNH_NULL) ? (int)DFN((kBasicBlock*)o) : (-1))
 //#define IArray_n(a, i)  ((int)(a)->ilist[i])
 //#define ISOBJ(n)        ((n) % 2 == 0)
 //#define hasassign(opcode) knh_opcode_usedef(opcode, 0)
@@ -83,20 +83,20 @@
 //#define OPCODE_PHI             (OPCODE_NOP)
 //typedef struct klr_PHI_t {
 //	KCODE_HEAD;
-//	knh_sfpidx_t a;
-//	knh_sfpidx_t b;
-//	knh_sfpidx_t c;
+//	ksfpidx_t a;
+//	ksfpidx_t b;
+//	ksfpidx_t c;
 //} klr_PHI_t;
 //
 //struct phidata {
-//	knh_Array_t *pred;
-//	knh_Array_t *liveIn;
-//	knh_Array_t *liveOut;
+//	kArray *pred;
+//	kArray *liveIn;
+//	kArray *liveOut;
 //	int max;
 //};
 //
-//void knh_BasicBlock_add_(CTX ctx, knh_BasicBlock_t *bb, int line, knh_opline_t *op);
-//knh_BasicBlock_t* new_BasicBlockLABEL(CTX ctx);
+//void knh_BasicBlock_add_(CTX ctx, kBasicBlock *bb, int line, kopl_t *op);
+//kBasicBlock* new_BasicBlockLABEL(CTX ctx);
 //
 //#ifdef __cplusplus 
 //extern "C" {
@@ -111,7 +111,7 @@
 // * @param a   Target Array<int>
 // * @param v   Int value
 // */
-//static void IArray_add(CTX ctx, knh_Array_t *a, kint_t v)
+//static void IArray_add(CTX ctx, kArray *a, kint_t v)
 //{
 //	BEGIN_LOCAL(ctx, lsfp, 1);
 //	lsfp[0].ivalue = v;
@@ -125,7 +125,7 @@
 // * @param a     Targe Array<int>
 // * @return      A top number of the stack.
 // */
-//static int IArray_pop(CTX ctx, knh_Array_t *a)
+//static int IArray_pop(CTX ctx, kArray *a)
 //{
 //	DBG_ASSERT(knh_Array_size(a) > 1);
 //	int v = IArray_n(a, knh_Array_size(a) - 1);
@@ -141,7 +141,7 @@
 // * @return    1 if a contains n
 // *            or 0 if a does not contain n.
 // */
-//static int IArray_isContain(knh_Array_t *a, int n)
+//static int IArray_isContain(kArray *a, int n)
 //{
 //	size_t i = 0;
 //	for (i = 0; i < knh_Array_size(a); i++) {
@@ -157,7 +157,7 @@
 // * @param af  Copy from this array.
 // * @param bt  Copy to this array.
 // */
-//static void knh_Array_copy(CTX ctx, knh_Array_t *at, knh_Array_t *af)
+//static void knh_Array_copy(CTX ctx, kArray *at, kArray *af)
 //{
 //	size_t i;
 //	for (i = 0; i < knh_Array_size(af); i++) {
@@ -171,11 +171,11 @@
 // * @param a   Target Array<void>
 // * @param o   Object
 // */
-//static void knh_Array_insert(CTX ctx, knh_Array_t *a, void *o)
+//static void knh_Array_insert(CTX ctx, kArray *a, void *o)
 //{
 //	size_t i;
 //	for (i = 0; i < knh_Array_size(a); i++) {
-//		if (knh_Array_n(a, i) == (knh_Object_t*)o)
+//		if (knh_Array_n(a, i) == (kObject*)o)
 //			return;
 //	}
 //	knh_Array_add(ctx, a, o);
@@ -189,10 +189,10 @@
 // * @return    1 if a contains n
 // *            or 0 if a does not contain n.
 // */
-//static int Array_isContain(knh_Array_t *a, void *n)
+//static int Array_isContain(kArray *a, void *n)
 //{
 //	size_t i;
-//	knh_BasicBlock_t *p;
+//	kBasicBlock *p;
 //	for (i = 0; i < knh_Array_size(a); i++) {
 //		p = (void *)knh_Array_n(a, i);
 //		if (p == n)
@@ -211,17 +211,17 @@
 // * @param ctx Context
 // * @param bb  BasicBlock
 // */
-//static void knh_BasicBlock_print(CTX ctx, knh_BasicBlock_t *bb)
+//static void knh_BasicBlock_print(CTX ctx, kBasicBlock *bb)
 //{
 //	int i;
-//	knh_opline_t *buf = DP(bb)->opbuf;
+//	kopl_t *buf = DP(bb)->opbuf;
 //	int size = DP(bb)->size;
 //	fprintf(stderr, "+------BB[%02d]------+\n", DP(bb)->id);
 //	fprintf(stderr, "|    incoming=%02d   |\n", DP(bb)->incoming);
 //	//fprintf(stderr, "| size=%02d, capa=%02d |\n",
 //	//DP(bb)->size, DP(bb)->capacity);
 //	for (i = 0; i < size; i++) {
-//		knh_opline_t *op = buf + i;
+//		kopl_t *op = buf + i;
 //		if (op->opcode == OPCODE_PHI) {
 //			fprintf(stderr, "|  PHI(%02d,%02d,%02d)   |\n", (int)op->data[0], (int)op->data[1], (int)op->data[2]);
 //		} else {
@@ -246,7 +246,7 @@
 // * @param semi     Semidominator of the block
 // * @param idom     Immediately dominator of the block
 // */
-//static void printIdom(CTX ctx, knh_Array_t *vertex, knh_Array_t *samedom, knh_Array_t *ancestor, knh_Array_t *semi, knh_Array_t *idom)
+//static void printIdom(CTX ctx, kArray *vertex, kArray *samedom, kArray *ancestor, kArray *semi, kArray *idom)
 //{
 //	size_t i;
 //	for (i = 0; i < knh_Array_size(vertex); i++) {
@@ -264,14 +264,14 @@
 // * @param vertex Linear list of BasicBlocks(~= listNC)
 // * @param df     Dominance Frontier
 // */
-//static void printDF(knh_Array_t *vertex, knh_Array_t* df)
+//static void printDF(kArray *vertex, kArray* df)
 //{
 //	size_t i, j;
-//	knh_BasicBlock_t *n;
+//	kBasicBlock *n;
 //	for (i = 0; i < knh_Array_size(vertex); i++) {
 //		fprintf(stderr, "[%02lu] DF={", i);
-//		for (j = 0; j < knh_Array_size((knh_Array_t*)knh_Array_n(df, i)); j++) {
-//			n = (knh_BasicBlock_t*)knh_Array_n((knh_Array_t*)knh_Array_n(df, i), j);
+//		for (j = 0; j < knh_Array_size((kArray*)knh_Array_n(df, i)); j++) {
+//			n = (kBasicBlock*)knh_Array_n((kArray*)knh_Array_n(df, i), j);
 //			if (j == 0) {
 //				fprintf(stderr, "%02d", DFN(n));
 //			} else {
@@ -282,7 +282,7 @@
 //	}
 //}
 //
-//static void knh_BasicBlock_printLiveness(knh_Array_t *liveIn, knh_Array_t *liveOut)
+//static void knh_BasicBlock_printLiveness(kArray *liveIn, kArray *liveOut)
 //{
 //	size_t i, j;
 //	for (i = 0; i < knh_Array_size(liveIn); i++) {
@@ -306,7 +306,7 @@
 //	}
 //}
 //
-//static void knh_BasicBlock_printTree(CTX ctx, knh_Array_t *vertex)
+//static void knh_BasicBlock_printTree(CTX ctx, kArray *vertex)
 //{
 //	size_t i;
 //	for (i = 0; i < knh_Array_size(vertex); i++) {
@@ -314,23 +314,23 @@
 //	}
 //}
 //
-//static void printStack(knh_Array_t *stack)
+//static void printStack(kArray *stack)
 //{
 //	int i, j;
 //	for (i = 0; i < (int)knh_Array_size(stack); i++) {
 //		fprintf(stderr, "stack[%02d] {", i);
-//		for (j = 0; j < (int)knh_Array_size((knh_Array_t*)knh_Array_n(stack, i)); j++) {
+//		for (j = 0; j < (int)knh_Array_size((kArray*)knh_Array_n(stack, i)); j++) {
 //			if (j == 0) {
-//				fprintf(stderr, "%02d", IArray_n((knh_Array_t*)knh_Array_n(stack, i), j));
+//				fprintf(stderr, "%02d", IArray_n((kArray*)knh_Array_n(stack, i), j));
 //			} else {
-//				fprintf(stderr, ", %02d", IArray_n((knh_Array_t*)knh_Array_n(stack, i), j));
+//				fprintf(stderr, ", %02d", IArray_n((kArray*)knh_Array_n(stack, i), j));
 //			}
 //		}
 //		fprintf(stderr, "}\n");
 //	}
 //}
 //
-//static void printIArray(knh_Array_t *a)
+//static void printIArray(kArray *a)
 //{
 //	int i;
 //	fprintf(stderr, "origidx {");
@@ -352,10 +352,10 @@
 ///* ------------------------------------------------------------------------ */
 ///* [convert to SSA form] */
 //
-//static void knh_BasicBlock_addPostbody(CTX ctx/*, knh_Array_t *pred*/, knh_BasicBlock_t *bb, knh_BasicBlock_t *bbN)
+//static void knh_BasicBlock_addPostbody(CTX ctx/*, kArray *pred*/, kBasicBlock *bb, kBasicBlock *bbN)
 //{
-//	knh_BasicBlock_t bbtmp;
-//	knh_BasicBlock_t *bbNEW = new_BasicBlockLABEL(ctx);
+//	kBasicBlock bbtmp;
+//	kBasicBlock *bbNEW = new_BasicBlockLABEL(ctx);
 //	// swap Block
 //	bbtmp = *bbN;
 //	*bbN = *bbNEW;
@@ -382,9 +382,9 @@
 // * @param vertex Linear list of BasicBlocks(~= listNC)
 // * @param pred   Predecessor of the block
 // */
-//static void knh_BasicBlock_DFS(CTX ctx, knh_BasicBlock_t *p, knh_BasicBlock_t *n, knh_Array_t *vertex, knh_Array_t *pred)
+//static void knh_BasicBlock_DFS(CTX ctx, kBasicBlock *p, kBasicBlock *n, kArray *vertex, kArray *pred)
 //{
-//	knh_BasicBlock_t *bbN, *bbJ;
+//	kBasicBlock *bbN, *bbJ;
 //	BasicBlock_setVisited(n, 1);
 //	DP(n)->id = knh_Array_size(vertex);
 ////#ifdef K_USING_DEBUG
@@ -439,11 +439,11 @@
 // * @param semi     Semidominator of the block
 // * @return         The ancestor block with lowest semidominator
 // */
-//static knh_BasicBlock_t* getAncestorWLS(CTX ctx, knh_Array_t *vertex, knh_BasicBlock_t *v, knh_Array_t* ancestor, knh_Array_t* best, knh_Array_t* semi)
+//static kBasicBlock* getAncestorWLS(CTX ctx, kArray *vertex, kBasicBlock *v, kArray* ancestor, kArray* best, kArray* semi)
 //{
-//	knh_BasicBlock_t *a = ANCESTOR(v);
-//	knh_BasicBlock_t *b = NULL;
-//	if (ANCESTOR(a) != (knh_BasicBlock_t*)KNH_NULL) {
+//	kBasicBlock *a = ANCESTOR(v);
+//	kBasicBlock *b = NULL;
+//	if (ANCESTOR(a) != (kBasicBlock*)KNH_NULL) {
 //		b = getAncestorWLS(ctx, vertex, a, ancestor, best, semi);
 //		KNH_SETv(ctx, Array_BB(ancestor, v), ANCESTOR(a));
 //		if (SEMI(b) < SEMI(BEST(v)))
@@ -459,7 +459,7 @@
 // * @return       Parent block if it exists
 // *               or NULL if it does not exists.
 // */
-//static knh_BasicBlock_t* knh_BasicBlock_getParent(knh_Array_t *vertex, knh_BasicBlock_t *n)
+//static kBasicBlock* knh_BasicBlock_getParent(kArray *vertex, kBasicBlock *n)
 //{
 //	size_t i;
 //	for (i = 0; i < knh_Array_size(vertex); i++) {
@@ -476,18 +476,18 @@
 // * @param idom   Immediately dominator of the block
 // * @param pred   Predecessor of the block
 // */
-//static void knh_setIdom(CTX ctx, knh_Array_t *vertex, knh_Array_t* idom, knh_Array_t* pred)
+//static void knh_setIdom(CTX ctx, kArray *vertex, kArray* idom, kArray* pred)
 //{
 //	size_t i, j;
 //	size_t size = knh_Array_size(vertex);
 //
 //	BEGIN_LOCAL(ctx, lsfp, 5);
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t*, bucket  , new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 1, knh_Array_t*, semi    , new_Array(ctx, CLASS_Int, 0));
-//	LOCAL_NEW(ctx, lsfp, 2, knh_Array_t*, ancestor, new_Array(ctx, CLASS_BasicBlock, 0));
-//	LOCAL_NEW(ctx, lsfp, 3, knh_Array_t*, samedom , new_Array(ctx, CLASS_BasicBlock, 0));
-//	LOCAL_NEW(ctx, lsfp, 4, knh_Array_t*, best    , new_Array(ctx, CLASS_BasicBlock, 0));
-//	knh_BasicBlock_t *n, *p, *s, *_s, *v, *y;
+//	LOCAL_NEW(ctx, lsfp, 0, kArray*, bucket  , new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 1, kArray*, semi    , new_Array(ctx, CLASS_Int, 0));
+//	LOCAL_NEW(ctx, lsfp, 2, kArray*, ancestor, new_Array(ctx, CLASS_BasicBlock, 0));
+//	LOCAL_NEW(ctx, lsfp, 3, kArray*, samedom , new_Array(ctx, CLASS_BasicBlock, 0));
+//	LOCAL_NEW(ctx, lsfp, 4, kArray*, best    , new_Array(ctx, CLASS_BasicBlock, 0));
+//	kBasicBlock *n, *p, *s, *_s, *v, *y;
 //
 //	for (i = 0; i < size; i++) {
 //		knh_Array_add(ctx, bucket, new_Array(ctx, CLASS_BasicBlock, 0));
@@ -502,7 +502,7 @@
 //		p = PARENT(n);
 //		s = p;
 //		for (j = 0; j < knh_Array_size(PRED(n)); j++) {
-//			v = (knh_BasicBlock_t*)knh_Array_n(PRED(n), j);
+//			v = (kBasicBlock*)knh_Array_n(PRED(n), j);
 //			//DBG_P("pred[%d]=%d", j, DFN(PRED(n, j)));
 //			if (DFN(v) <= DFN(n)) {
 //				_s = v;
@@ -517,7 +517,7 @@
 //		//DBG_P("bucketsize[%02d] = %02d", DFN(s), knh_Array_size(BUCKET(s)));
 //		LINK(p, n);
 //		for (j = 0; j < knh_Array_size(BUCKET(p)); j++) {
-//			v = (knh_BasicBlock_t*)knh_Array_n(BUCKET(p), j);
+//			v = (kBasicBlock*)knh_Array_n(BUCKET(p), j);
 //			//DBG_P("bucket[%d]=%d", j, DFN(BUCKET(p, j)));
 //			y = getAncestorWLS(ctx, vertex, v, ancestor, best, semi);
 //			if (SEMI(y) == SEMI(v)) {
@@ -531,7 +531,7 @@
 //	}
 //	for (i = 1; i < size; i++) {
 //		n = VERTEX(i);
-//		if (SAMEDOM(n) != (knh_BasicBlock_t*)KNH_NULL)
+//		if (SAMEDOM(n) != (kBasicBlock*)KNH_NULL)
 //			KNH_SETv(ctx, Array_BB(idom, n), IDOM(SAMEDOM(n)));
 //	}
 //#ifdef K_USING_DEBUG
@@ -549,10 +549,10 @@
 // * @return     1 if n is dominated by w
 // *             or 0 if n is not dominated by w
 // */
-//static int isDominated(CTX ctx, knh_BasicBlock_t *n, knh_BasicBlock_t *w, knh_Array_t* idom)
+//static int isDominated(CTX ctx, kBasicBlock *n, kBasicBlock *w, kArray* idom)
 //{
-//	knh_BasicBlock_t *tmp;
-//	for (tmp = IDOM(w); tmp != (knh_BasicBlock_t*)KNH_NULL; tmp = IDOM(tmp)) {
+//	kBasicBlock *tmp;
+//	for (tmp = IDOM(w); tmp != (kBasicBlock*)KNH_NULL; tmp = IDOM(tmp)) {
 //		if (n == tmp)
 //			return 1;
 //	}
@@ -567,15 +567,15 @@
 // * @param df     Dominance Frontier of the block
 // * @param idom   Immediately dominator of the block
 // */
-//static void computeDF(CTX ctx, knh_Array_t *vertex, knh_BasicBlock_t *n, knh_Array_t *df, knh_Array_t *idom)
+//static void computeDF(CTX ctx, kArray *vertex, kBasicBlock *n, kArray *df, kArray *idom)
 //{
 //	size_t i, j;
 //	size_t size = knh_Array_size(vertex);
-//	knh_BasicBlock_t *w, *c;
+//	kBasicBlock *w, *c;
 //	BEGIN_LOCAL(ctx, lsfp, 1);
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t*, S, new_Array(ctx, CLASS_BasicBlock, 0));
+//	LOCAL_NEW(ctx, lsfp, 0, kArray*, S, new_Array(ctx, CLASS_BasicBlock, 0));
 //	//DBG_P("S = %p", S);
-//	knh_BasicBlock_t *y;
+//	kBasicBlock *y;
 //	y = n->nextNC;
 //	if (y != NULL) {
 //		if (IDOM(y) != n)
@@ -591,7 +591,7 @@
 //			c = VERTEX(i);
 //			computeDF(ctx, vertex, c, df, idom);
 //			for (j = 0; j < knh_Array_size(DF(c)); j++) {
-//				w = (knh_BasicBlock_t*)knh_Array_n(DF(c), j);
+//				w = (kBasicBlock*)knh_Array_n(DF(c), j);
 //				if (!isDominated(ctx, n, w, idom))
 //					knh_Array_insert(ctx, S, w);
 //			}
@@ -607,10 +607,10 @@
 // * @param Aorig A list of variable that defined each block
 // * @param n     Target block
 // */
-//static void knh_setOrig(CTX ctx, knh_Array_t *Aorig, knh_BasicBlock_t *n)
+//static void knh_setOrig(CTX ctx, kArray *Aorig, kBasicBlock *n)
 //{
 //	int i, size;
-//	knh_opline_t *op;
+//	kopl_t *op;
 //	size = DP(n)->size;
 //	for (i = 0; i < size; i++) {
 //		op = DP(n)->opbuf + i;
@@ -639,25 +639,25 @@
 // * @param idx  An index of register
 // * @param argc A number of Predecessor
 // */
-//static void insertPhi(CTX ctx, knh_BasicBlock_t *n, int idx)
+//static void insertPhi(CTX ctx, kBasicBlock *n, int idx)
 //{
 //	size_t size = DP(n)->size;
 //	klr_PHI_t phi = {TADDR, OPCODE_PHI, ASMLINE, idx, idx, idx};
 //	DBG_P("[%02d] insert phifunc of r%d", DFN(n), idx);
 //	// at this point insert NOP instead of phifunc
 //	if (size > 0) {
-//		knh_opline_t *buf;
-//		size_t bsize = size * sizeof(knh_opline_t);
+//		kopl_t *buf;
+//		size_t bsize = size * sizeof(kopl_t);
 //		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-//		knh_BasicBlock_add_(ctx, n, 0, (knh_opline_t*)(&phi));
+//		knh_BasicBlock_add_(ctx, n, 0, (kopl_t*)(&phi));
 //		buf = DP(n)->opbuf;
-//		knh_Bytes_write(ctx, cwb->ba, new_bytes2((char *)&phi, sizeof(knh_opline_t)));
+//		knh_Bytes_write(ctx, cwb->ba, new_bytes2((char *)&phi, sizeof(kopl_t)));
 //		knh_Bytes_write(ctx, cwb->ba, new_bytes2((char *)buf, bsize));
 //		knh_memcpy(buf, CWB_totext(ctx, cwb), CWB_size(cwb));
 //		CWB_close(cwb);
 //	}
 //	else {
-//		knh_BasicBlock_add_(ctx, n, 0, (knh_opline_t*)(&phi));
+//		knh_BasicBlock_add_(ctx, n, 0, (kopl_t*)(&phi));
 //	}
 //}
 //
@@ -668,16 +668,16 @@
 // * @param df     Dominance Frontier of the block
 // * @param max    Max index of register
 // */
-//static void putPhifuncion(CTX ctx, knh_Array_t *vertex, knh_Array_t* df, int *max)
+//static void putPhifuncion(CTX ctx, kArray *vertex, kArray* df, int *max)
 //{
 //	int a;
 //	size_t i, j, size = knh_Array_size(vertex);
-//	knh_BasicBlock_t *n, *y;
+//	kBasicBlock *n, *y;
 //	BEGIN_LOCAL(ctx, lsfp, 4);
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t*, Aorig, new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 1, knh_Array_t*, Aphi, new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 2, knh_Array_t*, defsites, new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 3, knh_Array_t*, W, new_Array(ctx, CLASS_BasicBlock, 0));
+//	LOCAL_NEW(ctx, lsfp, 0, kArray*, Aorig, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 1, kArray*, Aphi, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 2, kArray*, defsites, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 3, kArray*, W, new_Array(ctx, CLASS_BasicBlock, 0));
 //	for (i = 0; i < size; i++) {
 //		n = VERTEX(i);
 //		knh_Array_add(ctx, Aorig, new_Array(ctx, CLASS_Int, 0));
@@ -701,10 +701,10 @@
 //			continue;
 //		knh_Array_copy(ctx, W, DEFSITES(a));
 //		while (knh_Array_size(W) > 0) {
-//			n = (knh_BasicBlock_t*)knh_Array_n(W, knh_Array_size(W) - 1);
+//			n = (kBasicBlock*)knh_Array_n(W, knh_Array_size(W) - 1);
 //			knh_Array_clear(ctx, W, knh_Array_size(W) - 1);
 //			for (i = 0; i < knh_Array_size(DF(n)); i++) {
-//				y = (knh_BasicBlock_t*)knh_Array_n(DF(n), i);
+//				y = (kBasicBlock*)knh_Array_n(DF(n), i);
 //				if (!Array_isContain(APHI(a), y)) {
 //					DBG_ASSERT(DP(y)->incoming == 2);
 //					insertPhi(ctx, y, a);
@@ -726,17 +726,17 @@
 // * @param n    Target block
 // * @return     An index of p in pred.
 // */
-//static int getPredNum(knh_Array_t *pred, knh_BasicBlock_t *p, knh_BasicBlock_t *n)
+//static int getPredNum(kArray *pred, kBasicBlock *p, kBasicBlock *n)
 //{
 //	size_t i;
 //	for (i = 0; i < knh_Array_size(PRED(n)); i++) {
-//		if (knh_Array_n(PRED(n), i) == (knh_Object_t*)p)
+//		if (knh_Array_n(PRED(n), i) == (kObject*)p)
 //			return i;
 //	}
 //	return -1;
 //}
 //
-//static void extendLiveness(CTX ctx, knh_Array_t *liveIn, knh_Array_t *liveOut, int idx, knh_BasicBlock_t *n)
+//static void extendLiveness(CTX ctx, kArray *liveIn, kArray *liveOut, int idx, kBasicBlock *n)
 //{
 //	int i;
 //	for (i = DFN(n); i > 0; i--) {
@@ -767,11 +767,11 @@
 // * @param pred   Predecessor of the block
 // * @param idom   Immediately dominator of the block
 // */
-//static void knh_BasicBlock_renameVar(CTX ctx, knh_Array_t *vertex, knh_BasicBlock_t *n, knh_Array_t *stack, knh_Array_t *origidx, knh_Array_t *pred, knh_Array_t *idom, knh_Array_t *liveIn, knh_Array_t *liveOut, int *idx)
+//static void knh_BasicBlock_renameVar(CTX ctx, kArray *vertex, kBasicBlock *n, kArray *stack, kArray *origidx, kArray *pred, kArray *idom, kArray *liveIn, kArray *liveOut, int *idx)
 //{
 //	size_t i, j, shift, count;
-//	knh_opline_t *s, *op;
-//	knh_BasicBlock_t *x ,*y;
+//	kopl_t *s, *op;
+//	kBasicBlock *x ,*y;
 //	for (i = 0; i < DP(n)->size; i++) {
 //		s = DP(n)->opbuf + i;
 //		if (s->opcode != OPCODE_PHI && !ISCALL(s->opcode) && s->opcode != OPCODE_FASTCALL0) {
@@ -924,7 +924,7 @@
 //		}
 //	}
 //	for (i = 0; i < knh_Array_size(vertex); i++) {
-//		x = (knh_BasicBlock_t*)VERTEX(i);
+//		x = (kBasicBlock*)VERTEX(i);
 //		if (IDOM(x) == n) {
 //			knh_BasicBlock_renameVar(ctx, vertex, x, stack, origidx, pred, idom, liveIn, liveOut, idx);
 //		}
@@ -948,7 +948,7 @@
 //#endif
 //}
 //
-//static void BasicBlock_setUnvisited(CTX ctx, knh_Array_t *vertex) {
+//static void BasicBlock_setUnvisited(CTX ctx, kArray *vertex) {
 //	size_t i;
 //	for (i = 0; i < knh_Array_size(vertex); i++) {
 //#ifdef K_USING_DEBUG
@@ -969,7 +969,7 @@
 // * @param stack  A stack that records rename in each variable
 // * @param max    Max index of register
 // */
-//static void knh_BasicBlock_convert(CTX ctx, knh_BasicBlock_t *bb, knh_Array_t *df, knh_Array_t *pred, knh_Array_t *idom, knh_Array_t *vertex, knh_Array_t *liveIn, knh_Array_t *liveOut, int *max)
+//static void knh_BasicBlock_convert(CTX ctx, kBasicBlock *bb, kArray *df, kArray *pred, kArray *idom, kArray *vertex, kArray *liveIn, kArray *liveOut, int *max)
 //{
 //	int i, idx = 0;
 //	knh_BasicBlock_DFS(ctx, NULL, bb, vertex, pred);
@@ -984,11 +984,11 @@
 //	putPhifuncion(ctx, vertex, df, &idx);
 //	*max = idx;
 //	BEGIN_LOCAL(ctx, lsfp, 2);
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t*, stack, new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 1, knh_Array_t*, origidx, new_Array(ctx, CLASS_Int, 0));
+//	LOCAL_NEW(ctx, lsfp, 0, kArray*, stack, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 1, kArray*, origidx, new_Array(ctx, CLASS_Int, 0));
 //	for (i = 0; i < *max; i++) {
 //		knh_Array_add(ctx, stack, new_Array(ctx, CLASS_Int, 0));
-//		IArray_add(ctx, (knh_Array_t*)knh_Array_n(stack, i), i);
+//		IArray_add(ctx, (kArray*)knh_Array_n(stack, i), i);
 //		IArray_add(ctx, origidx, i);
 //	}
 //	if ((int)knh_Array_size(stack) > 0) {
@@ -1009,14 +1009,14 @@
 ///* ------------------------------------------------------------------------ */
 ///* [convert out of SSA form] */
 //
-//static int isInterfering(int isSource, int a, int b, knh_Array_t *liveIn, knh_Array_t *liveOut)
+//static int isInterfering(int isSource, int a, int b, kArray *liveIn, kArray *liveOut)
 //{
 //	if (isSource) {
 //	}
 //	return 0;
 //}
 //
-//static int isSameArray(knh_Array_t *a, knh_Array_t *b)
+//static int isSameArray(kArray *a, kArray *b)
 //{
 //	size_t i = 0;
 //	size_t j = 0;
@@ -1042,13 +1042,13 @@
 // * Eliminate phi resource interferences based on
 // * data-flow and interference graph updates.
 // */
-//static void eliminatePRI(CTX ctx, knh_BasicBlock_t *bb, knh_Array_t *liveIn, knh_Array_t *liveOut, knh_Array_t *pcc, knh_Array_t *unm, int max)
+//static void eliminatePRI(CTX ctx, kBasicBlock *bb, kArray *liveIn, kArray *liveOut, kArray *pcc, kArray *unm, int max)
 //{
 //	int c, i0, j0, i1, j1, xi, xj, yi, yj;
-//	knh_opline_t *op;
+//	kopl_t *op;
 //	BEGIN_LOCAL(ctx, lsfp, 1);
 //	// candidateResourceSet
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t *, crs, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 0, kArray *, crs, new_Array(ctx, CLASS_Array, 0));
 //#ifdef K_USING_DEBUG
 //	knh_BasicBlock_print(ctx, bb);
 //#endif
@@ -1089,24 +1089,24 @@
 // * @param ctx Context
 // * @param bb  BasicBlock
 // */
-//static void phi_elimination_simple(CTX ctx, knh_Array_t *vertex, void *data)
+//static void phi_elimination_simple(CTX ctx, kArray *vertex, void *data)
 //{
 //	struct phidata *pdata = (struct phidata*)data;
 //	int i, j, k;
-//	knh_opline_t *op;
-//	knh_BasicBlock_t *target, *bb;
-//	knh_Array_t *pred    = pdata->pred;
-//	knh_Array_t *liveIn  = pdata->liveIn;
-//	knh_Array_t *liveOut = pdata->liveOut;
+//	kopl_t *op;
+//	kBasicBlock *target, *bb;
+//	kArray *pred    = pdata->pred;
+//	kArray *liveIn  = pdata->liveIn;
+//	kArray *liveOut = pdata->liveOut;
 //	int max = pdata->max;
 ////#ifdef K_USING_DEBUG
 ////	knh_BasicBlock_print(ctx, bb);
 ////#endif
 //	BEGIN_LOCAL(ctx, lsfp, 2);
 //	// phiCongruenceClass
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t *, pcc, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 0, kArray *, pcc, new_Array(ctx, CLASS_Array, 0));
 //	// unresolvedNaighborMap
-//	LOCAL_NEW(ctx, lsfp, 1, knh_Array_t *, unm, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 1, kArray *, unm, new_Array(ctx, CLASS_Array, 0));
 //	for (i = 0; i < max; i++) {
 //		knh_Array_add(ctx, pcc, new_Array(ctx, CLASS_Int, 0));
 //		IArray_add(ctx, PCC(i), i);
@@ -1119,19 +1119,19 @@
 //			op = DP(bb)->opbuf + j;
 //			if (op->opcode == OPCODE_PHI) {
 //				for (k = 0; k <= 1; k++) {
-//					target = (knh_BasicBlock_t*)knh_Array_n((knh_Array_t*)PRED(bb), k);
+//					target = (kBasicBlock*)knh_Array_n((kArray*)PRED(bb), k);
 //					if (ISOBJ(op->data[0])) {
 //						klr_OMOV_t omov = {TADDR, OPCODE_OMOV, ASMLINE, op->data[0], op->data[k + 1]};
 //						DBG_P("[%02d] add OMOV r%d r%d", DFN(target), op->data[0], op->data[k + 1]);
-//						knh_BasicBlock_add_(ctx, target, 0, (knh_opline_t*)(&omov));
+//						knh_BasicBlock_add_(ctx, target, 0, (kopl_t*)(&omov));
 //					} else {
 //						klr_NMOV_t nmov = {TADDR, OPCODE_NMOV, ASMLINE, op->data[0], op->data[k + 1]};
 //						DBG_P("[%02d] add NMOV r%d r%d", DFN(target), op->data[0], op->data[k + 1]);
-//						knh_BasicBlock_add_(ctx, target, 0, (knh_opline_t*)(&nmov));
+//						knh_BasicBlock_add_(ctx, target, 0, (kopl_t*)(&nmov));
 //					}
 //					if (target->nextNC != NULL && target->jumpNC != NULL) {
-//						knh_opline_t *opLAST = DP(target)->opbuf + DP(target)->size - 1;
-//						SWAP(opLAST, opLAST - 1, sizeof(knh_opline_t));
+//						kopl_t *opLAST = DP(target)->opbuf + DP(target)->size - 1;
+//						SWAP(opLAST, opLAST - 1, sizeof(kopl_t));
 //					}
 //				}
 //				op->opcode = OPCODE_NOP;
@@ -1148,14 +1148,14 @@
 //#include "opt/cfold.c"
 //#include "opt/peephole.c"
 //
-//typedef void (*fbbopt)(CTX ctx, knh_BasicBlock_t *bb, knh_Array_t *data, int mask);
+//typedef void (*fbbopt)(CTX ctx, kBasicBlock *bb, kArray *data, int mask);
 ///* ------------------------------------------------------------------------ */
 ///**
 // * Optimize the BasicBlocks.
 // * @param ctx Context
 // * @param bbs BasicBlocks
 // */
-//static void ssa_optimize(CTX ctx, knh_BasicBlock_t *bbs)
+//static void ssa_optimize(CTX ctx, kBasicBlock *bbs)
 //{
 //#ifdef K_USING_SSA_OPT
 //	struct opt {
@@ -1173,7 +1173,7 @@
 //	size_t i;
 //	size_t size = (int)(sizeof(x) / sizeof((x)[0]));
 //	BEGIN_LOCAL(ctx, lsfp, 1);
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t *, data, new_Array(ctx, CLASS_Int, 0));
+//	LOCAL_NEW(ctx, lsfp, 0, kArray *, data, new_Array(ctx, CLASS_Int, 0));
 //	for (i = 0; i < size; i++) {
 //		DBG_P("opt:%s", opts[i].name);
 //		flag = !flag;
@@ -1193,18 +1193,18 @@
 // * @param ctx Context
 // * @param bb  BasicBlock
 // */
-//void knh_BasicBlock_optimize(CTX ctx, knh_BasicBlock_t *bb)
+//void knh_BasicBlock_optimize(CTX ctx, kBasicBlock *bb)
 //{
 //#if 1
 //	int max;
 //	size_t i, size = knh_Array_size(bb->listNC);
 //	BEGIN_LOCAL(ctx, lsfp, 6);
-//	LOCAL_NEW(ctx, lsfp, 0, knh_Array_t*, df, new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 1, knh_Array_t*, pred, new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 2, knh_Array_t*, idom, new_Array(ctx, CLASS_BasicBlock, 0));
-//	LOCAL_NEW(ctx, lsfp, 3, knh_Array_t*, vertex, new_Array(ctx, CLASS_BasicBlock, 0));
-//	LOCAL_NEW(ctx, lsfp, 4, knh_Array_t*, liveIn, new_Array(ctx, CLASS_Array, 0));
-//	LOCAL_NEW(ctx, lsfp, 5, knh_Array_t*, liveOut, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 0, kArray*, df, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 1, kArray*, pred, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 2, kArray*, idom, new_Array(ctx, CLASS_BasicBlock, 0));
+//	LOCAL_NEW(ctx, lsfp, 3, kArray*, vertex, new_Array(ctx, CLASS_BasicBlock, 0));
+//	LOCAL_NEW(ctx, lsfp, 4, kArray*, liveIn, new_Array(ctx, CLASS_Array, 0));
+//	LOCAL_NEW(ctx, lsfp, 5, kArray*, liveOut, new_Array(ctx, CLASS_Array, 0));
 //
 //	//DBG_P("DF = %p", df);
 //	for (i = 0; i < size; i++) {

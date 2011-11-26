@@ -11,7 +11,7 @@ static const struct codeasm_field F_KNH_HOBJECT_T[] = {
 };
 #define SIZE_F_KNH_HOBJECT_T 4
 static const struct cstruct STRUCT_KNH_HOBJECT_T = {
-	"knh_hObject_t",
+	"kObjectHeader",
 	SIZE_F_KNH_HOBJECT_T,
 	F_KNH_HOBJECT_T
 };
@@ -24,7 +24,7 @@ static const struct codeasm_field F_KNH_OBJECT_T[] = {
 };
 #define SIZE_F_KNH_OBJECT_T 5
 static const struct cstruct STRUCT_KNH_OBJECT_T = {
-	"knh_Object_t",
+	"kObject",
 	SIZE_F_KNH_OBJECT_T,
 	F_KNH_OBJECT_T
 };
@@ -37,7 +37,7 @@ static const struct codeasm_field F_KNH_ARRAY_T[] = {
 };
 #define SIZE_F_KNH_ARRAY_T 5
 static const struct cstruct STRUCT_KNH_ARRAY_T = {
-	"knh_Array_t",
+	"kArray",
 	SIZE_F_KNH_ARRAY_T,
 	F_KNH_ARRAY_T
 };
@@ -48,7 +48,7 @@ static const struct codeasm_field F_KNH_OBJECTFIELD_T[] = {
 };
 #define SIZE_F_KNH_OBJECTFIELD_T 3
 static const struct cstruct STRUCT_KNH_OBJECTFIELD_T = {
-	"knh_ObjectField_t",
+	"kObject",
 	SIZE_F_KNH_OBJECTFIELD_T,
 	F_KNH_OBJECTFIELD_T
 };
@@ -61,7 +61,7 @@ static const struct codeasm_field F_KNH_OUTPUTSTREAM_T[] = {
 };
 #define SIZE_F_KNH_OUTPUTSTREAM_T 5
 static const struct cstruct STRUCT_KNH_OUTPUTSTREAM_T = {
-	"knh_OutputStream_t",
+	"kOutputStream",
 	SIZE_F_KNH_OUTPUTSTREAM_T,
 	F_KNH_OUTPUTSTREAM_T
 };
@@ -74,7 +74,7 @@ static const struct codeasm_field F_KNH_INPUTSTREAM_T[] = {
 };
 #define SIZE_F_KNH_INPUTSTREAM_T 5
 static const struct cstruct STRUCT_KNH_INPUTSTREAM_T = {
-	"knh_InputStream_t",
+	"kInputStream",
 	SIZE_F_KNH_INPUTSTREAM_T,
 	F_KNH_INPUTSTREAM_T
 };
@@ -120,7 +120,7 @@ static const struct codeasm_field F_KNH_SYSTEM_T[] = {
 };
 #define SIZE_F_KNH_SYSTEM_T 2
 static const struct cstruct STRUCT_KNH_SYSTEM_T = {
-	"knh_System_t",
+	"kSystem",
 	SIZE_F_KNH_SYSTEM_T,
 	F_KNH_SYSTEM_T
 };
@@ -134,7 +134,7 @@ static const struct codeasm_field F_KNH_METHOD_T[] = {
 };
 #define SIZE_F_KNH_METHOD_T 6
 static const struct cstruct STRUCT_KNH_METHOD_T = {
-	"knh_Method_t",
+	"kMethod",
 	SIZE_F_KNH_METHOD_T,
 	F_KNH_METHOD_T
 };
@@ -145,7 +145,7 @@ static const struct codeasm_field F_KNH_ITERATOR_T[] = {
 };
 #define SIZE_F_KNH_ITERATOR_T 3
 static const struct cstruct STRUCT_KNH_ITERATOR_T = {
-	"knh_Iterator_t",
+	"kIterator",
 	SIZE_F_KNH_ITERATOR_T,
 	F_KNH_ITERATOR_T
 };
@@ -201,7 +201,7 @@ static const struct codeasm_field F_KNH_CONTEXT_T[] = {
 };
 #define SIZE_F_KNH_CONTEXT_T 48
 static const struct cstruct STRUCT_KNH_CONTEXT_T = {
-	"knh_context_t",
+	"kcontext_t",
 	SIZE_F_KNH_CONTEXT_T,
 	F_KNH_CONTEXT_T
 };

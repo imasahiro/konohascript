@@ -38,15 +38,15 @@ extern "C" {
 #ifdef K_USING_SEMANTICS
 
 static
-kclass_t knh_addSpecializedType(CTX ctx, kclass_t cid, kclass_t bcid, knh_Semantics_t *u);
+kclass_t knh_addSpecializedType(CTX ctx, kclass_t cid, kclass_t bcid, kSemantics *u);
 
 /* ------------------------------------------------------------------------ */
 
-knh_Int_t* new_Int_X(CTX ctx, kclass_t cid, kint_t value)
+kInt* new_Int_X(CTX ctx, kclass_t cid, kint_t value)
 {
-	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
+	kSemantics *u = knh_getSemantics(ctx, cid);
 	if(DP(u)->fichk(u, value)) {
-		knh_Int_t *n = (knh_Int_t*)new_H(ctx, FLAG_Int, CLASS_Int, cid);
+		kInt *n = (kInt*)new_H(ctx, FLAG_Int, CLASS_Int, cid);
 		n->n.ivalue = value;
 		return n;
 	}
@@ -63,12 +63,12 @@ knh_Int_t* new_Int_X(CTX ctx, kclass_t cid, kint_t value)
 
 /* ------------------------------------------------------------------------ */
 
-knh_Float_t* new_Float_X(CTX ctx, kclass_t cid, kfloat_t value)
+kFloat* new_Float_X(CTX ctx, kclass_t cid, kfloat_t value)
 {
 	DBG_ASSERT_cid(cid);
-	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
+	kSemantics *u = knh_getSemantics(ctx, cid);
 	if(DP(u)->ffchk(u, value)) {
-		knh_Float_t *f = (knh_Float_t*)new_H(ctx, FLAG_Float, CLASS_Float, cid);
+		kFloat *f = (kFloat*)new_H(ctx, FLAG_Float, CLASS_Float, cid);
 		f->n.fvalue = value;
 		return f;
 	}
@@ -81,33 +81,33 @@ knh_Float_t* new_Float_X(CTX ctx, kclass_t cid, kfloat_t value)
 /* ------------------------------------------------------------------------ */
 /* [Int] */
 
-static int knh_fichk__range(knh_Semantics_t *u, kint_t v)
+static int knh_fichk__range(kSemantics *u, kint_t v)
 {
 	return (DP(u)->imin <= v && v <= DP(u)->imax);
 }
 
-static int knh_fichk__umax(knh_Semantics_t *u, kuint_t v)
+static int knh_fichk__umax(kSemantics *u, kuint_t v)
 {
 	return (v <= DP(u)->umax);
 }
 
-static int knh_fichk__urange(knh_Semantics_t *u, kuint_t v)
+static int knh_fichk__urange(kSemantics *u, kuint_t v)
 {
 	return (DP(u)->umin <= v && v <= DP(u)->umax);
 }
 
-static int knh_ficmp__unsigned(knh_Semantics_t *u, kuint_t v1, kuint_t v2)
+static int knh_ficmp__unsigned(kSemantics *u, kuint_t v1, kuint_t v2)
 {
 	if(v1 == v2) return 0;
 	return (v1 > v2) ? 1 : -1;
 }
 
-static int knh_ffchk__range(knh_Semantics_t *u, kfloat_t v)
+static int knh_ffchk__range(kSemantics *u, kfloat_t v)
 {
 	return (DP(u)->fmin <= v && v <= DP(u)->fmax);
 }
 
-static int knh_ffcmp__step(knh_Semantics_t *u, kfloat_t v1, kfloat_t v2)
+static int knh_ffcmp__step(kSemantics *u, kfloat_t v1, kfloat_t v2)
 {
 	kfloat_t v = v1 - v2;
 	if(v >= DP(u)->fstep) return 1;
@@ -117,7 +117,7 @@ static int knh_ffcmp__step(knh_Semantics_t *u, kfloat_t v1, kfloat_t v2)
 
 /* ------------------------------------------------------------------------ */
 
-static void knh_Semantics_initIntRange(CTX ctx, knh_Semantics_t *u, kint_t min, kint_t max)
+static void knh_Semantics_initIntRange(CTX ctx, kSemantics *u, kint_t min, kint_t max)
 {
 	DP(u)->imin = min;
 	DP(u)->fmin = (kfloat_t)min;
@@ -145,7 +145,7 @@ static void knh_Semantics_initIntRange(CTX ctx, knh_Semantics_t *u, kint_t min, 
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_intx(CTX ctx, knh_OutputStream_t *w, knh_Semantics_t *u, kint_t v)
+void knh_write_intx(CTX ctx, kOutputStream *w, kSemantics *u, kint_t v)
 {
 	char buf[KINT_FMTSIZ];
 	char *fmt = KINT_FMT;
@@ -165,7 +165,7 @@ void knh_write_intx(CTX ctx, knh_OutputStream_t *w, knh_Semantics_t *u, kint_t v
 /* ------------------------------------------------------------------------ */
 
 static
-void knh_Semantics_initFloatRange(CTX ctx, knh_Semantics_t *u, kfloat_t min, kfloat_t max, kfloat_t step)
+void knh_Semantics_initFloatRange(CTX ctx, kSemantics *u, kfloat_t min, kfloat_t max, kfloat_t step)
 {
 	DP(u)->fmin = min;
 	DP(u)->fmax = max;
@@ -197,7 +197,7 @@ void knh_Semantics_initFloatRange(CTX ctx, knh_Semantics_t *u, kfloat_t min, kfl
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_floatx(CTX ctx, knh_OutputStream_t *w, knh_Semantics_t *u, kfloat_t v)
+void knh_write_floatx(CTX ctx, kOutputStream *w, kSemantics *u, kfloat_t v)
 {
 	char *FMT = KFLOAT_FMT;
 #if !defined(K_USING_NOFLOT)
@@ -243,7 +243,7 @@ static TYPEMAP knh_FloatX_IntX(CTX ctx, ksfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 
 static
-int Semantics_isVocab(knh_Semantics_t *u)
+int Semantics_isVocab(kSemantics *u)
 {
 	return IS_DictIdx(DP(u)->vocabDictIdx);
 }
@@ -251,7 +251,7 @@ int Semantics_isVocab(knh_Semantics_t *u)
 /* ------------------------------------------------------------------------ */
 
 static
-knh_String_t *knh_Semantics_getVocabAt(CTX ctx, knh_Semantics_t *u, size_t n)
+kString *knh_Semantics_getVocabAt(CTX ctx, kSemantics *u, size_t n)
 {
 	return knh_DictIdx_get__fast(DP(u)->vocabDictIdx, n - DP(u)->imin);
 }
@@ -259,7 +259,7 @@ knh_String_t *knh_Semantics_getVocabAt(CTX ctx, knh_Semantics_t *u, size_t n)
 /* ------------------------------------------------------------------------ */
 
 static
-kint_t knh_Semantics_getVocabIdx(CTX ctx, knh_Semantics_t *u, knh_String_t *s)
+kint_t knh_Semantics_getVocabIdx(CTX ctx, kSemantics *u, kString *s)
 {
 	return knh_DictIdx_index(ctx, DP(u)->vocabDictIdx, S_tobytes(s)) + DP(u)->imin;
 }
@@ -268,7 +268,7 @@ kint_t knh_Semantics_getVocabIdx(CTX ctx, knh_Semantics_t *u, knh_String_t *s)
 
 static TYPEMAP knh_IntX_Vocab(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Semantics_t *u = (knh_Semantics_t*)DP(sfp[1].mpr)->mapdata;
+	kSemantics *u = (kSemantics*)DP(sfp[1].mpr)->mapdata;
 	KNH_ASSERT(IS_Semantics(u));
 	RETURN_(knh_Semantics_getVocabAt(ctx, u, sfp[0].ivalue));
 }
@@ -277,14 +277,14 @@ static TYPEMAP knh_IntX_Vocab(CTX ctx, ksfp_t *sfp _RIX)
 
 static TYPEMAP knh_Vocab_IntX(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Semantics_t *u = (knh_Semantics_t*)DP(sfp[1].mpr)->mapdata;
+	kSemantics *u = (kSemantics*)DP(sfp[1].mpr)->mapdata;
 	KNH_ASSERT(IS_Semantics(u));
 	KNH_MAPPED_Int(ctx, sfp, knh_Semantics_getVocabIdx(ctx, u, sfp[0].s));
 }
 
 /* ------------------------------------------------------------------------ */
 
-void knh_Semantics_reuse(CTX ctx, knh_Semantics_t *u, kclass_t cid)
+void knh_Semantics_reuse(CTX ctx, kSemantics *u, kclass_t cid)
 {
 	kclass_t bcid = ClassTBL(cid)->bcid;
 	if(bcid == CLASS_Int) {
@@ -295,14 +295,14 @@ void knh_Semantics_reuse(CTX ctx, knh_Semantics_t *u, kclass_t cid)
 		KNH_ASSERT(DP(u)->ivalue == NULL);
 		KNH_INITv(DP(u)->ivalue, new_Int_(ctx, cid, v));
 		if(DP(u)->fvalue != NULL) {
-			knh_TypeMap_t *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, DP(u)->ucid, cid, knh_FloatX_IntX, (Object*)u);
+			kTypeMap *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, DP(u)->ucid, cid, knh_FloatX_IntX, (Object*)u);
 			knh_addTypeMap(ctx, mpr);
 			mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, cid, DP(u)->ucid, knh_IntX_FloatX, (Object*)u);
 			knh_addTypeMap(ctx, mpr);
 		}
 		if(DP(u)->svalue != NULL) {
 			if(Semantics_isVocab(u)) {
-				knh_TypeMap_t *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, cid, DP(u)->ucid, knh_IntX_Vocab, (Object*)u);
+				kTypeMap *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, cid, DP(u)->ucid, knh_IntX_Vocab, (Object*)u);
 				knh_addTypeMap(ctx, mpr);
 				mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, DP(u)->ucid, cid, knh_Vocab_IntX, (Object*)u);
 				knh_addTypeMap(ctx, mpr);
@@ -317,7 +317,7 @@ void knh_Semantics_reuse(CTX ctx, knh_Semantics_t *u, kclass_t cid)
 		KNH_ASSERT(DP(u)->fvalue == NULL);
 		KNH_INITv(DP(u)->fvalue, new_Float_(ctx, cid, v));
 		if(DP(u)->ivalue != NULL) {
-			knh_TypeMap_t *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, cid, DP(u)->ucid, knh_FloatX_IntX, (Object*)u);
+			kTypeMap *mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, cid, DP(u)->ucid, knh_FloatX_IntX, (Object*)u);
 			knh_addTypeMap(ctx, mpr);
 			mpr = new_TypeMap(ctx, FLAG_TypeMap_Affine, DP(u)->ucid, cid, knh_IntX_FloatX, (Object*)u);
 			knh_addTypeMap(ctx, mpr);
@@ -332,10 +332,10 @@ void knh_Semantics_reuse(CTX ctx, knh_Semantics_t *u, kclass_t cid)
 
 /* ------------------------------------------------------------------------ */
 
-knh_Semantics_t* new_Enum(CTX ctx, char *tag, kbytes_t urn, kint_t min, kint_t max)
+kSemantics* new_Enum(CTX ctx, char *tag, kbytes_t urn, kint_t min, kint_t max)
 {
 	kclass_t cid = new_ClassId(ctx);
-	knh_Semantics_t* u = (knh_Semantics_t*)new_Object_bcid(ctx, CLASS_Semantics, (int)cid);
+	kSemantics* u = (kSemantics*)new_Object_bcid(ctx, CLASS_Semantics, (int)cid);
 	DP(u)->ubcid = CLASS_Int;
 	KNH_SETv(ctx, DP(u)->urn, new_S(ctx, urn, NULL));
 	if(tag != NULL || tag[0] != 0) {
@@ -355,10 +355,10 @@ knh_Semantics_t* new_Enum(CTX ctx, char *tag, kbytes_t urn, kint_t min, kint_t m
 /* ------------------------------------------------------------------------ */
 
 
-knh_Semantics_t* new_Unit(CTX ctx, char *tag, kbytes_t urn, kfloat_t min, kfloat_t max, kfloat_t step)
+kSemantics* new_Unit(CTX ctx, char *tag, kbytes_t urn, kfloat_t min, kfloat_t max, kfloat_t step)
 {
 	kclass_t cid = new_ClassId(ctx);
-	knh_Semantics_t* u = (knh_Semantics_t*)new_Object_bcid(ctx, CLASS_Semantics, (int)cid);
+	kSemantics* u = (kSemantics*)new_Object_bcid(ctx, CLASS_Semantics, (int)cid);
 	DP(u)->ubcid = CLASS_Float;
 	KNH_SETv(ctx, DP(u)->urn, new_S(ctx, urn, NULL));
 	if(tag != NULL || tag[0] != 0) {
@@ -382,9 +382,9 @@ knh_Semantics_t* new_Unit(CTX ctx, char *tag, kbytes_t urn, kfloat_t min, kfloat
 /* [String] */
 
 static
-knh_String_t *knh_fsnew__dict(CTX ctx, kclass_t cid, kbytes_t t, knh_String_t *memoNULL, int *foundError)
+kString *knh_fsnew__dict(CTX ctx, kclass_t cid, kbytes_t t, kString *memoNULL, int *foundError)
 {
-	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
+	kSemantics *u = knh_getSemantics(ctx, cid);
 	kindex_t n = knh_DictIdx_index(ctx, DP(u)->vocabDictIdx, t);
 	if(n == -1) {
 		kbytes_t tag;
@@ -402,7 +402,7 @@ knh_String_t *knh_fsnew__dict(CTX ctx, kclass_t cid, kbytes_t t, knh_String_t *m
 /* ------------------------------------------------------------------------ */
 
 static
-int knh_fscmp__dict(knh_Semantics_t *u, kbytes_t v1, kbytes_t v2)
+int knh_fscmp__dict(kSemantics *u, kbytes_t v1, kbytes_t v2)
 {
 	return knh_DictIdx_index(NULL, DP(u)->vocabDictIdx, v1) - knh_DictIdx_index(NULL, DP(u)->vocabDictIdx, v2);
 }
@@ -410,7 +410,7 @@ int knh_fscmp__dict(knh_Semantics_t *u, kbytes_t v1, kbytes_t v2)
 /* ------------------------------------------------------------------------ */
 
 static
-knh_DictIdx_t* new_DictIdx__Array(CTX ctx, knh_Array_t *a)
+knh_DictIdx_t* new_DictIdx__Array(CTX ctx, kArray *a)
 {
 	knh_DictIdx_t *o = (knh_DictIdx_t*)new_H(ctx, FLAG_DictIdx, CLASS_DictIdx, CLASS_DictIdx);
 	KNH_INITv(o->terms, a);
@@ -419,11 +419,11 @@ knh_DictIdx_t* new_DictIdx__Array(CTX ctx, knh_Array_t *a)
 	{
 		kuintptr_t i = 0;
 		for(i = 0; i < knh_Array_size(a); i++) {
-			knh_String_t *s = (knh_String_t*)knh_Array_n(a, i);
+			kString *s = (kString*)knh_Array_n(a, i);
 			knh_DictSet_append(ctx, o->termsDictSet, s, i+1);
 		}
 	}
-	//knh_DictSet_toIgnoreCase(o->termsDictSet);
+	//kDictSetoIgnoreCase(o->termsDictSet);
 	return o;
 }
 
@@ -432,7 +432,7 @@ knh_DictIdx_t* new_DictIdx__Array(CTX ctx, knh_Array_t *a)
 static
 TYPEMAP knh_Ftypemap_vocabidx(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[0].o));
+	kSemantics *u = knh_getSemantics(ctx, O_cid(sfp[0].o));
 	kint_t n = knh_Semantics_getVocabIdx(ctx, u, sfp[0].s);
 	DBG_P("n = %d", (int)n);
 	KNH_MAPPED_Int(ctx, sfp, n);
@@ -443,10 +443,10 @@ TYPEMAP knh_Ftypemap_vocabidx(CTX ctx, ksfp_t *sfp _RIX)
 static
 TYPEMAP knh_Ftypemap_vocab(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Semantics_t *u = (knh_Semantics_t*)DP(sfp[1].mpr)->mapdata;
+	kSemantics *u = (kSemantics*)DP(sfp[1].mpr)->mapdata;
 	size_t n = (size_t)(sfp[0].ivalue - DP(u)->imin);
 	DBG_P("n = %zd", n);
-	knh_Array_t *a = (DP(u)->vocabDictIdx)->terms;
+	kArray *a = (DP(u)->vocabDictIdx)->terms;
 	Object *s = KNH_NULL;
 	if(n < knh_Array_size(a)) {
 		s = knh_Array_n(a, n);
@@ -456,10 +456,10 @@ TYPEMAP knh_Ftypemap_vocab(CTX ctx, ksfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-knh_Semantics_t* new_Vocab(CTX ctx, char *tag, kbytes_t urn, int base, char **terms)
+kSemantics* new_Vocab(CTX ctx, char *tag, kbytes_t urn, int base, char **terms)
 {
 	kclass_t cid = new_ClassId(ctx);
-	knh_Semantics_t* u = (knh_Semantics_t*)new_Object_bcid(ctx, CLASS_Semantics, (int)cid);
+	kSemantics* u = (kSemantics*)new_Object_bcid(ctx, CLASS_Semantics, (int)cid);
 	DP(u)->ubcid = CLASS_String;
 	KNH_SETv(ctx, DP(u)->urn, new_S(ctx, urn, NULL));
 	if(tag != NULL || tag[0] != 0) {
@@ -468,9 +468,9 @@ knh_Semantics_t* new_Vocab(CTX ctx, char *tag, kbytes_t urn, int base, char **te
 	DP(u)->fsnew = knh_fsnew__dict;
 	DP(u)->fscmp = knh_fscmp__dict;
 	{
-		knh_Array_t *a = new_Array0(ctx, 0);
+		kArray *a = new_Array0(ctx, 0);
 		while(*terms != NULL) {
-			knh_String_t *s = new_T(*terms);
+			kString *s = new_T(*terms);
 			knh_Array_add_(ctx, a, UPCAST(s));
 			s->h.cid = cid;
 			terms++;
@@ -482,7 +482,7 @@ knh_Semantics_t* new_Vocab(CTX ctx, char *tag, kbytes_t urn, int base, char **te
 	}
 	knh_addSpecializedType(ctx, cid, CLASS_String, u);
 	{
-		knh_TypeMap_t *mpr = new_TypeMap(ctx, FLAG_TypeMap_Total|FLAG_TypeMap_Const|FLAG_TypeMap_Final, cid, CLASS_Int, knh_Ftypemap_vocabidx, (Object*)u);
+		kTypeMap *mpr = new_TypeMap(ctx, FLAG_TypeMap_Total|FLAG_TypeMap_Const|FLAG_TypeMap_Final, cid, CLASS_Int, knh_Ftypemap_vocabidx, (Object*)u);
 		knh_addTypeMap(ctx, mpr);
 		mpr = new_TypeMap(ctx, FLAG_TypeMap_Const|FLAG_TypeMap_Final, CLASS_Int, cid, knh_Ftypemap_vocab, (Object*)u);
 		knh_addTypeMap(ctx, mpr);
@@ -554,7 +554,7 @@ knh_Semantics_t* new_Vocab(CTX ctx, char *tag, kbytes_t urn, int base, char **te
 
 kbytes_t knh_getURNAlias(CTX ctx, kbytes_t aurn)
 {
-	knh_String_t *s = (knh_String_t*)knh_DictMap_get(ctx,  ctx->share->URNAliasDictMap, aurn);
+	kString *s = (kString*)knh_DictMap_get(ctx,  ctx->share->URNAliasDictMap, aurn);
 	if(IS_NOTNULL(s)) {
 		return S_tobytes(s);
 	}
@@ -578,10 +578,10 @@ kbytes_t knh_getURNAlias(CTX ctx, kbytes_t aurn)
 
 void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 {
-	knh_DictMap_t *mapptr = ctx->share->URNAliasDictMap;
+	kDictMap *mapptr = ctx->share->URNAliasDictMap;
 	knh_StringData_t *d = data;
 	while(d->name != NULL) {
-		knh_String_t *s =(knh_String_t*)knh_DictMap_get(ctx,  mapptr, B(d->name));
+		kString *s =(kString*)knh_DictMap_get(ctx,  mapptr, B(d->name));
 		if(IS_NOTNULL(s) && !S_equals(s, B(d->value))) {
 			KNH_SYSLOG(ctx, LOG_WARNING, _("overriding alias %s %s as %s"), d->name, S_totext(s), d->value);
 		}
@@ -589,7 +589,7 @@ void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 	}
 	d = data;
 	while(d->name != NULL) {
-		knh_String_t *n = new_T(d->name);
+		kString *n = new_T(d->name);
 		knh_DictMap_append(ctx, mapptr, n, UPCAST(new_T(d->value)));
 		d++;
 	}
@@ -599,11 +599,11 @@ void knh_loadScriptURNAliasData(CTX ctx, knh_StringData_t *data)
 
 void knh_loadScriptSemanticsFuncData(CTX ctx, knh_FuncData_t *data)
 {
-	knh_DictSet_t *ds = ctx->share->SpecFuncDictSet;
+	kDictSet *ds = ctx->share->SpecFuncDictSet;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	while(data->name != NULL) {
 		DBG_P("adding.. '%s'", data->name);
-		knh_String_t *n = new_T(data->name);
+		kString *n = new_T(data->name);
 		knh_DictSet_set(ctx, ds, n, (kuintptr_t)data->ptr);
 		data++;
 	}
@@ -613,9 +613,9 @@ void knh_loadScriptSemanticsFuncData(CTX ctx, knh_FuncData_t *data)
 /* ------------------------------------------------------------------------ */
 
 static
-knh_Semantics_t *new_SemanticsNULL(CTX ctx, kbytes_t urn)
+kSemantics *new_SemanticsNULL(CTX ctx, kbytes_t urn)
 {
-	knh_Semantics_t *u = NULL;
+	kSemantics *u = NULL;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	kindex_t loc = 0;
 	kbytes_t p = urn;
@@ -641,9 +641,9 @@ L_UNLOCK:;
 /* ------------------------------------------------------------------------ */
 /* [SPEC] */
 
-knh_Semantics_t *knh_getSemantics(CTX ctx, kclass_t cid)
+kSemantics *knh_getSemantics(CTX ctx, kclass_t cid)
 {
-	knh_Semantics_t *u = (knh_Semantics_t*)ClassTBL(cid)->cspec;
+	kSemantics *u = (kSemantics*)ClassTBL(cid)->cspec;
 	KNH_ASSERT(IS_Semantics(u));
 	return u;
 }
@@ -653,7 +653,7 @@ knh_Semantics_t *knh_getSemantics(CTX ctx, kclass_t cid)
 static
 Object *knh_ClassTBL_fdefault__ISPEC(CTX ctx, kclass_t cid)
 {
-	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
+	kSemantics *u = knh_getSemantics(ctx, cid);
 	return UPCAST(DP(u)->ivalue);
 }
 
@@ -662,7 +662,7 @@ Object *knh_ClassTBL_fdefault__ISPEC(CTX ctx, kclass_t cid)
 static
 Object *knh_ClassTBL_fdefault__FSPEC(CTX ctx, kclass_t cid)
 {
-	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
+	kSemantics *u = knh_getSemantics(ctx, cid);
 	return UPCAST(DP(u)->fvalue);
 }
 
@@ -671,14 +671,14 @@ Object *knh_ClassTBL_fdefault__FSPEC(CTX ctx, kclass_t cid)
 static
 Object *knh_ClassTBL_fdefault__SSPEC(CTX ctx, kclass_t cid)
 {
-	knh_Semantics_t *u = knh_getSemantics(ctx, cid);
+	kSemantics *u = knh_getSemantics(ctx, cid);
 	return UPCAST(DP(u)->svalue);
 }
 
 /* ------------------------------------------------------------------------ */
 
 static
-kclass_t knh_addSpecializedType(CTX ctx, kclass_t cid, kclass_t supcid, knh_Semantics_t *u)
+kclass_t knh_addSpecializedType(CTX ctx, kclass_t cid, kclass_t supcid, kSemantics *u)
 {
 	kclass_t bcid = C_bcid(supcid);
 	char bufcn[CLASS__AME_BUFSIZ];
@@ -741,7 +741,7 @@ kclass_t knh_addSpecializedType(CTX ctx, kclass_t cid, kclass_t supcid, knh_Sema
 /* ------------------------------------------------------------------------ */
 
 static
-knh_Semantics_t* knh_findSemanticsNULL(CTX ctx, kbytes_t lname)
+kSemantics* knh_findSemanticsNULL(CTX ctx, kbytes_t lname)
 {
 	kindex_t loc = knh_bytes_index(lname, '{');
 	if(loc != -1) {
@@ -770,7 +770,7 @@ knh_Semantics_t* knh_findSemanticsNULL(CTX ctx, kbytes_t lname)
 
 kclass_t knh_findcidx(CTX ctx, kbytes_t lname)
 {
-	knh_Semantics_t *u = 	knh_findSemanticsNULL(ctx, lname);
+	kSemantics *u = 	knh_findSemanticsNULL(ctx, lname);
 	if(u != NULL) {
 		kindex_t loc = knh_bytes_index(lname, '{');
 		kclass_t bcid = knh_getcid(ctx, knh_bytes_first(lname, loc));

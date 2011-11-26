@@ -47,10 +47,10 @@ extern "C" {
 /*String call back*/
 static size_t write_String(char *buffer, size_t size, size_t nitems, void *string)
 {
-	knh_context_t *ctx = knh_getCurrentContext();
+	kcontext_t *ctx = knh_getCurrentContext();
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_String_t *res = (knh_String_t *)string;
-	knh_String_t *str;
+	kString *res = (kString *)string;
+	kString *str;
 	kbytes_t buf = S_tobytes(res);
 	size *= nitems;
 	knh_Bytes_write(ctx, cwb->ba, buf);
@@ -64,8 +64,8 @@ static size_t write_String(char *buffer, size_t size, size_t nitems, void *strin
 /*Bytes call back*/
 static size_t write_Bytes(char *buffer, size_t size, size_t nitems, void *bytes)
 {
-	knh_context_t *ctx = knh_getCurrentContext();
-	knh_Bytes_t *res = (knh_Bytes_t *)bytes;
+	kcontext_t *ctx = knh_getCurrentContext();
+	kBytes *res = (kBytes *)bytes;
 	size *= nitems;
 	knh_Bytes_write(ctx, res, new_bytes2(buffer, size));
 	return size;
@@ -73,13 +73,13 @@ static size_t write_Bytes(char *buffer, size_t size, size_t nitems, void *bytes)
 
 /* ------------------------------------------------------------------------ */
 
-static void Curl_init(CTX ctx, knh_RawPtr_t *po)
+static void Curl_init(CTX ctx, kRawPtr *po)
 {
 	CURL *curl = curl_easy_init();
 	po->rawptr = curl;
 }
 
-static void Curl_free(CTX ctx, knh_RawPtr_t *po)
+static void Curl_free(CTX ctx, kRawPtr *po)
 {
 	CURL *curl = (CURL *)po->rawptr;
 	if (curl != NULL) {
@@ -100,8 +100,8 @@ KMETHOD Curl_setOpt(CTX ctx, ksfp_t *sfp _RIX)
 	CURL* curl = RawPtr_to(CURL*, sfp[0]);
 	long curlopt = Int_to(long, sfp[1]);
 //	FILE* fp = NULL;
-	knh_String_t* str = NULL;
-	knh_Bytes_t* bytes = NULL;
+	kString* str = NULL;
+	kBytes* bytes = NULL;
 	switch(curlopt) {
 	// @FROM http://www.phpmanual.jp/function.curl-setopt.html
 	case CURLOPT_AUTOREFERER:
@@ -226,14 +226,14 @@ KMETHOD Curl_setOpt(CTX ctx, ksfp_t *sfp _RIX)
 		if(IS_String(sfp[2].o)){
 			//TODO
 			//write result to sfp[2] as String
-			str = (knh_String_t*)sfp[2].o;
+			str = (kString*)sfp[2].o;
 			curl_easy_setopt(curl, curlopt, str);
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_String);
 		}
 		else if(IS_Bytes(sfp[2].o)){
 			//TODO
 			//write result to sfp[2] as Bytes
-			bytes = (knh_Bytes_t*)sfp[2].o;
+			bytes = (kBytes*)sfp[2].o;
 			curl_easy_setopt(curl, curlopt, bytes);
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_Bytes);
 		}
@@ -431,11 +431,11 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 //	return 0;
 //}
 //
-//static knh_io_t CURL_open(CTX ctx, kbytes_t path, const char *mode)
+//static int CURL_open(CTX ctx, kbytes_t path, const char *mode)
 //{
 //	//TODO mode treats as method
 //	CURLFILE *file = malloc(sizeof(CURLFILE));
-//	if(file == NULL) return (knh_io_t)NULL;
+//	if(file == NULL) return (int)NULL;
 //	memset(file, 0, sizeof(CURLFILE));
 //	file->curl = curl_easy_init();
 //	curl_easy_setopt(file->curl, CURLOPT_URL, path.ubuf);
@@ -457,16 +457,16 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 //		free(file);
 //		file = NULL;
 //	}
-//	return (knh_io_t)file;
+//	return (int)file;
 //}
 //
 ////new OutputStream(http://...)
-//static knh_io_t CURL_init(CTX ctx, kbytes_t path, const char *mode)
+//static int CURL_init(CTX ctx, kbytes_t path, const char *mode)
 //{
-//	return (knh_io_t)NULL;
+//	return (int)NULL;
 //}
 //
-//static void CURL_close(CTX ctx, knh_io_t fd)
+//static void CURL_close(CTX ctx, int fd)
 //{
 //	CURLFILE *file = (CURLFILE*)fd;
 //	curl_multi_remove_handle(multi_handle, file->curl);
@@ -483,7 +483,7 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 //	return ret;
 //}
 //
-//static kintptr_t CURL_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+//static kintptr_t CURL_read(CTX ctx, int fd, char *buf, size_t bufsiz)
 //{
 //	CURLFILE *file = (CURLFILE*)fd;
 //	if(file == NULL) return 0;
@@ -497,18 +497,18 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 //	return bufsiz;
 //}
 //
-//static kintptr_t CURL_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+//static kintptr_t CURL_write(CTX ctx, int fd, const char *buf, size_t bufsiz)
 //{
 //	return 0;
 //}
 //
-//static int CURL_feof(CTX ctx, knh_io_t fd)
+//static int CURL_feof(CTX ctx, int fd)
 //{
 //	return url_feof((CURLFILE*)fd);
 //}
 //
 //static int pos = 0;
-//static int CURL_getc(CTX ctx, knh_io_t fd)
+//static int CURL_getc(CTX ctx, int fd)
 //{
 //    CURLFILE *file = (CURLFILE*)fd;
 //    if(!file->buffer_pos || file->buffer_pos < file->buffer_len) 
@@ -516,7 +516,7 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 //    return file->buffer[pos++];
 //}
 //
-//static const char* CURL_getContentType(CTX ctx, knh_io_t fd)
+//static const char* CURL_getContentType(CTX ctx, int fd)
 //{
 //	CURLFILE *file = (CURLFILE*)fd;
 //	if(file != NULL){
@@ -527,7 +527,7 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 //	return NULL;
 //}
 //
-//static const char* CURL_getCharset(CTX ctx, knh_io_t fd)
+//static const char* CURL_getCharset(CTX ctx, int fd)
 //{
 //	CURLFILE *file = (CURLFILE*)fd;
 //	if(file != NULL){
@@ -554,7 +554,7 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 ////	file->buffer_len=0;
 ////}
 //
-//static kuintptr_t CURL_exists(CTX ctx, kbytes_t path, knh_NameSpace_t *ns)
+//static kuintptr_t CURL_exists(CTX ctx, kbytes_t path, kNameSpace *ns)
 //{
 //	CURLFILE *file = malloc(sizeof(CURLFILE));
 //	if(file == NULL) return (kuintptr_t)0;
@@ -591,7 +591,7 @@ KMETHOD Curl_getInfo(CTX ctx, ksfp_t *sfp _RIX)
 //	return PATH_isTyped(cid);
 //}
 //
-//static Object* newObjectNULL(CTX ctx, kclass_t cid, knh_String_t *s, knh_NameSpace_t *n)
+//static Object* newObjectNULL(CTX ctx, kclass_t cid, kString *s, kNameSpace *n)
 //{
 //    return (Object*)s;
 //}
@@ -705,7 +705,7 @@ static knh_IntData_t CurlConstInt[] = {
 	{NULL} // end of const data
 };
 
-DEFAPI(void) defCurl(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defCurl(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Curl";
 	cdef->init = Curl_init;

@@ -115,12 +115,12 @@ typedef kintptr_t knh_data_t;
 
 typedef struct knh_LoaderAPI_t {
 	/* global */
-	void (*loadData)(CTX, const knh_data_t *, knh_ParamArray_t **);
+	void (*loadData)(CTX, const knh_data_t *, kParam **);
 	void (*loadFuncData)(CTX, const knh_FuncData_t *);
 	/* constant */
-	void (*loadIntData)(CTX, knh_NameSpace_t *ns, const knh_IntData_t *);
-	void (*loadFloatData)(CTX, knh_NameSpace_t *ns, const knh_FloatData_t *);
-	void (*loadStringData)(CTX, knh_NameSpace_t *ns, const knh_StringData_t *);
+	void (*loadIntData)(CTX, kNameSpace *ns, const knh_IntData_t *);
+	void (*loadFloatData)(CTX, kNameSpace *ns, const knh_FloatData_t *);
+	void (*loadStringData)(CTX, kNameSpace *ns, const knh_StringData_t *);
 	void (*loadClassIntConst)(CTX, kclass_t cid, const knh_IntData_t *);
 	void (*loadClassFloatConst)(CTX, kclass_t cid, const knh_FloatData_t *);
 	void (*loadStringClassConst)(CTX, kclass_t cid, const knh_StringData_t *);
@@ -128,8 +128,8 @@ typedef struct knh_LoaderAPI_t {
 	void (*setPackageIntProperty)(CTX, const char*, kint_t);
 	void (*setPackageFloatProperty)(CTX, const char*, kfloat_t);
 	/* namespace */
-//	void (*setRegexSPI)(CTX, knh_NameSpace_t *ns, const knh_RegexSPI_t *);
-//	void (*addLinkClass)(CTX, knh_NameSpace_t *ns, const char*, kclass_t cid);
+//	void (*setRegexSPI)(CTX, kNameSpace *ns, const knh_RegexSPI_t *);
+//	void (*addLinkClass)(CTX, kNameSpace *ns, const char*, kclass_t cid);
 	void (*addStreamDPI)(CTX, const char*, const knh_PathDPI_t *);
 //	void (*addQueryDPI)(CTX, const char *, const knh_QueryDPI_t *);
 	void (*addMapDPI)(CTX,   const char *, const knh_MapDPI_t*);
@@ -148,8 +148,8 @@ typedef struct {
 } knh_PackageDef_t;
 
 typedef const knh_PackageDef_t* (*knh_Fpkginit)(CTX, const knh_LoaderAPI_t *);
-typedef void (*knh_Fpkgload)(CTX, const knh_LoaderAPI_t *, knh_NameSpace_t *ns);
-typedef void (*knh_Fclassdef)(CTX, kclass_t, kClassDef*);
+typedef void (*knh_Fpkgload)(CTX, const knh_LoaderAPI_t *, kNameSpace *ns);
+typedef void (*knh_Fclassdef)(CTX, kclass_t, kclassdef_t*);
 typedef void (*knh_Fconstdef)(CTX, kclass_t, const knh_LoaderAPI_t*);
 
 /* ------------------------------------------------------------------------ */

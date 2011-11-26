@@ -39,7 +39,7 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-DEFAPI(void) defMath(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defMath(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Math";
 }

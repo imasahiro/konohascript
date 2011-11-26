@@ -1296,7 +1296,7 @@ static int _FUNCCALL_asm(CTX ctx, knh_Stmt_t *stmt, knh_type_t reqt, int sfpidx)
 	knh_class_t cid = Tn_cid(stmt, 1);
 	knh_ParamArray_t *pa = ClassTBL(cid)->cparam;
 	for (size_t i = 0; i < pa->psize; i++) {
-		knh_param_t *p = knh_ParamArray_get(pa, i);
+		kparam_t *p = knh_ParamArray_get(pa, i);
 		knh_type_t reqt = knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid);
 		int n = local + i + (K_CALLDELTA + 1);
 		Tn_asm(ctx, stmt, i+2, reqt, n);
@@ -2821,7 +2821,7 @@ static Function *build_wrapper_func(CTX ctx, Module *m, knh_Method_t *mtd, Funct
 	params.push_back(arg_ctx);
 	params.push_back(arg_sfp);
 	for (size_t i = 0; i < pa->psize; i++) {
-		knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
+		kparam_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
 		Value *v = arg_sfp;
 		v = loadsfp(ctx, builder, v, p->type, i+1);
 		v = builder->CreateLoad(v, "load");
@@ -2852,7 +2852,7 @@ AsmContext::AsmContext (Module *m, CTX ctx, knh_Method_t *mtd) :
 	args++;/*ctx*/
 	args++;/*sfp*/
 	for (size_t i = 0; i < DP(mtd)->mp->psize; i++) {
-		knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
+		kparam_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
 		Value *arg = VNAME_(args++, FN__(p->fn));
 		ValueStack_set(ctx, i+1, arg);
 	}

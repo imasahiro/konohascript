@@ -94,7 +94,7 @@ static const char* knh_format_w3cdtf(char *buf, size_t bufsiz, struct tm *tmp)
 	return (const char*)buf;
 }
 
-void knh_write_now(CTX ctx, knh_OutputStream_t *w)
+void knh_write_now(CTX ctx, kOutputStream *w)
 {
 	char buf[80];
 	time_t t;
@@ -338,8 +338,8 @@ static void opt_v(int mode, const char *optstr)
 		isVerboseVM     = 1;
 		dump_sysinfo(NULL, NULL, 1/*isALL*/);
 		KNH_ASSERT(sizeof(kintptr_t) == sizeof(void*));
-		KNH_ASSERT(sizeof(knh_Term_t) <= sizeof(knh_Object_t));
-		KNH_ASSERT(sizeof(knh_StmtExpr_t) <= sizeof(knh_Object_t));
+		KNH_ASSERT(sizeof(kTerm) <= sizeof(kObjectUnused));
+		KNH_ASSERT(sizeof(kStmtExpr) <= sizeof(kObjectUnused));
 		KNH_ASSERT(sizeof(kint_t) <= sizeof(kfloat_t));
 #ifdef K_USING_RBP_
 		KNH_ASSERT(sizeof(krbp_t) * 2 == sizeof(ksfp_t));
@@ -383,9 +383,9 @@ static int enforce_security = 0;
 static char role[64] = {0};
 
 /* added by Wakamori */
-static kbool_t method_isPermissionAllowed(CTX ctx, knh_Method_t *mtd)
+static kbool_t method_isPermissionAllowed(CTX ctx, kMethod *mtd)
 {
-	knh_DictMap_t *dmap = ctx->share->securityDictMap;
+	kDictMap *dmap = ctx->share->securityDictMap;
 	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
 	CWB_write(ctx, cwb, S_tobytes(ClassTBL(mtd->cid)->sname));
 	CWB_putc(ctx, cwb, '.');
@@ -394,18 +394,18 @@ static kbool_t method_isPermissionAllowed(CTX ctx, knh_Method_t *mtd)
 	const char *idx, *p = role;
 	while (p[0] != '\0') {
 		idx = strchr((const char *)p, ',');
-		knh_Array_t *a = NULL;
+		kArray *a = NULL;
 		if (idx != NULL) {
-			a = (knh_Array_t *)knh_DictMap_getNULL(ctx, dmap, new_bytes2(p, idx - p));
+			a = (kArray *)knh_DictMap_getNULL(ctx, dmap, new_bytes2(p, idx - p));
 			p = idx + 1;
 		} else {
-			a = (knh_Array_t *)knh_DictMap_getNULL(ctx, dmap, B(p));
+			a = (kArray *)knh_DictMap_getNULL(ctx, dmap, B(p));
 			p += knh_strlen(p);
 		}
 		if (a != NULL) {
 			int i;
 			for (i = 0; i < knh_Array_size(a); i++) {
-				const char *s = S_totext((knh_String_t*)knh_Array_n(a, i));
+				const char *s = S_totext((kString*)knh_Array_n(a, i));
 				if (strstr(s, CWB_tobytes(cwb).text) != NULL
 					|| strstr(s, "all") != NULL) {
 					// this method is allowed to be executed by this role
@@ -426,10 +426,10 @@ void loadPolicy(CTX ctx)
 	// load $konoha.home.path/policy
 	knh_setProperty(ctx, new_String(ctx, "role"), (dynamic *)new_String(ctx, role));
 	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
-	knh_String_t *s = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
+	kString *s = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
 	CWB_write(ctx, cwb, S_tobytes(s));
 	CWB_write(ctx, cwb, STEXT("/policy"));
-	knh_InputStream_t *is = new_InputStream(ctx, NULL, new_Path(ctx, CWB_newString0(ctx, cwb)));
+	kInputStream *is = new_InputStream(ctx, NULL, new_Path(ctx, CWB_newString0(ctx, cwb)));
 
 	if (is == NULL) {
 		DBG_P("policy file not found. All @Restricted annotated method is rescricted");
@@ -444,15 +444,15 @@ void loadPolicy(CTX ctx)
 		*/
 		// parse policy file written in JSON
 		// it must be refactored in the future
-		knh_DictMap_t *dmap = ctx->share->securityDictMap;
-		knh_String_t *line = knh_InputStream_readLine(ctx, is);
+		kDictMap *dmap = ctx->share->securityDictMap;
+		kString *line = knh_InputStream_readLine(ctx, is);
 		while (IS_NOTNULL(line)) {
 			//fprintf(stderr, "line=%s\n", S_totext(line));
 			if (S_equals(line, STEXT("[")) || S_equals(line, STEXT("]"))) {
 				/* ignore */
 			} else {
-				knh_String_t *key = NULL;
-				knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
+				kString *key = NULL;
+				kArray *a = new_Array(ctx, CLASS_String, 0);
 				const char *idx = NULL;
 				char *p = strstr(S_totext(line), "\"name\": \"");
 				if (p != NULL) {
@@ -491,7 +491,7 @@ void loadPolicy(CTX ctx)
 }
 
 /* modified by Wakamori */
-void knh_enforceSecurity(CTX ctx, knh_Method_t *mtd)
+void knh_enforceSecurity(CTX ctx, kMethod *mtd)
 {
 	if (enforce_security == 0) {
 		Method_setRestricted(mtd, 0);
@@ -939,7 +939,7 @@ void todo_p(const char *file, const char *func, int line, const char *fmt, ...)
 
 /* ------------------------------------------------------------------------ */
 
-static void knh_write_cline(CTX ctx, knh_OutputStream_t *w, const char *file, kuintptr_t line)
+static void knh_write_cline(CTX ctx, kOutputStream *w, const char *file, kuintptr_t line)
 {
 	knh_putc(ctx, w, '(');
 	knh_write_ascii(ctx, w, knh_sfile(file));
@@ -949,7 +949,7 @@ static void knh_write_cline(CTX ctx, knh_OutputStream_t *w, const char *file, ku
 	knh_putc(ctx, w, ' ');
 }
 
-void knh_write_uline(CTX ctx, knh_OutputStream_t *w, kline_t uline)
+void knh_write_uline(CTX ctx, kOutputStream *w, kline_t uline)
 {
 	kuri_t uri = ULINE_uri(uline);
 	kuintptr_t line = ULINE_line(uline);
@@ -958,7 +958,7 @@ void knh_write_uline(CTX ctx, knh_OutputStream_t *w, kline_t uline)
 	}
 }
 
-void knh_write_mline(CTX ctx, knh_OutputStream_t *w, kmethodn_t mn, kline_t uline)
+void knh_write_mline(CTX ctx, kOutputStream *w, kmethodn_t mn, kline_t uline)
 {
 	kuri_t uri = ULINE_uri(uline);
 	kuintptr_t line = ULINE_line(uline);
@@ -1030,7 +1030,7 @@ static const char* knh_readuline(CTX ctx, kline_t uline, char *buf, size_t bufsi
 
 static kbool_t isCalledMethod(CTX ctx, ksfp_t *sfp)
 {
-	knh_Method_t *mtd = sfp[0].mtdNC;
+	kMethod *mtd = sfp[0].mtdNC;
 	if(knh_isObject(ctx, UPCAST(mtd)) && IS_Method(mtd)) {
 		//DBG_P("FOUND mtdNC: shift=%d, pc=%d", sfp[-2].shift, sfp[-1].pc);
 		return 1;
@@ -1040,7 +1040,7 @@ static kbool_t isCalledMethod(CTX ctx, ksfp_t *sfp)
 
 static kline_t sfp_uline(CTX ctx, ksfp_t *sfp)
 {
-	knh_opline_t *pc = sfp[K_PCIDX].pc;
+	kopl_t *pc = sfp[K_PCIDX].pc;
 	DBG_ASSERT(isCalledMethod(ctx, sfp + K_MTDIDX));
 	if(pc == NULL) return 0;
 	{
@@ -1070,7 +1070,7 @@ static kline_t knh_stack_uline(CTX ctx, ksfp_t *sfp)
 	return 0;
 }
 
-void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, ktype_t type, ksfp_t *sfp, int level)
+void knh_write_sfp(CTX ctx, kOutputStream *w, ktype_t type, ksfp_t *sfp, int level)
 {
 	if(IS_Tunbox(type)) {
 		if(IS_Tint(type)) {
@@ -1088,10 +1088,10 @@ void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, ktype_t type, ksfp_t *sfp, in
 	}
 }
 
-static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, ksfp_t *sfp)
+static void knh_Exception_addStackTrace(CTX ctx, kException *e, ksfp_t *sfp)
 {
 	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
-	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
+	kMethod *mtd = sfp[K_MTDIDX].mtdNC;
 	if((mtd)->mn != MN_LAMBDA) {
 		int i = 0, psize = knh_Method_psize(mtd);
 		kline_t uline = knh_stack_uline(ctx, sfp);
@@ -1101,7 +1101,7 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, ksfp_t *sfp
 		knh_write_mn(ctx, cwb->w, (mtd)->mn);
 		knh_putc(ctx, cwb->w, '(');
 		for(i = 0; i < psize; i++) {
-			knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
+			kparam_t *p = knh_Param_get(DP(mtd)->mp, i);
 			ktype_t type = ktype_tocid(ctx, p->type, O_cid(sfp[0].o));
 			if(i > 0) {
 				knh_putc(ctx, cwb->w, ',');
@@ -1124,7 +1124,7 @@ void knh_throw(CTX ctx, ksfp_t *sfp, long start)
 {
 	if(IS_Exception(ctx->e)) {
 		ksfp_t *sp = (sfp == NULL) ? ctx->esp : sfp + start;
-		knh_ExceptionHandler_t *hdr = ctx->ehdrNC;
+		kExceptionHandler *hdr = ctx->ehdrNC;
 		if((ctx->e)->uline == 0) {
 			(ctx->e)->uline = knh_stack_uline(ctx, sfp);
 		}
@@ -1136,10 +1136,10 @@ void knh_throw(CTX ctx, ksfp_t *sfp, long start)
 			if(sp[0].hdr == hdr) {
 				size_t i = 0, size = knh_Array_size(hdr->stacklist);
 				for(i = 0; i < size; i++) {
-					knh_Object_t *o = knh_Array_n(hdr->stacklist, i);
+					kObject *o = knh_Array_n(hdr->stacklist, i);
 					O_cTBL(o)->cdef->checkout(ctx, RAWPTR(o), 1);
 				}
-				knh_Array_trimSize(ctx, hdr->stacklist, 0);
+				kArrayrimSize(ctx, hdr->stacklist, 0);
 #ifdef K_USING_SETJMP_
 				knh_longjmp(DP(hdr)->jmpbuf, 1);
 #else
@@ -1159,16 +1159,16 @@ KNHAPI2(void) knh_nthrow(CTX ctx, ksfp_t *sfp, const char *fault, knh_ldata_t *l
 {
 	if(ctx->ehdrNC != NULL) {
 		kline_t uline = knh_stack_uline(ctx, sfp);
-		knh_Exception_t *e =
-			new_Error(ctx, uline, new_String2(ctx, CLASS_String, fault, strlen(fault), K_SPOLICY_ASCII | K_SPOLICY_POOLALWAYS));
+		kException *e =
+			new_Error(ctx, uline, new_String2(ctx, CLASS_String, fault, strlen(fault), SPOL_ASCII | SPOL_POOLALWAYS));
 		CTX_setThrowingException(ctx, e);
 		knh_throw(ctx, sfp, 0);
 	}
 }
 
-static knh_Exception_t* new_Assertion(CTX ctx, kline_t uline)
+static kException* new_Assertion(CTX ctx, kline_t uline)
 {
-	knh_Exception_t* e = new_(Exception);
+	kException* e = new_(Exception);
 	char buf[256] = {'A', 's', 's', 'e', 'r', 't', 'i', 'o', 'n', '!', '!', ':', ' '};
 	char *mbuf = buf + 13;
 	knh_readuline(ctx, uline, mbuf, sizeof(buf)-13);
@@ -1177,7 +1177,7 @@ static knh_Exception_t* new_Assertion(CTX ctx, kline_t uline)
 		size_t line = ULINE_line(uline);
 		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %lu", FILENAME__(uri), line);
 	}
-	KNH_SETv(ctx, e->emsg, new_String2(ctx, CLASS_String, (const char*)buf, knh_strlen(buf), K_SPOLICY_ASCII));
+	KNH_SETv(ctx, e->emsg, new_String2(ctx, CLASS_String, (const char*)buf, knh_strlen(buf), SPOL_ASCII));
 	e->uline = uline;
 	return e;
 }
@@ -1215,24 +1215,24 @@ void knh_assert(CTX ctx, ksfp_t *sfp, long start, kline_t uline)
 //		}
 //		knh_write_logdata(ctx, cwb->w, data, datasize);
 //		ctx->spi->syslog(pe, CWB_totext(ctx, cwb));
-//		((knh_context_t*)ctx)->seq += 1;
+//		((kcontext_t*)ctx)->seq += 1;
 //		CWB_close0(cwb);
 //	}
 //	if(FLAG_is(op, K_RECFAILED) && ctx->ehdrNC != NULL) {
 //		CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
-//		if(FLAG_is(op, K_RECCRIT) || ctx->e == (knh_Exception_t*)TS_EMPTY) {
+//		if(FLAG_is(op, K_RECCRIT) || ctx->e == (kException*)TS_EMPTY) {
 //			knh_write_ascii(ctx, cwb->w, emsg);
 //			knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
 //			knh_write_logdata(ctx, cwb->w, data, datasize);
 //		}
 //		else if(IS_String(ctx->e)) {
-//			knh_String_t *emsg = (knh_String_t*)ctx->e;
+//			kString *emsg = (kString*)ctx->e;
 //			knh_write(ctx, cwb->w, S_tobytes(emsg));
 //			knh_putc(ctx, cwb->w, ':'); knh_putc(ctx, cwb->w, ' ');
 //			knh_write_logdata(ctx, cwb->w, data, datasize);
 //		}
 //		if(CWB_size(cwb) > 0) {
-//			knh_Exception_t *e = new_Error(ctx, uline, CWB_newString0(ctx, cwb));
+//			kException *e = new_Error(ctx, uline, CWB_newString0(ctx, cwb));
 //			CTX_setThrowingException(ctx, e);
 //			knh_throw(ctx, sfp, 0);
 //		}
@@ -1431,7 +1431,7 @@ static void ntrace(CTX ctx, const char *event, int pe, const knh_ldata2_t *d)
 	p = write_b(p, ebuf, ctx->trace, strlen(ctx->trace));
 	p[0] = '+'; p++;
 	p = write_d(p, ebuf, ctx->seq);
-	((knh_context_t*)ctx)->seq += 1;
+	((kcontext_t*)ctx)->seq += 1;
 	p[0] = ' '; p++;
 	p = write_b(p, ebuf, event, strlen(event));
 	if(pe % 2 == 1) {
@@ -1524,7 +1524,7 @@ void knh_ntrace(CTX ctx, const char *event, int pe, knh_ldata_t *ldata)
 	}
 }
 
-void knh_dtrace(CTX ctx, const char *event, int pe, knh_DictMap_t *data)
+void knh_dtrace(CTX ctx, const char *event, int pe, kDictMap *data)
 {
 
 }

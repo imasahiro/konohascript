@@ -176,7 +176,7 @@ static const char *HELPMSG =
 
 static void opt_help(CTX ctx, int mode, const char *optstr)
 {
-	knh_String_t* home = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
+	kString* home = knh_getPropertyNULL(ctx, STEXT("konoha.home.path"));
 	fprintf(stdout, HELPMSG, S_totext(home), knh_getSystemEncoding());
 	exit(0);
 }
@@ -306,16 +306,16 @@ static kbytes_t knh_bytes_nsname(kbytes_t t)
 static void knh_parsearg(CTX ctx, int argc, const char **argv)
 {
 	int i;
-	knh_Array_t *a = new_Array(ctx, CLASS_String, argc);
+	kArray *a = new_Array(ctx, CLASS_String, argc);
 	for(i = 1; i < argc; i++) {
-		knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv[i], knh_strlen(argv[i]), K_SPOLICY_TEXT|K_SPOLICY_POOLALWAYS));
+		knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv[i], knh_strlen(argv[i]), SPOL_TEXT|SPOL_POOLALWAYS));
 	}
 	knh_DictMap_set(ctx, ctx->share->props, new_T("script.argv"), a);
 	if(argc > 0) {
-		knh_String_t *s = new_T(argv[0]);
+		kString *s = new_T(argv[0]);
 		knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
 		kbytes_t t = knh_bytes_nsname(S_tobytes(s));
-		knh_Script_setNSName(ctx, ctx->script, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_TEXT|K_SPOLICY_POOLALWAYS));
+		knh_Script_setNSName(ctx, ctx->script, new_String2(ctx, CLASS_String, t.text, t.len, SPOL_TEXT|SPOL_POOLALWAYS));
 	}
 	else {
 		knh_Script_setNSName(ctx, ctx->script, TS_main);
@@ -327,7 +327,7 @@ static void knh_parsearg(CTX ctx, int argc, const char **argv)
 static int knh_runMain(CTX ctx, int argc, const char **argv)
 {
 	KONOHA_BEGIN(ctx);
-	knh_Method_t *mtd = ClassTBL_getMethodNULL(ctx, O_cTBL(ctx->script), MN_main);
+	kMethod *mtd = ClassTBL_getMethodNULL(ctx, O_cTBL(ctx->script), MN_main);
 	int res = 0;
 	if(mtd != NULL) {
 		int thisidx = 1 + K_CALLDELTA;
@@ -350,7 +350,7 @@ static int knh_runMain(CTX ctx, int argc, const char **argv)
 /* ------------------------------------------------------------------------ */
 /* [shell] */
 
-static void knh_showWelcome(CTX ctx, knh_OutputStream_t *w)
+static void knh_showWelcome(CTX ctx, kOutputStream *w)
 {
 	const knh_sysinfo_t *sysinfo = knh_getsysinfo();
 	knh_printf(ctx, w, "%s%s %s(%s) %s (rev:%d, %s %s)%s\n",
@@ -400,15 +400,15 @@ static int shell_checkstmt(kbytes_t t)
 
 static void shell_restart(CTX ctx)
 {
-//	knh_NameSpace_t *ns = new_NameSpace(ctx, NULL);
+//	kNameSpace *ns = new_NameSpace(ctx, NULL);
 //	DBG_ASSERT(ns->b->aliasDictMapNULL == NULL);
 //	ctx->wshare->sysAliasDictMapNULL = DP(ctx->share->rootns)->aliasDictMapNULL;
 //	DP(ctx->share->rootns)->aliasDictMapNULL = NULL;
 //	KNH_SETv(ctx, ((kshare_t*)ctx->share)->rootns, ns);
-//	KNH_SETv(ctx, ((knh_context_t*)ctx)->script, new_(Script));
+//	KNH_SETv(ctx, ((kcontext_t*)ctx)->script, new_(Script));
 //	{
-//		knh_GammaBuilder_t *newgma = new_(GammaBuilder);
-//		KNH_SETv(ctx, ((knh_context_t*)ctx)->gma, newgma);
+//		kGammaBuilder *newgma = new_(GammaBuilder);
+//		KNH_SETv(ctx, ((kcontext_t*)ctx)->gma, newgma);
 //		KNH_INITv(DP(newgma)->symbolDictMap, new_DictMap0(ctx, 256, 0/*isCaseMap*/, "GammaBuilder.symbolDictMap"));
 //		KNH_INITv(DP(newgma)->constPools, new_Array0(ctx, 0));
 //		KNH_INITv(DP(newgma)->script, ctx->script);
@@ -416,7 +416,7 @@ static void shell_restart(CTX ctx)
 	KNH_TODO("restart");
 }
 
-void knh_dumpKeyword(CTX ctx, knh_OutputStream_t *w);
+void knh_dumpKeyword(CTX ctx, kOutputStream *w);
 
 static kstatus_t shell_command(CTX ctx, const char *cmd)
 {
@@ -475,7 +475,7 @@ void knh_setSecurityAlertMessage(const char *msg, int isNeedFree)
 	isSecurityAlertNeedFree = isNeedFree;
 }
 
-static void knh_showSecurityAlert(CTX ctx, knh_OutputStream_t *w)
+static void knh_showSecurityAlert(CTX ctx, kOutputStream *w)
 {
 	if(SecurityAlertMessage != NULL /*&& CTX_isInteractive(ctx)*/) {
 		knh_write_ascii(ctx, w, TERM_BBOLD(ctx));
@@ -601,7 +601,7 @@ static void knh_shell(CTX ctx)
 {
 	void *shell_status = NULL;
 	BEGIN_LOCAL(ctx, lsfp, 2);
-//	LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
+//	LOCAL_NEW(ctx, lsfp, 0, kInputStream *, bin, new_BytesInputStream(ctx, new_Bytes(ctx, "shell", K_PAGESIZE)));
 	{
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		knh_showWelcome(ctx, cwb->w);
@@ -631,11 +631,11 @@ static void knh_shell(CTX ctx)
 				continue;
 			}
 #ifdef K_USING_SUGAR
-			knh_String_t *script = CWB_newString(ctx, cwb, 0);
+			kString *script = CWB_newString(ctx, cwb, 0);
 			KNH_SETv(ctx, lsfp[0].o, script);
 			knh_beval2(ctx, S_totext(script), 1);
 #else
-			knh_InputStream_t *bin = new_BytesInputStream(ctx, CWB_totext(ctx, cwb), CWB_size(cwb));
+			kInputStream *bin = new_BytesInputStream(ctx, CWB_totext(ctx, cwb), CWB_size(cwb));
 			KNH_SETv(ctx, lsfp[0].o, bin);
 			knh_beval(ctx, bin, 1);
 #endif

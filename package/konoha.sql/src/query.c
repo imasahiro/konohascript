@@ -50,15 +50,15 @@ extern knh_QueryDSPI_t DB__mysql;
 static void NOP_qfree(knh_qcur_t *qcur)
 {
 }
-static knh_qconn_t *NOP_qopen(CTX ctx, kbytes_t url)
+static kconn_t *NOP_qopen(CTX ctx, kbytes_t url)
 {
 	return NULL;
 }
-static knh_qcur_t *NOP_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
+static knh_qcur_t *NOP_query(CTX ctx, kconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
 {
 	return NULL;
 }
-static void NOP_qclose(CTX ctx, knh_qconn_t *hdr)
+static void NOP_qclose(CTX ctx, kconn_t *hdr)
 {
 }
 static int NOP_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
@@ -112,7 +112,7 @@ knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, kbytes_t path)
 /* ------------------------------------------------------------------------ */
 /* [Connection] */
 
-void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_String_t *urn)
+void knh_Connection_open(CTX ctx, knh_Connection_t *c, kString *urn)
 {
 	kbytes_t u = S_tobytes(urn);
 	KNH_SETv(ctx, (c)->urn, urn);
@@ -125,7 +125,7 @@ void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_String_t *urn)
 	KNH_INITv((c)->urn, urn);
 }
 
-knh_Connection_t* new_Connection(CTX ctx, knh_String_t *urn)
+knh_Connection_t* new_Connection(CTX ctx, kString *urn)
 {
 	knh_Connection_t *o = (knh_Connection_t *)new_O(Connection, knh_getcid(ctx, STEXT("Connection")));
 	knh_Connection_open(ctx, o, urn);
@@ -205,7 +205,7 @@ void knh_ResultSet_initTargetClass(knh_ResultSet_t *o, kclass_t tcid)
 
 /* ------------------------------------------------------------------------ */
 
-KMETHOD ResultSet_setName(CTX ctx, knh_ResultSet_t *o, size_t n, knh_String_t *name)
+KMETHOD ResultSet_setName(CTX ctx, knh_ResultSet_t *o, size_t n, kString *name)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	KNH_SETv(ctx, DP(o)->column[n].name, name);
@@ -213,7 +213,7 @@ KMETHOD ResultSet_setName(CTX ctx, knh_ResultSet_t *o, size_t n, knh_String_t *n
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *knh_ResultSet_getName(CTX ctx, knh_ResultSet_t *o, size_t n)
+kString *knh_ResultSet_getName(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	return DP(o)->column[n].name;
@@ -356,14 +356,14 @@ kfloat_t knh_ResultSet_getFloat(CTX ctx, knh_ResultSet_t *o, size_t n)
 
 /* ------------------------------------------------------------------------ */
 
-static knh_String_t *new_String__int(CTX ctx, kint_t n)
+static kString *new_String__int(CTX ctx, kint_t n)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_ifmt(ctx, cwb->w, KINT_FMT, n);
 	return CWB_newString0(ctx, cwb);
 }
 
-static knh_String_t *new_String__float(CTX ctx, kfloat_t n)
+static kString *new_String__float(CTX ctx, kfloat_t n)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_ffmt(ctx, cwb->w, KFLOAT_FMT, n);
@@ -372,7 +372,7 @@ static knh_String_t *new_String__float(CTX ctx, kfloat_t n)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)
+kString* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
@@ -393,18 +393,18 @@ knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)
 
 /* ------------------------------------------------------------------------ */
 /* [DEFAPI] */
-static void Connection_init(CTX ctx, knh_RawPtr_t *po)
+static void Connection_init(CTX ctx, kRawPtr *po)
 {
 	knh_Connection_t *o = (knh_Connection_t *)po;
 	KNH_INITv(o->urn, KNH_NULL);
 	//knh_Connection_open(ctx, o, "");
 }
 
-static void Connection_free(CTX ctx, knh_RawPtr_t *po)
+static void Connection_free(CTX ctx, kRawPtr *po)
 {
 	knh_Connection_t *c = (knh_Connection_t *)po;
 	KNH_FREE(ctx, c->urn->str.ubuf, KNH_SIZE(S_size(c->urn) + 1));
-	KNH_FREE(ctx, c, sizeof(knh_Object_t));
+	//KNH_FREE(ctx, c, sizeof(kObject));
 }
 
 void mysql_qcurfree(knh_qcur_t* qcur)
@@ -413,7 +413,7 @@ void mysql_qcurfree(knh_qcur_t* qcur)
 
 #define RESULTSET_BUFSIZE 256
 
-static void ResultSet_init(CTX ctx, knh_RawPtr_t *po)
+static void ResultSet_init(CTX ctx, kRawPtr *po)
 {
 	knh_ResultSet_t *o = (knh_ResultSet_t *)po;
 	knh_ResultSetEX_t *b;
@@ -432,24 +432,24 @@ static void ResultSet_init(CTX ctx, knh_RawPtr_t *po)
 	b->count = 0;
 }
 
-static void ResultSet_free(CTX ctx, knh_RawPtr_t *po)
+static void ResultSet_free(CTX ctx, kRawPtr *po)
 {
 	knh_ResultSet_t *rs = (knh_ResultSet_t *)po;
 	if (DP(rs) != NULL && DP(rs)->column_size > 0) {
 		KNH_FREE(ctx, DP(rs)->column, sizeof(knh_dbschema_t) * DP(rs)->column_size);
 	}
 	KNH_FREE(ctx, DP(rs), sizeof(knh_ResultSetEX_t));
-	KNH_FREE(ctx, rs, sizeof(knh_Object_t));
+	//KNH_FREE(ctx, rs, sizeof(kObject));
 }
 
-DEFAPI(void) defConnection(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defConnection(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Connection";
 	cdef->init = Connection_init;
 	cdef->free = Connection_free;
 }
 
-DEFAPI(void) defResultSet(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defResultSet(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "ResultSet";
 	cdef->init = ResultSet_init;

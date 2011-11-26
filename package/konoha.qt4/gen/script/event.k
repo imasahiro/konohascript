@@ -177,7 +177,7 @@ class K<C> {
 public:
 	int magic_num;
 	<C> *q_self;
-	knh_RawPtr_t *self;
+	kRawPtr *self;
 	Dummy<C> *dummy;
 <CR>
 """
@@ -187,12 +187,12 @@ class K<C> : public <C> {
 <UNUSE>	Q_OBJECT;
 public:
 	int magic_num;
-	knh_RawPtr_t *self;
+	kRawPtr *self;
 	Dummy<C> *dummy;
 <CR><DR>""";
 	}
 	
-	kqclass += "\tvoid setSelf(knh_RawPtr_t *ptr);\n";
+	kqclass += "\tvoid setSelf(kRawPtr *ptr);\n";
 	if (bi.have_event_method_flag) kqclass += "\tbool event(QEvent *event);\n";
 	if (bi.have_scene_event_method_flag) kqclass += "\tbool sceneEvent(QEvent *event);\n";
 	if (bi.inherits_qgraphicsitem_flag) kqclass += "\tvoid paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);\n";
@@ -288,7 +288,7 @@ KMETHOD <C>_addEvent(CTX ctx, ksfp_t *sfp _RIX)
 	(void)ctx;
 	<T>qp = RawPtr_to(<T>, sfp[0]);
 	const char *event_name = String_to(const char *, sfp[1]);
-	knh_Func_t *callback_func = sfp[2].fo;
+	kFunc *callback_func = sfp[2].fo;
 	if (qp != NULL) {
 //		if (qp->event_map->find(event_name) == qp->event_map->end()) {
 //			fprintf(stderr, \"WARNING:[<C>]unknown event name [%s]\\n\", event_name);
@@ -311,7 +311,7 @@ KMETHOD <C>_signalConnect(CTX ctx, ksfp_t *sfp _RIX)
 	(void)ctx;
 	<T>qp = RawPtr_to(<T>, sfp[0]);
 	const char *signal_name = String_to(const char *, sfp[1]);
-	knh_Func_t *callback_func = sfp[2].fo;
+	kFunc *callback_func = sfp[2].fo;
 	if (qp != NULL) {
 //		if (qp->slot_map->find(signal_name) == qp->slot_map->end()) {
 //			fprintf(stderr, \"WARNING:[<C>]unknown signal name [%s]\\n\", signal_name);
@@ -331,7 +331,7 @@ KMETHOD <C>_signalConnect(CTX ctx, ksfp_t *sfp _RIX)
 	String gc += "";
     gc +="""
 
-static void <C>_free(CTX ctx, knh_RawPtr_t *p)
+static void <C>_free(CTX ctx, kRawPtr *p)
 {
 	(void)ctx;
 	if (!exec_flag) return;
@@ -349,7 +349,7 @@ static void <C>_free(CTX ctx, knh_RawPtr_t *p)
 """;
 
 	gc += """
-static void <C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+static void <C>_reftrace(CTX ctx, kRawPtr *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 //		K<C> *qp = (K<C> *)p->rawptr;
@@ -374,7 +374,7 @@ static void <C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	String setSelf = "";
 	setSelf += """
 
-void K<C>::setSelf(knh_RawPtr_t *ptr)
+void K<C>::setSelf(kRawPtr *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);
@@ -468,31 +468,31 @@ String genDummyHeaderSource(BindInfo bi, QMethod[] mtds, QMethod[] sigs, BindInf
 class Dummy<C><INHERITS> {
 <UNUSE_QO>	Q_OBJECT;
 public:
-	knh_RawPtr_t *self;
-	std::map<std::string, knh_Func_t *> *event_map;
-	std::map<std::string, knh_Func_t *> *slot_map;
+	kRawPtr *self;
+	std::map<std::string, kFunc *> *event_map;
+	std::map<std::string, kFunc *> *slot_map;
 """;
 	foreach (QMethod mtd in mtds) {
-		class_definition += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
+		class_definition += "\tkFunc *" + mtd.mtd_cname + "_func;\n"
 	}
 	foreach (QMethod mtd in sigs) {
-		class_definition += "\tknh_Func_t *" + mtd.mtd_cname + "_func;\n"
+		class_definition += "\tkFunc *" + mtd.mtd_cname + "_func;\n"
 	}
 	if (bi.inherits_qgraphicsitem_flag) {
-		class_definition += "\tknh_Func_t *paint_func;\n";
+		class_definition += "\tkFunc *paint_func;\n";
 	}
 	foreach (QMethod mtd in mtds) {
-		class_definition += "\tknh_RawPtr_t *" + mtd.mtd_name + "Ptr;\n";
+		class_definition += "\tkRawPtr *" + mtd.mtd_name + "Ptr;\n";
 	}
 
 	class_definition += """
 	Dummy<C>();
 <UNUSE_DR>	virtual ~Dummy<C>();
-	void setSelf(knh_RawPtr_t *ptr);
+	void setSelf(kRawPtr *ptr);
 	bool eventDispatcher(QEvent *event);
-	bool addEvent(knh_Func_t *callback_func, std::string str);
-	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	bool addEvent(kFunc *callback_func, std::string str);
+	bool signalConnect(kFunc *callback_func, std::string str);
+	kObject** reftrace(CTX ctx, kRawPtr *p FTRARG);
 <CONNECTION><EVENT><SLOTS>};
 """;
 
@@ -587,16 +587,16 @@ Dummy<C>::Dummy<C>()
 	if (bi.inherits_qgraphicsitem_flag) {
 		constructor += "\tpaint_func = NULL;\n";
 	}
-	constructor += "\tevent_map = new map<string, knh_Func_t *>();\n";
-	constructor += "\tslot_map = new map<string, knh_Func_t *>();\n";
+	constructor += "\tevent_map = new map<string, kFunc *>();\n";
+	constructor += "\tslot_map = new map<string, kFunc *>();\n";
 	foreach (QMethod mtd in mtds) {
-		constructor += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
+		constructor += "\tevent_map->insert(map<string, kFunc *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
 	}
 	if (bi.inherits_qgraphicsitem_flag) {
-		constructor += "\tevent_map->insert(map<string, knh_Func_t *>::value_type(\"paint\", NULL));\n";
+		constructor += "\tevent_map->insert(map<string, kFunc *>::value_type(\"paint\", NULL));\n";
 	}
 	foreach (QMethod mtd in sigs) {
-		constructor += "\tslot_map->insert(map<string, knh_Func_t *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
+		constructor += "\tslot_map->insert(map<string, kFunc *>::value_type(\"" + mtd.event_type_name + "\", NULL));\n";
 	}
 	constructor += "}\n";
 
@@ -620,7 +620,7 @@ Dummy<C>::~Dummy<C>()
 	String setSelf = "";
 	setSelf += """
 
-void Dummy<C>::setSelf(knh_RawPtr_t *ptr)
+void Dummy<C>::setSelf(kRawPtr *ptr)
 {
 	Dummy<C>::self = ptr;
 """;
@@ -784,9 +784,9 @@ bool Dummy<C>::eventDispatcher(QEvent *event)
 //===================== Generate dummy::addEvent =========================//
 	String addEvent = "";
 	addEvent += """
-bool Dummy<C>::addEvent(knh_Func_t *callback_func, string str)
+bool Dummy<C>::addEvent(kFunc *callback_func, string str)
 {
-	std::map<string, knh_Func_t*>::iterator itr;// = Dummy<C>::event_map->bigin();
+	std::map<string, kFunc*>::iterator itr;// = Dummy<C>::event_map->bigin();
 	if ((itr = Dummy<C>::event_map->find(str)) == Dummy<C>::event_map->end()) {
 		bool ret = false;
 """;
@@ -811,9 +811,9 @@ bool Dummy<C>::addEvent(knh_Func_t *callback_func, string str)
 //=================== dummy::signalConnect  ==================//
 	String signalConnect = "";
 	signalConnect += """
-bool Dummy<C>::signalConnect(knh_Func_t *callback_func, string str)
+bool Dummy<C>::signalConnect(kFunc *callback_func, string str)
 {
-	std::map<string, knh_Func_t*>::iterator itr;// = Dummy<C>::slot_map->bigin();
+	std::map<string, kFunc*>::iterator itr;// = Dummy<C>::slot_map->bigin();
 	if ((itr = Dummy<C>::slot_map->find(str)) == Dummy<C>::slot_map->end()) {
 		bool ret = false;
 """;
@@ -837,7 +837,7 @@ bool Dummy<C>::signalConnect(knh_Func_t *callback_func, string str)
 
 	String reftrace = "";
 	reftrace += """
-knh_Object_t** Dummy<C>::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+kObject** Dummy<C>::reftrace(CTX ctx, kRawPtr *p FTRARG)
 {
 <UNUSE>	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "Dummy<C>::reftrace p->rawptr=[%p]\\n", p->rawptr);

@@ -61,11 +61,11 @@ static void knh_freeArgs(Args_t *args)
 	oauth_free_array(&args->argc, &args->argv);
 }
 
-static knh_Map_t *knh_parseReply(CTX ctx, char *reply)
+static kMap *knh_parseReply(CTX ctx, char *reply)
 {
 	int rc;
 	char **rv = NULL;
-	knh_Map_t *rmap = NULL;
+	kMap *rmap = NULL;
 	DBG_P("HTTP-reply: %s", reply);
 	rc = oauth_split_url_parameters(reply, &rv);
 	knh_qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
@@ -91,17 +91,17 @@ static knh_Map_t *knh_parseReply(CTX ctx, char *reply)
 
 static void knh_getToken(ksfp_t *sfp, AccessToken_t *token)
 {
-	knh_Object_t *consumer = sfp[0].ox->fields[0];
-	knh_Object_t *rtoken = sfp[0].ox->fields[1];
+	kObject *consumer = sfp[0].ox->fields[0];
+	kObject *rtoken = sfp[0].ox->fields[1];
 	if (IS_NOTNULL(consumer)) {
-		knh_ObjectField_t *of = (knh_ObjectField_t *)consumer;
-		token->key = S_totext((knh_String_t*)of->fields[0]);
-		token->secret = S_totext((knh_String_t*)of->fields[1]);
+		kObject *of = (kObject *)consumer;
+		token->key = S_totext((kString*)of->fields[0]);
+		token->secret = S_totext((kString*)of->fields[1]);
 	}
 	if (IS_NOTNULL(rtoken)) {
-		knh_ObjectField_t *of = (knh_ObjectField_t *)rtoken;
-		token->rtoken = S_totext((knh_String_t *)of->fields[0]);
-		token->rtoken_secret = S_totext((knh_String_t *)of->fields[1]);
+		kObject *of = (kObject *)rtoken;
+		token->rtoken = S_totext((kString *)of->fields[0]);
+		token->rtoken_secret = S_totext((kString *)of->fields[1]);
 	}
 	DBG_P("consumer_key: %s, consumer_secret: %s", token->key, token->secret);
 	DBG_P("request_token: %s, request_token_secret: %s", token->rtoken, token->rtoken_secret);
@@ -146,11 +146,11 @@ static char *knh_request(Args_t *args, const char *method, AccessToken_t *token)
 	return reply;
 }
 
-static void knh_setArgs(CTX ctx, Args_t *args, knh_Map_t *m)
+static void knh_setArgs(CTX ctx, Args_t *args, kMap *m)
 {
-	knh_DictMap_t *dmap = knh_toDictMap(ctx, m, 0);
+	kDictMap *dmap = knh_toDictMap(ctx, m, 0);
 	ksfp_t *lsfp = ctx->esp;
-	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
+	knitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	char buf[256] = {0};
 	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
@@ -168,7 +168,7 @@ static void knh_setArgs(CTX ctx, Args_t *args, knh_Map_t *m)
 					key, N_tobool(o) ? "true" : "false");
 			break;
 		case CLASS_String:
-			knh_snprintf(buf, sizeof(buf), "%s=%s", key, S_totext((knh_String_t *)o));
+			knh_snprintf(buf, sizeof(buf), "%s=%s", key, S_totext((kString *)o));
 			break;
 		default:
 			TODO();
@@ -191,7 +191,7 @@ static void knh_setArgs(CTX ctx, Args_t *args, knh_Map_t *m)
 //## @Native Map<String,String> Client_request(String url, String method, Map params);
 KMETHOD Client_request(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Map_t *rmap = NULL;
+	kMap *rmap = NULL;
 	AccessToken_t token = {NULL, NULL, NULL, NULL};
 	Args_t args = {0, NULL};
 	args.argc = oauth_split_url_parameters(String_to(const char *, sfp[1]), &args.argv);

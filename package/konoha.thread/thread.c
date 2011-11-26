@@ -41,27 +41,27 @@ extern "C" {
 // [private functions]
 
 typedef struct {
-	knh_context_t *ctx;
+	kcontext_t *ctx;
 	kthread_t thread;
-	knh_Func_t *func;
-	knh_Array_t *args;
+	kFunc *func;
+	kArray *args;
 } Thread_t;
 
 static void *spawn_start(void *v)
 {
 	Thread_t *t = (Thread_t *)v;
-	knh_context_t *ctx = t->ctx;
+	kcontext_t *ctx = t->ctx;
 
 	KONOHA_BEGIN(ctx);
 	// set ExceptionHandler
-	//knh_ExceptionHandler_t* hdr = new_(ExceptionHandler);
+	//kExceptionHandler* hdr = new_(ExceptionHandler);
 	//ctx->esp[0].hdr = hdr;
 	//ctx->esp++;
 	// set args
 	ksfp_t *sfp = ctx->esp;
 	int i, argc = knh_Array_size(t->args);
 	for(i=0; i<argc; i++) {
-		knh_Object_t *o = knh_Array_n(t->args, i);
+		kObject *o = knh_Array_n(t->args, i);
 		switch(O_cid(o)) {
 		case CLASS_Int:
 			sfp[K_CALLDELTA + i + 1].ivalue = N_toint(o);
@@ -82,12 +82,12 @@ static void *spawn_start(void *v)
 	//if(jump == 0) {
 	//	hdr->espidx = (ctx->esp - ctx->stack);
 	//	hdr->parentNC = ctx->ehdrNC;
-	//	((knh_context_t*)ctx)->ehdrNC = hdr;
+	//	((kcontext_t*)ctx)->ehdrNC = hdr;
 	//	knh_Func_invoke(ctx, t->func, sfp, argc);
 	//} else {
 	//	/* catch exception */
 	//	hdr = ctx->ehdrNC;
-	//	((knh_context_t*)ctx)->ehdrNC = hdr->parentNC;
+	//	((kcontext_t*)ctx)->ehdrNC = hdr->parentNC;
 	//}
 	//kthread_detach(ctx, t->thread);
 	//KNH_FREE(ctx, t, sizeof(Thread_t));
@@ -105,12 +105,12 @@ static void *spawn_start(void *v)
 	return NULL;
 }
 
-static void Mutex_init(CTX ctx, knh_RawPtr_t *po)
+static void Mutex_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void Mutex_free(CTX ctx, knh_RawPtr_t *po)
+static void Mutex_free(CTX ctx, kRawPtr *po)
 {
 	if(po->rawptr != NULL) {
 		knh_mutex_free(ctx, (kmutex_t *)po->rawptr);
@@ -124,11 +124,11 @@ static void Mutex_free(CTX ctx, knh_RawPtr_t *po)
 //## @Native Thread Thread.spawn(dynamic f, dynamic[] args)
 KMETHOD Thread_spawn(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Func_t *f = sfp[1].fo;
-	knh_Array_t *args = sfp[2].a;
-	if(IS_NOTNULL(((knh_Object_t *)f))) {
+	kFunc *f = sfp[1].fo;
+	kArray *args = sfp[2].a;
+	if(IS_NOTNULL(((kObject *)f))) {
 		Thread_t *t = (Thread_t *)KNH_MALLOC(ctx, sizeof(Thread_t));
-		knh_context_t *newCtx = new_ThreadContext(WCTX(ctx));
+		kcontext_t *newCtx = new_ThreadContext(WCTX(ctx));
 		t->ctx = newCtx;
 		t->func = f;
 		t->args = args;
@@ -169,7 +169,7 @@ KMETHOD Object_synchronized(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native Mutex Mutex.new()
 KMETHOD Mutex_new(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_RawPtr_t *p = sfp[0].p;
+	kRawPtr *p = sfp[0].p;
 	p->rawptr = (void *)knh_mutex_malloc(ctx);
 	RETURN_(p);
 }
@@ -206,12 +206,12 @@ KMETHOD Mutex_unlock(CTX ctx, ksfp_t *sfp _RIX)
 /* ======================================================================== */
 // [DEFAPI]
 
-DEFAPI(void) defThread(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defThread(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Thread";
 }
 
-DEFAPI(void) defMutex(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defMutex(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Mutex";
 	cdef->init = Mutex_init;

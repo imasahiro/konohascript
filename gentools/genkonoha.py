@@ -136,7 +136,7 @@ class Class :
 \tDATA_CLASS0, CLASS_%s, _DATA("konoha.%s"), CFLAG_%s, %s, %s, %s + %s /*%s*/,''' % (self.cname, self.name, self.cname, CLASS_(self.base), CLASS_(self.parent), self.method_size, self.formatter_size, self.mapper_size)
         return fmt
 
-# class Class Object knh_Object_t
+# class Class Object kObject
 # class Int[] IArray Array knh_IArray_t
 
 def parse_Class(meta, tokens, data):
@@ -362,20 +362,20 @@ class Method:
         p = (type, fn)
         self.mparams.append(p)
 
-    def ParamArrayKey(self):
+    def ParamKey(self):
         args = self.rtype.replace('!', '')
         for p in self.mparams: args += '.%s.%s' % (p[0].replace('!',''), p[1])
         if self.meta.has_key('@VARGs'): args += "..."
         return args
 
-    def ParamArrayData2(self):
+    def ParamData2(self):
         args = TYPE_(self.rtype)
         for p in self.mparams: args += ', %s, %s' % (TYPE_(p[0]), FN_(p[1]))
         fmt = '''
 \t{%d, %d, %s},''' % (self.mf, len(self.mparams), args)
         return fmt
 
-    def ParamArrayData(self):
+    def ParamData(self):
         args = ''
         for p in self.mparams: args += ', %s, %s' % (TYPE_(p[0]), FN_(p[1]))
         rsize = 0
@@ -384,7 +384,7 @@ class Method:
             args += ', %s, FN_return' % (TYPE_(self.rtype))
         if args == '': args = ', '
         flag = '0'
-        flag = addflag(flag, self.meta, 'ParamArray', '@VARGs')
+        flag = addflag(flag, self.meta, 'Param', '@VARGs')
         fmt = '''
 \tDATA_PARAM/*%d*/, %s, %d, %d%s,''' % (self.mf, flag, len(self.mparams), rsize, args)
         return fmt
@@ -437,7 +437,7 @@ def parse_Method(meta, tokens, data):
         mtd.add(type, fn)
         c += 2
     data.add_Method(mtd)
-    key = mtd.ParamArrayKey()
+    key = mtd.ParamKey()
     if not data.METHODFIELD.has_key(key):
         mf = len(data.METHODFIELD_LIST) + 1
         data.METHODFIELD_LIST.append(mtd)
@@ -910,8 +910,8 @@ def write_Data(f, data):
     #
     dlist = ['\n\tDATA_PARAM/*0*/, 0, 0, 0, ']
     for mtd in data.METHODFIELD_LIST:
-        dlist.append(mtd.ParamArrayData())
-    write_data(f, 'knh_data_t', 'ParamArrayData0', dlist, '0')
+        dlist.append(mtd.ParamData())
+    write_data(f, 'knh_data_t', 'ParamData0', dlist, '0')
     write_define(f, 'K_PARAM0_SIZE', '%d' % len(dlist))
     #
     dlist = []

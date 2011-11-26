@@ -168,7 +168,7 @@ typedef struct kthreadcc_t {
 //	KNH_SETv(ctx, lsfp[0].o, new_ExceptionHandler(ctx));
 //	KNH_TRY(ctx, L_CATCH, lsfp, 0);
 //	{
-//		knh_Method_t *mtd = ta.sfp[0].mtd;
+//		kMethod *mtd = ta.sfp[0].mtd;
 //		DBG_ASSERT(IS_Method(mtd));
 //		KNH_SETv(ctx, lsfp[1].o, mtd);
 //		KNH_SETv(ctx, lsfp[2].o, ta.sfp[1].o);

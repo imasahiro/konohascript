@@ -48,7 +48,7 @@ extern "C" {
 //	return (cid == CLASS_StringEncoder || cid == CLASS_StringDecoder);
 //}
 //
-//static kbool_t CHARSET_exists(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
+//static kbool_t CHARSET_exists(CTX ctx, kNameSpace *ns, kbytes_t path)
 //{
 //	kbytes_t t = knh_bytes_next(path, ':');
 //	knh_iconv_t ic = ctx->spi->iconv_openSPI(t.text, K_ENCODING);
@@ -62,14 +62,14 @@ extern "C" {
 //	return 0;
 //}
 //
-//static knh_Object_t* CHARSET_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, kclass_t cid, knh_String_t *s)
+//static kObject* CHARSET_newObjectNULL(CTX ctx, kNameSpace *ns, kclass_t cid, kString *s)
 //{
 //	kbytes_t t = knh_bytes_next(S_tobytes(s), ':');
 //	if(cid == CLASS_StringEncoder) {
-//		return (knh_Object_t*)new_StringEncoderNULL(ctx, t);
+//		return (kObject*)new_StringEncoderNULL(ctx, t);
 //	}
 //	if(cid == CLASS_StringDecoder) {
-//		return (knh_Object_t*)new_StringDecoderNULL(ctx, t);
+//		return (kObject*)new_StringDecoderNULL(ctx, t);
 //	}
 //	return NULL;
 //}
@@ -83,7 +83,7 @@ extern "C" {
 //	return (cid == CLASS_Bytes || cid == CLASS_InputStream);
 //}
 //
-//static kbool_t PACKAGE_exists(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
+//static kbool_t PACKAGE_exists(CTX ctx, kNameSpace *ns, kbytes_t path)
 //{
 //	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //	kbytes_t bpath = knh_bytes_next(path, ':');
@@ -93,13 +93,13 @@ extern "C" {
 //	return res;
 //}
 //
-//static knh_Object_t* PACKAGE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, kclass_t cid, knh_String_t *s)
+//static kObject* PACKAGE_newObjectNULL(CTX ctx, kNameSpace *ns, kclass_t cid, kString *s)
 //{
-//	knh_Object_t *res = NULL;
+//	kObject *res = NULL;
 //	if(cid == CLASS_Bytes) {
-//		knh_Bytes_t* ba = new_Bytes(ctx, NULL, 256);
+//		kBytes* ba = new_Bytes(ctx, NULL, 256);
 //		if(!knh_buff_addPackagePath(ctx, ba, 0, S_tobytes(s))) {
-//			knh_Object_toNULL(ctx, ba);
+//			kObjectoNULL(ctx, ba);
 //		}
 //		return UPCAST(ba);
 //	}
@@ -107,7 +107,7 @@ extern "C" {
 //		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 //		kbytes_t bpath = knh_bytes_next(S_tobytes(s), ':');
 //		knh_buff_addPackagePath(ctx, cwb->ba, cwb->pos, bpath);
-//		res = (knh_Object_t*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
+//		res = (kObject*)knh_Bytes_openInputStream(ctx, cwb->ba, cwb->pos, s);
 //		CWB_close(cwb);
 //	}
 //	return res;
@@ -119,7 +119,7 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-static kbool_t tolowercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len, knh_Bytes_t *tobuf)
+static kbool_t tolowercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len, kBytes *tobuf)
 {
 	size_t i, s = BA_size(tobuf);
 	knh_Bytes_write2(ctx, tobuf, text, len);
@@ -133,7 +133,7 @@ static kbool_t tolowercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len
 	return 1;
 }
 
-static kbool_t touppercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len, knh_Bytes_t *tobuf)
+static kbool_t touppercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len, kBytes *tobuf)
 {
 	size_t i, s = BA_size(tobuf);
 	knh_Bytes_write2(ctx, tobuf, text, len);
@@ -157,7 +157,7 @@ static const knh_ConverterDPI_t TO_upper = {
 	NULL, touppercase, touppercase, touppercase, touppercase, NULL, NULL,
 };
 
-void knh_loadSystemDriver(CTX ctx, knh_NameSpace_t *ns)
+void knh_loadSystemDriver(CTX ctx, kNameSpace *ns)
 {
 	const knh_LoaderAPI_t *api = knh_getLoaderAPI();
 	knh_NameSpace_setLinkClass(ctx, ns, STEXT("link"), ClassTBL(CLASS_Tdynamic));

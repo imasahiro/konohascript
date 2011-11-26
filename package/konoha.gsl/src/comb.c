@@ -40,12 +40,12 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-static void GslComb_init(CTX ctx, knh_RawPtr_t *po)
+static void GslComb_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void GslComb_free(CTX ctx, knh_RawPtr_t *po)
+static void GslComb_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		gsl_combination_free((gsl_combination *)po->rawptr);
@@ -53,7 +53,7 @@ static void GslComb_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defGslComb(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defGslComb(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "GslComb";
 	cdef->init = GslComb_init;
@@ -65,7 +65,7 @@ KMETHOD GslComb_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t n = Int_to(size_t, sfp[1]);
 	size_t k = Int_to(size_t, sfp[2]);
-	knh_RawPtr_t *p = sfp[0].p;
+	kRawPtr *p = sfp[0].p;
 	p->rawptr = gsl_combination_calloc(n, k);
 	RETURN_(p);
 }
@@ -95,7 +95,7 @@ KMETHOD GslComb_memcpy(CTX ctx, ksfp_t *sfp _RIX)
 	gsl_combination *dest = gsl_combination_alloc(n, k);
 	gsl_combination_memcpy(dest, c);
 	if (dest != NULL) {
-		knh_RawPtr_t *ret = new_ReturnRawPtr(ctx, sfp, dest);
+		kRawPtr *ret = new_ReturnRawPtr(ctx, sfp, dest);
 		RETURN_(ret);
 	} else {
 		RETURN_(KNH_NULL);
@@ -133,7 +133,7 @@ KMETHOD GslComb_getData(CTX ctx, ksfp_t *sfp _RIX)
 	gsl_combination *c = RawPtr_to(gsl_combination *, sfp[0]);
 	size_t *data = gsl_combination_data(c);
 	size_t k = gsl_combination_k(c);
-	knh_Array_t *res = new_Array(ctx, CLASS_Int, k);
+	kArray *res = new_Array(ctx, CLASS_Int, k);
 	BEGIN_LOCAL(ctx, lsfp, k);
 	int i;
 	for (i = 0; i < k; i++) {
@@ -168,7 +168,7 @@ KMETHOD GslComb_next(CTX ctx, ksfp_t *sfp _RIX)
 
 	int flag = gsl_combination_next(dist);
 	if (flag == GSL_SUCCESS) {
-		knh_RawPtr_t *ret = new_ReturnRawPtr(ctx, sfp, dist);
+		kRawPtr *ret = new_ReturnRawPtr(ctx, sfp, dist);
 		RETURN_(ret);
 	} else {
 		gsl_combination_free(dist);
@@ -187,7 +187,7 @@ KMETHOD GslComb_prev(CTX ctx, ksfp_t *sfp _RIX)
 
 	int flag = gsl_combination_prev(dist);
 	if (flag == GSL_SUCCESS) {
-		knh_RawPtr_t *ret = new_ReturnRawPtr(ctx, sfp, dist);
+		kRawPtr *ret = new_ReturnRawPtr(ctx, sfp, dist);
 		RETURN_(ret);
 	} else {
 		gsl_combination_free(dist);

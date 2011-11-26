@@ -5,22 +5,22 @@
 
 static KMETHOD _String_isASCII(CTX ctx, ksfp_t *sfp _RIX)
 {
-	RETURNb_(String_isASCII((knh_String_t*)sfp[0].o));
+	RETURNb_(String_isASCII((kString*)sfp[0].o));
 }
 
 static KMETHOD _String_isPooled(CTX ctx, ksfp_t *sfp _RIX)
 {
-	RETURNb_(String_isPooled((knh_String_t*)sfp[0].o));
+	RETURNb_(String_isPooled((kString*)sfp[0].o));
 }
 
 static KMETHOD _OutputStream_isAutoFlush(CTX ctx, ksfp_t *sfp _RIX)
 {
-	RETURNb_(OutputStream_isAutoFlush((knh_OutputStream_t*)sfp[0].o));
+	RETURNb_(OutputStream_isAutoFlush((kOutputStream*)sfp[0].o));
 }
 
 static KMETHOD _OutputStream_setAutoFlush(CTX ctx, ksfp_t *sfp _RIX)
 {
-	OutputStream_setAutoFlush((knh_OutputStream_t*)sfp[0].o, sfp[1].bvalue);
+	OutputStream_setAutoFlush((kOutputStream*)sfp[0].o, sfp[1].bvalue);
 	RETURNb_(sfp[1].bvalue);
 }
 
@@ -73,7 +73,7 @@ static knh_data_t StructData0[] = {
 	DATA_STRUCT0, CLASS_Array, _DATA(&ArrayDef), CFLAG_Array,
 	DATA_STRUCT0, CLASS_Map, _DATA(&MapDef), CFLAG_Map,
 	DATA_STRUCT0, CLASS_Class, _DATA(&ClassDef), CFLAG_Class,
-	DATA_STRUCT0, CLASS_ParamArray, _DATA(&ParamArrayDef), CFLAG_ParamArray,
+	DATA_STRUCT0, CLASS_Param, _DATA(&ParamDef), CFLAG_Param,
 	DATA_STRUCT0, CLASS_Method, _DATA(&MethodDef), CFLAG_Method,
 	DATA_STRUCT0, CLASS_TypeMap, _DATA(&TypeMapDef), CFLAG_TypeMap,
 	DATA_STRUCT0, CLASS_Func, _DATA(&FuncDef), CFLAG_Func,
@@ -130,7 +130,7 @@ static knh_data_t ClassData0[] = {
 	DATA_CLASS0, CLASS_Array, _DATA("konoha.Array"), CFLAG_Array, CLASS_Array, CLASS_Object, 28 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Map, _DATA("konoha.Map"), CFLAG_Map, CLASS_Map, CLASS_Object, 9 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Class, _DATA("konoha.Class"), CFLAG_Class, CLASS_Class, CLASS_Object, 0 + 0 /*0*/,
-	DATA_CLASS0, CLASS_ParamArray, _DATA("konoha.ParamArray"), CFLAG_ParamArray, CLASS_ParamArray, CLASS_Object, 0 + 0 /*0*/,
+	DATA_CLASS0, CLASS_Param, _DATA("konoha.Param"), CFLAG_Param, CLASS_Param, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Method, _DATA("konoha.Method"), CFLAG_Method, CLASS_Method, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_TypeMap, _DATA("konoha.TypeMap"), CFLAG_TypeMap, CLASS_TypeMap, CLASS_Object, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Func, _DATA("konoha.Func"), CFLAG_Func, CLASS_Func, CLASS_Object, 2 + 0 /*0*/,
@@ -322,10 +322,10 @@ static knh_FieldNameData0_t FieldNameData0[] = {
 	{NULL}
 };
 
-static knh_data_t ParamArrayData0[] = {
+static knh_data_t ParamData0[] = {
 	DATA_PARAM/*0*/, 0, 0, 0, 
 	DATA_PARAM/*1*/, 0, 0, 1, TYPE_This, FN_return,
-	DATA_PARAM/*2*/, FLAG_ParamArray_VARGs, 1, 1, TYPE_dynamic, FN_value, TYPE_This, FN_return,
+	DATA_PARAM/*2*/, FLAG_Param_VARGs, 1, 1, TYPE_dynamic, FN_value, TYPE_This, FN_return,
 	DATA_PARAM/*3*/, 0, 0, 1, TYPE_Class, FN_return,
 	DATA_PARAM/*4*/, 0, 0, 1, TYPE_Int, FN_return,
 	DATA_PARAM/*5*/, 0, 0, 1, TYPE_Boolean, FN_return,
@@ -346,7 +346,7 @@ static knh_data_t ParamArrayData0[] = {
 	DATA_PARAM/*20*/, 0, 3, 1, TYPE_String, FN_path, TYPE_NameSpace, FN_, TYPE_Class, FN_, TYPE_dynamic, FN_return,
 	DATA_PARAM/*21*/, 0, 1, 1, TYPE_NameSpace, FN_, TYPE_Boolean, FN_return,
 	DATA_PARAM/*22*/, 0, 1, 1, TYPE_String, FN_s, TYPE_Boolean, FN_return,
-	DATA_PARAM/*23*/, FLAG_ParamArray_VARGs, 1, 1, TYPE_Object, FN_value, TYPE_String, FN_return,
+	DATA_PARAM/*23*/, FLAG_Param_VARGs, 1, 1, TYPE_Object, FN_value, TYPE_String, FN_return,
 	DATA_PARAM/*24*/, 0, 1, 1, TYPE_dynamic, FN_value, TYPE_String, FN_return,
 	DATA_PARAM/*25*/, 0, 1, 1, TYPE_String, FN_s, TYPE_Int, FN_return,
 	DATA_PARAM/*26*/, 0, 1, 1, TYPE_Regex, FN_re, TYPE_Int, FN_return,
@@ -365,8 +365,8 @@ static knh_data_t ParamArrayData0[] = {
 	DATA_PARAM/*39*/, 0, 0, 1, TYPE_StringITR, FN_return,
 	DATA_PARAM/*40*/, 0, 2, 1, TYPE_T1, FN_start, TYPE_T1, FN_end, TYPE_This, FN_return,
 	DATA_PARAM/*41*/, 0, 1, 1, TYPE_Int, FN_initCapacity, TYPE_This, FN_return,
-	DATA_PARAM/*42*/, FLAG_ParamArray_VARGs, 1, 1, TYPE_Int, FN_size, TYPE_This, FN_return,
-	DATA_PARAM/*43*/, FLAG_ParamArray_VARGs, 1, 1, TYPE_T1, FN_value, TYPE_This, FN_return,
+	DATA_PARAM/*42*/, FLAG_Param_VARGs, 1, 1, TYPE_Int, FN_size, TYPE_This, FN_return,
+	DATA_PARAM/*43*/, FLAG_Param_VARGs, 1, 1, TYPE_T1, FN_value, TYPE_This, FN_return,
 	DATA_PARAM/*44*/, 0, 2, 1, TYPE_Object, FN_value, TYPE_Method, FN_mtd, TYPE_This, FN_return,
 	DATA_PARAM/*45*/, 0, 1, 1, TYPE_Int, FN_n, TYPE_T1, FN_return,
 	DATA_PARAM/*46*/, 0, 2, 1, TYPE_Int, FN_x, TYPE_Int, FN_y, TYPE_T1, FN_return,
@@ -377,7 +377,7 @@ static knh_data_t ParamArrayData0[] = {
 	DATA_PARAM/*51*/, 0, 4, 1, TYPE_Int, FN_x, TYPE_Int, FN_y, TYPE_Int, FN_z, TYPE_T1, FN_v, TYPE_T1, FN_return,
 	DATA_PARAM/*52*/, 0, 5, 1, TYPE_Int, FN_x, TYPE_Int, FN_y, TYPE_Int, FN_z, TYPE_Int, FN_w, TYPE_T1, FN_v, TYPE_T1, FN_return,
 	DATA_PARAM/*53*/, 0, 1, 1, TYPE_T1, FN_v, TYPE_T1, FN_return,
-	DATA_PARAM/*54*/, FLAG_ParamArray_VARGs, 1, 0, TYPE_T1, FN_value,
+	DATA_PARAM/*54*/, FLAG_Param_VARGs, 1, 0, TYPE_T1, FN_value,
 	DATA_PARAM/*55*/, 0, 2, 0, TYPE_Int, FN_n, TYPE_T1, FN_value,
 	DATA_PARAM/*56*/, 0, 1, 0, TYPE_Int, FN_n,
 	DATA_PARAM/*57*/, 0, 0, 1, TYPE_T1, FN_return,
@@ -405,7 +405,7 @@ static knh_data_t ParamArrayData0[] = {
 	DATA_PARAM/*79*/, 0, 1, 1, TYPE_Float, FN_v, TYPE_Float, FN_return,
 	DATA_PARAM/*80*/, 0, 1, 1, TYPE_Float, FN_n, TYPE_Float, FN_return,
 	DATA_PARAM/*81*/, 0, 1, 1, TYPE_String, FN_s, TYPE_String, FN_return,
-	DATA_PARAM/*82*/, FLAG_ParamArray_VARGs, 1, 1, TYPE_Int, FN_n, TYPE_Int, FN_return,
+	DATA_PARAM/*82*/, FLAG_Param_VARGs, 1, 1, TYPE_Int, FN_n, TYPE_Int, FN_return,
 	DATA_PARAM/*83*/, 0, 2, 1, TYPE_Int, FN_n, TYPE_Int, FN_c, TYPE_Int, FN_return,
 	DATA_PARAM/*84*/, 0, 1, 0, TYPE_Int, FN_c,
 	DATA_PARAM/*85*/, 0, 1, 1, TYPE_Int, FN_n, TYPE_String, FN_return,
@@ -416,9 +416,9 @@ static knh_data_t ParamArrayData0[] = {
 	DATA_PARAM/*90*/, 0, 3, 1, TYPE_Path, FN_urn, TYPE_String, FN_mode, TYPE_Map, FN_, TYPE_InputStream, FN_return,
 	DATA_PARAM/*91*/, 0, 3, 1, TYPE_Path, FN_path, TYPE_String, FN_mode, TYPE_Map, FN_, TYPE_OutputStream, FN_return,
 	DATA_PARAM/*92*/, 0, 3, 0, TYPE_Bytes, FN_buf, TYPE_Int, FN_offset, TYPE_Int, FN_length,
-	DATA_PARAM/*93*/, FLAG_ParamArray_VARGs, 1, 0, TYPE_Object, FN_value,
-	DATA_PARAM/*94*/, FLAG_ParamArray_VARGs, 1, 0, TYPE_dynamic, FN_value,
-	DATA_PARAM/*95*/, FLAG_ParamArray_VARGs, 1, 0, TYPE_String, FN_s,
+	DATA_PARAM/*93*/, FLAG_Param_VARGs, 1, 0, TYPE_Object, FN_value,
+	DATA_PARAM/*94*/, FLAG_Param_VARGs, 1, 0, TYPE_dynamic, FN_value,
+	DATA_PARAM/*95*/, FLAG_Param_VARGs, 1, 0, TYPE_String, FN_s,
 	DATA_PARAM/*96*/, 0, 1, 1, TYPE_String, FN_fmt, TYPE_String, FN_return,
 	DATA_PARAM/*97*/, 0, 3, 0, TYPE_String, FN_name, TYPE_NameSpace, FN_, TYPE_Map, FN_,
 	DATA_PARAM/*98*/, 0, 2, 1, TYPE_String, FN_path, TYPE_NameSpace, FN_, TYPE_View, FN_return,

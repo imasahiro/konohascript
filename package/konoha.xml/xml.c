@@ -37,12 +37,12 @@ extern "C" {
 ///* ------------------------------------------------------------------------ */
 ///* [XmlDoc] */
 //
-//static void XmlDoc_init(CTX ctx, knh_RawPtr_t *po)
+//static void XmlDoc_init(CTX ctx, kRawPtr *po)
 //{
 //	po->rawptr = NULL;
 //}
 //
-//static void XmlDoc_free(CTX ctx, knh_RawPtr_t *po)
+//static void XmlDoc_free(CTX ctx, kRawPtr *po)
 //{
 //	if (po->rawptr != NULL) {
 //		xmlFreeDoc((xmlDocPtr)po->rawptr);
@@ -50,12 +50,12 @@ extern "C" {
 //	}
 //}
 //
-//static void XmlDoc_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+//static void XmlDoc_checkout(CTX ctx, kRawPtr *po, int isFailed)
 //{
 //	XmlDoc_free(ctx, po);
 //}
 //
-//DEFAPI(void) defXmlDoc(CTX ctx, kclass_t cid, kClassDef *cdef)
+//DEFAPI(void) defXmlDoc(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 //{
 //	cdef->name = "XmlDoc";
 //	cdef->init = XmlDoc_init;
@@ -95,7 +95,7 @@ extern "C" {
 //{
 //	xmlChar* version = String_to(xmlChar*, sfp[1]);
 //	xmlDocPtr doc = xmlNewDoc(version);
-//	knh_RawPtr_t *po = new_RawPtr(ctx, sfp[2].p, doc);
+//	kRawPtr *po = new_RawPtr(ctx, sfp[2].p, doc);
 //	RETURN_(po);
 //}
 
@@ -290,12 +290,12 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [XmlReader] */
 
-static void XmlReader_init(CTX ctx, knh_RawPtr_t *po)
+static void XmlReader_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void XmlReader_free(CTX ctx, knh_RawPtr_t *po)
+static void XmlReader_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		xmlFreeTextReader((xmlTextReaderPtr)po->rawptr);
@@ -303,12 +303,12 @@ static void XmlReader_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-static void XmlReader_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+static void XmlReader_checkout(CTX ctx, kRawPtr *po, int isFailed)
 {
 	XmlReader_free(ctx, po);
 }
 
-DEFAPI(void) defXmlReader(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defXmlReader(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "XmlReader";
 	cdef->init = XmlReader_init;
@@ -346,9 +346,9 @@ DEFAPI(void) constXmlReader(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 //## @Native @Throwable XmlReader XmlReader.new(Path _);
 KMETHOD XmlReader_new(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename(pth->ospath);
-	knh_RawPtr_t *po = new_ReturnCppObject(ctx, sfp, reader, NULL);
+	kRawPtr *po = new_ReturnCppObject(ctx, sfp, reader, NULL);
 	if(reader == NULL) {
 		KNH_NTHROW2(ctx, sfp, "IO!!", "xmlNewTextReader", K_FAILED,
 				KNH_LDATA(LOG_s("urn", S_totext(pth->urn)), LOG_s("ospath", pth->ospath)));

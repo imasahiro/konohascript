@@ -39,7 +39,7 @@ extern "C" {
 
 ksfp_t* knh_stack_initexpand(CTX ctx, ksfp_t *sfp, size_t n)
 {
-	knh_context_t *ctxo = (knh_context_t*)ctx;
+	kcontext_t *ctxo = (kcontext_t*)ctx;
 	size_t i, s = 0;
 	if(sfp == NULL) {
 		DBG_ASSERT(ctxo->stacksize == 0);
@@ -129,7 +129,7 @@ ksfp_t* knh_stack_local(CTX ctx, size_t n)
 		knh_stack_initexpand(ctx, ctx->esp, ctx->stacksize + n + 64);
 	}
 	ksfp_t *esp = ctx->esp;
-	((knh_context_t*)ctx)->esp = esp + n;
+	((kcontext_t*)ctx)->esp = esp + n;
 	return esp;
 }
 
@@ -146,7 +146,7 @@ void knh_checkSafePoint(CTX ctx, ksfp_t *sfp, const char *file, int line)
 	if(TFLAG_is(int, safepoint, SAFEPOINT_SIGNAL)) {
 		if (ctx->sighandlers != NULL) {
 			KNH_ASSERT(ctx->signal < K_SIGNAL_MAX);
-			knh_Func_t *handler_func = (knh_Func_t *)ctx->sighandlers[ctx->signal];
+			kFunc *handler_func = (kFunc *)ctx->sighandlers[ctx->signal];
 			if (handler_func != NULL) {
 				ksfp_t *lsfp = ctx->esp + 1; // for safety
 				lsfp[K_CALLDELTA + 1].ivalue = ctx->signal;
@@ -163,12 +163,12 @@ void knh_checkSafePoint(CTX ctx, ksfp_t *sfp, const char *file, int line)
 ///* ------------------------------------------------------------------------ */
 ///* [call] */
 //
-//void knh_stack_typecheck(CTX ctx, ksfp_t *sfp, knh_Method_t *mtd, knh_opline_t *pc)
+//void knh_stack_typecheck(CTX ctx, ksfp_t *sfp, kMethod *mtd, kopl_t *pc)
 //{
 //	kclass_t this_cid = O_cid(sfp[0].o);
 //	int i, argc;
 //	DBG_ASSERT(IS_Method(sfp[K_MTDIDX].mtdNC));
-//	argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
+//	argc = Param_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
 //	for(i = 1; i < argc; i++) {
 //		ktype_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i - 1);
 //		const knh_ClassTBL_t *t = O_cTBL(sfp[i].o);
@@ -206,7 +206,7 @@ int event_isa(CTX ctx, kevent_t eid, kevent_t parent)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *knh_getEventName(CTX ctx, kevent_t eid)
+kString *knh_getEventName(CTX ctx, kevent_t eid)
 {
 	ASSERT_ebi(eid);
 	return ctx->share->EventTBL[eid-1].name;
@@ -215,7 +215,7 @@ knh_String_t *knh_getEventName(CTX ctx, kevent_t eid)
 /* ------------------------------------------------------------------------ */
 /* [TABLE] */
 
-kevent_t knh_addEvent(CTX ctx, kflag_t flag, knh_String_t *name, kclass_t peid)
+kevent_t knh_addEvent(CTX ctx, kflag_t flag, kString *name, kclass_t peid)
 {
 	kevent_t eid = 0;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
@@ -263,7 +263,7 @@ kevent_t knh_geteid(CTX ctx, kbytes_t t)
 	eid = (kevent_t)knh_DictSet_get(ctx, ctx->share->eventDictSet, t);
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	if(eid == 0) {
-		return knh_addEvent(ctx, 0, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), EVENT_Exception);
+		return knh_addEvent(ctx, 0, new_String2(ctx, CLASS_String, t.text, t.len, SPOL_ASCII|SPOL_POOLALWAYS), EVENT_Exception);
 	}
 	else {
 		return eid - 1;
@@ -273,45 +273,45 @@ kevent_t knh_geteid(CTX ctx, kbytes_t t)
 /* ------------------------------------------------------------------------ */
 /* [Exception.new] */
 
-knh_Exception_t* new_Error(CTX ctx, kline_t uline, knh_String_t *emsg)
+kException* new_Error(CTX ctx, kline_t uline, kString *emsg)
 {
-	knh_Exception_t* e = new_(Exception);
+	kException* e = new_(Exception);
 	KNH_SETv(ctx, e->emsg, emsg);
 	e->uline = uline;
 	return e;
 }
 
-void CTX_setThrowingException(CTX ctx, knh_Exception_t *e)
+void CTX_setThrowingException(CTX ctx, kException *e)
 {
-	KNH_SETv(ctx, ((knh_context_t*)ctx)->e, e);
+	KNH_SETv(ctx, ((kcontext_t*)ctx)->e, e);
 }
 
 /* rbp is ok, because isCATCH is called from only vm */
 kbool_t isCATCH(CTX ctx, krbp_t *rbp, int en, kevent_t peid)
 {
-	knh_Exception_t *e = ctx->e;
+	kException *e = ctx->e;
 	kevent_t eid = knh_geteid(ctx, S_tobytes(e->emsg));
 	int res = event_isa(ctx, eid, peid);
 	if(res == 1) {
 		KNH_SETv(ctx, rbp[en].o, e);
-		KNH_SETv(ctx, ((knh_context_t*)ctx)->e, KNH_NULL);
+		KNH_SETv(ctx, ((kcontext_t*)ctx)->e, KNH_NULL);
 	}
 	return res;
 }
 
-void Context_push(CTX ctx, knh_Object_t *o)
+void Context_push(CTX ctx, kObject *o)
 {
-	knh_Array_t *a = ctx->ehdrNC->stacklist;
+	kArray *a = ctx->ehdrNC->stacklist;
 	knh_Array_add(ctx, a, o);
 }
 
-knh_Object_t *Context_pop(CTX ctx)
+kObject *Context_pop(CTX ctx)
 {
-	knh_Array_t *a = ctx->ehdrNC->stacklist;
+	kArray *a = ctx->ehdrNC->stacklist;
 	DBG_ASSERT(a->size > 0);
 	a->size -= 1;
 	{
-		knh_Object_t *o = a->list[a->size];
+		kObject *o = a->list[a->size];
 		KNH_FINALv(ctx, a->list[a->size]);
 		return o;
 	}
@@ -333,7 +333,7 @@ knh_Object_t *Context_pop(CTX ctx)
  *  * MacOSX i386   GCC 4.0.1 (-O2)
  */
 
-knh_ExceptionHandler_t* ExceptionHandler_setjmp(CTX ctx, knh_ExceptionHandler_t *hdr)
+kExceptionHandler* ExceptionHandler_setjmp(CTX ctx, kExceptionHandler *hdr)
 {
 #if !defined(__i386__) && !defined(__x86_64__)
 #warning ExceptionHandler dose not work in your environment. Please define K_USING_SETJMP_=1
@@ -353,11 +353,11 @@ knh_ExceptionHandler_t* ExceptionHandler_setjmp(CTX ctx, knh_ExceptionHandler_t 
 	return NULL;
 }
 
-knh_ExceptionHandler_t *knh_ExceptionHandler_longjmp(CTX ctx, knh_ExceptionHandler_t *hdr)
+kExceptionHandler *knh_ExceptionHandler_longjmp(CTX ctx, kExceptionHandler *hdr)
 {
 #if defined(__GNUC__)
 #if defined(__i386__)
-	//@shinpei_NKT : fixed offset of knh_ExceptionHandler_t, i386 code
+	//@shinpei_NKT : fixed offset of kExceptionHandler, i386 code
 	asm volatile(
 			"pop %%ebp;"
 			"mov 0x10(%%eax),%%esi;" /* esi = DP(hdr) */

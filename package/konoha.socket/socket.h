@@ -15,11 +15,11 @@ extern "C" {
 //#define SP(o) (o)
 //typedef struct Socket_t {
 //	int port;
-//	knh_String_t *urn;
+//	kString *urn;
 //	kuri_t uri;
 //	kintptr_t sd; /* socket discripter */
-//	knh_InputStream_t  *in;
-//	knh_OutputStream_t *out;
+//	kInputStream  *in;
+//	kOutputStream *out;
 //} Socket_t;
 //
 //
@@ -96,7 +96,7 @@ extern "C" {
 //	return buf;
 //}
 //
-//static knh_io_t knh_iodrv_open__Channel(CTX ctx, kbytes_t file, kuri_t *uri, char *mode)
+//static int knh_iodrv_open__Channel(CTX ctx, kbytes_t file, kuri_t *uri, char *mode)
 //{
 //	kbytes_t urn = knh_bytes_path(file);
 //	kindex_t loc = knh_bytes_rindex(urn, ':');
@@ -110,24 +110,24 @@ extern "C" {
 //	}
 //	knh_format_bytes(host_or_ip, sizeof(host_or_ip), urn);
 //	DBG_P("opening Channel host='%s', port=%d", host_or_ip, port);
-//	return (knh_io_t)knh_socket_open(ctx, host_or_ip, port, 0/*isThrowable*/);
+//	return (int)knh_socket_open(ctx, host_or_ip, port, 0/*isThrowable*/);
 //}
 //
 //static void knh_iodrv_init__Channel(CTX ctx, Object *stream, char *mode)
 //{
 //}
 //
-//static kintptr_t knh_iodrv_read__Channel(CTX ctx, knh_io_t sd, char *buf, size_t bufsiz)
+//static kintptr_t knh_iodrv_read__Channel(CTX ctx, int sd, char *buf, size_t bufsiz)
 //{
 //	return knh_socket_recv(ctx, (kintptr_t)sd, buf, bufsiz, 0);
 //}
 //
-//static kintptr_t knh_iodrv_write__Channel(CTX ctx, knh_io_t sd, char *buf, size_t bufsiz)
+//static kintptr_t knh_iodrv_write__Channel(CTX ctx, int sd, char *buf, size_t bufsiz)
 //{
 //	return knh_socket_send(ctx, (kintptr_t)sd, buf, bufsiz, 0);
 //}
 //
-//static void knh_iodrv_close__Channel(CTX ctx, knh_io_t sd)
+//static void knh_iodrv_close__Channel(CTX ctx, int sd)
 //{
 //	knh_socket_close(ctx, (kintptr_t)sd);
 //}

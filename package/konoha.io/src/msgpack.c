@@ -26,6 +26,7 @@
 
 #include <msgpack.h>
 
+#define K_INTERNAL
 #define USE_STRUCT_InputStream
 #define USE_STRUCT_OutputStream
 
@@ -233,8 +234,8 @@ static inline kbytes_t CWB_tobytes(CWB_t *cwb)
 
 KMETHOD OutputStream_writeMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_OutputStream_t *w = sfp[0].w;
-	knh_RawPtr_t *o = sfp[1].p;
+	kOutputStream *w = sfp[0].w;
+	kRawPtr *o = sfp[1].p;
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	kpackAPI_t packer = {w, NULL, NULL};
 	kpackAPI_t *pkr = packspi->pack_init(ctx, &packer);
@@ -246,7 +247,7 @@ KMETHOD OutputStream_writeMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 static void RETURN_T(CTX ctx, ksfp_t *sfp, kclass_t scid, kclass_t tcid, ksfp_t *vsfp _RIX)
 {
 	if(tcid != scid) {
-		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
+		kTypeMap *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
 		if(tmr != NULL) {
 			klr_setesp(ctx, vsfp+1);
 			knh_TypeMap_exec(ctx, tmr, vsfp, sfp - vsfp + K_RIX);
@@ -265,7 +266,7 @@ static void RETURN_T(CTX ctx, ksfp_t *sfp, kclass_t scid, kclass_t tcid, ksfp_t 
 
 KMETHOD InputStream_readMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_InputStream_t *in = sfp[0].in;
+	kInputStream *in = sfp[0].in;
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	io2_readAll(ctx, in->io2, cwb->ba);
@@ -279,7 +280,7 @@ KMETHOD InputStream_readMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD Bytes_writeMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_RawPtr_t *o = sfp[1].p;
+	kRawPtr *o = sfp[1].p;
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	KNH_SETv(ctx, sfp[0].o, new_BytesOutputStream(ctx, sfp[0].ba));
 	kpackAPI_t packer = {sfp[0].w, NULL, NULL};

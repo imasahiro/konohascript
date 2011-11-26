@@ -41,7 +41,7 @@ extern "C" {
 #define INFO_  2
 #define DEBUG_ 3
 
-static void write_eline(CTX ctx, knh_OutputStream_t *w, kline_t uline, int lpos)
+static void write_eline(CTX ctx, kOutputStream *w, kline_t uline, int lpos)
 {
 	if(uline != 0 /*&& uri != URI_unknown && line != 0*/) {
 		kuri_t uri = ULINE_uri(uline);
@@ -87,7 +87,7 @@ static void knh_vperror(CTX ctx, int level, kline_t uline, int lpos, const char 
 		write_eline(ctx, cwb->w, uline, lpos);
 		knh_write_ascii(ctx, cwb->w, emsg);
 		knh_vprintf(ctx, cwb->w, fmt, ap);
-		knh_String_t *msg = CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
+		kString *msg = CWB_newString(ctx, cwb, SPOL_POOLNEVER);
 		knh_Array_add(ctx, ctx->errmsgs, msg);
 		knh_logprintf("konoha", 0, S_totext(msg));
 		fprintf(stderr, "%s - %s%s\n", TERM_BNOTE(ctx, level), S_totext(msg), TERM_ENOTE(ctx, level));
@@ -107,11 +107,11 @@ static int knh_errno(CTX ctx)
 	return knh_Array_size(ctx->errmsgs);
 }
 
-static knh_String_t* knh_strerror(CTX ctx, int kerrno)
+static kString* knh_strerror(CTX ctx, int kerrno)
 {
 	size_t i;
 	for(i = kerrno; i < knh_Array_size(ctx->errmsgs); i++) {
-		knh_String_t *emsg = (knh_String_t*)knh_Array_n(ctx->errmsgs, i);
+		kString *emsg = (kString*)knh_Array_n(ctx->errmsgs, i);
 		if(strstr(S_totext(emsg), "(error)") != NULL) {
 			return emsg;
 		}
@@ -120,7 +120,7 @@ static knh_String_t* knh_strerror(CTX ctx, int kerrno)
 	return NULL;
 }
 
-static void DEBUG_TokenAlias(CTX ctx, kline_t uline, int lpos, kbytes_t t, knh_String_t *alias)
+static void DEBUG_TokenAlias(CTX ctx, kline_t uline, int lpos, kbytes_t t, kString *alias)
 {
 	if(CTX_isDebug(ctx)) {
 		char buf[256] = {0};
@@ -146,7 +146,7 @@ static void IGNORE_UnxpectedMultiByteChar(CTX ctx, kline_t uline, int lpos, char
 	text[len] = ch; // danger a little
 }
 
-static void ERROR_NotFoundCloseToken(CTX ctx, knh_Token_t *tk, int closech)
+static void ERROR_NotFoundCloseToken(CTX ctx, kToken *tk, int closech)
 {
 	char buf[8];
 	knh_snprintf(buf, sizeof(buf), "%c", closech);
@@ -159,30 +159,30 @@ static kbool_t ERROR_SyntaxError(CTX ctx, kline_t uline)
 	return 0;
 }
 
-static kbool_t ERROR_TokenError(CTX ctx, knh_Token_t *tk)
+static kbool_t ERROR_TokenError(CTX ctx, kToken *tk)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "syntax error: token '%s' is unavailable", S_totext(tk->text));
 	return 0;
 }
 
-static kbool_t ERROR_TokenMustBe(CTX ctx, knh_Token_t *tk, const char *token)
+static kbool_t ERROR_TokenMustBe(CTX ctx, kToken *tk, const char *token)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "syntax error: '%s' must be %s", S_totext(tk->text), token);
 	return 0;
 }
 
-static knh_Expr_t *ERROR_TokenUndefinedMethod(CTX ctx, knh_Token_t *tk, kclass_t cid)
+static kExpr *ERROR_TokenUndefinedMethod(CTX ctx, kToken *tk, kclass_t cid)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "undefined method: %T.%s", cid, S_totext(tk->text));
 	return NULL;
 }
 
-void WARN_TokenMuchBetter(CTX ctx, knh_Token_t *tk, const char *token)
+void WARN_TokenMuchBetter(CTX ctx, kToken *tk, const char *token)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "%s is much better than %s", S_totext(tk->text), token);
 }
 
-void WARN_TokenOverflow(CTX ctx, knh_Token_t *tk)
+void WARN_TokenOverflow(CTX ctx, kToken *tk)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "%s is overflow", S_totext(tk->text));
 }

@@ -187,7 +187,7 @@ extern "C" {
 }\
 
 #define KLR_OMOVx(ctx, a, b) {\
-	knh_Object_t *v_ = RXo_(b);\
+	kObject *v_ = RXo_(b);\
 	klr_mov(ctx, Ro_(a), v_);\
 }\
 
@@ -204,7 +204,7 @@ extern "C" {
 	}\
 
 #define KLR_SCALL(ctx, rtnidx, thisidx, espshift, mtdO) { \
-		knh_Method_t *mtd_ = mtdO;\
+		kMethod *mtd_ = mtdO;\
 		/*prefetch((mtd_)->fcall_1);*/\
 		ksfp_t *sfp_ = SFP(rshift(rbp, thisidx)); \
 		sfp_[K_SHIFTIDX].shift = thisidx; \
@@ -224,7 +224,7 @@ extern "C" {
 /* VCALL */
 
 #define KLR_VCALL(ctx, rtnidx, thisidx, espshift, mtdO) { \
-		knh_Method_t *mtd_ = mtdO;\
+		kMethod *mtd_ = mtdO;\
 		prefetch((mtd_)->pc_start);\
 		klr_setesp(ctx, SFP(rshift(rbp, espshift)));\
 		if(unlikely(SFP(rbp) > ctx->stack_uplimit)) {\
@@ -239,7 +239,7 @@ extern "C" {
 	} \
 
 #define KLR_VCALL_(ctx, rtnidx, thisidx, espshift, mtdO) { \
-		knh_Method_t *mtd_ = mtdO;\
+		kMethod *mtd_ = mtdO;\
 		prefetch((mtd_)->pc_start);\
 		klr_setesp(ctx, SFP(rshift(rbp, espshift)));\
 		rbp = rshift(rbp, thisidx);\
@@ -254,7 +254,7 @@ extern "C" {
 
 #define KLR_RET(ctx) { \
 		kintptr_t vshift = rbp[K_SHIFTIDX2].shift;\
-		knh_opline_t *vpc = rbp[K_PCIDX2].pc;\
+		kopl_t *vpc = rbp[K_PCIDX2].pc;\
 		rbp[K_MTDIDX2].mtdNC = NULL;\
 		rbp = rshift(rbp, -vshift); \
 		pc = vpc; \
@@ -271,7 +271,7 @@ extern "C" {
 	} \
 
 #define KLR_CALL(ctx, rtnidx, thisidx, espshift) { \
-		knh_Method_t *mtd_ = rbp[thisidx+K_MTDIDX2].mtdNC;\
+		kMethod *mtd_ = rbp[thisidx+K_MTDIDX2].mtdNC;\
 		prefetch((mtd_)->pc_start);\
 		klr_setesp(ctx, SFP(rshift(rbp, espshift)));\
 		rbp = rshift(rbp, thisidx);\
@@ -283,7 +283,7 @@ extern "C" {
 
 /**
 #define KLR_VINVOKE(ctx, rtnidx, thisidx, espshift) { \
-		knh_Method_t *mtd_ = (rbp[thisidx].fo)->mtd;\
+		kMethod *mtd_ = (rbp[thisidx].fo)->mtd;\
 		prefetch((mtd_)->pc_start);\
 		klr_setesp(ctx, SFP(rshift(rbp, espshift)));\
 		rbp = rshift(rbp, thisidx);\
@@ -296,7 +296,7 @@ extern "C" {
 **/
 
 #define KLR_THUNK(ctx, rtnidx, thisidx, espshift, mtdO) { \
-		knh_Method_t *mtd_ = mtdO == NULL ? rbp[thisidx+K_MTDIDX2].mtdNC : mtdO;\
+		kMethod *mtd_ = mtdO == NULL ? rbp[thisidx+K_MTDIDX2].mtdNC : mtdO;\
 		klr_setesp(ctx, SFP(rshift(rbp, espshift)));\
 		knh_stack_newThunk(ctx, (ksfp_t*)rshift(rbp, thisidx));\
 	} \
@@ -307,7 +307,7 @@ extern "C" {
 	} \
 
 #define KLR_VEXEC(ctx) {\
-		knh_opline_t *vpc = PC_NEXT(pc);\
+		kopl_t *vpc = PC_NEXT(pc);\
 		pc = (rbp[K_MTDIDX2].mtdNC)->pc_start;\
 		rbp[K_SHIFTIDX2].shift = 0;\
 		rbp[K_PCIDX2].pc = vpc;\
@@ -315,7 +315,7 @@ extern "C" {
 	}\
 
 #define KLR_ENTER(ctx) {\
-		knh_opline_t *vpc = PC_NEXT(pc);\
+		kopl_t *vpc = PC_NEXT(pc);\
 		pc = (rbp[K_MTDIDX2].mtdNC)->pc_start;\
 		rbp[K_SHIFTIDX2].shift = 0;\
 		rbp[K_PCIDX2].pc = vpc;\
@@ -350,7 +350,7 @@ extern "C" {
 	} \
 
 #define KLR_TCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
-		knh_TypeMap_t *tmr_ = tmr; \
+		kTypeMap *tmr_ = tmr; \
 		ksfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
 		kclass_t scid = SP(tmr_)->scid, this_cid = O_cid(sfp_[0].o);\
 		if(this_cid != scid) {\
@@ -362,7 +362,7 @@ extern "C" {
 	} \
 
 #define KLR_ACAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
-		knh_TypeMap_t *tmr_ = tmr; \
+		kTypeMap *tmr_ = tmr; \
 		kclass_t tcid = SP(tmr_)->tcid, this_cid = O_cid(Ro_(thisidx));\
 		if(!class_isa(this_cid, tcid)) {\
 			kclass_t scid = SP(tmr_)->scid;\
@@ -430,7 +430,7 @@ extern "C" {
 #ifdef K_USING_SETJMP_
 
 #define KLR_TRY(ctx, PC, JUMP, hn)  {\
-	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
+	kExceptionHandler* _hdr = Rh_(hn); \
 	if(!IS_ExceptionHandler(_hdr)) { \
 		_hdr = new_(ExceptionHandler); \
 		klr_mov(ctx, Ro_(hn), _hdr); \
@@ -444,7 +444,7 @@ extern "C" {
 		_hdr = Rh_(hn);\
 		_hdr->espidx = (ctx->esp - ctx->stack); \
 		_hdr->parentNC = ctx->ehdrNC;\
-		((knh_context_t*)ctx)->ehdrNC = _hdr; \
+		((kcontext_t*)ctx)->ehdrNC = _hdr; \
 	} else { \
 		_hdr = ctx->ehdrNC;\
 		knh_ExceptionHandlerEX_t* _hdrEX = DP(_hdr);\
@@ -452,22 +452,22 @@ extern "C" {
 		rbp = RBP(ctx->stack + _hdrEX->sfpidx);\
 		klr_setesp(ctx, (ctx->stack + _hdr->espidx));\
 		op = _hdrEX->op;\
-		((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+		((kcontext_t*)ctx)->ehdrNC = _hdr->parentNC;\
 		KLR_JMP(ctx, PC, JUMP);\
 	}\
 } \
 
 #define KLR_TRYEND(ctx, hn)  {\
-	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
+	kExceptionHandler* _hdr = Rh_(hn); \
 	DBG_ASSERT(IS_ExceptionHandler(_hdr)); \
-	((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+	((kcontext_t*)ctx)->ehdrNC = _hdr->parentNC;\
 	klr_mov(ctx, Ro_(hn), KNH_TNULL(ExceptionHandler));\
 } \
 
 #else
 
 #define KLR_TRY(ctx, PC, JUMP, hn)  {\
-	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
+	kExceptionHandler* _hdr = Rh_(hn); \
 	if(!IS_ExceptionHandler(_hdr)) { \
 		_hdr = new_(ExceptionHandler); \
 		klr_mov(ctx, Ro_(hn), _hdr); \
@@ -481,24 +481,24 @@ extern "C" {
 		_hdr = Rh_(hn);\
 		_hdr->espidx = (ctx->esp - ctx->stack); \
 		_hdr->parentNC = ctx->ehdrNC;\
-		((knh_context_t*)ctx)->ehdrNC = _hdr; \
+		((kcontext_t*)ctx)->ehdrNC = _hdr; \
 	} else { \
 		knh_ExceptionHandlerEX_t* _hdrEX = DP(_hdr);\
 		pc = _hdrEX->pc; \
 		rbp = RBP(ctx->stack + _hdrEX->sfpidx);\
 		klr_setesp(ctx, (ctx->stack + _hdr->espidx));\
 		op = _hdrEX->op;\
-		((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+		((kcontext_t*)ctx)->ehdrNC = _hdr->parentNC;\
 		KLR_JMP(ctx, PC, JUMP);\
 	}\
 } \
 
 #define KLR_TRYEND(ctx, hn)  {\
-	knh_ExceptionHandler_t* _hdr = Rh_(hn); \
+	kExceptionHandler* _hdr = Rh_(hn); \
 	DBG_ASSERT(IS_ExceptionHandler(_hdr)); \
 	DP(_hdr)->return_address = NULL;\
 	DP(_hdr)->frame_address  = NULL;\
-	((knh_context_t*)ctx)->ehdrNC = _hdr->parentNC;\
+	((kcontext_t*)ctx)->ehdrNC = _hdr->parentNC;\
 	klr_mov(ctx, Ro_(hn), KNH_TNULL(ExceptionHandler));\
 } \
 
@@ -513,7 +513,7 @@ extern "C" {
 } \
 
 #define KLR_ERROR(ctx, start, msg) { \
-	knh_Exception_t *e_ = new_Error(ctx, 0, msg);\
+	kException *e_ = new_Error(ctx, 0, msg);\
 	CTX_setThrowingException(ctx, e_);\
 	knh_throw(ctx, SFP(rbp), SFPIDX(start)); \
 } \
@@ -527,13 +527,13 @@ extern "C" {
 	} \
 
 #define KLR_CHKIN(ctx, on, fcheckin)  {\
-		knh_Object_t *o_ = Ro_(on);\
+		kObject *o_ = Ro_(on);\
 		fcheckin(ctx, SFP(rbp), RAWPTR(o_));\
 		Context_push(ctx, o_);\
 	}\
 
 #define KLR_CHKOUT(ctx, on, fcheckout)  {\
-		knh_Object_t *o_ = Context_pop(ctx);\
+		kObject *o_ = Context_pop(ctx);\
 		DBG_ASSERT(o_ == Ro_(on));\
 		fcheckout(ctx, RAWPTR(o_), 0);\
 	}\
@@ -710,7 +710,7 @@ extern "C" {
 #define KLR_BSETIDX(ctx, cidx, aidx, nidx, vidx) KLR_BSETIDXC(ctx, cidx, aidx, Ri_(nidx), vidx)
 
 #define KLR_OGETIDXC(ctx, cidx, aidx, N) {\
-		knh_Array_t *a_ = Ra_(aidx);\
+		kArray *a_ = Ra_(aidx);\
 		size_t n_ = klr_array_index(ctx, N, knh_Array_size(a_));\
 		klr_array_check(n_, knh_Array_size(a_));\
 		Object *v_ = (a_)->list[n_];\
@@ -720,7 +720,7 @@ extern "C" {
 #define KLR_OGETIDX(ctx, cidx, aidx, nidx) KLR_OGETIDXC(ctx, cidx, aidx, Ri_(nidx))
 
 #define KLR_OSETIDXC(ctx, cidx, aidx, N, vidx) {\
-		knh_Array_t *a_ = Ra_(aidx);\
+		kArray *a_ = Ra_(aidx);\
 		size_t n_ = klr_array_index(ctx, N, knh_Array_size(a_));\
 		klr_array_check(n_, knh_Array_size(a_));\
 		klr_mov(ctx, (a_)->list[n_], Ro_(vidx));\
@@ -730,7 +730,7 @@ extern "C" {
 #define KLR_OSETIDX(ctx, cidx, aidx, nidx, vidx) KLR_OSETIDXC(ctx, cidx, aidx, Ri_(nidx), vidx)
 
 #define KLR_NGETIDXC(ctx, cidx, aidx, N) {\
-		knh_Array_t *a_ = Ra_(aidx);\
+		kArray *a_ = Ra_(aidx);\
 		size_t n_ = klr_array_index(ctx, N, knh_Array_size(a_));\
 		klr_array_check(n_, knh_Array_size(a_));\
 		Rn_(cidx) = (a_)->nlist[n_];\
@@ -739,7 +739,7 @@ extern "C" {
 #define KLR_NGETIDX(ctx, cidx, aidx, nidx) KLR_NGETIDXC(ctx, cidx, aidx, Ri_(nidx))
 
 #define KLR_NSETIDXC(ctx, cidx, aidx, N, vidx) {\
-		knh_Array_t *a_ = Ra_(aidx);\
+		kArray *a_ = Ra_(aidx);\
 		size_t n_ = klr_array_index(ctx, N, knh_Array_size(a_));\
 		klr_array_check(n_, knh_Array_size(a_));\
 		Rn_(cidx) = (a_)->nlist[n_] = Rn_(vidx);\

@@ -45,7 +45,7 @@ extern "C" {
 /* ======================================================================== */
 // [class Memcache functions]
 typedef struct {
-	knh_hObject_t h;
+	kObjectHeader h;
 	memcached_st *st;
 } knh_Memcache_t ;
 
@@ -53,19 +53,19 @@ typedef struct {
 /* ------------------------------------------------------------------------ */
 
 
-static void Memcache_init(CTX ctx, knh_RawPtr_t *po)
+static void Memcache_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void Memcache_free(CTX ctx, knh_RawPtr_t *po)
+static void Memcache_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		po->rawptr = NULL;
 	}
 }
 
-DEFAPI(void) defMemcache(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defMemcache(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->init = Memcache_init;
 	cdef->free = Memcache_free;
@@ -92,7 +92,7 @@ KMETHOD Memcache_new(CTX ctx, ksfp_t *sfp _RIX)
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
 	kint_t port = Int_to(kint_t, sfp[2]);
-	Memcache_init(ctx, (knh_RawPtr_t*)mcd);
+	Memcache_init(ctx, (kRawPtr*)mcd);
 	// first, create structure
 	mcd->st = memcached_create(NULL);
 	if (mcd->st == NULL) {
@@ -135,7 +135,7 @@ L_RETURN:
 //	kindex_t idx = knh_bytes_index(host_port, ':');
 //	if (idx == -1) {
 //		KNH_NTRACE2(ctx, "konoha:link", K_FAILED, KNH_LDATA(LOG_s{"path", host_port.text), LOG_s("type", "Memcache")));
-//		knh_Object_toNULL(ctx, sfp[0].o);
+//		kObjectoNULL(ctx, sfp[0].o);
 //		RETURN_(sfp[0].o);
 //	}
 //	kint_t port;
@@ -364,7 +364,7 @@ KMETHOD Memcache_get(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD Memcache_mGet(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
-	knh_Array_t *a = sfp[1].a;
+	kArray *a = sfp[1].a;
 	int number_of_keys = knh_Array_size(a);
 	const char *keys[number_of_keys];
 	size_t key_length[number_of_keys];
@@ -380,7 +380,7 @@ KMETHOD Memcache_mGet(CTX ctx, ksfp_t *sfp _RIX)
 		goto L_ERR;
 	}
 	KNH_NTRACE2(ctx, "memcached_mget", K_OK, KNH_LDATA0);
-	knh_Array_t *ret = new_Array(ctx, CLASS_String, number_of_keys);
+	kArray *ret = new_Array(ctx, CLASS_String, number_of_keys);
 	memcached_result_st *result = &mcd->st->result;
 	//	memcached_result_create(mcd->st, result);
 	while(1) {
@@ -433,7 +433,7 @@ KMETHOD Memcache_mGetByKey(CTX ctx, ksfp_t *sfp _RIX)
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
 	size_t group_key_length = sfp[1].s->str.len;
-	knh_Array_t *a = sfp[2].a;
+	kArray *a = sfp[2].a;
 	int number_of_keys = knh_Array_size(a);
 	const char *keys[number_of_keys];
 	size_t key_length[number_of_keys];
@@ -449,7 +449,7 @@ KMETHOD Memcache_mGetByKey(CTX ctx, ksfp_t *sfp _RIX)
 		goto L_ERR;
 	}
 	KNH_NTRACE2(ctx, "memcached_mgetByKey", K_OK, KNH_LDATA0);
-	knh_Array_t *ret = new_Array(ctx, CLASS_String, number_of_keys);
+	kArray *ret = new_Array(ctx, CLASS_String, number_of_keys);
 	memcached_result_st *result = &mcd->st->result;
 	while(1) {
 		result = memcached_fetch_result(mcd->st, result, &rc);
@@ -742,8 +742,8 @@ KMETHOD Memcache_appendByKey(CTX ctx, ksfp_t *sfp _RIX)
 // [private functions]
 
 typedef struct {
-	knh_context_t *ctx;
-	knh_Array_t *a;
+	kcontext_t *ctx;
+	kArray *a;
 	memcached_st *st;
 } knh_memcached_t;
 
@@ -765,7 +765,7 @@ static void knh_memcached_free(CTX ctx, knh_memcached_t *memc)
 	KNH_FREE(ctx, memc, sizeof(knh_memcached_t));
 }
 
-static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct knh_DictMap_t *opt)
+static kmapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kDictMap *opt)
 {
 	memcached_return rc;
 	memcached_server_list_st servers;
@@ -803,10 +803,10 @@ static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kn
 	memcached_server_list_free(servers);
 	knh_memcached_t *memc = knh_memcached_malloc(ctx);
 	knh_memcached_init(ctx, memc, st);
-	return (knh_mapptr_t *)memc;
+	return (kmapptr_t *)memc;
 }
 
-static void memc_reftrace(CTX ctx, knh_mapptr_t *m FTRARG)
+static void memc_reftrace(CTX ctx, kmapptr_t *m FTRARG)
 {
 	knh_memcached_t *memc = (knh_memcached_t *)m;
 	if (memc->ctx == NULL) {
@@ -815,7 +815,7 @@ static void memc_reftrace(CTX ctx, knh_mapptr_t *m FTRARG)
 	}
 }
 
-static void memc_freemap(CTX ctx, knh_mapptr_t *m)
+static void memc_freemap(CTX ctx, kmapptr_t *m)
 {
 	knh_memcached_t *memc = (knh_memcached_t *)m;
 	knh_memcached_free(ctx, memc);
@@ -830,11 +830,11 @@ static kbool_t string_isprint(const char *s, size_t len)
 	return 1;
 }
 
-static kbool_t memc_get(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
+static kbool_t memc_get(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
-	knh_String_t *key = ksfp[0].s;
+	kString *key = ksfp[0].s;
 	size_t vlen;
 	uint32_t flags;
 	const char *val = memcached_get(memc->st, S_totext(key), S_size(key), &vlen, &flags, &rc);
@@ -846,7 +846,7 @@ static kbool_t memc_get(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 	if (string_isprint(val, vlen)) {
 		KNH_SETv(ctx, rsfp[0].s, new_String(ctx, val));
 	} else {
-		knh_Bytes_t *ba = new_Bytes(ctx, "memc_get", vlen);
+		kBytes *ba = new_Bytes(ctx, "memc_get", vlen);
 		knh_Bytes_write2(ctx, ba, val, vlen);
 		KNH_SETv(ctx, rsfp[0].ba, ba);
 	}
@@ -854,11 +854,11 @@ static kbool_t memc_get(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 	return 1;
 }
 
-static void memc_remove(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
+static void memc_remove(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
-	knh_String_t *key =ksfp[0].s;
+	kString *key =ksfp[0].s;
 	rc = memcached_delete(memc->st, S_totext(key), S_size(key), 0);
 	if (rc != MEMCACHED_SUCCESS) {
 		KNH_NTRACE2(ctx, "memc_remove", K_FAILED,
@@ -867,7 +867,7 @@ static void memc_remove(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 	}
 }
 
-static size_t memc_size(CTX ctx, knh_mapptr_t* m)
+static size_t memc_size(CTX ctx, kmapptr_t* m)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
@@ -887,16 +887,16 @@ static memcached_return knh_memcached_set(memcached_st *ptr, const char *key, si
 	return rc;
 }
 
-static void memc_set(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
+static void memc_set(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
-	knh_String_t *key = kvsfp[0].s;
+	kString *key = kvsfp[0].s;
 	if (IS_String(kvsfp[1].o)) {
-		knh_String_t *val = kvsfp[1].s;
+		kString *val = kvsfp[1].s;
 		rc = knh_memcached_set(memc->st, S_totext(key), S_size(key), S_totext(val), S_size(val), 0, 0);
 	} else if (IS_Bytes(kvsfp[1].o)) {
-		knh_Bytes_t *val = kvsfp[1].ba;
+		kBytes *val = kvsfp[1].ba;
 		rc = knh_memcached_set(memc->st, S_totext(key), S_size(key), BA_totext(val), BA_size(val), 0, 0);
 	} else {
 		KNH_NTRACE2(ctx, "memc_set", K_FAILED, KNH_LDATA(LOG_msg("unknown value type")));
@@ -915,15 +915,15 @@ static void memc_set(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 static memcached_return_t dumper(const memcached_st *st, const char *key, size_t keylen, void *context)
 {
 	knh_memcached_t *memc = (knh_memcached_t *)context;
-	knh_context_t *ctx = memc->ctx;
-	knh_Array_t *a = memc->a;
+	kcontext_t *ctx = memc->ctx;
+	kArray *a = memc->a;
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	CWB_write(ctx, cwb, new_bytes2(key, keylen));
 	knh_Array_add(ctx, a, CWB_newString(ctx, cwb, 0));
 	return MEMCACHED_SUCCESS;
 }
 
-static kbool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, ksfp_t *rsfp)
+static kbool_t memc_next(CTX ctx, kmapptr_t *m, knitr_t *mitr, ksfp_t *rsfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
@@ -938,7 +938,7 @@ static kbool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, ksfp_t *rsf
 		}
 	}
 	if (mitr->index < knh_Array_size(memc->a)) {
-		knh_String_t *key = (knh_String_t *)knh_Array_n(memc->a, mitr->index);
+		kString *key = (kString *)knh_Array_n(memc->a, mitr->index);
 		KNH_SETv(ctx, rsfp[0].s, key);
 		BEGIN_LOCAL(ctx, lsfp, 2);
 		ksfp_t *ksfp = &lsfp[0];

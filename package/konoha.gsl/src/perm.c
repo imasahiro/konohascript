@@ -43,12 +43,12 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-static void GslPerm_init(CTX ctx, knh_RawPtr_t *po)
+static void GslPerm_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void GslPerm_free(CTX ctx, knh_RawPtr_t *po)
+static void GslPerm_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		gsl_permutation_free((gsl_permutation *)po->rawptr);
@@ -56,7 +56,7 @@ static void GslPerm_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defGslPerm(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defGslPerm(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "GslPerm";
 	cdef->init = GslPerm_init;
@@ -67,7 +67,7 @@ DEFAPI(void) defGslPerm(CTX ctx, kclass_t cid, kClassDef *cdef)
 KMETHOD GslPerm_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t n = Int_to(size_t, sfp[1]);
-	knh_RawPtr_t *p = sfp[0].p;
+	kRawPtr *p = sfp[0].p;
 	p->rawptr = (void *)gsl_permutation_alloc(n);
 	gsl_permutation_init(p->rawptr);
 	RETURN_(p);
@@ -103,7 +103,7 @@ KMETHOD GslPerm_data(CTX ctx, ksfp_t *sfp _RIX)
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	size_t psize = gsl_permutation_size(p);
 	size_t *data = gsl_permutation_data(p);
-	knh_Array_t *res = new_Array(ctx, CLASS_Int, 0);
+	kArray *res = new_Array(ctx, CLASS_Int, 0);
 	int i;
 	for(i = 0; i < psize; i++){
 		knh_Array_add(ctx, res, data[i]);
@@ -165,7 +165,7 @@ KMETHOD GslPerm_mul(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD GslPerm_fprintf(CTX ctx, ksfp_t *sfp _RIX)
 {
 //	const gsl_permutation *p = RawPtr_to(const gsl_permutation *, sfp[0]);
-//	knh_OutputStream_t *w = sfp[1].w;
+//	kOutputStream *w = sfp[1].w;
 //	knh_OutputStream_flush(ctx, w);
 //	const char *format = String_to(const char *, sfp[2]);
 //	FILE *file = (FILE*)DP(w)->fio;

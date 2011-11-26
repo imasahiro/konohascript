@@ -39,7 +39,7 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-DEFAPI(void) defGslStats(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defGslStats(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "GslStats";
 }

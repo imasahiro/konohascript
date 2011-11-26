@@ -63,34 +63,34 @@ extern "C" {
 // [PRIVATE FUNCTIONS]
 
 /* ------------------------------------------------------------------------ */
-// translate [json_object -> knh_Object_t]
-// @return knh_Object_t* NOT NULL
+// translate [json_object -> kObject]
+// @return kObject* NOT NULL
 
-static knh_Object_t* json_object_json_to_knh(CTX ctx, json_object *obj)
+static kObject* json_object_json_to_knh(CTX ctx, json_object *obj)
 {
-	knh_Object_t *o = KNH_NULL;
+	kObject *o = KNH_NULL;
 	json_type obj_t = json_object_get_type(obj);
 	if (obj_t == json_type_boolean)
 	{
-		o = (knh_Object_t*)new_Boolean(ctx, json_object_get_boolean(obj));
+		o = (kObject*)new_Boolean(ctx, json_object_get_boolean(obj));
 	}
 	else if (obj_t == json_type_double)
 	{
-		o = (knh_Object_t*)new_Float(ctx, json_object_get_double(obj));
+		o = (kObject*)new_Float(ctx, json_object_get_double(obj));
 	}
 	else if (obj_t == json_type_int)
 	{
-		o = (knh_Object_t*)new_Int(ctx, json_object_get_int(obj));
+		o = (kObject*)new_Int(ctx, json_object_get_int(obj));
 	}
 	else if (obj_t == json_type_string)
 	{
 		const char *str = json_object_get_string(obj);
-		o = (knh_Object_t*)new_String(ctx, str);
+		o = (kObject*)new_String(ctx, str);
 	}
 	else if (obj_t == json_type_array)
 	{
 		int i, len = json_object_array_length(obj);
-		knh_Array_t *a = new_Array0(ctx, len);
+		kArray *a = new_Array0(ctx, len);
 		for (i = 0; i < len; i++) {
 			json_object *aobj = json_object_array_get_idx(obj, i);
 			if (IS_Json(aobj)) {
@@ -100,32 +100,32 @@ static knh_Object_t* json_object_json_to_knh(CTX ctx, json_object *obj)
 				knh_Array_add(ctx, a, new_Int(ctx, 0));
 			}
 		}
-		o = (knh_Object_t*)a;
+		o = (kObject*)a;
 	}
 	else if (obj_t == json_type_object)
 	{
-		o = (knh_Object_t*)new_Json(ctx, obj);
+		o = (kObject*)new_Json(ctx, obj);
 	}
 	else if (obj_t == json_type_null)
 	{
 		DBG_P("Json translate_object", "type of value is null ==> 0");
-		o = (knh_Object_t*)new_Int(ctx, 0);
+		o = (kObject*)new_Int(ctx, 0);
 	}
 	else
 	{
 		DBG_P("Json translate_object", "no such type of value: json_type(%d) ==> 0", obj_t);
-		o = (knh_Object_t*)new_Int(ctx, 0);
+		o = (kObject*)new_Int(ctx, 0);
 	}
 	return o;
 }
 
-static json_object* json_object_knhary_to_json(CTX ctx, knh_Array_t *array, int idx, kclass_t cid, int isGenerics);
+static json_object* json_object_knhary_to_json(CTX ctx, kArray *array, int idx, kclass_t cid, int isGenerics);
 
 /* ------------------------------------------------------------------------ */
-// translate [knh_Array_t -> json_object]
+// translate [kArray -> json_object]
 // @return json_object* NOT NULL
 
-static json_object* json_object_knhary_object_to_json(CTX ctx, knh_Array_t *a, kclass_t cid, int isGenerics)
+static json_object* json_object_knhary_object_to_json(CTX ctx, kArray *a, kclass_t cid, int isGenerics)
 {
 	json_object *val = json_object_new_array();
 	kclass_t gcid = (isGenerics) ? C_p1(cid) : CLASS_Array;
@@ -139,10 +139,10 @@ static json_object* json_object_knhary_object_to_json(CTX ctx, knh_Array_t *a, k
 }
 
 /* ------------------------------------------------------------------------ */
-// translate [knh_Array_t[idx] -> json_object]
+// translate [kArray[idx] -> json_object]
 // @return json_object* or NULL
 
-static json_object* json_object_knhary_to_json(CTX ctx, knh_Array_t *array, int idx, kclass_t cid, int isGenerics)
+static json_object* json_object_knhary_to_json(CTX ctx, kArray *array, int idx, kclass_t cid, int isGenerics)
 {
 	json_object *val = NULL;
 	switch (cid) {
@@ -166,13 +166,13 @@ static json_object* json_object_knhary_to_json(CTX ctx, knh_Array_t *array, int 
 	}
 	case CLASS_String:
 	{
-		knh_String_t *s = array->strings[idx];
+		kString *s = array->strings[idx];
 		val = json_object_new_string_len(S_totext(s), S_size(s));
 		break;
 	}
 	case CLASS_Array:
 	{
-		knh_Array_t *a = (knh_Array_t*)array->list[idx];
+		kArray *a = (kArray*)array->list[idx];
 		val = json_object_knhary_object_to_json(ctx, a, cid, 0);
 		break;
 	}
@@ -180,12 +180,12 @@ static json_object* json_object_knhary_to_json(CTX ctx, knh_Array_t *array, int 
 	{
 		if (C_bcid(cid) == CLASS_Array)  // case Array Generics:
 		{
-			knh_Array_t *a = (knh_Array_t*)array->list[idx];
+			kArray *a = (kArray*)array->list[idx];
 			val = json_object_knhary_object_to_json(ctx, a, cid, 1);
 		}
 		else if (O_cid(array->list[idx]) == CLASS_Json) // case Json object:
 		{
-			knh_RawPtr_t *p = (knh_RawPtr_t*)array->list[idx];
+			kRawPtr *p = (kRawPtr*)array->list[idx];
 			val = (json_object*)p->rawptr;
 		}
 		else
@@ -199,10 +199,10 @@ static json_object* json_object_knhary_to_json(CTX ctx, knh_Array_t *array, int 
 }
 
 /* ------------------------------------------------------------------------ */
-// translate [knh_Object_t -> json_object]
+// translate [kObject -> json_object]
 // @return json_object* or NULL
 
-static json_object *json_object_knh_to_json(CTX ctx, knh_Object_t *o, kunbox_t n)
+static json_object *json_object_knh_to_json(CTX ctx, kObject *o, kunbox_t n)
 {
 	json_object *val = NULL;
 	kclass_t cid = O_cid(o);
@@ -225,14 +225,14 @@ static json_object *json_object_knh_to_json(CTX ctx, knh_Object_t *o, kunbox_t n
 	}
 	case CLASS_String:
 	{
-		knh_String_t *s = (knh_String_t *) o;
+		kString *s = (kString *) o;
 		val = json_object_new_string_len(S_totext(s), S_size(s));
 		//val = json_object_new_string(S_totext(s));
 		break;
 	}
 	case CLASS_Array:
 	{
-		knh_Array_t *a = (knh_Array_t *) o;
+		kArray *a = (kArray *) o;
 		val = json_object_knhary_object_to_json(ctx, a, cid, 0);
 		break;
 	}
@@ -240,12 +240,12 @@ static json_object *json_object_knh_to_json(CTX ctx, knh_Object_t *o, kunbox_t n
 	{
 		if (C_bcid(cid) == CLASS_Array) // case Array Generics:
 		{
-			knh_Array_t *a = (knh_Array_t *) o;
+			kArray *a = (kArray *) o;
 			val = json_object_knhary_object_to_json(ctx, a, cid, 1);
 		}
 		else if (cid == CLASS_Json) // case Json object:
 		{
-			knh_RawPtr_t *p = (knh_RawPtr_t *) o;
+			kRawPtr *p = (kRawPtr *) o;
 			val = (json_object*)p->rawptr;
 		}
 		else
@@ -282,7 +282,7 @@ KMETHOD Json_parse(CTX ctx, ksfp_t *sfp _RIX)
 		DBG_P("[ERROR] Json parse failed to parse ==> new Json()");
 		obj = json_object_new_object();
 	}
-	knh_RawPtr_t *r = new_Json(ctx, obj);
+	kRawPtr *r = new_Json(ctx, obj);
 	RETURN_(r);
 }
 
@@ -302,7 +302,7 @@ KMETHOD Json_stringify(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD Json_get(CTX ctx, ksfp_t *sfp _RIX)
 {
 	json_object *obj = RawPtr_to(json_object *, sfp[0]);
-	knh_Object_t *o = KNH_NULL;
+	kObject *o = KNH_NULL;
 	if (IS_Json(obj)){
 		if (IS_String(sfp[1].o)) {
 			char *key = String_to(char *, sfp[1]);
@@ -319,7 +319,7 @@ KMETHOD Json_get(CTX ctx, ksfp_t *sfp _RIX)
 	} else {
 		DBG_P("[ERROR] Json get this object is error ==> 0");
 	}
-	o = (knh_Object_t*)new_Int(ctx, 0);
+	o = (kObject*)new_Int(ctx, 0);
 	
 	RET_SUCCESS:;
 	RETURN_(o);
@@ -368,7 +368,7 @@ KMETHOD Json_opHAS(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD Json_getKeys(CTX ctx, ksfp_t *sfp _RIX)
 {
 	json_object *obj = RawPtr_to(json_object *, sfp[0]);
-	knh_Array_t *a = NULL;
+	kArray *a = NULL;
 	if (IS_Json(obj)) {
 		lh_table *table = json_object_get_object(obj);
 		a = new_Array(ctx, CLASS_String, table->count);
@@ -406,7 +406,7 @@ KMETHOD Json_delete(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//static void _json_set(CTX ctx, knh_String_t *str, knh_Object_t *o, json_object *json)
+//static void _json_set(CTX ctx, kString *str, kObject *o, json_object *json)
 //{
 //	char *key = (char *) S_totext(str);
 //	json_object *val = json_object_knh_to_json(ctx, o, 0);
@@ -423,7 +423,7 @@ KMETHOD Json_delete(CTX ctx, ksfp_t *sfp _RIX)
  * TODO Thread safe 
  **/
 //static int map_index = -1;
-//static knh_String_t *json_key  = NULL;
+//static kString *json_key  = NULL;
 //static json_object  *g_json    = NULL;
 //static void map_traverse_init(json_object *json)
 //{
@@ -433,13 +433,13 @@ KMETHOD Json_delete(CTX ctx, ksfp_t *sfp _RIX)
 //}
 
 /* ------------------------------------------------------------------------ */
-//static void map_traverse(CTX ctx, knh_Object_t *o)
+//static void map_traverse(CTX ctx, kObject *o)
 //{
 //	json_object *json = g_json;
 //	if (map_index % 2 == 0) {
 //		_json_set(ctx, json_key, o, json);
 //	} else {
-//		json_key = (knh_String_t *) o;
+//		json_key = (kString *) o;
 //	}
 //	map_index++;
 //}
@@ -449,9 +449,9 @@ KMETHOD Json_delete(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD Map_toJson(CTX ctx, ksfp_t *sfp _RIX)
 {
-	//knh_Map_t *map = sfp[0].m;
+	//kMap *map = sfp[0].m;
 	json_object *json = json_object_new_object();
-	knh_RawPtr_t *ptr = new_Json(ctx, json);
+	kRawPtr *ptr = new_Json(ctx, json);
 	//map_traverse_init(json);
 	//map->dspi->ftrmap(ctx, map->map, map_traverse);
 	RETURN_(ptr);
@@ -462,7 +462,7 @@ static json_object *_json;
 
 KMETHOD Map_toJsonString(CTX ctx, ksfp_t *sfp _RIX)
 {
-	//knh_Map_t *map = sfp[0].m;
+	//kMap *map = sfp[0].m;
 	if (unlikely(_isFirstRead)) {
 		_json = json_object_new_object();
 	}
@@ -637,7 +637,7 @@ static const knh_PackSPI_t pack = {
 static void RETURN_T(CTX ctx, ksfp_t *sfp, kclass_t scid, kclass_t tcid, ksfp_t *vsfp _RIX)
 {
 	if(tcid != scid) {
-		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
+		kTypeMap *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
 		if(tmr != NULL) {
 			klr_setesp(ctx, vsfp+1);
 			knh_TypeMap_exec(ctx, tmr, vsfp, sfp - vsfp + K_RIX);
@@ -656,7 +656,7 @@ static void RETURN_T(CTX ctx, ksfp_t *sfp, kclass_t scid, kclass_t tcid, ksfp_t 
 
 KMETHOD InputStream_readJson(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_InputStream_t *in = sfp[0].in;
+	kInputStream *in = sfp[0].in;
 	const knh_PackSPI_t *packspi = &pack;
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	io2_readAll(ctx, in->io2, cwb->ba);
@@ -670,8 +670,8 @@ KMETHOD InputStream_readJson(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD OutputStream_writeJson(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_OutputStream_t *w = sfp[0].w;
-	knh_RawPtr_t *o = sfp[1].p;
+	kOutputStream *w = sfp[0].w;
+	kRawPtr *o = sfp[1].p;
 	const knh_PackSPI_t *packspi = &pack;
 	kpackAPI_t packer = {w, NULL, NULL};
 	kpackAPI_t *pkr = packspi->pack_init(ctx, &packer);
@@ -684,7 +684,7 @@ KMETHOD OutputStream_writeJson(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD Bytes_writeJson(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_RawPtr_t *o = sfp[1].p;
+	kRawPtr *o = sfp[1].p;
 	const knh_PackSPI_t *packspi = &pack;
 	KNH_SETv(ctx, sfp[0].o, new_BytesOutputStream(ctx, sfp[0].ba));
 	kpackAPI_t packer = {sfp[0].w, NULL, NULL};
@@ -717,12 +717,12 @@ KMETHOD Bytes_readJson(CTX ctx, ksfp_t *sfp _RIX)
 
 #ifdef _SETUP
 
-static void Json_init(CTX ctx, knh_RawPtr_t *po)
+static void Json_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void Json_free(CTX ctx, knh_RawPtr_t *po)
+static void Json_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		DBG_P("Json_free[%p]", po->rawptr);
@@ -731,7 +731,7 @@ static void Json_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defJson(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defJson(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Json";
 	cdef->init = Json_init;

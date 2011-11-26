@@ -82,7 +82,7 @@ static knh_IntData_t TokenConstInt[] = {
 
 static KMETHOD String_tokenize(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
+	kArray *a = new_Array(ctx, CLASS_String, 0);
 	size_t i;
 	tenv_t tenvbuf = {
 		1,
@@ -94,7 +94,7 @@ static KMETHOD String_tokenize(CTX ctx, ksfp_t *sfp _RIX)
 	};
 	parse(ctx, &tenvbuf, 0);
 	for(i = 0; i < knh_Array_size(a); i++) {
-		knh_Token_t *tk = (knh_Token_t*)a->list[i];
+		kToken *tk = (kToken*)a->list[i];
 		KNH_SETv(ctx, a->list[i], tk->text);
 	}
 	RETURN_(a);
@@ -104,7 +104,7 @@ static KMETHOD String_tokenize(CTX ctx, ksfp_t *sfp _RIX)
 
 static KMETHOD Lang_tokenize(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *a = (knh_Array_t*)new_ReturnObject(ctx, sfp);
+	kArray *a = (kArray*)new_ReturnObject(ctx, sfp);
 	tenv_t tenvbuf = {
 		1,
 		a,
@@ -119,9 +119,9 @@ static KMETHOD Lang_tokenize(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 // only used in term.c
-knh_Array_t* new_TokenArray(CTX ctx, const char *text, kline_t uline)
+kArray* new_TokenArray(CTX ctx, const char *text, kline_t uline)
 {
-	knh_Array_t *a = (knh_Array_t*)new_Array0(ctx, 0);
+	kArray *a = (kArray*)new_Array0(ctx, 0);
 	PUSH_GCSTACK(ctx, a);
 	tenv_t tenvbuf = {
 		uline,
@@ -142,9 +142,9 @@ knh_Array_t* new_TokenArray(CTX ctx, const char *text, kline_t uline)
 
 static KMETHOD Lang_newBlock(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Lang_t *lang = ctx->share->corelang;
+	kLang *lang = ctx->share->corelang;
 	klr_setesp(ctx, sfp+5);
-	knh_Array_t *a = new_Array(ctx, CLASS_Token, 0);
+	kArray *a = new_Array(ctx, CLASS_Token, 0);
 	KNH_SETv(ctx, sfp[4].o, a);
 	tenv_t tenvbuf = {
 		sfp[2].ivalue == 0 ? 1 : (kline_t)sfp[2].ivalue,
@@ -163,12 +163,12 @@ static KMETHOD Lang_newBlock(CTX ctx, ksfp_t *sfp _RIX)
 //
 //static KMETHOD Block_eval(CTX ctx, ksfp_t *sfp _RIX)
 //{
-//	knh_Lang_t *lang = ctx->share->corelang;
-//	knh_Block_t *bk = sfp[1].bk;
+//	kLang *lang = ctx->share->corelang;
+//	kBlock *bk = sfp[1].bk;
 //	size_t i;
 //	for(i = 0; i < knh_Array_size(bk->blocks); i++) {
-//		knh_Stmt_t *stmt = (knh_Stmt_t*)bk->blocks->list[i];
-//		knh_Method_t *mtd = NULL;//Lang_getEvalNULL(ctx, lang, stmt->key);
+//		kStmt *stmt = (kStmt*)bk->blocks->list[i];
+//		kMethod *mtd = NULL;//Lang_getEvalNULL(ctx, lang, stmt->key);
 //		if(mtd != NULL) {
 //
 //		}
@@ -180,12 +180,12 @@ static KMETHOD Lang_newBlock(CTX ctx, ksfp_t *sfp _RIX)
 //
 //static KMETHOD Block_typeCheck(CTX ctx, ksfp_t *sfp _RIX)
 //{
-//	knh_Lang_t *lang = ctx->share->corelang;
-//	knh_Block_t *bk = sfp[0].bk;
+//	kLang *lang = ctx->share->corelang;
+//	kBlock *bk = sfp[0].bk;
 //	size_t i;
 //	for(i = 0; i < knh_Array_size(bk->blocks); i++) {
-//		knh_Stmt_t *stmt = (knh_Stmt_t*)bk->blocks->list[i];
-//		knh_Method_t *mtd = NULL;//Lang_getTypeCheckNULL(ctx, lang, stmt->key);
+//		kStmt *stmt = (kStmt*)bk->blocks->list[i];
+//		kMethod *mtd = NULL;//Lang_getTypeCheckNULL(ctx, lang, stmt->key);
 //		if(mtd != NULL) {
 //
 //		}
@@ -202,50 +202,50 @@ static KMETHOD Lang_newBlock(CTX ctx, ksfp_t *sfp _RIX)
 
 static KMETHOD Token_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	kToken *tok = (kToken*)sfp[0].o;
 	RETURNi_(tok->token);
 }
 
 static KMETHOD Token_getText(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	kToken *tok = (kToken*)sfp[0].o;
 	RETURN_(tok->text);
 }
 
 static KMETHOD Token_getLine(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	kToken *tok = (kToken*)sfp[0].o;
 	RETURNi_(ULINE_line(tok->uline));
 }
 
 static KMETHOD Token_getPosition(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	kToken *tok = (kToken*)sfp[0].o;
 	RETURNi_(tok->lpos);
 }
 
 static KMETHOD Token_error(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	kToken *tok = (kToken*)sfp[0].o;
 	knh_perror(ctx, ERR_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
 }
 
 static KMETHOD Token_warn(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	kToken *tok = (kToken*)sfp[0].o;
 	knh_perror(ctx, WARN_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
 }
 
 static KMETHOD Token_info(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
+	kToken *tok = (kToken*)sfp[0].o;
 	knh_perror(ctx, INFO_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
 }
 
 
 /* ------------------------------------------------------------------------ */
 
-static kline_t readQuote(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes_t *ba, int quote)
+static kline_t readQuote(CTX ctx, kInputStream *in, kline_t line, kBytes *ba, int quote)
 {
 	int ch, prev = quote;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -260,7 +260,7 @@ static kline_t readQuote(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes
 	return line;
 }
 
-static kline_t readComment(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes_t *ba)
+static kline_t readComment(CTX ctx, kInputStream *in, kline_t line, kBytes *ba)
 {
 	int ch, prev = 0, level = 1;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -275,7 +275,7 @@ static kline_t readComment(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Byt
 	return line;
 }
 
-static kline_t readChunk(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes_t *ba)
+static kline_t readChunk(CTX ctx, kInputStream *in, kline_t line, kBytes *ba)
 {
 	int ch;
 	int prev = 0, isBLOCK = 0;
@@ -314,17 +314,17 @@ static int isempty(kbytes_t t)
 	return 1;
 }
 
-static void readFile(CTX ctx, knh_Path_t *path)
+static void readFile(CTX ctx, kPath *path)
 {
-	knh_io2_t *io2 = path->dpi->io2openNULL(ctx, path, "r", NULL);
+	kio_t *io2 = path->dpi->io2openNULL(ctx, path, "r", NULL);
 	INIT_GCSTACK(ctx);
 	if(io2 != NULL) {
-		knh_InputStream_t *in = new_InputStream(ctx, io2, path);
+		kInputStream *in = new_InputStream(ctx, io2, path);
 		PUSH_GCSTACK(ctx, in);
 		kline_t uline = 1;
 		kuri_t uri = knh_getURI(ctx, S_tobytes(path->urn));
 		ULINE_setURI(uline, uri);
-		knh_Bytes_t*ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
+		kBytes*ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 		PUSH_GCSTACK(ctx, ba);
 		kline_t linenum = uline;
 		do {

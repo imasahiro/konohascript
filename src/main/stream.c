@@ -39,7 +39,7 @@ extern "C" {
 
 /* ************************************************************************ */
 
-void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, kbytes_t t)
+void knh_buff_addpath(CTX ctx, kBytes *ba, size_t pos, int needsSEP, kbytes_t t)
 {
 	size_t i;
 	if(needsSEP) {
@@ -54,7 +54,7 @@ void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, kbytes
 	}
 }
 
-void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, kbytes_t t)
+void knh_buff_addospath(CTX ctx, kBytes *ba, size_t pos, int needsSEP, kbytes_t t)
 {
 	size_t i;
 	if(needsSEP) {
@@ -74,7 +74,7 @@ void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, kbyt
 	}
 }
 
-void knh_buff_trim(CTX ctx, knh_Bytes_t *ba, size_t pos, int ch)
+void knh_buff_trim(CTX ctx, kBytes *ba, size_t pos, int ch)
 {
 	kchar_t *ubuf = ba->bu.ubuf + pos;
 	long i, len = BA_size(ba) - pos;
@@ -97,9 +97,9 @@ static const char *new_cwbtext(CTX ctx, CWB_t *cwb, size_t *lenref)
 	return (const char*)newtext;
 }
 
-KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path)
+KNHAPI2(kPath*) new_Path(CTX ctx, kString *path)
 {
-	knh_Path_t *pth = new_(Path);
+	kPath *pth = new_(Path);
 	KNH_SETv(ctx, pth->urn, path);
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, S_tobytes(path));
@@ -114,7 +114,7 @@ KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path)
 	return pth;
 }
 
-static void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, kbytes_t path)
+static void knh_buff_addScriptPath(CTX ctx, kBytes *ba, size_t pos, kNameSpace *ns, kbytes_t path)
 {
 	kbytes_t bpath = knh_bytes_next(path, ':');
 	knh_buff_addpath(ctx, ba, pos, 0, B(ns->path->ospath));
@@ -124,9 +124,9 @@ static void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_Nam
 	knh_buff_addospath(ctx, ba, pos, 1, bpath);
 }
 
-knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns)
+kPath *new_ScriptPath(CTX ctx, kString *urn, kNameSpace *ns)
 {
-	knh_Path_t *pth = new_(Path);
+	kPath *pth = new_(Path);
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	KNH_SETv(ctx, pth->urn, urn);
 	kbytes_t bpath = knh_bytes_next(S_tobytes(urn), ':');
@@ -141,9 +141,9 @@ knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns)
 #include <dirent.h>
 #endif
 
-knh_Array_t *knh_PathDir_toArray(CTX ctx, knh_Path_t *path)
+kArray *knh_PathDir_toArray(CTX ctx, kPath *path)
 {
-	knh_Array_t *a = new_ArrayG(ctx, CLASS_StringARRAY, 0);
+	kArray *a = new_ArrayG(ctx, CLASS_StringARRAY, 0);
 #ifdef K_USING_POSIX_
 	DIR *dirptr = opendir(path->ospath);
 	if(dirptr != NULL) {
@@ -162,19 +162,19 @@ knh_Array_t *knh_PathDir_toArray(CTX ctx, knh_Path_t *path)
 /* ------------------------------------------------------------------------ */
 /* K_DPI_STREAM */
 
-static size_t io2_writeNOP(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+static size_t io2_writeNOP(CTX ctx, kio_t *io2, const char *buf, size_t bufsiz)
 {
 	return 0;
 }
-static kbool_t io2_readNOP(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_readNOP(CTX ctx, kio_t *io2)
 {
 	return 0;
 }
-static void io2_closeNOP(CTX ctx, knh_io2_t *io2)
+static void io2_closeNOP(CTX ctx, kio_t *io2)
 {
 }
 
-static kbool_t io2_readFILE(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_readFILE(CTX ctx, kio_t *io2)
 {
 	if(io2->bufsiz == 0) {
 		io2->bufsiz = K_PAGESIZE;
@@ -197,7 +197,7 @@ static kbool_t io2_readFILE(CTX ctx, knh_io2_t *io2)
 	}
 }
 
-static size_t io2_writeFILE(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+static size_t io2_writeFILE(CTX ctx, kio_t *io2, const char *buf, size_t bufsiz)
 {
 	fflush(io2->fp);
 	ssize_t size = fwrite(buf, 1, bufsiz, io2->fp);
@@ -212,16 +212,16 @@ static size_t io2_writeFILE(CTX ctx, knh_io2_t *io2, const char *buf, size_t buf
 	return size;
 }
 
-static void io2_closeFILE(CTX ctx, knh_io2_t *io2)
+static void io2_closeFILE(CTX ctx, kio_t *io2)
 {
 	DBG_ASSERT(io2->isRunning == 1);
 	fclose(io2->fp);
 	io2->isRunning = 0;
 }
 
-knh_io2_t* new_FILE(CTX ctx, FILE *fp, size_t bufsiz)
+kio_t* new_FILE(CTX ctx, FILE *fp, size_t bufsiz)
 {
-	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	kio_t *io2 = KNH_MALLOC(ctx, sizeof(kio_t));
 	io2->fp  = fp;
 	io2->isRunning = 1;
 	io2->bufsiz = bufsiz;
@@ -240,7 +240,7 @@ knh_io2_t* new_FILE(CTX ctx, FILE *fp, size_t bufsiz)
 	return io2;
 }
 
-static kbool_t io2_blockread(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_blockread(CTX ctx, kio_t *io2)
 {
 	if(io2->bufsiz == 0) {
 		io2->bufsiz = K_PAGESIZE;
@@ -263,7 +263,7 @@ static kbool_t io2_blockread(CTX ctx, knh_io2_t *io2)
 	}
 }
 
-static kbool_t io2_unblockread(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_unblockread(CTX ctx, kio_t *io2)
 {
 	int fd = io2->fd;
 	fd_set fds;
@@ -285,7 +285,7 @@ static kbool_t io2_unblockread(CTX ctx, knh_io2_t *io2)
 	return 0;
 }
 
-static size_t io2_blockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+static size_t io2_blockwrite(CTX ctx, kio_t *io2, const char *buf, size_t bufsiz)
 {
 	int fd = io2->fd;
 	ssize_t size = write(fd, buf, bufsiz);
@@ -296,7 +296,7 @@ static size_t io2_blockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t bu
 	return 0;
 }
 
-static size_t io2_unblockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t size)
+static size_t io2_unblockwrite(CTX ctx, kio_t *io2, const char *buf, size_t size)
 {
 	int fd = io2->fd;
 	fd_set fds;
@@ -315,16 +315,16 @@ static size_t io2_unblockwrite(CTX ctx, knh_io2_t *io2, const char *buf, size_t 
 	return 0;
 }
 
-static void io2_closeFD(CTX ctx, knh_io2_t *io2)
+static void io2_closeFD(CTX ctx, kio_t *io2)
 {
 	DBG_ASSERT(io2->isRunning == 1);
 	close(io2->fd);
 	io2->isRunning = 0;
 }
 
-knh_io2_t* new_io2(CTX ctx, int fd, size_t bufsiz)
+kio_t* new_io2(CTX ctx, int fd, size_t bufsiz)
 {
-	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	kio_t *io2 = KNH_MALLOC(ctx, sizeof(kio_t));
 	io2->handler  = NULL;
 	io2->handler2 = NULL;
 	io2->fd = fd;
@@ -345,9 +345,9 @@ knh_io2_t* new_io2(CTX ctx, int fd, size_t bufsiz)
 	return io2;
 }
 
-knh_io2_t* new_io2ReadBuffer(CTX ctx, const char *buf, size_t bufsiz)
+kio_t* new_io2ReadBuffer(CTX ctx, const char *buf, size_t bufsiz)
 {
-	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	kio_t *io2 = KNH_MALLOC(ctx, sizeof(kio_t));
 	io2->handler  = NULL;
 	io2->handler2 = NULL;
 	io2->fd = -1;
@@ -367,13 +367,13 @@ knh_io2_t* new_io2ReadBuffer(CTX ctx, const char *buf, size_t bufsiz)
 	return io2;
 }
 
-static size_t io2_writeBytes(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+static size_t io2_writeBytes(CTX ctx, kio_t *io2, const char *buf, size_t bufsiz)
 {
 	knh_Bytes_write2(ctx, io2->baNC, buf, bufsiz);
 	return bufsiz;
 }
 
-static void io2_closeBytes(CTX ctx, knh_io2_t *io2)
+static void io2_closeBytes(CTX ctx, kio_t *io2)
 {
 	io2->_blockwrite    = io2_writeNOP;
 	io2->_unblockwrite  = io2_writeNOP;
@@ -381,9 +381,9 @@ static void io2_closeBytes(CTX ctx, knh_io2_t *io2)
 	io2->isRunning = 0;
 }
 
-knh_io2_t* new_io2WriteBuffer(CTX ctx, knh_Bytes_t *ba)
+kio_t* new_io2WriteBuffer(CTX ctx, kBytes *ba)
 {
-	knh_io2_t *io2 = KNH_MALLOC(ctx, sizeof(knh_io2_t));
+	kio_t *io2 = KNH_MALLOC(ctx, sizeof(kio_t));
 	io2->baNC  = ba;
 	io2->isRunning = 1;
 	io2->buffer = NULL;
@@ -400,9 +400,9 @@ knh_io2_t* new_io2WriteBuffer(CTX ctx, knh_Bytes_t *ba)
 	return io2;
 }
 
-knh_io2_t *io2_null(void)
+kio_t *io2_null(void)
 {
-	static knh_io2_t io2_dummy = {
+	static kio_t io2_dummy = {
 			{0}, NULL
 	};
 	io2_dummy._close = io2_closeNOP;
@@ -411,7 +411,7 @@ knh_io2_t *io2_null(void)
 	return &io2_dummy;
 }
 
-void io2_free(CTX ctx, knh_io2_t *io2)
+void io2_free(CTX ctx, kio_t *io2)
 {
 	if(io2->isRunning == 1) {
 		// TODO(@imasahiro) need flush
@@ -426,11 +426,11 @@ void io2_free(CTX ctx, knh_io2_t *io2)
 		io2->tail = 0;
 	}
 	if(io2 != io2_null()) {
-		KNH_FREE(ctx, io2, sizeof(knh_io2_t));
+		KNH_FREE(ctx, io2, sizeof(kio_t));
 	}
 }
 
-void io2_close(CTX ctx, knh_io2_t *io2)
+void io2_close(CTX ctx, kio_t *io2)
 {
 	if(io2->isRunning == 1) {
 		io2->_close(ctx, io2);
@@ -439,12 +439,12 @@ void io2_close(CTX ctx, knh_io2_t *io2)
 	}
 }
 
-kbool_t io2_isClosed(CTX ctx, knh_io2_t *io2)
+kbool_t io2_isClosed(CTX ctx, kio_t *io2)
 {
 	return (io2->isRunning == 0 && io2->top >= io2->tail);
 }
 
-int io2_getc(CTX ctx, knh_io2_t *io2)
+int io2_getc(CTX ctx, kio_t *io2)
 {
 	int ch = EOF;
 	if(io2->top < io2->tail) {
@@ -461,7 +461,7 @@ int io2_getc(CTX ctx, knh_io2_t *io2)
 	return ch;
 }
 
-size_t io2_read(CTX ctx, knh_io2_t *io2, char *buf, size_t bufsiz)
+size_t io2_read(CTX ctx, kio_t *io2, char *buf, size_t bufsiz)
 {
 	size_t rsize = 0;
 	while(bufsiz > 0) {
@@ -486,7 +486,7 @@ size_t io2_read(CTX ctx, knh_io2_t *io2, char *buf, size_t bufsiz)
 	return rsize;
 }
 
-static knh_String_t *CWB_newLine(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *dec)
+static kString *CWB_newLine(CTX ctx, CWB_t *cwb, kStringDecoder *dec)
 {
 	if(CWB_size(cwb) > 0) {
 		if(cwb->ba->bu.buf[BA_size(cwb->ba) - 1] == '\r') {
@@ -495,7 +495,7 @@ static knh_String_t *CWB_newLine(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *dec)
 			if(CWB_size(cwb) == 0) return TS_EMPTY;
 		}
 		if(dec == NULL) {
-			return CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER);
+			return CWB_newString(ctx, cwb, SPOL_POOLNEVER);
 		}
 		else {
 			return CWB_newStringDECODE(ctx, cwb, dec);
@@ -504,7 +504,7 @@ static knh_String_t *CWB_newLine(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *dec)
 	return TS_EMPTY;
 }
 
-knh_String_t* io2_readLine(CTX ctx, knh_io2_t *io2, knh_StringDecoder_t *dec)
+kString* io2_readLine(CTX ctx, kio_t *io2, kStringDecoder *dec)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	while(io2->isRunning) {
@@ -533,7 +533,7 @@ knh_String_t* io2_readLine(CTX ctx, knh_io2_t *io2, knh_StringDecoder_t *dec)
 	return KNH_TNULL(String);
 }
 
-void io2_readAll(CTX ctx, knh_io2_t *io2, knh_Bytes_t *ba)
+void io2_readAll(CTX ctx, kio_t *io2, kBytes *ba)
 {
 	while(io2->isRunning == 1) {
 		if(!(io2->top < io2->tail)) {
@@ -547,7 +547,7 @@ void io2_readAll(CTX ctx, knh_io2_t *io2, knh_Bytes_t *ba)
 	}
 }
 
-void io2_flush(CTX ctx, knh_io2_t *io2)
+void io2_flush(CTX ctx, kio_t *io2)
 {
 	if(io2->bufsiz > 0 && io2->tail > 0) {
 		io2->_write(ctx, io2, io2->buffer, io2->tail);
@@ -555,7 +555,7 @@ void io2_flush(CTX ctx, knh_io2_t *io2)
 	}
 }
 
-size_t io2_write(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
+size_t io2_write(CTX ctx, kio_t *io2, const char *buf, size_t bufsiz)
 {
 	if(io2->bufsiz > 0) {
 		if(io2->tail + bufsiz < io2->bufsiz) {
@@ -574,22 +574,22 @@ size_t io2_write(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz)
 	return io2->_write(ctx, io2, buf, bufsiz);
 }
 
-size_t io2_writeMultiByteChar(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufsiz, knh_StringEncoder_t *enc)
+size_t io2_writeMultiByteChar(CTX ctx, kio_t *io2, const char *buf, size_t bufsiz, kStringEncoder *enc)
 {
 	KNH_TODO("enc");
 	return io2->_write(ctx, io2, buf, bufsiz);
 }
 
-kbool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
+kbool_t NOFILE_exists(CTX ctx, kPath *path)
 {
 	return 0;
 }
-void NOFILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+void NOFILE_ospath(CTX ctx, kPath *path, kNameSpace *ns)
 {
 	path->ospath ="";
 	path->asize = 0;
 }
-knh_io2_t* NOFILE_openNULL(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+kio_t* NOFILE_openNULL(CTX ctx, kPath *path, const char *mode, kDictMap *conf)
 {
 	return NULL;
 }
@@ -599,11 +599,11 @@ static const knh_PathDPI_t STREAM_NOFILE = {
 	NOFILE_exists, NOFILE_ospath, NOFILE_openNULL,
 };
 
-static kbool_t FILE_exists(CTX ctx, knh_Path_t *path)
+static kbool_t FILE_exists(CTX ctx, kPath *path)
 {
 	return knh_exists(ctx, path->ospath);
 }
-static void FILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+static void FILE_ospath(CTX ctx, kPath *path, kNameSpace *ns)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	kbytes_t urn = S_tobytes(path->urn);
@@ -622,7 +622,7 @@ static void FILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 	}
 	CWB_close(cwb);
 }
-static knh_io2_t* FILE_openNULL(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+static kio_t* FILE_openNULL(CTX ctx, kPath *path, const char *mode, kDictMap *conf)
 {
 	FILE *fp = fopen(path->ospath, mode);
 	if(fp != NULL) return new_FILE(ctx, fp, 4096);
@@ -634,7 +634,7 @@ static const knh_PathDPI_t STREAM_FILE = {
 	FILE_exists, FILE_ospath, FILE_openNULL,
 };
 
-static void SCRIPT_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+static void SCRIPT_ospath(CTX ctx, kPath *path, kNameSpace *ns)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	kbytes_t bpath = knh_bytes_next(S_tobytes(path->urn), ':');
@@ -654,7 +654,7 @@ static const knh_PathDPI_t STREAM_SCRIPT = {
 
 #include<curl/curl.h>
 
-static kbool_t CURL_exists(CTX ctx, knh_Path_t *path)
+static kbool_t CURL_exists(CTX ctx, kPath *path)
 {
 	kbool_t res = 0;
 	CURL *curl = curl_easy_init();
@@ -667,7 +667,7 @@ static kbool_t CURL_exists(CTX ctx, knh_Path_t *path)
 	return res;
 }
 
-static void CURL_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
+static void CURL_ospath(CTX ctx, kPath *path, kNameSpace *ns)
 {
 	path->ospath = NULL;
 	path->asize = 0;
@@ -704,7 +704,7 @@ static size_t write_callback(char *buffer, size_t size, size_t nitems, void *use
 	return size;
 }
 
-static knh_io_t CURL_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictMap_t *conf)
+static int CURL_open(CTX ctx, kPath *path, const char *mode, kDictMap *conf)
 {
 	curl_t *cp = knh_malloc(ctx, sizeof(curl_t));
 	memset(cp, 0, sizeof(curl_t));
@@ -728,10 +728,10 @@ static knh_io_t CURL_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictM
 		knh_free(ctx, cp, sizeof(curl_t));
 		cp = NULL;
 	}
-	return (knh_io_t)cp;
+	return (int)cp;
 }
 
-static kbool_t CURL_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
+static kbool_t CURL_info(CTX ctx, int fd, kObject *o)
 {
 	//	if(cp->contenttype == NULL){
 	//		char *type = NULL;
@@ -819,7 +819,7 @@ static int use_buffer(curl_t *cp, int want)
 	return 0;
 }
 
-//static kintptr_t CURL_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+//static kintptr_t CURL_read(CTX ctx, int fd, char *buf, size_t bufsiz)
 //{
 //	curl_t *cp = (curl_t*)fd;
 //	fill_buffer(cp, bufsiz, 1);
@@ -832,7 +832,7 @@ static int use_buffer(curl_t *cp, int want)
 //	return bufsiz;
 //}
 //
-//static kbool_t CURL_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
+//static kbool_t CURL_readline(CTX ctx, int fd, kBytes *ba)
 //{
 //	curl_t *cp = (curl_t*)fd;
 //	int ret = 0;
@@ -865,7 +865,7 @@ static int use_buffer(curl_t *cp, int want)
 //	}
 //}
 //
-//static void CURL_close(CTX ctx, knh_io_t fd)
+//static void CURL_close(CTX ctx, int fd)
 //{
 //	curl_t *cp = (curl_t*)fd;
 //	curl_multi_remove_handle(cp->multi_handle, cp->curl);
@@ -874,7 +874,7 @@ static int use_buffer(curl_t *cp, int want)
 //	knh_free(ctx, cp, sizeof(curl_t));
 //}
 //
-//static int CURL_feof(CTX ctx, knh_io_t fd)
+//static int CURL_feof(CTX ctx, int fd)
 //{
 //	curl_t *cp = (curl_t*)fd;
 //	int ret = 0;
@@ -884,7 +884,7 @@ static int use_buffer(curl_t *cp, int want)
 //	return ret;
 //}
 //
-//static int CURL_getc(CTX ctx, knh_io_t fd)
+//static int CURL_getc(CTX ctx, int fd)
 //{
 //	curl_t *file = (curl_t*)fd;
 //	if(!file->buffer_pos || file->buffer_pos < file->buffer_len)
@@ -892,12 +892,12 @@ static int use_buffer(curl_t *cp, int want)
 //	return file->buffer[file->buffer_pos++];
 //}
 //
-//static kintptr_t CURL_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+//static kintptr_t CURL_write(CTX ctx, int fd, const char *buf, size_t bufsiz)
 //{
 //	return 0;
 //}
 //
-//static void CURL_flush(CTX ctx, knh_io_t fd)
+//static void CURL_flush(CTX ctx, int fd)
 //{
 //
 //}
@@ -926,9 +926,9 @@ const knh_PathDPI_t *knh_getDefaultPathStreamDPI(void)
 
 /* ------------------------------------------------------------------------ */
 
-KNHAPI2(knh_InputStream_t*) new_InputStream(CTX ctx, knh_io2_t *io2, knh_Path_t *path)
+KNHAPI2(kInputStream*) new_InputStream(CTX ctx, kio_t *io2, kPath *path)
 {
-	knh_InputStream_t* in = new_(InputStream);
+	kInputStream* in = new_(InputStream);
 	in->io2 = io2;
 	if(path != NULL) {
 		KNH_SETv(ctx, in->path, path);
@@ -937,7 +937,7 @@ KNHAPI2(knh_InputStream_t*) new_InputStream(CTX ctx, knh_io2_t *io2, knh_Path_t 
 			io2 = path->dpi->io2openNULL(ctx, path, "r", NULL);
 			if(io2 == NULL) {
 				io2 = io2_null();
-				knh_Object_toNULL(ctx, in);
+				kObjectoNULL(ctx, in);
 			}
 			in->io2 = io2;
 		}
@@ -945,14 +945,14 @@ KNHAPI2(knh_InputStream_t*) new_InputStream(CTX ctx, knh_io2_t *io2, knh_Path_t 
 	return in;
 }
 
-knh_InputStream_t* new_BytesInputStream(CTX ctx, const char *buf, size_t bufsiz)
+kInputStream* new_BytesInputStream(CTX ctx, const char *buf, size_t bufsiz)
 {
 	return new_InputStream(ctx, new_io2ReadBuffer(ctx, buf, bufsiz), NULL);
 }
 
-KNHAPI2(knh_OutputStream_t*) new_OutputStream(CTX ctx,  knh_io2_t *io2, knh_Path_t *path)
+KNHAPI2(kOutputStream*) new_OutputStream(CTX ctx,  kio_t *io2, kPath *path)
 {
-	knh_OutputStream_t* w = new_(OutputStream);
+	kOutputStream* w = new_(OutputStream);
 	w->io2 = io2;
 	if(path != NULL) {
 		KNH_SETv(ctx, w->path, path);
@@ -961,7 +961,7 @@ KNHAPI2(knh_OutputStream_t*) new_OutputStream(CTX ctx,  knh_io2_t *io2, knh_Path
 			io2 = path->dpi->io2openNULL(ctx, path, "a", NULL);
 			if(io2 == NULL) {
 				io2 = io2_null();
-				knh_Object_toNULL(ctx, w);
+				kObjectoNULL(ctx, w);
 			}
 			w->io2 = io2;
 		}
@@ -969,7 +969,7 @@ KNHAPI2(knh_OutputStream_t*) new_OutputStream(CTX ctx,  knh_io2_t *io2, knh_Path
 	return w;
 }
 
-void knh_InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecoder_t *c)
+void knh_InputStream_setCharset(CTX ctx, kInputStream *in, kStringDecoder *c)
 {
 	if(in->decNULL == NULL) {
 		if(c != NULL) {
@@ -987,7 +987,7 @@ void knh_InputStream_setCharset(CTX ctx, knh_InputStream_t *in, knh_StringDecode
 	}
 }
 
-void knh_OutputStream_setCharset(CTX ctx, knh_OutputStream_t *w, knh_StringEncoder_t *c)
+void knh_OutputStream_setCharset(CTX ctx, kOutputStream *w, kStringEncoder *c)
 {
 	if(w->encNULL == NULL) {
 		KNH_INITv(w->encNULL, c);
@@ -997,30 +997,30 @@ void knh_OutputStream_setCharset(CTX ctx, knh_OutputStream_t *w, knh_StringEncod
 	}
 }
 
-KNHAPI2(knh_OutputStream_t*) new_BytesOutputStream(CTX ctx, knh_Bytes_t *ba)
+KNHAPI2(kOutputStream*) new_BytesOutputStream(CTX ctx, kBytes *ba)
 {
-	knh_OutputStream_t *w = new_OutputStream(ctx, new_io2WriteBuffer(ctx, ba), NULL);
+	kOutputStream *w = new_OutputStream(ctx, new_io2WriteBuffer(ctx, ba), NULL);
 	KNH_INITv(w->bufferNULL, ba);
 	return w;
 }
 
-KNHAPI2(void) knh_OutputStream_flush(CTX ctx, knh_OutputStream_t *w)
+KNHAPI2(void) knh_OutputStream_flush(CTX ctx, kOutputStream *w)
 {
 	io2_flush(ctx, w->io2);
 }
 
-KNHAPI2(void) knh_OutputStream_putc(CTX ctx, knh_OutputStream_t *w, int ch)
+KNHAPI2(void) knh_OutputStream_putc(CTX ctx, kOutputStream *w, int ch)
 {
 	char buf[8] = {ch};
 	io2_write(ctx, w->io2, buf, 1);
 }
 
-KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, kbytes_t buf)
+KNHAPI2(void) knh_OutputStream_write(CTX ctx, kOutputStream *w, kbytes_t buf)
 {
 	io2_write(ctx, w->io2, buf.text, buf.len);
 }
 
-KNHAPI2(void) knh_OutputStream_p(CTX ctx, knh_OutputStream_t *w, kbytes_t buf)
+KNHAPI2(void) knh_OutputStream_p(CTX ctx, kOutputStream *w, kbytes_t buf)
 {
 	if(w->encNULL != NULL) {
 		size_t i;
@@ -1038,7 +1038,7 @@ KNHAPI2(void) knh_OutputStream_p(CTX ctx, knh_OutputStream_t *w, kbytes_t buf)
 /* ------------------------------------------------------------------------ */
 /* [knh_write] */
 
-KNHAPI2(void) knh_write_EOL(CTX ctx, knh_OutputStream_t *w)
+KNHAPI2(void) knh_write_EOL(CTX ctx, kOutputStream *w)
 {
 	io2_write(ctx, w->io2, K_OSLINEFEED, sizeof(K_OSLINEFEED) - 1);
 	if(OutputStream_isAutoFlush(w)) {
@@ -1047,7 +1047,7 @@ KNHAPI2(void) knh_write_EOL(CTX ctx, knh_OutputStream_t *w)
 	//OutputStream_setBOL(w, 1);
 }
 
-KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w)
+KNHAPI2(void) knh_write_TAB(CTX ctx, kOutputStream *w)
 {
 	io2_write(ctx, w->io2, "\t", 1);
 }
@@ -1055,41 +1055,41 @@ KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w)
 /* ------------------------------------------------------------------------ */
 /* [datatype] */
 
-void knh_write_bool(CTX ctx, knh_OutputStream_t *w, int b)
+void knh_write_bool(CTX ctx, kOutputStream *w, int b)
 {
 	kbytes_t t = (b) ? STEXT("true") : STEXT("false");
 	io2_write(ctx, w->io2, t.text, t.len);
 }
 
-void knh_write_ptr(CTX ctx, knh_OutputStream_t *w, void *ptr)
+void knh_write_ptr(CTX ctx, kOutputStream *w, void *ptr)
 {
 	char buf[KINT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), "%p", ptr);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_dfmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, kintptr_t n)
+void knh_write_dfmt(CTX ctx, kOutputStream *w, const char *fmt, kintptr_t n)
 {
 	char buf[KINT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_ifmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, kint_t n)
+void knh_write_ifmt(CTX ctx, kOutputStream *w, const char *fmt, kint_t n)
 {
 	char buf[KINT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_ffmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, kfloat_t n)
+void knh_write_ffmt(CTX ctx, kOutputStream *w, const char *fmt, kfloat_t n)
 {
 	char buf[KFLOAT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_flag(CTX ctx, knh_OutputStream_t *w, kflag_t flag)
+void knh_write_flag(CTX ctx, kOutputStream *w, kflag_t flag)
 {
 	kchar_t ubuf[8];
 	kbytes_t t = {{(const char*)ubuf}, 1};
@@ -1106,12 +1106,12 @@ void knh_write_flag(CTX ctx, knh_OutputStream_t *w, kflag_t flag)
 	}
 }
 
-KNHAPI2(void) knh_write_ascii(CTX ctx, knh_OutputStream_t *w, const char *text)
+KNHAPI2(void) knh_write_ascii(CTX ctx, kOutputStream *w, const char *text)
 {
 	io2_write(ctx, w->io2, text, knh_strlen(text));
 }
 
-KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, kbytes_t t, int hasUTF8)
+KNHAPI2(void) knh_write_utf8(CTX ctx, kOutputStream *w, kbytes_t t, int hasUTF8)
 {
 	if(hasUTF8 && w->encNULL != NULL) {
 		io2_writeMultiByteChar(ctx, w->io2, t.text, t.len, w->encNULL);
@@ -1123,7 +1123,7 @@ KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, kbytes_t t, int has
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_quote(CTX ctx, knh_OutputStream_t *w, int quote, kbytes_t t, int hasUTF8)
+void knh_write_quote(CTX ctx, kOutputStream *w, int quote, kbytes_t t, int hasUTF8)
 {
 	kbytes_t sub = t;
 	size_t i, s = 0;
@@ -1158,7 +1158,7 @@ void knh_write_quote(CTX ctx, knh_OutputStream_t *w, int quote, kbytes_t t, int 
 	knh_putc(ctx, w, quote);
 }
 
-void knh_write_cap(CTX ctx, knh_OutputStream_t *w, kbytes_t t, int hasUTF8)
+void knh_write_cap(CTX ctx, kOutputStream *w, kbytes_t t, int hasUTF8)
 {
 	if(islower(t.utext[0])) {
 		knh_putc(ctx, w, toupper(t.utext[0]));
@@ -1167,7 +1167,7 @@ void knh_write_cap(CTX ctx, knh_OutputStream_t *w, kbytes_t t, int hasUTF8)
 	knh_write_utf8(ctx, w, t, hasUTF8);
 }
 
-void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+void knh_write_Object(CTX ctx, kOutputStream *w, Object *o, int level)
 {
 	if(level % 2 == 0) { // TYPED
 		knh_write_ascii(ctx, w, CLASS__(O_cid(o)));
@@ -1184,7 +1184,7 @@ void knh_write_Object(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
 	}
 }
 
-void knh_write_InObject(CTX ctx, knh_OutputStream_t *w, Object *o, int level)
+void knh_write_InObject(CTX ctx, kOutputStream *w, Object *o, int level)
 {
 	if(level % 2 == 0) { // TYPED
 		knh_write_ascii(ctx, w, CLASS__(O_cid(o)));
@@ -1250,7 +1250,7 @@ typedef struct {
 
 /* ------------------------------------------------------------------------ */
 
-void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
+void knh_vprintf(CTX ctx, kOutputStream *w, const char *fmt, va_list ap)
 {
 	knh_valist_t args[10];
 	const char *c = fmt;
@@ -1466,7 +1466,7 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 	}
 }
 
-KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
+KNHAPI2(void) knh_printf(CTX ctx, kOutputStream *w, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap , fmt);
@@ -1485,7 +1485,7 @@ static KMETHOD InputStream_getByte(CTX ctx, ksfp_t *sfp _RIX)
 
 static KMETHOD InputStream_read(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Bytes_t *ba = sfp[1].ba;
+	kBytes *ba = sfp[1].ba;
 	if(IS_NULL(ba)) {
 		ba = new_Bytes(ctx, NULL, 4096);
 		KNH_SETv(ctx, sfp[1].ba, ba);
@@ -1505,13 +1505,13 @@ static KMETHOD InputStream_read(CTX ctx, ksfp_t *sfp _RIX)
 static KMETHOD InputStream_eachLine(CTX ctx, ksfp_t *sfp _RIX)
 {
 	ksfp_t *thissfp = sfp + 2 + K_CALLDELTA;
-	//knh_Method_t *mtd = knh_Func_preset(ctx, sfp[1].fo, thissfp);
+	//kMethod *mtd = knh_Func_preset(ctx, sfp[1].fo, thissfp);
 	while(1) {
-		knh_String_t *line = io2_readLine(ctx, (sfp[0].in)->io2, (sfp[0].in)->decNULL);
+		kString *line = io2_readLine(ctx, (sfp[0].in)->io2, (sfp[0].in)->decNULL);
 		if(IS_NULL(line)) break;
 		KNH_SETv(ctx, thissfp[1].o, line);
 		knh_Func_invoke(ctx, sfp[1].fo, sfp+2, 1);
-//		((knh_context_t*)ctx)->esp = thissfp + 2;
+//		((kcontext_t*)ctx)->esp = thissfp + 2;
 //		(mtd)->fcall_1(ctx, thissfp, K_CALLDELTA);
 	}
 	RETURNvoid_();
@@ -1524,13 +1524,13 @@ static KMETHOD InputStream_isClosed(CTX ctx, ksfp_t *sfp _RIX)
 
 static KMETHOD InputStream_setCharset(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_InputStream_setCharset(ctx, sfp[0].in, (knh_StringDecoder_t*)sfp[1].o);
+	knh_InputStream_setCharset(ctx, sfp[0].in, (kStringDecoder*)sfp[1].o);
 	RETURN_(sfp[1].o);
 }
 
 static KMETHOD OutputStream_putByte(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_OutputStream_t *w = sfp[0].w;
+	kOutputStream *w = sfp[0].w;
 	knh_putc(ctx, w, (int)(sfp[1].ivalue));
 	RETURNvoid_();
 }
@@ -1542,7 +1542,7 @@ static KMETHOD OutputStream_isClosed(CTX ctx, ksfp_t *sfp _RIX)
 
 static KMETHOD OutputStream_setCharset(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_OutputStream_setCharset(ctx, sfp[0].w, (knh_StringEncoder_t*)sfp[1].o);
+	knh_OutputStream_setCharset(ctx, sfp[0].w, (kStringEncoder*)sfp[1].o);
 	RETURN_(sfp[1].o);
 }
 

@@ -27,9 +27,9 @@
 /* --------------- */
 /* Token */
 
-static void Token_init(CTX ctx, knh_RawPtr_t *o)
+static void Token_init(CTX ctx, kRawPtr *o)
 {
-	knh_Token_t *tk = (knh_Token_t*)o;
+	kToken *tk = (kToken*)o;
 	tk->uline     =   0;
 	tk->token     =   TK_NONE;
 	tk->topch     =   0;
@@ -37,16 +37,16 @@ static void Token_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(tk->text, TS_EMPTY);
 }
 
-static void Token_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void Token_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
-	knh_Token_t *tk = (knh_Token_t*)o;
+	kToken *tk = (kToken*)o;
 	KNH_ADDREF(ctx, tk->text);
 	KNH_SIZEREF(ctx);
 }
 
-static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void Token_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
-	knh_Token_t *tk = (knh_Token_t*)o;
+	kToken *tk = (kToken*)o;
 //	if(IS_FMTdump(level)) {
 //		if(tk->uline != 0) {
 //			knh_write(ctx, w, STEXT("+L"));
@@ -59,37 +59,37 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	knh_write(ctx, w, S_tobytes(tk->text));
 }
 
-static const kClassDef TokenDef = {
+static const kclassdef_t TokenDef = {
 	Token_init, TODO_initcopy, Token_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Token_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Token", CFLAG_Token, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Token), 0,
+	NULL, DEFAULT_4, DEFAULT_5, sizeof_O(Token), 0,
 };
 
 /* --------------- */
 /* Sugar */
 
-static void Sugar_init(CTX ctx, knh_RawPtr_t *o)
+static void Sugar_init(CTX ctx, kRawPtr *o)
 {
-	knh_Sugar_t *sgr = (knh_Sugar_t*)o;
+	kSugar *sgr = (kSugar*)o;
 	sgr->sugar = SUGAR_TOKEN;
 	KNH_INITv(sgr->key, TS_EMPTY);
 	KNH_INITv(sgr->rules, new_Array0(ctx, 0));
 }
 
-static void Sugar_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void Sugar_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
-	knh_Sugar_t *sgr = (knh_Sugar_t*)o;
+	kSugar *sgr = (kSugar*)o;
 	KNH_ADDREF(ctx, sgr->key);
 	KNH_ADDREF(ctx, sgr->rules);
 	KNH_SIZEREF(ctx);
 }
 
-static void Sugar_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void Sugar_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
-//	knh_Sugar_t *sugar = (knh_Sugar_t*)o;
+//	kSugar *sugar = (kSugar*)o;
 //	if(IS_FMTdump(level)) {
 //		if(tk->uline != 0) {
 //			knh_write(ctx, w, STEXT("+L"));
@@ -102,21 +102,21 @@ static void Sugar_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 //	knh_write(ctx, w, S_tobytes(tk->text));
 }
 
-static const kClassDef SugarDef = {
+static const kclassdef_t SugarDef = {
 	Sugar_init, TODO_initcopy, Sugar_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Sugar_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Sugar", CFLAG_Sugar, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Sugar), 0,
+	NULL, DEFAULT_4, DEFAULT_5, sizeof_O(Sugar), 0,
 };
 
 /* --------------- */
 /* Expr */
 
-static void Expr_init(CTX ctx, knh_RawPtr_t *o)
+static void Expr_init(CTX ctx, kRawPtr *o)
 {
-	knh_Expr_t *expr = (knh_Expr_t*)o;
+	kExpr *expr = (kExpr*)o;
 	expr->kexpr       =   UEXPR_USER_DEFINED;
 	expr->type       =   TYPE_var;
 	expr->index      =   0;
@@ -125,17 +125,17 @@ static void Expr_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(expr->data,  TS_EMPTY);
 }
 
-static void Expr_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void Expr_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
-	knh_Expr_t *expr = (knh_Expr_t*)o;
+	kExpr *expr = (kExpr*)o;
 	KNH_ADDREF(ctx, expr->token);
 	KNH_ADDREF(ctx, expr->data);
 	KNH_SIZEREF(ctx);
 }
 
-static void Expr_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void Expr_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
-	knh_Expr_t *expr = (knh_Expr_t*)o;
+	kExpr *expr = (kExpr*)o;
 	int i, kexpr = (int)expr->kexpr;
 	switch(kexpr) {
 	// untyped
@@ -186,39 +186,39 @@ static void Expr_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 }
 
-static const kClassDef ExprDef = {
+static const kclassdef_t ExprDef = {
 	Expr_init, TODO_initcopy, Expr_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Expr_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Expr", CFLAG_Expr, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Expr), 0,
+	NULL, DEFAULT_4, DEFAULT_5, sizeof_O(Expr), 0,
 };
 
 /* --------------- */
 /* Stmt */
 
-static void Stmt_init(CTX ctx, knh_RawPtr_t *o)
+static void Stmt_init(CTX ctx, kRawPtr *o)
 {
-	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	kStmt *stmt = (kStmt*)o;
 	stmt->uline      =   0;
 	KNH_INITv(stmt->key,    TS_EMPTY);
 	KNH_INITv(stmt->parent, KNH_NULL);
 	KNH_INITv(stmt->clauseDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, NULL));
 }
 
-static void Stmt_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void Stmt_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
-	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	kStmt *stmt = (kStmt*)o;
 	KNH_ADDREF(ctx, stmt->key);
 	KNH_ADDREF(ctx, stmt->parent);
 	KNH_ADDREF(ctx, stmt->clauseDictMap);
 	KNH_SIZEREF(ctx);
 }
 
-static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void Stmt_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
-	knh_Stmt_t *stmt = (knh_Stmt_t*)o;
+	kStmt *stmt = (kStmt*)o;
 	knh_write_Object(ctx, w, UPCAST(stmt->key), FMT_line);
 	if(IS_FMTdump(level)) {
 		knh_write_EOL(ctx, w); knh_write_TAB(ctx, w);
@@ -226,51 +226,51 @@ static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 }
 
-static const kClassDef StmtDef = {
+static const kclassdef_t StmtDef = {
 	Stmt_init, TODO_initcopy, Stmt_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Stmt_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Stmt", CFLAG_Stmt, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Stmt), 0,
+	NULL, DEFAULT_4, DEFAULT_5, sizeof_O(Stmt), 0,
 };
 
 /* --------------- */
 /* Block */
 
-static void Block_init(CTX ctx, knh_RawPtr_t *o)
+static void Block_init(CTX ctx, kRawPtr *o)
 {
-	knh_Block_t *bk = (knh_Block_t*)o;
+	kBlock *bk = (kBlock*)o;
 	KNH_INITv(bk->parent, KNH_NULL);
 	KNH_INITv(bk->blocks, new_Array0(ctx, 0));
 }
 
-static void Block_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void Block_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
-	knh_Block_t *bk = (knh_Block_t*)o;
+	kBlock *bk = (kBlock*)o;
 	KNH_ADDREF(ctx, bk->parent);
 	KNH_ADDREF(ctx, bk->blocks);
 	KNH_SIZEREF(ctx);
 }
 
-static void Block_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void Block_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
-//	knh_Block_t *bk = (knh_Block_t*)o;
+//	kBlock *bk = (kBlock*)o;
 //	knh_write(ctx, w, S_tobytes(tk->text));
 }
 
-static const kClassDef BlockDef = {
+static const kclassdef_t BlockDef = {
 	Block_init, TODO_initcopy, Block_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Block_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Block", CFLAG_Block, 0, NULL,
-	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Block), 0,
+	NULL, DEFAULT_4, DEFAULT_5, sizeof_O(Block), 0,
 };
 
-static void Lang_init(CTX ctx, knh_RawPtr_t *o)
+static void Lang_init(CTX ctx, kRawPtr *o)
 {
-	knh_Lang_t *lang = (knh_Lang_t*)o;
+	kLang *lang = (kLang*)o;
 	knh_LangEX_t *b;
 #ifdef K_USING_BMGC
 	b = DP(lang);
@@ -284,9 +284,9 @@ static void Lang_init(CTX ctx, knh_RawPtr_t *o)
 	KNH_INITv(lang->gcbuf, new_Array0(ctx, 0));
 }
 
-static void Lang_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
+static void Lang_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
-	knh_Lang_t *lang = (knh_Lang_t*)o;
+	kLang *lang = (kLang*)o;
 	knh_LangEX_t *b = DP(lang);
 	KNH_ADDREF(ctx, lang->name);
 	KNH_ADDREF(ctx, lang->gcbuf);
@@ -299,22 +299,22 @@ static void Lang_reftrace(CTX ctx, knh_RawPtr_t *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static void Lang_free(CTX ctx, knh_RawPtr_t *o)
+static void Lang_free(CTX ctx, kRawPtr *o)
 {
 	BODY_free(ctx, o);
 }
 
-static void Lang_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
+static void Lang_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
 
 }
 
-static const kClassDef LangDef = {
+static const kclassdef_t LangDef = {
 	Lang_init, TODO_initcopy, Lang_reftrace, Lang_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Lang_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, DEFAULT_wdata, DEFAULT_2, DEFAULT_3,
 	"Lang", CFLAG_Lang, sizeof(knh_LangEX_t), NULL,
-	NULL, DEFAULT_4, DEFAULT_5, SIZE_OF_T(Lang), 0,
+	NULL, DEFAULT_4, DEFAULT_5, sizeof_O(Lang), 0,
 };
 

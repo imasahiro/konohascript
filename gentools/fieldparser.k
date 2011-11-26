@@ -18,16 +18,16 @@ typemap.add(["kmethodn_t",       "ASMCODE_TYPE_SHORT"]);
 typemap.add(["kuri_t",           "ASMCODE_TYPE_SHORT"]);
 typemap.add(["ksfp_t*",          "ASMCODE_TYPE_SFPPTR"]);
 typemap.add(["kshare_t",         "ASMCODE_TYPE_VOIDPTR"]);
-typemap.add(["knh_System_t*",       "ASMCODE_TYPE_SYSPTR"]);
+typemap.add(["kSystem*",       "ASMCODE_TYPE_SYSPTR"]);
 typemap.add(["knh_SystemEX_t*",     "ASMCODE_TYPE_SYSB"]);
-typemap.add(["knh_Object_t*",       "ASMCODE_TYPE_OBJECTPTR"]);
-typemap.add(["knh_Object_t**",      "ASMCODE_TYPE_OBJECTPTRPTR"]);
-typemap.add(["knh_hObject_t",       "ASMCODE_TYPE_HOBJECT"]);
-typemap.add(["knh_Array_t*",        "ASMCODE_TYPE_ARRAYPTR"]);
+typemap.add(["kObject*",       "ASMCODE_TYPE_OBJECTPTR"]);
+typemap.add(["kObject**",      "ASMCODE_TYPE_OBJECTPTRPTR"]);
+typemap.add(["kObjectHeader",       "ASMCODE_TYPE_HOBJECT"]);
+typemap.add(["kArray*",        "ASMCODE_TYPE_ARRAYPTR"]);
 typemap.add(["knh_Fmethod",         "ASMCODE_TYPE_FUNCTION"]);
 typemap.add(["knh_Fitrnext",        "ASMCODE_TYPE_FUNCTION"]);
-typemap.add(["knh_OutputStream_t*", "ASMCODE_TYPE_OUSPTR"]);
-typemap.add(["knh_InputStream_t*",  "ASMCODE_TYPE_INSPTR"]);
+typemap.add(["kOutputStream*", "ASMCODE_TYPE_OUSPTR"]);
+typemap.add(["kInputStream*",  "ASMCODE_TYPE_INSPTR"]);
 String toLLVMTYPE(String type) {
 	boolean matched = false;
 	foreach (String[] types in typemap) {
@@ -176,10 +176,10 @@ void genstruct_end(String name, Field[] fa, OutputStream ous) {
 void main (String[] args)
 {
 	targets = [
-		"knh_hObject_t", "knh_Object_t", "knh_Array_t", "knh_ObjectField_t",
-		"knh_OutputStream_t", "knh_InputStream_t", 
-		"ksfp_t", "knh_SystemEX_t", "knh_System_t", "knh_Method_t", "knh_Iterator_t",
-		"knh_context_t"/*knh_context_t must be last */
+		"kObjectHeader", "kObject", "kArray", "kObject",
+		"kOutputStream", "kInputStream", 
+		"ksfp_t", "knh_SystemEX_t", "kSystem", "kMethod", "kIterator",
+		"kcontext_t"/*kcontext_t must be last */
 	]
 
 	OutputStream ous = new OutputStream(file:./src/lang/llvm_struct.h);

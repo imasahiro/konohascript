@@ -63,11 +63,11 @@ static const char *symTK(ktoken_t t)
 	return "TK_UNKNOWN";
 }
 
-static void dumpTokenArray(CTX ctx, knh_Array_t *a, int s, int e)
+static void dumpTokenArray(CTX ctx, kArray *a, int s, int e)
 {
 	fprintf(stdout, "\n");
 	while(s < e) {
-		knh_Token_t *tk = a->tokens[s];
+		kToken *tk = a->tokens[s];
 		fprintf(stdout, "TK(%d) %s %d+%d: '%s'\n", s, symTK(tk->token), (short)tk->uline, tk->lpos, S_totext(tk->text));
 		s++;
 	}
@@ -81,18 +81,18 @@ typedef enum {
 } parserstatus_t;
 
 typedef struct {
-	const knh_context_t *ctx;
-	knh_Array_t         *list;
+	const kcontext_t *ctx;
+	kArray         *list;
 	int cur;         int eol;
 	parserstatus_t       status;
-	knh_String_t        *key;
-	knh_Stmt_t          *stmt;
-	knh_Expr_t          *expr;
-	knh_Lang_t          *lang;
-	knh_NameSpace_t     *ns;
+	kString        *key;
+	kStmt          *stmt;
+	kExpr          *expr;
+	kLang          *lang;
+	kNameSpace     *ns;
 } toks_t;
 
-static toks_t *new_toks(CTX ctx, toks_t *buf, knh_Array_t *a, knh_Lang_t *lang, knh_NameSpace_t *ns)
+static toks_t *new_toks(CTX ctx, toks_t *buf, kArray *a, kLang *lang, kNameSpace *ns)
 {
 	buf->ctx  = ctx;
 	buf->list = a;
@@ -120,15 +120,15 @@ static inline int hasN(toks_t *toks, int n)
 	return (cur < toks->eol);
 }
 
-static inline knh_Token_t *tkN(toks_t *toks, int n)
+static inline kToken *tkN(toks_t *toks, int n)
 {
 	int cur = toks->cur + n;
-	static knh_Token_t dummyEND = {
+	static kToken dummyEND = {
 		{0},
 		TK_NONE, {NULL}, 0
 	};
 	if(cur < toks->eol) {
-		knh_Token_t *tk = toks->list->tokens[cur];
+		kToken *tk = toks->list->tokens[cur];
 		return tk;
 	}
 	return &dummyEND;
@@ -141,9 +141,9 @@ static inline void incN(toks_t *toks, int n)
 
 static int findclose(toks_t *toks, int c, int opench, int closech)
 {
-	knh_Token_t *tkS = toks->list->tokens[c-1];
+	kToken *tkS = toks->list->tokens[c-1];
 	for(;c < toks->eol; c++) {
-		knh_Token_t *tk = toks->list->tokens[c];
+		kToken *tk = toks->list->tokens[c];
 		int ch = tk->topch;
 		if(ch == closech) return c;
 		if(ch == '(') {
@@ -176,7 +176,7 @@ static int nextT(toks_t *toks, int n)
 {
 	int c = n;
 	for(c = n; c < toks->eol; c++) {
-		knh_Token_t *tk = toks->list->tokens[c];
+		kToken *tk = toks->list->tokens[c];
 		if(tk->token == TK_WHITESPACE || tk->token == TK_INDENT) continue;
 		if(tk->token == TK_META) {
 			toks->cur = c;
@@ -208,7 +208,7 @@ static int nextT(toks_t *toks, int n)
 	return toks->eol;
 }
 
-static void ERROR_SyntaxErrorRule(CTX ctx, knh_Token_t *rule, toks_t *toks)
+static void ERROR_SyntaxErrorRule(CTX ctx, kToken *rule, toks_t *toks)
 {
 
 }
@@ -222,7 +222,7 @@ static int isTermRule(toks_t *rule);
 static int isOptionalRule(toks_t *rule);
 static int matchSymbolRule(toks_t *rule, toks_t *toks);
 static int matchTermRule(toks_t *rule, toks_t *toks);
-static knh_Expr_t* matchExpr(CTX ctx, toks_t *toks);
+static kExpr* matchExpr(CTX ctx, toks_t *toks);
 
 static int matchLeft(toks_t *rule, toks_t *toks)
 {
@@ -259,13 +259,13 @@ static int matchLeft(toks_t *rule, toks_t *toks)
 			if(!matchLeft(&sub, toks)) {
 				toks->cur = rollback;
 				rule->cur = sub.eol + 1;
-				knh_Token_t *tk = tkN(rule, 0);
+				kToken *tk = tkN(rule, 0);
 				if(tk->topch == '*') incN(rule, 1);
 			}
 			else {
 				int start = rule->cur;
 				rule->cur = sub.eol + 1;
-				knh_Token_t *tk = tkN(rule, 0);
+				kToken *tk = tkN(rule, 0);
 				if(tk->topch == '*') rule->cur = start;
 			}
 		}
@@ -301,17 +301,17 @@ sugar InterfaceBlock      ::= InterfaceFuncDecl
 sugar InterfaceDecl       ::= "interface" cname InterfaceBlock
 **/
 
-static int matchStmt(CTX ctx, toks_t *toks, knh_Stmt_t *stmt)
+static int matchStmt(CTX ctx, toks_t *toks, kStmt *stmt)
 {
-	knh_Lang_t *lang = toks->lang;
+	kLang *lang = toks->lang;
 	int i, toks_cur = toks->cur; int toks_eol = toks->eol;
 	toks_t rulebuf;
 	while(lang != NULL) {
-		knh_Array_t *l = DP(lang)->stmtRulesNULL;
+		kArray *l = DP(lang)->stmtRulesNULL;
 		if(l != NULL) {
 			toks->status = _Matching;
 			for(i = 0; i < knh_Array_size(l); i++) {
-				knh_Sugar_t *s = (knh_Sugar_t*)l->list[i];
+				kSugar *s = (kSugar*)l->list[i];
 				toks_t *rule = new_toks(ctx, &rulebuf, s->rules, toks->lang, toks->ns);
 				toks->cur = toks_cur; toks->eol = toks_eol;
 				rule->stmt = stmt;
@@ -328,7 +328,7 @@ static int matchStmt(CTX ctx, toks_t *toks, knh_Stmt_t *stmt)
 	}
 	/* ExprStmt */ {
 		toks->cur = toks_cur; toks->eol = toks_eol;
-		knh_Expr_t *expr = matchExpr(ctx, toks);
+		kExpr *expr = matchExpr(ctx, toks);
 		if(expr != NULL) {
 			KNH_SETv(ctx, stmt->key, new_T("ExprStmt"));
 			knh_DictMap_set(ctx, stmt->clauseDictMap, new_T("expr"), expr);
@@ -345,10 +345,10 @@ static kbool_t skipAnotation(toks_t *toks)
 {
 	int c = toks->cur;
 	for(;c < toks->eol; c++) {
-		knh_Token_t *tk = toks->list->tokens[c];
+		kToken *tk = toks->list->tokens[c];
 		if(tk->token == TK_WHITESPACE) continue;
 		if(tk->token == TK_META) {
-			knh_Token_t *tk1 = tkN(toks, 1);
+			kToken *tk1 = tkN(toks, 1);
 			if(tk1->topch == '(') {
 				c = findclose(toks, c+2, '(', ')');
 				if(c == -1) return 0;
@@ -361,14 +361,14 @@ static kbool_t skipAnotation(toks_t *toks)
 	return 1;
 }
 
-static void Stmt_addAnnotation(CTX ctx, knh_Stmt_t *stmt, toks_t *toks)
+static void Stmt_addAnnotation(CTX ctx, kStmt *stmt, toks_t *toks)
 {
 	int c = toks->cur;
 	for(;c < toks->eol; c++) {
-		knh_Token_t *tk = toks->list->tokens[c];
+		kToken *tk = toks->list->tokens[c];
 		if(tk->token == TK_WHITESPACE) continue;
 		if(tk->token == TK_META) {
-			knh_Token_t *tk1 = tkN(toks, 1);
+			kToken *tk1 = tkN(toks, 1);
 			knh_DictMap_set(ctx, stmt->clauseDictMap, tk->text, KNH_TRUE);
 			if(tk1->topch == '(') {
 				// TODO @Annotation(option)
@@ -379,9 +379,9 @@ static void Stmt_addAnnotation(CTX ctx, knh_Stmt_t *stmt, toks_t *toks)
 	}
 }
 
-static knh_Stmt_t *new_Stmt(CTX ctx, knh_Array_t *tlist, int s, int e, knh_Lang_t *lang, knh_NameSpace_t *ns)
+static kStmt *new_Stmt(CTX ctx, kArray *tlist, int s, int e, kLang *lang, kNameSpace *ns)
 {
-	knh_Stmt_t *stmt = new_(Stmt);
+	kStmt *stmt = new_(Stmt);
 	PUSH_GCSTACK(ctx, stmt);
 	toks_t toksbuf, *toks = new_toks(ctx, &toksbuf, tlist, lang, ns);
 	toks->cur = s; toks->eol = e;
@@ -399,14 +399,14 @@ static knh_Stmt_t *new_Stmt(CTX ctx, knh_Array_t *tlist, int s, int e, knh_Lang_
 	return stmt;
 }
 
-knh_Block_t *new_Block(CTX ctx, knh_Array_t *tlist, int s, int e, knh_Lang_t *lang, knh_NameSpace_t *ns)
+kBlock *new_Block(CTX ctx, kArray *tlist, int s, int e, kLang *lang, kNameSpace *ns)
 {
-	knh_Block_t *bk = new_(Block);
+	kBlock *bk = new_(Block);
 	int i = s, indent = 0;
 	PUSH_GCSTACK(ctx, bk);
 	while(i < e) {
 		int start;
-		knh_Token_t *tk = tlist->tokens[i];
+		kToken *tk = tlist->tokens[i];
 		while(tk->token == TK_INDENT) {
 			if(indent == 0) indent = tk->lpos;
 			i++;
@@ -421,7 +421,7 @@ knh_Block_t *new_Block(CTX ctx, knh_Array_t *tlist, int s, int e, knh_Lang_t *la
 		}
 		if(start < i) {
 			INIT_GCSTACK(ctx);
-			knh_Stmt_t *stmt = new_Stmt(ctx, tlist, start, i, lang, ns);
+			kStmt *stmt = new_Stmt(ctx, tlist, start, i, lang, ns);
 			knh_Array_add(ctx, bk->blocks, stmt);
 			KNH_SETv(ctx, stmt->parent, bk);
 			RESET_GCSTACK(ctx);
@@ -435,8 +435,8 @@ knh_Block_t *new_Block(CTX ctx, knh_Array_t *tlist, int s, int e, knh_Lang_t *la
 
 static int checkStmtKey(toks_t *rule)
 {
-	knh_Token_t *tk0 = tkN(rule, 0);
-	knh_Token_t *tk1 = tkN(rule, 1);
+	kToken *tk0 = tkN(rule, 0);
+	kToken *tk1 = tkN(rule, 1);
 	rule->key = NULL;
 	if(tk0->token == TK_SYMBOL && tk1->topch == ':') {
 		rule->key = tk0->text;
@@ -450,25 +450,25 @@ static int checkStmtKey(toks_t *rule)
 
 static int isDeterministic(toks_t *rule)
 {
-	knh_Token_t *tk0 = tkN(rule, 0);
+	kToken *tk0 = tkN(rule, 0);
 	return (tk0->topch == '^');
 }
 
 static int isSymbolRule(toks_t *rule)
 {
-	knh_Token_t *tk0 = tkN(rule, 0);
+	kToken *tk0 = tkN(rule, 0);
 	return (tk0->token == TK_TEXT || tk0->token == TK_STEXT);
 }
 
 static int isTermRule(toks_t *rule)
 {
-	knh_Token_t *tk0 = tkN(rule, 0);
+	kToken *tk0 = tkN(rule, 0);
 	return (tk0->token == TK_USYMBOL || tk0->token == TK_USYMBOL);
 }
 
 static int isOptionalRule(toks_t *rule)
 {
-	knh_Token_t *tk0 = tkN(rule, 0);
+	kToken *tk0 = tkN(rule, 0);
 	return (tk0->topch == '[');
 }
 
@@ -477,15 +477,15 @@ static int matchSymbolRule(toks_t *rule, toks_t *toks)
 	return 1;
 }
 
-typedef knh_Expr_t* (*Fmatch)(CTX, toks_t *);
-static knh_Expr_t* matchTokens(CTX ctx, toks_t *toks);
-static knh_Expr_t* matchName(CTX ctx, toks_t *toks);
-static knh_Expr_t* matchUName(CTX ctx, toks_t *toks);
-static knh_Expr_t* matchType(CTX ctx, toks_t *toks);
-static knh_Expr_t* matchExpr(CTX ctx, toks_t *toks);
-static knh_Expr_t* matchBlock(CTX ctx, toks_t *toks);
+typedef kExpr* (*Fmatch)(CTX, toks_t *);
+static kExpr* matchTokens(CTX ctx, toks_t *toks);
+static kExpr* matchName(CTX ctx, toks_t *toks);
+static kExpr* matchUName(CTX ctx, toks_t *toks);
+static kExpr* matchType(CTX ctx, toks_t *toks);
+static kExpr* matchExpr(CTX ctx, toks_t *toks);
+static kExpr* matchBlock(CTX ctx, toks_t *toks);
 
-static Fmatch findTermFunc(knh_String_t *termType)
+static Fmatch findTermFunc(kString *termType)
 {
 	int ch = S_totext(termType)[0];
 	switch(ch) {
@@ -528,10 +528,10 @@ static Fmatch findTermFunc(knh_String_t *termType)
 
 static int matchTermRule(toks_t *rule, toks_t *toks)
 {
-	const knh_context_t *ctx = toks->ctx;
-	knh_String_t *termType = tkN(rule, 0)->text;
+	const kcontext_t *ctx = toks->ctx;
+	kString *termType = tkN(rule, 0)->text;
 	Fmatch match = findTermFunc(termType);
-	knh_Expr_t *term = match(ctx, toks);
+	kExpr *term = match(ctx, toks);
 	if(term == NULL) {
 		return 0;
 	}
@@ -545,9 +545,9 @@ static int matchTermRule(toks_t *rule, toks_t *toks)
 	return 1;
 }
 
-static knh_Expr_t* new_Expr(CTX ctx, toks_t *toks, kexpr_t t, knh_Token_t *tk)
+static kExpr* new_Expr(CTX ctx, toks_t *toks, kexpr_t t, kToken *tk)
 {
-	knh_Expr_t *expr = new_(Expr);
+	kExpr *expr = new_(Expr);
 	PUSH_GCSTACK(ctx, expr);
 	DBG_ASSERT(tk->token != TK_NONE);
 	KNH_SETv(ctx, expr->token, tk);
@@ -557,10 +557,10 @@ static knh_Expr_t* new_Expr(CTX ctx, toks_t *toks, kexpr_t t, knh_Token_t *tk)
 
 // sugar IntType := "int";
 
-static knh_Expr_t* matchTokens(CTX ctx, toks_t *toks)
+static kExpr* matchTokens(CTX ctx, toks_t *toks)
 {
-	knh_Expr_t *expr = new_Expr(ctx, toks, TEXPR_CONST, tkN(toks, 0));
-	knh_Array_t *a = new_Array(ctx, CLASS_Token, (toks->eol - toks->cur));
+	kExpr *expr = new_Expr(ctx, toks, TEXPR_CONST, tkN(toks, 0));
+	kArray *a = new_Array(ctx, CLASS_Token, (toks->eol - toks->cur));
 	KNH_SETv(ctx, expr->data, a);
 	int i;
 	for(i=toks->cur;i < toks->eol; i++) {
@@ -570,22 +570,22 @@ static knh_Expr_t* matchTokens(CTX ctx, toks_t *toks)
 	return expr;
 }
 
-static knh_Expr_t* matchName(CTX ctx, toks_t *toks)
+static kExpr* matchName(CTX ctx, toks_t *toks)
 {
-	knh_Token_t *tk0 = tkN(toks, 0);
+	kToken *tk0 = tkN(toks, 0);
 	if(tk0->token == TK_SYMBOL) {
-		knh_Expr_t *expr = new_Expr(ctx, toks, UEXPR_TOKEN, tk0);
+		kExpr *expr = new_Expr(ctx, toks, UEXPR_TOKEN, tk0);
 		incN(toks, 1);
 		return expr;
 	}
 	return NULL;
 }
 
-static knh_Expr_t* matchUName(CTX ctx, toks_t *toks)
+static kExpr* matchUName(CTX ctx, toks_t *toks)
 {
-	knh_Token_t *tk0 = tkN(toks, 0);
+	kToken *tk0 = tkN(toks, 0);
 	if(tk0->token == TK_USYMBOL) {
-		knh_Expr_t *expr = new_Expr(ctx, toks, UEXPR_TOKEN, tk0);
+		kExpr *expr = new_Expr(ctx, toks, UEXPR_TOKEN, tk0);
 		incN(toks, 1);
 		return expr;
 	}
@@ -596,10 +596,10 @@ static knh_Expr_t* matchUName(CTX ctx, toks_t *toks)
 //sugar IntType   ::= "int"
 //sugar ArrayType ::= type "[" "]"
 
-static knh_Expr_t* matchType(CTX ctx, toks_t *toks)
+static kExpr* matchType(CTX ctx, toks_t *toks)
 {
-	knh_Token_t *tk0 = tkN(toks, 0);
-	knh_Expr_t *expr = NULL;
+	kToken *tk0 = tkN(toks, 0);
+	kExpr *expr = NULL;
 	if(tk0->token == TK_USYMBOL) {
 		kclass_t cid = knh_NameSpace_getcid(ctx, toks->ns, S_tobytes(tk0->text));
 		if(cid != CLASS_unknown) {
@@ -614,9 +614,9 @@ static knh_Expr_t* matchType(CTX ctx, toks_t *toks)
 	return expr;
 }
 
-static knh_Expr_t *new_SugarExpr(CTX ctx, knh_Sugar_t *sgr, toks_t *toks)
+static kExpr *new_SugarExpr(CTX ctx, kSugar *sgr, toks_t *toks)
 {
-	knh_Expr_t *expr = new_(Expr);
+	kExpr *expr = new_(Expr);
 	expr->kexpr = TEXPR_CONST;
 	DBG_ASSERT(expr == NULL);
 	return expr;
@@ -651,13 +651,13 @@ static knh_Expr_t *new_SugarExpr(CTX ctx, knh_Sugar_t *sgr, toks_t *toks)
 //			if(!matchLeft(&sub, toks)) {
 //				toks->cur = rollback;
 //				rule->cur = sub.eol + 1;
-//				knh_Token_t *tk = tkN(rule, 0);
+//				kToken *tk = tkN(rule, 0);
 //				if(tk->topch == '*') incN(rule, 1);
 //			}
 //			else {
 //				int start = rule->cur;
 //				rule->cur = sub.eol + 1;
-//				knh_Token_t *tk = tkN(rule, 0);
+//				kToken *tk = tkN(rule, 0);
 //				if(tk->topch == '*') rule->cur = start;
 //			}
 //		}
@@ -665,16 +665,16 @@ static knh_Expr_t *new_SugarExpr(CTX ctx, knh_Sugar_t *sgr, toks_t *toks)
 //	return 1;
 //}
 
-static knh_Expr_t* matchSugarExpr(CTX ctx, toks_t *toks)
+static kExpr* matchSugarExpr(CTX ctx, toks_t *toks)
 {
-	knh_Lang_t *lang = toks->lang;
+	kLang *lang = toks->lang;
 	int i, toks_cur = toks->cur; int toks_eol = toks->eol;
 	toks_t rulebuf;
 	while(lang != NULL) {
-		knh_Array_t *l = DP(lang)->exprRulesNULL;
+		kArray *l = DP(lang)->exprRulesNULL;
 		if(l != NULL) {
 			for(i = knh_Array_size(l) - 1; i >= 0; i--) {
-				knh_Sugar_t *s = (knh_Sugar_t*)l->list[i];
+				kSugar *s = (kSugar*)l->list[i];
 				toks_t *rule = new_toks(ctx, &rulebuf, s->rules, toks->lang, toks->ns);
 				toks->cur = toks_cur; toks->eol = toks_eol;
 				if(matchLeft(rule, toks)) {
@@ -690,16 +690,16 @@ static knh_Expr_t* matchSugarExpr(CTX ctx, toks_t *toks)
 	return NULL;
 }
 
-static knh_Expr_t *ERROR_NotTerm(CTX ctx, knh_Token_t *tk, toks_t *toks)
+static kExpr *ERROR_NotTerm(CTX ctx, kToken *tk, toks_t *toks)
 {
 	knh_perror(ctx, 0, tk->uline, tk->lpos, "not valid term: %s", S_totext(tk->text));
 	toks->status = FoundError;
 	return NULL;
 }
 
-static knh_Expr_t *matchTerm(CTX ctx, toks_t *toks)
+static kExpr *matchTerm(CTX ctx, toks_t *toks)
 {
-	knh_Token_t *tk0 = tkN(toks, 0);
+	kToken *tk0 = tkN(toks, 0);
 	switch((int)tk0->token) {
 	case TK_NONE:
 	case TK_CODE:
@@ -731,9 +731,9 @@ static knh_Expr_t *matchTerm(CTX ctx, toks_t *toks)
 	return NULL;
 }
 
-static knh_Expr_t* new_ConsExpr(CTX ctx, kexpr_t etype, knh_Token_t *tk)
+static kExpr* new_ConsExpr(CTX ctx, kexpr_t etype, kToken *tk)
 {
-	knh_Expr_t *expr = new_(Expr);
+	kExpr *expr = new_(Expr);
 	PUSH_GCSTACK(ctx, expr);
 	expr->kexpr = etype;
 	KNH_SETv(ctx, expr->token, tk);
@@ -742,7 +742,7 @@ static knh_Expr_t* new_ConsExpr(CTX ctx, kexpr_t etype, knh_Token_t *tk)
 	return expr;
 }
 
-static kbool_t Expr_add(CTX ctx, knh_Expr_t *expr, knh_Expr_t *e)
+static kbool_t Expr_add(CTX ctx, kExpr *expr, kExpr *e)
 {
 	DBG_ASSERT(IS_Array(expr->cons));
 	if(e != NULL) {
@@ -752,11 +752,11 @@ static kbool_t Expr_add(CTX ctx, knh_Expr_t *expr, knh_Expr_t *e)
 	return 0;
 }
 
-static knh_Expr_t *Expr_addParams(CTX ctx, knh_Expr_t *expr, toks_t *toks)
+static kExpr *Expr_addParams(CTX ctx, kExpr *expr, toks_t *toks)
 {
 	int i, start = toks->cur, level = 0;
 	for(i = toks->cur; i < toks->eol; i++) {
-		knh_Token_t *tk = toks->list->tokens[i];
+		kToken *tk = toks->list->tokens[i];
 		if(tk->topch == ',' && level == 0) {
 			if(start < i) {
 				toks_t subtoks;
@@ -781,11 +781,11 @@ static knh_Expr_t *Expr_addParams(CTX ctx, knh_Expr_t *expr, toks_t *toks)
 	return expr;
 }
 
-static knh_Expr_t* callExpr(CTX ctx, toks_t *toks, knh_Expr_t *expr, knh_Token_t *tk, kexpr_t etype)
+static kExpr* callExpr(CTX ctx, toks_t *toks, kExpr *expr, kToken *tk, kexpr_t etype)
 {
 	toks_t subtoks;
 	if(subBetween(&subtoks, toks, '(', ')')) {
-		knh_Expr_t *expr2 = new_ConsExpr(ctx, UEXPR_CALL, tk);
+		kExpr *expr2 = new_ConsExpr(ctx, UEXPR_CALL, tk);
 		Expr_add(ctx, expr2, expr);
 		toks->cur = subtoks.eol + 1;
 		return Expr_addParams(ctx, expr2, &subtoks);
@@ -793,36 +793,36 @@ static knh_Expr_t* callExpr(CTX ctx, toks_t *toks, knh_Expr_t *expr, knh_Token_t
 	return NULL;
 }
 
-static knh_Expr_t *ERROR_TokenExpr(CTX ctx, knh_Token_t *tk)
+static kExpr *ERROR_TokenExpr(CTX ctx, kToken *tk)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "syntax error: %s", S_totext(tk->text));
 	return NULL;
 }
 
-static knh_Expr_t* matchExprLeft(CTX ctx, toks_t *toks)
+static kExpr* matchExprLeft(CTX ctx, toks_t *toks)
 {
-	knh_Expr_t *expr = matchSugarExpr(ctx, toks);
+	kExpr *expr = matchSugarExpr(ctx, toks);
 	if(expr == NULL) {
 		if(toks->status == FoundError) return NULL;
 		expr = matchTerm(ctx, toks);
 		if(toks->status == FoundError) return NULL;
 	}
 	while(expr != NULL && hasN(toks, 0)) {
-		knh_Token_t *tk0 = tkN(toks, 0);
+		kToken *tk0 = tkN(toks, 0);
 		if(tk0->topch == '(') {   /* $expr() */
 			expr = callExpr(ctx, toks, expr, tk0, UEXPR_CALL);
 			continue;
 		}
 		if(tk0->topch == '.') {
-			knh_Token_t *tk1 = tkN(toks, 1);
+			kToken *tk1 = tkN(toks, 1);
 			if(tk1->token == TK_SYMBOL || tk1->token == TK_USYMBOL) {
-				knh_Token_t *tk2 = tkN(toks, 2);
+				kToken *tk2 = tkN(toks, 2);
 				if(tk2->topch == '(') {
 					incN(toks, 2);
 					expr = callExpr(ctx, toks, expr, tk1, UEXPR_METHOD_CALL);
 				}
 				else {
-					knh_Expr_t *expr2 = new_ConsExpr(ctx, UEXPR_GETTER, tk1);
+					kExpr *expr2 = new_ConsExpr(ctx, UEXPR_GETTER, tk1);
 					Expr_add(ctx, expr2, expr);
 					expr = expr2;
 				}
@@ -835,22 +835,22 @@ static knh_Expr_t* matchExprLeft(CTX ctx, toks_t *toks)
 	return expr;
 }
 
-// knh_DictMap_t*   tokenRulesNULL;
+// kDictMap*   tokenRulesNULL;
 
 static int skipUninary(toks_t *toks, int n)
 {
-	//knh_Sugar_t *bin = Lang_getBinary(ctx, toks->lang, S_tobytes(tk->text));
+	//kSugar *bin = Lang_getBinary(ctx, toks->lang, S_tobytes(tk->text));
 	return nextT(toks, n);
 }
 
 static int findBinaryOperator(toks_t *toks)
 {
 	int idx = -1, i = skipUninary(toks, toks->cur), priority = 10000;
-	knh_Token_t *tkf = NULL;
+	kToken *tkf = NULL;
 	for(i = toks->cur; i < toks->eol; i = nextT(toks, i)) {
-		knh_Token_t *tk = toks->list->tokens[i];
+		kToken *tk = toks->list->tokens[i];
 		if(tk->token == TK_OPERATOR) {
-			knh_Sugar_t *bin = (knh_Sugar_t*)knh_DictMap_getNULL(toks->ctx, DP(toks->lang)->binaryRulesNULL, S_tobytes(tk->text));
+			kSugar *bin = (kSugar*)knh_DictMap_getNULL(toks->ctx, DP(toks->lang)->binaryRulesNULL, S_tobytes(tk->text));
 			if(bin != NULL && bin->optnum <= priority) {
 				priority = bin->optnum;
 				idx = i;
@@ -874,17 +874,17 @@ static int findBinaryOperator(toks_t *toks)
 //sugar SizeExpr  ::= "|" expr "|"
 //sugar IndexExpr ::= expr "[" expr "]"
 
-static knh_Expr_t* matchExpr(CTX ctx, toks_t *toks)
+static kExpr* matchExpr(CTX ctx, toks_t *toks)
 {
 	int idx = findBinaryOperator(toks);
 	if(idx != -1) {
 		toks_t ltoks, rtoks;
 		sub(&ltoks, toks, toks->cur, idx);
 		sub(&rtoks, toks, idx+1, toks->eol);
-		knh_Expr_t *lexpr = matchExpr(ctx, &ltoks);
-		knh_Expr_t *rexpr = matchExpr(ctx, &rtoks);
-		knh_Token_t *tk = tkN(toks, idx);
-		knh_Expr_t *expr = new_ConsExpr(ctx, UEXPR_BINARY, tk);
+		kExpr *lexpr = matchExpr(ctx, &ltoks);
+		kExpr *rexpr = matchExpr(ctx, &rtoks);
+		kToken *tk = tkN(toks, idx);
+		kExpr *expr = new_ConsExpr(ctx, UEXPR_BINARY, tk);
 		if(Expr_add(ctx, expr, lexpr) && Expr_add(ctx, expr, rexpr)) {
 			return expr;
 		}
@@ -893,11 +893,11 @@ static knh_Expr_t* matchExpr(CTX ctx, toks_t *toks)
 	return matchExprLeft(ctx, toks);
 }
 
-static knh_Expr_t* matchBlock(CTX ctx, toks_t *toks)
+static kExpr* matchBlock(CTX ctx, toks_t *toks)
 {
 	toks_t sub;
-	knh_Token_t *tk0 = tkN(toks, 0);
-	knh_Block_t *bk = NULL;
+	kToken *tk0 = tkN(toks, 0);
+	kBlock *bk = NULL;
 	if(tk0->topch == '{') {
 		if(subBetween(&sub, toks, '{', '}')) {
 			bk = new_Block(ctx, toks->list, sub.cur, sub.eol, toks->lang, toks->ns);
@@ -921,7 +921,7 @@ static knh_Expr_t* matchBlock(CTX ctx, toks_t *toks)
 		bk = new_Block(ctx, toks->list, toks_listsize, knh_Array_size(toks->list), toks->lang, toks->ns);
 		knh_Array_clear(ctx, toks->list, toks_listsize);
 	}
-	return (knh_Expr_t*)bk;
+	return (kExpr*)bk;
 }
 
 /* ------------------------------------------------------------------------ */

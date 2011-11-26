@@ -38,16 +38,16 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [CONST/PROPERTY DATA] */
 
-static void loadData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Object *value)
+static void loadData(CTX ctx, kNameSpace *ns, const char *dname, Object *value)
 {
 	if(dname[0] == '$') {
-		knh_String_t *n = new_T(dname + 1);
+		kString *n = new_T(dname + 1);
 		knh_DictMap_set_(ctx, ctx->share->props, n, value);
 	}
 	else {
 		kbytes_t n = {{dname}, knh_strlen(dname)};
 		kindex_t loc = knh_bytes_rindex(n, '.');
-		knh_String_t *name = new_T(dname + (loc+1));
+		kString *name = new_T(dname + (loc+1));
 		kclass_t cid = CLASS_Tdynamic;
 		if(loc != -1) {
 			cid = knh_NameSpace_getcid(ctx, ns, knh_bytes_first(n, loc));
@@ -60,7 +60,7 @@ static void loadData(CTX ctx, knh_NameSpace_t *ns, const char *dname, Object *va
 	}
 }
 
-static void loadIntData(CTX ctx, knh_NameSpace_t *ns, const knh_IntData_t *data)
+static void loadIntData(CTX ctx, kNameSpace *ns, const knh_IntData_t *data)
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_Int(ctx, data->ivalue));
@@ -69,7 +69,7 @@ static void loadIntData(CTX ctx, knh_NameSpace_t *ns, const knh_IntData_t *data)
 	}
 }
 
-static void loadFloatData(CTX ctx, knh_NameSpace_t *ns, const knh_FloatData_t *data)
+static void loadFloatData(CTX ctx, kNameSpace *ns, const knh_FloatData_t *data)
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_Float(ctx, data->fvalue));
@@ -78,10 +78,10 @@ static void loadFloatData(CTX ctx, knh_NameSpace_t *ns, const knh_FloatData_t *d
 	}
 }
 
-static void loadStringData(CTX ctx, knh_NameSpace_t *ns, const knh_StringData_t *data)
+static void loadStringData(CTX ctx, kNameSpace *ns, const knh_StringData_t *data)
 {
 	while(data->name != NULL) {
-		Object *value = UPCAST(new_String2(ctx, CLASS_String, data->value, knh_strlen(data->value), K_SPOLICY_TEXT|K_SPOLICY_ASCII));
+		Object *value = UPCAST(new_String2(ctx, CLASS_String, data->value, knh_strlen(data->value), SPOL_TEXT|SPOL_ASCII));
 		loadData(ctx, ns, data->name, value);
 		data++;
 	}
@@ -109,7 +109,7 @@ static void loadStringClassConst(CTX ctx, kclass_t cid, const knh_StringData_t *
 {
 	while(data->name != NULL) {
 		Object *value = UPCAST(new_T(data->value));
-		knh_addClassConst(ctx, cid, new_String2(ctx, CLASS_String, data->name, knh_strlen(data->name), K_SPOLICY_TEXT), value);
+		knh_addClassConst(ctx, cid, new_String2(ctx, CLASS_String, data->name, knh_strlen(data->name), SPOL_TEXT), value);
 		data++;
 	}
 }
@@ -149,9 +149,9 @@ static kbytes_t knh_data_tobytes(knh_data_t data)
 	return B(p);
 }
 
-static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d, kuintptr_t uflag, int step)
+static kParam *knh_loadScriptParam(CTX ctx, const knh_data_t **d, kuintptr_t uflag, int step)
 {
-	knh_ParamArray_t *pa = new_ParamArray(ctx);
+	kParam *pa = new_Param(ctx);
 	const knh_data_t *data = (*d) + step;
 	long i, psize = (long)data[0];
 	long rsize = (long)data[1];
@@ -161,8 +161,8 @@ static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d,
 			(ktype_t)data[0] : knh_NameSpace_gettype(ctx, K_GMANS, knh_data_tobytes(data[0]));
 		ksymbol_t fn = (data[1] < _MAX) ?
 			(ksymbol_t)data[1] : knh_getfnq(ctx, knh_data_tobytes(data[1]), FN_NEWID);
-		knh_param_t p = {type, fn};
-		knh_ParamArray_add(ctx, pa, p);
+		kparam_t p = {type, fn};
+		knh_Param_add(ctx, pa, p);
 		data += 2;
 	}
 	pa->psize = (kushort_t)psize;
@@ -175,7 +175,7 @@ static knh_ParamArray_t *knh_loadScriptParamArray(CTX ctx, const knh_data_t **d,
 #define _CID(d)  (d < _MAX) ? (kclass_t)(d) : knh_NameSpace_getcid(ctx, K_GMANS, knh_data_tobytes(d))
 #define _EXPTID(d)  (d < _MAX) ? (kevent_t)(d) : knh_geteid(ctx, knh_data_tobytes(d))
 
-static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t **buf)
+static void knh_loadSystemData(CTX ctx, const knh_data_t *data, kParam **buf)
 {
 	size_t c = 0;
 	while(1) {
@@ -184,7 +184,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 		case DATA_END: return;
 		case DATA_STRUCT0: {
 			kclass_t cid0 = _CID(data[0]);
-			kClassDef *cspi = (kClassDef*)data[1];
+			kclassdef_t *cspi = (kclassdef_t*)data[1];
 			kflag_t cflag = (kflag_t)data[2];
 			data += 3;
 			kclass_t cid = new_ClassId(ctx);
@@ -235,7 +235,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			const char *lname = (const char*)data[1];
 			//const char *sname = (const char*)data[2];
 			knh_ClassTBL_t *ct = varClassTBL(cid);
-			knh_ParamArray_t *pa = knh_loadScriptParamArray(ctx, &data, 0/*hflag*/, +3);
+			kParam *pa = knh_loadScriptParam(ctx, &data, 0/*hflag*/, +3);
 			knh_setClassParam(ctx, ct, pa);
 			KNH_SETv(ctx, ct->lname, new_T(lname));
 			//KNH_SETv(ctx, ct->sname, new_T(sname));
@@ -243,7 +243,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 		}
 		case DATA_GENERICS: {
 			kclass_t bcid = _CID(data[0]);
-			knh_ParamArray_t *mp = knh_loadScriptParamArray(ctx, &data, 0/*hflag*/, +1);
+			kParam *mp = knh_loadScriptParam(ctx, &data, 0/*hflag*/, +1);
 			knh_addGenericsClass(ctx, CLASS_newid, bcid, mp);
 			break;
 		}
@@ -265,7 +265,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 				? knh_getmn(ctx, knh_data_tobytes(data[1]), MN_NEWID) : (kmethodn_t)data[1];
 			kflag_t flag = (kflag_t)data[2];
 			knh_Fmethod func = (knh_Fmethod)data[3];
-			knh_Method_t *mtd;
+			kMethod *mtd;
 			if(class_isSingleton(cid)) {
 				flag = flag | FLAG_Method_Static;
 			}
@@ -274,11 +274,11 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 			data += 4;
 			if(datatype == DATA_METHOD0) {
 				KNH_SETv(ctx, DP(mtd)->mp, buf[data[0]]);
-				DBG_ASSERT(IS_ParamArray(DP(mtd)->mp));
+				DBG_ASSERT(IS_Param(DP(mtd)->mp));
 				data++;
 			}
 			else {
-				knh_ParamArray_t *mp = knh_loadScriptParamArray(ctx, &data, 0/*hflag*/, +0);
+				kParam *mp = knh_loadScriptParam(ctx, &data, 0/*hflag*/, +0);
 				KNH_SETv(ctx, DP(mtd)->mp, mp);
 			}
 			break;
@@ -295,7 +295,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 		case DATA_PARAM: {
 			kuintptr_t flag = (kuintptr_t)data[0];
 			data++;
-			buf[c] = knh_loadScriptParamArray(ctx, &data, flag, +0);
+			buf[c] = knh_loadScriptParam(ctx, &data, flag, +0);
 			c++;
 			break;
 		}/*case DATA_PARAM*/
@@ -307,11 +307,11 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, knh_ParamArray_t
 
 static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
 {
-	knh_DictSet_t *ds = ctx->share->funcDictSet;
+	kDictSet *ds = ctx->share->funcDictSet;
 	while(d->name != NULL) {
 		const char *name = d->name;
 		if(name[0] == '_') name = name + 1;
-		knh_DictSet_append(ctx, ds, new_String2(ctx, CLASS_String, name, knh_strlen(name), K_SPOLICY_TEXT|K_SPOLICY_POOLNEVER), (kuintptr_t)d->ptr);
+		knh_DictSet_append(ctx, ds, new_String2(ctx, CLASS_String, name, knh_strlen(name), SPOL_TEXT|SPOL_POOLNEVER), (kuintptr_t)d->ptr);
 		d++;
 	}
 	knh_DictSet_sort(ctx, ds);
@@ -319,7 +319,7 @@ static void knh_loadFuncData(CTX ctx, const knh_FuncData_t *d)
 
 /* ------------------------------------------------------------------------ */
 
-//static void addLink(CTX ctx, knh_NameSpace_t *ns, const char *scheme, kclass_t cid)
+//static void addLink(CTX ctx, kNameSpace *ns, const char *scheme, kclass_t cid)
 //{
 //	knh_NameSpace_setLinkClass(ctx, ns, B(scheme), ClassTBL(cid));
 //}

@@ -47,25 +47,25 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 
 typedef struct {
-	knh_hObject_t h;
-	knh_io_t sd;
+	kObjectHeader h;
+	int sd;
 	int port;
 } knh_Socket_t ;
 
 typedef struct {
-	knh_io_t sd;
+	int sd;
 	int port;
 	int backlog;
   	int isListen;
 } knh_serversocket_t ;
 
-static void Socket_init(CTX ctx, knh_RawPtr_t *po)
+static void Socket_init(CTX ctx, kRawPtr *po)
 {
 	knh_Socket_t *so = (knh_Socket_t*)po;
 	so->sd = IO_NULL;
 }
 
-static void Socket_free(CTX ctx, knh_RawPtr_t *po)
+static void Socket_free(CTX ctx, kRawPtr *po)
 {
 	knh_Socket_t *so = (knh_Socket_t*)po;
 	if (so->sd != IO_NULL) {
@@ -74,23 +74,23 @@ static void Socket_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defSocket(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defSocket(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Socket";
 	cdef->init = Socket_init;
 	cdef->free = Socket_free;
 }
 
-//static kbool_t SOCKET_exists(CTX ctx, knh_Path_t *pth)
+//static kbool_t SOCKET_exists(CTX ctx, kPath *pth)
 //{
 //	return 0; // dummy
 //}
-//static knh_io2_t* SOCKET_open(CTX ctx, knh_Path_t *pth, const char *mode, knh_DictMap_t *conf)
+//static kio_t* SOCKET_open(CTX ctx, kPath *pth, const char *mode, kDictMap *conf)
 //{
 //	return NULL; // Always opened by external
 //}
 
-static knh_io_t open_socket(CTX ctx, ksfp_t *sfp, const char *ip_or_host, int port)
+static int open_socket(CTX ctx, ksfp_t *sfp, const char *ip_or_host, int port)
 {
 	int sd = IO_NULL;
 	struct in_addr addr = {0};
@@ -129,7 +129,7 @@ static knh_io_t open_socket(CTX ctx, ksfp_t *sfp, const char *ip_or_host, int po
 	else {
 		KNH_NTRACE2(ctx, "connect", K_OK, KNH_LDATA(LOG_s("host", ip_or_host), LOG_i("port", port), LOG_sfp));
 	}
-	return (knh_io_t) sd;
+	return (int) sd;
 }
 
 //## @Throwable Socket Socket.new(String host, int port);
@@ -142,7 +142,7 @@ KMETHOD Socket_new(CTX ctx, ksfp_t* sfp _RIX)
 	so->port = port;
 	so->sd = open_socket(ctx, sfp, host, port);
 	if (so->sd == IO_NULL) {
-		knh_Object_toNULL(ctx, so);
+		kObjectoNULL(ctx, so);
 	}
 	RETURN_(so);
 }
@@ -302,7 +302,7 @@ KMETHOD Socket_isClosed(CTX ctx, ksfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [ServerSocket] */
 
-static void ServerSocket_init(CTX ctx, knh_RawPtr_t *po)
+static void ServerSocket_init(CTX ctx, kRawPtr *po)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)KNH_MALLOC(ctx, sizeof(knh_serversocket_t));
 	ss->sd = IO_NULL;
@@ -312,7 +312,7 @@ static void ServerSocket_init(CTX ctx, knh_RawPtr_t *po)
 	po->rawptr = ss;
 }
 
-static void ServerSocket_free(CTX ctx, knh_RawPtr_t *po)
+static void ServerSocket_free(CTX ctx, kRawPtr *po)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t*)(po->rawptr);
 	if (ss->sd != IO_NULL) {
@@ -322,7 +322,7 @@ static void ServerSocket_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defServerSocket(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defServerSocket(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "ServerSocket";
 	cdef->init = ServerSocket_init;
@@ -383,7 +383,7 @@ KMETHOD ServerSocket_new(CTX ctx, ksfp_t* sfp _RIX)
 						LOG_s("host", host), LOG_i("port", port),
 						LOG_i("max_connection", backlog), LOG_sfp
 						));
-			knh_Object_toNULL(ctx, ss);
+			kObjectoNULL(ctx, ss);
 		}
 	}
 	RETURN_(new_ReturnRawPtr(ctx, sfp, ss));
@@ -393,7 +393,7 @@ KMETHOD ServerSocket_new(CTX ctx, ksfp_t* sfp _RIX)
 KMETHOD ServerSocket_accept(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
-	knh_RawPtr_t *so = NULL;
+	kRawPtr *so = NULL;
 	if (unlikely(ss->isListen == 0)) {
 		if (listen(ss->sd, ss->backlog) == -1) {
 			so = new_ReturnRawPtr(ctx, sfp, NULL);

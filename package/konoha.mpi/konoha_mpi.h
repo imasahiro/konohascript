@@ -27,18 +27,18 @@
 //## class MPIComm Object;
 
 typedef struct {
-	knh_hObject_t h;
+	kObjectHeader h;
 	MPI_Comm comm;
 	int myrank;
 	int numprocs;
 	char *proc_name;
-} knh_MPIComm_t;
+} kMPIComm;
 
 #define MPIC_COMM(c) ((c)->comm)
 #define MPIC_RANK(c) ((c)->myrank)
 #define MPIC_SIZE(c) ((c)->numprocs)
 #define MPIC_PROC(d) ((d)->proc_name)
-#define MPIC(v, o) knh_MPIComm_t *v = ((knh_MPIComm_t*)o)
+#define MPIC(v, o) kMPIComm *v = ((kMPIComm*)o)
 
 /* ------------------------------------------------------------------------ */
 /* MPI Data */
@@ -46,20 +46,20 @@ typedef struct {
 //## class MPIData Object;
 
 typedef struct {
-	knh_hObject_t h;
+	kObjectHeader h;
 	union {
-		knh_Object_t *o;
-		knh_RawPtr_t *r;
-		knh_Int_t    *i;
-		knh_Float_t  *f;
-		knh_Array_t  *a;
-		knh_Bytes_t  *ba;
-		knh_String_t *s;
+		kObject *o;
+		kRawPtr *r;
+		kInt    *i;
+		kFloat  *f;
+		kArray  *a;
+		kBytes  *ba;
+		kString *s;
 	};
 	MPI_Datatype type;
 	kclass_t cid;
 	size_t offset;
-} knh_MPIData_t;
+} kMPIData;
 
 #define MPID_ADDR(d) knh_MPIData_getAddr(d)
 #define MPID_TYPE(d) ((d)->type)
@@ -78,13 +78,13 @@ typedef struct {
 		int psize = MPID_SIZE(d) - MPID_POFS(d);\
 		if (c > psize) c = psize;\
 	}
-#define MPID(v, o) knh_MPIData_t *v = ((knh_MPIData_t*)o)
+#define MPID(v, o) kMPIData *v = ((kMPIData*)o)
 
-void* knh_MPIData_getAddr(knh_MPIData_t *data);
-void  knh_MPIData_expand(CTX ctx, knh_MPIData_t *data, int *count, int *inc);
-int   knh_MPIData_getSize(knh_MPIData_t *data);
-int   knh_MPIData_incSize(knh_MPIData_t *data, int count);
-int   knh_MPIData_getCapacity(knh_MPIData_t *data);
+void* knh_MPIData_getAddr(kMPIData *data);
+void  knh_MPIData_expand(CTX ctx, kMPIData *data, int *count, int *inc);
+int   knh_MPIData_getSize(kMPIData *data);
+int   knh_MPIData_incSize(kMPIData *data, int count);
+int   knh_MPIData_getCapacity(kMPIData *data);
 
 /* ------------------------------------------------------------------------ */
 /* MPI Request */
@@ -92,17 +92,17 @@ int   knh_MPIData_getCapacity(knh_MPIData_t *data);
 //## class MPIRequest Object;
 
 typedef struct {
-	knh_hObject_t h;
+	kObjectHeader h;
 	MPI_Request reqt;
-	knh_MPIData_t *data;
+	kMPIData *data;
 	int incflag;
-} knh_MPIRequest_t;
+} kMPIRequest;
 
 #define MPIR_REQ(req) (&((req)->reqt))
 #define MPIR_DATA(req) ((req)->data)
 #define MPIR_TYPE(req) (MPID_TYPE(MPIR_DATA(req)))
 #define MPIR_INC(req) ((req)->incflag)
-#define MPIR(v, o) knh_MPIRequest_t *v = ((knh_MPIRequest_t*)o)
+#define MPIR(v, o) kMPIRequest *v = ((kMPIRequest*)o)
 
 /* ------------------------------------------------------------------------ */
 /* MPI Operator */
@@ -110,10 +110,10 @@ typedef struct {
 //## class MPIOp Object;
 
 typedef struct {
-	knh_hObject_t h;
+	kObjectHeader h;
 	MPI_Op op;
 	MPI_User_function *func;
-} knh_MPIOp_t;
+} kMPIOp;
 
 //## type MPIOpFunc    Func  0 MPIData MPIData Int;
 
@@ -121,7 +121,7 @@ typedef struct {
 #define MPIO_OPFUNC(o) ((o)->func)
 #define KNH_MPI_OP_NULL(op) (MPIO_OP(op) = 0)
 #define KNH_MPI_OP_IS_NULL(op) (MPIO_OP(op) == 0)
-#define MPIO(v, op) knh_MPIOp_t *v = (knh_MPIOp_t*)op
+#define MPIO(v, op) kMPIOp *v = (kMPIOp*)op
 
 #ifndef _KNH_ON_T2K
 #endif /* KNH_INCLUDE_MPI */

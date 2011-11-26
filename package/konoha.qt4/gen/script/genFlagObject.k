@@ -9,7 +9,7 @@ KMETHOD <P><C>_new(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<E> i = Int_to(<P>::<E>, sfp[1]);
 	<P>::<C> *ret_v = new <P>::<C>(i);
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	RETURN_(rptr);
 }
 
@@ -21,7 +21,7 @@ KMETHOD <P><C>_and(CTX ctx, ksfp_t *sfp _RIX) {
 		int i = Int_to(int, sfp[1]);
 		<P>::<C> ret = ((*qp) & i);
 		<P>::<C> *ret_ = new <P>::<C>(ret);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
 		RETURN_(rptr);
 	} else {
 		RETURN_(KNH_NULL);
@@ -50,7 +50,7 @@ KMETHOD <P><C>_or(CTX ctx, ksfp_t *sfp _RIX)
 		<P>::<C> *f = RawPtr_to(<P>::<C>*, sfp[1]);
 		<P>::<C> ret = ((*qp) | (*f));
 		<P>::<C> *ret_ = new <P>::<C>(ret);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
 		RETURN_(rptr);
 	} else {
 		RETURN_(KNH_NULL);
@@ -79,7 +79,7 @@ KMETHOD <P><C>_xor(CTX ctx, ksfp_t *sfp _RIX)
 		<P>::<C> *f = RawPtr_to(<P>::<C>*, sfp[1]);
 		<P>::<C> ret = ((*qp) ^ (*f));
 		<P>::<C> *ret_ = new <P>::<C>(ret);
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
+		kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, ret_, NULL);
 		RETURN_(rptr);
 	} else {
 		RETURN_(KNH_NULL);
@@ -124,7 +124,7 @@ KMETHOD <P><C>_value(CTX ctx, ksfp_t *sfp _RIX) {
 	}
 }
 
-static void <P><C>_free(CTX ctx, knh_RawPtr_t *p)
+static void <P><C>_free(CTX ctx, kRawPtr *p)
 {
 	(void)ctx;
 	if (p->rawptr != NULL) {
@@ -135,7 +135,7 @@ static void <P><C>_free(CTX ctx, knh_RawPtr_t *p)
 	}
 }
 
-static void <P><C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+static void <P><C>_reftrace(CTX ctx, kRawPtr *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
 	if (p->rawptr != NULL) {
@@ -144,7 +144,7 @@ static void <P><C>_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	}
 }
 
-static int <P><C>_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+static int <P><C>_compareTo(kRawPtr *p1, kRawPtr *p2)
 {
 	if (p1->rawptr == NULL || p2->rawptr == NULL) {
 		return 1;
@@ -159,7 +159,7 @@ static int <P><C>_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	}
 }
 
-DEFAPI(void) def<P><C>(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) def<P><C>(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	(void)ctx; (void) cid;
 	cdef->name = "<P><C>";

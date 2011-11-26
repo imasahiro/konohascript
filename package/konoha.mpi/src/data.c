@@ -94,7 +94,7 @@ TYPEMAP MPIData_Bytes(CTX ctx, ksfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-void* knh_MPIData_getAddr(knh_MPIData_t *data)
+void* knh_MPIData_getAddr(kMPIData *data)
 {
 	switch (MPID_DCID(data)) {
 	case CLASS_Int:
@@ -114,7 +114,7 @@ void* knh_MPIData_getAddr(knh_MPIData_t *data)
 	return NULL;
 }
 
-void knh_MPIData_expand(CTX ctx, knh_MPIData_t *data, int *count, int *inc)
+void knh_MPIData_expand(CTX ctx, kMPIData *data, int *count, int *inc)
 {
 	if (count <= 0) {
 		*count = 0;  // invalid param
@@ -150,7 +150,7 @@ void knh_MPIData_expand(CTX ctx, knh_MPIData_t *data, int *count, int *inc)
 	*inc = new_size - cur_size;
 }
 
-int knh_MPIData_getSize(knh_MPIData_t *data)
+int knh_MPIData_getSize(kMPIData *data)
 {
 	switch (MPID_DCID(data)) {
 	case CLASS_Array:
@@ -163,7 +163,7 @@ int knh_MPIData_getSize(knh_MPIData_t *data)
 	return 0;
 }
 
-int knh_MPIData_incSize(knh_MPIData_t *data, int count)
+int knh_MPIData_incSize(kMPIData *data, int count)
 {
 	if (count <= 0) return 0;
 	switch (MPID_DCID(data)) {
@@ -179,7 +179,7 @@ int knh_MPIData_incSize(knh_MPIData_t *data, int count)
 	return 0;
 }
 
-int knh_MPIData_getCapacity(knh_MPIData_t *data)
+int knh_MPIData_getCapacity(kMPIData *data)
 {
 	switch (MPID_DCID(data)) {
 	case CLASS_Array:
@@ -190,7 +190,7 @@ int knh_MPIData_getCapacity(knh_MPIData_t *data)
 	return -1;
 }
 
-void  knh_MPIData_checkCount(knh_MPIData_t *data, int *count)
+void  knh_MPIData_checkCount(kMPIData *data, int *count)
 {
 	int size = MPID_SIZE(data);
 	int pofs = MPID_POFS(data);

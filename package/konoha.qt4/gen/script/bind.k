@@ -2,7 +2,7 @@ String ClassDef(String class_name)
 {
 	String ret = """
 
-DEFAPI(void) def<C>(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) def<C>(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	(void)ctx; (void) cid;
 	cdef->name = \"<C>\";
@@ -79,47 +79,47 @@ String CommonHpp()
 #define G_MAGIC_NUM 39543
 
 // template<class T>
-// inline knh_RawPtr_t *new_QRawPtr(CTX lctx, T *v)
+// inline kRawPtr *new_QRawPtr(CTX lctx, T *v)
 // {
 // 	return new_RawPtrFromClass(T, v);
 // }
 
 // template<class T>
-// inline knh_RawPtr_t *new_QRawPtr(CTX lctx, const T *v)
+// inline kRawPtr *new_QRawPtr(CTX lctx, const T *v)
 // {
 // 	return new_RawPtrFromClass(T, (void *)v);
 // }
 
 // template<class T>
-// inline knh_RawPtr_t *new_QRawPtr(CTX lctx, T &v)
+// inline kRawPtr *new_QRawPtr(CTX lctx, T &v)
 // {
 // 	T *v_ = new T(v);
 // 	return new_RawPtrFromClass(T, v_);
 // }
 
 // template<class T>
-// inline knh_RawPtr_t *new_QRawPtr(CTX lctx, const T &v)
+// inline kRawPtr *new_QRawPtr(CTX lctx, const T &v)
 // {
 // 	T *v_ = new T(v);
 // 	return new_RawPtrFromClass(T, v_);
 // }
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T *v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T *v)
 {
 	return new_RawPtr(lctx, ct, v);
 //return new_RawPtrFromClass(T, v);
 }
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T *v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T *v)
 {
 //return new_RawPtrFromClass(T, (void *)v);
 	return new_RawPtr(lctx, ct, (void *)v);
 }
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T &v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T &v)
 {
 	T *v_ = new T(v);
 	return new_RawPtr(lctx, ct, v_);
@@ -127,7 +127,7 @@ inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T &v)
 }
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T &v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T &v)
 {
 	T *v_ = new T(v);
 //return new_RawPtrFromClass(T, v_);
@@ -167,11 +167,11 @@ String InitFunc()
 // 	(void)ctx;
 // 	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
 // 	if(IS_Class(sfp[1].o)) {
-// 		ct = ClassTBL(((knh_Class_t*)sfp[1].o)->cid);
-// 		knh_Array_t *a = new_Array0(ctx, 10);
+// 		ct = ClassTBL(((kClass*)sfp[1].o)->cid);
+// 		kArray *a = new_Array0(ctx, 10);
 // 		while(ct->supcid != CLASS_Object) {
 // 			ct = ct->supTBL;
-// 			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+// 			knh_Array_add(ctx, a, (kObject *)ct->lname);
 // 		}
 // 		RETURN_(a);
 // 	} else {
@@ -183,14 +183,14 @@ String InitFunc()
 KMETHOD System_getClassParents(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
-	knh_String_t *class_name = sfp[1].s;
+	kString *class_name = sfp[1].s;
 	kbytes_t lname = class_name->str;
 	const knh_ClassTBL_t *ct = (const knh_ClassTBL_t *)knh_DictSet_get(ctx, ctx->share->classNameDictSet, lname);
 	if(ct != 0) {
-		knh_Array_t *a = new_Array0(ctx, 10);
+		kArray *a = new_Array0(ctx, 10);
 		while(ct->supcid != CLASS_Object) {
 			ct = ct->supTBL;
-			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+			knh_Array_add(ctx, a, (kObject *)ct->lname);
 		}
 		RETURN_(a);
 	} else {
@@ -296,11 +296,11 @@ String RawPtr_to(String name, String type, int sfp_num, boolean object_flag = fa
 String Array_to(String name, String type_, int sfp_num)
 {
 	String ret = """
-knh_Array_t *a = sfp[SFP_NUM].a;
+kArray *a = sfp[SFP_NUM].a;
 		int asize = knh_Array_size(a);
 		TYPE NAME;
 		for (int n = 0; n < asize; n++) {
-			knh_RawPtr_t *p = (knh_RawPtr_t*)(a->list[n]);
+			kRawPtr *p = (kRawPtr*)(a->list[n]);
 			NAME.append(CASTp->rawptr);
 		}
 """;
@@ -397,7 +397,7 @@ String RETURNs_()
 String RETURNrc_()
 {
 	String ret = """
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	ret_v->setSelf(rptr);
 	RETURN_(rptr);
 }
@@ -408,7 +408,7 @@ String RETURNrc_()
 String RETURNc_()
 {
 	String ret = """
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
+	kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, ret_v, NULL);
 	RETURN_(rptr);
 }
 """;
@@ -418,7 +418,7 @@ String RETURNc_()
 String RETURNr_(String type)
 {
 	String ret = """
-		knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, RETVALUE, NULL);
+		kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, RETVALUE, NULL);
 		RETURN_(rptr);
 	} else {
 		RETURN_(KNH_NULL);
@@ -440,11 +440,11 @@ String RETURNa_(String type)
 {
 	String ret = """
 		int list_size = ret_v.size();
-		knh_Array_t *a = new_Array0(ctx, list_size);
+		kArray *a = new_Array0(ctx, list_size);
 		kclass_t cid = knh_getcid(ctx, STEXT(\"TYPE\"));
 		for (int n = 0; n < list_size; n++) {ADDED_SRC
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), RETVALUE);
-			knh_Array_add(ctx, a, (knh_Object_t *)p);
+			kRawPtr *p = new_RawPtr(ctx, ClassTBL(cid), RETVALUE);
+			knh_Array_add(ctx, a, (kObject *)p);
 		}
 		RETURN_(a);
 	} else {
@@ -832,11 +832,11 @@ String EventArgPassing(boolean event_flag, String arg_type, String mtd_name)
 	if ("QList<" in? arg_type) {
 		ret += """
 		int size = <V>.length();
-		knh_Array_t *p<N> = new_Array0(lctx, size);
+		kArray *p<N> = new_Array0(lctx, size);
 		kclass_t cid = knh_getcid(lctx, STEXT(\"<T>\"));
 		for (int i = 0; i < size; i++) {
 			<T> *<V>_ = new <T>(<V>[i]);
-			knh_RawPtr_t *p = new_RawPtr(lctx, lctx->share->ClassTBL[cid], <V>_);
+			kRawPtr *p = new_RawPtr(lctx, lctx->share->ClassTBL[cid], <V>_);
 			knh_Array_add(lctx, p<N>, UPCAST(p));
 		}
 """;
@@ -859,7 +859,7 @@ String EventArgPassing(boolean event_flag, String arg_type, String mtd_name)
 		ret += "\t\tlsfp[K_CALLDELTA+<DELTA>].bvalue = <V>;\n";
 		break;
 	case "char":
-		ret += "\t\tknh_String_t *s<N> = new_String(lctx, <V>);\n";
+		ret += "\t\tkString *s<N> = new_String(lctx, <V>);\n";
 		ret += "\t\tlsfp[K_CALLDELTA+<DELTA>].s = s<N>;\n";
 		break;
 	default:
@@ -867,7 +867,7 @@ String EventArgPassing(boolean event_flag, String arg_type, String mtd_name)
 			ret += "\t\t" + mtd_name + "Ptr->rawptr = <V>;\n";
 			ret += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+<DELTA>].o, (UPCAST(" + mtd_name + "Ptr)));\n";
 		} else {
-			ret += "\t\tknh_RawPtr_t *p<N> = new_QRawPtr(lctx, <T>, <V>);\n";
+			ret += "\t\tkRawPtr *p<N> = new_QRawPtr(lctx, <T>, <V>);\n";
 			ret += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+<DELTA>].o, UPCAST(p<N>));\n";
 		}
 	}
@@ -917,7 +917,7 @@ String COMPARE_TO(String class_name, boolean have_compare_operator_flag)
 {
 	String ret = """
 
-static int <CLASS>_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
+static int <CLASS>_compareTo(kRawPtr *p1, kRawPtr *p2)
 {
 <COMP>
 }
@@ -944,7 +944,7 @@ KMETHOD QApplication_new(CTX ctx, ksfp_t *sfp _RIX)
 //	QApplication *app = new QApplication(dummy, argv);
 	KQApplication *app = new KQApplication(dummy, argv);
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, app, NULL);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, app, NULL);
 	app->setSelf(p);
 	RETURN_(p);
 }
@@ -983,11 +983,11 @@ KMETHOD <C>_parents(CTX ctx, ksfp_t *sfp _RIX)
 	<C> *qp = RawPtr_to(<C>*, sfp[0]);
 	if (qp != NULL) {
 		int size = <SIZE>;
-		knh_Array_t *a = new_Array0(ctx, size);
+		kArray *a = new_Array0(ctx, size);
 		const knh_ClassTBL_t *ct = sfp[0].p->h.cTBL;
 		while(ct->supcid != CLASS_Object) {
 			ct = ct->supTBL;
-			knh_Array_add(ctx, a, (knh_Object_t *)ct->lname);
+			knh_Array_add(ctx, a, (kObject *)ct->lname);
 		}
 		RETURN_(a);
 	} else {
@@ -1036,11 +1036,11 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 		CTX lctx = knh_getCurrentContext();
 		ksfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		kRawPtr *p1 = new_QRawPtr(lctx, QPainter, painter);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
-		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		kRawPtr *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
-		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		kRawPtr *p3 = new_QRawPtr(lctx, QWidget, widget);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
 		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
 	} else {
@@ -1071,8 +1071,8 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 // 		char *c_str = String_to(char *, sfp[1]);
 // 		std::string str(c_str);
 
-// 		std::map<string, knh_Func_t*> *mp = qp->dummy->event_map;
-// 		std::map<string, knh_Func_t*>::iterator itr;
+// 		std::map<string, kFunc*> *mp = qp->dummy->event_map;
+// 		std::map<string, kFunc*>::iterator itr;
 // 		if ((itr = em->find(str)) == em->end()) {
 // 		}
 // 		if ((itr = em->find(str)) == em->end()) {

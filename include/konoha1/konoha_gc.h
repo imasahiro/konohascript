@@ -102,13 +102,13 @@ extern "C" {
 #define KNH_SAFEPOINT(ctx, sfp) \
 	if(ctx->safepoint != 0) knh_checkSafePoint(ctx, sfp, __FILE__, __LINE__);
 
-#define O_toTenure(o)  knh_Object_toTenure(ctx, o)
+#define O_toTenure(o)  kObjectoTenure(ctx, o)
 
 #endif/*K_USING_RCGC*/
 
 #ifdef _MSC_VER
 #define OBJECT_SET(v, h) {\
-	knh_Object_t **v_ = (knh_Object_t**)&v; \
+	kObject **v_ = (kObject**)&v; \
 	v_[0] = (h_); \
 }
 #else
@@ -116,32 +116,32 @@ extern "C" {
 #endif /*_MSC_VER*/
 
 #define KNH_INITv(v,o) {\
-		knh_Object_t *h_ = (knh_Object_t*)o; \
+		kObject *h_ = (kObject*)o; \
 		DBG_ASSERT_ISOBJECT(h_); \
 		knh_Object_RCinc(h_); \
 		OBJECT_SET(v, h_);\
 	}\
 
 #define KNH_SETv(ctx,v,o) {\
-		knh_Object_t *h_ = (knh_Object_t*)(o); \
+		kObject *h_ = (kObject*)(o); \
 		DBG_ASSERT_ISOBJECT(v);  \
 		DBG_ASSERT_ISOBJECT(h_); \
 		knh_Object_RCinc(h_); \
-		knh_Object_DRCsweep(ctx, (knh_Object_t*)v); \
+		knh_Object_DRCsweep(ctx, (kObject*)v); \
 		OBJECT_SET(v, h_);\
 	}\
 
 #define KNH_RCSETv(ctx,v,o) {\
-		knh_Object_t *h_ = (knh_Object_t*)o; \
+		kObject *h_ = (kObject*)o; \
 		DBG_ASSERT_ISOBJECT(v);  \
 		DBG_ASSERT_ISOBJECT(h_); \
 		knh_Object_RCinc(h_); \
-		knh_Object_DRCsweep(ctx, (knh_Object_t*)v); \
+		knh_Object_DRCsweep(ctx, (kObject*)v); \
 		OBJECT_SET(v, h_);\
 	}\
 
 #define KNH_NGCSETv(ctx,v,o) {\
-		knh_Object_t *h_ = (knh_Object_t*)o; \
+		kObject *h_ = (kObject*)o; \
 		DBG_ASSERT_ISOBJECT(h_); \
 		knh_Object_RCinc(h_); \
 		knh_Object_RCdec(v); \

@@ -371,7 +371,7 @@ static knh_memslot_t *new_FastMemoryList(CTX ctx)
 		at->head =   mslot;
 		at->bottom = (knh_memslot_t*)K_SHIFTPTR(mslot, (K_PAGESIZE * 8));
 		DBG_ASSERT(ctx->freeMemoryList == NULL);
-		((knh_context_t*)ctx)->freeMemoryList = mslot;
+		((kcontext_t*)ctx)->freeMemoryList = mslot;
 		for(;mslot < at->bottom; mslot++) {
 			mslot->ref = (mslot + 1);
 		}
@@ -412,7 +412,7 @@ static knh_memslotX2_t *freeMemoryListX2(CTX ctx)
 		at->head =   mslot;
 		at->bottom = (knh_memslotX2_t*)K_PTRSHIFT(mslot, (K_PAGESIZE * 2));
 		DBG_ASSERT(ctx->freeMemoryListX2 == NULL);
-		((knh_context_t*)ctx)->freeMemoryListX2 = mslot;
+		((kcontext_t*)ctx)->freeMemoryListX2 = mslot;
 		while(mslot < at->bottom) {
 			mslot->ref = (mslot + 1);
 			mslot++;
@@ -456,7 +456,7 @@ static knh_memslot256_t *freeMemoryList256(CTX ctx)
 		at->head =   mslot;
 		at->bottom = (knh_memslot256_t*)K_PTRSHIFT(mslot, (K_PAGESIZE * 2));
 		DBG_ASSERT(ctx->freeMemoryList256 == NULL);
-		((knh_context_t*)ctx)->freeMemoryList256 = mslot;
+		((kcontext_t*)ctx)->freeMemoryList256 = mslot;
 		while(mslot < at->bottom) {
 			mslot->ref = (mslot + 1);
 			mslot++;
@@ -474,10 +474,10 @@ void *knh_fastmalloc(CTX ctx, size_t size)
 	if(size <= K_FASTMALLOC_SIZE) {
 		knh_memslot_t *m;
 		if(ctx->freeMemoryList == NULL) {
-			((knh_context_t*)ctx)->freeMemoryList = new_FastMemoryList(ctx);
+			((kcontext_t*)ctx)->freeMemoryList = new_FastMemoryList(ctx);
 		}
 		m = ctx->freeMemoryList;
-		((knh_context_t*)ctx)->freeMemoryList = m->ref;
+		((kcontext_t*)ctx)->freeMemoryList = m->ref;
 		m->ref = NULL;
 		MEMLOG("fastmalloc", "ptr=%p, size=%lu", m, size);
 		return (void*)m;
@@ -500,7 +500,7 @@ void knh_fastfree(CTX ctx, void *block, size_t size)
 		knh_memslot_t *m = (knh_memslot_t*)block;
 		KNH_FREEZERO(m, K_FASTMALLOC_SIZE);
 		m->ref = ctx->freeMemoryList;
-		((knh_context_t*)ctx)->freeMemoryList = m;
+		((kcontext_t*)ctx)->freeMemoryList = m;
 	}
 	else {
 		KNH_FREEZERO(block, size);
@@ -543,7 +543,7 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 /* [Object] */
 
 #define K_OPAGEOFFSET(o, opage)\
-	(((kuintptr_t)o) / sizeof(knh_Object_t)) % (K_PAGESIZE / sizeof(knh_Object_t))
+	(((kuintptr_t)o) / sizeof(kObjectUnused)) % (K_PAGESIZE / sizeof(kObjectUnused))
 
 #define UINTPTR8 (sizeof(kuintptr_t) * 8)
 #define INDEX2OFFSET(index_) ((index_) / UINTPTR8)
@@ -561,36 +561,36 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 #define prefetch_tenure(o)   prefetch(K_OPAGE(o)->h.tenure)
 
 #define O_set_tenure(o) {\
-		knh_ObjectPage_t *opage = K_OPAGE(o);\
+		kobjpage_t *opage = K_OPAGE(o);\
 		kuintptr_t *tenure = opage->h.tenure;\
 		size_t offset = K_OPAGEOFFSET(o, opage);\
 		bit_set(tenure, offset);\
 	}\
 
 #define O_unset_tenure(o) {\
-		knh_ObjectPage_t *opage = K_OPAGE(o);\
+		kobjpage_t *opage = K_OPAGE(o);\
 		kuintptr_t *tenure = opage->h.tenure;\
 		size_t offset = K_OPAGEOFFSET(o, opage);\
 		bit_unset(tenure, offset);\
 	}\
 
 typedef struct {
-	knh_hObject_t h;
+	kObjectHeader h;
 	kuintptr_t *bitmap;
 	kuintptr_t *tenure;
-	knh_context_t *ctx;
+	kcontext_t *ctx;
 	void *unused;
 } knh_hOArena_t;
 
-typedef struct knh_ObjectPage_t knh_ObjectPage_t;
-struct knh_ObjectPage_t {
+typedef struct kobjpage_t kobjpage_t;
+struct kobjpage_t {
 	knh_hOArena_t h;
-	knh_Object_t  slots[K_PAGEOBJECTSIZE];
+	kObjectUnused  slots[K_PAGEOBJECTSIZE];
 };
 
 struct knh_ObjectArenaTBL_t {
-	knh_ObjectPage_t *head;
-	knh_ObjectPage_t *bottom;
+	kobjpage_t *head;
+	kobjpage_t *bottom;
 	size_t            arenasize;
 	kuintptr_t    *bitmap;
 	kuintptr_t     bitmapsize;
@@ -631,10 +631,10 @@ void knh_share_freeArena(CTX ctx, kshare_t *share)
 	share->MemoryArenaTBL = NULL;
 }
 
-static void ObjectPage_init(knh_ObjectPage_t *opage)
+static void ObjectPage_init(kobjpage_t *opage)
 {
 	size_t i;
-	knh_Object_t *o = opage->slots;
+	kObjectUnused *o = opage->slots;
 	for(i = 0; i < K_PAGEOBJECTSIZE - 1; i++) {
 		DBG_ASSERT(K_OPAGE(opage->slots + i) == opage);
 		o[i].h.cTBL = NULL;
@@ -648,12 +648,12 @@ static void ObjectPage_init(knh_ObjectPage_t *opage)
 static void ObjectArenaTBL_checkSize(knh_ObjectArenaTBL_t *oat, size_t arenasize, size_t object_count)
 {
 	size_t cnt2=0;
-	knh_Object_t *p = oat->head->slots;
+	kObjectUnused *p = oat->head->slots;
 	while(p->ref != NULL) {
-		knh_ObjectPage_t *opage = K_OPAGE(p);
-		DBG_ASSERT(oat->bitmap <= opage->h.bitmap && opage->h.bitmap < oat->bitmap + ((arenasize/sizeof(knh_Object_t))/sizeof(kuintptr_t)));
+		kobjpage_t *opage = K_OPAGE(p);
+		DBG_ASSERT(oat->bitmap <= opage->h.bitmap && opage->h.bitmap < oat->bitmap + ((arenasize/sizeof(kObjectUnused))/sizeof(kuintptr_t)));
 		cnt2++;
-		p = (knh_Object_t*) p->ref;
+		p = (kObjectUnused*) p->ref;
 	}
 	DBG_ASSERT(cnt2 + 1 == object_count * K_PAGEOBJECTSIZE);
 }
@@ -661,12 +661,12 @@ static void ObjectArenaTBL_checkSize(knh_ObjectArenaTBL_t *oat, size_t arenasize
 
 static void ObjectArenaTBL_init(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t arenasize)
 {
-	size_t object_count, bitmapsize = (arenasize/sizeof(knh_Object_t));
-	knh_ObjectPage_t *opage = (knh_ObjectPage_t*)KNH_VALLOC(ctx, arenasize);
+	size_t object_count, bitmapsize = (arenasize/sizeof(kObjectUnused));
+	kobjpage_t *opage = (kobjpage_t*)KNH_VALLOC(ctx, arenasize);
 	kuintptr_t *bitmap = (kuintptr_t*)KNH_MALLOC(ctx, bitmapsize * K_NBITMAP);
 	KNH_ASSERT((kuintptr_t)opage % K_PAGESIZE == 0);
 	oat->head =   opage;
-	oat->bottom = (knh_ObjectPage_t*)K_SHIFTPTR(opage, arenasize);
+	oat->bottom = (kobjpage_t*)K_SHIFTPTR(opage, arenasize);
 	oat->bitmap = bitmap;
 	oat->arenasize = arenasize;
 	oat->bitmapsize = bitmapsize;
@@ -677,18 +677,18 @@ static void ObjectArenaTBL_init(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t arena
 	for(; opage < oat->bottom; opage++) {
 		opage->h.bitmap = bitmap;
 		opage->h.tenure = (kuintptr_t*)K_SHIFTPTR(bitmap, bitmapsize);
-		bitmap += (K_PAGESIZE/sizeof(knh_Object_t))/sizeof(kuintptr_t);
+		bitmap += (K_PAGESIZE/sizeof(kObjectUnused))/sizeof(kuintptr_t);
 		opage->h.ctx = NULL;
 		ObjectPage_init(opage);
 	}
 	(opage-1)->slots[K_PAGEOBJECTSIZE - 1].ref = NULL;
 
-	DBG_ASSERT((bitmap - oat->bitmap) * sizeof(kuintptr_t) == arenasize/sizeof(knh_Object_t));
+	DBG_ASSERT((bitmap - oat->bitmap) * sizeof(kuintptr_t) == arenasize/sizeof(kObjectUnused));
 	ctx->stat->gcObjectCount += (object_count * K_PAGEOBJECTSIZE);
 	DBG_(ObjectArenaTBL_checkSize(oat, arenasize, object_count););
 }
 
-static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
+static kObjectUnused *new_ObjectArena(CTX ctx, size_t arenasize)
 {
 	OLD_LOCK(ctx, LOCK_MEMORY, NULL);
 	knh_ObjectArenaTBL_t *oat;
@@ -701,22 +701,22 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 	}
 	ctxshare->sizeObjectArenaTBL += 1;
 	OLD_UNLOCK(ctx, LOCK_MEMORY, NULL);
-	DBG_ASSERT(sizeof(knh_ObjectPage_t) == K_PAGESIZE);
+	DBG_ASSERT(sizeof(kobjpage_t) == K_PAGESIZE);
 	oat = &ctxshare->ObjectArenaTBL[pageindex];
 	ObjectArenaTBL_init(ctx, oat, arenasize);
 	GC_LOG("Allocated object arena id=%d region=(%p-%p), %d objects", pageindex, oat->head, oat->bottom, ((oat->bottom - oat->head) * K_PAGEOBJECTSIZE));
 	{
-		knh_Object_t *p = oat->head->slots;
-		p->ref4_tail = &(((knh_Object_t*)(oat->bottom))[-1]);
+		kObjectUnused *p = oat->head->slots;
+		p->ref4_tail = &(((kObjectUnused*)(oat->bottom))[-1]);
 		return p;
 	}
 }
 
-kbool_t knh_isObject(CTX ctx, knh_Object_t *o)
+kbool_t knh_isObject(CTX ctx, kObject *o)
 {
 	void *ptr = (void*) o;
 	kuintptr_t n = (kuintptr_t)ptr;
-	if(ptr != NULL && n % sizeof(knh_Object_t) == 0) {
+	if(ptr != NULL && n % sizeof(kObjectUnused) == 0) {
 		size_t i, size = ctx->share->sizeObjectArenaTBL;
 		knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;
 		for(i = 0; i < size; i++) {
@@ -743,7 +743,7 @@ static const char* addr_to_name(void* p)
 
 static void dumpObject(CTX ctx, kuintptr_t* p)
 {
-	knh_Object_t* o = (knh_Object_t*)(*p);
+	kObject* o = (kObject*)(*p);
 	if (knh_isObject(ctx, (void*) o) && O_cTBL(o) != NULL) {
 		if (O_cid(o) < K_CLASS_INITSIZE) {
 			knh_putc(ctx, KNH_STDERR, '\t');
@@ -786,7 +786,7 @@ static void cstack_mark(CTX ctx FTRARG)
 	void** stack  = C_STACK_TOP(ctx);
 	void** bottom = (void**) ctx->cstack_bottom;
 	for (; stack < bottom; ++stack) {
-		knh_Object_t *o = (knh_Object_t*)(*stack);
+		kObject *o = (kObject*)(*stack);
 		if (knh_isObject(ctx, o)) {
 			KNH_ADDREF(ctx, o);
 		}
@@ -800,8 +800,8 @@ static void cstack_mark(CTX ctx FTRARG)
 #ifdef K_USING_DEBUG
 #define DBG_CHECK_ONARENA(ctx, p) DBG_checkOnArena(ctx, p K_TRACEPOINT)
 //#define DBG_CHECK_UNOBJECT(ctx) DBG_ASSERT(ctx->freeObjectListSize == 0)
-//#define DBG_UNOBJinc(ctx, N) ((knh_context_t*)ctx)->freeObjectListSize += N
-//#define DBG_UNOBJdec(ctx, N) ((knh_context_t*)ctx)->freeObjectListSize -= N
+//#define DBG_UNOBJinc(ctx, N) ((kcontext_t*)ctx)->freeObjectListSize += N
+//#define DBG_UNOBJdec(ctx, N) ((kcontext_t*)ctx)->freeObjectListSize -= N
 
 #ifndef K_USING_BMGC
 static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
@@ -826,17 +826,17 @@ static void DBG_checkOnArena(CTX ctx, void *used K_TRACEARGV)
 #ifndef K_USING_BMGC
 #define K_MEMBLOCKPAGE			64
 #define K_MEMBLOCKSIZE			(K_MEMBLOCKPAGE * K_PAGESIZE)
-#define GET_PAGECTX(page)		((knh_context_t *)((page)->h.ctx))
+#define GET_PAGECTX(page)		((kcontext_t *)((page)->h.ctx))
 #define SET_PAGECTX(page, ctx1)	(page)->h.ctx = (void *)(ctx1)
 
-static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
+static kObjectUnused* get_memBlock(CTX ctx, size_t mbsize)
 {
 	KNH_MEMLOCK(ctx);
 	knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;
-	knh_ObjectPage_t *page;
+	kobjpage_t *page;
 	size_t i, arenasize = ctx->share->sizeObjectArenaTBL;
 	for(i = 0; i < arenasize; i++) {
-		knh_ObjectPage_t *bottom = oat[i].bottom;
+		kobjpage_t *bottom = oat[i].bottom;
 		for(page = oat[i].head; page < bottom; page += K_MEMBLOCKPAGE) {
 			if(GET_PAGECTX(page) == NULL) {
 				goto SETFLAG;
@@ -847,8 +847,8 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 	SETFLAG:
 	for(i=0; i<K_MEMBLOCKPAGE; i++) SET_PAGECTX(page + i, ctx);
 	KNH_MEMUNLOCK(ctx);
-	knh_Object_t *p = page->slots;
-	p->ref4_tail = &(((knh_Object_t*)((page + K_MEMBLOCKPAGE)))[-1]);
+	kObjectUnused *p = page->slots;
+	p->ref4_tail = &(((kObjectUnused*)((page + K_MEMBLOCKPAGE)))[-1]);
 	p->ref4_tail->ref = NULL;
 	WCTX(ctx)->freeObjectListSize += K_PAGEOBJECTSIZE * K_MEMBLOCKPAGE;
 	return p;
@@ -857,16 +857,16 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 
 #define CHECK_UNUSED_OBJECT(ctx) { \
 		if(ctx->freeObjectList == NULL) { \
-			knh_Object_t *p = get_memBlock(ctx, K_MEMBLOCKSIZE);\
-			((knh_context_t*)ctx)->freeObjectList = p; \
-			((knh_context_t*)ctx)->freeObjectTail = p->ref4_tail;\
+			kObjectUnused *p = get_memBlock(ctx, K_MEMBLOCKSIZE);\
+			((kcontext_t*)ctx)->freeObjectList = p; \
+			((kcontext_t*)ctx)->freeObjectTail = p->ref4_tail;\
 		} \
 		DBG_CHECK_ONARENA(ctx, ctx->freeObjectList);\
 	} \
 
 #define FREELIST_POP(o) {\
 		o = ctx->freeObjectList;\
-		((knh_context_t*)ctx)->freeObjectList = (Object*)(o)->ref;\
+		((kcontext_t*)ctx)->freeObjectList = (Object*)(o)->ref;\
 		prefetch(o->ref);\
 		/*TODO(imasahiro) measure GC performance */\
 		o->ref = NULL;\
@@ -875,7 +875,7 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 
 #define FREELIST_PUSH(o) {\
 		o->ref = ctx->freeObjectList;\
-		((knh_context_t*)ctx)->freeObjectList = o;\
+		((kcontext_t*)ctx)->freeObjectList = o;\
 		/*DBG_UNOBJinc((ctx), 1);*/\
 	}\
 
@@ -902,16 +902,16 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 void knh_initFirstObjectArena(CTX ctx)
 {
 	DBG_ASSERT(ctx->freeObjectList == NULL);
-	knh_Object_t *p = get_memBlock(ctx, K_ARENASIZE);
-	((knh_context_t*)ctx)->freeObjectList = p;
-	((knh_context_t*)ctx)->freeObjectTail = p->ref4_tail;
+	kObjectUnused *p = get_memBlock(ctx, K_ARENASIZE);
+	((kcontext_t*)ctx)->freeObjectList = p;
+	((kcontext_t*)ctx)->freeObjectTail = p->ref4_tail;
 	ctx->stat->gcObjectCount -= K_GC_MARGIN; // important
 	ctx->stat->latestGcTime = knh_getTimeMilliSecond();
 }
 
-knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
+kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 {
-	knh_Object_t *o = NULL;
+	kObjectUnused *o = NULL;
 	CHECK_UNUSED_OBJECT(ctx);
 	FREELIST_POP(o);
 	prefetch_tenure(o);
@@ -925,12 +925,12 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 	}
 	STAT_Object(ctx, ct);
 	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
-	return o;
+	return (kObject*)o;
 }
 
-knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
+kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 {
-	knh_Object_t *o = NULL;
+	kObjectUnused *o = NULL;
 	CHECK_UNUSED_OBJECT(ctx);
 	FREELIST_POP(o);
 	o->h.magicflag = ct->magicflag;
@@ -944,12 +944,12 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	}
 	STAT_Object(ctx, ct);
 	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
-	return o;
+	return (kObject*)o;
 }
 
-void TR_NEW(CTX ctx, ksfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+void TR_NEW(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
 {
-	knh_Object_t *o = NULL;
+	kObjectUnused *o = NULL;
 	CHECK_UNUSED_OBJECT(ctx);
 	FREELIST_POP(o);
 	o->h.magicflag = ct->magicflag;
@@ -968,7 +968,7 @@ void TR_NEW(CTX ctx, ksfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 
 /* ------------------------------------------------------------------------ */
 
-static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
+static void knh_Object_finalfree(CTX ctx, kObjectUnused *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	RCGC_(DBG_ASSERT(Object_isRC0(o)));
@@ -987,7 +987,7 @@ static void knh_Object_finalfree(CTX ctx, knh_Object_t *o)
 #endif /* K_USING_BMGC */
 
 typedef struct knh_ostack_t {
-	knh_Object_t **stack;
+	kObject **stack;
 	size_t cur;
 	size_t tail;
 	size_t capacity;
@@ -1003,19 +1003,19 @@ static knh_ostack_t *ostack_init(CTX ctx, knh_ostack_t *ostack)
 		ostack->capacity_log2 = 12;
 		ostack->capacity = (1 << ostack->capacity_log2) - 1;
 		DBG_ASSERT(K_PAGESIZE == 1 << 12);
-		ostack->stack = (knh_Object_t**)KNH_MALLOC(ctx, sizeof(knh_Object_t*) * (ostack->capacity + 1));
+		ostack->stack = (kObject**)KNH_MALLOC(ctx, sizeof(kObject*) * (ostack->capacity + 1));
 	}
 	ostack->cur  = 0;
 	ostack->tail = 0;
 	return ostack;
 }
 
-static void ostack_push(CTX ctx, knh_ostack_t *ostack, knh_Object_t *ref)
+static void ostack_push(CTX ctx, knh_ostack_t *ostack, kObject *ref)
 {
 	size_t ntail = (ostack->tail + 1 ) & ostack->capacity;
 	if(unlikely(ntail == ostack->cur)) {
 		size_t capacity = 1 << ostack->capacity_log2;
-		ostack->stack = (knh_Object_t**)KNH_REALLOC(ctx, "ostack", ostack->stack, capacity, capacity * 2, sizeof(knh_Object_t*));
+		ostack->stack = (kObject**)KNH_REALLOC(ctx, "ostack", ostack->stack, capacity, capacity * 2, sizeof(kObject*));
 		ostack->capacity_log2 += 1;
 		ostack->capacity = (1 << ostack->capacity_log2) - 1;
 		ntail = (ostack->tail + 1) & ostack->capacity;
@@ -1024,9 +1024,9 @@ static void ostack_push(CTX ctx, knh_ostack_t *ostack, knh_Object_t *ref)
 	ostack->tail = ntail;
 }
 
-static knh_Object_t *ostack_next(knh_ostack_t *ostack)
+static kObject *ostack_next(knh_ostack_t *ostack)
 {
-	knh_Object_t *ref = NULL;
+	kObject *ref = NULL;
 	if(likely(ostack->cur != ostack->tail)) {
 		ostack->tail -=1;
 		ref = ostack->stack[ostack->tail];
@@ -1037,22 +1037,22 @@ static knh_Object_t *ostack_next(knh_ostack_t *ostack)
 
 static void ostack_free(CTX ctx, knh_ostack_t *ostack)
 {
-	knh_context_t *wctx = (knh_context_t*)ctx;
+	kcontext_t *wctx = (kcontext_t*)ctx;
 	wctx->queue_capacity = ostack->capacity;
 	wctx->queue = ostack->stack;
 	wctx->queue_log2 = ostack->capacity_log2;
 }
 
-knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
+kObject** knh_ensurerefs(CTX ctx, kObject** tail, size_t size)
 {
 	size_t ref_size = tail - ctx->ref_buf;
 	if(unlikely(ctx->ref_capacity < size + ref_size)) {
-		knh_context_t *wctx = (knh_context_t*)ctx;
+		kcontext_t *wctx = (kcontext_t*)ctx;
 		size_t newsize = (ctx->ref_capacity == 0) ? 8 : ctx->ref_capacity * 2;
 		while(newsize < size + ref_size) {
 			newsize *= 2;
 		}
-		wctx->ref_buf = (knh_Object_t**)KNH_REALLOC(ctx, "ctx->ref_buf", ctx->ref_buf, ctx->ref_capacity, newsize, sizeof(knh_Object_t*));
+		wctx->ref_buf = (kObject**)KNH_REALLOC(ctx, "ctx->ref_buf", ctx->ref_buf, ctx->ref_capacity, newsize, sizeof(kObject*));
 		wctx->ref_capacity = newsize;
 		wctx->refs = ctx->ref_buf;
 		tail = ctx->ref_buf + ref_size;
@@ -1061,7 +1061,7 @@ knh_Object_t** knh_ensurerefs(CTX ctx, knh_Object_t** tail, size_t size)
 }
 
 #ifdef K_USING_RCGC
-static void deref_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
+static void deref_ostack(CTX ctx, kObject *ref, knh_ostack_t *ostack)
 {
 	if (knh_Object_RCdec(ref) == 1) {
 		ostack_push(ctx, ostack, ref);
@@ -1071,11 +1071,11 @@ static void deref_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 void knh_Object_RCfree(CTX ctx, Object *o)
 {
 #define ctx_update_refs(ctx, buf, size) \
-		((knh_context_t*)ctx)->refs = buf;\
-		((knh_context_t*)ctx)->ref_size = size;
+		((kcontext_t*)ctx)->refs = buf;\
+		((kcontext_t*)ctx)->ref_size = size;
 
 	long i;
-	knh_Object_t *ref;
+	kObject *ref;
 	knh_ostack_t ostackbuf, *ostack = ostack_init(ctx, &ostackbuf);
 	knh_ensurerefs(ctx, ctx->ref_buf, K_PAGESIZE);
 	ostack_push(ctx, ostack, o);
@@ -1107,7 +1107,7 @@ void knh_Object_RCsweep(CTX ctx, Object *o)
 
 static void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *oat)
 {
-	knh_ObjectPage_t *opage = oat->head;
+	kobjpage_t *opage = oat->head;
 	while(opage < oat->bottom) {
 		size_t i;
 		for(i = 0; i < K_PAGEOBJECTSIZE; i++) {
@@ -1118,27 +1118,27 @@ static void knh_ObjectObjectArenaTBL_free(CTX ctx, const knh_ObjectArenaTBL_t *o
 //				fprintf(stderr, "async object %p cid=%s(%d), ref=%d ", o, STRUCT__(O_bcid(o)), (int)O_cid(o), (int)O_bcid(o));
 //				switch(O_bcid(o)) {
 //				case CLASS_Boolean:
-//					fprintf(stderr, "bvalue='%d' true?=%d false?=%d\n", (int)((knh_Int_t*)o)->n.bvalue, (o == KNH_TRUE), (o == KNH_FALSE));
+//					fprintf(stderr, "bvalue='%d' true?=%d false?=%d\n", (int)((kInt*)o)->n.bvalue, (o == KNH_TRUE), (o == KNH_FALSE));
 //				break;
 //				case CLASS_Int:
-//					fprintf(stderr, "ivalue='%lld'\n", (long long int)((knh_Int_t*)o)->n.ivalue);
+//					fprintf(stderr, "ivalue='%lld'\n", (long long int)((kInt*)o)->n.ivalue);
 //				break;
 //				case CLASS_Class:
-//					fprintf(stderr, "o->cid=%d\n", (int)((knh_Class_t*)o)->cid);
+//					fprintf(stderr, "o->cid=%d\n", (int)((kClass*)o)->cid);
 //				break;
 //				case CLASS_String:
-//					fprintf(stderr, "str='%s'\n", S_totext((knh_String_t*)o));
+//					fprintf(stderr, "str='%s'\n", S_totext((kString*)o));
 //				break;
 //				case CLASS_Term:
-//					fprintf(stderr, "tt='%s'\n", TT__(((knh_Term_t*)o)->tt));
+//					fprintf(stderr, "tt='%s'\n", TT__(((kTerm*)o)->tt));
 //				break;
 //				case CLASS_Method: {
-//					knh_Method_t *mtd = (knh_Method_t*)o;
+//					kMethod *mtd = (kMethod*)o;
 //					fprintf(stderr, "(mtd)->cid=%s, (mtd)->mn=%d\n", STRUCT__((mtd)->cid), (mtd)->mn);
 //					break;
 //				}
 //				case CLASS_Stmt:
-//					fprintf(stderr, "stmt='%s'\n", TT__((SP(knh_StmtExpr_t*)o)->stt));
+//					fprintf(stderr, "stmt='%s'\n", TT__((SP(kStmtExpr*)o)->stt));
 //				break;
 //				default:
 //					fprintf(stderr, "\n");
@@ -1164,7 +1164,7 @@ void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSiz
 
 /* ------------------------------------------------------------------------ */
 
-//#define BSHIFT ((K_PAGESIZE / sizeof(knh_Object_t)) / (sizeof(kuintptr_t) * 8))
+//#define BSHIFT ((K_PAGESIZE / sizeof(kObject)) / (sizeof(kuintptr_t) * 8))
 
 static inline int bit_test_and_set(kuintptr_t *b, size_t offset)
 {
@@ -1188,9 +1188,9 @@ static void gc_init(CTX ctx)
 	STAT_(ctx->stat->markedObject = 0;)
 }
 
-static void mark_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
+static void mark_ostack(CTX ctx, kObject *ref, knh_ostack_t *ostack)
 {
-	knh_ObjectPage_t *opage = K_OPAGE(ref);
+	kobjpage_t *opage = K_OPAGE(ref);
 	prefetch(opage);
 	size_t n = K_OPAGEOFFSET(ref, opage);
 	kuintptr_t *b = opage->h.bitmap;
@@ -1203,14 +1203,14 @@ static void mark_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 }
 
 #define CONTEXT_REFINIT(ctx) \
-	((knh_context_t*)ctx)->refs = ctx->ref_buf;\
-	((knh_context_t*)ctx)->ref_size = 0;
+	((kcontext_t*)ctx)->refs = ctx->ref_buf;\
+	((kcontext_t*)ctx)->ref_size = 0;
 
 static void gc_mark(CTX ctx, int needsCStackTrace)
 {
 	long i;
 	knh_ostack_t ostackbuf, *ostack = ostack_init(ctx, &ostackbuf);
-	knh_Object_t *ref = NULL, **reftail = NULL;
+	kObject *ref = NULL, **reftail = NULL;
 
 	knh_ensurerefs(ctx, ctx->ref_buf, K_PAGESIZE);
 	CONTEXT_REFINIT(ctx);
@@ -1241,7 +1241,7 @@ static void gc_move(CTX ctx, int needsCStackTrace)
 	// yoan
 }
 
-static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
+static inline void Object_MSfree(CTX ctx, kObjectUnused *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	MEMLOG("~Object", "ptr=%p, cid=%d", o, ct->cid);
@@ -1258,8 +1258,8 @@ static inline void Object_MSfree(CTX ctx, knh_Object_t *o)
 
 static void gc_extendMemBlock(CTX ctx)
 {
-	knh_Object_t *block = get_memBlock(ctx, K_MEMBLOCKSIZE);
-	knh_Object_t *tail = block->ref4_tail;
+	kObjectUnused *block = get_memBlock(ctx, K_MEMBLOCKSIZE);
+	kObjectUnused *tail = block->ref4_tail;
 	tail->ref = ctx->freeObjectList;
 	WCTX(ctx)->freeObjectList = block;
 }
@@ -1272,12 +1272,12 @@ static void gc_sweep(CTX ctx)
 	size_t listSize = 0;
 	(void)moved;
 	for(atindex = 0; atindex < size; atindex++) {
-		knh_ObjectPage_t *opage = oat[atindex].head;
+		kobjpage_t *opage = oat[atindex].head;
 		for(;opage < oat[atindex].bottom; opage++) {
 			if(ctx == GET_PAGECTX(opage)) {
 				kuintptr_t i, *b = opage->h.bitmap;
 				for(i = 1; i <= K_PAGEOBJECTSIZE; i++) {
-					knh_Object_t *o = &opage->slots[i-1];
+					kObject *o = &opage->slots[i-1];
 					if(!bit_test(b, (i))) {
 						//prefetch(o);
 						Object_MSfree(ctx, o);
@@ -1310,7 +1310,7 @@ static void gc_sweep(CTX ctx)
 	size_t listSize = 0;
 	(void)moved;
 	for(atindex = 0; atindex < size; atindex++) {
-		knh_ObjectPage_t *opage, *bottom = oat[atindex].bottom;
+		kobjpage_t *opage, *bottom = oat[atindex].bottom;
 		for (opage = oat[atindex].head; opage < bottom; opage++) {
 			kuintptr_t i, *bitmap = opage->h.bitmap;
 			if(GET_PAGECTX(opage) == ctx) {
@@ -1319,7 +1319,7 @@ static void gc_sweep(CTX ctx)
 					kuintptr_t b = ~bitmap[i];
 					while (b != 0) {
 						kuintptr_t n = CTZ(b);
-						register knh_Object_t *o = &(opage->slots[i * UINTPTR8 + n - 1]);
+						register kObject *o = &(opage->slots[i * UINTPTR8 + n - 1]);
 						Object_MSfree(ctx, o);
 						collected++;
 						CLEAR(b, n);
@@ -1349,16 +1349,16 @@ static void gc_sweep(CTX ctx)
 ////	const knh_sysinfo_t *sysinfo = knh_getsysinfo();
 ////	size_t max = (sysinfo->hw_usermem > 0) ? sysinfo->hw_usermem / 20 : 64 * (1024 * 1024);
 ////	if(arenasize <= max) arenasize *= 2;
-//	knh_Object_t *newobj = get_memBlock(ctx, arenasize);
-//	knh_Object_t *p = ctx->freeObjectList;
+//	kObject *newobj = get_memBlock(ctx, arenasize);
+//	kObject *p = ctx->freeObjectList;
 //	if(p == NULL) {
-//		((knh_context_t*)ctx)->freeObjectList = newobj;
-//		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
+//		((kcontext_t*)ctx)->freeObjectList = newobj;
+//		((kcontext_t*)ctx)->freeObjectTail = newobj->ref4_tail;
 //	}
 //	else {
 //		p = ctx->freeObjectTail;
 //		p->ref = newobj;
-//		((knh_context_t*)ctx)->freeObjectTail = newobj->ref4_tail;
+//		((kcontext_t*)ctx)->freeObjectTail = newobj->ref4_tail;
 //	}
 //	GC_LOG("extendObjectArena: id=%d newarena=%luMb, used_memory=%luMb extending_time=%dms",
 //			(int)(ctx->share->sizeObjectArenaTBL - 1),
@@ -1367,14 +1367,14 @@ static void gc_sweep(CTX ctx)
 //}
 //#endif
 
-static void gc_freeMemBlock(CTX ctx, knh_context_t *deadCtx)
+static void gc_freeMemBlock(CTX ctx, kcontext_t *deadCtx)
 {
 	knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;
 	size_t collected=0, moved = 0, atindex, size = ctx->share->sizeObjectArenaTBL;
 	(void)collected;
 	(void)moved;
 	for(atindex = 0; atindex < size; atindex++) {
-		knh_ObjectPage_t *opage = oat[atindex].head;
+		kobjpage_t *opage = oat[atindex].head;
 		for(;opage < oat[atindex].bottom; opage++) {
 			if(deadCtx == GET_PAGECTX(opage)) {
 				SET_PAGECTX(opage, ctx);
@@ -1388,7 +1388,7 @@ static void gc_freeCtx(CTX ctx)
 	int i;
 	kshare_t *share = ctx->wshare;
 	for(i = knh_Array_size(share->contextListNULL) - 1; i >= 0; i--) {
-		knh_context_t *c = WCTX(((knh_Context_t *)knh_Array_n(share->contextListNULL, i))->ctx);
+		kcontext_t *c = WCTX(((kContext *)knh_Array_n(share->contextListNULL, i))->ctx);
 		if(!IS_RUNNING(c)) {
 			gc_freeMemBlock(ctx, c);
 			knh_Context_free(ctx, c);
@@ -1407,7 +1407,7 @@ static int stop_the_world(CTX ctx)
 		share->stopCounter++;
 		if(size > 1) {
 			for(i = 0; i < size; i++) {
-				knh_Context_t *c = (knh_Context_t *)knh_Array_n(share->contextListNULL, i);
+				kContext *c = (kContext *)knh_Array_n(share->contextListNULL, i);
 				if(ctx != c->ctx) {
 					SAFEPOINT_SETGC(c->ctx);
 				}
@@ -1471,7 +1471,7 @@ void knh_System_gc(CTX ctx, int needsCStackTrace)
 //		)
 //	}
 	//STAT_(KNH_ASSERT(ctxstat->markedObject == ctxstat->usedObjectSize);)
-	//MSGC_(if(ctxstat->gcObjectCount < K_ARENASIZE/sizeof(knh_Object_t)) {
+	//MSGC_(if(ctxstat->gcObjectCount < K_ARENASIZE/sizeof(kObject)) {
 //	MSGC_(if(!(ctxstat->usedObjectSize < ((ctxstat->gcBoundary * 3) / 4))) { /* 75%*/
 //		gc_extendObjectArena(ctx);
 //	})

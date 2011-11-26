@@ -91,70 +91,70 @@ kfloat_t kfloat_rand(void)
 
 /* ------------------------------------------------------------------------ */
 
-knh_Int_t* new_Int_(CTX ctx, kclass_t cid, kint_t value)
+kInt* new_Int_(CTX ctx, kclass_t cid, kint_t value)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	if(ct->constPoolMapNULL != NULL) {
-		knh_Int_t *n = knh_PtrMap_getI(ctx, ct->constPoolMapNULL, (kunbox_t)value);
+		kInt *n = knh_PtrMap_getI(ctx, ct->constPoolMapNULL, (kunbox_t)value);
 		if(n == NULL) {
-			n = (knh_Int_t*)new_hObject_(ctx, ct);
+			n = (kInt*)new_hObject_(ctx, ct);
 			n->n.ivalue = value;
 			knh_PtrMap_addI(ctx, ct->constPoolMapNULL, n);
 		}
 		return n;
 	}
 	else {
-		knh_Int_t *b = (knh_Int_t*)new_hObject_(ctx, ct);
+		kInt *b = (kInt*)new_hObject_(ctx, ct);
 		b->n.ivalue = value;
 		return b;
 	}
 }
 
-knh_Float_t* new_Float_(CTX ctx, kclass_t cid, kfloat_t value)
+kFloat* new_Float_(CTX ctx, kclass_t cid, kfloat_t value)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	if(ct->constPoolMapNULL != NULL) {
 		ksfp_t lsfp;
 		lsfp.fvalue = value;
-		knh_Int_t *n = knh_PtrMap_getI(ctx, ct->constPoolMapNULL, lsfp.ndata);
+		kInt *n = knh_PtrMap_getI(ctx, ct->constPoolMapNULL, lsfp.ndata);
 		if(n == NULL) {
-			n = (knh_Int_t*)new_hObject_(ctx, ct);
+			n = (kInt*)new_hObject_(ctx, ct);
 			n->n.fvalue = value;
 			knh_PtrMap_addI(ctx, ct->constPoolMapNULL, n);
 		}
-		return (knh_Float_t*)n;
+		return (kFloat*)n;
 	}
 	else {
-		knh_Float_t *b = (knh_Float_t*)new_hObject_(ctx, ct);
+		kFloat *b = (kFloat*)new_hObject_(ctx, ct);
 		b->n.fvalue = value;
 		return b;
 	}
 }
 
-KNHAPI2(knh_Int_t*) new_Int(CTX ctx, kint_t value)
+KNHAPI2(kInt*) new_Int(CTX ctx, kint_t value)
 {
 	return new_Int_(ctx, CLASS_Int, value);
 }
 
-KNHAPI2(knh_Float_t*) new_Float(CTX ctx, kfloat_t value)
+KNHAPI2(kFloat*) new_Float(CTX ctx, kfloat_t value)
 {
 	return new_Float_(ctx, CLASS_Float, value);
 }
 
 Object* new_Boxing(CTX ctx, ksfp_t *sfp, const knh_ClassTBL_t *ct)
 {
-	knh_Object_t *o = NULL;
+	kObject *o = NULL;
 	if(ct->constPoolMapNULL != NULL) {
-		o = (knh_Object_t*)knh_PtrMap_getI(ctx, ct->constPoolMapNULL, sfp[0].ndata);
+		o = (kObject*)knh_PtrMap_getI(ctx, ct->constPoolMapNULL, sfp[0].ndata);
 		if(o == NULL) {
 			o = new_hObject_(ctx, ct);
-			((knh_Int_t*)o)->n.data = sfp[0].ndata;
-			knh_PtrMap_addI(ctx, ct->constPoolMapNULL, (knh_Int_t*)o);
+			((kInt*)o)->n.data = sfp[0].ndata;
+			knh_PtrMap_addI(ctx, ct->constPoolMapNULL, (kInt*)o);
 		}
 	}
 	else {
 		o = new_hObject_(ctx, ct);
-		((knh_Int_t*)o)->n.data = sfp[0].ndata;
+		((kInt*)o)->n.data = sfp[0].ndata;
 	}
 	return o;
 }
@@ -163,18 +163,18 @@ KNHAPI2(void) knh_boxing(CTX ctx, ksfp_t *sfp, int type)
 {
 	if(IS_Tunbox(type)) {
 		const knh_ClassTBL_t *ct = ClassTBL(type);
-		knh_Object_t *o;
+		kObject *o;
 		if(ct->constPoolMapNULL != NULL) {
-			o = (knh_Object_t*)knh_PtrMap_getI(ctx, ct->constPoolMapNULL, sfp[0].ndata);
+			o = (kObject*)knh_PtrMap_getI(ctx, ct->constPoolMapNULL, sfp[0].ndata);
 			if(o == NULL) {
 				o = new_hObject_(ctx, ct);
-				((knh_Int_t*)o)->n.data = sfp[0].ndata;
-				knh_PtrMap_addI(ctx, ct->constPoolMapNULL, (knh_Int_t*)o);
+				((kInt*)o)->n.data = sfp[0].ndata;
+				knh_PtrMap_addI(ctx, ct->constPoolMapNULL, (kInt*)o);
 			}
 		}
 		else {
 			o = new_hObject_(ctx, ct);
-			((knh_Int_t*)o)->n.data = sfp[0].ndata;
+			((kInt*)o)->n.data = sfp[0].ndata;
 		}
 		KNH_SETv(ctx, sfp[0].o, o);
 	}

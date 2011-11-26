@@ -41,7 +41,7 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-DEFAPI(void) defGslPoly(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defGslPoly(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "GslPoly";
 }
@@ -49,7 +49,7 @@ DEFAPI(void) defGslPoly(CTX ctx, kclass_t cid, kClassDef *cdef)
 //## @Native float GslPoly.eval(float[] c, float x);
 KMETHOD GslPoly_eval(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *c = sfp[1].a;
+	kArray *c = sfp[1].a;
 	double x = sfp[2].fvalue;
 	double r = gsl_poly_eval(c->flist, knh_Array_size(c), x);
 	RETURNf_(r);
@@ -58,9 +58,9 @@ KMETHOD GslPoly_eval(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native int GslPoly.evalDerivs(float[] c, float x, float[] res);
 KMETHOD GslPoly_evalDerivs(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *c = sfp[1].a;
+	kArray *c = sfp[1].a;
 	double x = sfp[2].fvalue;
-	knh_Array_t *res = sfp[3].a;
+	kArray *res = sfp[3].a;
 	int n = gsl_poly_eval_derivs(c->flist, knh_Array_size(c), x, res->flist, knh_Array_size(res));
 	RETURNi_(n);
 }
@@ -68,9 +68,9 @@ KMETHOD GslPoly_evalDerivs(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native int GslPoly.ddInit(float[] dd, float[] xa, double ya[]);
 KMETHOD GslPoly_ddInit(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *dd = sfp[1].a;
-	knh_Array_t *xa = sfp[2].a;
-	knh_Array_t *ya = sfp[3].a;
+	kArray *dd = sfp[1].a;
+	kArray *xa = sfp[2].a;
+	kArray *ya = sfp[3].a;
 	int size = knh_Array_size(dd);
 	int r = gsl_poly_dd_init(dd->flist, xa->flist, ya->flist, size);
 	RETURNi_(r);
@@ -79,8 +79,8 @@ KMETHOD GslPoly_ddInit(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native float GslPoly.ddEval(float[] dd, float[] xa, double x);
 KMETHOD GslPoly_ddEval(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *dd = sfp[1].a;
-	knh_Array_t *xa = sfp[2].a;
+	kArray *dd = sfp[1].a;
+	kArray *xa = sfp[2].a;
 	double x = sfp[3].fvalue;
 	double r = gsl_poly_dd_eval(dd->flist, xa->flist, knh_Array_size(xa), x);
 	RETURNf_(r);
@@ -89,11 +89,11 @@ KMETHOD GslPoly_ddEval(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native int GslPoly.ddTaylor(float[] c, float xp, float[] dd, float[] xa, double w[]);
 KMETHOD GslPoly_ddTaylor(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *c = sfp[1].a;
+	kArray *c = sfp[1].a;
 	double xp = sfp[2].fvalue;
-	knh_Array_t *dd = sfp[3].a;
-	knh_Array_t *xa = sfp[4].a;
-	knh_Array_t *w = sfp[5].a;
+	kArray *dd = sfp[3].a;
+	kArray *xa = sfp[4].a;
+	kArray *w = sfp[5].a;
 	int r = gsl_poly_dd_taylor(c->flist, xp, dd->flist, xa->flist, knh_Array_size(dd), w->flist);
 	RETURNi_(r);
 }
@@ -106,7 +106,7 @@ KMETHOD GslPoly_solveQuadratic(CTX ctx, ksfp_t *sfp _RIX)
 	double c = Float_to(double, sfp[3]);
 	double x0 = 0.0, x1 = 0.0;
 	gsl_poly_solve_quadratic(a, b, c, &x0, &x1);
-	knh_Tuple_t *t = (knh_Tuple_t*)new_ReturnObject(ctx, sfp);
+	kTuple *t = (kTuple*)new_ReturnObject(ctx, sfp);
 	t->ffields[0] = (kfloat_t)x0;
 	t->ffields[1] = (kfloat_t)x1;
 	RETURN_(t);
@@ -120,7 +120,7 @@ KMETHOD GslPoly_solveCubic(CTX ctx, ksfp_t *sfp _RIX)
 	double c = Float_to(double, sfp[3]);
 	double x0 = 0.0, x1 = 0.0, x2 = 0.0;
 	gsl_poly_solve_cubic(a, b, c, &x0, &x1, &x2);
-	knh_Tuple_t *t = (knh_Tuple_t*)new_ReturnObject(ctx, sfp);
+	kTuple *t = (kTuple*)new_ReturnObject(ctx, sfp);
 	t->ffields[0] = (kfloat_t)x0;
 	t->ffields[1] = (kfloat_t)x1;
 	t->ffields[2] = (kfloat_t)x2;
@@ -130,9 +130,9 @@ KMETHOD GslPoly_solveCubic(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native float[] GslPoly.complexSolve(float[] a, GslPolyComplexWorkspace ws);
 KMETHOD GslPoly_complexSolve(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Array_t *a = sfp[1].a;
+	kArray *a = sfp[1].a;
 	int size = knh_Array_size(a);
-	knh_Array_t *z = new_Array(ctx, CLASS_Float, (size - 1) * 2);
+	kArray *z = new_Array(ctx, CLASS_Float, (size - 1) * 2);
 	z->size = (size - 1) * 2;
 	gsl_poly_complex_workspace *ws;
 	if(IS_NULL(sfp[2].o)) {
@@ -149,12 +149,12 @@ KMETHOD GslPoly_complexSolve(CTX ctx, ksfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static void GslPolyComplexWorkspace_init(CTX ctx, knh_RawPtr_t *po)
+static void GslPolyComplexWorkspace_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void GslPolyComplexWorkspace_free(CTX ctx, knh_RawPtr_t *po)
+static void GslPolyComplexWorkspace_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		gsl_poly_complex_workspace_free((gsl_poly_complex_workspace *)po->rawptr);
@@ -162,7 +162,7 @@ static void GslPolyComplexWorkspace_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defGslPolyComplexWorkspace(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defGslPolyComplexWorkspace(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "GslPolyComplexWorkspace";
 	cdef->init = GslPolyComplexWorkspace_init;
@@ -173,7 +173,7 @@ DEFAPI(void) defGslPolyComplexWorkspace(CTX ctx, kclass_t cid, kClassDef *cdef)
 KMETHOD GslPolyComplexWorkspace_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t size = Int_to(size_t, sfp[1]);
-	knh_RawPtr_t *p = sfp[0].p;
+	kRawPtr *p = sfp[0].p;
 	p->rawptr = gsl_poly_complex_workspace_alloc(size);
 	RETURN_(p);
 }

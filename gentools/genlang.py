@@ -429,10 +429,10 @@ def write_hfile(f):
 	write_line(f)
 	for stmt in STMT_LIST:
 		f.write('''
-#define %s  ((knh_term_t)%d)''' % (stmt.TT, stmt.tt))
+#define %s  ((kterm_t)%d)''' % (stmt.TT, stmt.tt))
 	for tk in TOKEN_LIST:
 		f.write('''
-#define %s   ((knh_term_t)%d)''' % (tk.TT, tk.tt))
+#define %s   ((kterm_t)%d)''' % (tk.TT, tk.tt))
 	f.write('''
 #endif/*MN_OPSIZE*/
 ''')
@@ -461,7 +461,7 @@ static TERMDATA_t TERMDATA[] = {''')
 
 static void knh_loadScriptTermData(CTX ctx)
 {
-	knh_DictSet_t *ds = ctx->share->tokenDictSet;
+	kDictSet *ds = ctx->share->tokenDictSet;
 	TERMDATA_t *data = TERMDATA + STT_MAX;
 	int tt = STT_MAX;
 	while(data->name != NULL) {
@@ -474,7 +474,7 @@ static void knh_loadScriptTermData(CTX ctx)
 	knh_DictSet_sort(ctx, ds);
 }
 
-const char *TT__(knh_term_t tt)
+const char *TT__(kterm_t tt)
 {
 	if(tt < TT_MAX + STT_MAX) {
 		return TERMDATA[tt].name;
@@ -483,17 +483,17 @@ const char *TT__(knh_term_t tt)
 	return "UNDEFINED";
 }
 
-kbool_t TT_is(knh_term_t tt, kflag_t flag)
+kbool_t TT_is(kterm_t tt, kflag_t flag)
 {
 	return FLAG_is(TERMDATA[tt].flag, flag);
 }
 
-kshort_t TT_to(knh_term_t tt)
+kshort_t TT_to(kterm_t tt)
 {
 	return TERMDATA[tt].to;
 }
 
-void knh_dumpKeyword(CTX ctx, knh_OutputStream_t *w)
+void knh_dumpKeyword(CTX ctx, kOutputStream *w)
 {
 	TERMDATA_t *data = TERMDATA + STT_MAX;
 	while(data->name != NULL) {
@@ -524,7 +524,7 @@ static ALIASDATA_t __AliasData[] = {''')
 void knh_loadScriptAliasTermData(CTX ctx)
 {
 	ALIASDATA_t *data = __AliasData;
-	knh_DictMap_t *dm = new_DictMap0(ctx, sizeof(__AliasData), 0/*isCaseMap*/, "AliasDictMap");
+	kDictMap *dm = new_DictMap0(ctx, sizeof(__AliasData), 0/*isCaseMap*/, "AliasDictMap");
 	KNH_INITv(ctx->wshare->sysAliasDictMap, dm);
 	while(data->name != NULL) {
 		knh_DictMap_append(ctx, dm, new_T(data->name), UPCAST(new_T(data->alias)));
@@ -558,7 +558,7 @@ static const char *MN_opNAME[] = {''')
 	f.write('''
 };
 
-int TT_priority(knh_term_t tt)
+int TT_priority(kterm_t tt)
 {
 	if(TT_LET <= tt && tt <= TT_TSUB) {
 		return OPDATA[tt-TT_LET].priority;
@@ -569,7 +569,7 @@ int TT_priority(knh_term_t tt)
 	return 0;
 }
 
-kmethodn_t TT_toMN(knh_term_t tt)
+kmethodn_t TT_toMN(kterm_t tt)
 {
 	if(TT_LET <= tt && tt <= TT_TSUB) {
 		return OPDATA[tt - TT_LET].mn;

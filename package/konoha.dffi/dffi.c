@@ -35,7 +35,7 @@ typedef struct knh_CLib_t {
 	void *handler;
 } knh_CLib_t;
 
-static void Clib_init(CTX ctx, knh_RawPtr_t *po)
+static void Clib_init(CTX ctx, kRawPtr *po)
 {
 	//po->rawptr = (void*)KNH_MALLOC(ctx, sizeof(knh_CLib_t));
 	//knh_CLib_t *clib  = (knh_CLib_t*)po->rawptr;
@@ -43,7 +43,7 @@ static void Clib_init(CTX ctx, knh_RawPtr_t *po)
 	po->rawptr = NULL;
 }
 
-static void Clib_free(CTX ctx, knh_RawPtr_t *po)
+static void Clib_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		knh_CLib_t *clib = (knh_CLib_t*)po->rawptr;
@@ -55,7 +55,7 @@ static void Clib_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defClib(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defClib(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Clib";
 	cdef->init = Clib_init;
@@ -71,19 +71,19 @@ typedef struct knh_Process_t {
 	int pid;
 } knh_Process_t;
 
-static void Process_init(CTX ctx, knh_RawPtr_t *po)
+static void Process_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void Process_free(CTX ctx, knh_RawPtr_t *po)
+static void Process_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		po->rawptr = NULL;
 	}
 }
 
-DEFAPI(void) defProcess(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defProcess(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Process";
 	cdef->init = Process_init;
@@ -169,14 +169,14 @@ KMETHOD Clib_new(CTX ctx, ksfp_t *sfp _RIX)
 	const char *libname = String_to(const char *, sfp[1]);
 	knh_CLib_t *clib = (knh_CLib_t*)KNH_MALLOC(ctx, sizeof(knh_CLib_t));
 	clib->handler = knh_dlopen(ctx, libname);
-	knh_RawPtr_t *po = new_RawPtr(ctx, sfp[2].p, clib);
+	kRawPtr *po = new_RawPtr(ctx, sfp[2].p, clib);
 	RETURN_(po);
 }
 
 static KMETHOD Fmethod_wrapCLib(CTX ctx, ksfp_t *sfp _RIX)
 {
-	ktype_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
-	knh_Func_t *fo = sfp[0].fo;
+	ktype_t rtype = knh_Param_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
+	kFunc *fo = sfp[0].fo;
 	knh_ClibGlue_t *cglue = (knh_ClibGlue_t*)(((fo->mtd)->b)->cfunc);
 	//  fprintf(stderr, "fptr:%p, %p, %d, %p, %p\n", 
   //		  dg->fptr,
@@ -243,30 +243,30 @@ static KMETHOD Fmethod_wrapCLib(CTX ctx, ksfp_t *sfp _RIX)
 				} else {
 					fprintf(stderr, "prep_cif FAILED\n:");
 				}
-				RETURN_(new_RawPtr(ctx, (knh_RawPtr_t*)KNH_NULVAL(CLASS_Tvar), return_ptr));
+				RETURN_(new_RawPtr(ctx, (kRawPtr*)KNH_NULVAL(CLASS_Tvar), return_ptr));
 			}
 		} // end of IS_Tunbox 
 	} // end of is_VOID
 	RETURNvoid_();
 }
 
-static knh_RawPtr_t *ClibGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
+static kRawPtr *ClibGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Glue_t *glue = (knh_Glue_t*)((sfp[0].p)->rawptr);
 	knh_ClibGlue_t *cglue = (knh_ClibGlue_t*)(glue->glueInfo);
 	knh_CLib_t *clib = (knh_CLib_t*)glue->componentInfo;
 	if (clib == NULL) {
 		fprintf(stderr, "invalid Dglue\n");
-		return (knh_RawPtr_t*)(sfp[3].o);
+		return (kRawPtr*)(sfp[3].o);
 	}
 	const char *symstr = String_to(const char *, sfp[1]);
-	knh_Class_t *klass = (knh_Class_t*)sfp[2].o;
-	knh_Func_t *fo = (knh_Func_t *)sfp[3].o;
+	kClass *klass = (kClass*)sfp[2].o;
+	kFunc *fo = (kFunc *)sfp[3].o;
 
 	// requested type
   //  fprintf(stderr, "%s %s\n", CLASS__(O_cid(klass)), CLASS__(klass->cid));
 	const knh_ClassTBL_t *tbl = ClassTBL(klass->cid);
-	knh_ParamArray_t *pa = tbl->cparam;
+	kParam *pa = tbl->cparam;
 
 	if ((cglue->fptr = knh_dlsym(ctx, clib->handler, symstr, 0))== NULL) {
 		fprintf(stderr, "dlsym_ERROR!!!\n");
@@ -276,7 +276,7 @@ static knh_RawPtr_t *ClibGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 	cglue->argCount = argCount;
 	// retT
 	DBG_ASSERT(pa->rsize == 1);
-	knh_param_t *p = knh_ParamArray_rget(pa, 0);
+	kparam_t *p = knh_Param_rget(pa, 0);
 	if (p->type == TYPE_Int || p->type == TYPE_Boolean) {
 		cglue->retT = &ffi_type_sint64;
 	} else if (p->type == TYPE_Float) {
@@ -289,7 +289,7 @@ static knh_RawPtr_t *ClibGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 	//argT
 	size_t idx = 0;
 	for (idx = 0; idx < argCount; idx++) {
-		knh_param_t *p = knh_ParamArray_get(pa, idx);
+		kparam_t *p = knh_Param_get(pa, idx);
 		if (p->type == TYPE_Int || p->type == TYPE_Boolean) {
 			cglue->argT[idx] = &ffi_type_sint64;
 			cglue->argT_isUnboxed[idx] = DGLUE_UNBOXED;
@@ -311,11 +311,11 @@ static knh_RawPtr_t *ClibGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 	//cid = knh_class_Generics(ctx, CLASS_Func, pa);
 
   // set wrapper method
-	knh_Method_t *mtd = new_Method(ctx, 0, O_cid(klass), MN_LAMBDA, Fmethod_wrapCLib);
+	kMethod *mtd = new_Method(ctx, 0, O_cid(klass), MN_LAMBDA, Fmethod_wrapCLib);
 	mtd->b->cfunc = (void*)cglue;
 	KNH_SETv(ctx, ((mtd)->b)->mp, tbl->cparam);
 	KNH_INITv(fo->mtd, mtd);
-	return (knh_RawPtr_t*)fo;
+	return (kRawPtr*)fo;
 }
 
 
@@ -365,8 +365,8 @@ KMETHOD Process_new(CTX ctx, ksfp_t *sfp _RIX)
 //#include <crt_externs.h>
 static KMETHOD Fmethod_wrapProcess(CTX ctx, ksfp_t *sfp _RIX)
 {
-	ktype_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
-	knh_Func_t *fo = sfp[0].fo;
+	ktype_t rtype = knh_Param_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
+	kFunc *fo = sfp[0].fo;
 	knh_ProcessGlue_t *pglue = (knh_ProcessGlue_t*)(((fo->mtd)->b)->cfunc);
 	char *arg1 = String_to(char *, sfp[1]);
 	char *args[] = {pglue->path, arg1, NULL};
@@ -443,9 +443,9 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, ksfp_t *sfp _RIX)
 	}
 }
 
-static knh_RawPtr_t *ProcessGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
+static kRawPtr *ProcessGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_RawPtr_t *po = sfp[0].p;
+	kRawPtr *po = sfp[0].p;
 	knh_Glue_t *glue = (knh_Glue_t*)po->rawptr;
 	knh_ProcessGlue_t *pglue = (knh_ProcessGlue_t*)(glue->glueInfo);
 	knh_Process_t *proc = (knh_Process_t*)(glue->componentInfo);
@@ -453,22 +453,22 @@ static knh_RawPtr_t *ProcessGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 	if (proc == NULL) {
 		knh_ldata_t ldata[] = {__ERRNO__};
 		KNH_NTRACE(ctx, "invaid proc", "ContentFail!!");
-		return (knh_RawPtr_t*)(sfp[3].o);
+		return (kRawPtr*)(sfp[3].o);
 	}
 
 	//  const char *symbol = String_to(const char*, sfp[1]);
-	knh_Class_t *klass = (knh_Class_t*)sfp[2].o;
-	knh_Func_t *fo = sfp[3].fo;
+	kClass *klass = (kClass*)sfp[2].o;
+	kFunc *fo = sfp[3].fo;
 
 	const knh_ClassTBL_t *tbl = ClassTBL(klass->cid);
-	//  knh_ParamArray_t *pa = tbl->cparam;
+	//  kParam *pa = tbl->cparam;
 
 	fo->h.cTBL= tbl;
-	knh_Method_t *mtd = new_Method(ctx, 0, O_cid(klass), MN_LAMBDA, Fmethod_wrapProcess);
+	kMethod *mtd = new_Method(ctx, 0, O_cid(klass), MN_LAMBDA, Fmethod_wrapProcess);
 	mtd->b->cfunc = (void*)pglue;
 	KNH_SETv(ctx, ((mtd)->b)->mp, tbl->cparam);
 	KNH_INITv(fo->mtd, mtd);
-	return (knh_RawPtr_t*)fo;
+	return (kRawPtr*)fo;
 }
 
 static knh_GlueSPI_t ProcessGlueSPI = {

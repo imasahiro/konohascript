@@ -51,7 +51,7 @@ static void CWB_nzenvkey(CTX ctx, CWB_t *cwb, kbytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t* knh_getPropertyNULL(CTX ctx, kbytes_t key)
+kString* knh_getPropertyNULL(CTX ctx, kbytes_t key)
 {
 	if(knh_bytes_startsWith_(key, STEXT("env."))) {
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
@@ -59,14 +59,14 @@ knh_String_t* knh_getPropertyNULL(CTX ctx, kbytes_t key)
 		char *v = knh_getenv(CWB_totext(ctx, cwb));
 		CWB_close(cwb);
 		if(v == NULL) return NULL;
-		return new_String2(ctx, CLASS_String, v, knh_strlen(v), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS);
+		return new_String2(ctx, CLASS_String, v, knh_strlen(v), SPOL_ASCII|SPOL_POOLALWAYS);
 	}
-	return (knh_String_t*)knh_DictMap_getNULL(ctx,  ctx->share->props, key);
+	return (kString*)knh_DictMap_getNULL(ctx,  ctx->share->props, key);
 }
 
 /* ------------------------------------------------------------------------ */
 
-void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value)
+void knh_setProperty(CTX ctx, kString *key, dynamic *value)
 {
 	knh_DictMap_set_(ctx, ctx->share->props, key, value);
 }
@@ -75,8 +75,8 @@ void knh_setProperty(CTX ctx, knh_String_t *key, dynamic *value)
 
 KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value)
 {
-	knh_String_t *k = new_T(key);
-	knh_String_t *v = new_String2(ctx, CLASS_String, value, knh_strlen(value), K_SPOLICY_TEXT);
+	kString *k = new_T(key);
+	kString *v = new_String2(ctx, CLASS_String, value, knh_strlen(value), SPOL_TEXT);
 	knh_DictMap_set_(ctx, ctx->share->props, k, UPCAST(v));
 }
 
@@ -87,7 +87,7 @@ Object *knh_getClassConstNULL(CTX ctx, kclass_t cid, kbytes_t name)
 {
 	DBG_ASSERT_cid(cid);
 	if(ClassTBL(cid)->constDictCaseMapNULL == NULL) return NULL;
-	knh_DictMap_t *cmap = ClassTBL(cid)->constDictCaseMapNULL;
+	kDictMap *cmap = ClassTBL(cid)->constDictCaseMapNULL;
 	Object *value = NULL;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	int res = knh_DictMap_index(cmap, name);
@@ -100,10 +100,10 @@ Object *knh_getClassConstNULL(CTX ctx, kclass_t cid, kbytes_t name)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_addClassConst(CTX ctx, kclass_t cid, knh_String_t* name, Object *value)
+int knh_addClassConst(CTX ctx, kclass_t cid, kString* name, Object *value)
 {
 	int ret;
-	knh_DictMap_t *cmap = ClassTBL(cid)->constDictCaseMapNULL;
+	kDictMap *cmap = ClassTBL(cid)->constDictCaseMapNULL;
 	DBG_ASSERT_cid(cid);
 	if(cmap == NULL) {
 		knh_ClassTBL_t *t = varClassTBL(cid);
@@ -128,7 +128,7 @@ int knh_addClassConst(CTX ctx, kclass_t cid, knh_String_t* name, Object *value)
 /* ------------------------------------------------------------------------ */
 /* [tfieldn, tmethodn] */
 
-ksymbol_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
+ksymbol_t knh_addname(CTX ctx, kString *s, knh_Fdictset f)
 {
 	size_t n = knh_Map_size(ctx->share->symbolDictCaseSet);
 	if(unlikely(!(n+1 < KFLAG_MN_SETTER))) {  /* Integer overflowed */
@@ -155,7 +155,7 @@ static ksymbol_t addSymbol(CTX ctx, kbytes_t t)
 		if(!(pos < sizeof(symbuf) - 2)) break;
 	}
 	symbuf[pos] = 0;
-	return knh_addname(ctx, new_String2(ctx, CLASS_String, (const char*)symbuf, pos, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
+	return knh_addname(ctx, new_String2(ctx, CLASS_String, (const char*)symbuf, pos, SPOL_ASCII|SPOL_POOLALWAYS), knh_DictSet_set);
 }
 
 static ksymbol_t getSymbol(CTX ctx, kbytes_t n, ksymbol_t def)
@@ -182,7 +182,7 @@ static ksymbol_t getSymbol(CTX ctx, kbytes_t n, ksymbol_t def)
 
 const char* knh_getopMethodName(kmethodn_t mn);
 
-KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, ksymbol_t fn)
+KNHAPI2(kString*) knh_getFieldName(CTX ctx, ksymbol_t fn)
 {
 	fn = FN_UNMASK(fn);
 	if(fn < MN_OPSIZE) {
@@ -286,7 +286,7 @@ kuri_t knh_getURI(CTX ctx, kbytes_t t)
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	kindex_t idx = knh_DictSet_index(ctx->share->urnDictSet, t);
 	if(idx == -1) {
-		knh_String_t *s = new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_POOLALWAYS);
+		kString *s = new_String2(ctx, CLASS_String, t.text, t.len, SPOL_POOLALWAYS);
 		idx = knh_Array_size(ctx->share->urns);
 		knh_DictSet_set(ctx, ctx->share->urnDictSet, s, idx);
 		knh_Array_add(ctx, ctx->share->urns, s);
@@ -301,12 +301,12 @@ kuri_t knh_getURI(CTX ctx, kbytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *knh_getURN(CTX ctx, kuri_t uri)
+kString *knh_getURN(CTX ctx, kuri_t uri)
 {
 	size_t n = URI_UNMASK(uri);
-	knh_Array_t *a = ctx->share->urns;
+	kArray *a = ctx->share->urns;
 	if(n < knh_Array_size(a)) {
-		return (knh_String_t*)(a)->list[n];
+		return (kString*)(a)->list[n];
 	}
 	else {
 		DBG_ASSERT(uri == URI_unknown);
@@ -317,10 +317,10 @@ knh_String_t *knh_getURN(CTX ctx, kuri_t uri)
 /* ------------------------------------------------------------------------ */
 /* [Driver] */
 
-static kbytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, kbytes_t path)
+static kbytes_t knh_NameSpace_getDpiPath(CTX ctx , kNameSpace *ns, kbytes_t path)
 {
 	while(DP(ns)->name2dpiNameDictMapNULL != NULL) {
-		knh_String_t *s = (knh_String_t*)knh_DictMap_getNULL(ctx, DP(ns)->name2dpiNameDictMapNULL, path);
+		kString *s = (kString*)knh_DictMap_getNULL(ctx, DP(ns)->name2dpiNameDictMapNULL, path);
 		if(s != NULL) return S_tobytes(s);
 		if(ns->parentNULL == NULL) break;
 		ns = ns->parentNULL;
@@ -328,19 +328,19 @@ static kbytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, kbytes_t
 	return path;
 }
 
-const knh_PathDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
+const knh_PathDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, kNameSpace *ns, kbytes_t path)
 {
 	kbytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
 	return (const knh_PathDPI_t *)knh_DictSet_get(ctx, ctx->share->streamDpiDictSet, hpath);
 }
 
-const knh_MapDPI_t *knh_NameSpace_getMapDPINULL(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
+const knh_MapDPI_t *knh_NameSpace_getMapDPINULL(CTX ctx, kNameSpace *ns, kbytes_t path)
 {
 	kbytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
 	return (const knh_MapDPI_t*)knh_DictSet_get(ctx, ctx->share->mapDpiDictSet, hpath);
 }
 
-const knh_ConverterDPI_t *knh_NameSpace_getConverterDPINULL(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
+const knh_ConverterDPI_t *knh_NameSpace_getConverterDPINULL(CTX ctx, kNameSpace *ns, kbytes_t path)
 {
 	kbytes_t bpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_next(path, ':'));
 	void *d;

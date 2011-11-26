@@ -38,11 +38,11 @@ extern "C" {
 
 
 
-static knh_Expr_t* Expr_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
+static kExpr* Expr_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
 
-static knh_Expr_t* Expr_typeCheck(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* Expr_typeCheck(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
-	knh_Expr_t *e = expr;
+	kExpr *e = expr;
 	if(e->type == TYPE_var) {
 		e = Expr_type(ctx, expr, gma, reqt);
 		if(e == NULL) {
@@ -57,26 +57,26 @@ static knh_Expr_t* Expr_typeCheck(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, k
 }
 
 
-static knh_Method_t *Expr_toMethodNULL(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kMethod *Expr_toMethodNULL(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
 	return NULL;
 }
 
 //o.call("method", c, arg1, arg2);
-static knh_Expr_t* MethodStaticCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
-static knh_Expr_t* MethodDynamicCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
+static kExpr* MethodStaticCall_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
+static kExpr* MethodDynamicCall_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
 
-static knh_Expr_t* MethodCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* MethodCall_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
-	knh_Array_t *cons = expr->cons;
-	knh_Expr_t *e = Expr_typeCheck(ctx, cons->exprs[0], gma, TYPE_Object);
+	kArray *cons = expr->cons;
+	kExpr *e = Expr_typeCheck(ctx, cons->exprs[0], gma, TYPE_Object);
 	if(e == NULL) return e;
 	KNH_SETv(ctx, cons->exprs[0], e);
 	if(e->type == TYPE_dynamic) {
 		return MethodDynamicCall_type(ctx, expr, gma, reqt);
 	}
 	else {
-		knh_Method_t *mtd = Expr_toMethodNULL(ctx, cons->exprs[1], gma, e->type);
+		kMethod *mtd = Expr_toMethodNULL(ctx, cons->exprs[1], gma, e->type);
 		if(mtd == NULL) {
 			return ERROR_TokenUndefinedMethod(ctx, cons->exprs[1]->token, e->type);
 		}
@@ -85,13 +85,13 @@ static knh_Expr_t* MethodCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, 
 	return expr;
 }
 
-static knh_Expr_t* MethodStaticCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* MethodStaticCall_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
-	knh_Array_t *cons = expr->cons;
+	kArray *cons = expr->cons;
 	size_t i, csize = knh_Array_size(cons);
 	expr->kexpr = TEXPR_METHOD_CALL;
 	for(i = 2; i < csize; i++) {
-		knh_Expr_t *e = Expr_typeCheck(ctx, cons->exprs[i], gma, TYPE_Object);
+		kExpr *e = Expr_typeCheck(ctx, cons->exprs[i], gma, TYPE_Object);
 		if(e == NULL) {
 
 			return e;
@@ -102,13 +102,13 @@ static knh_Expr_t* MethodStaticCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t 
 	return expr;
 }
 
-static knh_Expr_t* MethodDynamicCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* MethodDynamicCall_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
-	knh_Array_t *cons = expr->cons;
+	kArray *cons = expr->cons;
 	size_t i, csize = knh_Array_size(cons);
 	expr->kexpr = TEXPR_METHOD_CALL;
 	for(i = 2; i < csize; i++) {
-		knh_Expr_t *e = Expr_typeCheck(ctx, cons->exprs[i], gma, TYPE_Object);
+		kExpr *e = Expr_typeCheck(ctx, cons->exprs[i], gma, TYPE_Object);
 		if(e == NULL) return e;
 		KNH_SETv(ctx, cons->exprs[i], e);
 	}
@@ -117,12 +117,12 @@ static knh_Expr_t* MethodDynamicCall_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t
 }
 
 
-static knh_Expr_t* Term_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
+static kExpr* Term_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
 
-static knh_Expr_t* Expr_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* Expr_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
 	DBG_ASSERT(expr->type != TYPE_var);
-	knh_Expr_t *e = expr;
+	kExpr *e = expr;
 	switch(expr->kexpr) {
 	case UEXPR_TOKEN:       e = Term_type(ctx, expr, gma, reqt);       break;
 	case UEXPR_METHOD_CALL: e = MethodCall_type(ctx, expr, gma, reqt); break;
@@ -136,13 +136,13 @@ static knh_Expr_t* Expr_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass
 	return NULL;
 }
 
-static knh_Expr_t* TextTerm_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
-static knh_Expr_t* IntTerm_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
-static knh_Expr_t* FloatTerm_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
+static kExpr* TextTerm_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
+static kExpr* IntTerm_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
+static kExpr* FloatTerm_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
 
-static knh_Expr_t* Term_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* Term_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
-	knh_Token_t *tk = expr->token;
+	kToken *tk = expr->token;
 	switch((int)tk->token) {
 	case TK_SYMBOL:
 	case TK_USYMBOL:
@@ -159,14 +159,14 @@ static knh_Expr_t* Term_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass
 	return NULL;
 }
 
-static knh_Expr_t* TextTerm_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* TextTerm_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
 	return Expr_setConst(ctx, expr, expr->token->text);
 }
 
-static knh_Expr_t* IntTerm_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* IntTerm_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
-	knh_Token_t *tk = expr->token;
+	kToken *tk = expr->token;
 	kbytes_t t = S_tobytes(tk->text);
 	kint_t n = 0;
 	if(reqt == CLASS_Boolean) {
@@ -190,9 +190,9 @@ static knh_Expr_t* IntTerm_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kcl
 	}
 }
 
-static knh_Expr_t* FloatTerm_type(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt)
+static kExpr* FloatTerm_type(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt)
 {
-	knh_Token_t *tk = expr->token;
+	kToken *tk = expr->token;
 	kbytes_t t = S_tobytes(tk->text);
 	kfloat_t num = 0;
 	if(!knh_bytes_parsefloat(t, &num)) {

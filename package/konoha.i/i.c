@@ -30,6 +30,7 @@
 //
 // **************************************************************************
 
+#define K_INTERNAL
 #include <konoha1.h>
 #include <konoha1/konohalang.h>
 
@@ -40,7 +41,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [man]*/
 
-static void knh_write_ctext(CTX ctx, knh_OutputStream_t *w, const char *msg)
+static void knh_write_ctext(CTX ctx, kOutputStream *w, const char *msg)
 {
 //	knh_write_ascii(ctx, w, TERM_BBOLD(ctx));
 	knh_write_ascii(ctx, w, msg);
@@ -48,7 +49,7 @@ static void knh_write_ctext(CTX ctx, knh_OutputStream_t *w, const char *msg)
 	knh_write_EOL(ctx, w);
 }
 
-static void ClassNAME_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct)
+static void ClassNAME_man(CTX ctx, kOutputStream *w, const knh_ClassTBL_t *ct)
 {
 	knh_write_ctext(ctx, w, _("CLASS"));
 	knh_write_TAB(ctx, w);
@@ -66,9 +67,9 @@ static void ClassNAME_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *
 	knh_write_EOL(ctx, w);
 }
 
-static void ClassCONST_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
+static void ClassCONST_man(CTX ctx, kOutputStream *w, const knh_ClassTBL_t *ct, kNameSpace *ns)
 {
-	knh_DictMap_t *tcmap = ct->constDictCaseMapNULL;
+	kDictMap *tcmap = ct->constDictCaseMapNULL;
 	size_t i, size = knh_Map_size(tcmap);
 	int hasCaption = 0;
 	for(i = 0; i < size; i++) {
@@ -130,14 +131,14 @@ static const char *MNOP__(kmethodn_t mn)
 	return NULL;
 }
 
-static void ClassOP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
+static void ClassOP_man(CTX ctx, kOutputStream *w, const knh_ClassTBL_t *ct, kNameSpace *ns)
 {
 	size_t i, cnt = 0, hasCaption = 0;
-	knh_Array_t *a = ct->methods;
+	kArray *a = ct->methods;
 	int isBOL = 1;
 	char buf[40];
 	for(i = 0; i < knh_Array_size(a); i++) {
-		knh_Method_t *mtd = a->methods[i];
+		kMethod *mtd = a->methods[i];
 		const char *op = MNOP__(SP(mtd)->mn);
 		if(op == NULL) continue;
 		if(hasCaption == 0) {
@@ -164,13 +165,13 @@ static void ClassOP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct
 	}
 }
 
-static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct, knh_Method_t *o)
+static void knh_write_Method(CTX ctx, kOutputStream *w, const knh_ClassTBL_t *ct, kMethod *o)
 {
 	knh_write_TAB(ctx, w);
 	if(Method_isAbstract(o)) {
 		knh_write_ascii(ctx, w, "@Abstract ");
 	}
-	knh_write_type(ctx, w, ktype_tocid(ctx, knh_ParamArray_rtype(DP(o)->mp), ct->cid));
+	knh_write_type(ctx, w, ktype_tocid(ctx, knh_Param_rtype(DP(o)->mp), ct->cid));
 	knh_putc(ctx, w, ' ');
 	if(Method_isStatic(o)) {
 		knh_write_ascii(ctx, w, S_totext(ct->sname));
@@ -180,7 +181,7 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 	knh_putc(ctx, w, '(');
 	size_t i;
 	for(i = 0; i < knh_Method_psize(o); i++) {
-		knh_param_t *p = knh_ParamArray_get(DP(o)->mp, i);
+		kparam_t *p = knh_Param_get(DP(o)->mp, i);
 		if(i > 0) {
 			knh_write_delim(ctx, w);
 		}
@@ -188,7 +189,7 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 		knh_putc(ctx, w, ' ');
 		knh_write_ascii(ctx, w, FN__(p->fn));
 	}
-	if(ParamArray_isVARGs(DP(o)->mp)) {
+	if(Param_isVARGs(DP(o)->mp)) {
 		knh_write_delim(ctx, w);
 		knh_write_dots(ctx, w);
 	}
@@ -196,12 +197,12 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 	knh_write_EOL(ctx, w);
 }
 
-static void ClassMETHOD_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
+static void ClassMETHOD_man(CTX ctx, kOutputStream *w, const knh_ClassTBL_t *ct, kNameSpace *ns)
 {
 	size_t i, cnt = 0, hasCaption = 0;
-	knh_Array_t *a = ct->methods;
+	kArray *a = ct->methods;
 	for(i = 0; i < knh_Array_size(a); i++) {
-		knh_Method_t *mtd = a->methods[i];
+		kMethod *mtd = a->methods[i];
 		if(mtd->mn < MN_OPSIZE) continue;
 		if(MN_isFMT(mtd->mn)) continue;
 		if(Method_isHidden(mtd) && !knh_isVerbose()) continue;
@@ -217,12 +218,12 @@ static void ClassMETHOD_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t
 	}
 }
 
-static void ClassFMT_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
+static void ClassFMT_man(CTX ctx, kOutputStream *w, const knh_ClassTBL_t *ct, kNameSpace *ns)
 {
 	size_t i, cnt = 0, hasCaption = 0;
-	knh_Array_t *a = ct->methods;
+	kArray *a = ct->methods;
 	for(i = 0; i < knh_Array_size(a); i++) {
-		knh_Method_t *mtd = a->methods[i];
+		kMethod *mtd = a->methods[i];
 		if(!MN_isFMT(mtd->mn)) continue;
 		if(hasCaption == 0) {
 			knh_write_ctext(ctx, w, _("FORMAT"));
@@ -238,17 +239,17 @@ static void ClassFMT_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *c
 	}
 }
 
-static void ClassTYPEMAP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
+static void ClassTYPEMAP_man(CTX ctx, kOutputStream *w, const knh_ClassTBL_t *ct, kNameSpace *ns)
 {
 	size_t i;
 	int hasCaption = 0;
-	knh_Array_t *typemaps = ct->typemaps;
+	kArray *typemaps = ct->typemaps;
 	for(i = 0; i < typemaps->size; i++) {
 		if(hasCaption == 0) {
 			knh_write_ctext(ctx, w, _("TYPEMAP"));
 			hasCaption = 1;
 		}
-		knh_TypeMap_t *mpr = typemaps->trans[i];
+		kTypeMap *mpr = typemaps->trans[i];
 		knh_write_TAB(ctx, w); /*knh_write_TAB(ctx, w);*/
 		if(TypeMap_isInterface(mpr)) {
 			knh_write_ascii(ctx, w, "interface ");
@@ -263,9 +264,9 @@ static void ClassTYPEMAP_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 		knh_write_EOL(ctx, w);
 	}
 }
-static void _System_man(CTX ctx, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
+static void _System_man(CTX ctx, const knh_ClassTBL_t *ct, kNameSpace *ns)
 {
-	knh_OutputStream_t *w = KNH_STDOUT;
+	kOutputStream *w = KNH_STDOUT;
 	ClassNAME_man(ctx, w, ct);
 	if(!class_isPrivate(ct->cid)) {
 		if(ct->constDictCaseMapNULL != NULL) {
@@ -282,9 +283,9 @@ static void _System_man(CTX ctx, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
 KMETHOD System_man(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
-	knh_NameSpace_t *ns = sfp[2].ns;
+	kNameSpace *ns = sfp[2].ns;
 	if(IS_Class(sfp[1].o)) {
-		ct = ClassTBL(((knh_Class_t*)sfp[1].o)->cid);
+		ct = ClassTBL(((kClass*)sfp[1].o)->cid);
 	}
 	_System_man(ctx, ct, ns);
 }

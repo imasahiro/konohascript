@@ -52,7 +52,7 @@ KMETHOD Connection_new(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD Connection_query(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
-	knh_String_t *query = (knh_String_t*)sfp[1].o;
+	kString *query = (kString*)sfp[1].o;
 	knh_ResultSet_t *rs = (knh_ResultSet_t*)new_O(ResultSet, knh_getcid(ctx, STEXT("ResultSet")));
 	KNH_RCSETv(ctx, sfp[2].o, rs);
 	knh_qcur_t *qcur = (c)->dspi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
@@ -75,7 +75,7 @@ KMETHOD Connection_query(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD Connection_exec(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
-	knh_String_t *query = sfp[1].s;
+	kString *query = sfp[1].s;
 	(c)->dspi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
 	RETURNvoid_();
 }
@@ -124,7 +124,7 @@ KMETHOD ResultSet_getName(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
 	size_t n = Int_to(size_t, sfp[1]);
-	knh_String_t *v = TS_EMPTY;
+	kString *v = TS_EMPTY;
 	if(n < DP(o)->column_size) {
 		v = knh_ResultSet_getName(ctx, o, n);
 	}
@@ -246,7 +246,7 @@ KMETHOD ResultSet_get(CTX ctx, ksfp_t *sfp _RIX)
 		}
 		case knh_ResultSet_CTYPE__bytes :
 			{
-				knh_Bytes_t *ba = new_Bytes(ctx, BA_totext(DP(o)->databuf) + DP(o)->column[n].start, DP(o)->column[n].len);
+				kBytes *ba = new_Bytes(ctx, BA_totext(DP(o)->databuf) + DP(o)->column[n].start, DP(o)->column[n].len);
 				kbytes_t t = {{BA_totext(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
 				knh_Bytes_write(ctx, ba, t);
 				v = UPCAST(ba);
@@ -262,7 +262,7 @@ KMETHOD ResultSet_get(CTX ctx, ksfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## method void ResultSet.%dump(OutputStream w, String m);
 //
-//static void knh_ResultSet__dump(CTX ctx, knh_ResultSet_t *o, knh_OutputStream_t *w, knh_String_t *m)
+//static void knh_ResultSet__dump(CTX ctx, knh_ResultSet_t *o, kOutputStream *w, kString *m)
 //{
 //	knh_putc(ctx, w, '{');
 //	size_t n;

@@ -38,7 +38,7 @@ extern "C" {
 
 
 #define Expr_setConst(ctx, expr, data)  Expr_setConst_(ctx, expr, UPCAST(data))
-static knh_Expr_t *Expr_setConst_(CTX ctx, knh_Expr_t *expr, knh_Object_t *data)
+static kExpr *Expr_setConst_(CTX ctx, kExpr *expr, kObject *data)
 {
 	expr->kexpr = TEXPR_CONST;
 	KNH_SETv(ctx, expr->data, data);
@@ -46,9 +46,9 @@ static knh_Expr_t *Expr_setConst_(CTX ctx, knh_Expr_t *expr, knh_Object_t *data)
 	return expr;
 }
 
-static knh_Expr_t* Expr_typeCheck(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
+static kExpr* Expr_typeCheck(CTX ctx, kExpr *expr, kGamma *gma, kclass_t reqt);
 
-static knh_Object_t *Expr_getConst(CTX ctx, knh_Expr_t *expr, kclass_t cid)
+static kObject *Expr_getConst(CTX ctx, kExpr *expr, kclass_t cid)
 {
 	if(Expr_typeCheck(ctx, expr, NULL, cid)) {
 		if(expr->kexpr == TEXPR_CONST) {
@@ -81,56 +81,56 @@ typedef struct flagop_t {
 	kflag_t flag;
 } flagop_t ;
 
-static kflag_t Stmt_flag(CTX ctx, knh_Stmt_t *stmt, flagop_t *fop, kflag_t flag)
+static kflag_t Stmt_flag(CTX ctx, kStmt *stmt, flagop_t *fop, kflag_t flag)
 {
 	while(fop->key != NULL) {
 		kbytes_t n = {{fop->key}, fop->keysize};
-		knh_Object_t *op = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, n);
+		kObject *op = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, n);
 		if(op != NULL) flag |= fop->flag;
 	}
 	return flag;
 }
 
-static knh_Object_t* Stmt_getConst_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, kclass_t cid)
+static kObject* Stmt_getConst_(CTX ctx, kStmt *stmt, kbytes_t name, kclass_t cid)
 {
-	knh_Object_t *term = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
+	kObject *term = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
 	if(term != NULL && IS_Expr(term)) {
-		return Expr_getConst(ctx, (knh_Expr_t*)term, cid);
+		return Expr_getConst(ctx, (kExpr*)term, cid);
 	}
 	return NULL;
 }
 
-static kint_t Stmt_getint_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, kint_t defn)
+static kint_t Stmt_getint_(CTX ctx, kStmt *stmt, kbytes_t name, kint_t defn)
 {
-	knh_Object_t *o = Stmt_getConst_(ctx, stmt, name, CLASS_Int);
+	kObject *o = Stmt_getConst_(ctx, stmt, name, CLASS_Int);
 	if(o != NULL) {
-		return ((knh_Int_t*)o)->n.ivalue;
+		return ((kInt*)o)->n.ivalue;
 	}
 	return defn;
 }
 
 
-static knh_Token_t *Stmt_getTokenNULL_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name)
+static kToken *Stmt_getTokenNULL_(CTX ctx, kStmt *stmt, kbytes_t name)
 {
-	knh_Object_t *term = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
+	kObject *term = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
 	if(term != NULL && IS_Expr(term)) {
-		return ((knh_Expr_t*)term)->token;
+		return ((kExpr*)term)->token;
 	}
 	return NULL;
 }
 
-static knh_Block_t *Stmt_getBlock_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name)
+static kBlock *Stmt_getBlock_(CTX ctx, kStmt *stmt, kbytes_t name)
 {
-	knh_Block_t *bk = (knh_Block_t*)knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
+	kBlock *bk = (kBlock*)knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
 	if(bk != NULL && IS_Block(bk)) {
 		return bk;
 	}
 	return KNH_TNULL(Block);
 }
 
-static kclass_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, knh_NameSpace_t *ns, kclass_t defcid)
+static kclass_t Stmt_getcid_(CTX ctx, kStmt *stmt, kbytes_t name, kNameSpace *ns, kclass_t defcid)
 {
-//	knh_Expr_t *expr = Stmt_getExprNULL_(ctx, stmt, name);
+//	kExpr *expr = Stmt_getExprNULL_(ctx, stmt, name);
 //	if(expr == NULL) {
 //		return defcid;
 //	}
@@ -153,7 +153,7 @@ static kclass_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, knh_NameS
 
 //define Term_fn(ctx, tk) FN_UNMASK(Term_fnq(ctx, tk))
 //
-//ksymbol_t Term_fnq(CTX ctx, knh_Term_t *tk)
+//ksymbol_t Term_fnq(CTX ctx, kTerm *tk)
 //{
 //	ksymbol_t fn = FN_;
 //	if(TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME) {
@@ -162,7 +162,7 @@ static kclass_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, knh_NameS
 //	return fn;
 //}
 //
-//static kmethodn_t Term_mn(CTX ctx, knh_Term_t *tk)
+//static kmethodn_t Term_mn(CTX ctx, kTerm *tk)
 //{
 //	if(TT_(tk) == TT_FUNCNAME || TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME || TT_(tk) == TT_UFUNCNAME) {
 //		TT_(tk) = TT_MN;
@@ -188,14 +188,14 @@ static kclass_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, knh_NameS
 //	return (tk)->mn;
 //}
 
-static ksymbol_t Stmt_getfn_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, ksymbol_t deffn)
+static ksymbol_t Stmt_getfn_(CTX ctx, kStmt *stmt, kbytes_t name, ksymbol_t deffn)
 {
 	return deffn;
 }
 
-static kmethodn_t Stmt_getmn_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, kmethodn_t defmn)
+static kmethodn_t Stmt_getmn_(CTX ctx, kStmt *stmt, kbytes_t name, kmethodn_t defmn)
 {
-//	knh_Expr_t *expr = Stmt_getExprNULL_(ctx, stmt, name);
+//	kExpr *expr = Stmt_getExprNULL_(ctx, stmt, name);
 //	if(expr == NULL) {
 //		return defmn;
 //	}

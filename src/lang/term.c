@@ -43,24 +43,24 @@ void knh_perror(CTX ctx, int level, kline_t uline, int lpos, const char *fmt, ..
 /* ------------------------------------------------------------------------ */
 /* [term] */
 
-knh_Term_t* new_Term(CTX ctx, knh_term_t tt)
+kTerm* new_Term(CTX ctx, kterm_t tt)
 {
-	knh_Term_t *tk = new_(Term);
+	kTerm *tk = new_(Term);
 	SP(tk)->tt = tt;
 	tk->uline = ctx->gma->uline;
 	return tk;
 }
 
-knh_StmtExpr_t* new_Stmt2(CTX ctx, knh_term_t stt, ...)
+kStmtExpr* new_Stmt2(CTX ctx, kterm_t stt, ...)
 {
-	knh_StmtExpr_t *stmt = new_(StmtExpr);
-	knh_Term_t *tm = NULL;
+	kStmtExpr *stmt = new_(StmtExpr);
+	kTerm *tm = NULL;
 	va_list ap;
 	DBG_ASSERT(stt < TT_PRAGMA);
 	stmt->stt = stt;
 	stmt->uline = ctx->gma->uline;
 	va_start(ap , stt);
-	while((tm = (knh_Term_t*)va_arg(ap, knh_Term_t*)) != NULL) {
+	while((tm = (kTerm*)va_arg(ap, kTerm*)) != NULL) {
 		DBG_ASSERT(IS_Term(tm) || IS_StmtExpr(tm));
 		knh_Stmt_add_(ctx, stmt, tm, NULL);
 	}
@@ -68,16 +68,16 @@ knh_StmtExpr_t* new_Stmt2(CTX ctx, knh_term_t stt, ...)
 	return stmt;
 }
 
-void knh_Stmt_swap(CTX ctx, knh_StmtExpr_t *stmt, size_t n, size_t m)
+void knh_Stmt_swap(CTX ctx, kStmtExpr *stmt, size_t n, size_t m)
 {
 	DBG_ASSERT(n < DP(stmt)->size);
 	DBG_ASSERT(m < DP(stmt)->size);
-	knh_Term_t *tm = tmNN(stmt, n);
+	kTerm *tm = tmNN(stmt, n);
 	tmNN(stmt, n) = tmNN(stmt, m);
 	tmNN(stmt, m) = tm;
 }
 
-void knh_StmtExpr_trimToSize(CTX ctx, knh_StmtExpr_t *stmt, size_t n)
+void kStmtExprrimToSize(CTX ctx, kStmtExpr *stmt, size_t n)
 {
 	size_t i;
 	for(i = n; i < DP(stmt)->size; i++) {
@@ -87,25 +87,25 @@ void knh_StmtExpr_trimToSize(CTX ctx, knh_StmtExpr_t *stmt, size_t n)
 	DP(stmt)->size = n;
 }
 
-knh_Term_t *knh_Stmt_done(CTX ctx, knh_StmtExpr_t *stmt)
+kTerm *knh_Stmt_done(CTX ctx, kStmtExpr *stmt)
 {
-	knh_StmtEX_t *b = DP((knh_StmtExpr_t*)stmt);
+	knh_StmtEX_t *b = DP((kStmtExpr*)stmt);
 	stmt->stt = STT_DONE;
 	if(stmt->terms != NULL) {
 		size_t i;
 		for(i = 0; i < b->size; i++) {
 			KNH_FINALv(ctx, stmt->terms[i]);
 		}
-		KNH_FREE(ctx, stmt->terms, sizeof(knh_Term_t*) * b->capacity);
+		KNH_FREE(ctx, stmt->terms, sizeof(kTerm*) * b->capacity);
 		stmt->terms = NULL;
 		b->capacity = 0;
 		b->size = 0;
 	}
 	KNH_SETv(ctx, b->metaDictCaseMap, KNH_NULL);
-	return (knh_Term_t*)(stmt);
+	return (kTerm*)(stmt);
 }
 
-void knh_StmtExpr_toERR(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *tkERR)
+void kStmtExproERR(CTX ctx, kStmtExpr *stmt, kTerm *tkERR)
 {
 	DBG_ASSERT(IS_StmtExpr(stmt));
 	if(STT_(stmt) == STT_ERR) return;
@@ -119,20 +119,20 @@ void knh_StmtExpr_toERR(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *tkERR)
 	}
 	else {
 		KNH_SETv(ctx, tmNN(stmt, 0), tkERR);
-		knh_StmtExpr_trimToSize(ctx, stmt, 1);
+		kStmtExprrimToSize(ctx, stmt, 1);
 	}
 	STT_(stmt) = STT_ERR;
 }
 
-static void Stmt_toSyntaxError(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *tk K_TRACEARGV)
+static void Stmt_toSyntaxError(CTX ctx, kStmtExpr *stmt, kTerm *tk K_TRACEARGV)
 {
-	knh_StmtExpr_toERR(ctx, stmt, ERROR_Term(ctx, tk K_TRACEDATA));
+	kStmtExproERR(ctx, stmt, ERROR_Term(ctx, tk K_TRACEDATA));
 }
 
 /* ------------------------------------------------------------------------ */
 
 typedef struct {
-	struct knh_Term_t** ts;
+	struct kTerm** ts;
 	int meta;
 	int c;
 	int e;
@@ -143,7 +143,7 @@ typedef struct {
 #define ITR_size(itr)        ((itr)->e - (itr)->c)
 #define ITR_uline(itr)       if((itr)->c < (itr)->e) ctx->gma->uline = ((itr)->ts[(itr)->c])->uline
 
-static tkitr_t* ITR_new(knh_Term_t *tk, tkitr_t *buf)
+static tkitr_t* ITR_new(kTerm *tk, tkitr_t *buf)
 {
 	buf->meta = -1;
 	buf->c = 0;
@@ -162,7 +162,7 @@ static tkitr_t* ITR_new(knh_Term_t *tk, tkitr_t *buf)
 	return buf;
 }
 
-static knh_term_t ITR_tt(tkitr_t *itr)
+static kterm_t ITR_tt(tkitr_t *itr)
 {
 	DBG_ASSERT(itr->c < itr->e);
 	return TT_(itr->ts[itr->c]);
@@ -170,7 +170,7 @@ static knh_term_t ITR_tt(tkitr_t *itr)
 
 #define ITR_is(itr, tt) ITR_isN(itr, 0, tt)
 
-static int ITR_isN(tkitr_t *itr, int shift, knh_term_t tt)
+static int ITR_isN(tkitr_t *itr, int shift, kterm_t tt)
 {
 	int c = itr->c + shift;
 	return (c < itr->e && TT_(itr->ts[c]) == tt);
@@ -178,14 +178,14 @@ static int ITR_isN(tkitr_t *itr, int shift, knh_term_t tt)
 
 #define ITR_tk(itr)     (itr->ts[itr->c])
 
-static knh_Term_t *ITR_nextTK(tkitr_t *itr)
+static kTerm *ITR_nextTK(tkitr_t *itr)
 {
 	DBG_ASSERT(itr->c < itr->e);
 	(itr)->c += 1;
 	return (itr)->ts[(itr)->c - 1];
 }
 
-static void ITR_chop(tkitr_t *itr, knh_term_t tt)
+static void ITR_chop(tkitr_t *itr, kterm_t tt)
 {
 	int e = itr->e - 1;
 	if(itr->c <= e && TT_(itr->ts[e]) == tt) {
@@ -193,9 +193,9 @@ static void ITR_chop(tkitr_t *itr, knh_term_t tt)
 	}
 }
 
-static int ITR_count(tkitr_t *itr, knh_term_t tt)
+static int ITR_count(tkitr_t *itr, kterm_t tt)
 {
-	knh_Term_t **ts = itr->ts;
+	kTerm **ts = itr->ts;
 	int i, cnt = 0;
 	for(i = itr->c; i < itr->e; i++) {
 		if(TT_(ts[i]) == tt) cnt++;
@@ -206,10 +206,10 @@ static int ITR_count(tkitr_t *itr, knh_term_t tt)
 /* ------------------------------------------------------------------------ */
 /* [tokenizer] */
 
-static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm);
+static void TermBlock_add(CTX ctx, kTerm *tkB, kTerm *tm);
 
 #ifndef K_USING_SUGAR
-static knh_term_t TT_ch(int ch)
+static kterm_t TT_ch(int ch)
 {
 	switch(ch) {
 		case '{': case '}': return TT_BRACE;
@@ -228,22 +228,22 @@ static knh_term_t TT_ch(int ch)
 	return TT_ERR;
 }
 
-static void TermB_setline(knh_Term_t *tkB, kline_t uline)
+static void TermB_setline(kTerm *tkB, kline_t uline)
 {
-	knh_Term_t *tk = IS_Array((tkB)->data) ? (tkB)->list->terms[knh_Array_size((tkB)->list) - 1] : (tkB)->token;
+	kTerm *tk = IS_Array((tkB)->data) ? (tkB)->list->terms[knh_Array_size((tkB)->list) - 1] : (tkB)->token;
 	tk->uline = uline;
 }
 #endif
 
-static int isTYPE(knh_Term_t *tk)
+static int isTYPE(kTerm *tk)
 {
-	knh_term_t tt = TT_(tk);
+	kterm_t tt = TT_(tk);
 	return (tt == TT_PTYPE || tt == TT_UNAME || (TT_TYPEOF <= tt && tt <= TT_DYN));
 }
 
-static knh_Term_t *new_TermCID(CTX ctx, kclass_t cid)
+static kTerm *new_TermCID(CTX ctx, kclass_t cid)
 {
-	knh_Term_t *tk = new_(Term);
+	kTerm *tk = new_(Term);
 	TT_(tk) = TT_UNAME;
 	tk->uline = ctx->gma->uline;
 	(tk)->cid = cid;
@@ -251,10 +251,10 @@ static knh_Term_t *new_TermCID(CTX ctx, kclass_t cid)
 	return tk;
 }
 
-static knh_Term_t *new_TermPTYPE(CTX ctx, kclass_t cid, knh_Term_t *tk)
+static kTerm *new_TermPTYPE(CTX ctx, kclass_t cid, kTerm *tk)
 {
-	knh_Term_t *tkT = new_Term(ctx, TT_PTYPE);
-	knh_Term_t *tkC = new_TermCID(ctx, cid);
+	kTerm *tkT = new_Term(ctx, TT_PTYPE);
+	kTerm *tkC = new_TermCID(ctx, cid);
 	Term_setBOL(tkT, Term_isBOL(tk));
 	if(cid == CLASS_Tvar) {
 		TermBlock_add(ctx, tkT, tk);
@@ -274,7 +274,7 @@ static int ITR_findPTYPE(tkitr_t *itr)
 {
 	int c, e = 0, f = 0;
 	for(c = itr->e-2; 0 <= c; c--) {
-		knh_Term_t *tk = itr->ts[c];
+		kTerm *tk = itr->ts[c];
 		if(!isTYPE(tk)) break;
 		if(e == 1) {
 			itr->c = c; return 1;
@@ -291,12 +291,12 @@ static int ITR_findPTYPE(tkitr_t *itr)
 	return 0;
 }
 
-static void Term_setTYPEOFEXPR(CTX ctx, knh_Term_t *tm);
+static void Term_setTYPEOFEXPR(CTX ctx, kTerm *tm);
 
-static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
+static void TermBlock_add(CTX ctx, kTerm *tkB, kTerm *tm)
 {
-	knh_Term_t *tkPREV = NULL;
-	knh_Array_t *a = NULL;
+	kTerm *tkPREV = NULL;
+	kArray *a = NULL;
 	int prev_idx = 0;
 #ifndef K_USING_SUGAR
 	DBG_ASSERT(tkB->uline != 0 && tm->uline != 0);
@@ -339,7 +339,7 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
 			}
 		}
 		if(!Term_isSAMELINE(tkB)) {
-//			knh_Term_t *tkSMC = new_Term(ctx, TT_SEMICOLON);
+//			kTerm *tkSMC = new_Term(ctx, TT_SEMICOLON);
 			DBG_P("BOL: cur=%s,%d", TT__(tm->tt), (short)tm->uline);
 			DBG_P("*isSAMELINE(tkB)=%d, prev=%s,%d cur=%s,%d", Term_isSAMELINE(tkB), TT__(tkPREV->tt), (short)tkPREV->uline, TT__(tm->tt), (short)tm->uline);
 //			knh_Array_add(ctx, a, tkSMC);
@@ -358,7 +358,7 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
 	}
 
 	if(prev_idx > 0 && TT_(tm) == TT_CODE && TT_(tkPREV) == TT_DARROW) {
-		knh_Term_t *tkPREV2 = a->terms[prev_idx - 1];
+		kTerm *tkPREV2 = a->terms[prev_idx - 1];
 		if(TT_(tkPREV2) == TT_PARENTHESIS) {  // (n) => {} ==> function(n) {}
 			TT_(tkPREV) = TT_FUNCTION;
 			knh_Array_swap(ctx, a, prev_idx-1, prev_idx);
@@ -396,7 +396,7 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
 				knh_Bytes_putc(ctx, cwb->ba, '\n');
 			}
 			knh_Bytes_write(ctx, cwb->ba, S_tobytes((tm)->text));
-			KNH_SETv(ctx, (tkPREV)->data, CWB_newString(ctx, cwb, K_SPOLICY_POOLNEVER));
+			KNH_SETv(ctx, (tkPREV)->data, CWB_newString(ctx, cwb, SPOL_POOLNEVER));
 			//if(TT_(tk) == TT_ESTR) TT_(tkPREV) = TT_ESTR;
 			goto L_JOIN1;
 		}
@@ -444,10 +444,10 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
 		if(TT_(tm) == TT_GT || TT_(tm) == TT_RSFT || TT_(tm) == TT_RSEND) { // String> or String>>
 			tkitr_t itrbuf, *itr = ITR_new(tkB, &itrbuf);
 			if(ITR_findPTYPE(itr)) {
-				knh_Term_t *tkT = new_Term(ctx, TT_PTYPE);
+				kTerm *tkT = new_Term(ctx, TT_PTYPE);
 				prev_idx = itr->c;
 				while(ITR_hasNext(itr)) {
-					knh_Term_t *tkPT = ITR_nextTK(itr);
+					kTerm *tkPT = ITR_nextTK(itr);
 					TermBlock_add(ctx, tkT, tkPT);
 					if(ITR_is(itr, TT_DARROW)) {
 						TermBlock_add(ctx, tkT, ITR_tk(itr));
@@ -459,14 +459,14 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
 					TT_(tm) = TT_RSFT;
 					tkPREV = tkT;
 					KNH_SETv(ctx, a->list[prev_idx+1], tm);
-					knh_Array_trimSize(ctx, a, prev_idx+2);
+					kArrayrimSize(ctx, a, prev_idx+2);
 					goto L_JOIN;
 				}
 				if(TT_(tm) == TT_RSFT) {
 					TT_(tm) = TT_GT;
 					tkPREV = tkT;
 					KNH_SETv(ctx, a->list[prev_idx+1], tm);
-					knh_Array_trimSize(ctx, a, prev_idx+2);
+					kArrayrimSize(ctx, a, prev_idx+2);
 					goto L_JOIN;
 				}
 				goto L_JOIN1;
@@ -476,11 +476,11 @@ static void TermBlock_add(CTX ctx, knh_Term_t *tkB, knh_Term_t *tm)
 	return;
 
 	L_JOIN1:
-	knh_Array_trimSize(ctx, a, prev_idx+1);
+	kArrayrimSize(ctx, a, prev_idx+1);
 }
 
 
-static knh_Term_t *Term_lastChildNULL(knh_Term_t *tkB)
+static kTerm *Term_lastChildNULL(kTerm *tkB)
 {
 	if(IS_Array((tkB)->data)) {
 		size_t n = knh_Array_size((tkB)->list);
@@ -493,11 +493,11 @@ static knh_Term_t *Term_lastChildNULL(knh_Term_t *tkB)
 	return NULL;
 }
 
-static int Term_startsWithExpr(CTX ctx, knh_Term_t *tkB)
+static int Term_startsWithExpr(CTX ctx, kTerm *tkB)
 {
-	knh_Term_t *tk = Term_lastChildNULL(tkB);
+	kTerm *tk = Term_lastChildNULL(tkB);
 	if(tk != NULL) {
-		knh_term_t tt = TT_(tk);
+		kterm_t tt = TT_(tk);
 		if(tt == TT_COMMA || tt == TT_SEMICOLON || tt == TT_COLON) return 1;
 		if(tt == TT_CASE || tt == TT_RETURN || tt == TT_YIELD
 			|| tt == TT_PRINT || tt == TT_ASSERT) return 1;
@@ -508,9 +508,9 @@ static int Term_startsWithExpr(CTX ctx, knh_Term_t *tkB)
 	return 1;
 }
 
-static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, kbytes_t t)
+static kString* NameSpace_getAliasNULL(CTX ctx, kNameSpace* ns, kbytes_t t)
 {
-	knh_String_t *s = (knh_String_t*)knh_DictMap_getNULL(ctx, ctx->wshare->sysAliasDictMap, t);
+	kString *s = (kString*)knh_DictMap_getNULL(ctx, ctx->wshare->sysAliasDictMap, t);
 	while(1) {
 		if(s == NULL) {
 			if(ns->parentNULL != NULL) {
@@ -529,15 +529,15 @@ static knh_String_t* NameSpace_getAliasNULL(CTX ctx, knh_NameSpace_t* ns, kbytes
 
 #ifndef K_USING_SUGAR
 
-static knh_String_t *new_StringSYMBOL(CTX ctx, kbytes_t t)
+static kString *new_StringSYMBOL(CTX ctx, kbytes_t t)
 {
 #ifdef K_USING_STRINGPOOL
 	return new_S(t.text, t.len);
 #else
-	knh_DictMap_t *symbolDictMap = ctx->symbolDictMap;
+	kDictMap *symbolDictMap = ctx->symbolDictMap;
 	kindex_t idx = knh_DictMap_index(symbolDictMap, t);
 	if(idx == -1) {
-		knh_String_t *s = new_S(ctx, t);
+		kString *s = new_S(ctx, t);
 		knh_DictMap_set(ctx, symbolDictMap, s, s);
 		return s;
 	}
@@ -547,7 +547,7 @@ static knh_String_t *new_StringSYMBOL(CTX ctx, kbytes_t t)
 #endif
 }
 
-static void Term_setNAME(CTX ctx, knh_Term_t *tk, CWB_t *cwb)
+static void Term_setNAME(CTX ctx, kTerm *tk, CWB_t *cwb)
 {
 	kbytes_t t = CWB_tobytes(cwb);
 	if(t.utext[0] == '.') {
@@ -593,21 +593,21 @@ static void Term_setNAME(CTX ctx, knh_Term_t *tk, CWB_t *cwb)
 /* [tokenizer] */
 
 
-static void Term_setTEXT(CTX ctx, knh_Term_t *tk, CWB_t *cwb)
+static void Term_setTEXT(CTX ctx, kTerm *tk, CWB_t *cwb)
 {
 	kbytes_t t = CWB_tobytes(cwb);
 	if(TT_(tk) == TT_UNTYPED) {
-		knh_String_t *text = NameSpace_getAliasNULL(ctx, K_GMANS, t);
+		kString *text = NameSpace_getAliasNULL(ctx, K_GMANS, t);
 		if(text != NULL) {
 			t = S_tobytes(text);
 			KNH_SETv(ctx, (tk)->data, text);
 			CWB_clear(cwb, 0);
 			knh_Bytes_write(ctx, cwb->ba, t);  // alias
 		}
-		knh_DictSet_t *tokenDictSet = ctx->share->tokenDictSet;
+		kDictSet *tokenDictSet = ctx->share->tokenDictSet;
 		kindex_t idx = knh_DictSet_index(tokenDictSet, t);
 		if(idx != -1) {
-			knh_term_t tt = (knh_term_t)knh_DictSet_valueAt(tokenDictSet, idx);
+			kterm_t tt = (kterm_t)knh_DictSet_valueAt(tokenDictSet, idx);
 			TT_(tk) = tt;
 			if(IS_NULL((tk)->data)) {
 				KNH_SETv(ctx, (tk)->data, knh_DictSet_keyAt(tokenDictSet, idx));
@@ -621,36 +621,36 @@ static void Term_setTEXT(CTX ctx, knh_Term_t *tk, CWB_t *cwb)
 		KNH_SETv(ctx, (tk)->data, new_StringSYMBOL(ctx, t));
 	}
 	else {
-		knh_String_t *s = CWB_newString(ctx, cwb, 0);
+		kString *s = CWB_newString(ctx, cwb, 0);
 		KNH_SETv(ctx, (tk)->data, s);
 	}
 }
 
-static knh_Term_t *addNewTerm(CTX ctx, knh_Term_t *tkB, knh_term_t tt, int ch)
+static kTerm *addNewTerm(CTX ctx, kTerm *tkB, kterm_t tt, int ch)
 {
-	knh_Term_t *tk = new_Term(ctx, tt);
+	kTerm *tk = new_Term(ctx, tt);
 	if(ch == ' ') {
 		Term_setNWS(tk, 1);
 	}
 	return tk;
 }
 
-static void Term_addBuf(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_term_t tt, int ch)
+static void Term_addBuf(CTX ctx, kTerm *tkB, CWB_t *cwb, kterm_t tt, int ch)
 {
 	if(CWB_size(cwb) != 0) {
-		knh_Term_t *tk = addNewTerm(ctx, tkB, tt, ch);
+		kTerm *tk = addNewTerm(ctx, tkB, tt, ch);
 		Term_setTEXT(ctx, tk, cwb);
 		TermBlock_add(ctx, tkB, tk);  // must add after setting data
 		CWB_clear(cwb, 0);
 	}
 	else if(tt == TT_CODE || TT_isSTR(tt) || tt == TT_REGEX) {
-		knh_Term_t *tk = addNewTerm(ctx, tkB, tt, ch);
+		kTerm *tk = addNewTerm(ctx, tkB, tt, ch);
 		KNH_SETv(ctx, (tk)->data, TS_EMPTY);
 		TermBlock_add(ctx, tkB, tk);   // must add after setting data
 	}
 }
 
-static void InputStream_skipLINE(CTX ctx, knh_InputStream_t *in, kline_t *ul)
+static void InputStream_skipLINE(CTX ctx, kInputStream *in, kline_t *ul)
 {
 	int ch;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -661,7 +661,7 @@ static void InputStream_skipLINE(CTX ctx, knh_InputStream_t *in, kline_t *ul)
 	}
 }
 
-static void InputStream_skipBLOCKCOMMENT(CTX ctx, knh_InputStream_t *in, kline_t *ul, knh_Bytes_t *ba)
+static void InputStream_skipBLOCKCOMMENT(CTX ctx, kInputStream *in, kline_t *ul, kBytes *ba)
 {
 	int ch, prev = 0, level = 1;
 	if(ba != NULL) {
@@ -691,7 +691,7 @@ static void InputStream_skipBLOCKCOMMENT(CTX ctx, knh_InputStream_t *in, kline_t
 	}
 }
 
-static kbool_t Bytes_isTripleQuote(knh_Bytes_t *ba, int quote)
+static kbool_t Bytes_isTripleQuote(kBytes *ba, int quote)
 {
 	if(BA_size(ba) > 2 &&
 		ba->bu.utext[BA_size(ba)-1] == quote
@@ -699,7 +699,7 @@ static kbool_t Bytes_isTripleQuote(knh_Bytes_t *ba, int quote)
 	return 0;
 }
 
-static void Bytes_addESC(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kline_t *ul)
+static void Bytes_addESC(CTX ctx, kBytes *ba, kInputStream *in, kline_t *ul)
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == 'n') ch = '\n';
@@ -709,7 +709,7 @@ static void Bytes_addESC(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kline_
 	knh_Bytes_putc(ctx, ba, ch);
 }
 
-static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kline_t *ul, int quote, int skip, int isRAW, int isTQUOTE)
+static void Bytes_addQUOTE(CTX ctx, kBytes *ba, kInputStream *in, kline_t *ul, int quote, int skip, int isRAW, int isTQUOTE)
 {
 	if(isRAW == 1) {
 		int prev = quote;
@@ -762,7 +762,7 @@ static void Bytes_addQUOTE(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, klin
 	}
 }
 
-static int Term_addQUOTE(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul, int quote, int isRAW)
+static int Term_addQUOTE(CTX ctx, kTerm *tkB, CWB_t *cwb, kInputStream *in, kline_t *ul, int quote, int isRAW)
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == '\n') ul[0] += 1;
@@ -794,7 +794,7 @@ static int Term_addQUOTE(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t
 		Term_addBuf(ctx, tkB, cwb, TT_ch(quote), ch);
 	}
 	else { /* triple quote */
-		knh_term_t tt = TT_ch(quote);
+		kterm_t tt = TT_ch(quote);
 		if(tt == TT_TSTR) tt = TT_STR;
 		Bytes_addQUOTE(ctx, cwb->ba, in, ul, quote, '\n'/*skip*/, isRAW, 1/*isTQUOTE*/);
 		kline_t uline = ul[0];
@@ -806,7 +806,7 @@ static int Term_addQUOTE(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t
 }
 
 
-static int Term_addREGEX(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul, int ch0)
+static int Term_addREGEX(CTX ctx, kTerm *tkB, CWB_t *cwb, kInputStream *in, kline_t *ul, int ch0)
 {
 	int prev = 0;
 	int ch = (ch0 == 0) ? knh_InputStream_getc(ctx, in) : ch0;
@@ -929,7 +929,7 @@ static int bytes_isOPR(kbytes_t t, int ch)
 	return 0;
 }
 
-static int Term_addOPR(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul, int ch)
+static int Term_addOPR(CTX ctx, kTerm *tkB, CWB_t *cwb, kInputStream *in, kline_t *ul, int ch)
 {
 	if(ch == '/') {
 		ch = knh_InputStream_getc(ctx, in);
@@ -959,7 +959,7 @@ static int Term_addOPR(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *
 			int isHEAD = Term_startsWithExpr(ctx, tkB);
 			Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
 			if(isHEAD) {
-				knh_Term_t *ctk = Term_lastChildNULL(tkB);
+				kTerm *ctk = Term_lastChildNULL(tkB);
 				DBG_ASSERT(ctk != NULL);
 				if(TT_(ctk) == TT_SUB) TT_(ctk) = TT_TSUB;
 				if(TT_(ctk) == TT_ADD) TT_(ctk) = TT_TADD;
@@ -971,7 +971,7 @@ static int Term_addOPR(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *
 	return ch;
 }
 
-static int Term_addMETAN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul)
+static int Term_addMETAN(CTX ctx, kTerm *tk, CWB_t *cwb, kInputStream *in, kline_t *ul)
 {
 	int ch;
 	Term_addBuf(ctx, tk, cwb, TT_UNTYPED, '@');
@@ -990,7 +990,7 @@ static int Term_addMETAN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t 
 	return ch;
 }
 
-static int Term_addPROPN(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul)
+static int Term_addPROPN(CTX ctx, kTerm *tkB, CWB_t *cwb, kInputStream *in, kline_t *ul)
 {
 	int ch;
 	Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, '$');
@@ -1009,7 +1009,7 @@ static int Term_addPROPN(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t
 	return ch;
 }
 
-static int Term_addURN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul)
+static int Term_addURN(CTX ctx, kTerm *tk, CWB_t *cwb, kInputStream *in, kline_t *ul)
 {
 	int ch = knh_InputStream_getc(ctx, in);
 	if(ch == ':') {  /* hoge:: */
@@ -1045,7 +1045,7 @@ static int Term_addURN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *i
 	}
 	L_NEWURN: {
 		kbytes_t t = CWB_tobytes(cwb);
-		knh_term_t tt = TT_URN;
+		kterm_t tt = TT_URN;
 #ifdef K_USING_SEMANTICS
 		if(knh_bytes_startsWith_(t, STEXT("int:")) || knh_bytes_startsWith_(t, STEXT("float:"))) {
 			t.ubuf[0] = toupper(t.utext[0]);
@@ -1059,7 +1059,7 @@ static int Term_addURN(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *i
 	return ch;
 }
 
-static int Term_addNUM(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul, int ch)
+static int Term_addNUM(CTX ctx, kTerm *tk, CWB_t *cwb, kInputStream *in, kline_t *ul, int ch)
 {
 	int prev = 0, dot = 0;
 	L_ADD:;
@@ -1091,7 +1091,7 @@ static int Term_addNUM(CTX ctx, knh_Term_t *tk, CWB_t *cwb, knh_InputStream_t *i
 	return ch;
 }
 
-static void Term_addBLOCKERR(CTX ctx, knh_Term_t *tkB, knh_InputStream_t *in, kline_t *ul, int ch)
+static void Term_addBLOCKERR(CTX ctx, kTerm *tkB, kInputStream *in, kline_t *ul, int ch)
 {
 	const char *block = "indent";
 	if(ch == ')') block = ")";
@@ -1101,7 +1101,7 @@ static void Term_addBLOCKERR(CTX ctx, knh_Term_t *tkB, knh_InputStream_t *in, kl
 	TermBlock_add(ctx, tkB, ERROR_Block(ctx, block));
 }
 
-static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kline_t *ul, int end)
+static void Bytes_addRAW(CTX ctx, kBytes *ba, kInputStream *in, kline_t *ul, int end)
 {
 	int prev = 0, ch;
 	while((ch = knh_InputStream_getc(ctx, in)) != EOF) {
@@ -1115,7 +1115,7 @@ static void Bytes_addRAW(CTX ctx, knh_Bytes_t *ba, knh_InputStream_t *in, kline_
 	}
 }
 
-static void Term_addBLOCK(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_t *in, kline_t *ul, int block_indent)
+static void Term_addBLOCK(CTX ctx, kTerm *tkB, CWB_t *cwb, kInputStream *in, kline_t *ul, int block_indent)
 {
 	int c, this_indent = 0, ch, prev = '{', level = 1;
 	Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, '{');
@@ -1189,7 +1189,7 @@ static void Term_addBLOCK(CTX ctx, knh_Term_t *tkB, CWB_t *cwb, knh_InputStream_
 	Term_addBLOCKERR(ctx, tkB, in, ul, 0);
 }
 
-static int InputStream_skipMultiByteChar(CTX ctx, knh_InputStream_t *in, kline_t *ul, int ch)
+static int InputStream_skipMultiByteChar(CTX ctx, kInputStream *in, kline_t *ul, int ch)
 {
 	char buf[8] = {ch, 0};
 	int i, size = knh_utf8len(ch);
@@ -1208,7 +1208,7 @@ static int InputStream_skipMultiByteChar(CTX ctx, knh_InputStream_t *in, kline_t
 	}
 }
 
-static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, kline_t *ul, knh_Term_t *tkB)
+static void InputStream_parseTerm(CTX ctx, kInputStream *in, kline_t *ul, kTerm *tkB)
 {
 	int ch;
 	int block_indent = 0, block_line = 0;
@@ -1281,7 +1281,7 @@ static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, kline_t *ul, k
 		case '[': case '(':
 			Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
 			{
-				knh_Term_t *tkSUB = new_Term(ctx, TT_ch(ch));
+				kTerm *tkSUB = new_Term(ctx, TT_ch(ch));
 				tkSUB->h.meta = tkB;
 				tkB = tkSUB;
 			}
@@ -1290,8 +1290,8 @@ static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, kline_t *ul, k
 		case ')': case ']':
 			Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
 			if(TT_ch(ch) == TT_(tkB)) {
-				knh_Term_t *tkSUB = tkB;
-				tkB = (knh_Term_t*)(tkSUB)->h.meta;
+				kTerm *tkSUB = tkB;
+				tkB = (kTerm*)(tkSUB)->h.meta;
 				(tkSUB)->h.meta = NULL;
 				TermBlock_add(ctx, tkB, tkSUB);
 				TermB_setline(tkB, ctx->gma->uline);
@@ -1317,8 +1317,8 @@ static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, kline_t *ul, k
 		case '|':
 			Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, ch);
 			if(TT_ch(ch) == TT_(tkB)) {
-				knh_Term_t *ctk = tkB;
-				tkB = (knh_Term_t*)(ctk)->h.meta;
+				kTerm *ctk = tkB;
+				tkB = (kTerm*)(ctk)->h.meta;
 				(ctk)->h.meta = NULL;
 				TermBlock_add(ctx, tkB, ctk);
 				TT_(ctk) = TT_PARENTHESIS;
@@ -1327,7 +1327,7 @@ static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, kline_t *ul, k
 				goto L_NEWTOKEN;
 			}
 			if(Term_startsWithExpr(ctx, tkB)) {
-				knh_Term_t *ctk = new_Term(ctx, TT_ch(ch));
+				kTerm *ctk = new_Term(ctx, TT_ch(ch));
 				ctk->h.meta = tkB;
 				tkB = ctk;
 				goto L_NEWTOKEN;
@@ -1393,7 +1393,7 @@ static void InputStream_parseTerm(CTX ctx, knh_InputStream_t *in, kline_t *ul, k
 
 #ifdef K_USING_SUGAR
 
-static void Term_meta(CTX ctx, knh_Term_t *tm)
+static void Term_meta(CTX ctx, kTerm *tm)
 {
 	kbytes_t t = S_tobytes(tm->text);
 	DBG_ASSERT(t.utext[0] == '@');
@@ -1402,17 +1402,17 @@ static void Term_meta(CTX ctx, knh_Term_t *tm)
 	KNH_SETv(ctx, (tm)->data, new_S(t.text, t.len));
 }
 
-static void Term_op(CTX ctx, knh_Term_t *tm)
+static void Term_op(CTX ctx, kTerm *tm)
 {
 	kbytes_t t = S_tobytes(tm->text);
-	knh_String_t *text = NameSpace_getAliasNULL(ctx, K_GMANS, t);
+	kString *text = NameSpace_getAliasNULL(ctx, K_GMANS, t);
 	if(text != NULL) {
 		KNH_SETv(ctx, (tm)->data, text);
 	}
-	knh_DictSet_t *tokenDictSet = ctx->share->tokenDictSet;
+	kDictSet *tokenDictSet = ctx->share->tokenDictSet;
 	kindex_t idx = knh_DictSet_index(tokenDictSet, t);
 	if(idx != -1) {
-		knh_term_t tt = (knh_term_t)knh_DictSet_valueAt(tokenDictSet, idx);
+		kterm_t tt = (kterm_t)knh_DictSet_valueAt(tokenDictSet, idx);
 		TT_(tm) = tt;
 		if(IS_NULL((tm)->data)) {
 			KNH_SETv(ctx, (tm)->data, knh_DictSet_keyAt(tokenDictSet, idx));
@@ -1420,7 +1420,7 @@ static void Term_op(CTX ctx, knh_Term_t *tm)
 	}
 }
 
-static void Term_name(CTX ctx, knh_Term_t *tm)
+static void Term_name(CTX ctx, kTerm *tm)
 {
 	kbytes_t t = S_tobytes(tm->text);
 	tm->tt = TT_NAME;
@@ -1453,9 +1453,9 @@ static void Term_name(CTX ctx, knh_Term_t *tm)
 	}
 }
 
-static knh_Term_t *new_TokenTerm(CTX ctx, knh_Token_t *tk)
+static kTerm *new_TokenTerm(CTX ctx, kToken *tk)
 {
-	knh_Term_t *tm = new_Term(ctx, TT_ERR);
+	kTerm *tm = new_Term(ctx, TT_ERR);
 	tm->uline = tk->uline;
 	KNH_SETv(ctx, tm->text, tk->text);
 	switch((int)tk->token) {
@@ -1478,11 +1478,11 @@ static knh_Term_t *new_TokenTerm(CTX ctx, knh_Token_t *tk)
 	return tm;
 }
 
-static int TokenArray_parseTerm(CTX ctx, knh_Array_t *a, int s, knh_Term_t *tkB, int closech)
+static int TokenArray_parseTerm(CTX ctx, kArray *a, int s, kTerm *tkB, int closech)
 {
 	int i;
 	for(i = s; i < knh_Array_size(a); i++) {
-		knh_Token_t *tk = a->tokens[i];
+		kToken *tk = a->tokens[i];
 		if(tk->token == TK_INDENT) continue;
 		if(tk->token == TK_WHITESPACE) continue;
 		if(tk->topch == closech) {
@@ -1490,7 +1490,7 @@ static int TokenArray_parseTerm(CTX ctx, knh_Array_t *a, int s, knh_Term_t *tkB,
 		}
 		switch(tk->topch) {
 		case '(': {
-			knh_Term_t *tkSUB = new_Term(ctx, TT_PARENTHESIS);
+			kTerm *tkSUB = new_Term(ctx, TT_PARENTHESIS);
 			tkSUB->uline = tk->uline;
 			if((i = TokenArray_parseTerm(ctx, a, i + 1, tkSUB, ')'))) {
 				TermBlock_add(ctx, tkB, tkSUB);
@@ -1501,7 +1501,7 @@ static int TokenArray_parseTerm(CTX ctx, knh_Array_t *a, int s, knh_Term_t *tkB,
 			return 0;
 		}
 		case '[': {
-			knh_Term_t *tkSUB = new_Term(ctx, TT_BRANCET);
+			kTerm *tkSUB = new_Term(ctx, TT_BRANCET);
 			if((i = TokenArray_parseTerm(ctx, a, i + 1, tkSUB, ']'))) {
 				TermBlock_add(ctx, tkB, tkSUB);
 				continue;
@@ -1511,7 +1511,7 @@ static int TokenArray_parseTerm(CTX ctx, knh_Array_t *a, int s, knh_Term_t *tkB,
 			return 0;
 		}
 		case '{': {
-			knh_Term_t *tkSUB = new_Term(ctx, TT_BRACE);
+			kTerm *tkSUB = new_Term(ctx, TT_BRACE);
 			if((i = TokenArray_parseTerm(ctx, a, i + 1, tkSUB, '}'))) {
 				TermBlock_add(ctx, tkB, tkSUB);
 				continue;
@@ -1522,9 +1522,9 @@ static int TokenArray_parseTerm(CTX ctx, knh_Array_t *a, int s, knh_Term_t *tkB,
 		}
 		case '|':
 			if(Term_startsWithExpr(ctx, tkB)) {
-				knh_Term_t *tkSUB = new_Term(ctx, TT_PARENTHESIS);
+				kTerm *tkSUB = new_Term(ctx, TT_PARENTHESIS);
 				if((i = TokenArray_parseTerm(ctx, a, i+1, tkSUB, '|'))) {
-					knh_Term_t *tm = new_Term(ctx, TT_NAME);
+					kTerm *tm = new_Term(ctx, TT_NAME);
 					KNH_SETv(ctx, tm->text, new_S("size", sizeof("size")));
 					Term_setDOT(tm, 1);
 					TermBlock_add(ctx, tkB, tkSUB);
@@ -1553,13 +1553,13 @@ static int TokenArray_parseTerm(CTX ctx, knh_Array_t *a, int s, knh_Term_t *tkB,
 
 #ifdef K_USING_SUGAR
 
-knh_Array_t* new_TokenArray(CTX ctx, const char *text, kline_t uline);
+kArray* new_TokenArray(CTX ctx, const char *text, kline_t uline);
 
-static void Term_toBRACE(CTX ctx, knh_Term_t *tk, int isEXPANDING)
+static void Term_toBRACE(CTX ctx, kTerm *tk, int isEXPANDING)
 {
 	if(S_size(tk->text) > 0) {
 		INIT_GCSTACK(ctx);
-		knh_Array_t *a = new_TokenArray(ctx, S_totext((tk)->text), tk->uline);
+		kArray *a = new_TokenArray(ctx, S_totext((tk)->text), tk->uline);
 		KNH_SETv(ctx, (tk)->data, KNH_NULL);
 		TT_(tk) = TT_BRACE;
 		TokenArray_parseTerm(ctx, a, 0, tk, -1);
@@ -1576,12 +1576,12 @@ static void Term_toBRACE(CTX ctx, knh_Term_t *tk, int isEXPANDING)
 	}
 }
 #else
-static void Term_toBRACE(CTX ctx, knh_Term_t *tk, int isEXPANDING)
+static void Term_toBRACE(CTX ctx, kTerm *tk, int isEXPANDING)
 {
         if(S_size(tk->text) > 0) {
                 ksfp_t *lsfp = knh_stack_local(ctx, 1);
                 int sfpidx_ = lsfp - ctx->stack;
-                LOCAL_NEW(ctx, lsfp, 0, knh_InputStream_t*, in, new_BytesInputStream(ctx, S_totext((tk)->text), S_size((tk)->text)));
+                LOCAL_NEW(ctx, lsfp, 0, kInputStream*, in, new_BytesInputStream(ctx, S_totext((tk)->text), S_size((tk)->text)));
                 KNH_SETv(ctx, (tk)->data, KNH_NULL);
                 TT_(tk) = TT_BRACE;
                 kline_t uline = tk->uline;
@@ -1599,23 +1599,23 @@ static void Term_toBRACE(CTX ctx, knh_Term_t *tk, int isEXPANDING)
 }
 #endif
 
-static void Stmt_expand(CTX ctx, knh_StmtExpr_t *stmt)
+static void Stmt_expand(CTX ctx, kStmtExpr *stmt)
 {
 	size_t newcapacity = DP(stmt)->capacity * 2;
 	if(newcapacity == 0) {
-		newcapacity = (K_FASTMALLOC_SIZE / sizeof(knh_Object_t*));
+		newcapacity = (K_FASTMALLOC_SIZE / sizeof(kObject*));
 	}
-	stmt->terms = (knh_Term_t**)KNH_REALLOC(ctx, NULL, stmt->terms, DP(stmt)->capacity, newcapacity, sizeof(knh_Term_t*));
+	stmt->terms = (kTerm**)KNH_REALLOC(ctx, NULL, stmt->terms, DP(stmt)->capacity, newcapacity, sizeof(kTerm*));
 	DP(stmt)->capacity = newcapacity;
 }
 
-knh_Term_t *knh_Stmt_add_(CTX ctx, knh_StmtExpr_t *stmt, ...)
+kTerm *knh_Stmt_add_(CTX ctx, kStmtExpr *stmt, ...)
 {
 	va_list ap;
-	knh_Term_t *tm = NULL;
+	kTerm *tm = NULL;
 	size_t size = DP(stmt)->size;
 	va_start(ap, stmt);
-	while((tm = (knh_Term_t*)va_arg(ap, knh_Term_t*)) != NULL) {
+	while((tm = (kTerm*)va_arg(ap, kTerm*)) != NULL) {
 		DBG_ASSERT(IS_Term(tm) || IS_StmtExpr(tm));
 		if(!(DP(stmt)->size < DP(stmt)->capacity)) {
 			Stmt_expand(ctx, stmt);
@@ -1626,22 +1626,22 @@ knh_Term_t *knh_Stmt_add_(CTX ctx, knh_StmtExpr_t *stmt, ...)
 		DP(stmt)->size = size;
 		if(STT_(stmt) == STT_ERR) continue;
 		if(TT_(tm) == TT_ERR) {
-			knh_StmtExpr_toERR(ctx, stmt, (knh_Term_t*)tm);
+			kStmtExproERR(ctx, stmt, (kTerm*)tm);
 		}
 		if(TT_(tm) == STT_ERR) {
-			knh_StmtExpr_t *stmt2 = (knh_StmtExpr_t*)tm;
-			knh_Term_t *tk = tkNN(stmt2, 0);
+			kStmtExpr *stmt2 = (kStmtExpr*)tm;
+			kTerm *tk = tkNN(stmt2, 0);
 			DBG_ASSERT(TT_(tk) == TT_ERR);
-			knh_StmtExpr_toERR(ctx, stmt, tk);
+			kStmtExproERR(ctx, stmt, tk);
 		}
 	}
 	va_end(ap);
-	return (knh_Term_t*)(stmt);
+	return (kTerm*)(stmt);
 }
 
-knh_Term_t *new_TermMN(CTX ctx, kmethodn_t mn)
+kTerm *new_TermMN(CTX ctx, kmethodn_t mn)
 {
-	knh_Term_t *tk = new_(Term);
+	kTerm *tk = new_(Term);
 	tk->uline = ctx->gma->uline;
 	TT_(tk) = TT_MN;
 	(tk)->mn = mn;
@@ -1657,10 +1657,10 @@ knh_Term_t *new_TermMN(CTX ctx, kmethodn_t mn)
 		FUNC;\
 	}\
 
-static void _EXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr);
-static knh_StmtExpr_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr);
+static void _EXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr);
+static kStmtExpr *new_StmtSTMT1(CTX ctx, tkitr_t *itr);
 
-static int ITR_indexTT(tkitr_t *itr, knh_term_t tt, int def)
+static int ITR_indexTT(tkitr_t *itr, kterm_t tt, int def)
 {
 	int i;
 	for(i = itr->c; i < itr->e; i++) {
@@ -1669,7 +1669,7 @@ static int ITR_indexTT(tkitr_t *itr, knh_term_t tt, int def)
 	return def;
 }
 
-static void ITR_replace(tkitr_t *itr, knh_term_t tt, knh_term_t tt1)
+static void ITR_replace(tkitr_t *itr, kterm_t tt, kterm_t tt1)
 {
 	int i;
 	for(i = itr->c; i < itr->e; i++) {
@@ -1684,7 +1684,7 @@ static tkitr_t *ITR_copy(tkitr_t *itr, tkitr_t *buf, int shift)
 	return buf;
 }
 
-static void _SEMICOLON(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _SEMICOLON(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_SEMICOLON)) {
 		ITR_next(itr);
@@ -1705,7 +1705,7 @@ static void ITR_skipSEMICOLON(tkitr_t *itr)
 static void ITR_nextStmt(tkitr_t *itr)
 {
 	int i;
-	knh_Term_t **ts = itr->ts;
+	kTerm **ts = itr->ts;
 	for(i = itr->c; i < itr->e; i++) {
 		if(Term_isBOL(ts[i])) {
 			itr->c = i;
@@ -1747,7 +1747,7 @@ static tkitr_t *ITR_first(tkitr_t *titr, int idx, tkitr_t *buf, int shift)
 	*buf = *titr;
 	buf->meta = -1;
 	for(i = titr->c; i < idx; i++) {
-		knh_term_t tt = TT_(titr->ts[i]);
+		kterm_t tt = TT_(titr->ts[i]);
 		if(tt == TT_METAN) {
 			if(buf->meta == -1) buf->meta = i;
 			titr->c = i + 1;
@@ -1762,7 +1762,7 @@ static tkitr_t *ITR_first(tkitr_t *titr, int idx, tkitr_t *buf, int shift)
 	return buf;
 }
 
-static void ITR_skipUNTIL(tkitr_t *itr, knh_term_t tt)
+static void ITR_skipUNTIL(tkitr_t *itr, kterm_t tt)
 {
 	int i;
 	for(i = itr->c; i < itr->e; i++) {
@@ -1777,7 +1777,7 @@ static void TT_skipMETA(CTX ctx, tkitr_t *itr)
 {
 	itr->meta = -1;
 	while(ITR_hasNext(itr)) {
-		knh_term_t tt = ITR_tt(itr);
+		kterm_t tt = ITR_tt(itr);
 		ctx->gma->uline = ITR_tk(itr)->uline;
 		if(ITR_isN(itr, +1, TT_COLON) && (tt == TT_NAME || tt == TT_UNAME) && !ITR_isN(itr, +2, TT_PARENTHESIS)) {
 			if(itr->meta == -1) itr->meta = itr->c;
@@ -1803,10 +1803,10 @@ static void TT_skipMETA(CTX ctx, tkitr_t *itr)
 
 #define _ERROR(ctx, stmt, itr, whatis)    _DBGERROR(ctx, stmt, itr, whatis K_TRACEPOINT); return;
 
-static void _DBGERROR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, const char *whatis K_TRACEARGV)
+static void _DBGERROR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr, const char *whatis K_TRACEARGV)
 {
 	if(STT_(stmt) != STT_ERR) {
-		knh_Term_t* tkERR;
+		kTerm* tkERR;
 		if(whatis != NULL && ITR_hasNext(itr)) {
 			tkERR = ITR_tk(itr);
 			if(TT_(tkERR) != TT_ERR) {
@@ -1816,32 +1816,32 @@ static void _DBGERROR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, const char *w
 		else {
 			tkERR = ERROR_Stmt(ctx, stmt, _file, _line, _func);
 		}
-		knh_StmtExpr_toERR(ctx, stmt, tkERR);
+		kStmtExproERR(ctx, stmt, tkERR);
 	}
 	ITR_nextStmt(itr);
 }
-static void _ASIS(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _ASIS(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	knh_Stmt_add(ctx, stmt, new_Term(ctx, TT_ASIS));
 }
 
-static void _VAR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _VAR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	knh_Stmt_add(ctx, stmt, new_Term(ctx, TT_VAR));
 }
-static void _DONE(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _DONE(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	knh_Stmt_add(ctx, stmt, new_Stmt2(ctx, STT_DONE, NULL));
 }
 
-typedef int (*knh_FisTerm)(knh_Term_t *tk);
+typedef int (*knh_FisTerm)(kTerm *tk);
 
 static int ITR_isT(tkitr_t *itr, knh_FisTerm f)
 {
 	return (ITR_hasNext(itr) && f(ITR_tk(itr)));
 }
 
-static void Stmt_tadd(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, knh_FisTerm f, const char *whatis)
+static void Stmt_tadd(CTX ctx, kStmtExpr *stmt, tkitr_t *itr, knh_FisTerm f, const char *whatis)
 {
 	if(STT_(stmt) == STT_ERR) return;
 	if(ITR_hasNext(itr) && f(ITR_tk(itr))) {
@@ -1852,11 +1852,11 @@ static void Stmt_tadd(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, knh_FisTerm f
 	}
 }
 
-static void Stmt_taddASIS(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, knh_FisTerm f)
+static void Stmt_taddASIS(CTX ctx, kStmtExpr *stmt, tkitr_t *itr, knh_FisTerm f)
 {
 	if(STT_(stmt) == STT_ERR) return;
 	if(ITR_hasNext(itr)) {
-		knh_Term_t *tk = ITR_tk(itr);
+		kTerm *tk = ITR_tk(itr);
 		if(TT_(tk) != TT_SEMICOLON && f(tk)) {
 			knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
 			return;
@@ -1865,22 +1865,22 @@ static void Stmt_taddASIS(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, knh_FisTe
 	_ASIS(ctx, stmt, itr);
 }
 
-static int isVARN(knh_Term_t* tk)
+static int isVARN(kTerm* tk)
 {
 	return ((TT_(tk) == TT_NAME && !Term_isDOT(tk)) || TT_(tk) == TT_ASIS);
 }
 
-static void _PNAME(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _PNAME(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_String_t *s = NULL;
+	kString *s = NULL;
 	if(itr->c + 1 == itr->e) {
-		knh_Term_t *tk = itr->ts[itr->c];
+		kTerm *tk = itr->ts[itr->c];
 		if(TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME) {
 			s = (tk)->text;
 		}
 	}
 	if(s != NULL) {
-		knh_Term_t *tkN = new_Term(ctx, TT_CONST);
+		kTerm *tkN = new_Term(ctx, TT_CONST);
 		KNH_SETv(ctx, (tkN)->data, s);
 		SP(tkN)->type = TYPE_String;
 		Term_setPNAME(tkN, 1);
@@ -1888,7 +1888,7 @@ static void _PNAME(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _EXPRs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _EXPRs(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_SEMICOLON)) return;
 	do {
@@ -1912,7 +1912,7 @@ static kindex_t ITR_indexTOUNTIL(tkitr_t *itr)
 {
 	kindex_t i;
 	for(i = itr->c; i < itr->e; i++) {
-		knh_term_t tt = TT_(itr->ts[i]);
+		kterm_t tt = TT_(itr->ts[i]);
 		if(tt == TT_TO || tt == TT_UNTIL) return i;
 		if(tt == TT_ITR || tt == TT_COLON) { /* a[1..n] as a [1 until n] */
 			TT_(itr->ts[i]) = TT_UNTIL;
@@ -1923,7 +1923,7 @@ static kindex_t ITR_indexTOUNTIL(tkitr_t *itr)
 	return -1;
 }
 
-static void _NULLEXPRs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _NULLEXPRs(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	do {
 		int idx = ITR_indexTT(itr, TT_COMMA, itr->e);
@@ -1946,7 +1946,7 @@ static void _NULLEXPRs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 
 static int ITR_indexKEY(tkitr_t *itr, int shift)
 {
-	knh_Term_t **ts = itr->ts;
+	kTerm **ts = itr->ts;
 	int i;
 	for(i = itr->c + shift; i < itr->e - 2; i++) { /* BEGIN */
 		if(TT_(ts[i+1]) == TT_COLON && IS_bString((ts[i])->text)) {
@@ -1956,9 +1956,9 @@ static int ITR_indexKEY(tkitr_t *itr, int shift)
 	return itr->e;
 }
 
-static void _ARRAY(CTX ctx, knh_StmtExpr_t *stmt, kmethodn_t mn, kclass_t cid, tkitr_t *itr)
+static void _ARRAY(CTX ctx, kStmtExpr *stmt, kmethodn_t mn, kclass_t cid, tkitr_t *itr)
 {
-	knh_Term_t *tkC = new_TermCID(ctx, cid);
+	kTerm *tkC = new_TermCID(ctx, cid);
 	DBG_ASSERT(STT_(stmt) == STT_NEW);
 	knh_Stmt_add(ctx, stmt, new_TermMN(ctx, mn));
 	knh_Stmt_add(ctx, stmt, tkC);
@@ -1966,14 +1966,14 @@ static void _ARRAY(CTX ctx, knh_StmtExpr_t *stmt, kmethodn_t mn, kclass_t cid, t
 	_EXPRs(ctx, stmt, itr);
 }
 
-static knh_StmtExpr_t *Stmt_addNewStmt(CTX ctx, knh_StmtExpr_t *stmt, knh_term_t stt)
+static kStmtExpr *Stmt_addNewStmt(CTX ctx, kStmtExpr *stmt, kterm_t stt)
 {
-	knh_StmtExpr_t *newstmt = new_Stmt2(ctx, stt, NULL);
+	kStmtExpr *newstmt = new_Stmt2(ctx, stt, NULL);
 	knh_Stmt_add(ctx, stmt, newstmt);
 	return newstmt;
 }
 
-static void _KEYVALUEs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _KEYVALUEs(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	int p = ITR_indexKEY(itr, +0), p_next;
 	while(p < itr->e) {
@@ -1984,7 +1984,7 @@ static void _KEYVALUEs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 		ITR_chop(eitr, TT_SEMICOLON);
 		ITR_chop(eitr, TT_COMMA);
 		if(ITR_size(eitr) > 2) {
-			knh_Term_t *tk = ITR_nextTK(eitr);
+			kTerm *tk = ITR_nextTK(eitr);
 			TT_(tk) = TT_STR;
 			knh_Stmt_add(ctx, stmt, tk);
 			DBG_ASSERT(ITR_is(eitr, TT_COLON));
@@ -1997,7 +1997,7 @@ static void _KEYVALUEs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 				_EXPR(ctx, stmt, eitr);
 			}
 			else {
-				knh_StmtExpr_t *stmtARRAY = Stmt_addNewStmt(ctx, stmt, STT_NEW);
+				kStmtExpr *stmtARRAY = Stmt_addNewStmt(ctx, stmt, STT_NEW);
 				_ARRAY(ctx, stmtARRAY, MN_newLIST, CLASS_Array, eitr);
 			}
 		}
@@ -2005,7 +2005,7 @@ static void _KEYVALUEs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _DICT(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *tkC, knh_Term_t *tkB)
+static void _DICT(CTX ctx, kStmtExpr *stmt, kTerm *tkC, kTerm *tkB)
 {
 	DBG_ASSERT(STT_(stmt) == STT_NEW);
 	if(TT_(tkB) == TT_CODE) {
@@ -2020,12 +2020,12 @@ static void _DICT(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *tkC, knh_Term_t *tk
 	}
 }
 
-static void Term_setTYPEOFEXPR(CTX ctx, knh_Term_t *tm)
+static void Term_setTYPEOFEXPR(CTX ctx, kTerm *tm)
 {
 	DBG_ASSERT(TT_(tm) == TT_TYPEOF);
 	tkitr_t tbuf, *titr = ITR_new(tm->token, &tbuf);
 	if(ITR_hasNext(titr)) {
-		knh_StmtExpr_t *stmt = new_Stmt2(ctx, STT_CALL1, NULL);
+		kStmtExpr *stmt = new_Stmt2(ctx, STT_CALL1, NULL);
 		_EXPR(ctx, stmt, titr);
 		KNH_SETv(ctx, (tm)->data, stmt);
 	}
@@ -2035,7 +2035,7 @@ static void Term_setTYPEOFEXPR(CTX ctx, knh_Term_t *tm)
 	}
 }
 
-static knh_StmtExpr_t *new_StmtREUSE(CTX ctx, knh_StmtExpr_t *stmt, knh_term_t stt)
+static kStmtExpr *new_StmtREUSE(CTX ctx, kStmtExpr *stmt, kterm_t stt)
 {
 	if(STT_(stmt) == STT_CALL1 || (STT_(stmt) == STT_CALL && DP(stmt)->size == 0)) {
 		STT_(stmt) = stt;
@@ -2049,13 +2049,13 @@ static knh_StmtExpr_t *new_StmtREUSE(CTX ctx, knh_StmtExpr_t *stmt, knh_term_t s
 /* ------------------------------------------------------------------------ */
 /* EXPR */
 
-kshort_t TT_to(knh_term_t tt);
+kshort_t TT_to(kterm_t tt);
 
 static int ITR_indexLET(tkitr_t *itr)
 {
-	knh_Term_t **ts = itr->ts; int i;
+	kTerm **ts = itr->ts; int i;
 	for(i = itr->c; i < itr->e; i++) {
-		knh_term_t tt = TT_(ts[i]);
+		kterm_t tt = TT_(ts[i]);
 		if(tt == TT_LET || tt == TT_DECLLET) return i;
 		if(TT_DECLLET < tt && tt < TT_LET) {
 			TT_(ts[i]) = TT_to(tt);
@@ -2065,9 +2065,9 @@ static int ITR_indexLET(tkitr_t *itr)
 	return -1;
 }
 
-static void _EXPRLET(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, kindex_t idx)
+static void _EXPRLET(CTX ctx, kStmtExpr *stmt, tkitr_t *itr, kindex_t idx)
 {
-	knh_Term_t *tkCUR = itr->ts[idx];
+	kTerm *tkCUR = itr->ts[idx];
 	tkitr_t lbuf, *litr = ITR_first(itr, idx, &lbuf, +1);
 	stmt = new_StmtREUSE(ctx, stmt, STT_LET);
 	_VAR(ctx, stmt, litr); // var is the first element
@@ -2076,8 +2076,8 @@ static void _EXPRLET(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, kindex_t idx)
 		itr->c = litr->c;
 		_EXPR(ctx, stmt, litr);
 		while(c < e) {
-			knh_Term_t *otk = itr->ts[c];
-			knh_Term_t *ntk = new_Term(ctx, TT_(otk));
+			kTerm *otk = itr->ts[c];
+			kTerm *ntk = new_Term(ctx, TT_(otk));
 			KNH_SETv(ctx, ntk->data, otk->data);
 			ntk->uline = otk->uline;
 			ntk->flag0 = otk->flag0;
@@ -2096,7 +2096,7 @@ static int ITR_isDOTNAME(tkitr_t *itr, int shift)
 {
 	int c = itr->c + shift;
 	if(c < itr->e) {
-		knh_Term_t *tk = itr->ts[c];
+		kTerm *tk = itr->ts[c];
 		if(!Term_isDOT(tk)) return 0;
 		if(TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME ||
 			TT_(tk) == TT_FUNCNAME || TT_(tk) == TT_UFUNCNAME) return 1;
@@ -2106,7 +2106,7 @@ static int ITR_isDOTNAME(tkitr_t *itr, int shift)
 
 static void ITR_CASTOP(tkitr_t *itr)
 {
-	knh_Term_t *tk = itr->ts[itr->c+1];
+	kTerm *tk = itr->ts[itr->c+1];
 	if(TT_(tk) == TT_SUB) TT_(tk) = TT_TSUB;
 	else if(TT_(tk) == TT_ADD) TT_(tk) = TT_TADD;
 	else if(TT_(tk) == TT_AND) TT_(tk) = TT_TAND;
@@ -2133,12 +2133,12 @@ static int ITR_isCAST(tkitr_t *itr)
 	return 0;
 }
 
-static void _EXPRCAST(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _EXPRCAST(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_StmtExpr_t *stmtT = new_StmtREUSE(ctx, stmt, STT_TCAST);
+	kStmtExpr *stmtT = new_StmtREUSE(ctx, stmt, STT_TCAST);
 	DBG_ASSERT(itr->c + 1 < itr->e);
 	if(ITR_is(itr, TT_TLINK)) {
-		knh_Term_t *tkTL = ITR_nextTK(itr);
+		kTerm *tkTL = ITR_nextTK(itr);
 		STT_(stmtT) = STT_TLINK;
 		_ASIS(ctx, stmtT, itr);
 		knh_Stmt_add(ctx, stmtT, tkTL);
@@ -2160,13 +2160,13 @@ static void _EXPRCAST(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-int TT_priority(knh_term_t tt);
+int TT_priority(kterm_t tt);
 
 static int ITR_indexOPR(CTX ctx, tkitr_t *itr, int offset)
 {
 	int i, oppri = 98, idx = -1;
-	knh_term_t tt_found = TT_EOT;
-	knh_Term_t **ts = itr->ts;
+	kterm_t tt_found = TT_EOT;
+	kTerm **ts = itr->ts;
 	int isTEXTPARAM = 0;
 	for(i = itr->c + offset; i < itr->e; i++) {
 		if(TT_(ts[i]) == TT_NAME || TT_(ts[i]) == TT_UNAME) {
@@ -2179,7 +2179,7 @@ static int ITR_indexOPR(CTX ctx, tkitr_t *itr, int offset)
 		break;
 	}
 	for(i = itr->c; i < itr->e; i++) {
-		knh_term_t tt = TT_(ts[i]);
+		kterm_t tt = TT_(ts[i]);
 		int p = TT_priority(tt);
 		if(p == 0) {
 			DBG_P("p=%d, TT=%s", TT__(tt));
@@ -2204,10 +2204,10 @@ static int ITR_indexOPR(CTX ctx, tkitr_t *itr, int offset)
 	return idx;
 }
 
-static void ITR_toLET(CTX ctx, tkitr_t *itr, knh_Term_t *tk)
+static void ITR_toLET(CTX ctx, tkitr_t *itr, kTerm *tk)
 {
 	int i;
-	knh_Term_t *tkC = NULL;
+	kTerm *tkC = NULL;
 	KNH_SETv(ctx, (tk)->data, new_Array0(ctx, 0));
 	for(i = itr->c; i < itr->e; i++) {
 		tkC = new_Term(ctx, TT_(itr->ts[i]));
@@ -2229,11 +2229,11 @@ static void ITR_toLET(CTX ctx, tkitr_t *itr, knh_Term_t *tk)
 	knh_Array_add(ctx, (tk)->list, tkC);
 }
 
-static void _EXPROP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, int idx)
+static void _EXPROP(CTX ctx, kStmtExpr *stmt, tkitr_t *itr, int idx)
 {
-	knh_term_t stt = STT_OPR;
-	knh_Term_t *tkOP = itr->ts[idx];
-	knh_term_t tt = TT_(tkOP);
+	kterm_t stt = STT_OPR;
+	kTerm *tkOP = itr->ts[idx];
+	kterm_t tt = TT_(tkOP);
 	if(ITR_size(itr) == 1) {
 		Stmt_toSyntaxError(ctx, stmt, tkOP K_TRACEPOINT);
 		return;
@@ -2246,7 +2246,7 @@ static void _EXPROP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, int idx)
 	case TT_TADD:   /* @CODE: +expr */
 	case TT_TAND:   /* @CODE: &expr */ {
 		if(itr->c == idx) {
-			knh_StmtExpr_t *stmtOPR = new_StmtREUSE(ctx, stmt, stt);
+			kStmtExpr *stmtOPR = new_StmtREUSE(ctx, stmt, stt);
 			knh_Stmt_add(ctx, stmtOPR, tkOP);
 			ITR_next(itr);
 			_EXPR(ctx, stmtOPR, itr);
@@ -2273,7 +2273,7 @@ static void _EXPROP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, int idx)
 			}
 			_EXPR(ctx, stmt, itr);
 			if(STT_(stmt) != STT_ERR) {
-				knh_StmtExpr_t *stmtPOST = new_Stmt2(ctx, STT_CALL1, NULL);
+				kStmtExpr *stmtPOST = new_Stmt2(ctx, STT_CALL1, NULL);
 				KNH_SETv(ctx, DP(stmt)->stmtPOST, stmtPOST);
 				itr->c = c; itr->e = e;
 				ITR_toLET(ctx, itr, tkOP);
@@ -2292,7 +2292,7 @@ static void _EXPROP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, int idx)
 			_EXPRs(ctx, stmt, itr);
 		}
 		else {
-			knh_StmtExpr_toERR(ctx, stmt, ERROR_Required(ctx, tkOP, _("trinary"), ":"));
+			kStmtExproERR(ctx, stmt, ERROR_Required(ctx, tkOP, _("trinary"), ":"));
 		}
 		return;
 	}
@@ -2301,7 +2301,7 @@ static void _EXPROP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, int idx)
 	case TT_ALT: stt = STT_ALT; goto L_OPR;
 	default: {
 		L_OPR:;
-		knh_StmtExpr_t *stmtOPR = new_StmtREUSE(ctx, stmt, stt);
+		kStmtExpr *stmtOPR = new_StmtREUSE(ctx, stmt, stt);
 		if(stt == STT_OPR) {
 			knh_Stmt_add(ctx, stmtOPR, tkOP);
 		}
@@ -2319,7 +2319,7 @@ static void _EXPROP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, int idx)
 	}
 }
 
-void knh_Regex_setGlobalOption(CTX ctx, knh_Regex_t *re, const char *opt)
+void knh_Regex_setGlobalOption(CTX ctx, kRegex *re, const char *opt)
 {
 	const char *p = opt;
 	while(*p != 0) {
@@ -2331,9 +2331,9 @@ void knh_Regex_setGlobalOption(CTX ctx, knh_Regex_t *re, const char *opt)
 	}
 }
 
-static void _REGEX(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, knh_Term_t *tk)
+static void _REGEX(CTX ctx, kStmtExpr *stmt, tkitr_t *itr, kTerm *tk)
 {
-	knh_Regex_t *re = new_H(Regex);
+	kRegex *re = new_H(Regex);
 	const char *opt = "";
 	int cflags = 0;
 	KNH_INITv(re->pattern, (tk)->text);
@@ -2348,7 +2348,7 @@ static void _REGEX(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, knh_Term_t *tk)
 	}
 	cflags = re->spi->parse_cflags(ctx, opt);
 	if(re->spi->regcomp(ctx, re->reg, S_totext(re->pattern), cflags) != 0) {
-		knh_StmtExpr_toERR(ctx, stmt, ERROR_RegexCompilation(ctx, tk, re->spi->name, S_totext((tk)->text)));
+		kStmtExproERR(ctx, stmt, ERROR_RegexCompilation(ctx, tk, re->spi->name, S_totext((tk)->text)));
 	}
 	else {
 		re->eflags = re->spi->parse_eflags(ctx, opt);
@@ -2358,10 +2358,10 @@ static void _REGEX(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, knh_Term_t *tk)
 	}
 }
 
-static void _CODEDOC(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _CODEDOC(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(STT_(stmt) == STT_ERR) return;
-	knh_Term_t *tkDOC = new_Term(ctx, TT_DOC);
+	kTerm *tkDOC = new_Term(ctx, TT_DOC);
 	if(ITR_is(itr, TT_CODE)) {
 		KNH_SETv(ctx, (tkDOC)->data, (ITR_tk(itr))->text);
 	}
@@ -2371,23 +2371,23 @@ static void _CODEDOC(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	knh_Stmt_add(ctx, stmt, tkDOC);
 }
 
-static void _RETURNEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _RETURNEXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_StmtExpr_t *stmtRTN = new_Stmt2(ctx, STT_RETURN, NULL);
+	kStmtExpr *stmtRTN = new_Stmt2(ctx, STT_RETURN, NULL);
 	knh_Stmt_add(ctx, stmt, stmtRTN);
 	if(ITR_hasNext(itr)) {
 		_EXPR(ctx, stmtRTN, itr);
 	}
 }
 
-static void _PARAM(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr);
-static void _PARAMs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr);
-static void _STMT1(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr);
+static void _PARAM(CTX ctx, kStmtExpr *stmt, tkitr_t *itr);
+static void _PARAMs(CTX ctx, kStmtExpr *stmt, tkitr_t *itr);
+static void _STMT1(CTX ctx, kStmtExpr *stmt, tkitr_t *itr);
 
-static void _EXPR1(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _EXPR1(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	//if(ITR_hasNext(itr)) {
-		knh_Term_t *tkCUR = ITR_nextTK(itr);
+		kTerm *tkCUR = ITR_nextTK(itr);
 		switch(TT_(tkCUR)) {
 			case TT_NAME:    /* @CODE: name */
 			case TT_UNAME:   /* @CODE: NAME */
@@ -2455,7 +2455,7 @@ static void _EXPR1(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 					stmt = new_StmtREUSE(ctx, stmt, STT_FUNCTION);
 					_ASIS(ctx, stmt, itr);
 					knh_Stmt_add(ctx, stmt, new_Stmt2(ctx, STT_DECL, NULL));
-					knh_Term_t *tkDOC = new_Term(ctx, TT_DOC);
+					kTerm *tkDOC = new_Term(ctx, TT_DOC);
 					KNH_SETv(ctx, (tkDOC)->data, (tkCUR)->text);
 					knh_Stmt_add(ctx, stmt, tkDOC);
 					itr->c -= 1;
@@ -2465,7 +2465,7 @@ static void _EXPR1(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 				break;
 			}
 			case TT_ERR:
-				knh_StmtExpr_toERR(ctx, stmt, tkCUR);
+				kStmtExproERR(ctx, stmt, tkCUR);
 				break;
 			default: {
 				Stmt_toSyntaxError(ctx, stmt, tkCUR K_TRACEPOINT);
@@ -2473,11 +2473,11 @@ static void _EXPR1(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 		}
 //	}
 //	else {
-//		knh_StmtExpr_toERR(ctx, stmt, ERROR_text(ctx, TT__(stmt->stt) K_TRACEPOINT));
+//		kStmtExproERR(ctx, stmt, ERROR_text(ctx, TT__(stmt->stt) K_TRACEPOINT));
 //	}
 }
 
-static knh_StmtExpr_t *Stmt_addFUNC(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *tkF)
+static kStmtExpr *Stmt_addFUNC(CTX ctx, kStmtExpr *stmt, kTerm *tkF)
 {
 	size_t size = DP(stmt)->size;
 	if(TT_(tkF) == TT_NAME || TT_(tkF) == TT_UNAME) {
@@ -2493,7 +2493,7 @@ static knh_StmtExpr_t *Stmt_addFUNC(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *t
 		knh_Stmt_swap(ctx, stmt, 0, 1);
 	}
 	else {
-		knh_StmtExpr_t *stmtIN = new_Stmt2(ctx, STT_(stmt), NULL);
+		kStmtExpr *stmtIN = new_Stmt2(ctx, STT_(stmt), NULL);
 		size_t i;
 		for(i = 0; i < DP(stmt)->size; i++) {
 			knh_Stmt_add(ctx, stmtIN, tmNN(stmt, i), NULL);
@@ -2512,7 +2512,7 @@ static knh_StmtExpr_t *Stmt_addFUNC(CTX ctx, knh_StmtExpr_t *stmt, knh_Term_t *t
 
 #define Stmt_addFUNCMN(ctx, stmt, mn) Stmt_addFUNC(ctx, stmt, new_TermMN(ctx, mn))
 
-static void _CALLPARAM(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _CALLPARAM(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	while(ITR_hasNext(itr)) {
 		while(ITR_isDOTNAME(itr, 0)) {
@@ -2554,10 +2554,10 @@ static void _CALLPARAM(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _EXPRCALL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _EXPRCALL(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_term_t tt = ITR_tt(itr);
-	knh_Term_t *tkCUR = ITR_nextTK(itr);
+	kterm_t tt = ITR_tt(itr);
+	kTerm *tkCUR = ITR_nextTK(itr);
 	int isCALL = 0;
 	DBG_ASSERT(ITR_hasNext(itr));
 	stmt = new_StmtREUSE(ctx, stmt, STT_CALL);
@@ -2577,7 +2577,7 @@ static void _EXPRCALL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 		case TT_FUNCTION: {
 			STT_(stmt) = STT_FUNCTION;
 			if(ITR_is(itr, TT_FUNCNAME) || ITR_is(itr, TT_UFUNCNAME)) {
-				knh_Term_t *tkN = ITR_nextTK(itr);
+				kTerm *tkN = ITR_nextTK(itr);
 				WARN_Ignored(ctx, _("function name"), CLASS_unknown, S_totext(tkN->text));
 			}
 			if(ITR_is(itr, TT_PARENTHESIS) && ITR_isN(itr, +1, TT_CODE)) {
@@ -2589,7 +2589,7 @@ static void _EXPRCALL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 				_STMT1(ctx, stmt, itr);
 			}
 			else {
-				knh_StmtExpr_toERR(ctx, stmt, ERROR_text(ctx, "syntax error: function() {...}" K_TRACEPOINT));
+				kStmtExproERR(ctx, stmt, ERROR_text(ctx, "syntax error: function() {...}" K_TRACEPOINT));
 				return;
 			}
 			break;
@@ -2616,7 +2616,7 @@ static void _EXPRCALL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 				break;
 			}
 			if(ITR_isT(itr, isTYPE) && ITR_isN(itr, +1, TT_BRANCET)) {
-				knh_Term_t *tkC = ITR_nextTK(itr);
+				kTerm *tkC = ITR_nextTK(itr);
 				TT_(tkCUR) = TT_MN; /* new C[10] */
 				(tkCUR)->mn = MN_newARRAY;
 				knh_Stmt_add(ctx, stmt, new_TermPTYPE(ctx, CLASS_Array, tkC));
@@ -2631,7 +2631,7 @@ static void _EXPRCALL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 				break;
 			}
 			if(ITR_isT(itr, isTYPE) && ITR_isN(itr, +1, TT_CODE)) {
-				knh_Term_t *tkC = ITR_nextTK(itr);
+				kTerm *tkC = ITR_nextTK(itr);
 				TT_(tkCUR) = TT_MN; /* new C {} */
 				(tkCUR)->mn = MN_newMAP;
 				_DICT(ctx, stmt, tkC, ITR_nextTK(itr));
@@ -2655,7 +2655,7 @@ static void _EXPRCALL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 				_EXPR(ctx, stmt, itr);
 				break;
 			}
-			knh_StmtExpr_toERR(ctx, stmt, ERROR_Undefined(ctx, "class for new", CLASS_unknown, ITR_nextTK(itr)/*tkCUR*/));
+			kStmtExproERR(ctx, stmt, ERROR_Undefined(ctx, "class for new", CLASS_unknown, ITR_nextTK(itr)/*tkCUR*/));
 			return;
 		}/*TT_NEW*/
 		default: {
@@ -2677,12 +2677,12 @@ static void _EXPRCALL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static int IS_BIN(knh_term_t tt)
+static int IS_BIN(kterm_t tt)
 {
 	return (TT_isBINARY(tt) || tt == TT_AND || tt == TT_OR);
 }
 
-static void _EXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _EXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	size_t n = ITR_size(itr);
 	if(n == 1) {
@@ -2711,31 +2711,31 @@ static void _EXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-typedef void (*knh_Fstmt)(CTX, knh_StmtExpr_t *stmt, tkitr_t *itr);
+typedef void (*knh_Fstmt)(CTX, kStmtExpr *stmt, tkitr_t *itr);
 
-static void _CHECKEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr, int s, int e)
+static void _CHECKEXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr, int s, int e)
 {
-	knh_Term_t **ts = itr->ts;
+	kTerm **ts = itr->ts;
 	int i;
 	DBG_ASSERT(itr->c <= s && e <= itr->e);
 	for(i = s; i < e; i++) {
-		knh_term_t tt = TT_(ts[i]);
+		kterm_t tt = TT_(ts[i]);
 		if(tt <= TT_ASIS) {
-			knh_StmtExpr_toERR(ctx, stmt, ERROR_TermIsNot(ctx, ts[i], _("value")));
+			kStmtExproERR(ctx, stmt, ERROR_TermIsNot(ctx, ts[i], _("value")));
 			itr->e = i;
 			return;
 		}
 	}
 }
 
-static void _SAFEEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _SAFEEXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_Term_t **ts = itr->ts;
+	kTerm **ts = itr->ts;
 	int i;
 	for(i = itr->c; i < itr->e; i++) {
-		knh_term_t tt = TT_(ts[i]);
+		kterm_t tt = TT_(ts[i]);
 		if(tt <= TT_ASIS) {
-			knh_StmtExpr_toERR(ctx, stmt, ERROR_TermIsNot(ctx, ts[i], _("value")));
+			kStmtExproERR(ctx, stmt, ERROR_TermIsNot(ctx, ts[i], _("value")));
 			itr->e = i;
 			return;
 		}
@@ -2743,7 +2743,7 @@ static void _SAFEEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	_EXPR(ctx, stmt, itr);
 }
 
-static void _PEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _PEXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_PARENTHESIS)) {
 		tkitr_t pbuf, *pitr = ITR_new(ITR_nextTK(itr), &pbuf);
@@ -2754,7 +2754,7 @@ static void _PEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _ONEEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _ONEEXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	int e = itr->e;
 	itr->e = itr->c + 1;
@@ -2764,10 +2764,10 @@ static void _ONEEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 
 /* ------------------------------------------------------------------------ */
 
-static void _DECL2(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _DECL2(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	DBG_ASSERT(ITR_isT(itr, isTYPE));
-	knh_Term_t *tkT = ITR_nextTK(itr);
+	kTerm *tkT = ITR_nextTK(itr);
 	knh_Stmt_add(ctx, stmt, tkT);
 	while(ITR_hasNext(itr)) {
 		int idx = ITR_indexTT(itr, TT_COMMA, itr->e);
@@ -2791,16 +2791,16 @@ static void _DECL2(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 			_ASIS(ctx, stmt, aitr);
 		}
 		if(ITR_hasNext(itr)) {
-			knh_StmtExpr_t *stmtDECL = new_Stmt2(ctx, STT_DECL, tkT, NULL);
+			kStmtExpr *stmtDECL = new_Stmt2(ctx, STT_DECL, tkT, NULL);
 			KNH_INITv(DP(stmt)->nextNULL, stmtDECL);
 			stmt = stmtDECL;
 		}
 	}
 }
 
-static void _PARAMs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _PARAMs(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_StmtExpr_t *stmtP = new_Stmt2(ctx, STT_DECL, NULL);
+	kStmtExpr *stmtP = new_Stmt2(ctx, STT_DECL, NULL);
 	int e = itr->e, ridx = ITR_indexTT(itr, TT_DARROW, -1);  /* int n, int b */
 	if(ridx != -1) itr->e = ridx;
 	int varidx = ITR_indexTT(itr, TT_DOTS, -1);
@@ -2828,7 +2828,7 @@ static void _PARAMs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 			_VAR(ctx, stmtP, aitr);
 		}
 		if(ITR_isT(aitr, isVARN)) {
-			knh_Term_t *tkN = ITR_nextTK(aitr);
+			kTerm *tkN = ITR_nextTK(aitr);
 			knh_Stmt_add(ctx, stmtP, tkN);
 		}
 		else {
@@ -2845,7 +2845,7 @@ static void _PARAMs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	if(ridx != -1) itr->e = e;
 }
 
-static void _PARAM(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _PARAM(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_PARENTHESIS)) {
 		tkitr_t pbuf, *pitr = ITR_new(ITR_nextTK(itr), &pbuf);
@@ -2862,7 +2862,7 @@ static void _PARAM(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static kbool_t Stmt_checkDepth(knh_StmtExpr_t *stmt, int depth, int max)
+static kbool_t Stmt_checkDepth(kStmtExpr *stmt, int depth, int max)
 {
 	size_t i;
 	if(depth > max) {
@@ -2871,7 +2871,7 @@ static kbool_t Stmt_checkDepth(knh_StmtExpr_t *stmt, int depth, int max)
 		return 1;
 	}
 	for(i = 0; i < DP(stmt)->size; i++) {
-		knh_StmtExpr_t *stmt2 = stmtNN(stmt, i);
+		kStmtExpr *stmt2 = stmtNN(stmt, i);
 		if(IS_StmtExpr(stmt2)) {
 			//DBG_P("CHILD %p stmt=%s", stmt2, TT__(STT_(stmt2)));
 			if(Stmt_checkDepth(stmt2, depth+1, max)) return 1;
@@ -2880,14 +2880,14 @@ static kbool_t Stmt_checkDepth(knh_StmtExpr_t *stmt, int depth, int max)
 	return 0;
 }
 
-static knh_StmtExpr_t *Stmt_norm(CTX ctx, knh_StmtExpr_t *stmt)
+static kStmtExpr *Stmt_norm(CTX ctx, kStmtExpr *stmt)
 {
-	knh_StmtExpr_t *stmtITR = stmt;
-	knh_StmtExpr_t *stmtPREV = NULL, *stmtLAST = NULL;
+	kStmtExpr *stmtITR = stmt;
+	kStmtExpr *stmtPREV = NULL, *stmtLAST = NULL;
 	while(stmtITR != NULL) {
 		//DBG_P("PARENT %p stmt=%s", stmtITR, TT__(STT_(stmtITR)));
 		if(Stmt_checkDepth(stmtITR, 0, 64)) {
-			knh_StmtExpr_toERR(ctx, stmtITR, NULL); // TODO
+			kStmtExproERR(ctx, stmtITR, NULL); // TODO
 		}
 		if(STT_(stmtITR) == STT_RETURN || STT_(stmtITR) == STT_THROW) {
 			if(DP(stmtITR)->nextNULL != NULL) {
@@ -2907,7 +2907,7 @@ static knh_StmtExpr_t *Stmt_norm(CTX ctx, knh_StmtExpr_t *stmt)
 			STT_(stmtLAST) = STT_RETURN;
 		}
 //		else if(stmt_isExpr(STT_(stmtLAST)) && STT_(stmtLAST) != STT_LET) {
-//			knh_StmtExpr_t *stmtRETURN = new_Stmt2(ctx, STT_RETURN, stmtLAST, NULL);
+//			kStmtExpr *stmtRETURN = new_Stmt2(ctx, STT_RETURN, stmtLAST, NULL);
 //			if(stmtPREV != NULL) {
 //				KNH_SETv(ctx, DP(stmtPREV)->nextNULL, stmtRETURN);
 //			}
@@ -2919,11 +2919,11 @@ static knh_StmtExpr_t *Stmt_norm(CTX ctx, knh_StmtExpr_t *stmt)
 	return stmt;
 }
 
-static void _STMTs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _STMTs(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_StmtExpr_t *stmtHEAD = NULL, *stmtTAIL = NULL;
+	kStmtExpr *stmtHEAD = NULL, *stmtTAIL = NULL;
 	while(ITR_hasNext(itr)) {
-		knh_StmtExpr_t *stmtCUR = new_StmtSTMT1(ctx, itr);
+		kStmtExpr *stmtCUR = new_StmtSTMT1(ctx, itr);
 		if(stmtHEAD == NULL) {
 			stmtHEAD = stmtCUR;
 		}
@@ -2939,7 +2939,7 @@ static void _STMTs(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	knh_Stmt_add(ctx, stmt, Stmt_norm(ctx, stmtHEAD));
 }
 
-static void _STMT1(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _STMT1(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_CODE)) {
 		Term_toBRACE(ctx, ITR_tk(itr), 1/*isEXPANDING*/);
@@ -2955,7 +2955,7 @@ static void _STMT1(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _ELSE(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _ELSE(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_ELSE)) {
 		ITR_next(itr);
@@ -2966,7 +2966,7 @@ static void _ELSE(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _DOWHILE(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _DOWHILE(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_CODE)) {
 		Term_toBRACE(ctx, ITR_tk(itr), 1/*isEXPANDING*/);
@@ -2982,9 +2982,9 @@ static void _DOWHILE(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	_ERROR(ctx, stmt, itr, _("{} for while body"));
 }
 
-static void _CASESTMT(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _CASESTMT(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_StmtExpr_t *stmtHEAD = NULL, *stmtLAST = NULL;
+	kStmtExpr *stmtHEAD = NULL, *stmtLAST = NULL;
 	tkitr_t stmtbuf;
 	if(ITR_is(itr, TT_CODE)) {
 		Term_toBRACE(ctx, ITR_tk(itr), 1/*isEXPANDING*/);
@@ -2997,8 +2997,8 @@ static void _CASESTMT(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 		return;
 	}
 	while(ITR_hasNext(itr)) {
-		knh_term_t tt = TT_(ITR_nextTK(itr));
-		knh_StmtExpr_t *stmtCASE;
+		kterm_t tt = TT_(ITR_nextTK(itr));
+		kStmtExpr *stmtCASE;
 		if(tt == TT_CASE || tt == TT_DEFAULT) {
 			int idx = ITR_indexTT(itr, TT_COLON, -1);
 			if(idx == -1) {
@@ -3057,7 +3057,7 @@ static int ITR_indexINFROM(tkitr_t *itr)
 		int i, c = itr->c + 1;
 		if(TT_(itr->ts[c]) == TT_UNAME) c++;  // skip InputSteam in
 		for(i = c; i < itr->e; i++) {
-			knh_term_t tt = TT_(itr->ts[i]);
+			kterm_t tt = TT_(itr->ts[i]);
 			if(tt == TT_FROM || tt == TT_COLON) {
 				return i;
 			}
@@ -3069,7 +3069,7 @@ static int ITR_indexINFROM(tkitr_t *itr)
 	return -1;
 }
 
-static void _EACH(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _EACH(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	int idx = ITR_indexINFROM(itr);
 	if(idx != -1) {
@@ -3084,7 +3084,7 @@ static void _EACH(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _PEACH(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _PEACH(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_PARENTHESIS)) {
 		tkitr_t pbuf, *pitr = ITR_new(ITR_nextTK(itr), &pbuf);
@@ -3102,7 +3102,7 @@ static void _PEACH(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _PSTMT3(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _PSTMT3(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_is(itr, TT_PARENTHESIS)) {
 		tkitr_t pbuf, *pitr = ITR_new(ITR_nextTK(itr), &pbuf);
@@ -3131,13 +3131,13 @@ static void _PSTMT3(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static int isLABEL(knh_Term_t *tk)
+static int isLABEL(kTerm *tk)
 {
-	knh_term_t tt = TT_(tk);
+	kterm_t tt = TT_(tk);
 	return (tt == TT_UNAME || tt == TT_NAME);
 }
 
-static void _LABEL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _LABEL(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	if(ITR_hasNext(itr) && isLABEL(ITR_tk(itr))) {
 		knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
@@ -3146,41 +3146,41 @@ static void _LABEL(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	_ASIS(ctx, stmt, itr);
 }
 
-static int isEVENT(knh_Term_t *tk)
+static int isEVENT(kTerm *tk)
 {
 	if(Term_isExceptionType(tk)) return 1;
 	return 0;
 }
 
-static knh_StmtExpr_t *Stmt_tail(CTX ctx, knh_StmtExpr_t *o)
+static kStmtExpr *Stmt_tail(CTX ctx, kStmtExpr *o)
 {
-	knh_StmtExpr_t *tail = o;
+	kStmtExpr *tail = o;
 	while(DP(tail)->nextNULL != NULL) {
 		tail = DP(tail)->nextNULL;
 	}
 	return tail;
 }
 
-static knh_StmtExpr_t* StmtNULL_append(CTX ctx, knh_StmtExpr_t *o, knh_StmtExpr_t *stmt)
+static kStmtExpr* StmtNULL_append(CTX ctx, kStmtExpr *o, kStmtExpr *stmt)
 {
 	if(o == NULL) {
 		return stmt;
 	}
 	else {
-		knh_StmtExpr_t *tail = Stmt_tail(ctx, o);
+		kStmtExpr *tail = Stmt_tail(ctx, o);
 		KNH_INITv(DP(tail)->nextNULL, stmt);
 		return o;
 	}
 }
 
-static void _CATCH(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _CATCH(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_StmtExpr_t *stmtHEAD = NULL;
+	kStmtExpr *stmtHEAD = NULL;
 	while(ITR_is(itr, TT_CATCH)) {
 		ITR_next(itr);
 		if(ITR_is(itr, TT_PARENTHESIS)) {
 			tkitr_t pbuf, *pitr = ITR_new(ITR_nextTK(itr), &pbuf);
-			knh_StmtExpr_t *stmtCATCH = new_Stmt2(ctx, STT_CATCH, NULL);
+			kStmtExpr *stmtCATCH = new_Stmt2(ctx, STT_CATCH, NULL);
 			Stmt_tadd(ctx, stmtCATCH, pitr, isEVENT, _("exception"));
 			Stmt_tadd(ctx, stmtCATCH, pitr, isVARN, _("variable"));
 			_STMT1(ctx, stmtCATCH, itr);
@@ -3203,24 +3203,24 @@ static void _CATCH(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _PRAGMA(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _PRAGMA(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	while(ITR_hasNext(itr)) {
 		knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));
 	}
 }
 
-static void _USING(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _USING(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	while(ITR_hasNext(itr)) {
-		knh_Term_t *tk = ITR_nextTK(itr);
+		kTerm *tk = ITR_nextTK(itr);
 		if(TT_(tk) == TT_OR) _ASIS(ctx, stmt, itr);
 		knh_Stmt_add(ctx, stmt, tk);
 	}
 	_ASIS(ctx, stmt, itr);
 }
 
-static int isCLASSAME(knh_Term_t* tk)
+static int isCLASSAME(kTerm* tk)
 {
 	if(TT_(tk) == TT_UNAME || TT_(tk) == TT_UFUNCNAME) {
 //		kbytes_t t = S_tobytes((tk)->text);
@@ -3233,7 +3233,7 @@ static int isCLASSAME(knh_Term_t* tk)
 	return 0;
 }
 
-static void _CLASS(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _CLASS(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {	// CNAME:0 NEW:1 EXTENDS:2 IMPLEMENTS:3 STMT:4
 	Stmt_tadd(ctx, stmt, itr, isCLASSAME, _("class name")); /*0*/
 	if(ITR_is(itr, TT_PARENTHESIS)) {  // Scala style
@@ -3271,13 +3271,13 @@ static void _CLASS(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static int isMN(knh_Term_t* tk)
+static int isMN(kTerm* tk)
 {
 	if(TT_(tk) == TT_UFUNCNAME) TT_(tk) = TT_UFUNCNAME;
 	return (TT_(tk) == TT_FUNCNAME  /* || TT_(tk) == TT_PROPN*/);
 }
 
-static void _CODE(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _CODE(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	size_t i, hasCODE = 0;;
 	for(i = 0; i < DP(stmt)->size; i++) {
@@ -3322,9 +3322,9 @@ static void _CODE(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}
 }
 
-static void _METHOD(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _METHOD(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_Term_t *tkT = ITR_nextTK(itr);
+	kTerm *tkT = ITR_nextTK(itr);
 	knh_Stmt_add(ctx, stmt, tkT);
 	if(TT_(tkT) == TT_FUNCTION) TT_(tkT) = TT_ASIS;
 	if(ITR_is(itr, TT_UNAME)) {
@@ -3339,9 +3339,9 @@ static void _METHOD(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 }
 
 
-static void _CONSTRUCTOR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _CONSTRUCTOR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_Term_t *tkT = ITR_tk(itr);
+	kTerm *tkT = ITR_tk(itr);
 	TT_(tkT) = TT_UNAME;
 	Stmt_tadd(ctx, stmt, itr, isCLASSAME, _("class name"));
 	_ASIS(ctx, stmt, itr);
@@ -3350,7 +3350,7 @@ static void _CONSTRUCTOR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	ADD(stmt, _CODE(ctx, stmt, itr));
 }
 
-static void _TYPEMAP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _TYPEMAP(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	_ASIS(ctx, stmt, itr);    // TLINK or ASIS
 	knh_Stmt_add(ctx, stmt, ITR_nextTK(itr));  /* T */
@@ -3360,9 +3360,9 @@ static void _TYPEMAP(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	ADD(stmt, _CODE(ctx, stmt, itr));
 }
 
-static void _FORMAT(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _FORMAT(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
-	knh_Term_t *tkT = ITR_nextTK(itr);
+	kTerm *tkT = ITR_nextTK(itr);
 	knh_Stmt_add(ctx, stmt, tkT);  // void
 	ITR_nextTK(itr); // skip %
 	_ASIS(ctx, stmt, itr);  // class name
@@ -3374,10 +3374,10 @@ static void _FORMAT(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 /* ------------------------------------------------------------------------ */
 /* META */
 
-static void Stmt_addMETA(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void Stmt_addMETA(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	int i, e;
-	knh_Term_t **ts = itr->ts;
+	kTerm **ts = itr->ts;
 	if(itr->meta == -1 || STT_(stmt) == STT_DONE || STT_(stmt) == STT_ERR) {
 		return ;
 	}
@@ -3399,11 +3399,11 @@ static void Stmt_addMETA(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	itr->meta = -1;
 }
 
-static knh_StmtExpr_t *new_StmtMETA(CTX ctx, knh_term_t stt, tkitr_t *itr, int shift, ...)
+static kStmtExpr *new_StmtMETA(CTX ctx, kterm_t stt, tkitr_t *itr, int shift, ...)
 {
 	knh_Fstmt func = NULL;
 	va_list ap;
-	knh_StmtExpr_t *stmt = new_Stmt2(ctx, stt, NULL);
+	kStmtExpr *stmt = new_Stmt2(ctx, stt, NULL);
 	Stmt_addMETA(ctx, stmt, itr);
 	itr->c = itr->c + shift;
 	va_start(ap , shift);
@@ -3438,7 +3438,7 @@ static int ITR_findSTMTOPR(tkitr_t *itr, int *op)
 {
 	int i;
 	for(i = itr->c; i < itr->e; i++) {
-		knh_term_t tt = TT_(itr->ts[i]);
+		kterm_t tt = TT_(itr->ts[i]);
 		if(tt == TT_LET) {
 			op[0] = 0; return i;
 		}
@@ -3458,7 +3458,7 @@ static int ITR_findSTMTOPR(tkitr_t *itr, int *op)
 	return -1;
 }
 
-static void _STMTEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
+static void _STMTEXPR(CTX ctx, kStmtExpr *stmt, tkitr_t *itr)
 {
 	int op = -1;
 	int idx = ITR_findSTMTOPR(itr, &op);
@@ -3479,7 +3479,7 @@ static void _STMTEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 				_EXPRs(ctx, stmt, itr);
 			}
 			else {
-				knh_StmtExpr_toERR(ctx, stmt, ERROR_text(ctx,  "mismatched assignment" K_TRACEPOINT));
+				kStmtExproERR(ctx, stmt, ERROR_text(ctx,  "mismatched assignment" K_TRACEPOINT));
 			}
 		}
 		else if(ITR_is(itr, TT_UNAME) && itr->c+1 == idx) {
@@ -3520,7 +3520,7 @@ static void _STMTEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 		}
 		else {
 			if(STT_(stmt) != STT_ERR) {
-				knh_StmtExpr_toERR(ctx, stmt, ERROR_text(ctx,  "message should be sent" K_TRACEPOINT));
+				kStmtExproERR(ctx, stmt, ERROR_text(ctx,  "message should be sent" K_TRACEPOINT));
 			}
 		}
 		break;
@@ -3531,14 +3531,14 @@ static void _STMTEXPR(CTX ctx, knh_StmtExpr_t *stmt, tkitr_t *itr)
 	}/*switch*/
 }
 
-static int Term_isMAP(CTX ctx, knh_Term_t *tk)
+static int Term_isMAP(CTX ctx, kTerm *tk)
 {
 	DBG_ASSERT(TT_(tk) == TT_BRACE);
 	tkitr_t tbuf, *titr = ITR_new(tk, &tbuf);
 	int i, colon = 0, comma = 0;
 	int isMAP = titr->e == 0 ? 1 : 0;
 	for(i = 0; i < titr->e; i++) {
-		knh_term_t tt = TT_(titr->ts[i]);
+		kterm_t tt = TT_(titr->ts[i]);
 		if(tt <= TT_FINALLY || tt == TT_LSEND || tt == TT_RSEND || tt == TT_LET) {
 			isMAP = 0;
 			goto L_RETURN;
@@ -3561,11 +3561,11 @@ static int Term_isMAP(CTX ctx, knh_Term_t *tk)
 	return isMAP;
 }
 
-static knh_StmtExpr_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
+static kStmtExpr *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 {
-	knh_term_t tt;
-	knh_StmtExpr_t *stmt = NULL;
-	knh_Term_t *tkLINE = NULL;
+	kterm_t tt;
+	kStmtExpr *stmt = NULL;
+	kTerm *tkLINE = NULL;
 	L_TAIL:;
 	TT_skipMETA(ctx, itr);
 	if(!ITR_hasNext(itr)) {
@@ -3626,7 +3626,7 @@ static knh_StmtExpr_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 			if(ITR_is(mitr, TT_UNAME)) {
 				ITR_next(mitr);
 				if(ITR_is(mitr, TT_UFUNCNAME)) {
-					knh_Term_t *tkUF = ITR_tk(mitr); TT_(tkUF) = TT_FUNCNAME;
+					kTerm *tkUF = ITR_tk(mitr); TT_(tkUF) = TT_FUNCNAME;
 					WarningMethodName(ctx, S_totext(tkUF->text));
 				}
 				if(ITR_is(mitr, TT_FUNCNAME)) {
@@ -3639,7 +3639,7 @@ static knh_StmtExpr_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 				break;
 			}
 			if(ITR_is(mitr, TT_UFUNCNAME) && !Term_isDOT(ITR_tk(mitr))) {
-				knh_Term_t *tkUF = ITR_tk(mitr); TT_(tkUF) = TT_FUNCNAME;
+				kTerm *tkUF = ITR_tk(mitr); TT_(tkUF) = TT_FUNCNAME;
 				WarningMethodName(ctx, S_totext(tkUF->text));
 				stmt = new_StmtMETA(ctx, STT_METHOD, itr, 0, _METHOD, NULL);
 				break;
@@ -3698,15 +3698,15 @@ static knh_StmtExpr_t *new_StmtSTMT1(CTX ctx, tkitr_t *itr)
 
 #ifdef K_USING_SUGAR
 
-knh_StmtExpr_t *knh_parseStmt(CTX ctx, const char *script, kline_t uline)
+kStmtExpr *knh_parseStmt(CTX ctx, const char *script, kline_t uline)
 {
-	knh_StmtExpr_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
+	kStmtExpr *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	rVALUE->uline	= uline;
 	PUSH_GCSTACK(ctx, rVALUE);
 	{
 		INIT_GCSTACK(ctx);
-		knh_Array_t *a = new_TokenArray(ctx, script, uline);
-		knh_Term_t *tm = new_Term(ctx, TT_BRACE);
+		kArray *a = new_TokenArray(ctx, script, uline);
+		kTerm *tm = new_Term(ctx, TT_BRACE);
 		PUSH_GCSTACK(ctx, tm);
 		TokenArray_parseTerm(ctx, a, 0, tm, -1);
 		DBG_(if(knh_isVerboseLang() /*&& DP(in)->uri == URI_EVAL*/) {
@@ -3727,7 +3727,7 @@ knh_StmtExpr_t *knh_parseStmt(CTX ctx, const char *script, kline_t uline)
 				goto L_OK;
 			}
 		}
-		knh_StmtExpr_toERR(ctx, rVALUE, tm);
+		kStmtExproERR(ctx, rVALUE, tm);
 		L_OK: ;
 		RESET_GCSTACK(ctx);
 	}
@@ -3735,13 +3735,13 @@ knh_StmtExpr_t *knh_parseStmt(CTX ctx, const char *script, kline_t uline)
 }
 #else
 
-knh_StmtExpr_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in, kline_t *ul)
+kStmtExpr *knh_InputStream_parseStmt(CTX ctx, kInputStream *in, kline_t *ul)
 {
 	BEGIN_LOCAL(ctx, lsfp, 2);
 	DBG_ASSERT(ul[0] != 0);
 	ctx->gma->uline = ul[0];
-	knh_StmtExpr_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
-	knh_Term_t *tk = new_Term(ctx, TT_BRACE);
+	kStmtExpr *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
+	kTerm *tk = new_Term(ctx, TT_BRACE);
 	KNH_SETv(ctx, lsfp[0].o, rVALUE);
 	KNH_SETv(ctx, lsfp[1].o, tk);
 	InputStream_parseTerm(ctx, in, ul, tk);
@@ -3760,7 +3760,7 @@ knh_StmtExpr_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in, kline_
 			goto L_RETURN;
 		}
 	}
-	knh_StmtExpr_toERR(ctx, rVALUE, tk);
+	kStmtExproERR(ctx, rVALUE, tk);
 	L_RETURN:;
 	END_LOCAL(ctx, lsfp);
 	return rVALUE;
@@ -3769,12 +3769,12 @@ knh_StmtExpr_t *knh_InputStream_parseStmt(CTX ctx, knh_InputStream_t *in, kline_
 
 /* ------------------------------------------------------------------------ */
 
-knh_StmtExpr_t *knh_Term_parseStmt(CTX ctx, kline_t uline, knh_Term_t *tk)
+kStmtExpr *knh_Term_parseStmt(CTX ctx, kline_t uline, kTerm *tk)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	//DBG_P("uline=%d, tk->uline=%d src='''%s'''", (kshort_t)uline, (kshort_t)tk->uline, S_totext(tk->text));
 	ctx->gma->uline = tk->uline;
-	knh_StmtExpr_t *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
+	kStmtExpr *rVALUE = new_Stmt2(ctx, STT_BLOCK, NULL);
 	KNH_SETv(ctx, lsfp[0].o, rVALUE);
 	Term_toBRACE(ctx, tk, 1/*isEXPANDING*/);
 	if(TT_(tk) != TT_ERR) {
@@ -3787,18 +3787,18 @@ knh_StmtExpr_t *knh_Term_parseStmt(CTX ctx, kline_t uline, knh_Term_t *tk)
 		DBG_ASSERT(IS_StmtExpr(rVALUE));
 	}
 	else {
-		knh_StmtExpr_toERR(ctx, rVALUE, tk);
+		kStmtExproERR(ctx, rVALUE, tk);
 	}
 	END_LOCAL(ctx, lsfp);
 	return rVALUE;
 }
 
-knh_StmtExpr_t *knh_bytes_parseStmt(CTX ctx, kbytes_t expr, kline_t uline)
+kStmtExpr *knh_bytes_parseStmt(CTX ctx, kbytes_t expr, kline_t uline)
 {
 	ctx->gma->uline = uline;
 	BEGIN_LOCAL(ctx, lsfp, 2);
-	LOCAL_NEW(ctx, lsfp, 0, knh_StmtExpr_t*, rVALUE, new_Stmt2(ctx, STT_BLOCK, NULL));
-	LOCAL_NEW(ctx, lsfp, 1, knh_Term_t*, tk, new_Term(ctx, TT_CODE));
+	LOCAL_NEW(ctx, lsfp, 0, kStmtExpr*, rVALUE, new_Stmt2(ctx, STT_BLOCK, NULL));
+	LOCAL_NEW(ctx, lsfp, 1, kTerm*, tk, new_Term(ctx, TT_CODE));
 	KNH_SETv(ctx, (tk)->data, new_String2(ctx, CLASS_String, expr.text, expr.len, 0));
 	Term_toBRACE(ctx, tk, 1/*isEXPANDING*/);
 	if(TT_(tk) != TT_ERR) {
@@ -3808,7 +3808,7 @@ knh_StmtExpr_t *knh_bytes_parseStmt(CTX ctx, kbytes_t expr, kline_t uline)
 		rVALUE = stmtNN(rVALUE, 0);
 	}
 	else {
-		knh_StmtExpr_toERR(ctx, rVALUE, tk);
+		kStmtExproERR(ctx, rVALUE, tk);
 	}
 	END_LOCAL(ctx, lsfp);
 	return rVALUE;

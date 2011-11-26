@@ -32,7 +32,7 @@
 
 /* ************************************************************************ */
 
-#define USE_STRUCT_Path
+#define K_INTERNAL
 #include<konoha1.h>
 
 #include <unistd.h>
@@ -73,7 +73,7 @@ KMETHOD System_getHostName(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native Map System.uname();
 KMETHOD System_uname(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Map_t *mdata = KNH_TNULL(Map);
+	kMap *mdata = KNH_TNULL(Map);
 	struct utsname buf;
 	int ret = uname(&buf);
 	if (ret == -1) {
@@ -186,7 +186,7 @@ KMETHOD System_getGroups(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gid_t groups[NGROUPS_MAX] = {0};
 	int group_num = getgroups(NGROUPS_MAX, groups);
-	knh_Array_t *a = KNH_TNULL(Array);
+	kArray *a = KNH_TNULL(Array);
 	if (group_num == -1) {
 		// error
 		KNH_NTRACE2(ctx, "getgroups", K_PERROR, KNH_LDATA0);
@@ -211,7 +211,7 @@ KMETHOD System_getGroups(CTX ctx, ksfp_t *sfp _RIX)
 //@Public @Native Map System.getrusage(int who);
 KMETHOD System_getResourceUsage(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Map_t *mdata = KNH_TNULL(Map);
+	kMap *mdata = KNH_TNULL(Map);
 	int who = Int_to(int, sfp[1]);
 	struct rusage usage;
 	int ret = getrusage(who, &usage);
@@ -243,7 +243,7 @@ KMETHOD System_getResourceUsage(CTX ctx, ksfp_t *sfp _RIX)
 //## @Public @Native Map System.getRlimit(int rtype);
 KMETHOD System_getRlimit(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Map_t *mdata = KNH_TNULL(Map);
+	kMap *mdata = KNH_TNULL(Map);
 	int rtype = Int_to(int, sfp[1]);
 	struct rlimit limit;
 	int ret = getrlimit(rtype, &limit);
@@ -357,7 +357,7 @@ KMETHOD System_getCwd(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(new_String(ctx, (const char*)tmpbuf));
 }
 
-static int fileop(CTX ctx, ksfp_t *sfp, const char *name, int (*func)(const char*), knh_Path_t *pth)
+static int fileop(CTX ctx, ksfp_t *sfp, const char *name, int (*func)(const char*), kPath *pth)
 {
 	if(func(pth->ospath) == -1) {
 		KNH_NTRACE2(ctx, name, K_PERROR, KNH_LDATA(LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath)));
@@ -369,7 +369,7 @@ static int fileop(CTX ctx, ksfp_t *sfp, const char *name, int (*func)(const char
 	return 1;
 }
 
-static int fileop2(CTX ctx, ksfp_t *sfp, const char *name, int (*func)(const char*, const char*), knh_Path_t *pth, knh_Path_t *pth2)
+static int fileop2(CTX ctx, ksfp_t *sfp, const char *name, int (*func)(const char*, const char*), kPath *pth, kPath *pth2)
 {
 	if(func(pth->ospath, pth2->ospath) == -1) {
 		KNH_NTRACE2(ctx, name, K_PERROR, KNH_LDATA(
@@ -414,11 +414,11 @@ KMETHOD System_unlink(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native String System.readlink(Path path);
 KMETHOD System_readlink(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	char tmpbuf[K_PATHMAX] = {0};
 
 	int ret = readlink(pth->ospath, tmpbuf, K_PATHMAX);
-	knh_String_t *str = KNH_TNULL(String);
+	kString *str = KNH_TNULL(String);
 	if (ret == -1) {
 		// error
 		KNH_NTRACE2(ctx, "readlink", K_PERROR, KNH_LDATA(LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath)));
@@ -446,7 +446,7 @@ KMETHOD System_chroot(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native @Restricted boolean System.mkdir(Path path, int mode);
 KMETHOD System_mkdir(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	//	mode_t mode =  IS_NULL(sfp[2].o) ? 0755 : (mode_t)sfp[2].ivalue;
 	mode_t mode = sfp[2].ivalue;
 	int ret = mkdir(pth->ospath, mode);
@@ -498,12 +498,12 @@ KMETHOD System_getPageSize(CTX ctx, ksfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [DIR] */
 
-static void Dir_init(CTX ctx, knh_RawPtr_t *po)
+static void Dir_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void Dir_free(CTX ctx, knh_RawPtr_t *po)
+static void Dir_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		closedir((DIR*)po->rawptr);
@@ -511,7 +511,7 @@ static void Dir_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-static void Dir_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+static void Dir_checkout(CTX ctx, kRawPtr *po, int isFailed)
 {
 	if (po->rawptr != NULL) {
 		closedir((DIR*)po->rawptr);
@@ -519,7 +519,7 @@ static void Dir_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 	}
 }
 
-DEFAPI(void) defDir(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defDir(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Dir";
 	cdef->init = Dir_init;
@@ -550,9 +550,9 @@ DEFAPI(void) constDir(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 //## @Native @Throwable Dir System.openDir(Path path);
 KMETHOD System_openDir(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	DIR *dirptr = opendir(pth->ospath);
-	knh_RawPtr_t *po = 	new_ReturnCppObject(ctx, sfp, dirptr, NULL/*ignored*/);
+	kRawPtr *po = 	new_ReturnCppObject(ctx, sfp, dirptr, NULL/*ignored*/);
 	KNH_NTRACE2(ctx, "opendir", (dirptr != NULL) ? K_OK : K_PERROR, KNH_LDATA(
 				LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath)
 				));
@@ -581,7 +581,7 @@ KMETHOD Dir_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native @Iterative Map Dir.read();
 KMETHOD Dir_read(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Map_t *mdata = KNH_TNULL(Map);
+	kMap *mdata = KNH_TNULL(Map);
 	DIR *dirptr = (DIR*)sfp[0].p->rawptr;
 	if(dirptr != NULL) {
 		errno = 0; 
@@ -618,12 +618,12 @@ KMETHOD Dir_readName(CTX ctx, ksfp_t *sfp _RIX)
 /* ======================================================================== */
 /* FILE Stream*/
 
-static void File_init(CTX ctx, knh_RawPtr_t *po)
+static void File_init(CTX ctx, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
 
-static void File_free(CTX ctx, knh_RawPtr_t *po)
+static void File_free(CTX ctx, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		fclose((FILE*)po->rawptr);
@@ -631,7 +631,7 @@ static void File_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-static void File_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
+static void File_checkout(CTX ctx, kRawPtr *po, int isFailed)
 {
 	if (po->rawptr != NULL) {
 		fclose((FILE*)po->rawptr);
@@ -642,7 +642,7 @@ static void File_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 	}
 }
 
-DEFAPI(void) defFile(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defFile(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "File";
 	cdef->init = File_init;
@@ -653,10 +653,10 @@ DEFAPI(void) defFile(CTX ctx, kclass_t cid, kClassDef *cdef)
 //## @Native @Throwable DFile System.fopen(Path path, String mode);
 KMETHOD System_fopen(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	const char *mode = IS_NULL(sfp[2].s) ? "r" : S_totext(sfp[2].s);
 	FILE *fp = fopen(pth->ospath, mode);
-	knh_RawPtr_t *po = new_ReturnCppObject(ctx, sfp, fp, NULL/*ignored*/);
+	kRawPtr *po = new_ReturnCppObject(ctx, sfp, fp, NULL/*ignored*/);
 	KNH_NTRACE2(ctx, "fopen", (fp != NULL) ? K_OK : K_PERROR, KNH_LDATA(
 				LOG_s("path", S_totext(pth->urn)), LOG_s("ospath", pth->ospath),
 				LOG_s("mode", mode)
@@ -667,7 +667,7 @@ KMETHOD System_fopen(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native @Restricted boolean System.chmod(Path path, int mode);
 KMETHOD System_chmod(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	mode_t mode = Int_to(mode_t, sfp[2]);
 	int ret = -1;
 	if (mode <= 07777) { // including set-user-ID + set-group-ID + stkckybit
@@ -683,7 +683,7 @@ KMETHOD System_chmod(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native @Restricted boolean System.chown(Path path, int owner, int group);
 KMETHOD System_chown(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	uid_t owner = Int_to(uid_t, sfp[2]);
 	gid_t group = Int_to(gid_t, sfp[3]);
 	int ret = chown(pth->ospath, owner, group);
@@ -697,7 +697,7 @@ KMETHOD System_chown(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native @Restricted boolean System.access(Path path);
 KMETHOD System_access(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	mode_t mode = Int_to(mode_t, sfp[2]);
 	int ret = access(pth->ospath, mode);
 	KNH_NTRACE2(ctx, "access", ret == 0 ? K_OK : K_PERROR, KNH_LDATA(
@@ -719,7 +719,7 @@ KMETHOD System_sync(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native Map System.truncate(Path path, int length);
 KMETHOD System_truncate(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Path_t *pth = sfp[1].pth;
+	kPath *pth = sfp[1].pth;
 	int length = Int_to(int, sfp[2]);
 	int ret = truncate(pth->ospath, length);
 	KNH_NTRACE2(ctx, "truncate", (ret == 0) ? K_OK : K_PERROR, KNH_LDATA(
@@ -732,8 +732,8 @@ KMETHOD System_truncate(CTX ctx, ksfp_t *sfp _RIX)
 //## @Native Map System.stat(Path path);
 KMETHOD System_stat(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Map_t *mdata = KNH_TNULL(Map);
-	knh_Path_t *pth = sfp[1].pth;
+	kMap *mdata = KNH_TNULL(Map);
+	kPath *pth = sfp[1].pth;
 	struct stat fbuf = {0};
 	int ret = lstat(pth->ospath, &fbuf);
 	KNH_NTRACE2(ctx, "stat", (ret != -1) ? K_OK : K_PERROR, KNH_LDATA(
@@ -804,7 +804,7 @@ KMETHOD File_read(CTX ctx, ksfp_t *sfp _RIX)
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
 	if(fp != NULL) {
-		knh_Bytes_t *ba = sfp[1].ba;
+		kBytes *ba = sfp[1].ba;
 		size_t offset = (size_t)sfp[2].ivalue;
 		size_t len = (size_t)sfp[3].ivalue;
 		size = BA_size(ba);
@@ -834,7 +834,7 @@ KMETHOD File_write(CTX ctx, ksfp_t *sfp _RIX)
 	FILE *fp = (FILE*)sfp[0].p->rawptr;
 	size_t size = 0;
 	if(fp != NULL) {
-		knh_Bytes_t *ba = sfp[1].ba;
+		kBytes *ba = sfp[1].ba;
 		size_t offset = (size_t)sfp[2].ivalue;
 		size_t len = (size_t)sfp[3].ivalue;
 		size = BA_size(ba);
@@ -1050,7 +1050,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 	RETURN_PKGINFO("konoha.posix");
 }
 
-//DEFAPI(void) SystemCONST(CTX ctx, const knh_LoaderAPI_t *kapi, knh_NameSpace_t *ns)
+//DEFAPI(void) SystemCONST(CTX ctx, const knh_LoaderAPI_t *kapi, kNameSpace *ns)
 //{
 //	kapi->loadIntData(ctx, ns, IntConstData);
 //}

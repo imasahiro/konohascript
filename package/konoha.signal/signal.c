@@ -30,7 +30,7 @@
 //  chen_ji - Takuma Wakamori, Yokohama National University, Japan
 // **************************************************************************
 
-#define USE_STRUCT_Func
+#define K_INTERNAL
 #include <konoha1.h>
 #include <signal.h>
 #include <unistd.h>
@@ -83,7 +83,7 @@ static knh_IntData_t SignalConstInt[] = {
 	{NULL, 0}, //necessary for checking rnd of definition
 };
 
-static knh_context_t* (*getCurrentContext)(void);
+static kcontext_t* (*getCurrentContext)(void);
 
 void signal_handler(int signum)
 {
@@ -100,8 +100,8 @@ KMETHOD Signal_signal(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int signum = Int_to(int, sfp[1]);
 	if(ctx->sighandlers == NULL) {
-		WCTX(ctx)->sighandlers = KNH_MALLOC(ctx, sizeof(knh_Func_t*) * K_SIGNAL_MAX);
-		knh_bzero(ctx->sighandlers, sizeof(knh_Func_t*) * K_SIGNAL_MAX);
+		WCTX(ctx)->sighandlers = KNH_MALLOC(ctx, sizeof(kFunc*) * K_SIGNAL_MAX);
+		knh_bzero(ctx->sighandlers, sizeof(kFunc*) * K_SIGNAL_MAX);
 	}
 	if(unlikely(!(0 <= signum && signum < K_SIGNAL_MAX))) {
 		THROW_OutOfRange(ctx, sfp, signum, K_SIGNAL_MAX);
@@ -156,7 +156,7 @@ KMETHOD Signal_alarm(CTX ctx, ksfp_t *sfp _RIX)
 // [DEFAPI]
 
 
-DEFAPI(void) defSignal(CTX ctx, kclass_t cid, kClassDef *cdef)
+DEFAPI(void) defSignal(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Signal";
 }

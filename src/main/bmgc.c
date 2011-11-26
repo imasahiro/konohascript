@@ -547,7 +547,7 @@ static inline void do_free(void *ptr, size_t size)
 }
 
 /* bmgc */
-static knh_Object_t *bm_malloc_internal(CTX, HeapManager *mng, size_t n);
+static kObject *bm_malloc_internal(CTX, HeapManager *mng, size_t n);
 void *bm_malloc(CTX ctx, size_t n);
 void *bm_realloc(CTX ctx, void *ptr, size_t os, size_t ns);
 void bm_free(CTX ctx, void *ptr, size_t n);
@@ -559,7 +559,7 @@ static void dumpBM(uintptr_t bm) CC_UNUSED;
 static void HeapManager_init(CTX ctx, HeapManager *mng, size_t heap_size);
 static void HeapManager_delete(CTX ctx, HeapManager *mng);
 static void HeapManager_final_free(CTX ctx, HeapManager *mng);
-static inline void bmgc_Object_free(CTX ctx, knh_Object_t *o);
+static inline void bmgc_Object_free(CTX ctx, kObject *o);
 
 static GCInfo *BMGC_init(CTX ctx)
 {
@@ -765,7 +765,7 @@ static BlkPtr *blockAddress(Segment *s, uintptr_t idx, uintptr_t mask)
 
 #if GCDEBUG
 #define DBG_ALLOCATION_POINTER(p) do {\
-    knh_Object_t *o = blockAddress(p->seg, BP(p, 0).idx, BP(p, 0).mask);\
+    kObject *o = blockAddress(p->seg, BP(p, 0).idx, BP(p, 0).mask);\
     if (o->h.meta == NULL) {\
         fprintf(stderr, "o=%p, seg=%p\n", o, p->seg);\
         assert(o->h.meta == NULL);\
@@ -973,7 +973,7 @@ static SubHeap *findSubHeapBySize(HeapManager *mng, size_t n)
 #endif
 
 #if GCDEBUG
-static bool CHECK_OBJECT(SubHeap *h, knh_Object_t *o, size_t request_size)
+static bool CHECK_OBJECT(SubHeap *h, kObject *o, size_t request_size)
 {
     short *gcinfo = (short*) &o->h.gcinfo;
     if (gcinfo[0] > 0) {
@@ -990,7 +990,7 @@ static bool CHECK_OBJECT(SubHeap *h, knh_Object_t *o, size_t request_size)
 #endif
 
 #if GCDEBUG
-static void DBG_CHECK_OBJECT(SubHeap *h, knh_Object_t *o, size_t request_size, bool write)
+static void DBG_CHECK_OBJECT(SubHeap *h, kObject *o, size_t request_size, bool write)
 {
     short *gcinfo = (short*) &o->h.gcinfo;
     if (CHECK_OBJECT(h, o, request_size)) {
@@ -1008,14 +1008,14 @@ static void DBG_CHECK_OBJECT(SubHeap *h, knh_Object_t *o, size_t request_size, b
 #endif
 
 #if GCDEBUG
-static bool DBG_CHECK_OBJECT_IN_SEGMENT(knh_Object_t *o, Segment *seg)
+static bool DBG_CHECK_OBJECT_IN_SEGMENT(kObject *o, Segment *seg)
 {
-    knh_Object_t *s = (knh_Object_t *) seg->managed_heap;
-    knh_Object_t *e = (knh_Object_t *) seg->managed_heap_end;
+    kObject *s = (kObject *) seg->managed_heap;
+    kObject *e = (kObject *) seg->managed_heap_end;
     return (s < o && o < e);
 }
 
-static bool DBG_CHECK_OBJECT_IN_HEAP(knh_Object_t *o, SubHeap *h)
+static bool DBG_CHECK_OBJECT_IN_HEAP(kObject *o, SubHeap *h)
 {
     Segment *seg = h->p.seg;
     if (DBG_CHECK_OBJECT_IN_SEGMENT(o, seg))
@@ -1029,15 +1029,15 @@ static bool DBG_CHECK_OBJECT_IN_HEAP(knh_Object_t *o, SubHeap *h)
 #define DBG_CHECK_OBJECT_IN_HEAP(o, h) true
 #endif
 
-static void deferred_sweep(CTX ctx, knh_Object_t *o)
+static void deferred_sweep(CTX ctx, kObject *o)
 {
     bmgc_Object_free(ctx, o);
     CLEAR_GCINFO(o);
 }
 
-static knh_Object_t *bm_malloc_internal(CTX ctx, HeapManager *mng, size_t n)
+static kObject *bm_malloc_internal(CTX ctx, HeapManager *mng, size_t n)
 {
-    knh_Object_t *temp = NULL;
+    kObject *temp = NULL;
     SubHeap *h;
 
     DBG_ASSERT(n != 0);
@@ -1089,18 +1089,18 @@ static void clearAllBitMapsAndCount(HeapManager *mng, SubHeap *h)
     BM_SET(bm, mask);\
 } while(0)
 
-static knh_Object_t *indexToAddr(Segment *seg, uintptr_t idx, uintptr_t mask)
+static kObject *indexToAddr(Segment *seg, uintptr_t idx, uintptr_t mask)
 {
     const BlkPtr *ptr = seg->blk;
     size_t size = seg->heap_klass;
     size_t n = idx * BITS + FFS(mask) - 1;
     size_t offset = n << size;
-    return (knh_Object_t*)((char*)ptr+offset);
+    return (kObject*)((char*)ptr+offset);
 }
 
 static void b0_final_sweep(CTX ctx, bitmap_t bm, size_t idx, Segment *seg)
 {
-    knh_Object_t *o;
+    kObject *o;
     bitmap_t mask = 1;
     NEXT_MASK(bm, mask);
     while (mask) {
@@ -1263,7 +1263,7 @@ static void bitmap_mark(bitmap_t bm, Segment *seg, uintptr_t idx, uintptr_t mask
     }
 }
 
-static void mark_ostack(CTX ctx, HeapManager *mng, knh_Object_t *o, knh_ostack_t *ostack)
+static void mark_ostack(CTX ctx, HeapManager *mng, kObject *o, knh_ostack_t *ostack)
 {
     Segment *seg;
     int index, klass;
@@ -1291,7 +1291,7 @@ static void mark_ostack(CTX ctx, HeapManager *mng, knh_Object_t *o, knh_ostack_t
 }
 
 #define context_reset_refs(ctx) do {\
-    knh_context_t *wctx = (knh_context_t*) ctx;\
+    kcontext_t *wctx = (kcontext_t*) ctx;\
     wctx->refs = wctx->ref_buf;\
     wctx->ref_size = 0;\
 } while (0)
@@ -1300,7 +1300,7 @@ static void bmgc_gc_mark(CTX ctx, HeapManager *mng, int needsCStackTrace)
 {
     long i;
     knh_ostack_t ostackbuf, *ostack = ostack_init(ctx, &ostackbuf);
-    knh_Object_t *ref = NULL, **reftail = NULL;
+    kObject *ref = NULL, **reftail = NULL;
 
     knh_ensurerefs(ctx, ctx->ref_buf, K_PAGESIZE);
     context_reset_refs(ctx);
@@ -1333,7 +1333,7 @@ void *bm_malloc(CTX ctx, size_t n)
 void bm_free(CTX ctx, void *ptr, size_t n)
 {
     if (n <= SUBHEAP_KLASS_SIZE_MAX) {
-        knh_Object_t *o = (knh_Object_t *) ptr;
+        kObject *o = (kObject *) ptr;
         Segment *seg;
         uintptr_t bpidx, bpmask, index, klass;
         OBJECT_LOAD_BLOCK_INFO(o, seg, index, klass);
@@ -1345,7 +1345,7 @@ void bm_free(CTX ctx, void *ptr, size_t n)
         seg->live_count -= 1;
         KNH_TODO("");
         bitmap_mark(*bm, seg, bpidx, bpmask);
-        CLEAR_GCINFO((knh_Object_t*)ptr);
+        CLEAR_GCINFO((kObject*)ptr);
     } else {
         do_free(ptr, n);
     }
@@ -1476,16 +1476,16 @@ void knh_initFirstObjectArena(CTX ctx)
 {
     ctx->stat->gcObjectCount -= K_GC_MARGIN;
     ctx->stat->latestGcTime = knh_getTimeMilliSecond();
-    ((knh_context_t*)ctx)->freeObjectList = (knh_Object_t *) BMGC_init(ctx);
+    ((kcontext_t*)ctx)->freeObjectList = (kObject *) BMGC_init(ctx);
 }
 
 void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSize)
 {
     BMGC_exit(ctx, GCDATA(ctx));
-    ((knh_context_t*)ctx)->freeObjectList = NULL;
+    ((kcontext_t*)ctx)->freeObjectList = NULL;
 }
 
-kbool_t knh_isObject(CTX ctx, knh_Object_t *o)
+kbool_t knh_isObject(CTX ctx, kObject *o)
 {
     HeapManager *mng = (HeapManager*) GCDATA(ctx);
 
@@ -1493,8 +1493,8 @@ kbool_t knh_isObject(CTX ctx, knh_Object_t *o)
     if ((uintptr_t) o % KlassBlockSize(SUBHEAP_KLASS_MIN) != 0)
         return false;
     FOR_EACH_ARRAY_(mng->managed_heap_a, i) {
-        knh_Object_t *s = (knh_Object_t *) ARRAY_n(mng->managed_heap_a, i);
-        knh_Object_t *e = (knh_Object_t *) ARRAY_n(mng->managed_heap_end_a, i);
+        kObject *s = (kObject *) ARRAY_n(mng->managed_heap_a, i);
+        kObject *e = (kObject *) ARRAY_n(mng->managed_heap_end_a, i);
         if (s < o && o < e) {
             Segment *seg;
             uintptr_t klass, index;
@@ -1531,10 +1531,10 @@ kbool_t knh_isObject(CTX ctx, knh_Object_t *o)
     knh_Object_RCset(o, K_RCGC_INIT);\
 } while(0)
 
-knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
+kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 {
     DBG_ASSERT(ct->struct_size > 0);
-    knh_Object_t *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
+    kObject *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
     OBJECT_INIT(o, ct);
     GC_SAFEPOINT(ctx);
     STAT_Object(ctx, ct);
@@ -1542,10 +1542,10 @@ knh_Object_t *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
     return o;
 }
 
-knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
+kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 {
     DBG_ASSERT(ct->struct_size > 0);
-    knh_Object_t *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
+    kObject *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
     OBJECT_INIT(o, ct);
     ct->cdef->init(ctx, RAWPTR(o));
     GC_SAFEPOINT(ctx);
@@ -1554,10 +1554,10 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
     return o;
 }
 
-void TR_NEW(CTX ctx, ksfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+void TR_NEW(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
 {
     DBG_ASSERT(ct->struct_size > 0);
-    knh_Object_t *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
+    kObject *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
     OBJECT_INIT(o, ct);
     ct->cdef->init(ctx, RAWPTR(o));
     GC_SAFEPOINT(ctx);
@@ -1582,7 +1582,7 @@ static void stat_report_memory_usage(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
-static inline void bmgc_Object_free(CTX ctx, knh_Object_t *o)
+static inline void bmgc_Object_free(CTX ctx, kObject *o)
 {
     const knh_ClassTBL_t *ct = O_cTBL(o);
     if (ct) {

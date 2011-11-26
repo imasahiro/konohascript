@@ -37,7 +37,7 @@ extern "C" {
 
 #include<sqlite3.h>
 
-static sqlite3 *SQLITE3_qopen(CTX ctx, knh_Path_t *path)
+static sqlite3 *SQLITE3_qopen(CTX ctx, kPath *path)
 {
 	sqlite3 *qconn = NULL;
 	int r = sqlite3_open(path->ospath, &qconn);
@@ -47,14 +47,14 @@ static sqlite3 *SQLITE3_qopen(CTX ctx, knh_Path_t *path)
 	return qconn;
 }
 
-//static void SQLITE3_qclose(CTX ctx, knh_Path_t *path, sqlite3 *qconn)
+//static void SQLITE3_qclose(CTX ctx, kPath *path, sqlite3 *qconn)
 //{
 //	sqlite3_close(qconn);
 //}
 
 static void SQLITE3_qfree(void *qcur)
 {
-	knh_nitr_t *m = (knh_nitr_t*)qcur;
+	knitr_t *m = (knitr_t*)qcur;
 	sqlite3_finalize((sqlite3_stmt*)m->qstmt);
 	sqlite3_close((sqlite3*)m->qconn);
 	m->nfree = NULL;
@@ -66,7 +66,7 @@ typedef ITRNEXT (*fsqlite3_next)(CTX, ksfp_t *, sqlite3_stmt* _RIX);
 static ITRNEXT nextData(CTX ctx, ksfp_t *sfp, sqlite3_stmt *stmt _RIX)
 {
 	size_t i, column_size = (size_t)sqlite3_column_count(stmt);
-	knh_Map_t *dmap = new_DataMap(ctx);
+	kMap *dmap = new_DataMap(ctx);
 	for(i = 0; i < column_size; i++) {
 		const char *name = (const char*)sqlite3_column_name(stmt, i);
 		int type = sqlite3_column_type(stmt, i);
@@ -98,12 +98,12 @@ static ITRNEXT nextData(CTX ctx, ksfp_t *sfp, sqlite3_stmt *stmt _RIX)
 
 static ITRNEXT SQLITE3_next(CTX ctx, ksfp_t *sfp, fsqlite3_next fnext _RIX)
 {
-	knh_Iterator_t *itr = ITR(sfp);
+	kIterator *itr = ITR(sfp);
 	sqlite3_stmt *stmt = DP(itr)->m.qstmt;
 	if(stmt == NULL) {
-		knh_View_t *view = (knh_View_t*)DP(itr)->source;
+		kView *view = (kView*)DP(itr)->source;
 		sqlite3 *qconn = SQLITE3_qopen(ctx, view->path);
-		knh_String_t *query = knh_View_getQuery(ctx, view);
+		kString *query = knh_View_getQuery(ctx, view);
 		if(qconn == NULL) {
 			ITREND_();
 		}
@@ -125,18 +125,18 @@ static ITRNEXT SQLITE3_nextData(CTX ctx, ksfp_t *sfp _RIX)
 	return SQLITE3_next(ctx, sfp, nextData, K_RIX);
 }
 
-static const knh_PathDPI_t STREAM_SQLITE3 = {
-	K_STREAM_NET, "NOFILE", K_PAGESIZE,
-	NOFILE_exists, NOFILE_ospath, NOFILE_openNULL,
-//	NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close,
-//	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
-	SQLITE3_nextData,
-};
+//static const knh_PathDPI_t STREAM_SQLITE3 = {
+//	K_STREAM_NET, "NOFILE", K_PAGESIZE,
+//	NOFILE_exists, NOFILE_ospath, NOFILE_openNULL,
+////	NOFILE_open, NOFILE_read, NOFILE_write, NOFILE_close,
+////	NOFILE_info, NOFILE_getc, NOFILE_readline, NOFILE_feof, NOFILE_flush,
+//	SQLITE3_nextData,
+//};
 
-void knh_loadSystemQueryDriver(CTX ctx, knh_NameSpace_t *ns)
+void knh_loadSystemQueryDriver(CTX ctx, kNameSpace *ns)
 {
-	const knh_LoaderAPI_t *api = knh_getLoaderAPI();
-	api->addStreamDPI(ctx, "sqlite3", &STREAM_SQLITE3);
+//	const knh_LoaderAPI_t *api = knh_getLoaderAPI();
+//	api->addStreamDPI(ctx, "sqlite3", &STREAM_SQLITE3);
 }
 
 /* ------------------------------------------------------------------------ */
