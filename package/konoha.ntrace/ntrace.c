@@ -37,7 +37,7 @@ extern "C" {
 #endif
 
 //@Native @Public System.ntrace_notice(String title, Map ldata);
-KMETHOD System_ntraceNotice (CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_ntraceNotice (CTX ctx, ksfp_t *sfp _RIX)
 {
 	char *title = String_to(char *, sfp[1]);
 	knh_Map_t *mdata = sfp[2].m;
@@ -45,13 +45,13 @@ KMETHOD System_ntraceNotice (CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_ldata_t log_buffer[64] = {0};
 	int logidx = 0;
 	// suppose p1 is "String"
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	while(mdata->spi->next(ctx, mapptr, mitr, lsfp)) {
 		knh_String_t *key = lsfp[0].s;
 		knh_Object_t *value = knh_DictMap_getNULL(ctx, (knh_DictMap_t*)mdata, S_tobytes(key));
-		knh_class_t cid = O_cid(value);
+		kclass_t cid = O_cid(value);
 		if (cid == CLASS_Int) {
 			knh_ldata_t item[] = {LOG_i(S_totext(key), N_toint(value))};
 			log_buffer[logidx++] = item[0];
@@ -78,7 +78,7 @@ KMETHOD System_ntraceNotice (CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public System.ntrace_ok(String title, Map ldata);
-KMETHOD System_ntraceOk (CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_ntraceOk (CTX ctx, ksfp_t *sfp _RIX)
 {
 	char *title = String_to(char *, sfp[1]);
 	knh_Map_t *mdata = sfp[2].m;
@@ -86,13 +86,13 @@ KMETHOD System_ntraceOk (CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_ldata_t log_buffer[64] = {0};
 	int logidx = 0;
 	// suppose p1 is "String"
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	while(mdata->spi->next(ctx, mapptr, mitr, lsfp)) {
 		knh_String_t *key = lsfp[0].s;
 		knh_Object_t *value = knh_DictMap_getNULL(ctx, (knh_DictMap_t*)mdata, S_tobytes(key));
-		knh_class_t cid = O_cid(value);
+		kclass_t cid = O_cid(value);
 		if (cid == CLASS_Int) {
 			knh_ldata_t item[] = {LOG_i(S_totext(key), N_toint(value))};
 			log_buffer[logidx++] = item[0];
@@ -119,7 +119,7 @@ KMETHOD System_ntraceOk (CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public System.ntrace_failed(String title, Map ldata);
-KMETHOD System_ntraceFailed (CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_ntraceFailed (CTX ctx, ksfp_t *sfp _RIX)
 {
 	char *title = String_to(char *, sfp[1]);
 	knh_Map_t *mdata = sfp[2].m;
@@ -127,13 +127,13 @@ KMETHOD System_ntraceFailed (CTX ctx, knh_sfp_t *sfp _RIX)
 	knh_ldata_t log_buffer[64] = {0};
 	int logidx = 0;
 	// suppose p1 is "String"
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	while(mdata->spi->next(ctx, mapptr, mitr, lsfp)) {
 		knh_String_t *key = lsfp[0].s;
 		knh_Object_t *value = knh_DictMap_getNULL(ctx, (knh_DictMap_t*)mdata, S_tobytes(key));
-		knh_class_t cid = O_cid(value);
+		kclass_t cid = O_cid(value);
 		if (cid == CLASS_Int) {
 			knh_ldata_t item[] = {LOG_i(S_totext(key), N_toint(value))};
 			log_buffer[logidx++] = item[0];

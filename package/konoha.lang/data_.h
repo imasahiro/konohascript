@@ -4,9 +4,9 @@
 #define _DEF   (1<<2)
 typedef struct {
 	const char *name;
-	knh_flag_t   flag;
-	knh_ushort_t size;
-	knh_ushort_t types[6];
+	kflag_t   flag;
+	kushort_t size;
+	kushort_t types[6];
 } knh_OPDATA_t;
 
 static const knh_OPDATA_t OPDATA[] = {

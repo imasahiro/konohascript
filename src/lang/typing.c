@@ -106,23 +106,23 @@ static inline void Stmt_toSTT(knh_StmtExpr_t *stmt, knh_term_t stt)
 	STT_(stmt) = stt;
 }
 
-static inline knh_Term_t *Stmt_typed(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t type)
+static inline knh_Term_t *Stmt_typed(CTX ctx, knh_StmtExpr_t *stmt, ktype_t type)
 {
 	SP(stmt)->type = type;
 	return (knh_Term_t*)stmt;
 }
 
-static knh_Term_t *new_StmtBOX(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
+static knh_Term_t *new_StmtBOX(CTX ctx, knh_Term_t *tk, ktype_t reqt)
 {
 	knh_StmtExpr_t *stmt = new_Stmt2(ctx, STT_BOX, tk, NULL);
 	return Stmt_typed(ctx, stmt, reqt);
 }
 
-static void Stmt_boxAll(CTX ctx, knh_StmtExpr_t *stmt, size_t s, size_t e, knh_type_t reqt)
+static void Stmt_boxAll(CTX ctx, knh_StmtExpr_t *stmt, size_t s, size_t e, ktype_t reqt)
 {
 	size_t i;
 	for(i = s; i < e; i++) {
-		knh_class_t bcid = C_bcid(Tn_cid(stmt, i));
+		kclass_t bcid = C_bcid(Tn_cid(stmt, i));
 		if(bcid == CLASS_Int || bcid == CLASS_Float || bcid == CLASS_Boolean) {
 			if(TT_(tkNN(stmt, i)) == TT_CONST) {
 				tkNN(stmt, i)->type = reqt;  // re-typing as boxed value
@@ -134,10 +134,10 @@ static void Stmt_boxAll(CTX ctx, knh_StmtExpr_t *stmt, size_t s, size_t e, knh_t
 	}
 }
 
-static knh_Term_t* TERROR_Stmt(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t reqt)
+static knh_Term_t* TERROR_Stmt(CTX ctx, knh_StmtExpr_t *stmt, size_t n, ktype_t reqt)
 {
 	knh_Term_t *tkERR = NULL;
-	knh_type_t type = TYPE_void;
+	ktype_t type = TYPE_void;
 	if(n < DP(stmt)->size) {
 		type = Tn_type(stmt, n);
 	}
@@ -169,20 +169,20 @@ static knh_Term_t* TERROR_Stmt(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type
 #define ERROR_IF(c)     if(c)  goto L_ERROR;
 #define PERROR_IF(c)    if(c)  goto L_PERROR;
 
-static knh_Term_t *Term_typing(CTX ctx, knh_Term_t *tk, knh_type_t tcid);
+static knh_Term_t *Term_typing(CTX ctx, knh_Term_t *tk, ktype_t tcid);
 static knh_Term_t *Stmt_typing(CTX ctx, knh_StmtExpr_t *stmt, int needsReturn);
-static knh_Term_t *CALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t tcid);
-static knh_Term_t *EXPR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t tcid);
-static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid, knh_class_t new_cid, knh_Method_t *mtd);
+static knh_Term_t *CALL_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t tcid);
+static knh_Term_t *EXPR_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t tcid);
+static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t tcid, kclass_t new_cid, knh_Method_t *mtd);
 
-static knh_Term_t *new_TermDYNCAST(CTX ctx, knh_class_t tcid, knh_methodn_t mn, knh_Term_t *tkO);
-static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t tcid, knh_TypeMap_t *mpr, knh_Term_t *tkO);
+static knh_Term_t *new_TermDYNCAST(CTX ctx, kclass_t tcid, kmethodn_t mn, knh_Term_t *tkO);
+static knh_Term_t *new_TermTCAST(CTX ctx, kclass_t tcid, knh_TypeMap_t *mpr, knh_Term_t *tkO);
 
-knh_Term_t* Tn_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag)
+knh_Term_t* Tn_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t n, ktype_t reqt, kflag_t opflag)
 {
-	knh_flag_t flagorig = DP(ctx->gma)->flag;
+	kflag_t flagorig = DP(ctx->gma)->flag;
 	knh_Term_t *tk = tkNN(stmt, n), *tkRES = NULL;
-	knh_type_t vart = TYPE_void;
+	ktype_t vart = TYPE_void;
 	DBG_ASSERT(STT_(stmt) != STT_ERR);
 	if(FLAG_is(opflag, _NOWARN)) {
 		DBG_P("@@ NOWARN stt=%s n=%d, reqt=%s, vart=%s", TT__(SP(stmt)->stt), (int)n, TYPE__(reqt), TYPE__(vart));
@@ -286,7 +286,7 @@ knh_Term_t* Tn_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t reqt, 
 
 #define IS_SCRIPTLEVEL(ctx)       IS_NULL(DP(ctx->gma)->mtd)
 
-#define GammaBuilder_type(ctx, type)  knh_type_tocid(ctx, type, DP(ctx->gma)->this_cid)
+#define GammaBuilder_type(ctx, type)  ktype_tocid(ctx, type, DP(ctx->gma)->this_cid)
 
 /* ----------------------------------------------------------------------- */
 /* [Term] */
@@ -313,7 +313,7 @@ static knh_Term_t* new_TermCONST_(CTX ctx, dynamic *data)
 	return tk;
 }
 
-static void Term_setMethod(CTX ctx, knh_Term_t *tk, knh_methodn_t mn, knh_Method_t *mtd)
+static void Term_setMethod(CTX ctx, knh_Term_t *tk, kmethodn_t mn, knh_Method_t *mtd)
 {
 	TT_(tk) = TT_MN;
 	(tk)->mn = mn;
@@ -323,27 +323,27 @@ static void Term_setMethod(CTX ctx, knh_Term_t *tk, knh_methodn_t mn, knh_Method
 	}
 }
 
-knh_Term_t* knh_Term_toCID(CTX ctx, knh_Term_t *tk, knh_class_t cid)
+knh_Term_t* knh_Term_toCID(CTX ctx, knh_Term_t *tk, kclass_t cid)
 {
 	TK_typing(tk, TT_CID, CLASS_Class, cid);
 	return tk;
 }
 
-knh_Term_t* knh_Term_toTYPED(CTX ctx, knh_Term_t *tk, knh_term_t tt, knh_type_t type, knh_short_t nn)
+knh_Term_t* knh_Term_toTYPED(CTX ctx, knh_Term_t *tk, knh_term_t tt, ktype_t type, kshort_t nn)
 {
 	TK_typing(tk, tt, type, nn);
 	if(tt == TT_FIELD) {GammaBuilder_foundFIELD(ctx->gma, 1); }
 	return tk;
 }
 
-knh_Term_t* new_TermTYPED(CTX ctx, knh_term_t tt, knh_type_t type, knh_short_t nn)
+knh_Term_t* new_TermTYPED(CTX ctx, knh_term_t tt, ktype_t type, kshort_t nn)
 {
 	knh_Term_t *tk = new_(Term);
 	knh_Term_toTYPED(ctx, tk, tt, type, nn);
 	return tk;
 }
 
-knh_bool_t StmtMETA_is_(CTX ctx, knh_StmtExpr_t *stmt, knh_bytes_t name)
+kbool_t StmtMETA_is_(CTX ctx, knh_StmtExpr_t *stmt, kbytes_t name)
 {
 	if(IS_Map(DP(stmt)->metaDictCaseMap)) {
 		Object *v = knh_DictMap_getNULL(ctx, DP(stmt)->metaDictCaseMap, name);
@@ -377,7 +377,7 @@ ksymbol_t Term_fnq(CTX ctx, knh_Term_t *tk)
 	return fn;
 }
 
-static knh_methodn_t Term_mn(CTX ctx, knh_Term_t *tk)
+static kmethodn_t Term_mn(CTX ctx, knh_Term_t *tk)
 {
 	if(TT_(tk) == TT_FUNCNAME || TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME || TT_(tk) == TT_UFUNCNAME) {
 		TT_(tk) = TT_MN;
@@ -403,10 +403,10 @@ static knh_methodn_t Term_mn(CTX ctx, knh_Term_t *tk)
 	return (tk)->mn;
 }
 
-static knh_class_t TermPTYPE_cid(CTX ctx, knh_Term_t *tk, knh_class_t bcid)
+static kclass_t TermPTYPE_cid(CTX ctx, knh_Term_t *tk, kclass_t bcid)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
-	knh_class_t cid = bcid;
+	kclass_t cid = bcid;
 	LOCAL_NEW(ctx, lsfp, 0, knh_ParamArray_t*, pa, new_ParamArray(ctx));
 	knh_ParamArray_t *bpa = ClassTBL(bcid)->cparam;
 	size_t i;
@@ -414,7 +414,7 @@ static knh_class_t TermPTYPE_cid(CTX ctx, knh_Term_t *tk, knh_class_t bcid)
 	for(i = 1; i < knh_Array_size((tk)->list); i++) {
 		knh_Term_t *tkT = (tk)->list->terms[i];
 		if(TT_(tkT) == TT_DARROW) { i++; break; }
-		knh_type_t ptype = knh_Term_cid(ctx, tkT, CLASS_Tdynamic);
+		ktype_t ptype = knh_Term_cid(ctx, tkT, CLASS_Tdynamic);
 		if(ptype == TYPE_void) continue;
 		if(psize == 1 && (bcid == CLASS_Map || bcid == CLASS_Tuple)) {
 			knh_ParamArray_addParam(ctx, pa, CLASS_String, FN_k); // Tuple<T> => Tuple<String, T>
@@ -443,7 +443,7 @@ static knh_class_t TermPTYPE_cid(CTX ctx, knh_Term_t *tk, knh_class_t bcid)
 			p->fn = bp->fn;
 			if(bp->type == TYPE_dyn) continue;
 			if(p->type == bp->type) continue;
-			knh_class_t tcid = knh_type_tocid(ctx, p->type, DP(ctx->gma)->this_cid);
+			kclass_t tcid = ktype_tocid(ctx, p->type, DP(ctx->gma)->this_cid);
 			if(!class_isa(tcid, bp->type)) {
 				WARN_WrongTypeParam(ctx, bcid);
 				cid = bcid;
@@ -457,9 +457,9 @@ static knh_class_t TermPTYPE_cid(CTX ctx, knh_Term_t *tk, knh_class_t bcid)
 	return cid;
 }
 
-knh_class_t knh_Term_cid(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
+kclass_t knh_Term_cid(CTX ctx, knh_Term_t *tk, ktype_t reqt)
 {
-	knh_class_t cid = CLASS_unknown;
+	kclass_t cid = CLASS_unknown;
 	switch(TT_(tk)) {
 		case TT_CID : {
 			DBG_ASSERT((tk)->cid != CLASS_unknown);
@@ -506,7 +506,7 @@ knh_class_t knh_Term_cid(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
 		case TT_PTYPE: {
 			DBG_ASSERT(IS_Array((tk)->list));
 			knh_Term_t *tkC = tk->list->terms[0];
-			knh_class_t bcid = knh_Term_cid(ctx, tkC, CLASS_unknown);
+			kclass_t bcid = knh_Term_cid(ctx, tkC, CLASS_unknown);
 			if(bcid != CLASS_unknown && C_isGenerics(bcid)) {
 				cid = TermPTYPE_cid(ctx, tk, bcid);
 			}
@@ -531,9 +531,9 @@ knh_class_t knh_Term_cid(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
 	return cid;
 }
 
-static knh_Term_t *TTYPE_typing(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
+static knh_Term_t *TTYPE_typing(CTX ctx, knh_Term_t *tk, ktype_t reqt)
 {
-	knh_class_t cid = knh_Term_cid(ctx, tk, reqt);
+	kclass_t cid = knh_Term_cid(ctx, tk, reqt);
 	if(cid == CLASS_unknown) {
 		return ERROR_Undefined(ctx, "name", CLASS_unknown, tk);
 	}
@@ -558,7 +558,7 @@ static void *knh_loadGlueFunc(CTX ctx, const char *funcname, int isVerbose)
 	return f;
 }
 
-static knh_Fmethod GammaBuilder_loadMethodFunc(CTX ctx, knh_class_t cid, knh_methodn_t mn, int isNATIVE)
+static knh_Fmethod GammaBuilder_loadMethodFunc(CTX ctx, kclass_t cid, kmethodn_t mn, int isNATIVE)
 {
 	DBG_ASSERT_cid(cid);
 	char buf[80];
@@ -650,12 +650,12 @@ static knh_Term_t *GammaBuilder_tokenIDX(CTX ctx, knh_Term_t *tk)
 #define GF_FUNCVAR   (1<<2)
 #define GF_USEDCOUNT (1<<3)
 
-static knh_Term_t *GammaBuilder_add(CTX ctx, knh_flag_t flag, knh_Term_t *tkT, knh_Term_t *tkN, knh_Term_t *tkV, knh_flag_t op)
+static knh_Term_t *GammaBuilder_add(CTX ctx, kflag_t flag, knh_Term_t *tkT, knh_Term_t *tkN, knh_Term_t *tkV, kflag_t op)
 {
-	knh_index_t idx = 0;
+	kindex_t idx = 0;
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
 	ksymbol_t fn = Term_fn(ctx, tkN);
-	knh_type_t type = (tkT)->cid;
+	ktype_t type = (tkT)->cid;
 
 	if(FLAG_is(op, GF_UNIQUE)) {
 		for(idx = 0; idx < DP(ctx->gma)->gsize; idx++) {
@@ -702,9 +702,9 @@ static knh_Term_t *GammaBuilder_add(CTX ctx, knh_flag_t flag, knh_Term_t *tkT, k
 	return tkN;
 }
 
-static knh_Term_t *GammaBuilder_addLVAR(CTX ctx, knh_flag_t flag, knh_type_t type, ksymbol_t fn, int ucnt)
+static knh_Term_t *GammaBuilder_addLVAR(CTX ctx, kflag_t flag, ktype_t type, ksymbol_t fn, int ucnt)
 {
-	knh_index_t idx = DP(ctx->gma)->gsize;
+	kindex_t idx = DP(ctx->gma)->gsize;
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
 	knh_Term_t *tkIDX = new_TermTYPED(ctx, TT_LVAR, type, idx - DP(ctx->gma)->fvarsize);
 	if(!(idx < DP(ctx->gma)->gcapacity)) {
@@ -719,15 +719,15 @@ static knh_Term_t *GammaBuilder_addLVAR(CTX ctx, knh_flag_t flag, knh_type_t typ
 	return gf[idx].tkIDX;
 }
 
-static knh_Term_t *GammaBuilder_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t type, ksymbol_t fn, int ucnt)
+static knh_Term_t *GammaBuilder_addFVAR(CTX ctx, kflag_t flag, ktype_t type, ksymbol_t fn, int ucnt)
 {
-	knh_index_t idx = DP(ctx->gma)->fvarsize;
+	kindex_t idx = DP(ctx->gma)->fvarsize;
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
 	if(!(DP(ctx->gma)->gsize < DP(ctx->gma)->gcapacity)) {
 		gf = GammaBuilder_expand(ctx, ctx->gma, /*minimum*/4);
 	}
 	if(idx < DP(ctx->gma)->gsize) {
-		knh_index_t n = DP(ctx->gma)->gsize;
+		kindex_t n = DP(ctx->gma)->gsize;
 		knh_gamma2_t gftmp = gf[n];
 		for(; idx < n; n--) {
 			gf[n] = gf[n-1];
@@ -747,7 +747,7 @@ static knh_Term_t *GammaBuilder_addFVAR(CTX ctx, knh_flag_t flag, knh_type_t typ
 
 static knh_Term_t* GammaBuilder_rindexFNQ(CTX ctx, knh_GammaBuilder_t *gma, ksymbol_t fnq, int ucnt)
 {
-	knh_index_t idx;
+	kindex_t idx;
 	ksymbol_t fn = FN_UNMASK(fnq);
 	knh_gamma2_t *gf = DP(gma)->gf;
 	for(idx = DP(gma)->gsize - 1; idx >= 0; idx--) {
@@ -760,13 +760,13 @@ static knh_Term_t* GammaBuilder_rindexFNQ(CTX ctx, knh_GammaBuilder_t *gma, ksym
 	return NULL;
 }
 
-static knh_fields_t* class_rindexFNQ(CTX ctx, knh_class_t cid, ksymbol_t fnq, knh_index_t *n)
+static kfieldinfo_t* class_rindexFNQ(CTX ctx, kclass_t cid, ksymbol_t fnq, kindex_t *n)
 {
 	ksymbol_t fn = FN_UNMASK(fnq);
 	const knh_ClassTBL_t *t = ClassTBL(cid);
-	knh_index_t idx;
-	for(idx = (knh_index_t)t->fsize - 1; idx >= 0 ; idx--) {
-		knh_fields_t *cf = t->fields + idx;
+	kindex_t idx;
+	for(idx = (kindex_t)t->fsize - 1; idx >= 0 ; idx--) {
+		kfieldinfo_t *cf = t->fields + idx;
 		if(cf->fn == fn) {
 			*n = idx;
 			return cf;
@@ -777,7 +777,7 @@ static knh_fields_t* class_rindexFNQ(CTX ctx, knh_class_t cid, ksymbol_t fnq, kn
 
 #define MN_isNEW(mn)  MN_isNEW_(ctx, mn)
 
-static int MN_isNEW_(CTX ctx, knh_methodn_t mn)
+static int MN_isNEW_(CTX ctx, kmethodn_t mn)
 {
 	if(mn == MN_new) return 1;
 	if(!MN_isFMT(mn) && !MN_isGETTER(mn) && !MN_isSETTER(mn)) {
@@ -799,10 +799,10 @@ static int MN_isNEW_(CTX ctx, knh_methodn_t mn)
 #define _CHECKREADONLY  (1<<6)
 #define _TOERROR        (1<<7)
 
-static knh_class_t class_FuncType(CTX ctx, knh_class_t this_cid, knh_Method_t *mtd);
-static knh_Func_t * new_StaticFunc(CTX ctx, knh_class_t cid, knh_Method_t *mtd);
+static kclass_t class_FuncType(CTX ctx, kclass_t this_cid, knh_Method_t *mtd);
+static knh_Func_t * new_StaticFunc(CTX ctx, kclass_t cid, knh_Method_t *mtd);
 
-static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, knh_type_t reqt, knh_flag_t op)
+static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, ktype_t reqt, kflag_t op)
 {
 	ksymbol_t fnq = Term_fnq(ctx, tkN);
 	DBG_ASSERT(fnq != FN_NONAME);
@@ -819,7 +819,7 @@ static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, knh_type_t reqt, knh_f
 			}
 			if(DP(ctx->gma)->funcbase0 > 0) {
 				if(tkIDX->index < DP(ctx->gma)->funcbase0) {
-					int fi = tkIDX->index * (sizeof(knh_sfp_t)/sizeof(Object*));
+					int fi = tkIDX->index * (sizeof(ksfp_t)/sizeof(Object*));
 					if(IS_Tunbox(tkIDX->type)) fi += 1;
 					knh_Term_toTYPED(ctx, tkN, TT_FIELD, tkIDX->type, fi);
 					DBG_P("@@LEXICAL SCOPE IDX=%d", fi);
@@ -837,10 +837,10 @@ static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, knh_type_t reqt, knh_f
 	}
 	L_FIELD:;
 	if(FLAG_is(op, _FINDFIELD)) {
-		knh_index_t idx = -1;
-		knh_fields_t *cf = class_rindexFNQ(ctx, DP(ctx->gma)->this_cid, fnq, &idx);
+		kindex_t idx = -1;
+		kfieldinfo_t *cf = class_rindexFNQ(ctx, DP(ctx->gma)->this_cid, fnq, &idx);
 		if(cf != NULL) {
-			knh_type_t type = GammaBuilder_type(ctx, cf->type);
+			ktype_t type = GammaBuilder_type(ctx, cf->type);
 			if(FLAG_is(op, _CHECKREADONLY) && FLAG_is(cf->flag, _FREADONLY)) {
 				knh_Method_t *mtd = DP(ctx->gma)->mtd;
 				if(!MN_isNEW((mtd)->mn)) {
@@ -865,12 +865,12 @@ static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, knh_type_t reqt, knh_f
 	}
 	L_SCRIPT:;
 	if(FLAG_is(op, _FINDSCRIPT)) {
-		knh_class_t scrcid = O_cid(K_GMASCR);
+		kclass_t scrcid = O_cid(K_GMASCR);
 		if(DP(ctx->gma)->this_cid != scrcid) {
-			knh_index_t idx = -1;
-			knh_fields_t *cf = class_rindexFNQ(ctx, scrcid, fnq, &idx);
+			kindex_t idx = -1;
+			kfieldinfo_t *cf = class_rindexFNQ(ctx, scrcid, fnq, &idx);
 			if(cf != NULL) {
-				knh_type_t type = GammaBuilder_type(ctx, cf->type);
+				ktype_t type = GammaBuilder_type(ctx, cf->type);
 				knh_Term_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 				if(DP(ctx->gma)->tkScriptNC == NULL) {
 					DP(ctx->gma)->tkScriptNC = GammaBuilder_addFVAR(ctx, 0, scrcid, FN_, 1);
@@ -891,8 +891,8 @@ static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, knh_type_t reqt, knh_f
 	if(FLAG_is(op, _FINDFUNC)) { // TODO_AC
 		knh_Method_t *mtd = NULL;
 		knh_NameSpace_t *ns = K_GMANS;
-		knh_class_t this_cid = DP(ctx->gma)->this_cid;
-		knh_class_t mtd_cid = knh_NameSpace_getFuncClass(ctx, ns, fnq);
+		kclass_t this_cid = DP(ctx->gma)->this_cid;
+		kclass_t mtd_cid = knh_NameSpace_getFuncClass(ctx, ns, fnq);
 		if(mtd_cid != CLASS_unknown) {
 			mtd = knh_NameSpace_getMethodNULL(ctx, ns, mtd_cid, fnq);
 			if(!Method_isStatic(mtd)) mtd = NULL;
@@ -928,7 +928,7 @@ static knh_Term_t *TNAME_typing(CTX ctx, knh_Term_t *tkN, knh_type_t reqt, knh_f
 
 static knh_Term_t* Term_toSYSVAL(CTX ctx, knh_Term_t *tk)
 {
-	knh_bytes_t t = TK_tobytes(tk);
+	kbytes_t t = TK_tobytes(tk);
 	if(IS_SYSVAL(t, "CTX")) {
 		TK_typing(tk, TT_SYSVAL, TYPE_Context, K_SYSVAL_CTX);
 	}
@@ -985,7 +985,7 @@ static knh_Term_t* Term_toSYSVAL(CTX ctx, knh_Term_t *tk)
 
 static knh_Term_t* TUNAME_typing(CTX ctx, knh_Term_t *tk)
 {
-	knh_class_t cid = knh_Term_cid(ctx, tk, CLASS_unknown);
+	kclass_t cid = knh_Term_cid(ctx, tk, CLASS_unknown);
 	if(cid != CLASS_unknown) {
 		return knh_Term_toCID(ctx, tk, cid);
 	}
@@ -999,9 +999,9 @@ static knh_Term_t* TUNAME_typing(CTX ctx, knh_Term_t *tk)
 	return Term_toSYSVAL(ctx, tk);
 }
 
-static knh_Term_t* TPROPN_typing(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
+static knh_Term_t* TPROPN_typing(CTX ctx, knh_Term_t *tk, ktype_t reqt)
 {
-	knh_bytes_t t = S_tobytes((tk)->text);
+	kbytes_t t = S_tobytes((tk)->text);
 	if(B_endsWith(t, "*")) { /* name.* */
 		knh_StmtExpr_t *stmt =
 			new_Stmt2(ctx, STT_CALL, new_TermMN(ctx, MN_listProperties), new_TermCONST(ctx, KNH_NULL), tk, NULL);
@@ -1034,9 +1034,9 @@ static knh_Term_t* TPROPN_typing(CTX ctx, knh_Term_t *tk, knh_type_t reqt)
 /* [NUM] */
 
 #ifdef K_USING_SEMANTICS
-static knh_class_t knh_Term_tagcNUM(CTX ctx, knh_Term_t *tk, knh_class_t reqc, knh_NameSpace_t *ns)
+static kclass_t knh_Term_tagcNUM(CTX ctx, knh_Term_t *tk, kclass_t reqc, knh_NameSpace_t *ns)
 {
-	knh_bytes_t t = TK_tobytes(ctx, tk), tag = STEXT("");
+	kbytes_t t = TK_tobytes(ctx, tk), tag = STEXT("");
 	size_t i = 1;
 	int ishex = 0;
 	if(t.utext[0] == '0' && (t.utext[1] == 'x' || t.utext[1] == 'b')) {
@@ -1077,7 +1077,7 @@ static knh_class_t knh_Term_tagcNUM(CTX ctx, knh_Term_t *tk, knh_class_t reqc, k
 		return reqc;
 	}
 	else {
-		knh_class_t tagc = knh_NameSpace_tagcid(ctx, ns, reqc, tag);
+		kclass_t tagc = knh_NameSpace_tagcid(ctx, ns, reqc, tag);
 		if(tagc == CLASS_unknown) {
 			knh_GammaBuilder_perror(ctx, tk, KC_DWARN, _("unknown class tag: %L"), tk);
 			return reqc;
@@ -1090,7 +1090,7 @@ static knh_class_t knh_Term_tagcNUM(CTX ctx, knh_Term_t *tk, knh_class_t reqc, k
 
 /* ------------------------------------------------------------------------ */
 
-static knh_class_t bytes_guessNUMcid(CTX ctx, knh_bytes_t t)
+static kclass_t bytes_guessNUMcid(CTX ctx, kbytes_t t)
 {
 	size_t i;
 	if(t.utext[0] == '0' && (t.utext[1] == 'x' || t.utext[1]=='b')) {
@@ -1110,10 +1110,10 @@ static knh_class_t bytes_guessNUMcid(CTX ctx, knh_bytes_t t)
 	return CLASS_Int;
 }
 
-static knh_Term_t* NUM_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
+static knh_Term_t* NUM_typing(CTX ctx, knh_Term_t *tk, kclass_t reqt)
 {
-	knh_bytes_t t = TK_tobytes(tk);
-	knh_class_t breqc = C_bcid(reqt);
+	kbytes_t t = TK_tobytes(tk);
+	kclass_t breqc = C_bcid(reqt);
 	if(reqt == CLASS_Boolean) {
 		if(t.utext[0] == '0') {
 			WARN_MuchBetter(ctx, "false", "0");
@@ -1129,12 +1129,12 @@ static knh_Term_t* NUM_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
 		breqc = C_bcid(reqt);
 	}
 	if(breqc == CLASS_Float) {
-		knh_float_t n = K_FLOAT_ZERO;
+		kfloat_t n = KFLOAT_ZERO;
 		if(!knh_bytes_parsefloat(t, &n)) {
 			WARN_Overflow(ctx, "float", t);
 		}
 #if defined(K_USING_SEMANTICS)
-		knh_class_t tagc = knh_Term_tagcNUM(ctx, tk, reqc, ns);
+		kclass_t tagc = knh_Term_tagcNUM(ctx, tk, reqc, ns);
 		knh_Semantics_t *u = knh_getSemantics(ctx, tagc);
 		if(!DP(u)->ffchk(u, n)) {
 			knh_GammaBuilder_perror(ctx, KC_ERRATA, _("%C: out of range: %B ==> %O"), tagc, t, DP(u)->fvalue);
@@ -1148,12 +1148,12 @@ static knh_Term_t* NUM_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
 #endif/*K_USING_SEMANTICS*/
 	}
 	else { /* if(req_bcid == CLASS_Int) */
-		knh_int_t n = 0;
+		kint_t n = 0;
 		if(!knh_bytes_parseint(t, &n)) {
 			WARN_Overflow(ctx, "integer", t);
 		}
 #if defined(K_USING_SEMANTICS)
-		knh_class_t tagc = knh_Term_tagcNUM(ctx, tk, reqc, ns);
+		kclass_t tagc = knh_Term_tagcNUM(ctx, tk, reqc, ns);
 		knh_Semantics_t *u = knh_getSemantics(ctx, tagc);
 		if(!DP(u)->fichk(u, n)) {
 			knh_GammaBuilder_perror(ctx, KC_ERRATA, _("%C: out of range: %B ==> %O"), tagc, t, DP(u)->ivalue);
@@ -1168,18 +1168,18 @@ static knh_Term_t* NUM_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
 	}
 }
 
-static knh_Term_t* TSTR_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
+static knh_Term_t* TSTR_typing(CTX ctx, knh_Term_t *tk, kclass_t reqt)
 {
-	knh_bytes_t t = TK_tobytes(tk);
+	kbytes_t t = TK_tobytes(tk);
 	if(CLASS_t(reqt) != CLASS_String && knh_bytes_mlen(t) == 1) {
 		/* 'A' ==> int if not String */
-		knh_bytes_t sub = knh_bytes_mofflen(t, 0, 1);
-		return Term_setCONST(ctx, tk, new_Int_(ctx, CLASS_Int, knh_uchar_toucs4(&sub.utext[0])));
+		kbytes_t sub = knh_bytes_mofflen(t, 0, 1);
+		return Term_setCONST(ctx, tk, new_Int_(ctx, CLASS_Int, kchar_toucs4(&sub.utext[0])));
 	}
 	return Term_toCONST(ctx, tk);
 }
 
-static knh_bool_t bytes_isLONGFMT(knh_bytes_t t)
+static kbool_t bytes_isLONGFMT(kbytes_t t)
 {
 	size_t i = 0, size = t.len - 1;
 	if(t.len < 1) return 0;
@@ -1212,7 +1212,7 @@ static knh_bool_t bytes_isLONGFMT(knh_bytes_t t)
 	return 0;
 }
 
-static knh_class_t bytes_CFMT(knh_bytes_t t)
+static kclass_t bytes_CFMT(kbytes_t t)
 {
 	if(t.utext[0] == '%') {
 		int fmtidx = (isdigit(t.utext[1]) || t.utext[1] == ' ' || t.utext[1] == '.') ? t.len - 1 : 1;
@@ -1226,7 +1226,7 @@ static knh_class_t bytes_CFMT(knh_bytes_t t)
 	return CLASS_unknown;
 }
 
-static knh_methodn_t bytes_parsemn(CTX ctx, knh_bytes_t t)
+static kmethodn_t bytes_parsemn(CTX ctx, kbytes_t t)
 {
 	if(t.utext[0] == '%' && t.utext[1] != '%') {
 		size_t i;
@@ -1246,8 +1246,8 @@ static knh_methodn_t bytes_parsemn(CTX ctx, knh_bytes_t t)
 static knh_Term_t *W1_typing(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_Term_t *tkFMT = tkNN(stmt, 0);
-	knh_bytes_t fmt = S_tobytes((tkFMT)->text);
-	knh_class_t cid = bytes_CFMT(fmt);
+	kbytes_t fmt = S_tobytes((tkFMT)->text);
+	kclass_t cid = bytes_CFMT(fmt);
 	if(DP(stmt)->size > 3) {
 		WARN_TooMany(ctx, "parameters", fmt.text);
 		knh_StmtExpr_trimToSize(ctx, stmt, 3);
@@ -1265,7 +1265,7 @@ static knh_Term_t *W1_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	if(DP(stmt)->size == 3) { //"%bits" (a)
 		STT_(stmt) = STT_W1;
 		TYPING_UntypedExpr(ctx, stmt, 2);
-		knh_methodn_t mn = bytes_parsemn(ctx, fmt);
+		kmethodn_t mn = bytes_parsemn(ctx, fmt);
 		knh_Method_t *mtdf = knh_NameSpace_getFmtNULL(ctx, K_GMANS, Tn_cid(stmt, 2), mn);
 		if(mtdf != NULL) {
 			KNH_SETv(ctx, (tkFMT)->data, mtdf);
@@ -1303,7 +1303,7 @@ static knh_StmtExpr_t* new_StmtW1(CTX ctx, knh_Term_t *tkFMT, knh_Term_t *tkW, k
 static knh_Term_t *FMTCALL_typing(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_Term_t *tkFMT = tkNN(stmt, 0);
-	knh_bytes_t t = S_tobytes((tkFMT)->text);
+	kbytes_t t = S_tobytes((tkFMT)->text);
 	knh_StmtExpr_t *stmtHEAD = NULL, *stmtTAIL = NULL, *stmtW;
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	kline_t uline = tkFMT->uline;
@@ -1339,7 +1339,7 @@ static knh_Term_t *FMTCALL_typing(CTX ctx, knh_StmtExpr_t *stmt)
 				if(!isalnum(ch)) break;
 			}
 			DBG_P("nm last t[%d]=%c", i-1, t.utext[-1]);
-			knh_bytes_t name = {{t.text + s + 1}, i - (s + 1)};
+			kbytes_t name = {{t.text + s + 1}, i - (s + 1)};
 			knh_Term_t *tkN = new_(Term);
 			tkN->tt = isupper(t.text[0]) ? TT_UNAME : TT_NAME;
 			tkN->uline = uline;
@@ -1352,9 +1352,9 @@ static knh_Term_t *FMTCALL_typing(CTX ctx, knh_StmtExpr_t *stmt)
 				int ch = t.utext[i];
 				DBG_P("t[%d]=%c", i, ch);
 				if(ch == '{') {
-					knh_bytes_t mt = {{t.text + s}, i - s};
-					knh_bytes_t expr = {{t.text + (i+1)}, t.len - (i+1)};
-					knh_index_t loc = knh_bytes_index(expr, '}');
+					kbytes_t mt = {{t.text + s}, i - s};
+					kbytes_t expr = {{t.text + (i+1)}, t.len - (i+1)};
+					kindex_t loc = knh_bytes_index(expr, '}');
 					if(loc == -1) {
 						WarningIllegalFormatting(ctx, expr.text - 1);
 						DBG_P("unclosed }");
@@ -1403,10 +1403,10 @@ static knh_Term_t *FMTCALL_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	return new_TermCONST(ctx, TS_EMPTY);
 }
 
-static knh_Term_t *FMTOP_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t *FMTOP_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	knh_Term_t *tkFMT = tkNN(stmt, 0);
-	knh_bytes_t t = S_tobytes((tkFMT)->text);
+	kbytes_t t = S_tobytes((tkFMT)->text);
 	if(bytes_isLONGFMT(t)) {
 		return FMTCALL_typing(ctx, stmt);
 	}
@@ -1418,9 +1418,9 @@ static knh_Term_t *FMTOP_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 	}
 }
 
-static knh_Term_t* ESTR_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
+static knh_Term_t* ESTR_typing(CTX ctx, knh_Term_t *tk, kclass_t reqt)
 {
-	knh_bytes_t t = S_tobytes((tk)->text);
+	kbytes_t t = S_tobytes((tk)->text);
 	if(bytes_isLONGFMT(t)) {
 		knh_StmtExpr_t *stmt = new_Stmt2(ctx, STT_FUNCCALL, tk, new_(Term)/*ASIS*/, NULL);
 		return FMTOP_typing(ctx, stmt, reqt);
@@ -1430,7 +1430,7 @@ static knh_Term_t* ESTR_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
 	}
 }
 
-static knh_Term_t* TURN_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
+static knh_Term_t* TURN_typing(CTX ctx, knh_Term_t *tk, kclass_t reqt)
 {
 	if(reqt == TYPE_String) {
 		return Term_toCONST(ctx, tk);
@@ -1457,7 +1457,7 @@ static knh_Term_t* TURN_typing(CTX ctx, knh_Term_t *tk, knh_class_t reqt)
 }
 
 /* @see _EXPRCAST */
-static knh_Term_t* TLINK_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* TLINK_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	knh_Term_t *tkLNK = tkNN(stmt, 1);
 	knh_NameSpace_t *ns = K_GMANS;
@@ -1475,7 +1475,7 @@ static knh_Term_t* TLINK_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 	if(reqt == CLASS_Tdynamic || reqt == CLASS_Tvar || reqt == CLASS_Tvar) {
 		reqt = ct->cid;
 	}
-	knh_class_t cid = knh_ClassTBL_linkType(ctx, ct, reqt);
+	kclass_t cid = knh_ClassTBL_linkType(ctx, ct, reqt);
 	if(cid != CLASS_unknown) {
 		DBG_ASSERT(DP(stmt)->size == 3);
 		STT_(stmt) = STT_CALL;
@@ -1494,7 +1494,7 @@ static knh_Term_t* TLINK_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 /* ------------------------------------------------------------------------ */
 /* [Term] */
 
-static knh_Term_t *Term_typing(CTX ctx, knh_Term_t *tk, knh_type_t tcid)
+static knh_Term_t *Term_typing(CTX ctx, knh_Term_t *tk, ktype_t tcid)
 {
 	if(Term_isTyped(tk)) return tk;
 	if(tcid == TYPE_var || tcid == TYPE_void) tcid = TYPE_dyn;
@@ -1522,7 +1522,7 @@ static knh_Term_t *Term_typing(CTX ctx, knh_Term_t *tk, knh_type_t tcid)
 /* ------------------------------------------------------------------------ */
 /* STMT */
 
-static knh_type_t Method_lookupVariableType(CTX ctx, knh_Method_t *mtd, ksymbol_t fn)
+static ktype_t Method_lookupVariableType(CTX ctx, knh_Method_t *mtd, ksymbol_t fn)
 {
 	size_t i;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
@@ -1533,10 +1533,10 @@ static knh_type_t Method_lookupVariableType(CTX ctx, knh_Method_t *mtd, ksymbol_
 	return TYPE_var;
 }
 
-static knh_type_t Class_lookupVariableType(CTX ctx, knh_class_t cid, ksymbol_t fn)
+static ktype_t Class_lookupVariableType(CTX ctx, kclass_t cid, ksymbol_t fn)
 {
-	knh_index_t idx;
-	knh_fields_t *cf = class_rindexFNQ(ctx, cid, fn, &idx);
+	kindex_t idx;
+	kfieldinfo_t *cf = class_rindexFNQ(ctx, cid, fn, &idx);
 	if(cf != NULL) {
 		return cf->type;
 	}
@@ -1547,7 +1547,7 @@ static knh_type_t Class_lookupVariableType(CTX ctx, knh_class_t cid, ksymbol_t f
 			long i;
 			for(i = knh_Array_size(a) - 1; i >=0; i--) {
 				knh_Method_t *mtd = a->methods[i];
-				knh_type_t itype = Method_lookupVariableType(ctx, mtd, fn);
+				ktype_t itype = Method_lookupVariableType(ctx, mtd, fn);
 				if(itype != TYPE_var) return itype;
 			}
 		}
@@ -1558,10 +1558,10 @@ static knh_type_t Class_lookupVariableType(CTX ctx, knh_class_t cid, ksymbol_t f
 #define _VFINDTHIS          (1<<1)
 #define _VFINDSCRIPT        (1<<2)
 
-static knh_type_t GammaBuilder_lookupVariableType(CTX ctx, knh_Term_t *tkN, knh_flag_t op)
+static ktype_t GammaBuilder_lookupVariableType(CTX ctx, knh_Term_t *tkN, kflag_t op)
 {
-	knh_type_t itype = TYPE_var;  // if not found
-	knh_class_t this_cid = DP(ctx->gma)->this_cid;
+	ktype_t itype = TYPE_var;  // if not found
+	kclass_t this_cid = DP(ctx->gma)->this_cid;
 	ksymbol_t fn = Term_fn(ctx, tkN);
 	if(FLAG_is(op, _VFINDTHIS)) {
 		itype = Class_lookupVariableType(ctx, this_cid, fn);
@@ -1572,13 +1572,13 @@ static knh_type_t GammaBuilder_lookupVariableType(CTX ctx, knh_Term_t *tkN, knh_
 	return itype;
 }
 
-static knh_Term_t *DECL3_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t reqt, knh_flag_t opflag, int allowDynamic)
+static knh_Term_t *DECL3_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t n, ktype_t reqt, kflag_t opflag, int allowDynamic)
 {
 	knh_Term_t *tkT = TTYPE_typing(ctx, tkNN(stmt, n), reqt);
 	knh_Term_t *tkN = tkNN(stmt, n+1);
 	knh_Term_t *tkV = tkNN(stmt, n+2);
 	if((tkT)->cid == TYPE_var) {
-		knh_type_t itype = TYPE_var;
+		ktype_t itype = TYPE_var;
 		if(itype == TYPE_var && TT_(tkV) != TT_ASIS) {
 			TYPING(ctx, stmt, n+2, TYPE_var, _TINFER | _NOVOID | _NOBOX);
 			itype = Tn_type(stmt, n+2);
@@ -1607,7 +1607,7 @@ static knh_Term_t *DECL3_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_typ
 	return tkT;
 }
 
-static knh_flag_t DECL_flag(CTX ctx, knh_StmtExpr_t *o, knh_flag_t flag)
+static kflag_t DECL_flag(CTX ctx, knh_StmtExpr_t *o, kflag_t flag)
 {
 	if(IS_Map(DP(o)->metaDictCaseMap)) {
 		if(knh_DictMap_getNULL(ctx, DP(o)->metaDictCaseMap, STEXT("Private"))) {
@@ -1627,7 +1627,7 @@ static knh_flag_t DECL_flag(CTX ctx, knh_StmtExpr_t *o, knh_flag_t flag)
 
 static knh_Term_t *DECL_typing(CTX ctx, knh_StmtExpr_t *stmt) /* LOCAL*/
 {
-	knh_flag_t flag  = DECL_flag(ctx, stmt, 0);
+	kflag_t flag  = DECL_flag(ctx, stmt, 0);
 	knh_Term_t *tkT = DECL3_typing(ctx, stmt, 0, TYPE_var, 0, 0);
 	if(TT_(tkT) != TT_ERR) {
 		tkT = GammaBuilder_add(ctx, flag, tkNN(stmt, 0), tkNN(stmt, 1), NULL, 0);
@@ -1644,18 +1644,18 @@ static knh_Term_t *DECL_typing(CTX ctx, knh_StmtExpr_t *stmt) /* LOCAL*/
 
 /* ------------------------------------------------------------------------ */
 
-static knh_fields_t *ClassTBL_expandFields(CTX ctx, knh_ClassTBL_t *ct)
+static kfieldinfo_t *ClassTBL_expandFields(CTX ctx, knh_ClassTBL_t *ct)
 {
-	size_t newsize = (ct->fcapacity == 0) ? sizeof(knh_Object_t) / sizeof(knh_fields_t) : ct->fcapacity * 2;
-	ct->fields = (knh_fields_t*)KNH_REALLOC(ctx, "fields", ct->fields, ct->fcapacity, newsize, sizeof(knh_fields_t));
+	size_t newsize = (ct->fcapacity == 0) ? sizeof(knh_Object_t) / sizeof(kfieldinfo_t) : ct->fcapacity * 2;
+	ct->fields = (kfieldinfo_t*)KNH_REALLOC(ctx, "fields", ct->fields, ct->fcapacity, newsize, sizeof(kfieldinfo_t));
 	ct->fcapacity = newsize;
 	return ct->fields;
 }
 
-static void class_addField(CTX ctx, knh_class_t cid, knh_flag_t flag, knh_type_t type, ksymbol_t fn)
+static void class_addField(CTX ctx, kclass_t cid, kflag_t flag, ktype_t type, ksymbol_t fn)
 {
 	knh_ClassTBL_t *t = varClassTBL(cid);
-	knh_fields_t *cf = t->fields;
+	kfieldinfo_t *cf = t->fields;
 	size_t n = t->fsize;
 	if(t->fcapacity == n) {
 		cf = ClassTBL_expandFields(ctx, t);
@@ -1698,24 +1698,24 @@ static void ObjectField_expand(CTX ctx, knh_ObjectField_t *of, size_t oldsize, s
 	//DBG_P("fields=%p => %p, size=%d => %d", oldf, of->fields, oldsize, newsize);
 }
 
-static void ObjectField_add(CTX ctx, knh_class_t this_cid, knh_Object_t **v, size_t i, knh_type_t type, knh_Object_t *o)
+static void ObjectField_add(CTX ctx, kclass_t this_cid, knh_Object_t **v, size_t i, ktype_t type, knh_Object_t *o)
 {
-	knh_class_t cid = knh_type_tocid(ctx, type, this_cid);
-	knh_class_t bcid = C_bcid(type);
+	kclass_t cid = ktype_tocid(ctx, type, this_cid);
+	kclass_t bcid = C_bcid(type);
 	switch(bcid) {
 		case CLASS_Boolean: {
-			knh_ndata_t *nn = (knh_ndata_t*)(v + i);
+			kunbox_t *nn = (kunbox_t*)(v + i);
 			nn[0] = IS_Boolean(o) ? N_tobool(o) : 0;
 			break;
 		}
 		case CLASS_Int: {
-			knh_int_t *nn = (knh_int_t*)(v + i);
+			kint_t *nn = (kint_t*)(v + i);
 			nn[0] = IS_bInt(o) ? N_toint(o) : 0;
 			break;
 		}
 		case CLASS_Float: {
-			knh_float_t *nn = (knh_float_t*)(v + i);
-			nn[0] = IS_bFloat(o) ? N_tofloat(o) : K_FLOAT_ZERO;
+			kfloat_t *nn = (kfloat_t*)(v + i);
+			nn[0] = IS_bFloat(o) ? N_tofloat(o) : KFLOAT_ZERO;
 			break;
 		}
 		case CLASS_Tvoid: {
@@ -1734,7 +1734,7 @@ static void ObjectField_add(CTX ctx, knh_class_t this_cid, knh_Object_t **v, siz
 
 //#define k_goodbsize(n)   (k_goodsize((n) * sizeof(void*)) / sizeof(void*))
 
-static knh_index_t Script_addField(CTX ctx, knh_Script_t *scr, knh_flag_t flag, knh_type_t type, ksymbol_t fn)
+static kindex_t Script_addField(CTX ctx, knh_Script_t *scr, kflag_t flag, ktype_t type, ksymbol_t fn)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(scr);
 	size_t fsize = ct->fsize, fcapacity = ct->fcapacity;
@@ -1745,20 +1745,20 @@ static knh_index_t Script_addField(CTX ctx, knh_Script_t *scr, knh_flag_t flag, 
 		ObjectField_expand(ctx, (knh_ObjectField_t*)scr, fcapacity, ct->fcapacity);
 	}
 	ObjectField_add(ctx, ct->cid, scr->fields, fsize, type, KNH_NULL);
-	return (knh_index_t)fsize;
+	return (kindex_t)fsize;
 }
 
 static knh_Term_t *DECLSCRIPT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_flag_t flag  = DECL_flag(ctx, stmt, _FGETTER | _FSETTER);
+	kflag_t flag  = DECL_flag(ctx, stmt, _FGETTER | _FSETTER);
 	knh_Term_t *tkT = DECL3_typing(ctx, stmt, 0, TYPE_var, _VFINDSCRIPT, 0);
 	knh_Term_t *tkN = tkNN(stmt, 1);
 	if(TT_(tkT) != TT_ERR) {
 		knh_Script_t *scr = K_GMASCR;
 		ksymbol_t fn = Term_fn(ctx, tkN);
 		const knh_ClassTBL_t *t = O_cTBL(scr);
-		knh_index_t idx = -1;
-		for(idx = (knh_index_t)t->fsize - 1; idx >= 0 ; idx--) {
+		kindex_t idx = -1;
+		for(idx = (kindex_t)t->fsize - 1; idx >= 0 ; idx--) {
 			if(t->fields[idx].fn == fn) {
 				if(t->fields[idx].type != tkT->cid) {
 					return ERROR_AlreadyDefinedType(ctx, fn, tkT->cid);
@@ -1780,13 +1780,13 @@ static knh_Term_t *DECLSCRIPT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	return tkT;
 }
 
-static knh_Term_t *OPR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid);
+static knh_Term_t *OPR_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t tcid);
 
-static knh_Term_t *SETPROPN_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t *SETPROPN_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	knh_Term_t *tkN = tkNN(stmt, 1);
 	knh_String_t *v = knh_getPropertyNULL(ctx, S_tobytes(tkN->text));
-	knh_type_t type;
+	ktype_t type;
 	if(v != NULL) {
 		type = O_cid(v);
 		TYPING_TypedObject(ctx, stmt, 2, type);
@@ -1806,11 +1806,11 @@ static knh_Term_t *SETPROPN_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t req
 static knh_Term_t *TNAME_infer(CTX ctx, knh_Term_t *tkN, knh_StmtExpr_t *stmt, size_t n)
 {
 	TYPING(ctx, stmt, n, TYPE_var, _NOCHECK|_NOVOID);
-	knh_type_t type = Tn_type(stmt, n);
+	ktype_t type = Tn_type(stmt, n);
 	INFO_Typing(ctx, "", TK_tobytes(tkN), type);
 	ksymbol_t fn = Term_fn(ctx, tkN);
 	if(IS_SCRIPTLEVEL(ctx)) {
-		knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
+		kindex_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 		knh_Term_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 		return tkN;
 	}
@@ -1819,7 +1819,7 @@ static knh_Term_t *TNAME_infer(CTX ctx, knh_Term_t *tkN, knh_StmtExpr_t *stmt, s
 	}
 }
 
-static knh_Term_t *LET_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t *LET_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	knh_Term_t *tkN = tkNN(stmt, 1);
 	Term_setReadOnly(tkN, 0);
@@ -1878,12 +1878,12 @@ static void Stmt_setESPIDX(CTX ctx, knh_StmtExpr_t *stmt)
 	DP(stmt)->espidx = GammaBuilder_espidx(ctx);
 }
 
-static void LET_addVAR(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t type, knh_Term_t *tkN)
+static void LET_addVAR(CTX ctx, knh_StmtExpr_t *stmt, size_t n, ktype_t type, knh_Term_t *tkN)
 {
 	ksymbol_t fn = Term_fn(ctx, tkN);
 	DBG_P("script level=%d", IS_SCRIPTLEVEL(ctx));
 	if(IS_SCRIPTLEVEL(ctx)) {
-		knh_index_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
+		kindex_t idx = Script_addField(ctx, K_GMASCR, 0, type, fn);
 		knh_Term_toTYPED(ctx, tkN, TT_FIELD, type, idx);
 	}
 	else {
@@ -1896,11 +1896,11 @@ static void LET_addVAR(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t type,
 
 static knh_Term_t *LETM_typing(CTX ctx, knh_StmtExpr_t *stmt)
 {
-//	knh_class_t tuplecid = CLASS_Tuple;
+//	kclass_t tuplecid = CLASS_Tuple;
 	size_t i, msize = DP(stmt)->size - 1, tsize = msize;
 	int CheckReadOnly = 0;  // TODO
 	TYPING(ctx, stmt, msize, TYPE_Tuple, _BCHECK);
-	knh_class_t tplcid = Tn_cid(stmt, msize);
+	kclass_t tplcid = Tn_cid(stmt, msize);
 	const knh_ClassTBL_t *ct = ClassTBL(tplcid);
 	if(ct->cparam->psize < tsize) {
 		knh_Term_t *tkN = tkNN(stmt, ct->cparam->psize);
@@ -1919,7 +1919,7 @@ static knh_Term_t *LETM_typing(CTX ctx, knh_StmtExpr_t *stmt)
 		}
 		knh_Term_t *tkRES = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | CheckReadOnly);
 		if(tkRES == NULL) {
-			knh_type_t type = knh_ParamArray_get(ct->cparam, i)->type;
+			ktype_t type = knh_ParamArray_get(ct->cparam, i)->type;
 			LET_addVAR(ctx, stmt, i, type, tkN);
 		}
 	}
@@ -1964,7 +1964,7 @@ static knh_Term_t *SELECT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	size_t i, msize = DP(stmt)->size - 1;
 	int CheckReadOnly = 0;  // TODO
 	TYPING_UntypedExpr(ctx, stmt, msize);
-	knh_class_t cid = Tn_cid(stmt, msize);
+	kclass_t cid = Tn_cid(stmt, msize);
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	if(ct->bcid == CLASS_Tuple) {
 		WARN_MuchBetter(ctx, "=", "from");
@@ -1988,7 +1988,7 @@ static knh_Term_t *SELECT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 			}
 		}
 		getters[i] = mtd;
-		knh_type_t rtype = knh_Method_rtype(ctx, mtd, cid);
+		ktype_t rtype = knh_Method_rtype(ctx, mtd, cid);
 		knh_Term_t *tkRES = TNAME_typing(ctx, tkN, rtype, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | CheckReadOnly);
 		if(tkRES == NULL) {
 			LET_addVAR(ctx, stmt, i, rtype, tkN);
@@ -2115,7 +2115,7 @@ static knh_Term_t *SWAP_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
 
-static knh_Term_t* CALL1_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* CALL1_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	if(IS_StmtExpr(DP(stmt)->stmtPOST)) {
 		knh_StmtExpr_t *stmtPOST = DP(stmt)->stmtPOST;
@@ -2142,7 +2142,7 @@ static knh_Term_t* CALL1_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 
 /* ------------------------------------------------------------------------ */
 
-static inline void unboxSFP(CTX ctx, knh_sfp_t *sfp)
+static inline void unboxSFP(CTX ctx, ksfp_t *sfp)
 {
 	sfp[0].ndata = (sfp[0].i)->n.data;
 }
@@ -2174,7 +2174,7 @@ static knh_Term_t* CALL_toCONST(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_t *mtd
 		knh_Term_t *rvalue;
 		size_t i = 1;
 		if(MN_isNEW((mtd)->mn)) {
-			knh_class_t cid = CLASS_t(stmt->type);
+			kclass_t cid = CLASS_t(stmt->type);
 			//DBG_P("CONST NEW", CLASS__(cid));
 			KNH_SETv(ctx, lsfp[thisidx].o, new_Object_init2(ctx, ClassTBL(cid)));
 			i = 2;
@@ -2195,7 +2195,7 @@ static knh_Term_t* CALL_toCONST(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_t *mtd
 		return rvalue;
 	}
 	else {
-		knh_class_t mtd_cid = mtd->cid, this_cid = Tn_cid(stmt, 1);
+		kclass_t mtd_cid = mtd->cid, this_cid = Tn_cid(stmt, 1);
 		if(IS_Tunbox(this_cid) && (mtd_cid == CLASS_Object || mtd_cid == CLASS_Number)) {
 			Stmt_boxAll(ctx, stmt, 1, 2, mtd_cid);
 		}
@@ -2205,7 +2205,7 @@ static knh_Term_t* CALL_toCONST(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_t *mtd
 
 static void METHOD_asm(CTX ctx, knh_StmtExpr_t *stmt);
 
-static knh_Term_t *new_TermDEFAULT(CTX ctx, knh_class_t cid, knh_type_t reqt)
+static knh_Term_t *new_TermDEFAULT(CTX ctx, kclass_t cid, ktype_t reqt)
 {
 	switch(cid) {
 	case CLASS_Class:
@@ -2263,11 +2263,11 @@ static void StmtCALL_lazyasm(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_t *mtd)
 	}
 }
 
-static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid, knh_class_t new_cid, knh_Method_t *mtd)
+static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t tcid, kclass_t new_cid, knh_Method_t *mtd)
 {
 	size_t i, size = DP(stmt)->size;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
-	knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(pa), new_cid);
+	ktype_t rtype = ktype_tocid(ctx, knh_ParamArray_rtype(pa), new_cid);
 	if(rtype == TYPE_var && DP(ctx->gma)->mtd == mtd) {
 		return ERROR_Unsupported(ctx, "type inference of recursive calls", CLASS_unknown, NULL);
 	}
@@ -2275,7 +2275,7 @@ static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t t
 	for(i = 0; i < pa->psize; i++) {
 		size_t n = i + 2;
 		knh_param_t* p = knh_ParamArray_get(pa, i);
-		knh_type_t param_reqt = knh_type_tocid(ctx, p->type, new_cid);
+		ktype_t param_reqt = ktype_tocid(ctx, p->type, new_cid);
 		if(n < size) {
 			TYPING_TypedExpr(ctx, stmt, n, param_reqt);
 		}
@@ -2296,8 +2296,8 @@ static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t t
 		}
 	}
 	if(ParamArray_isVARGs(pa)) {
-		knh_type_t param_reqt = knh_ParamArray_get(pa, i)->type;
-		param_reqt = knh_type_tocid(ctx, param_reqt, new_cid);
+		ktype_t param_reqt = knh_ParamArray_get(pa, i)->type;
+		param_reqt = ktype_tocid(ctx, param_reqt, new_cid);
 		for(i = pa->psize; i + 2 < size; i++) {
 			TYPING_TypedExpr(ctx, stmt, i+2, param_reqt);
 		}
@@ -2315,7 +2315,7 @@ static knh_Term_t* CALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t t
 	return CALL_toCONST(ctx, stmt, mtd);
 }
 
-static void NameSpace_lookupMethods(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_methodn_t mn, knh_Method_t **mlists, size_t remaining)
+static void NameSpace_lookupMethods(CTX ctx, knh_NameSpace_t *ns, kclass_t cid, kmethodn_t mn, knh_Method_t **mlists, size_t remaining)
 {
 	size_t i;
 	while(ns != NULL) {
@@ -2354,7 +2354,7 @@ static void NameSpace_lookupMethods(CTX ctx, knh_NameSpace_t *ns, knh_class_t ci
 	}
 }
 
-static knh_Term_t* OLCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid, knh_class_t new_cid, knh_Method_t *mtd0)
+static knh_Term_t* OLCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t tcid, kclass_t new_cid, knh_Method_t *mtd0)
 {
 	size_t i, size = DP(stmt)->size;
 	knh_Method_t *mlists[32] = {NULL}, **mp = mlists;
@@ -2371,8 +2371,8 @@ static knh_Term_t* OLCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t
 			for(i = 0; i < pa->psize; i++) {
 				size_t n = i + 2;
 				knh_param_t* p = knh_ParamArray_get(pa, i);
-				knh_type_t param_reqt = knh_type_tocid(ctx, p->type, new_cid);
-				knh_type_t type = Tn_type(stmt, n);
+				ktype_t param_reqt = ktype_tocid(ctx, p->type, new_cid);
+				ktype_t type = Tn_type(stmt, n);
 				if(type == param_reqt || ClassTBL_isa_(ctx, ClassTBL(type), ClassTBL(param_reqt)) || param_reqt == TYPE_dynamic) {
 					continue;
 				}
@@ -2384,7 +2384,7 @@ static knh_Term_t* OLCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t
 				status = 2; break;
 			}
 			if(status == 0) {
-				knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(pa), new_cid);
+				ktype_t rtype = ktype_tocid(ctx, knh_ParamArray_rtype(pa), new_cid);
 				Stmt_typed(ctx, stmt, rtype);
 				KNH_SETv(ctx, tkNN(stmt, 0)->data, mtd);
 				return CALL_toCONST(ctx, stmt, mtd);
@@ -2402,21 +2402,21 @@ static knh_Term_t* OLCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t
 	return ERROR_Unsupported(ctx, "no matched method", mtd0->cid, NULL);
 }
 
-static inline knh_int_t Tn_int(knh_StmtExpr_t *stmt, size_t n)
+static inline kint_t Tn_int(knh_StmtExpr_t *stmt, size_t n)
 {
 	knh_Term_t *tk = tkNN(stmt, n);
 	DBG_ASSERT(TT_(tk) == TT_CONST);
 	return ((tk)->num)->n.ivalue;
 }
 
-static knh_Term_t* CALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t tcid)
+static knh_Term_t* CALL_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t tcid)
 {
 	knh_Term_t *tkM = tkNN(stmt, 0);
 	knh_Term_t *tkO = tkNN(stmt, 1);
 	int maybeCLASSCONST = (TT_(tkM) == TT_UNAME && TT_(tkO) == TT_UNAME && DP(stmt)->size == 2) ? 1 : 0;
-	knh_methodn_t mn = Term_mn(ctx, tkM);
+	kmethodn_t mn = Term_mn(ctx, tkM);
 	knh_Method_t *mtd = NULL;
-	knh_class_t mtd_cid = CLASS_Object;
+	kclass_t mtd_cid = CLASS_Object;
 	DBG_ASSERT(TT_(tkO) != TT_ASIS);
 	if(MN_isNEW(mn)) { /* reported by Maeda */
 		return ERROR_Unsupported(ctx, "calling new as method", CLASS_unknown, NULL);
@@ -2462,7 +2462,7 @@ static knh_Term_t* CALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t tcid)
 			knh_ParamArray_t *pa = ClassTBL(mtd_cid)->cparam;
 			size_t psize = pa->psize;
 			TYPING(ctx, stmt, 2, TYPE_Int, _CONSTONLY);
-			knh_int_t ivalue = (knh_int_t)Tn_int(stmt, 2);
+			kint_t ivalue = (kint_t)Tn_int(stmt, 2);
 			size_t n = (ivalue < 0) ? psize + ivalue : ivalue;
 			if(!(n < psize)) {
 				return ERROR_OutOfIndex(ctx, 0, ivalue, psize);
@@ -2518,7 +2518,7 @@ static knh_Term_t* defined_typing(CTX ctx, knh_StmtExpr_t *stmt)
 //		return tkRES;
 //	}
 //	else {
-//		knh_class_t cid = Tn_cid(stmt, 2);
+//		kclass_t cid = Tn_cid(stmt, 2);
 //		if(knh_class_canObjectCopy(ctx, cid)) {
 //			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, CLASS_Object, MN_copy);
 //			KNH_SETv(ctx, tmNN(stmt, 1), tmNN(stmt, 2));
@@ -2535,9 +2535,9 @@ static knh_Term_t* defined_typing(CTX ctx, knh_StmtExpr_t *stmt)
 //	}
 //}
 
-static knh_Term_t* this_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_methodn_t mn)
+static knh_Term_t* this_typing(CTX ctx, knh_StmtExpr_t *stmt, kmethodn_t mn)
 {
-	knh_class_t mtd_cid = DP(ctx->gma)->this_cid;
+	kclass_t mtd_cid = DP(ctx->gma)->this_cid;
 	knh_Term_t *tkMTD = tkNN(stmt, 0); /* change */
 	knh_Method_t *mtd;
 	mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, mtd_cid, MN_new);
@@ -2550,9 +2550,9 @@ static knh_Term_t* this_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_methodn_t mn)
 }
 
 
-static knh_class_t class_FuncType(CTX ctx, knh_class_t this_cid, knh_Method_t *mtd)
+static kclass_t class_FuncType(CTX ctx, kclass_t this_cid, knh_Method_t *mtd)
 {
-	knh_class_t cid;
+	kclass_t cid;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
 	if(knh_ParamArray_hasTypeVar(pa)) {
 		BEGIN_LOCAL(ctx, lsfp, 1);
@@ -2570,7 +2570,7 @@ static knh_class_t class_FuncType(CTX ctx, knh_class_t this_cid, knh_Method_t *m
 
 /* delegate, iterate */
 
-static knh_Func_t * new_StaticFunc(CTX ctx, knh_class_t cid, knh_Method_t *mtd)
+static knh_Func_t * new_StaticFunc(CTX ctx, kclass_t cid, knh_Method_t *mtd)
 {
 	knh_Func_t *fo = new_H(Func);
 	O_cTBL(fo) = ClassTBL(cid);
@@ -2586,7 +2586,7 @@ static knh_Term_t* delegate_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	if(DP(stmt)->size == 4) {
 		knh_Term_t *tkMN = tkNN(stmt, 3);
 		TYPING_UntypedExpr(ctx, stmt, 2);
-		knh_class_t cid = Tn_cid(stmt, 2), this_cid = DP(ctx->gma)->this_cid;
+		kclass_t cid = Tn_cid(stmt, 2), this_cid = DP(ctx->gma)->this_cid;
 		if(Tn_isCID(stmt, 2)) { /* delegate(Class, f) */
 			knh_Term_t *tkC = tkNN(stmt, 2);
 			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, (tkC)->cid, Term_mn(ctx, tkMN));
@@ -2600,7 +2600,7 @@ static knh_Term_t* delegate_typing(CTX ctx, knh_StmtExpr_t *stmt)
 			return Term_setCONST(ctx, tkMN, new_StaticFunc(ctx, cid, mtd));
 		}
 		else {
-			knh_class_t cid = Tn_cid(stmt, 2);
+			kclass_t cid = Tn_cid(stmt, 2);
 			knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, cid, Term_mn(ctx, tkMN));
 			if(mtd == NULL) {
 				return ERROR_Undefined(ctx, "method", cid, tkMN);
@@ -2623,11 +2623,11 @@ static knh_Term_t* delegate_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	}
 }
 
-static knh_Term_t* proceed_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* proceed_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	if(DP(ctx->gma)->proceedNC != NULL) {
 		knh_Method_t *promtd = DP(ctx->gma)->proceedNC;
-		knh_class_t this_cid = DP(ctx->gma)->this_cid;
+		kclass_t this_cid = DP(ctx->gma)->this_cid;
 		KNH_ASSERT(IS_Method(promtd));
 		Term_setMethod(ctx, tkNN(stmt, 0), promtd->mn, promtd);
 		KNH_SETv(ctx, tkNN(stmt, 1), new_TermTYPED(ctx, TT_FVAR, this_cid, 0));
@@ -2645,10 +2645,10 @@ static knh_Term_t* proceed_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt
 	}
 }
 
-static knh_Term_t* FUNCCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* FUNCCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	size_t i;
-	knh_class_t cid = Tn_cid(stmt, 0);
+	kclass_t cid = Tn_cid(stmt, 0);
 	DBG_ASSERT(IS_Tfunc(cid));
 	knh_ParamArray_t *pa = ClassTBL(cid)->cparam;
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, cid, MN_);
@@ -2659,7 +2659,7 @@ static knh_Term_t* FUNCCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type
 	Term_setMethod(ctx, tkNN(stmt, 0), MN_, mtd);
 	for(i = 0; i < pa->psize; i++) {
 		knh_param_t *p = knh_ParamArray_get(pa, i);
-		knh_type_t type = GammaBuilder_type(ctx, p->type);
+		ktype_t type = GammaBuilder_type(ctx, p->type);
 		if(2 + i < DP(stmt)->size) {
 			TYPING_TypedExpr(ctx, stmt, 2 + i, type);
 		}
@@ -2676,11 +2676,11 @@ static knh_Term_t* FUNCCALLPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type
 	return Stmt_typed(ctx, stmt, reqt);
 }
 
-static knh_Term_t* FUNCDYNCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* FUNCDYNCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	size_t i;
-	knh_class_t cid = CLASS_Func;
+	kclass_t cid = CLASS_Func;
 	LOCAL_NEW(ctx, lsfp, 0, knh_ParamArray_t*, pa, new_ParamArray(ctx));
 	for(i = 2; i < DP(stmt)->size; i++) {
 		TYPING_UntypedObject(ctx, stmt, i);
@@ -2710,10 +2710,10 @@ static knh_Term_t* FUNCDYNCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t 
 	return Stmt_typed(ctx, stmt, reqt);
 }
 
-static knh_Term_t* func_typingNULL(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
+static knh_Term_t* func_typingNULL(CTX ctx, knh_StmtExpr_t *stmt, kclass_t reqt)
 {
 	knh_Term_t *tkF = tkNN(stmt, 0);
-	knh_methodn_t mn = Term_mn(ctx, tkF);
+	kmethodn_t mn = Term_mn(ctx, tkF);
 	knh_Term_t *tkIDX = NULL;
 	{ /* 1. lookup builtin function */
 		switch(mn) {
@@ -2738,7 +2738,7 @@ static knh_Term_t* func_typingNULL(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t re
 		}
 	}
 
-	knh_class_t mtd_cid = knh_NameSpace_getFuncClass(ctx, K_GMANS, mn);
+	kclass_t mtd_cid = knh_NameSpace_getFuncClass(ctx, K_GMANS, mn);
 	knh_Method_t *mtd = NULL;
 
 	/* 3. static function in namespace */
@@ -2793,7 +2793,7 @@ static knh_Term_t* func_typingNULL(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t re
 	}
 }
 
-static knh_Term_t* FUNCCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
+static knh_Term_t* FUNCCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t reqt)
 {
 	knh_Term_t *tkF = tkNN(stmt, 0);
 	DBG_ASSERT(TT_(tkNN(stmt, 1)) == TT_ASIS);
@@ -2809,7 +2809,7 @@ static knh_Term_t* FUNCCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t re
 		TT_(tkF) = TT_NAME;
 	}
 	TYPING_UntypedExpr(ctx, stmt, 0);
-	knh_type_t type = Tn_type(stmt, 0);
+	ktype_t type = Tn_type(stmt, 0);
 	if(type == TYPE_String && TT_(tkNN(stmt, 0)) == TT_CONST) {
 		return FMTOP_typing(ctx, stmt, reqt);
 	}
@@ -2825,7 +2825,7 @@ static knh_Term_t* FUNCCALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t re
 /* ------------------------------------------------------------------------ */
 /* [NEW] */
 
-static knh_Term_t* NEWPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t new_cid, knh_methodn_t mn, int needsTypingPARAMs)
+static knh_Term_t* NEWPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t new_cid, kmethodn_t mn, int needsTypingPARAMs)
 {
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, new_cid, mn);
 	knh_Term_t *tkRES = (knh_Term_t*)stmt;
@@ -2854,7 +2854,7 @@ static knh_Term_t* NEWPARAMs_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t n
 
 #define IS_NEWLIST(cid)  (cid == CLASS_Array || cid == CLASS_Range)
 
-static knh_Term_t* FIELD_typing(CTX ctx, knh_class_t cid, knh_StmtExpr_t *stmt, size_t n)
+static knh_Term_t* FIELD_typing(CTX ctx, kclass_t cid, knh_StmtExpr_t *stmt, size_t n)
 {
 	knh_Term_t *tkK = tkNN(stmt, n); DBG_ASSERT(IS_String(tkK->text));
 	ksymbol_t fn = knh_getfnq(ctx, S_tobytes(tkK->text), FN_NEWID);
@@ -2867,7 +2867,7 @@ static knh_Term_t* FIELD_typing(CTX ctx, knh_class_t cid, knh_StmtExpr_t *stmt, 
 		}
 	}
 	else if(knh_Method_psize(mtd) == 1) {
-		knh_type_t ptype = knh_Method_ptype(ctx, mtd, 0, cid);
+		ktype_t ptype = knh_Method_ptype(ctx, mtd, 0, cid);
 		TYPING_TypedExpr(ctx, stmt, n+1, ptype);
 		Stmt_boxAll(ctx, stmt, n+1, n+2, CLASS_Tdynamic);
 	}
@@ -2877,11 +2877,11 @@ static knh_Term_t* FIELD_typing(CTX ctx, knh_class_t cid, knh_StmtExpr_t *stmt, 
 	return tkK; // OK
 }
 
-static knh_Term_t* NEWMAP_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
+static knh_Term_t* NEWMAP_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t reqt)
 {
 	size_t i;
 	if(reqt == TYPE_dyn || reqt == TYPE_Object) reqt = TYPE_Map;
-	knh_class_t breqt = C_bcid(reqt);
+	kclass_t breqt = C_bcid(reqt);
 	DBG_P("mtdcid=%s, reqt=%s, bcid=%s", CLASS__(tkNN(stmt,1)->cid), CLASS__(reqt), CLASS__(breqt));
 	for(i = 2; i < DP(stmt)->size; i+=2) {
 		TYPING_TypedExpr(ctx, stmt, i, TYPE_String);  // key
@@ -2894,7 +2894,7 @@ static knh_Term_t* NEWMAP_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt
 		return NEWPARAMs_typing(ctx, stmt, CLASS_Map, MN_newMAP, 0/*needsTypingPARAMs*/);
 	}
 	else if(reqt != CLASS_Map) {
-		knh_class_t p2 = C_p2(reqt);
+		kclass_t p2 = C_p2(reqt);
 		for(i = 2; i < DP(stmt)->size; i+=2) {
 			TYPING_TypedExpr(ctx, stmt, i+1, p2);       // value
 		}
@@ -2912,18 +2912,18 @@ static knh_Term_t* NEWMAP_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt
 	}
 }
 
-static knh_Term_t* NEW_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
+static knh_Term_t* NEW_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t reqt)
 {
 	knh_Term_t *tkMTD = tkNN(stmt, 0);
 	knh_Term_t *tkC = tkNN(stmt, 1);
-	knh_methodn_t mn = Term_mn(ctx, tkMTD);
+	kmethodn_t mn = Term_mn(ctx, tkMTD);
 	if(reqt == TYPE_var || reqt == TYPE_void) reqt = TYPE_dyn;
 
 	if(mn == MN_newMAP) {  /* {hoge: 1, hogo: 2} */
 		return NEWMAP_typing(ctx, stmt, reqt);
 	}
 
-	knh_class_t new_cid = CLASS_unknown;
+	kclass_t new_cid = CLASS_unknown;
 	if(TT_(tkC) == TT_ASIS) { /* new () */
 		if(reqt == TYPE_dyn) {
 			return ERROR_Needs(ctx, "class");
@@ -2951,9 +2951,9 @@ static knh_Term_t* NEW_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
 	if(mn == MN_newLIST) {  /* [1, 2, .. ] */
 		size_t i;
 		DBG_ASSERT(IS_NEWLIST(new_cid));
-		knh_class_t bcid = C_bcid(reqt);
+		kclass_t bcid = C_bcid(reqt);
 		if(!IS_NEWLIST(bcid) && DP(stmt)->size > 2) {
-			knh_class_t p1;
+			kclass_t p1;
 			TYPING_UntypedExpr(ctx, stmt, 2);
 			p1 = Tn_cid(stmt, 2);
 			for(i = 3; i < DP(stmt)->size; i++) {
@@ -2968,7 +2968,7 @@ static knh_Term_t* NEW_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
 			}
 		}
 		else {
-			knh_class_t p1 = C_p1(reqt);
+			kclass_t p1 = C_p1(reqt);
 			for(i = 2; i < DP(stmt)->size; i++) {
 				TYPING(ctx, stmt, i, p1, _NOVOID|_NOCHECK);
 				if(Tn_cid(stmt, i) != p1) {
@@ -3014,7 +3014,7 @@ static knh_Term_t* NEW_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t reqt)
 /* ------------------------------------------------------------------------ */
 /* [OPR] */
 
-static knh_Term_t *OPR_setMethod(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t mtd_cid, knh_methodn_t mn, knh_class_t reqt)
+static knh_Term_t *OPR_setMethod(CTX ctx, knh_StmtExpr_t *stmt, kclass_t mtd_cid, kmethodn_t mn, kclass_t reqt)
 {
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, mtd_cid, mn);
 	if(mtd == NULL) {
@@ -3033,7 +3033,7 @@ static knh_Term_t *OPR_setMethod(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t mtd_
 	return CALLPARAMs_typing(ctx, stmt, reqt, mtd_cid, mtd);
 }
 
-static knh_Term_t* OPRWITH_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* OPRWITH_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	if(TT_(tkNN(stmt, 1)) == TT_CID) {
 		KNH_TODO("new C {}");
@@ -3064,19 +3064,19 @@ static knh_Term_t* OPRWITH_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt
 	knh_Term_t *tkRES = Tn_typing(ctx, stmt, 2, Tn_cid(stmt, 1), _NOCHECK);
 	GammaBuilder_setEnforceConst(ctx->gma, 0);
 	if(TT_(tkRES) == TT_ERR) return tkRES;
-	knh_class_t dcid = Tn_cid(stmt, 2);
+	kclass_t dcid = Tn_cid(stmt, 2);
 	if(C_bcid(dcid) == CLASS_Map && C_p1(dcid) == CLASS_String) {
 
 	}
 	return OPR_setMethod(ctx, stmt, Tn_cid(stmt, 1), MN_opWITH, reqt);
 }
 
-static knh_class_t OPADD_bcid(CTX ctx, knh_StmtExpr_t *stmt)
+static kclass_t OPADD_bcid(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_class_t cid1 = Tn_cid(stmt, 1);
-	knh_class_t cid2 = Tn_cid(stmt, 2);
-	knh_class_t bcid1 = C_bcid(cid1);
-	knh_class_t bcid2 = C_bcid(cid2);
+	kclass_t cid1 = Tn_cid(stmt, 1);
+	kclass_t cid2 = Tn_cid(stmt, 2);
+	kclass_t bcid1 = C_bcid(cid1);
+	kclass_t bcid2 = C_bcid(cid2);
 	if(cid1 == CLASS_Tdynamic || cid2 == CLASS_Tdynamic) return CLASS_Tdynamic;
 	if(cid1 == cid2) return cid1;
 	if(bcid1 == bcid2) return bcid1;
@@ -3086,12 +3086,12 @@ static knh_class_t OPADD_bcid(CTX ctx, knh_StmtExpr_t *stmt)
 	return cid1;
 }
 
-static knh_class_t OPEQ_bcid(CTX ctx, knh_StmtExpr_t *stmt)
+static kclass_t OPEQ_bcid(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_class_t cid1 = Tn_cid(stmt, 1);
-	knh_class_t cid2 = Tn_cid(stmt, 2);
-	knh_class_t bcid1 = C_bcid(cid1);
-	knh_class_t bcid2 = C_bcid(cid2);
+	kclass_t cid1 = Tn_cid(stmt, 1);
+	kclass_t cid2 = Tn_cid(stmt, 2);
+	kclass_t bcid1 = C_bcid(cid1);
+	kclass_t bcid2 = C_bcid(cid2);
 	if(cid1 == cid2) return cid1;
 	if(cid1 == CLASS_Tdynamic || cid2 == CLASS_Tdynamic) return CLASS_Tdynamic;
 	if(bcid1 == cid2) return bcid1;
@@ -3101,16 +3101,16 @@ static knh_class_t OPEQ_bcid(CTX ctx, knh_StmtExpr_t *stmt)
 	return CLASS_unknown;
 }
 
-knh_methodn_t TT_toMN(knh_term_t tt);
+kmethodn_t TT_toMN(knh_term_t tt);
 
-static const char* _unbox(knh_class_t cid)
+static const char* _unbox(kclass_t cid)
 {
 	if(cid == TYPE_Boolean) return "boolean";
 	if(cid == TYPE_Float) return "float";
 	return "int";
 }
 
-static knh_Term_t *new_TermCID(CTX ctx, knh_class_t cid)
+static knh_Term_t *new_TermCID(CTX ctx, kclass_t cid)
 {
 	knh_Term_t *tk = new_(Term);
 	TT_(tk) = TT_CID;
@@ -3124,8 +3124,8 @@ static knh_Term_t* StmtCALL_toIterator(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_Term_t *tkMN = tkNN(stmt, 0);
 	knh_Method_t *mtd = tkMN->mtd;
 	if(IS_Method(mtd) && Method_isIterative(mtd)) {
-		knh_type_t rtype = knh_type_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), Tn_cid(stmt, 1));
-		knh_class_t itrcid = knh_class_P1(ctx, CLASS_Iterator, rtype);
+		ktype_t rtype = ktype_tocid(ctx, knh_ParamArray_rtype(DP(mtd)->mp), Tn_cid(stmt, 1));
+		kclass_t itrcid = knh_class_P1(ctx, CLASS_Iterator, rtype);
 		Stmt_insert(ctx, stmt, 1, new_TermCID(ctx, itrcid));
 		knh_Stmt_add(ctx, stmt, new_TermCONST(ctx, mtd));
 		KNH_SETv(ctx, tkMN->mtd, knh_NameSpace_getMethodNULL(ctx, K_GMANS, CLASS_Iterator, MN_new));
@@ -3136,12 +3136,12 @@ static knh_Term_t* StmtCALL_toIterator(CTX ctx, knh_StmtExpr_t *stmt)
 	return ERROR_MethodIsNot(ctx, mtd, "@Iterative");
 }
 
-static knh_Term_t* OPR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid)
+static knh_Term_t* OPR_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t tcid)
 {
 	size_t i, opsize = DP(stmt)->size - 1;
 	knh_Term_t *tkOP = tkNN(stmt, 0);
-	knh_class_t mtd_cid = CLASS_Tdynamic;
-	knh_methodn_t mn;
+	kclass_t mtd_cid = CLASS_Tdynamic;
+	kmethodn_t mn;
 	if(TT_(tkOP) == TT_MN) {
 		mn = (tkOP)->mn;
 		mtd_cid = Tn_cid(stmt, 1);
@@ -3167,7 +3167,7 @@ static knh_Term_t* OPR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid)
 			knh_Stmt_swap(ctx, stmt, 1, 2);
 		}
 		if(Tn_isNULL(stmt, 2)) { /* o == null, o != null */
-			knh_class_t cid = Tn_cid(stmt, 1);
+			kclass_t cid = Tn_cid(stmt, 1);
 			if(IS_Tunbox(cid)) {
 				return ERROR_UndefinedBehavior(ctx, _unbox(cid));
 			}
@@ -3246,7 +3246,7 @@ static knh_Term_t* OPR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid)
 	case MN_opOF:
 	{
 		knh_Term_t *tkC = tkNN(stmt, 2);
-		knh_class_t cid = CLASS_t((tkC)->type);
+		kclass_t cid = CLASS_t((tkC)->type);
 		mtd_cid = Tn_cid(stmt, 1);
 		if(TT_(tkC) == TT_CID) {
 			if(mtd_cid == CLASS_Exception) {
@@ -3326,13 +3326,13 @@ static knh_Term_t* OPR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t tcid)
 	}
 }
 
-static knh_Term_t* SEND_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* SEND_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	size_t i;
 	for(i = 1; i < DP(stmt)->size; i++) {
 		TYPING_UntypedExpr(ctx, stmt, i);
 	}
-	knh_class_t mtd_cid = Tn_cid(stmt, 1);
+	kclass_t mtd_cid = Tn_cid(stmt, 1);
 	if(mtd_cid == CLASS_OutputStream) {
 		return Stmt_typed(ctx, stmt, TYPE_void);
 	} else {
@@ -3346,7 +3346,7 @@ static knh_Term_t* SEND_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 	}
 }
 
-static knh_Term_t* ACALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* ACALL_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	return ERROR_Unsupported(ctx, "actor", CLASS_unknown, NULL);
 }
@@ -3354,7 +3354,7 @@ static knh_Term_t* ACALL_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 /* ------------------------------------------------------------------------ */
 /* [TCAST] */
 
-static void Term_setTypeMap(CTX ctx, knh_Term_t *tk, knh_class_t tcid, knh_TypeMap_t *tmrNULL)
+static void Term_setTypeMap(CTX ctx, knh_Term_t *tk, kclass_t tcid, knh_TypeMap_t *tmrNULL)
 {
 	(tk)->cid = tcid;
 	if(tmrNULL != NULL) {
@@ -3365,7 +3365,7 @@ static void Term_setTypeMap(CTX ctx, knh_Term_t *tk, knh_class_t tcid, knh_TypeM
 	}
 }
 
-static knh_Term_t *new_TermDYNCAST(CTX ctx, knh_class_t tcid, knh_methodn_t mn, knh_Term_t *tkO)
+static knh_Term_t *new_TermDYNCAST(CTX ctx, kclass_t tcid, kmethodn_t mn, knh_Term_t *tkO)
 {
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, CLASS_Object, mn);
 	if(Method_isRestricted(mtd)) {
@@ -3379,7 +3379,7 @@ static knh_Term_t *new_TermDYNCAST(CTX ctx, knh_class_t tcid, knh_methodn_t mn, 
 	return Stmt_typed(ctx, stmt, tcid);
 }
 
-static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t tcid, knh_TypeMap_t *tmr, knh_Term_t *tkO)
+static knh_Term_t *new_TermTCAST(CTX ctx, kclass_t tcid, knh_TypeMap_t *tmr, knh_Term_t *tkO)
 {
 	DBG_ASSERT(tmr != NULL);
 	if(TT_(tkO) == TT_CONST && TypeMap_isConst(tmr)) {
@@ -3401,9 +3401,9 @@ static knh_Term_t *new_TermTCAST(CTX ctx, knh_class_t tcid, knh_TypeMap_t *tmr, 
 	}
 }
 
-static knh_Term_t* TCAST_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* TCAST_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
-	knh_class_t scid, tcid;
+	kclass_t scid, tcid;
 	knh_Term_t *tkC = TTYPE_typing(ctx, tkNN(stmt, 0), CLASS_unknown);
 	knh_TypeMap_t *tmr = NULL;
 	if(TT_(tkC) == TT_ERR) return tkC;
@@ -3475,7 +3475,7 @@ static knh_Term_t* TCAST_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 }
 
 /* [MT,AND,OR,] */
-static knh_Term_t* AND_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* AND_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	size_t i;
 	for(i = 0; i < DP(stmt)->size; i++) {
@@ -3487,7 +3487,7 @@ static knh_Term_t* AND_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 	return Stmt_typed(ctx, stmt, TYPE_Boolean);
 }
 
-static knh_Term_t* OR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* OR_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	size_t i;
 	for(i = 0; i < DP(stmt)->size; i++) {
@@ -3499,7 +3499,7 @@ static knh_Term_t* OR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 	return Stmt_typed(ctx, stmt, TYPE_Boolean);
 }
 
-static knh_Term_t* ALT_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* ALT_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	size_t i;
 	DBG_ASSERT(DP(stmt)->size > 1);
@@ -3509,7 +3509,7 @@ static knh_Term_t* ALT_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 	return Stmt_typed(ctx, stmt, reqt);
 }
 
-static knh_Term_t* TRI_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* TRI_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	TYPING_Condition(ctx, stmt, 0);
 	TYPING_TypedExpr(ctx, stmt, 1, reqt);
@@ -3522,13 +3522,13 @@ static knh_Term_t* TRI_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
 	return Stmt_typed(ctx, stmt, reqt);
 }
 
-static knh_type_t GammaBuilder_getReturnType(CTX ctx)
+static ktype_t GammaBuilder_getReturnType(CTX ctx)
 {
 	knh_Method_t *mtd = DP(ctx->gma)->mtd;
 	return GammaBuilder_type(ctx, knh_ParamArray_rtype(DP(mtd)->mp));
 }
 
-static void GammaBuilder_inferReturnType(CTX ctx, knh_type_t rtype)
+static void GammaBuilder_inferReturnType(CTX ctx, ktype_t rtype)
 {
 	knh_Method_t *mtd = DP(ctx->gma)->mtd;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
@@ -3545,8 +3545,8 @@ static knh_Term_t* RETURN_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	size_t size = DP(stmt)->size;
 	knh_Method_t *mtd = DP(ctx->gma)->mtd;
 	knh_ParamArray_t *pa = DP(mtd)->mp;
-	knh_class_t this_cid = DP(ctx->gma)->this_cid;
-	knh_type_t rtype = GammaBuilder_type(ctx, knh_ParamArray_rtype(pa));
+	kclass_t this_cid = DP(ctx->gma)->this_cid;
+	ktype_t rtype = GammaBuilder_type(ctx, knh_ParamArray_rtype(pa));
 	Stmt_setSTOPITR(stmt, 1);
 	if(size > 1) {
 		WARN_Unsupported(ctx, "returning multiple values");
@@ -3641,7 +3641,7 @@ static int/*hasRETURN*/ StmtITR_typing(CTX ctx, knh_StmtExpr_t *stmt, int needsR
 	return hasRETURN;
 }
 
-knh_bool_t typingFunction(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
+kbool_t typingFunction(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
 {
 	knh_ParamArray_t *mp = DP(mtd)->mp;
 	size_t i, psize = mp->psize;
@@ -3670,7 +3670,7 @@ knh_bool_t typingFunction(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
 	return (STT_(stmtB) != STT_ERR);
 }
 
-static knh_Term_t* FUNCTION_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t reqt)
+static knh_Term_t* FUNCTION_typing(CTX ctx, knh_StmtExpr_t *stmt, ktype_t reqt)
 {
 	knh_StmtExpr_t *stmtP = stmtNN(stmt, 1);
 	knh_StmtExpr_t *stmtB = stmtNN(stmt, 3);
@@ -3728,7 +3728,7 @@ static knh_Term_t* FUNCTION_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t req
 	}
 	knh_Term_t *tkRES = TM(stmt);
 	{
-		knh_flag_t gma_flag = DP(ctx->gma)->flag;
+		kflag_t gma_flag = DP(ctx->gma)->flag;
 		int gma_funcbase0 = DP(ctx->gma)->funcbase0;
 		int gma_psize = DP(ctx->gma)->psize;
 		int gma_fvarsize = DP(ctx->gma)->fvarsize;
@@ -3774,7 +3774,7 @@ static knh_Term_t* FUNCTION_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_type_t req
 	}\
 
 
-static knh_Term_t* EXPR_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_class_t tcid)
+static knh_Term_t* EXPR_typing(CTX ctx, knh_StmtExpr_t *stmt, kclass_t tcid)
 {
 	if(stmt->type != TYPE_var) return TM(stmt);
 	switch(STT_(stmt)) {
@@ -3838,7 +3838,7 @@ static knh_Term_t* IF_typing(CTX ctx, knh_StmtExpr_t *stmt, int needsRETURN)
 	return Stmt_typed(ctx, stmt, TYPE_void);
 }
 
-static knh_Term_t *Tn_it(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t type)
+static knh_Term_t *Tn_it(CTX ctx, knh_StmtExpr_t *stmt, size_t n, ktype_t type)
 {
 	knh_Term_t *tkIT = tkNN(stmt, n);
 	if(TT_(tkIT) != TT_LVAR) {
@@ -3850,9 +3850,9 @@ static knh_Term_t *Tn_it(CTX ctx, knh_StmtExpr_t *stmt, size_t n, knh_type_t typ
 
 static knh_StmtExpr_t* new_StmtCASE(CTX ctx, knh_Term_t *tkIT, knh_Term_t *tkC)
 {
-	knh_type_t switch_type = (tkIT)->type;
-	knh_type_t case_type = (tkC)->type;
-	knh_methodn_t mn = MN_opEQ;
+	ktype_t switch_type = (tkIT)->type;
+	ktype_t case_type = (tkC)->type;
+	kmethodn_t mn = MN_opEQ;
 	DBG_P("switch_type=%s, case_type=%s", TYPE__(switch_type), TYPE__(case_type));
 	if(case_type == CLASS_Class) {  // case Object:
 		mn = MN_opOF;
@@ -3872,7 +3872,7 @@ static knh_Term_t* SWITCH_typing(CTX ctx, knh_StmtExpr_t *stmt, int needsRETURN)
 	}
 	{
 		BEGIN_BLOCK(stmt, esp);
-		knh_type_t type = Tn_type(stmt, 0);
+		ktype_t type = Tn_type(stmt, 0);
 		knh_Term_t *tkIT = Tn_it(ctx, stmt, 2/*IT*/, type);
 		int c = 0;
 		knh_StmtExpr_t *stmtCASE, *stmtDEFAULT = NULL;
@@ -3966,14 +3966,14 @@ static knh_Term_t* FOR_typing(CTX ctx, knh_StmtExpr_t *stmt)
 
 static knh_Term_t* FOREACH1_toIterator(CTX ctx, knh_StmtExpr_t *stmt, size_t n)
 {
-	knh_class_t cid = Tn_cid(stmt, n);
-	knh_class_t bcid = C_bcid(cid), p1 = C_p1(cid);
+	kclass_t cid = Tn_cid(stmt, n);
+	kclass_t bcid = C_bcid(cid), p1 = C_p1(cid);
 	DBG_P("bcid=%s, p1=%s", TYPE__(bcid), TYPE__(p1));
 	if(bcid == CLASS_Iterator) {
 		return tkNN(stmt, n); // OK
 	}
 	if(p1 != TYPE_void) {
-		knh_class_t tcid = knh_class_P1(ctx, CLASS_Iterator, p1);
+		kclass_t tcid = knh_class_P1(ctx, CLASS_Iterator, p1);
 		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, cid, tcid);
 		if(tmr != NULL) {
 			KNH_SETv(ctx, stmtNN(stmt, n), new_TermTCAST(ctx, tcid, tmr, tkNN(stmt, n)));
@@ -4000,11 +4000,11 @@ static knh_Term_t* FOREACH1_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_StmtExpr_t *stmtDECL = stmtNN(stmt, 0);
 //	if(IS_StmtExpr(stmtDECL)) {
 	BEGIN_BLOCK(stmt, esp);
-	knh_class_t itrcid = CLASS_unknown;
+	kclass_t itrcid = CLASS_unknown;
 	knh_Term_t *tkT = TTYPE_typing(ctx, tkNN(stmtDECL, 0), TYPE_var);
 	knh_Term_t *tkN = tkNN(stmtDECL, 1);
 	ksymbol_t fn = Term_fn(ctx, tkN);
-	knh_class_t p1 = tkT->cid;
+	kclass_t p1 = tkT->cid;
 	if(p1 == TYPE_var) {  // foreach(s from in..) ;
 		knh_Term_t *tkN2 = TNAME_typing(ctx, tkN, TYPE_dyn, _FINDLOCAL | _FINDFIELD | _FINDSCRIPT | _USEDCOUNT);
 		if(tkN2 == NULL) {
@@ -4127,9 +4127,9 @@ static knh_Term_t* ASSERT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 /* ------------------------------------------------------------------------ */
 /* [METHOD] */
 
-static knh_flag_t METHOD_flag(CTX ctx, knh_StmtExpr_t *o, knh_class_t cid)
+static kflag_t METHOD_flag(CTX ctx, knh_StmtExpr_t *o, kclass_t cid)
 {
-	knh_flag_t flag = 0;
+	kflag_t flag = 0;
 	if(IS_Map(DP(o)->metaDictCaseMap)) {
 		ADD_FLAG(flag, "Virtual", FLAG_Method_Virtual);
 		ADD_FLAG(flag, "Private", FLAG_Method_Private);
@@ -4147,15 +4147,15 @@ static knh_flag_t METHOD_flag(CTX ctx, knh_StmtExpr_t *o, knh_class_t cid)
 	return flag;
 }
 
-static knh_class_t METHOD_cid(CTX ctx, knh_StmtExpr_t *stmt)
+static kclass_t METHOD_cid(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_Term_t *tkC = tkNN(stmt, 1); DBG_ASSERT(IS_Term(tkC));
-	knh_class_t this_cid = DP(ctx->gma)->this_cid;
+	kclass_t this_cid = DP(ctx->gma)->this_cid;
 	if(TT_(tkC) == TT_ASIS) {
 		return this_cid;
 	}
 	else {
-		knh_class_t cid = knh_Term_cid(ctx, tkC, DP(ctx->gma)->this_cid);
+		kclass_t cid = knh_Term_cid(ctx, tkC, DP(ctx->gma)->this_cid);
 		if(this_cid != O_cid(K_GMASCR) && this_cid != cid) {
 			cid = this_cid;
 			WarningDifferentMethodClass(ctx, TK_tobytes(tkC), cid);
@@ -4164,7 +4164,7 @@ static knh_class_t METHOD_cid(CTX ctx, knh_StmtExpr_t *stmt)
 	}
 }
 
-static knh_methodn_t METHOD_name(CTX ctx, knh_StmtExpr_t *stmt)
+static kmethodn_t METHOD_name(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_Term_t *tkN = tkNN(stmt, 2); DBG_ASSERT(IS_Term(tkN));
 	return (TT_(tkN) == TT_ASIS) ? MN_new : Term_mn(ctx, tkN);
@@ -4172,7 +4172,7 @@ static knh_methodn_t METHOD_name(CTX ctx, knh_StmtExpr_t *stmt)
 
 #define Stmt_isAbstractMethod(stmt)   (DP(stmt)->size == 4)
 
-static knh_Term_t* knh_StmtMTD_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_t *mtd, knh_class_t mtd_cid)
+static knh_Term_t* knh_StmtMTD_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_t *mtd, kclass_t mtd_cid)
 {
 	knh_Fmethod func = NULL;
 	DP(mtd)->uri = ULINE_uri(stmt->uline);
@@ -4190,9 +4190,9 @@ static knh_Term_t* knh_StmtMTD_typing(CTX ctx, knh_StmtExpr_t *stmt, knh_Method_
 
 static knh_Term_t* METHOD_typing(CTX ctx, knh_StmtExpr_t *stmtM)
 {
-	knh_class_t mtd_cid = METHOD_cid(ctx, stmtM);
-	knh_flag_t flag   = METHOD_flag(ctx, stmtM, mtd_cid);
-	knh_methodn_t mn = METHOD_name(ctx, stmtM);
+	kclass_t mtd_cid = METHOD_cid(ctx, stmtM);
+	kflag_t flag   = METHOD_flag(ctx, stmtM, mtd_cid);
+	kmethodn_t mn = METHOD_name(ctx, stmtM);
 	knh_Method_t *mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, mtd_cid, mn);
 	knh_ParamArray_t *mp = NULL;
 	knh_StmtExpr_t *stmtP = stmtNN(stmtM, 3/*PARAMs*/);
@@ -4245,7 +4245,7 @@ L_CheckScope:;
 		}
 		ParamArray_setVARGs(mp, StmtMETHOD_isVARGs(stmtM));
 		knh_Term_t *tkR = TTYPE_typing(ctx, tkNN(stmtM, 0), TYPE_var);
-		knh_type_t rtype = (tkR)->cid;
+		ktype_t rtype = (tkR)->cid;
 		if(rtype == TYPE_var) {
 			ParamArray_setRVAR(mp, 1);
 		}
@@ -4285,7 +4285,7 @@ L_CheckScope:;
 		/* check return value */
 		if(mp->rsize == 0) {
 			knh_Term_t *tkR = TTYPE_typing(ctx, tkNN(stmtM, 0), TYPE_void);
-			knh_type_t rtype = (tkR)->cid;
+			ktype_t rtype = (tkR)->cid;
 			if(rtype != TYPE_void) {
 				return ErrorDifferentlyDefinedMethod(ctx, mtd_cid, mn);
 			}
@@ -4293,7 +4293,7 @@ L_CheckScope:;
 		else {
 			knh_param_t *p = knh_ParamArray_rget(mp, 0);
 			knh_Term_t *tkR = TTYPE_typing(ctx, tkNN(stmtM, 0), p->type);
-			knh_type_t rtype = (tkR)->cid;
+			ktype_t rtype = (tkR)->cid;
 			if(rtype != p->type) {
 				return ErrorDifferentlyDefinedMethod(ctx, mtd_cid, mn);
 			}
@@ -4365,9 +4365,9 @@ static knh_Term_t *DECLFIRST_typing(CTX ctx, knh_StmtExpr_t *stmtP)
 	return ERROR_SingleParam(ctx);
 }
 
-static knh_flag_t TYPEMAP_flag(CTX ctx, knh_StmtExpr_t *stmt)
+static kflag_t TYPEMAP_flag(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_flag_t flag = 0;
+	kflag_t flag = 0;
 	if(IS_Map(DP(stmt)->metaDictCaseMap)) {
 		if(knh_DictMap_getNULL(ctx, DP(stmt)->metaDictCaseMap, STEXT("Const"))) {
 			flag |= FLAG_TypeMap_Const;
@@ -4379,7 +4379,7 @@ static knh_flag_t TYPEMAP_flag(CTX ctx, knh_StmtExpr_t *stmt)
 	return flag;
 }
 
-static knh_Fmethod loadTypeMapFunc(CTX ctx, knh_class_t scid, knh_class_t tcid)
+static knh_Fmethod loadTypeMapFunc(CTX ctx, kclass_t scid, kclass_t tcid)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write_cname(ctx, cwb->w, scid);
@@ -4402,7 +4402,7 @@ static knh_Term_t* TYPEMAP_typing(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_Term_t *tkS = DECLFIRST_typing(ctx, stmtNN(stmt, 2));
 	if(TT_(tkT) == TT_ERR) return tkT;
 	if(TT_(tkS) == TT_ERR) return tkS;
-	knh_class_t scid = tkS->cid, tcid = tkT->cid;
+	kclass_t scid = tkS->cid, tcid = tkT->cid;
 	DBG_P("%s ==> %s", CLASS__(scid), CLASS__(tcid));
 	knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
 	if(tmr != NULL && tmr->scid == scid && !knh_StmtMETA_is(ctx, stmt, "Override")) {
@@ -4430,11 +4430,11 @@ static knh_Term_t* TYPEMAP_typing(CTX ctx, knh_StmtExpr_t *stmt)
 
 static knh_Term_t* FORMAT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_methodn_t mn = MN_toFMT(Term_mn(ctx, tkNN(stmt, 2)));
+	kmethodn_t mn = MN_toFMT(Term_mn(ctx, tkNN(stmt, 2)));
 	DBG_ASSERT(DP(stmt)->size == 3); // check
 	knh_Term_t *tkT = DECLFIRST_typing(ctx, stmtNN(stmt, 3));
 	if(TT_(tkT) != TT_ERR) {
-		knh_class_t cid = tkT->cid;
+		kclass_t cid = tkT->cid;
 		knh_Method_t *mtd = knh_NameSpace_getFmtNULL(ctx, K_GMANS, cid, mn);
 		if(mtd == NULL) {
 			mtd = new_Method(ctx, 0, cid, mn, NULL);
@@ -4455,7 +4455,7 @@ static knh_Term_t* FORMAT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 
 static knh_Term_t *DECLFIELD_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t i)
 {
-	knh_flag_t flag  = DECL_flag(ctx, stmt, _FGETTER | _FSETTER);
+	kflag_t flag  = DECL_flag(ctx, stmt, _FGETTER | _FSETTER);
 	knh_Term_t *tkT = DECL3_typing(ctx, stmt, i, TYPE_var, _VFINDSCRIPT, 0);
 	if(TT_(tkT) != TT_ERR) {
 		return GammaBuilder_add(ctx, flag, tkT, tkNN(stmt,i+1), tkNN(stmt,i+2), GF_UNIQUE|GF_FIELD|GF_USEDCOUNT);
@@ -4464,7 +4464,7 @@ static knh_Term_t *DECLFIELD_typing(CTX ctx, knh_StmtExpr_t *stmt, size_t i)
 }
 
 
-static int GammaBuilder_initClassTBLField(CTX ctx, knh_class_t cid)
+static int GammaBuilder_initClassTBLField(CTX ctx, kclass_t cid)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	if(ct->fsize == 0 && (ct->bcid == CLASS_Object || ct->bcid == CLASS_CppObject)) {
@@ -4491,7 +4491,7 @@ static int GammaBuilder_initClassTBLField(CTX ctx, knh_class_t cid)
 			gf[i].fn   = FN_xdata;
 			gf[i].ucnt = 1;
 			KNH_SETv(ctx, gf[i].tk, KNH_NULL);
-			((knh_ClassTBL_t*)ct)->xdataidx = (knh_short_t)i;
+			((knh_ClassTBL_t*)ct)->xdataidx = (kshort_t)i;
 			DP(ctx->gma)->gsize += 1;
 		}
 		return 1;
@@ -4505,17 +4505,17 @@ static void ClassTBL_newField(CTX ctx, knh_ClassTBL_t *ct)
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
 	DBLNDATA_(
 		for(i = 0; i < gsize; i++) {
-			knh_type_t type = gf[i].type;
+			ktype_t type = gf[i].type;
 			if(IS_Tunbox(type)) fsize++;
 		}
 	);
 	if(fsize > 0) {
 		size_t fi = 0;
-		ct->fields = (knh_fields_t*)KNH_MALLOC(ctx, fsize * sizeof(knh_fields_t));
+		ct->fields = (kfieldinfo_t*)KNH_MALLOC(ctx, fsize * sizeof(kfieldinfo_t));
 		ct->fcapacity = fsize;
 		ct->fsize = fsize;
 		for(i = 0; i < gsize; i++) {
-			knh_type_t type = gf[i].type;
+			ktype_t type = gf[i].type;
 			ct->fields[fi].flag = gf[i].flag;
 			ct->fields[fi].type = type;
 			ct->fields[fi].fn = gf[i].fn;
@@ -4571,7 +4571,7 @@ static void ObjectField_init(CTX ctx, knh_ObjectField_t *o)
 	}
 }
 
-static void GammaBuilder_declareClassField(CTX ctx, knh_class_t cid, size_t s)
+static void GammaBuilder_declareClassField(CTX ctx, kclass_t cid, size_t s)
 {
 	knh_ClassTBL_t *ct = varClassTBL(cid);
 	DBG_ASSERT(O_cid(ct->defnull) == cid);
@@ -4587,7 +4587,7 @@ static void GammaBuilder_declareClassField(CTX ctx, knh_class_t cid, size_t s)
 static knh_Term_t* CLASS_typing(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_Term_t *tkC = tkNN(stmt, 0);
-	knh_class_t this_cid = (tkC)->cid;
+	kclass_t this_cid = (tkC)->cid;
 	size_t i;
 	knh_Term_t *tkRES = NULL;
 	int isAllowedNewField = GammaBuilder_initClassTBLField(ctx, this_cid);
@@ -4687,7 +4687,7 @@ static knh_Term_t* REGISTER_typing(CTX ctx, knh_StmtExpr_t *stmt)
 		TYPING(ctx, stmt, i, TYPE_var, _NOVOID|_NOBOX);
 		knh_StmtExpr_t *stmtREG = stmtNN(stmt, i);
 		if(IS_StmtExpr(stmtREG) && stmtREG->type != TYPE_var) {
-			knh_index_t idx = DP(ctx->gma)->gsize;
+			kindex_t idx = DP(ctx->gma)->gsize;
 			knh_gamma2_t *gf = DP(ctx->gma)->gf;
 			knh_Term_t *tkIDX = new_TermTYPED(ctx, TT_LVAR, stmtREG->type, idx - DP(ctx->gma)->fvarsize);
 			if(!(idx < DP(ctx->gma)->gcapacity)) {
@@ -4729,7 +4729,7 @@ static int Term_equals(CTX ctx, knh_Term_t *tk, knh_Term_t *tk2)
 	return 1;
 }
 
-static knh_bool_t Stmt_equals(CTX ctx, knh_StmtExpr_t *stmt, knh_StmtExpr_t *stmtA)
+static kbool_t Stmt_equals(CTX ctx, knh_StmtExpr_t *stmt, knh_StmtExpr_t *stmtA)
 {
 	size_t i;
 	for(i = 0; i < DP(stmt)->size; i++) {
@@ -4818,7 +4818,7 @@ static knh_Term_t *Stmt_typing(CTX ctx, knh_StmtExpr_t *stmt, int needsReturn)
 }
 
 
-static void GammaBuilder_initThis(CTX ctx, knh_class_t cid, knh_type_t it_type)
+static void GammaBuilder_initThis(CTX ctx, kclass_t cid, ktype_t it_type)
 {
 	knh_gamma2_t *gf = DP(ctx->gma)->gf;
 	GammaBuilder_clear(ctx, 0, NULL);
@@ -4859,7 +4859,7 @@ static void GammaBuilder_initThis(CTX ctx, knh_class_t cid, knh_type_t it_type)
 
 void SCRIPT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 {
-	knh_class_t this_cid = O_cid(K_GMASCR);
+	kclass_t this_cid = O_cid(K_GMASCR);
 	knh_Term_t *tkRES = TM(stmt);
 	if(DP(ctx->gma)->gcapacity == 0) {
 		GammaBuilder_expand(ctx, ctx->gma, 8/*init*/);
@@ -4889,7 +4889,7 @@ void SCRIPT_typing(CTX ctx, knh_StmtExpr_t *stmt)
 /* ------------------------------------------------------------------------ */
 /* [asm] */
 
-knh_bool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
+kbool_t typingMethod2(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
 {
 	knh_ParamArray_t *mp = DP(mtd)->mp;
 	size_t i, psize = mp->psize;
@@ -4929,11 +4929,11 @@ static void METHOD_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	DBG_ASSERT(DP(stmt)->size == 6);
 	if(TT_(tkNN(stmt, 4)) == TT_DOC) {
 		KNH_SETv(ctx, DP(mtd)->tsource, tkNN(stmt, 4/*source*/));
-//		DBG_P("@@ stmt_line =%d, stmt_code=%d", (knh_short_t)stmt->uline, (knh_short_t)tkNN(stmt, 4)->uline);
+//		DBG_P("@@ stmt_line =%d, stmt_code=%d", (kshort_t)stmt->uline, (kshort_t)tkNN(stmt, 4)->uline);
 //		DBG_P("source='''%s'''", S_totext(tkNN(stmt, 4/*source*/)->text));
 	}
 	if(TT_(tkNN(stmt, 5)) == TT_CODE) {  // source code should be parsed just before asm
-//		DBG_P("@@ stmt_line =%d, stmt_code=%d", (knh_short_t)stmt->uline, (knh_short_t)tkNN(stmt, 5)->uline);
+//		DBG_P("@@ stmt_line =%d, stmt_code=%d", (kshort_t)stmt->uline, (kshort_t)tkNN(stmt, 5)->uline);
 		KNH_SETv(ctx, stmtNN(stmt, 5), knh_Term_parseStmt(ctx, stmt->uline, tkNN(stmt, 5)));
 	}
 	//DBG_ASSERT(tkNN(stmt, 5)->uline == stmt->uline);  // bugs fixed
@@ -4953,7 +4953,7 @@ static void TYPEMAP_asm(CTX ctx, knh_StmtExpr_t *stmt)
 	knh_Method_asm(ctx, mtd, stmtNN(stmt, 5), typingMethod2);
 }
 
-static knh_bool_t typingFormat2(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
+static kbool_t typingFormat2(CTX ctx, knh_Method_t *mtd, knh_StmtExpr_t *stmtB)
 {
 	GammaBuilder_initThis(ctx, CLASS_OutputStream, TYPE_void);
 	GammaBuilder_addFVAR(ctx, 0, mtd->cid, FN_it, 1/*ucnt*/);
@@ -4980,8 +4980,8 @@ static void FORMAT_asm(CTX ctx, knh_StmtExpr_t *stmt)
 static void CLASS_asm(CTX ctx, knh_StmtExpr_t *stmt)
 {
 	knh_GammaBuilder_t *kc = ctx->gma;
-	knh_class_t prev_cid = DP(kc)->this_cid;
-	knh_class_t this_cid = (tkNN(stmt, 0))->cid;
+	kclass_t prev_cid = DP(kc)->this_cid;
+	kclass_t this_cid = (tkNN(stmt, 0))->cid;
 	knh_StmtExpr_t *stmtFIELD = stmtNN(stmt, 4/*instmt*/);
 	DP(kc)->this_cid = this_cid;
 	while(stmtFIELD != NULL) {

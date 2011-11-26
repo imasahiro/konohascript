@@ -80,7 +80,7 @@ static knh_IntData_t TokenConstInt[] = {
 
 // String[] String.tokenize()
 
-static KMETHOD String_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_tokenize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
 	size_t i;
@@ -102,7 +102,7 @@ static KMETHOD String_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
 
 // Token[] Lang.tokenize(String script)
 
-static KMETHOD Lang_tokenize(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Lang_tokenize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = (knh_Array_t*)new_ReturnObject(ctx, sfp);
 	tenv_t tenvbuf = {
@@ -140,7 +140,7 @@ knh_Array_t* new_TokenArray(CTX ctx, const char *text, kline_t uline)
 
 // @Static Block Lang.newBlock(String script, int uline, NameSpace _)
 
-static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Lang_newBlock(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Lang_t *lang = ctx->share->corelang;
 	klr_setesp(ctx, sfp+5);
@@ -161,7 +161,7 @@ static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //// void boolean Lang_evalBlock(Block block, NameSpace _);
 //
-//static KMETHOD Block_eval(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Block_eval(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Lang_t *lang = ctx->share->corelang;
 //	knh_Block_t *bk = sfp[1].bk;
@@ -178,7 +178,7 @@ static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 //
 //// void boolean Block_typeCheck(Gamma gma);
 //
-//static KMETHOD Block_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Block_typeCheck(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Lang_t *lang = ctx->share->corelang;
 //	knh_Block_t *bk = sfp[0].bk;
@@ -195,48 +195,48 @@ static KMETHOD Lang_newBlock(CTX ctx, knh_sfp_t *sfp _RIX)
 //
 //// void boolean Block_build(Builder build);
 //
-//static KMETHOD Block_build(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Block_build(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	RETURNb_(1);
 //}
 
-static KMETHOD Token_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Token_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
 	RETURNi_(tok->token);
 }
 
-static KMETHOD Token_getText(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Token_getText(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
 	RETURN_(tok->text);
 }
 
-static KMETHOD Token_getLine(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Token_getLine(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
 	RETURNi_(ULINE_line(tok->uline));
 }
 
-static KMETHOD Token_getPosition(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Token_getPosition(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
 	RETURNi_(tok->lpos);
 }
 
-static KMETHOD Token_error(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Token_error(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
 	knh_perror(ctx, ERR_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
 }
 
-static KMETHOD Token_warn(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Token_warn(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
 	knh_perror(ctx, WARN_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
 }
 
-static KMETHOD Token_info(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Token_info(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Token_t *tok = (knh_Token_t*)sfp[0].o;
 	knh_perror(ctx, INFO_, tok->uline, tok->lpos, "%s", S_totext(sfp[1].s));
@@ -305,7 +305,7 @@ static kline_t readChunk(CTX ctx, knh_InputStream_t *in, kline_t line, knh_Bytes
 	return line;
 }
 
-static int isempty(knh_bytes_t t)
+static int isempty(kbytes_t t)
 {
 	size_t i;
 	for(i = 0; i < t.len; i++) {
@@ -322,7 +322,7 @@ static void readFile(CTX ctx, knh_Path_t *path)
 		knh_InputStream_t *in = new_InputStream(ctx, io2, path);
 		PUSH_GCSTACK(ctx, in);
 		kline_t uline = 1;
-		knh_uri_t uri = knh_getURI(ctx, S_tobytes(path->urn));
+		kuri_t uri = knh_getURI(ctx, S_tobytes(path->urn));
 		ULINE_setURI(uline, uri);
 		knh_Bytes_t*ba = new_Bytes(ctx, "chunk", K_PAGESIZE);
 		PUSH_GCSTACK(ctx, ba);
@@ -338,7 +338,7 @@ static void readFile(CTX ctx, knh_Path_t *path)
 					fprintf(stderr, "\n>>>--------------------------------\n");
 					fprintf(stderr, "%s<<<--------------------------------\n", knh_Bytes_ensureZero(ctx, ba));
 				});
-				//status  = (knh_status_t)knh_beval2(ctx, knh_Bytes_ensureZero(ctx, ba), uline);
+				//status  = (kstatus_t)knh_beval2(ctx, knh_Bytes_ensureZero(ctx, ba), uline);
 			}
 		} while(BA_size(ba) > 0);
 	}
@@ -347,7 +347,7 @@ static void readFile(CTX ctx, knh_Path_t *path)
 
 // @Static void Lang.load(Path path)
 
-static KMETHOD Lang_load(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Lang_load(CTX ctx, ksfp_t *sfp _RIX)
 {
 	readFile(ctx, sfp[1].pth);
 	RETURNvoid_();

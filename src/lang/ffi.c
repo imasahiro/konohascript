@@ -48,24 +48,24 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-//typedef void (*ffi_pconv)(CTX, knh_rbp_t *rbp, void**);
-//typedef void (*ffi_rfunc)(CTX, knh_sfp_t *, void * _RIX);
+//typedef void (*ffi_pconv)(CTX, krbp_t *rbp, void**);
+//typedef void (*ffi_rfunc)(CTX, ksfp_t *, void * _RIX);
 //
-////static void arraysize(CTX ctx, knh_rbp_t* rp, void **pdp)
+////static void arraysize(CTX ctx, krbp_t* rp, void **pdp)
 ////{
 ////	size_t *param = (size_t*)pdp;
 ////	param[0] = knh_Array_size(rp->a);
 ////}
 ////
-////static void arraychar(CTX ctx, knh_rbp_t* rp, void **pdp)
+////static void arraychar(CTX ctx, krbp_t* rp, void **pdp)
 ////{
 ////	const char **param = (const char**)pdp;
 //////	param[0] = Array_size(rp->a);
 ////}
 //
-//static void ffi_pconvNOP(CTX ctx, knh_rbp_t *rp, void **pdp)
+//static void ffi_pconvNOP(CTX ctx, krbp_t *rp, void **pdp)
 //{
-//	knh_rbp_t *nrp = (knh_rbp_t*)pdp;
+//	krbp_t *nrp = (krbp_t*)pdp;
 //	nrp->ndata = rp->ndata;
 //}
 //
@@ -83,7 +83,7 @@ extern "C" {
 //extern ffi_type	ffi_type_longdouble;
 //extern ffi_type	ffi_type_pointer;
 //
-//static ffi_type* type_ffitype(CTX ctx, knh_type_t ptype)
+//static ffi_type* type_ffitype(CTX ctx, ktype_t ptype)
 //{
 //	if(IS_Tunbox(ptype)) {
 //		if(IS_Tint(ptype)) {
@@ -182,7 +182,7 @@ extern "C" {
 //	return NULL;
 //}
 //
-//static void *bytes_find(knh_bytes_t t, knh_keyvalue_t *data, size_t n)
+//static void *bytes_find(kbytes_t t, knh_keyvalue_t *data, size_t n)
 //{
 //	if(t.buf[t.len-1] == '*') {
 //		return &ffi_type_pointer;
@@ -200,7 +200,7 @@ extern "C" {
 //	return NULL;
 //}
 //
-//static ffi_type* bytes_ffitype(CTX ctx, knh_bytes_t t, ffi_type *def)
+//static ffi_type* bytes_ffitype(CTX ctx, kbytes_t t, ffi_type *def)
 //{
 //	ffi_type *ctype = (ffi_type*)bytes_find(t, tdata, sizeof(tdata) / sizeof(knh_keyvalue_t));
 //	if(ctype == NULL) {
@@ -210,32 +210,32 @@ extern "C" {
 //	return ctype;
 //}
 //
-//static int ffi_rbpidx(CTX ctx, knh_type_t ptype, int sfpidx)
+//static int ffi_rbpidx(CTX ctx, ktype_t ptype, int sfpidx)
 //{
 //	int rbpidx = (IS_Tunbox(ptype)) ? 1: 0;
 //	return rbpidx + (sfpidx) * 2;
 //}
 //
-//static int bytes_rbpidx(CTX ctx, knh_bytes_t t, knh_type_t ptype, int def)
+//static int bytes_rbpidx(CTX ctx, kbytes_t t, ktype_t ptype, int def)
 //{
-//	knh_int_t n;
+//	kint_t n;
 //	if(knh_bytes_parseint(t, &n)) {
 //		return ((int)n) * 2 + IS_Tunbox(ptype) ? 1 : 0;
 //	}
 //	return def;
 //}
 //
-//static ffi_pconv bytes_fficonv(CTX ctx, knh_bytes_t t)
+//static ffi_pconv bytes_fficonv(CTX ctx, kbytes_t t)
 //{
 //	return ffi_pconvNOP;
 //}
 //
-//static void Array_addCtype(CTX ctx, knh_Array_t *a, knh_bytes_t t, knh_type_t ptype, int sfpidx)
+//static void Array_addCtype(CTX ctx, knh_Array_t *a, kbytes_t t, ktype_t ptype, int sfpidx)
 //{
 //	ffi_type *ctype = type_ffitype(ctx, ptype);
 //	int rbpidx = ffi_rbpidx(ctx, ptype, sfpidx);
 //	ffi_pconv tr = ffi_pconvNOP;
-//	knh_index_t loc = knh_bytes_index(t, ':');
+//	kindex_t loc = knh_bytes_index(t, ':');
 //	if(loc != -1) {
 //		t = knh_bytes_last(t, loc+1);  // skip ctype:
 //		loc = knh_bytes_index(t, ':');
@@ -266,7 +266,7 @@ extern "C" {
 //}
 //
 //
-//static knh_type_t ptype_getsfpidx(CTX ctx, knh_Method_t *mtd, int sfpidx)
+//static ktype_t ptype_getsfpidx(CTX ctx, knh_Method_t *mtd, int sfpidx)
 //{
 //	if(sfpidx == 0)
 //		return mtd->cid;
@@ -277,10 +277,10 @@ extern "C" {
 //	return TYPE_void;
 //}
 //
-//static knh_bool_t Method_addParam(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, Object *pdata)
+//static kbool_t Method_addParam(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, Object *pdata)
 //{
 //	int sfpidx = Method_isStatic(mtd) ? 1 : 0;
-//	knh_type_t ptype = TYPE_void;
+//	ktype_t ptype = TYPE_void;
 //	if(pdata == NULL) {
 //		ptype = ptype_getsfpidx(ctx, mtd, sfpidx);
 //		while(ptype != TYPE_void) {
@@ -290,7 +290,7 @@ extern "C" {
 //		}
 //	}
 //	else if(IS_bString(pdata)) {
-//		knh_bytes_t t = S_tobytes((knh_String_t*)pdata);
+//		kbytes_t t = S_tobytes((knh_String_t*)pdata);
 //		ptype = ptype_getsfpidx(ctx, mtd, sfpidx);
 //		Array_addCtype(ctx, a, t, ptype, sfpidx);
 //	}
@@ -298,7 +298,7 @@ extern "C" {
 //		knh_Array_t *as = (knh_Array_t*)pdata;
 //		size_t i;
 //		for(i = 0; i < knh_Array_size(as); i++) {
-//			knh_bytes_t t = S_tobytes(as->strings[i]);
+//			kbytes_t t = S_tobytes(as->strings[i]);
 //			ptype = ptype_getsfpidx(ctx, mtd, sfpidx);
 //			Array_addCtype(ctx, a, t, ptype, sfpidx);
 //			sfpidx++;
@@ -314,7 +314,7 @@ extern "C" {
 //	free(cif);
 //}
 //
-//static knh_bool_t Array_addCIF(CTX ctx, knh_Array_t *a, ffi_type *return_type)
+//static kbool_t Array_addCIF(CTX ctx, knh_Array_t *a, ffi_type *return_type)
 //{
 //	size_t i, psize = knh_Array_size(a) / 3;
 //	ffi_type *ctypes[psize];
@@ -345,7 +345,7 @@ extern "C" {
 //#define RTYPE_String   4
 //#define RTYPE_RawPtr   5
 //
-////static int RTYPE__(knh_class_t bcid)
+////static int RTYPE__(kclass_t bcid)
 ////{
 ////	switch(bcid) {
 ////	case CLASS_Tvoid: return RTYPE_void;
@@ -357,43 +357,43 @@ extern "C" {
 ////	return RTYPE_RawPtr;
 ////}
 //
-//static void rconv_void(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
+//static void rconv_void(CTX ctx, ksfp_t *sfp, void *rvalue _RIX)
 //{
 //	RETURNvoid_();
 //}
 //
-//static void rconv_bool(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
+//static void rconv_bool(CTX ctx, ksfp_t *sfp, void *rvalue _RIX)
 //{
-//	knh_bool_t *v = (knh_bool_t*)rvalue;
+//	kbool_t *v = (kbool_t*)rvalue;
 //	RETURNb_(v[0]);
 //}
 //
-//static void rconv_int(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
+//static void rconv_int(CTX ctx, ksfp_t *sfp, void *rvalue _RIX)
 //{
-//	knh_int_t *v = (knh_int_t*)rvalue;
+//	kint_t *v = (kint_t*)rvalue;
 //	RETURNi_(v[0]);
 //}
 //
-//static void rconv_float(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
+//static void rconv_float(CTX ctx, ksfp_t *sfp, void *rvalue _RIX)
 //{
-//	knh_float_t *v = (knh_float_t*)rvalue;
+//	kfloat_t *v = (kfloat_t*)rvalue;
 //	RETURNf_(v[0]);
 //}
 //
-//static void rconv_String(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
+//static void rconv_String(CTX ctx, ksfp_t *sfp, void *rvalue _RIX)
 //{
 //	const char** v = (const char **)rvalue;
 //	RETURN_(new_String(ctx, v[0]));
 //}
 //
-//static void rconv_RawPtr(CTX ctx, knh_sfp_t *sfp, void *rvalue _RIX)
+//static void rconv_RawPtr(CTX ctx, ksfp_t *sfp, void *rvalue _RIX)
 //{
 //	void** v = (void**)rvalue;
 //	KNH_TODO(__FUNCTION__);
 //	RETURN_(new_ReturnCppObject(ctx, sfp, v[0], NULL)); // leak
 //}
 //
-//static ffi_rfunc bcid_rfunc(knh_class_t bcid)
+//static ffi_rfunc bcid_rfunc(kclass_t bcid)
 //{
 //	switch(bcid) {
 //	case CLASS_Tvoid: return rconv_void;
@@ -405,9 +405,9 @@ extern "C" {
 //	return rconv_RawPtr;
 //}
 //
-//static ffi_rfunc bytes_rfunc(CTX ctx, knh_bytes_t t, knh_type_t rtype)
+//static ffi_rfunc bytes_rfunc(CTX ctx, kbytes_t t, ktype_t rtype)
 //{
-//	knh_class_t bcid = C_bcid(rtype);
+//	kclass_t bcid = C_bcid(rtype);
 //	switch(bcid) {
 //	case CLASS_Tvoid: return rconv_void;
 //	case CLASS_Boolean: return rconv_bool;
@@ -418,15 +418,15 @@ extern "C" {
 //	return rconv_RawPtr;
 //}
 //
-//static knh_bool_t Method_setReturn(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, Object *rdata)
+//static kbool_t Method_setReturn(CTX ctx, knh_Method_t *mtd, knh_Array_t *a, Object *rdata)
 //{
 //	knh_ParamArray_t *pa = DP(mtd)->mp;
-//	knh_type_t rtype = knh_ParamArray_rtype(pa);
+//	ktype_t rtype = knh_ParamArray_rtype(pa);
 //	ffi_type *return_type = type_ffitype(ctx, rtype);
 //	ffi_rfunc tr = bcid_rfunc(C_bcid(rtype));
 //	if(rdata != NULL && IS_bString(rdata)) {
-//		knh_bytes_t t = S_tobytes((knh_String_t*)rdata);
-//		knh_index_t loc = knh_bytes_index(t, ':');
+//		kbytes_t t = S_tobytes((knh_String_t*)rdata);
+//		kindex_t loc = knh_bytes_index(t, ':');
 //		t = knh_bytes_last(t, loc+1);  // skip ctype:
 //		loc = knh_bytes_index(t, ':');
 //		if(loc != -1) {
@@ -450,9 +450,9 @@ extern "C" {
 //#define FFI_values(rbp, a, n)      &(rbp[FFI_rbpidx(a,n)].pc)
 //#define FFI_tr(a, n)               (ffi_pconv)(a->ptrs[((n)*3)+1]->rawptr)
 //
-//static KMETHOD Fmethod_FFI(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Fmethod_FFI(CTX ctx, ksfp_t *sfp _RIX)
 //{
-//	knh_rbp_t *rp = (knh_rbp_t*)sfp;
+//	krbp_t *rp = (krbp_t*)sfp;
 //	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
 //	knh_Array_t *ffi_info = Method_infoFFI(mtd)
 //	ffi_cif* cif = FFI_cif(ffi_info);
@@ -472,7 +472,7 @@ extern "C" {
 //
 //typedef void* (*Fgetfunc)(const char *symbol);
 //
-//static void* knh_loadCFUNC(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t cfunc)
+//static void* knh_loadCFUNC(CTX ctx, knh_NameSpace_t *ns, kbytes_t cfunc)
 //{
 //	const char *funcname = knh_bytes_next(cfunc, ':').text;
 //	void *func = NULL;
@@ -518,7 +518,7 @@ knh_Fmethod knh_gluefunc(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_Di
 	return gluefunc;
 }
 
-knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata)
+kbool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata)
 {
 	DBG_P("class %s", CLASS__(O_cid(mdata)));
 	//knh_write_Object(ctx, KNH_STDOUT, UPCAST(mdata), FMT_dump);
@@ -558,12 +558,12 @@ knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_D
 
 /* ------------------------------------------------------------------------ */
 
-//static knh_bool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//static kbool_t LIB_exists(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
 //{
-//	knh_bytes_t libname = knh_bytes_next(path, ':');
-//	knh_bytes_t funcname = knh_bytes_rnext(path, '.');
+//	kbytes_t libname = knh_bytes_next(path, ':');
+//	kbytes_t funcname = knh_bytes_rnext(path, '.');
 //	void *p = knh_open_ffilink(ctx, ns, path);
-//	knh_bool_t res = 0;
+//	kbool_t res = 0;
 //	if(p != NULL) {
 //		res = 1;
 //		if(funcname.len < libname.len) {
@@ -575,7 +575,7 @@ knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_D
 //	return res;
 //}
 //
-//static knh_Object_t* LIB_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//static knh_Object_t* LIB_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, kclass_t cid, knh_String_t *s)
 //{
 //	return NULL/*(knh_Object_t*)s*/;
 //}
@@ -584,17 +584,17 @@ knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_D
 //	"lib", NULL, LIB_hasType, LIB_exists, LIB_newObjectNULL,
 //};
 //
-//static knh_bool_t CFUNC_hasType(CTX ctx, knh_class_t cid)
+//static kbool_t CFUNC_hasType(CTX ctx, kclass_t cid)
 //{
 //	return 0;
 //}
 //
-//static knh_bool_t CFUNC_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//static kbool_t CFUNC_exists(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
 //{
 //	return (knh_loadCFUNC(ctx, ns, path) != NULL);
 //}
 //
-//static knh_Object_t* CFUNC_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//static knh_Object_t* CFUNC_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, kclass_t cid, knh_String_t *s)
 //{
 //	return NULL/*(knh_Object_t*)s*/;
 //}
@@ -603,18 +603,18 @@ knh_bool_t knh_Method_ffi(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_D
 //	"cfunc", NULL, CFUNC_hasType, CFUNC_exists, CFUNC_newObjectNULL,
 //};
 //
-//static knh_bool_t CTYPE_hasType(CTX ctx, knh_class_t cid)
+//static kbool_t CTYPE_hasType(CTX ctx, kclass_t cid)
 //{
 //	return 0;
 //}
 //
-//static knh_bool_t CTYPE_exists(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+//static kbool_t CTYPE_exists(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
 //{
 //	void *ctype = bytes_find(knh_bytes_next(path, ':'), tdata, sizeof(tdata) / sizeof(knh_keyvalue_t));
 //	return (ctype != NULL);
 //}
 //
-//static knh_Object_t* CTYPE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_class_t cid, knh_String_t *s)
+//static knh_Object_t* CTYPE_newObjectNULL(CTX ctx, knh_NameSpace_t *ns, kclass_t cid, knh_String_t *s)
 //{
 //	return NULL/*(knh_Object_t*)s*/;
 //}
@@ -893,8 +893,8 @@ static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ff
 }
 #endif/*K_USING_FFIDSL*/
 //typedef struct {
-//	knh_type_t type;
-//	knh_short_t sfpidx;
+//	ktype_t type;
+//	kshort_t sfpidx;
 //	void *conv_func;
 //} knh_ffiparam_t;  // for ffi
 // sfp: -1 --> return
@@ -906,9 +906,9 @@ static knh_xblock_t* knh_generateWrapper(CTX ctx, void* callee, int argc, knh_ff
 
 static void *knh_generateCallbackFunc32(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo)
 {
-  knh_uchar_t *function = NULL;
+  kchar_t *function = NULL;
 #if !defined(K_USING_WINDOWS) && !defined(K_USING_BTRON)
-  function = (knh_uchar_t*)tmpl;
+  function = (kchar_t*)tmpl;
   //search -1
   int i, marker = -1, jmp_pos = -1, shrink_pos = -1;
   for (i = 0; i < FUNC_SIZE; i++) {
@@ -937,10 +937,10 @@ static void *knh_generateCallbackFunc32(CTX ctx, void *tmpl, void *dest, knh_Fun
 	}
   }
   //  fprintf(stderr, "i=%d\n", i);
-  function = (knh_uchar_t*)knh_xmalloc(ctx, i);
+  function = (kchar_t*)knh_xmalloc(ctx, i);
   memcpy(function, tmpl, i);
   //  fprintf(stderr, "marker:%d, jmp:%d, shrink:%d\n", marker, jmp_pos, shrink_pos);
-  knh_uchar_t buf[FUNC_SIZE]={0};
+  kchar_t buf[FUNC_SIZE]={0};
   //  dumpBinary(function, 48);
   size_t funcsize = i;
   if (shrink_pos > 0) {
@@ -991,9 +991,9 @@ enum last_inst {
 };
 static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Func_t *fo)
 {
-	knh_uchar_t *function = NULL;
+	kchar_t *function = NULL;
 #if !defined(K_USING_WINDOWS) && !defined(K_USING_BTRON)
-	function = (knh_uchar_t*)tmpl;
+	function = (kchar_t*)tmpl;
 	// search -1 (0xfffffff0fffffff0)
 	int i, marker = -1, jmp_pos = -1;
 	enum last_inst lastInst = call_leave_ret;
@@ -1033,7 +1033,7 @@ static void *knh_generateCallbackFunc64(CTX ctx, void *tmpl, void *dest, knh_Fun
 	}
 	// copy function
 	size_t funcsize = i;
-	function = (knh_uchar_t*)knh_xmalloc(ctx, funcsize);
+	function = (kchar_t*)knh_xmalloc(ctx, funcsize);
 	memcpy(function, tmpl, i);
 	if (marker > 0) {
 		memcpy(&function[marker], &fo, sizeof(void*));

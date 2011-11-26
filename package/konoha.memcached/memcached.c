@@ -65,7 +65,7 @@ static void Memcache_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defMemcache(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defMemcache(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->init = Memcache_init;
 	cdef->free = Memcache_free;
@@ -81,17 +81,17 @@ static knh_IntData_t MemcacheConstInt[] = {
 	{NULL, 0}
 };
 
-DEFAPI(void) constMemcache(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constMemcache(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, MemcacheConstInt);
 }
 
 //@Native @Public Memcache Memcache_new (String host, int port)
-KMETHOD Memcache_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
-	knh_int_t port = Int_to(knh_int_t, sfp[2]);
+	kint_t port = Int_to(kint_t, sfp[2]);
 	Memcache_init(ctx, (knh_RawPtr_t*)mcd);
 	// first, create structure
 	mcd->st = memcached_create(NULL);
@@ -129,22 +129,22 @@ L_RETURN:
 
 
 //## @Native @Hidden Memcache Memcache.opLINK(String path, NameSpace _)
-//KMETHOD Memcache_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Memcache_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 //{
-//	knh_bytes_t host_port = knh_bytes_next(S_tobyte(sfp[1].s), ':');
-//	knh_index_t idx = knh_bytes_index(host_port, ':');
+//	kbytes_t host_port = knh_bytes_next(S_tobyte(sfp[1].s), ':');
+//	kindex_t idx = knh_bytes_index(host_port, ':');
 //	if (idx == -1) {
 //		KNH_NTRACE2(ctx, "konoha:link", K_FAILED, KNH_LDATA(LOG_s{"path", host_port.text), LOG_s("type", "Memcache")));
 //		knh_Object_toNULL(ctx, sfp[0].o);
 //		RETURN_(sfp[0].o);
 //	}
-//	knh_int_t port;
+//	kint_t port;
 //}
 
 /* ======================================================================== */
 // [Incrementing and decrementing values]
 //@Native @Public int Memcache.increment(String key, int offset);
-KMETHOD Memcache_increment(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_increment(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -171,7 +171,7 @@ KMETHOD Memcache_increment(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public int Memcache.decrement(String key, int offset);
-KMETHOD Memcache_decrement(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_decrement(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -202,7 +202,7 @@ KMETHOD Memcache_decrement(CTX ctx, knh_sfp_t *sfp _RIX)
 // [Deleting data]
 
 //@Native @Public Boolean Memcache.delete(String key, int expiration_sec);
-KMETHOD Memcache_delete(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_delete(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -224,7 +224,7 @@ KMETHOD Memcache_delete(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public Boolean Memcache.delete_by_key(String group_key, String key, int expiration_sec);
-KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_deleteByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
@@ -253,7 +253,7 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //@Native @Public Boolean Memcache.exist(String key);
 //# if LIBMEMCACHED_VERSION_HEX == 0x00053000
-//KMETHOD Memcache_exist(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Memcache_exist(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 //	const char *key = String_to(const char*, sfp[1]);
@@ -276,7 +276,7 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //@Native @Public Boolean Memcache.exist_by_key(String key);
 //# if LIBMEMCACHED_VERSION_HEX == 0x00053000
-//KMETHOD Memcache_existByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Memcache_existByKey(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 //	const char *group_key = String_to(const char*, sfp[1]);
@@ -301,7 +301,7 @@ KMETHOD Memcache_deleteByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 // [Flushing client buffers]
 
 //@Native @Public Boolean Memcache.flushBuffers(void);
-KMETHOD Memcache_flushBuffers (CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_flushBuffers (CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	memcached_return_t rc = memcached_flush_buffers(mcd->st);
@@ -320,7 +320,7 @@ KMETHOD Memcache_flushBuffers (CTX ctx, knh_sfp_t *sfp _RIX)
 // [Wiping clean the contents of a server]
 
 //@Native @Public Boolean Memcache.flush(int expiration_sec);
-KMETHOD Memcache_flush(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_flush(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	time_t expiration_sec = Int_to(time_t, sfp[1]);
@@ -339,7 +339,7 @@ KMETHOD Memcache_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 // [Retrieving data from the server]
 
 //@Native @Public String Memcache.get (String key);
-KMETHOD Memcache_get(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_get(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -361,7 +361,7 @@ KMETHOD Memcache_get(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public String[] Memcache.mGet (String[] keys);
-KMETHOD Memcache_mGet(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_mGet(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	knh_Array_t *a = sfp[1].a;
@@ -404,7 +404,7 @@ KMETHOD Memcache_mGet(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public String Memcache.getByKey (String key);
-KMETHOD Memcache_getByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_getByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
@@ -428,7 +428,7 @@ KMETHOD Memcache_getByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public String[] Memcache.mGetByKey (String group_key, String[] keys);
-KMETHOD Memcache_mGetByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_mGetByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
@@ -477,7 +477,7 @@ L_ERR:;
 // [Store, replace add, or atomically add data]
 
 //@Native @Public void Memcache.set (String key, String value, int expiration_sec, int falgs);
-KMETHOD Memcache_set (CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_set (CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -501,7 +501,7 @@ KMETHOD Memcache_set (CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public void Memcache.add (String key, String value, int expiration_sec, int flags);
-KMETHOD Memcache_add (CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_add (CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -525,7 +525,7 @@ KMETHOD Memcache_add (CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public void Memcache.replace (String key, String value, int expiration_sec, int flags);
-KMETHOD Memcache_replace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_replace(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -549,7 +549,7 @@ KMETHOD Memcache_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public void Memcache.set_by_key (String group_key, String key, String value, int expiration_sec, int flags);
-KMETHOD Memcache_setByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_setByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
@@ -576,7 +576,7 @@ KMETHOD Memcache_setByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public void Memcache.add_by_key (String group_key, String key, String value, int expiration_sec, int flags);
-KMETHOD Memcache_addByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_addByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
@@ -603,7 +603,7 @@ KMETHOD Memcache_addByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public void Memcache.replace_by_key (String group_key, String key, String value, int expiration_sec, int flags);
-KMETHOD Memcache_replaceByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_replaceByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
@@ -633,7 +633,7 @@ KMETHOD Memcache_replaceByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 // [appending or prepending]
 
 //@Native @Public Boolean Memcache.prepend(String key, String vlaue, int expiration_sec, int flags);
-KMETHOD Memcache_prepend(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_prepend(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -658,7 +658,7 @@ KMETHOD Memcache_prepend(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 //@Native @Public Boolean Memcache.append(String key, String vlaue, int expiration_sec, int flags);
-KMETHOD Memcache_append(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_append(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
@@ -682,7 +682,7 @@ KMETHOD Memcache_append(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public Boolean Memcache.prepend_by_key(String group_key, String key, String vlaue, int expiration_sec, int flags);
-KMETHOD Memcache_prependByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_prependByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
@@ -709,7 +709,7 @@ KMETHOD Memcache_prependByKey(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //@Native @Public Boolean Memcache.append_by_key(String group_key, String key, String vlaue, int expiration_sec, int flags);
-KMETHOD Memcache_appendByKey(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Memcache_appendByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
@@ -769,8 +769,8 @@ static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kn
 {
 	memcached_return rc;
 	memcached_server_list_st servers;
-	knh_bytes_t host, host_port = knh_bytes_next(B(path), ':');
-	knh_index_t idx = knh_bytes_index(host_port, ':');
+	kbytes_t host, host_port = knh_bytes_next(B(path), ':');
+	kindex_t idx = knh_bytes_index(host_port, ':');
 	if (idx == -1) {
 		KNH_NTRACE2(ctx, "memc_init", K_FAILED, KNH_LDATA(LOG_s("path", host_port.text)));
 		return NULL;
@@ -778,7 +778,7 @@ static knh_mapptr_t *memc_init(CTX ctx, size_t init, const char *path, struct kn
 		KNH_NTRACE2(ctx, "memc_init", K_OK, KNH_LDATA(LOG_s("path", host_port.text)));
 	}
 	host = knh_bytes_first(host_port, idx);
-	knh_int_t port;
+	kint_t port;
 	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
 		KNH_NTRACE2(ctx, "memc_init", K_FAILED, KNH_LDATA(LOG_s("path", host_port.text)));
 		return NULL;
@@ -821,7 +821,7 @@ static void memc_freemap(CTX ctx, knh_mapptr_t *m)
 	knh_memcached_free(ctx, memc);
 }
 
-static knh_bool_t string_isprint(const char *s, size_t len)
+static kbool_t string_isprint(const char *s, size_t len)
 {
 	size_t i;
 	for (i = 0; i < len; i++) {
@@ -830,7 +830,7 @@ static knh_bool_t string_isprint(const char *s, size_t len)
 	return 1;
 }
 
-static knh_bool_t memc_get(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t memc_get(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
@@ -854,7 +854,7 @@ static knh_bool_t memc_get(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t 
 	return 1;
 }
 
-static void memc_remove(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+static void memc_remove(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
@@ -887,7 +887,7 @@ static memcached_return knh_memcached_set(memcached_st *ptr, const char *key, si
 	return rc;
 }
 
-static void memc_set(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void memc_set(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
@@ -923,7 +923,7 @@ static memcached_return_t dumper(const memcached_st *st, const char *key, size_t
 	return MEMCACHED_SUCCESS;
 }
 
-static knh_bool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
+static kbool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, ksfp_t *rsfp)
 {
 	memcached_return rc;
 	knh_memcached_t *memc = (knh_memcached_t *)m;
@@ -941,9 +941,9 @@ static knh_bool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_
 		knh_String_t *key = (knh_String_t *)knh_Array_n(memc->a, mitr->index);
 		KNH_SETv(ctx, rsfp[0].s, key);
 		BEGIN_LOCAL(ctx, lsfp, 2);
-		knh_sfp_t *ksfp = &lsfp[0];
+		ksfp_t *ksfp = &lsfp[0];
 		KNH_SETv(ctx, ksfp[0].s, key);
-		knh_sfp_t *vsfp = &lsfp[1];
+		ksfp_t *vsfp = &lsfp[1];
 		if (memc_get(ctx, m, ksfp, vsfp)) {
 			if (IS_String(vsfp[0].o)) {
 				KNH_SETv(ctx, rsfp[1].s, vsfp[0].s);
@@ -961,7 +961,7 @@ static knh_bool_t memc_next(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_
 	return 0;
 }
 
-static const knh_MapDPI_t* memc_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static const knh_MapDPI_t* memc_config(CTX ctx, kclass_t p1, kclass_t p2);
 
 static const knh_MapDPI_t MEMCMAP_SO = {
 	K_DSPI_MAP,    // type
@@ -977,7 +977,7 @@ static const knh_MapDPI_t MEMCMAP_SO = {
 	memc_next,     // next
 };
 
-static const knh_MapDPI_t *memc_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDPI_t *memc_config(CTX ctx, kclass_t p1, kclass_t p2)
 {
 	if (IS_Tstr(p1)) {
 		return &MEMCMAP_SO;

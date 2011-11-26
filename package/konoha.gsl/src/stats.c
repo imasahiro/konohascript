@@ -39,15 +39,15 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-DEFAPI(void) defGslStats(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defGslStats(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "GslStats";
 }
 
 //## @Native float GslStats.mean(float[] data);
-KMETHOD GslStats_mean(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslStats_mean(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_float_t v = gsl_stats_mean((const double *)sfp[1].a->flist, 1, knh_Array_size(sfp[1].a));
+	kfloat_t v = gsl_stats_mean((const double *)sfp[1].a->flist, 1, knh_Array_size(sfp[1].a));
 	RETURNf_(v);
 }
 

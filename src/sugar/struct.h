@@ -50,7 +50,7 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 //	if(IS_FMTdump(level)) {
 //		if(tk->uline != 0) {
 //			knh_write(ctx, w, STEXT("+L"));
-//			knh_write_ifmt(ctx, w, K_INT_FMT, ULINE_line(tk->uline));
+//			knh_write_ifmt(ctx, w, KINT_FMT, ULINE_line(tk->uline));
 //		}
 //		if(SP(tk)->type != TYPE_var) {
 //			knh_write(ctx, w, STEXT("+:")); knh_write_type(ctx, w, SP(tk)->type);
@@ -59,7 +59,7 @@ static void Token_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	knh_write(ctx, w, S_tobytes(tk->text));
 }
 
-static const knh_ClassDef_t TokenDef = {
+static const kClassDef TokenDef = {
 	Token_init, TODO_initcopy, Token_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Token_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -93,7 +93,7 @@ static void Sugar_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 //	if(IS_FMTdump(level)) {
 //		if(tk->uline != 0) {
 //			knh_write(ctx, w, STEXT("+L"));
-//			knh_write_ifmt(ctx, w, K_INT_FMT, ULINE_line(tk->uline));
+//			knh_write_ifmt(ctx, w, KINT_FMT, ULINE_line(tk->uline));
 //		}
 //		if(SP(tk)->type != TYPE_var) {
 //			knh_write(ctx, w, STEXT("+:")); knh_write_type(ctx, w, SP(tk)->type);
@@ -102,7 +102,7 @@ static void Sugar_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 //	knh_write(ctx, w, S_tobytes(tk->text));
 }
 
-static const knh_ClassDef_t SugarDef = {
+static const kClassDef SugarDef = {
 	Sugar_init, TODO_initcopy, Sugar_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Sugar_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -178,7 +178,7 @@ static void Expr_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	break;
 	default:
 		knh_write(ctx, w, STEXT("**UNSET kexpr="));
-		knh_write_ifmt(ctx, w, K_INT_FMT, (knh_int_t)kexpr);
+		knh_write_ifmt(ctx, w, KINT_FMT, (kint_t)kexpr);
 	}
 	if(expr->type != TYPE_var) {
 		knh_putc(ctx, w, ':');
@@ -186,7 +186,7 @@ static void Expr_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 }
 
-static const knh_ClassDef_t ExprDef = {
+static const kClassDef ExprDef = {
 	Expr_init, TODO_initcopy, Expr_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Expr_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -226,7 +226,7 @@ static void Stmt_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 	}
 }
 
-static const knh_ClassDef_t StmtDef = {
+static const kClassDef StmtDef = {
 	Stmt_init, TODO_initcopy, Stmt_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Stmt_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -259,7 +259,7 @@ static void Block_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 //	knh_write(ctx, w, S_tobytes(tk->text));
 }
 
-static const knh_ClassDef_t BlockDef = {
+static const kClassDef BlockDef = {
 	Block_init, TODO_initcopy, Block_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Block_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -309,7 +309,7 @@ static void Lang_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 
 }
 
-static const knh_ClassDef_t LangDef = {
+static const kClassDef LangDef = {
 	Lang_init, TODO_initcopy, Lang_reftrace, Lang_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, Lang_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,

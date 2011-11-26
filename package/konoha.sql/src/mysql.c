@@ -56,8 +56,8 @@ static void knh_mysql_perror(CTX ctx, MYSQL *db, int r)
 /* ------------------------------------------------------------------------ */
 // url mysql://uname:passwd@host:port/dbname
 
-//static knh_qconn_t *MYSQL_qopen(CTX ctx, knh_bytes_t url)
-knh_qconn_t *MYSQL_qopen(CTX ctx, knh_bytes_t url)
+//static knh_qconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
+knh_qconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
 {
 	char *puser, user[MYSQL_USER_MAXLEN+1] = {0};
 	char *ppass, pass[MYSQL_PASS_MAXLEN+1] = {0}; // temporary defined
@@ -65,7 +65,7 @@ knh_qconn_t *MYSQL_qopen(CTX ctx, knh_bytes_t url)
 	unsigned int port = 0;
 	char *pdbnm, dbnm[MYSQL_DBNM_MAXLEN+1] = {0};
 
-	knh_bytes_t bt = knh_bytes_last(url, 8); // skip: mysql://
+	kbytes_t bt = knh_bytes_last(url, 8); // skip: mysql://
 	const char *btstr = bt.text;
 	sscanf(btstr, "%16[^ :\r\n\t]:%255[^ @\r\n\t]@%255[^ :\r\n\t]:%5d/%64[^ \r\n\t]",
 			(char*)&user, (char*)&pass, (char*)&host, &port, (char*)&dbnm); // consider to buffer over run
@@ -97,8 +97,8 @@ int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 	if ((row = mysql_fetch_row((MYSQL_RES*)qcur)) != NULL) {
 		KNH_NTRACE2(ctx, "mysql_fetch_row", K_OK, KNH_LDATA0);
 		int i;
-		knh_int_t ival;
-		knh_float_t fval;
+		kint_t ival;
+		kfloat_t fval;
 		for (i = 0; i < DP(rs)->column_size; i++) {
 			if (row[i] == NULL) {
 				ResultSet_setNULL(ctx, rs, i);
@@ -139,8 +139,8 @@ int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 }
 /* ------------------------------------------------------------------------ */
 
-//static knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_ResultSet_t *rs)
-knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_ResultSet_t *rs)
+//static knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
+knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
 {
 	MYSQL_RES *res = NULL;
 	MYSQL *db = (MYSQL*)hdr;

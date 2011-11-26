@@ -39,11 +39,11 @@ extern "C" {
 
 /* ************************************************************************ */
 
-void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t)
+void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, kbytes_t t)
 {
 	size_t i;
 	if(needsSEP) {
-		knh_bytes_t b = {{ba->bu.text}, pos};
+		kbytes_t b = {{ba->bu.text}, pos};
 		if(!(b.len > 0 && b.buf[b.len-1] == '/')) {
 			knh_Bytes_putc(ctx, ba, '/');
 		}
@@ -54,11 +54,11 @@ void knh_buff_addpath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_by
 	}
 }
 
-void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_bytes_t t)
+void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, kbytes_t t)
 {
 	size_t i;
 	if(needsSEP) {
-		knh_bytes_t b = {{ba->bu.text}, pos};
+		kbytes_t b = {{ba->bu.text}, pos};
 		if(!(b.len > 0 && b.buf[b.len-1] == K_SEP)) {
 			knh_Bytes_putc(ctx, ba, K_SEP);
 		}
@@ -76,7 +76,7 @@ void knh_buff_addospath(CTX ctx, knh_Bytes_t *ba, size_t pos, int needsSEP, knh_
 
 void knh_buff_trim(CTX ctx, knh_Bytes_t *ba, size_t pos, int ch)
 {
-	knh_uchar_t *ubuf = ba->bu.ubuf + pos;
+	kchar_t *ubuf = ba->bu.ubuf + pos;
 	long i, len = BA_size(ba) - pos;
 	if(ch == '/' && ch != K_SEP) ch = K_SEP;
 	for(i = len - 1; i >= 0 ; i--) {
@@ -114,9 +114,9 @@ KNHAPI2(knh_Path_t*) new_Path(CTX ctx, knh_String_t *path)
 	return pth;
 }
 
-static void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, knh_bytes_t path)
+static void knh_buff_addScriptPath(CTX ctx, knh_Bytes_t *ba, size_t pos, knh_NameSpace_t *ns, kbytes_t path)
 {
-	knh_bytes_t bpath = knh_bytes_next(path, ':');
+	kbytes_t bpath = knh_bytes_next(path, ':');
 	knh_buff_addpath(ctx, ba, pos, 0, B(ns->path->ospath));
 	if(!knh_buff_isdir(ctx, ba, pos)) {
 		knh_buff_trim(ctx, ba, pos, '/');
@@ -129,7 +129,7 @@ knh_Path_t *new_ScriptPath(CTX ctx, knh_String_t *urn, knh_NameSpace_t *ns)
 	knh_Path_t *pth = new_(Path);
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	KNH_SETv(ctx, pth->urn, urn);
-	knh_bytes_t bpath = knh_bytes_next(S_tobytes(urn), ':');
+	kbytes_t bpath = knh_bytes_next(S_tobytes(urn), ':');
 	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
 	pth->ospath = new_cwbtext(ctx, cwb, &(pth->asize));
 	CWB_close(cwb);
@@ -166,7 +166,7 @@ static size_t io2_writeNOP(CTX ctx, knh_io2_t *io2, const char *buf, size_t bufs
 {
 	return 0;
 }
-static knh_bool_t io2_readNOP(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_readNOP(CTX ctx, knh_io2_t *io2)
 {
 	return 0;
 }
@@ -174,7 +174,7 @@ static void io2_closeNOP(CTX ctx, knh_io2_t *io2)
 {
 }
 
-static knh_bool_t io2_readFILE(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_readFILE(CTX ctx, knh_io2_t *io2)
 {
 	if(io2->bufsiz == 0) {
 		io2->bufsiz = K_PAGESIZE;
@@ -240,7 +240,7 @@ knh_io2_t* new_FILE(CTX ctx, FILE *fp, size_t bufsiz)
 	return io2;
 }
 
-static knh_bool_t io2_blockread(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_blockread(CTX ctx, knh_io2_t *io2)
 {
 	if(io2->bufsiz == 0) {
 		io2->bufsiz = K_PAGESIZE;
@@ -263,7 +263,7 @@ static knh_bool_t io2_blockread(CTX ctx, knh_io2_t *io2)
 	}
 }
 
-static knh_bool_t io2_unblockread(CTX ctx, knh_io2_t *io2)
+static kbool_t io2_unblockread(CTX ctx, knh_io2_t *io2)
 {
 	int fd = io2->fd;
 	fd_set fds;
@@ -439,7 +439,7 @@ void io2_close(CTX ctx, knh_io2_t *io2)
 	}
 }
 
-knh_bool_t io2_isClosed(CTX ctx, knh_io2_t *io2)
+kbool_t io2_isClosed(CTX ctx, knh_io2_t *io2)
 {
 	return (io2->isRunning == 0 && io2->top >= io2->tail);
 }
@@ -448,7 +448,7 @@ int io2_getc(CTX ctx, knh_io2_t *io2)
 {
 	int ch = EOF;
 	if(io2->top < io2->tail) {
-		ch = (knh_uchar_t)io2->buffer[io2->top];
+		ch = (kchar_t)io2->buffer[io2->top];
 		io2->top += 1;
 	}
 	else if(io2->isRunning) {
@@ -580,7 +580,7 @@ size_t io2_writeMultiByteChar(CTX ctx, knh_io2_t *io2, const char *buf, size_t b
 	return io2->_write(ctx, io2, buf, bufsiz);
 }
 
-knh_bool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
+kbool_t NOFILE_exists(CTX ctx, knh_Path_t *path)
 {
 	return 0;
 }
@@ -599,14 +599,14 @@ static const knh_PathDPI_t STREAM_NOFILE = {
 	NOFILE_exists, NOFILE_ospath, NOFILE_openNULL,
 };
 
-static knh_bool_t FILE_exists(CTX ctx, knh_Path_t *path)
+static kbool_t FILE_exists(CTX ctx, knh_Path_t *path)
 {
 	return knh_exists(ctx, path->ospath);
 }
 static void FILE_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_bytes_t urn = S_tobytes(path->urn);
+	kbytes_t urn = S_tobytes(path->urn);
 	if(isalpha(urn.text[0]) && urn.text[1] == ':') { // C:\Windows
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, urn);
 	}
@@ -637,7 +637,7 @@ static const knh_PathDPI_t STREAM_FILE = {
 static void SCRIPT_ospath(CTX ctx, knh_Path_t *path, knh_NameSpace_t *ns)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_bytes_t bpath = knh_bytes_next(S_tobytes(path->urn), ':');
+	kbytes_t bpath = knh_bytes_next(S_tobytes(path->urn), ':');
 	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
 	path->ospath = new_cwbtext(ctx, cwb, &(path->asize));
 	CWB_close(cwb);
@@ -654,9 +654,9 @@ static const knh_PathDPI_t STREAM_SCRIPT = {
 
 #include<curl/curl.h>
 
-static knh_bool_t CURL_exists(CTX ctx, knh_Path_t *path)
+static kbool_t CURL_exists(CTX ctx, knh_Path_t *path)
 {
-	knh_bool_t res = 0;
+	kbool_t res = 0;
 	CURL *curl = curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_URL, S_totext(path->urn));
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
@@ -731,7 +731,7 @@ static knh_io_t CURL_open(CTX ctx, knh_Path_t *path, const char *mode, knh_DictM
 	return (knh_io_t)cp;
 }
 
-static knh_bool_t CURL_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
+static kbool_t CURL_info(CTX ctx, knh_io_t fd, knh_Object_t *o)
 {
 	//	if(cp->contenttype == NULL){
 	//		char *type = NULL;
@@ -819,7 +819,7 @@ static int use_buffer(curl_t *cp, int want)
 	return 0;
 }
 
-//static knh_intptr_t CURL_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
+//static kintptr_t CURL_read(CTX ctx, knh_io_t fd, char *buf, size_t bufsiz)
 //{
 //	curl_t *cp = (curl_t*)fd;
 //	fill_buffer(cp, bufsiz, 1);
@@ -832,7 +832,7 @@ static int use_buffer(curl_t *cp, int want)
 //	return bufsiz;
 //}
 //
-//static knh_bool_t CURL_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
+//static kbool_t CURL_readline(CTX ctx, knh_io_t fd, knh_Bytes_t *ba)
 //{
 //	curl_t *cp = (curl_t*)fd;
 //	int ret = 0;
@@ -892,7 +892,7 @@ static int use_buffer(curl_t *cp, int want)
 //	return file->buffer[file->buffer_pos++];
 //}
 //
-//static knh_intptr_t CURL_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
+//static kintptr_t CURL_write(CTX ctx, knh_io_t fd, const char *buf, size_t bufsiz)
 //{
 //	return 0;
 //}
@@ -1015,12 +1015,12 @@ KNHAPI2(void) knh_OutputStream_putc(CTX ctx, knh_OutputStream_t *w, int ch)
 	io2_write(ctx, w->io2, buf, 1);
 }
 
-KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf)
+KNHAPI2(void) knh_OutputStream_write(CTX ctx, knh_OutputStream_t *w, kbytes_t buf)
 {
 	io2_write(ctx, w->io2, buf.text, buf.len);
 }
 
-KNHAPI2(void) knh_OutputStream_p(CTX ctx, knh_OutputStream_t *w, knh_bytes_t buf)
+KNHAPI2(void) knh_OutputStream_p(CTX ctx, knh_OutputStream_t *w, kbytes_t buf)
 {
 	if(w->encNULL != NULL) {
 		size_t i;
@@ -1057,44 +1057,44 @@ KNHAPI2(void) knh_write_TAB(CTX ctx, knh_OutputStream_t *w)
 
 void knh_write_bool(CTX ctx, knh_OutputStream_t *w, int b)
 {
-	knh_bytes_t t = (b) ? STEXT("true") : STEXT("false");
+	kbytes_t t = (b) ? STEXT("true") : STEXT("false");
 	io2_write(ctx, w->io2, t.text, t.len);
 }
 
 void knh_write_ptr(CTX ctx, knh_OutputStream_t *w, void *ptr)
 {
-	char buf[K_INT_FMTSIZ];
+	char buf[KINT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), "%p", ptr);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_dfmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_intptr_t n)
+void knh_write_dfmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, kintptr_t n)
 {
-	char buf[K_INT_FMTSIZ];
+	char buf[KINT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_ifmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_int_t n)
+void knh_write_ifmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, kint_t n)
 {
-	char buf[K_INT_FMTSIZ];
+	char buf[KINT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_ffmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, knh_float_t n)
+void knh_write_ffmt(CTX ctx, knh_OutputStream_t *w, const char *fmt, kfloat_t n)
 {
-	char buf[K_FLOAT_FMTSIZ];
+	char buf[KFLOAT_FMTSIZ];
 	knh_snprintf(buf, sizeof(buf), fmt, n);
 	io2_write(ctx, w->io2, (const char*)buf, knh_strlen(buf));
 }
 
-void knh_write_flag(CTX ctx, knh_OutputStream_t *w, knh_flag_t flag)
+void knh_write_flag(CTX ctx, knh_OutputStream_t *w, kflag_t flag)
 {
-	knh_uchar_t ubuf[8];
-	knh_bytes_t t = {{(const char*)ubuf}, 1};
-	knh_intptr_t i;
-	knh_flag_t f = 1 << 15;
+	kchar_t ubuf[8];
+	kbytes_t t = {{(const char*)ubuf}, 1};
+	kintptr_t i;
+	kflag_t f = 1 << 15;
 	for(i = 0; i < 16; i++) {
 		if(i > 0 && i % 8 == 0) {
 			ubuf[0] = ' ';
@@ -1111,7 +1111,7 @@ KNHAPI2(void) knh_write_ascii(CTX ctx, knh_OutputStream_t *w, const char *text)
 	io2_write(ctx, w->io2, text, knh_strlen(text));
 }
 
-KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8)
+KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, kbytes_t t, int hasUTF8)
 {
 	if(hasUTF8 && w->encNULL != NULL) {
 		io2_writeMultiByteChar(ctx, w->io2, t.text, t.len, w->encNULL);
@@ -1123,9 +1123,9 @@ KNHAPI2(void) knh_write_utf8(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int 
 
 /* ------------------------------------------------------------------------ */
 
-void knh_write_quote(CTX ctx, knh_OutputStream_t *w, int quote, knh_bytes_t t, int hasUTF8)
+void knh_write_quote(CTX ctx, knh_OutputStream_t *w, int quote, kbytes_t t, int hasUTF8)
 {
-	knh_bytes_t sub = t;
+	kbytes_t sub = t;
 	size_t i, s = 0;
 	knh_putc(ctx, w, quote);
 	for(i = 0; i < t.len; i++) {
@@ -1158,7 +1158,7 @@ void knh_write_quote(CTX ctx, knh_OutputStream_t *w, int quote, knh_bytes_t t, i
 	knh_putc(ctx, w, quote);
 }
 
-void knh_write_cap(CTX ctx, knh_OutputStream_t *w, knh_bytes_t t, int hasUTF8)
+void knh_write_cap(CTX ctx, knh_OutputStream_t *w, kbytes_t t, int hasUTF8)
 {
 	if(islower(t.utext[0])) {
 		knh_putc(ctx, w, toupper(t.utext[0]));
@@ -1218,7 +1218,7 @@ static const char* knh_vprintf_parseindex(const char *p, int *index)
 
 #define VA_NOP                0
 #define VA_DIGIT              1 /* intptr_t */
-#define VA_LONG               2 /* knh_int_t */
+#define VA_LONG               2 /* kint_t */
 #define VA_FLOAT              3
 #define VA_CHAR               4
 #define VA_POINTER            5
@@ -1232,19 +1232,19 @@ static const char* knh_vprintf_parseindex(const char *p, int *index)
 typedef struct {
 	int atype;
 	union {
-		knh_intptr_t  dvalue;
-		knh_uintptr_t uvalue;
-		knh_int_t     ivalue;
-		knh_float_t   fvalue;
-		knh_float_t   evalue;
+		kintptr_t  dvalue;
+		kuintptr_t uvalue;
+		kint_t     ivalue;
+		kfloat_t   fvalue;
+		kfloat_t   evalue;
 		void         *pvalue;
 		char         *svalue;
 		Object       *ovalue;
-		knh_bytes_t   bvalue;
-		knh_class_t     cid;
-		knh_type_t      type;
+		kbytes_t   bvalue;
+		kclass_t     cid;
+		ktype_t      type;
 		ksymbol_t    fn;
-		knh_methodn_t   mn;
+		kmethodn_t   mn;
 	};
 } knh_valist_t;
 
@@ -1312,14 +1312,14 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 	for(i = 0; i < 10; i++) {
 		switch(args[i].atype) {
 		case VA_DIGIT:
-			args[i].dvalue = (knh_intptr_t)va_arg(ap, knh_intptr_t); break;
+			args[i].dvalue = (kintptr_t)va_arg(ap, kintptr_t); break;
 		case VA_LONG:
-			args[i].ivalue = (knh_int_t)va_arg(ap, knh_int_t); break;
+			args[i].ivalue = (kint_t)va_arg(ap, kint_t); break;
 		case VA_FLOAT:
 #if defined(K_USING_NOFLOAT)
-			args[i].fvalue = (knh_float_t)va_arg(ap, knh_float_t);
+			args[i].fvalue = (kfloat_t)va_arg(ap, kfloat_t);
 #else
-			args[i].fvalue = (knh_float_t)va_arg(ap, double);
+			args[i].fvalue = (kfloat_t)va_arg(ap, double);
 #endif
 			break;
 		case VA_CHAR:
@@ -1331,13 +1331,13 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 		case VA_FIELDN:
 			args[i].fn = (ksymbol_t)va_arg(ap, int/*ksymbol_t*/); break;
 		case VA_METHODN:
-			args[i].mn = (knh_methodn_t)va_arg(ap, int/*knh_methodn_t*/); break;
+			args[i].mn = (kmethodn_t)va_arg(ap, int/*kmethodn_t*/); break;
 		case VA_CLASS:
-			args[i].cid = (knh_class_t)va_arg(ap, int/*knh_class_t*/); break;
+			args[i].cid = (kclass_t)va_arg(ap, int/*kclass_t*/); break;
 		case VA_TYPE:
-			args[i].type = (knh_type_t)va_arg(ap, int/*knh_type_t*/); break;
+			args[i].type = (ktype_t)va_arg(ap, int/*ktype_t*/); break;
 		case VA_BYTES:
-			args[i].bvalue = (knh_bytes_t)va_arg(ap, knh_bytes_t); break;
+			args[i].bvalue = (kbytes_t)va_arg(ap, kbytes_t); break;
 		default:
 			bindex_max = i;
 			goto L_FORMAT;
@@ -1345,7 +1345,7 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 	}
 
 	L_FORMAT: {
-		knh_bytes_t b;
+		kbytes_t b;
 		c = fmt;
 		bindex = 0;
 		b.text = c;
@@ -1395,15 +1395,15 @@ void knh_vprintf(CTX ctx, knh_OutputStream_t *w, const char *fmt, va_list ap)
 						break;
 					case 'l': case 'i' :
 						DBG_ASSERT(args[index].atype == VA_LONG);
-						knh_write_ifmt(ctx, w, K_INT_FMT, args[index].ivalue);
+						knh_write_ifmt(ctx, w, KINT_FMT, args[index].ivalue);
 						break;
 					case 'f':
 						DBG_ASSERT(args[index].atype == VA_FLOAT);
-						knh_write_ffmt(ctx, w, K_FLOAT_FMT, args[index].fvalue);
+						knh_write_ffmt(ctx, w, KFLOAT_FMT, args[index].fvalue);
 						break;
 					case 'e':
 						DBG_ASSERT(args[index].atype == VA_FLOAT);
-						knh_write_ffmt(ctx, w, K_FLOAT_FMTE, args[index].fvalue);
+						knh_write_ffmt(ctx, w, KFLOAT_FMTE, args[index].fvalue);
 						break;
 					case 's':
 						DBG_ASSERT(args[index].atype == VA_CHAR);
@@ -1476,14 +1476,14 @@ KNHAPI2(void) knh_printf(CTX ctx, knh_OutputStream_t *w, const char *fmt, ...)
 
 /* ------------------------------------------------------------------------ */
 
-static KMETHOD InputStream_getByte(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_getByte(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(io2_getc(ctx, (sfp[0].in)->io2));
 }
 
 // Bytes InputStream.read(Bytes buf, size_t size);
 
-static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_read(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[1].ba;
 	if(IS_NULL(ba)) {
@@ -1502,9 +1502,9 @@ static KMETHOD InputStream_read(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(ba);
 }
 
-static KMETHOD InputStream_eachLine(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_eachLine(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_sfp_t *thissfp = sfp + 2 + K_CALLDELTA;
+	ksfp_t *thissfp = sfp + 2 + K_CALLDELTA;
 	//knh_Method_t *mtd = knh_Func_preset(ctx, sfp[1].fo, thissfp);
 	while(1) {
 		knh_String_t *line = io2_readLine(ctx, (sfp[0].in)->io2, (sfp[0].in)->decNULL);
@@ -1517,36 +1517,36 @@ static KMETHOD InputStream_eachLine(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-static KMETHOD InputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_isClosed(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(io2_isClosed(ctx, (sfp[0].in)->io2));
 }
 
-static KMETHOD InputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_setCharset(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_InputStream_setCharset(ctx, sfp[0].in, (knh_StringDecoder_t*)sfp[1].o);
 	RETURN_(sfp[1].o);
 }
 
-static KMETHOD OutputStream_putByte(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_putByte(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_putc(ctx, w, (int)(sfp[1].ivalue));
 	RETURNvoid_();
 }
 
-static KMETHOD OutputStream_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_isClosed(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(io2_isClosed(ctx, (sfp[0].in)->io2));
 }
 
-static KMETHOD OutputStream_setCharset(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_setCharset(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_setCharset(ctx, sfp[0].w, (knh_StringEncoder_t*)sfp[1].o);
 	RETURN_(sfp[1].o);
 }
 
-static KMETHOD System_addHistory(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_addHistory(CTX ctx, ksfp_t *sfp _RIX)
 {
 	ctx->spi->add_history(S_totext(sfp[1].s));
 	RETURNvoid_();

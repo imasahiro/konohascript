@@ -41,7 +41,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [properties] */
 
-static void CWB_nzenvkey(CTX ctx, CWB_t *cwb, knh_bytes_t t)
+static void CWB_nzenvkey(CTX ctx, CWB_t *cwb, kbytes_t t)
 {
 	size_t i;
 	for(i = 0; i < t.len; i++) {
@@ -51,7 +51,7 @@ static void CWB_nzenvkey(CTX ctx, CWB_t *cwb, knh_bytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t* knh_getPropertyNULL(CTX ctx, knh_bytes_t key)
+knh_String_t* knh_getPropertyNULL(CTX ctx, kbytes_t key)
 {
 	if(knh_bytes_startsWith_(key, STEXT("env."))) {
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
@@ -83,7 +83,7 @@ KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value)
 /* ------------------------------------------------------------------------ */
 /* [Constant Value] */
 
-Object *knh_getClassConstNULL(CTX ctx, knh_class_t cid, knh_bytes_t name)
+Object *knh_getClassConstNULL(CTX ctx, kclass_t cid, kbytes_t name)
 {
 	DBG_ASSERT_cid(cid);
 	if(ClassTBL(cid)->constDictCaseMapNULL == NULL) return NULL;
@@ -100,7 +100,7 @@ Object *knh_getClassConstNULL(CTX ctx, knh_class_t cid, knh_bytes_t name)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_addClassConst(CTX ctx, knh_class_t cid, knh_String_t* name, Object *value)
+int knh_addClassConst(CTX ctx, kclass_t cid, knh_String_t* name, Object *value)
 {
 	int ret;
 	knh_DictMap_t *cmap = ClassTBL(cid)->constDictCaseMapNULL;
@@ -133,18 +133,18 @@ ksymbol_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 	size_t n = knh_Map_size(ctx->share->nameDictCaseSet);
 	if(n == ctx->share->namecapacity) {
 		ctx->wshare->namecapacity = k_grow(n);
-		ctx->wshare->nameinfo = (knh_nameinfo_t*)KNH_REALLOC(ctx, "nameinfo", ctx->share->nameinfo, n, ctx->share->namecapacity, sizeof(knh_nameinfo_t));
+		ctx->wshare->nameinfo = (knameinfo_t*)KNH_REALLOC(ctx, "nameinfo", ctx->share->nameinfo, n, ctx->share->namecapacity, sizeof(knameinfo_t));
 	}
 	DBG_ASSERT(n < ctx->share->namecapacity);
 	KNH_INITv(ctx->share->nameinfo[n].name, s);
-	if(unlikely(!(n+1 < K_FLAG_MN_SETTER))) {  /* Integer overflowed */
-		KNH_DIE("too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)K_FLAG_MN_SETTER);
+	if(unlikely(!(n+1 < KFLAG_MN_SETTER))) {  /* Integer overflowed */
+		KNH_DIE("too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)KFLAG_MN_SETTER);
 	}
 	f(ctx, ctx->share->nameDictCaseSet, s, n + 1);
 	return (ksymbol_t)(n);
 }
 
-static ksymbol_t addSymbol(CTX ctx, knh_bytes_t t)
+static ksymbol_t addSymbol(CTX ctx, kbytes_t t)
 {
 	char symbuf[K_SYMBOL_MAXSIZ];
 	size_t i, pos = 0;
@@ -164,10 +164,10 @@ static ksymbol_t addSymbol(CTX ctx, knh_bytes_t t)
 	return knh_addname(ctx, new_String2(ctx, CLASS_String, (const char*)symbuf, pos, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
 }
 
-static ksymbol_t getSymbol(CTX ctx, knh_bytes_t n, ksymbol_t def)
+static ksymbol_t getSymbol(CTX ctx, kbytes_t n, ksymbol_t def)
 {
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	knh_index_t idx = knh_DictSet_index(ctx->share->nameDictCaseSet, n);
+	kindex_t idx = knh_DictSet_index(ctx->share->nameDictCaseSet, n);
 	if(idx == -1) {
 		if(def == FN_NEWID) {
 			idx = addSymbol(ctx, n);
@@ -183,7 +183,7 @@ static ksymbol_t getSymbol(CTX ctx, knh_bytes_t n, ksymbol_t def)
 	return (ksymbol_t)idx + MN_OPSIZE;
 }
 
-static knh_nameinfo_t *knh_getnameinfo(CTX ctx, ksymbol_t fn)
+static knameinfo_t *knh_getnameinfo(CTX ctx, ksymbol_t fn)
 {
 	size_t n = (FN_UNMASK(fn) - MN_OPSIZE);
 	DBG_(
@@ -196,7 +196,7 @@ static knh_nameinfo_t *knh_getnameinfo(CTX ctx, ksymbol_t fn)
 /* ------------------------------------------------------------------------ */
 /* [fn] */
 
-const char* knh_getopMethodName(knh_methodn_t mn);
+const char* knh_getopMethodName(kmethodn_t mn);
 
 KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, ksymbol_t fn)
 {
@@ -211,24 +211,24 @@ KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, ksymbol_t fn)
 
 /* ------------------------------------------------------------------------ */
 
-ksymbol_t knh_getfnq(CTX ctx, knh_bytes_t tname, ksymbol_t def)
+ksymbol_t knh_getfnq(CTX ctx, kbytes_t tname, ksymbol_t def)
 {
 	ksymbol_t mask = 0;
-	knh_index_t idx = knh_bytes_index(tname, ':');
+	kindex_t idx = knh_bytes_index(tname, ':');
 	if(idx > 0) {
 		tname = knh_bytes_first(tname, idx);
 	}
 	else if(knh_bytes_startsWith_(tname, STEXT("super."))) {
-		mask = (def == FN_NONAME) ? 0 : K_FLAG_FN_SUPER;
+		mask = (def == FN_NONAME) ? 0 : KFLAG_FN_SUPER;
 		tname = knh_bytes_last(tname, 6);
 	}
 	else if(!knh_bytes_endsWith_(tname, STEXT("__"))) {
 		if(tname.utext[0] == '_' && def != FN_NONAME) {
-			mask = K_FLAG_FN_U1;
+			mask = KFLAG_FN_U1;
 			tname = knh_bytes_last(tname, 1);
 		}
 		if(tname.utext[0] == '_' && def != FN_NONAME) {
-			mask = K_FLAG_FN_U2;
+			mask = KFLAG_FN_U2;
 			tname = knh_bytes_last(tname, 1);
 		}
 		while(tname.utext[0] == '_') {
@@ -241,7 +241,7 @@ ksymbol_t knh_getfnq(CTX ctx, knh_bytes_t tname, ksymbol_t def)
 /* ------------------------------------------------------------------------ */
 /* [methodn] */
 
-static knh_bytes_t knh_bytes_skipFMTOPT(knh_bytes_t t)
+static kbytes_t knh_bytes_skipFMTOPT(kbytes_t t)
 {
 	size_t i;
 	for(i = 1; i < t.len; i++) {
@@ -252,11 +252,11 @@ static knh_bytes_t knh_bytes_skipFMTOPT(knh_bytes_t t)
 	return t;
 }
 
-knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def)
+kmethodn_t knh_getmn(CTX ctx, kbytes_t tname, kmethodn_t def)
 {
 	ksymbol_t mask = 0;
 	if(tname.utext[0] == 'o' && tname.utext[1] == 'p') {
-		knh_methodn_t mn = MN_opNOT;
+		kmethodn_t mn = MN_opNOT;
 		for(; mn <= MN_opNEG; mn++) {
 			const char *op = knh_getopMethodName(mn);
 			if(knh_bytes_equals(tname, B(op))) {
@@ -266,26 +266,26 @@ knh_methodn_t knh_getmn(CTX ctx, knh_bytes_t tname, knh_methodn_t def)
 	}
 	if(tname.utext[0] == '%') {
 		tname = knh_bytes_skipFMTOPT(tname);
-		if(def != MN_NONAME) mask |= K_FLAG_MN_FMT;
+		if(def != MN_NONAME) mask |= KFLAG_MN_FMT;
 	}
 	else if(tname.utext[0] == 'i' && tname.utext[1] == 's') { /* is => get */
 		tname = knh_bytes_last(tname, 2);
-		if(def != MN_NONAME) mask |= K_FLAG_MN_ISBOOL;
+		if(def != MN_NONAME) mask |= KFLAG_MN_ISBOOL;
 	}
 	else if(tname.utext[0] == 'g' && tname.utext[1] == 'e' && tname.utext[2] == 't') {
 		tname = knh_bytes_last(tname, 3);
-		if(def != MN_NONAME) mask |= K_FLAG_MN_GETTER;
+		if(def != MN_NONAME) mask |= KFLAG_MN_GETTER;
 	}
 	else if(tname.utext[0] == 's' && tname.utext[1] == 'e' && tname.utext[2] == 't') {
 		tname = knh_bytes_last(tname, 3);
-		if(def != MN_NONAME) mask |= K_FLAG_MN_SETTER;
+		if(def != MN_NONAME) mask |= KFLAG_MN_SETTER;
 	}
 	return getSymbol(ctx, tname, def) | mask;
 }
 
 /* ------------------------------------------------------------------------ */
 
-const char* knh_getmnname(CTX ctx, knh_methodn_t mn)
+const char* knh_getmnname(CTX ctx, kmethodn_t mn)
 {
 	mn = MN_toFN(mn);
 	if(mn < MN_OPSIZE) {
@@ -297,10 +297,10 @@ const char* knh_getmnname(CTX ctx, knh_methodn_t mn)
 /* ------------------------------------------------------------------------ */
 /* [uri] */
 
-knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
+kuri_t knh_getURI(CTX ctx, kbytes_t t)
 {
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	knh_index_t idx = knh_DictSet_index(ctx->share->urnDictSet, t);
+	kindex_t idx = knh_DictSet_index(ctx->share->urnDictSet, t);
 	if(idx == -1) {
 		knh_String_t *s = new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_POOLALWAYS);
 		idx = knh_Array_size(ctx->share->urns);
@@ -312,12 +312,12 @@ knh_uri_t knh_getURI(CTX ctx, knh_bytes_t t)
 		idx = knh_DictSet_valueAt(ctx->share->urnDictSet, idx);
 	}
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-	return (knh_uri_t)idx;
+	return (kuri_t)idx;
 }
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *knh_getURN(CTX ctx, knh_uri_t uri)
+knh_String_t *knh_getURN(CTX ctx, kuri_t uri)
 {
 	size_t n = URI_UNMASK(uri);
 	knh_Array_t *a = ctx->share->urns;
@@ -333,7 +333,7 @@ knh_String_t *knh_getURN(CTX ctx, knh_uri_t uri)
 /* ------------------------------------------------------------------------ */
 /* [Driver] */
 
-static knh_bytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, knh_bytes_t path)
+static kbytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, kbytes_t path)
 {
 	while(DP(ns)->name2dpiNameDictMapNULL != NULL) {
 		knh_String_t *s = (knh_String_t*)knh_DictMap_getNULL(ctx, DP(ns)->name2dpiNameDictMapNULL, path);
@@ -344,21 +344,21 @@ static knh_bytes_t knh_NameSpace_getDpiPath(CTX ctx , knh_NameSpace_t *ns, knh_b
 	return path;
 }
 
-const knh_PathDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_PathDPI_t *knh_NameSpace_getStreamDPINULL(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
 {
-	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
+	kbytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
 	return (const knh_PathDPI_t *)knh_DictSet_get(ctx, ctx->share->streamDpiDictSet, hpath);
 }
 
-const knh_MapDPI_t *knh_NameSpace_getMapDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_MapDPI_t *knh_NameSpace_getMapDPINULL(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
 {
-	knh_bytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
+	kbytes_t hpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_head(path, ':'));
 	return (const knh_MapDPI_t*)knh_DictSet_get(ctx, ctx->share->mapDpiDictSet, hpath);
 }
 
-const knh_ConverterDPI_t *knh_NameSpace_getConverterDPINULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+const knh_ConverterDPI_t *knh_NameSpace_getConverterDPINULL(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
 {
-	knh_bytes_t bpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_next(path, ':'));
+	kbytes_t bpath = knh_NameSpace_getDpiPath(ctx, ns, knh_bytes_next(path, ':'));
 	void *d;
 	if(path.text[0] == 'f') {
 		d = (void*)knh_DictSet_get(ctx, ctx->share->rconvDpiDictSet, bpath);

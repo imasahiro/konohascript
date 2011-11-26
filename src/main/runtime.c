@@ -50,15 +50,15 @@ static void opt_W(CTX ctx, int mode, const char *optstr)
 
 }
 
-static knh_bool_t isCompileOnly = 0;
-static knh_bool_t isInteractiveMode = 0;
+static kbool_t isCompileOnly = 0;
+static kbool_t isInteractiveMode = 0;
 
 static void opt_i(CTX ctx, int mode, const char *optstr)
 {
 	isInteractiveMode = 1;
 }
 
-knh_bool_t knh_isCompileOnly(CTX ctx)
+kbool_t knh_isCompileOnly(CTX ctx)
 {
 	return isCompileOnly;
 }
@@ -81,7 +81,7 @@ static void opt_O(CTX ctx, int mode, const char *optstr)
 	}
 }
 
-static knh_bool_t isActorMode = 0;
+static kbool_t isActorMode = 0;
 static int port = 0;
 
 static void opt_p(CTX ctx, int mode, const char *optstr)
@@ -95,7 +95,7 @@ static void opt_p(CTX ctx, int mode, const char *optstr)
 void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 {
 	if(pkglist != NULL) {
-		knh_bytes_t t = {{pkglist}, knh_strlen(pkglist)};
+		kbytes_t t = {{pkglist}, knh_strlen(pkglist)};
 		char buf[256];
 		size_t i = 0;
 		int isExists = 0;
@@ -253,7 +253,7 @@ static int knh_parseopt(CTX ctx, int argc, const char **argv)
 				t += d->len;
 				if(t[0] == '=') t++;
 				if(isalnum(t[0])) {
-					knh_int_t v = 0;
+					kint_t v = 0;
 					knh_bytes_parseint(B((char*)t), &v);
 					optnum = (int)v;
 				}
@@ -282,7 +282,7 @@ static int knh_parseopt(CTX ctx, int argc, const char **argv)
 	return n;
 }
 
-static knh_bytes_t knh_bytes_nsname(knh_bytes_t t)
+static kbytes_t knh_bytes_nsname(kbytes_t t)
 {
 	size_t i, s = 0;
 	for(i = t.len - 1; i > 0; i--) {
@@ -314,7 +314,7 @@ static void knh_parsearg(CTX ctx, int argc, const char **argv)
 	if(argc > 0) {
 		knh_String_t *s = new_T(argv[0]);
 		knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
-		knh_bytes_t t = knh_bytes_nsname(S_tobytes(s));
+		kbytes_t t = knh_bytes_nsname(S_tobytes(s));
 		knh_Script_setNSName(ctx, ctx->script, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_TEXT|K_SPOLICY_POOLALWAYS));
 	}
 	else {
@@ -356,13 +356,13 @@ static void knh_showWelcome(CTX ctx, knh_OutputStream_t *w)
 	knh_printf(ctx, w, "%s%s %s(%s) %s (rev:%d, %s %s)%s\n",
 		TERM_BBOLD(ctx),
 		sysinfo->konoha_type, sysinfo->konoha_version, sysinfo->konoha_codename,
-		K_DISTTYPE, ((knh_intptr_t)K_REVISION), __DATE__, __TIME__, TERM_EBOLD(ctx));
+		K_DISTTYPE, ((kintptr_t)K_REVISION), __DATE__, __TIME__, TERM_EBOLD(ctx));
 	//knh_printf(ctx, w, "[%s] on %s (%d, %s)\n", CC_TYPE, sysinfo->kern_ostype, sysinfo->konoha_systembits, knh_getSystemEncoding());
 	knh_printf(ctx, w, "options: %sused_memory:%d kb\n",
-		sysinfo->konoha_options, (knh_intptr_t)(ctx->stat->usedMemorySize / 1024));
+		sysinfo->konoha_options, (kintptr_t)(ctx->stat->usedMemorySize / 1024));
 }
 
-static int shell_checkstmt(knh_bytes_t t)
+static int shell_checkstmt(kbytes_t t)
 {
 	size_t i = 0;
 	int ch, quote = 0, nest = 0;
@@ -404,7 +404,7 @@ static void shell_restart(CTX ctx)
 //	DBG_ASSERT(ns->b->aliasDictMapNULL == NULL);
 //	ctx->wshare->sysAliasDictMapNULL = DP(ctx->share->rootns)->aliasDictMapNULL;
 //	DP(ctx->share->rootns)->aliasDictMapNULL = NULL;
-//	KNH_SETv(ctx, ((knh_share_t*)ctx->share)->rootns, ns);
+//	KNH_SETv(ctx, ((kshare_t*)ctx->share)->rootns, ns);
 //	KNH_SETv(ctx, ((knh_context_t*)ctx)->script, new_(Script));
 //	{
 //		knh_GammaBuilder_t *newgma = new_(GammaBuilder);
@@ -418,9 +418,9 @@ static void shell_restart(CTX ctx)
 
 void knh_dumpKeyword(CTX ctx, knh_OutputStream_t *w);
 
-static knh_status_t shell_command(CTX ctx, const char *cmd)
+static kstatus_t shell_command(CTX ctx, const char *cmd)
 {
-	knh_bytes_t t = {{cmd}, knh_strlen(cmd)};
+	kbytes_t t = {{cmd}, knh_strlen(cmd)};
 	if(B_equals(t, "quit") || B_equals(t, "exit") || B_equals(t, "bye")) {
 		return K_BREAK;
 	}
@@ -487,10 +487,10 @@ static void knh_showSecurityAlert(CTX ctx, knh_OutputStream_t *w)
 	}
 }
 
-static knh_status_t readstmt(CTX ctx, CWB_t *cwb)
+static kstatus_t readstmt(CTX ctx, CWB_t *cwb)
 {
 	int line = 1;
-	knh_status_t status = K_CONTINUE;
+	kstatus_t status = K_CONTINUE;
 	CWB_clear(cwb, 0);
 	fputs(TERM_BBOLD(ctx), stdout);
 	while(1) {
@@ -612,7 +612,7 @@ static void knh_shell(CTX ctx)
 	while(1) {
 		{
 			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-			knh_status_t status = readstmt(ctx, cwb);
+			kstatus_t status = readstmt(ctx, cwb);
 			if(status == K_BREAK) {
 				CWB_close(cwb);
 				break;

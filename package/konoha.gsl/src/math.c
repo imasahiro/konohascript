@@ -56,148 +56,148 @@ static knh_FloatData_t GslMathConstFloat[] = {
 	{"LN2", M_LN2},
 	{"LNPI", M_LNPI},
 	{"EULER", M_EULER},
-	{NULL, K_FLOAT_ZERO}
+	{NULL, KFLOAT_ZERO}
 };
 
-DEFAPI(void) constGslMath(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constGslMath(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassFloatConst(ctx, cid, GslMathConstFloat);
 }
 
-KMETHOD GslMath_isNan(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_isNan(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(gsl_isnan(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_isInf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_isInf(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(gsl_isinf(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_isFinite(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_isFinite(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(gsl_finite(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_log1p(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_log1p(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_log1p(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_expm1(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_expm1(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_expm1(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_hypot(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_hypot(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_hypot(Float_to(const double, sfp[1]), Float_to(const double, sfp[2])));
 }
 
-KMETHOD GslMath_hypot3(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_hypot3(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_hypot3(Float_to(const double, sfp[1]), Float_to(const double, sfp[2]), Float_to(const double, sfp[3])));
 }
 
-KMETHOD GslMath_acosh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_acosh(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_acosh(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_asinh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_asinh(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_asinh(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_atanh(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_atanh(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_atanh(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_ldexp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_ldexp(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_ldexp(Float_to(double, sfp[1]), Int_to(int, sfp[2])));
 }
 
-KMETHOD GslMath_frexp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_frexp(CTX ctx, ksfp_t *sfp _RIX)
 {
 	double x = Float_to(double, sfp[1]);
 	int e;
 	double f = gsl_frexp(x, &e);
 	knh_Tuple_t *t = (knh_Tuple_t*)new_ReturnObject(ctx, sfp);
-	t->ffields[0] = (knh_float_t)f;
-	t->ifields[1] = (knh_int_t)e;
+	t->ffields[0] = (kfloat_t)f;
+	t->ifields[1] = (kint_t)e;
 	RETURN_(t);
 }
 
-KMETHOD GslMath_powInt(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_powInt(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_int(Float_to(double, sfp[1]), Int_to(int, sfp[2])));
 }
 
-KMETHOD GslMath_pow2(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow2(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_2(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_pow3(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow3(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_3(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_pow4(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow4(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_4(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_pow5(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow5(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_5(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_pow6(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow6(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_6(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_pow7(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow7(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_7(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_pow8(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow8(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_8(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_pow9(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_pow9(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(gsl_pow_9(Float_to(const double, sfp[1])));
 }
 
-KMETHOD GslMath_sign(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_sign(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int i = GSL_SIGN(Float_to(double, sfp[1]));
 	if(i == 1) RETURNb_(1)
 	else RETURNb_(0);
 }
 
-KMETHOD GslMath_isOdd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_isOdd(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(GSL_IS_ODD(Int_to(int, sfp[1])));
 }
 
-KMETHOD GslMath_isEven(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_isEven(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(GSL_IS_EVEN(Int_to(int, sfp[1])));
 }
 
-KMETHOD GslMath_fcmp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslMath_fcmp(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(gsl_fcmp(Float_to(double, sfp[1]), Float_to(double, sfp[2]), Float_to(double, sfp[3])));
 }
 
-DEFAPI(void) defGslMath(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defGslMath(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "GslMath";
 }

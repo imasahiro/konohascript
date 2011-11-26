@@ -89,7 +89,7 @@ static knh_Map_t *knh_parseReply(CTX ctx, char *reply)
 	return rmap;
 }
 
-static void knh_getToken(knh_sfp_t *sfp, AccessToken_t *token)
+static void knh_getToken(ksfp_t *sfp, AccessToken_t *token)
 {
 	knh_Object_t *consumer = sfp[0].ox->fields[0];
 	knh_Object_t *rtoken = sfp[0].ox->fields[1];
@@ -149,7 +149,7 @@ static char *knh_request(Args_t *args, const char *method, AccessToken_t *token)
 static void knh_setArgs(CTX ctx, Args_t *args, knh_Map_t *m)
 {
 	knh_DictMap_t *dmap = knh_toDictMap(ctx, m, 0);
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	char buf[256] = {0};
@@ -158,10 +158,10 @@ static void knh_setArgs(CTX ctx, Args_t *args, knh_Map_t *m)
 		Object *o = knh_DictMap_getNULL(ctx, dmap, S_tobytes(lsfp[0].s));
 		switch (O_cid(o)) {
 		case CLASS_Int:
-			knh_snprintf(buf, sizeof(buf), "%s=" K_INT_FMT, key, N_toint(o));
+			knh_snprintf(buf, sizeof(buf), "%s=" KINT_FMT, key, N_toint(o));
 			break;
 		case CLASS_Float:
-			knh_snprintf(buf, sizeof(buf), "%s=" K_FLOAT_FMT, key, N_tofloat(o));
+			knh_snprintf(buf, sizeof(buf), "%s=" KFLOAT_FMT, key, N_tofloat(o));
 			break;
 		case CLASS_Boolean:
 			knh_snprintf(buf, sizeof(buf), "%s=%s",
@@ -189,7 +189,7 @@ static void knh_setArgs(CTX ctx, Args_t *args, knh_Map_t *m)
 // [KMETHODS]
 
 //## @Native Map<String,String> Client_request(String url, String method, Map params);
-KMETHOD Client_request(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Client_request(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *rmap = NULL;
 	AccessToken_t token = {NULL, NULL, NULL, NULL};

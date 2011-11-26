@@ -2,22 +2,22 @@
 /* Generate ./src/lang/llvm_struct.h */
 
 String[][] typemap = [];
-typemap.add(["knh_uintptr_t",       "ASMCODE_TYPE_LONG"]);
+typemap.add(["kuintptr_t",       "ASMCODE_TYPE_LONG"]);
 typemap.add(["void*",               "ASMCODE_TYPE_VOIDPTR"]);
 typemap.add(["void**",              "ASMCODE_TYPE_VOIDPTR"]);
-typemap.add(["knh_int_t",           "ASMCODE_TYPE_INT64"]);
-typemap.add(["knh_uint_t",          "ASMCODE_TYPE_INT64"]);
-typemap.add(["knh_ndata_t",         "ASMCODE_TYPE_INT64"]);
+typemap.add(["kint_t",           "ASMCODE_TYPE_INT64"]);
+typemap.add(["kuint_t",          "ASMCODE_TYPE_INT64"]);
+typemap.add(["kunbox_t",         "ASMCODE_TYPE_INT64"]);
 typemap.add(["size_t",              "ASMCODE_TYPE_LONG"]);
 typemap.add(["kline_t",         "ASMCODE_TYPE_LONG"]);
 typemap.add(["char[16]",            "ASMCODE_TYPE_VEC16"]);
-typemap.add(["knh_flag_t",          "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_ushort_t",        "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_class_t",         "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_methodn_t",       "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_uri_t",           "ASMCODE_TYPE_SHORT"]);
-typemap.add(["knh_sfp_t*",          "ASMCODE_TYPE_SFPPTR"]);
-typemap.add(["knh_share_t",         "ASMCODE_TYPE_VOIDPTR"]);
+typemap.add(["kflag_t",          "ASMCODE_TYPE_SHORT"]);
+typemap.add(["kushort_t",        "ASMCODE_TYPE_SHORT"]);
+typemap.add(["kclass_t",         "ASMCODE_TYPE_SHORT"]);
+typemap.add(["kmethodn_t",       "ASMCODE_TYPE_SHORT"]);
+typemap.add(["kuri_t",           "ASMCODE_TYPE_SHORT"]);
+typemap.add(["ksfp_t*",          "ASMCODE_TYPE_SFPPTR"]);
+typemap.add(["kshare_t",         "ASMCODE_TYPE_VOIDPTR"]);
 typemap.add(["knh_System_t*",       "ASMCODE_TYPE_SYSPTR"]);
 typemap.add(["knh_SystemEX_t*",     "ASMCODE_TYPE_SYSB"]);
 typemap.add(["knh_Object_t*",       "ASMCODE_TYPE_OBJECTPTR"]);
@@ -178,7 +178,7 @@ void main (String[] args)
 	targets = [
 		"knh_hObject_t", "knh_Object_t", "knh_Array_t", "knh_ObjectField_t",
 		"knh_OutputStream_t", "knh_InputStream_t", 
-		"knh_sfp_t", "knh_SystemEX_t", "knh_System_t", "knh_Method_t", "knh_Iterator_t",
+		"ksfp_t", "knh_SystemEX_t", "knh_System_t", "knh_Method_t", "knh_Iterator_t",
 		"knh_context_t"/*knh_context_t must be last */
 	]
 

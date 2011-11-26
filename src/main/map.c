@@ -46,13 +46,13 @@ typedef struct knh_hentry_t {
 	union {
 		Object       *key;
 		knh_String_t *skey;
-		knh_ndata_t   nkey;
+		kunbox_t   nkey;
 		void         *pkey;
 	};
 	union {
 		Object       *value;
 		void         *pvalue;
-		knh_ndata_t   nvalue;
+		kunbox_t   nvalue;
 	};
 } knh_hentry_t;
 
@@ -99,7 +99,7 @@ static void hmap_rehash(CTX ctx, knh_hmap_t *hmap)
 	hmap->hmax = newhmax;
 }
 
-static void hmap_shiftptr(knh_hmap_t *hmap, knh_intptr_t shift)
+static void hmap_shiftptr(knh_hmap_t *hmap, kintptr_t shift)
 {
 	size_t i, size = hmap->arenasize / 2;
 	for(i = 0; i < size; i++) {
@@ -265,7 +265,7 @@ static void hmap_top(knh_hmap_t* hmap, knh_hentry_t *oe)
 	}
 }
 
-static knh_bool_t hmap_getOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t hmap_getOO(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_Object_t *key = ksfp[0].o;
@@ -281,7 +281,7 @@ static knh_bool_t hmap_getOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 	return 0;
 }
 
-static knh_bool_t hmap_getON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t hmap_getON(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_Object_t *key = ksfp[0].o;
@@ -299,11 +299,11 @@ static knh_bool_t hmap_getON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 
 #define knh_String_equals(STR, t)   (knh_bytes_equals(S_tobytes(STR), t))
 
-static knh_bool_t hmap_getSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t hmap_getSO(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_bytes_t k = S_tobytes(ksfp[0].s);
+	kbytes_t k = S_tobytes(ksfp[0].s);
 	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
@@ -316,11 +316,11 @@ static knh_bool_t hmap_getSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 	return 0;
 }
 
-static knh_bool_t hmap_getSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t hmap_getSN(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_bytes_t k = S_tobytes(ksfp[0].s);
+	kbytes_t k = S_tobytes(ksfp[0].s);
 	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
@@ -333,7 +333,7 @@ static knh_bool_t hmap_getSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 	return 0;
 }
 
-static knh_bool_t hmap_getNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t hmap_getNO(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
@@ -348,7 +348,7 @@ static knh_bool_t hmap_getNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 	return 0;
 }
 
-static knh_bool_t hmap_getNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t hmap_getNN(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
@@ -363,7 +363,7 @@ static knh_bool_t hmap_getNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 	return 0;
 }
 
-static void hmap_setOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void hmap_setOO(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_Object_t *key = kvsfp[0].o;
@@ -382,7 +382,7 @@ static void hmap_setOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	hmap_add(hmap, e);
 }
 
-static void hmap_setON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void hmap_setON(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_Object_t *key = kvsfp[0].o;
@@ -401,11 +401,11 @@ static void hmap_setON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	hmap_add(hmap, e);
 }
 
-static void hmap_setSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void hmap_setSO(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	DBG_ASSERT(IS_bString(kvsfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_bytes_t k = S_tobytes(kvsfp[0].s);
+	kbytes_t k = S_tobytes(kvsfp[0].s);
 	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
@@ -421,11 +421,11 @@ static void hmap_setSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	hmap_add(hmap, e);
 }
 
-static void hmap_setSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void hmap_setSN(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	DBG_ASSERT(IS_bString(kvsfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_bytes_t k = S_tobytes(kvsfp[0].s);
+	kbytes_t k = S_tobytes(kvsfp[0].s);
 	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
@@ -441,7 +441,7 @@ static void hmap_setSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	hmap_add(hmap, e);
 }
 
-static void hmap_setNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void hmap_setNO(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_hashcode_t hcode = (knh_hashcode_t)kvsfp[0].ndata;
@@ -459,7 +459,7 @@ static void hmap_setNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	hmap_add(hmap, e);
 }
 
-static void hmap_setNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void hmap_setNN(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_hashcode_t hcode = (knh_hashcode_t)kvsfp[0].ndata;
@@ -477,7 +477,7 @@ static void hmap_setNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	hmap_add(hmap, e);
 }
 
-static void hmap_removeOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+static void hmap_removeOO(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_Object_t *key = ksfp[0].o;
@@ -495,7 +495,7 @@ static void hmap_removeOO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
 	}
 }
 
-static void hmap_removeON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+static void hmap_removeON(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_Object_t *key = ksfp[0].o;
@@ -514,11 +514,11 @@ static void hmap_removeON(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
 
 #define knh_String_equals(STR, t)   (knh_bytes_equals(S_tobytes(STR), t))
 
-static void hmap_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+static void hmap_removeSO(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 {
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_bytes_t k = S_tobytes(ksfp[0].s);
+	kbytes_t k = S_tobytes(ksfp[0].s);
 	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
@@ -533,11 +533,11 @@ static void hmap_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
 	}
 }
 
-static void hmap_removeSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+static void hmap_removeSN(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 {
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_bytes_t k = S_tobytes(ksfp[0].s);
+	kbytes_t k = S_tobytes(ksfp[0].s);
 	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
@@ -551,7 +551,7 @@ static void hmap_removeSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
 	}
 }
 
-static void hmap_removeNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+static void hmap_removeNO(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
@@ -567,7 +567,7 @@ static void hmap_removeNO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
 	}
 }
 
-static void hmap_removeNN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp)
+static void hmap_removeNN(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
@@ -588,7 +588,7 @@ static size_t hmap_size(CTX ctx, knh_mapptr_t* m)
 	return hmap->size;
 }
 
-static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
+static kbool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -604,7 +604,7 @@ static knh_bool_t hmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sf
 	return 0;
 }
 
-static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
+static kbool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -620,7 +620,7 @@ static knh_bool_t hmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sf
 	return 0;
 }
 
-static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
+static kbool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -636,7 +636,7 @@ static knh_bool_t hmap_nextNO(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sf
 	return 0;
 }
 
-static knh_bool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sfp_t *rsfp)
+static kbool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	size_t i;
@@ -652,7 +652,7 @@ static knh_bool_t hmap_nextNN(CTX ctx, knh_mapptr_t *m, knh_nitr_t *mitr, knh_sf
 	return 0;
 }
 
-static const knh_MapDPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static const knh_MapDPI_t* hmap_config(CTX ctx, kclass_t p1, kclass_t p2);
 
 static const knh_MapDPI_t HMAP_OO = {
 	K_DSPI_MAP, "hash",
@@ -685,7 +685,7 @@ static const knh_MapDPI_t HMAP_NN = {
 	hmap_getNN, hmap_setNN, hmap_removeNN, hmap_size, hmap_nextNN,
 };
 
-static const knh_MapDPI_t* hmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDPI_t* hmap_config(CTX ctx, kclass_t p1, kclass_t p2)
 {
 	if(IS_Tunbox(p2)) {
 		if(IS_Tstr(p1)) {
@@ -795,7 +795,7 @@ void knh_PtrMap_addS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *v)
 void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *s)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_bytes_t t = S_tobytes(s);
+	kbytes_t t = S_tobytes(s);
 	knh_hashcode_t hcode = knh_hash(0, t.text, t.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	DBG_ASSERT(IS_bString(s));
@@ -811,7 +811,7 @@ void knh_PtrMap_rmS(CTX ctx, knh_PtrMap_t *pm, knh_String_t *s)
 	//KNH_ASSERT(ctx == NULL);
 }
 
-knh_Int_t* knh_PtrMap_getI(CTX ctx, knh_PtrMap_t *pm, knh_ndata_t k)
+knh_Int_t* knh_PtrMap_getI(CTX ctx, knh_PtrMap_t *pm, kunbox_t k)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	knh_hashcode_t hcode = (knh_hashcode_t)k;
@@ -830,7 +830,7 @@ knh_Int_t* knh_PtrMap_getI(CTX ctx, knh_PtrMap_t *pm, knh_ndata_t k)
 void knh_PtrMap_addI(CTX ctx, knh_PtrMap_t *pm, knh_Int_t *v)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_ndata_t k = v->n.data;
+	kunbox_t k = v->n.data;
 	knh_hashcode_t hcode = (knh_hashcode_t)k;
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
 	e->nkey = k;
@@ -902,16 +902,16 @@ void knh_PtrMap_rmM(CTX ctx, knh_PtrMap_t *pm, knh_Method_t *mtd)
 #define K_USE_FASTDMAP(STMT)  STMT
 
 typedef struct knh_dentry_t {
-K_USE_FASTDMAP(knh_uint64_t ukey;)
+K_USE_FASTDMAP(kuint64_t ukey;)
 	union {
 		knh_String_t  *key;
-		knh_intptr_t   ikey;
-		knh_floatptr_t fkey;
-		knh_ndata_t    nkey;
+		kintptr_t   ikey;
+		kfloatptr_t fkey;
+		kunbox_t    nkey;
 	};
 	union {
 		Object         *value;
-		knh_ndata_t    nvalue;
+		kunbox_t    nvalue;
 	};
 } knh_dentry_t;
 
@@ -919,9 +919,9 @@ typedef struct knh_dmap_t {
 	knh_dentry_t *dentry;
 	size_t size;
 	size_t capacity;
-K_USE_FASTDMAP(knh_uint64_t (*strkeyuint)(knh_bytes_t);)
+K_USE_FASTDMAP(kuint64_t (*strkeyuint)(kbytes_t);)
 	int (*dentrycmpr)(const void *, const void *);
-	int (*strcmpr)(knh_bytes_t, knh_bytes_t);
+	int (*strcmpr)(kbytes_t, kbytes_t);
 	size_t sorted;
 	const char *DBGNAME;
 } knh_dmap_t ;
@@ -930,20 +930,20 @@ K_USE_FASTDMAP(knh_uint64_t (*strkeyuint)(knh_bytes_t);)
 #define knh_map_dmap(m)        ((knh_dmap_t*)m)
 #define knh_map_dentry(m)      (((knh_dmap_t*)m)->dentry)
 
-static knh_uint64_t knh_struint64(knh_bytes_t t)
+static kuint64_t knh_struint64(kbytes_t t)
 {
 	const unsigned char *p = (const unsigned char*)t.text;
-	knh_uint64_t n = 0;
+	kuint64_t n = 0;
 	if(t.len > 0) {
 		switch(t.len) {
-		default: n |= (((knh_uint64_t)p[7]) << (64-64)); /* FALLTHROUGH */
-		case 7 : n |= (((knh_uint64_t)p[6]) << (64-56)); /* FALLTHROUGH */
-		case 6 : n |= (((knh_uint64_t)p[5]) << (64-48)); /* FALLTHROUGH */
-		case 5 : n |= (((knh_uint64_t)p[4]) << (64-40)); /* FALLTHROUGH */
-		case 4 : n |= (((knh_uint64_t)p[3]) << (64-32)); /* FALLTHROUGH */
-		case 3 : n |= (((knh_uint64_t)p[2]) << (64-24)); /* FALLTHROUGH */
-		case 2 : n |= (((knh_uint64_t)p[1]) << (64-16)); /* FALLTHROUGH */
-		case 1 : n |= (((knh_uint64_t)p[0]) << (64- 8));
+		default: n |= (((kuint64_t)p[7]) << (64-64)); /* FALLTHROUGH */
+		case 7 : n |= (((kuint64_t)p[6]) << (64-56)); /* FALLTHROUGH */
+		case 6 : n |= (((kuint64_t)p[5]) << (64-48)); /* FALLTHROUGH */
+		case 5 : n |= (((kuint64_t)p[4]) << (64-40)); /* FALLTHROUGH */
+		case 4 : n |= (((kuint64_t)p[3]) << (64-32)); /* FALLTHROUGH */
+		case 3 : n |= (((kuint64_t)p[2]) << (64-24)); /* FALLTHROUGH */
+		case 2 : n |= (((kuint64_t)p[1]) << (64-16)); /* FALLTHROUGH */
+		case 1 : n |= (((kuint64_t)p[0]) << (64- 8));
 		}
 	}
 	return n;
@@ -999,7 +999,7 @@ static size_t dmap_size(CTX ctx, knh_mapptr_t* m)
 	return dmap->size;
 }
 
-static knh_bool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, knh_sfp_t *rsfp)
+static kbool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, ksfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {
@@ -1015,16 +1015,16 @@ static knh_bool_t dmap_nextOO(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, knh_sf
 /* ------------------------------------------------------------------------ */
 /* String */
 
-static knh_index_t dmap_index(knh_dmap_t *dmap, size_t sp, size_t ep, knh_bytes_t key)
+static kindex_t dmap_index(knh_dmap_t *dmap, size_t sp, size_t ep, kbytes_t key)
 {
 	knh_dentry_t *a = dmap->dentry;
-	knh_uint64_t ukey = dmap->strkeyuint(key);
+	kuint64_t ukey = dmap->strkeyuint(key);
 	L_TAIL:;
 	if(ep - sp < UNSORTED) {
 		size_t i;
 		for(i = sp; i < ep; i++) {
 			if(a[i].ukey == ukey) {
-				knh_bytes_t k = S_tobytes(a[i].key);
+				kbytes_t k = S_tobytes(a[i].key);
 				if(key.len < 8) {
 					//DBG_ASSERT(key.len == k.len);
 					return i;
@@ -1043,7 +1043,7 @@ static knh_index_t dmap_index(knh_dmap_t *dmap, size_t sp, size_t ep, knh_bytes_
 			ep = cp;
 		}
 		else {
-			knh_bytes_t k = S_tobytes(a[cp].key);
+			kbytes_t k = S_tobytes(a[cp].key);
 			int res = dmap->strcmpr(k, key);
 			if(res == 0) {return cp; }
 			else if(res > 0) { ep = cp; }
@@ -1053,11 +1053,11 @@ static knh_index_t dmap_index(knh_dmap_t *dmap, size_t sp, size_t ep, knh_bytes_
 	}
 }
 
-static knh_bool_t dmap_getSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t dmap_getSO(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
-	knh_bytes_t key = S_tobytes(ksfp[0].s);
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kbytes_t key = S_tobytes(ksfp[0].s);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) return 0;
@@ -1091,7 +1091,7 @@ static knh_bool_t dmap_getSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 //	}
 //}
 
-static void dmap_addSO(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
+static void dmap_addSO(CTX ctx, knh_dmap_t *dmap, ksfp_t *kvsfp)
 {
 	size_t loc = dmap->size;
 	dmap_grow(ctx, dmap);
@@ -1101,11 +1101,11 @@ static void dmap_addSO(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
 	dmap->size++;
 }
 
-static void dmap_setSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t* kvsfp)
+static void dmap_setSO(CTX ctx, knh_mapptr_t* m, ksfp_t* kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
-	knh_bytes_t key = S_tobytes(kvsfp[0].s);
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kbytes_t key = S_tobytes(kvsfp[0].s);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) {
@@ -1117,11 +1117,11 @@ static void dmap_setSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t* kvsfp)
 	KNH_SETv(ctx, dmap->dentry[loc].value, kvsfp[1].o);
 }
 
-static void dmap_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void dmap_removeSO(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
-	knh_bytes_t key = S_tobytes(kvsfp[0].s);
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kbytes_t key = S_tobytes(kvsfp[0].s);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) {
@@ -1137,7 +1137,7 @@ static void dmap_removeSO(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
 	dmap->size--;
 }
 
-static const knh_MapDPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2);
+static const knh_MapDPI_t* dmap_config(CTX ctx, kclass_t p1, kclass_t p2);
 
 static const knh_MapDPI_t DMAP_SO = {
 	K_DSPI_MAP, "dictionary",
@@ -1157,7 +1157,7 @@ static void dmap_reftraceON(CTX ctx, knh_mapptr_t *m FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
-static knh_bool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, knh_sfp_t *rsfp)
+static kbool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, ksfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
 	if(mitr->index < dmap->size) {
@@ -1170,11 +1170,11 @@ static knh_bool_t dmap_nextON(CTX ctx, knh_mapptr_t *m, knh_nitr_t* mitr, knh_sf
 	return 0;
 }
 
-static knh_bool_t dmap_getSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_t *rsfp)
+static kbool_t dmap_getSN(CTX ctx, knh_mapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
-	knh_bytes_t key = S_tobytes(ksfp[0].s);
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kbytes_t key = S_tobytes(ksfp[0].s);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) return 0;
@@ -1183,7 +1183,7 @@ static knh_bool_t dmap_getSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *ksfp, knh_sfp_
 	return 1;
 }
 
-static void dmap_addSN(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
+static void dmap_addSN(CTX ctx, knh_dmap_t *dmap, ksfp_t *kvsfp)
 {
 	size_t loc = dmap->size;
 	dmap_grow(ctx, dmap);
@@ -1193,11 +1193,11 @@ static void dmap_addSN(CTX ctx, knh_dmap_t *dmap, knh_sfp_t *kvsfp)
 	dmap->size++;
 }
 
-static void dmap_setSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t* kvsfp)
+static void dmap_setSN(CTX ctx, knh_mapptr_t* m, ksfp_t* kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
-	knh_bytes_t key = S_tobytes(kvsfp[0].s);
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kbytes_t key = S_tobytes(kvsfp[0].s);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) {
@@ -1209,11 +1209,11 @@ static void dmap_setSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t* kvsfp)
 	dmap->dentry[loc].nvalue = kvsfp[1].ndata;
 }
 
-static void dmap_removeSN(CTX ctx, knh_mapptr_t* m, knh_sfp_t *kvsfp)
+static void dmap_removeSN(CTX ctx, knh_mapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_dmap_t *dmap = knh_map_dmap(m);
-	knh_bytes_t key = S_tobytes(kvsfp[0].s);
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kbytes_t key = S_tobytes(kvsfp[0].s);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 		if(loc == -1) {
@@ -1234,7 +1234,7 @@ static const knh_MapDPI_t DMAP_SN = {
 	dmap_getSN, dmap_setSN, dmap_removeSN, dmap_size, dmap_nextON,
 };
 
-static const knh_MapDPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
+static const knh_MapDPI_t* dmap_config(CTX ctx, kclass_t p1, kclass_t p2)
 {
 	if(IS_Tstr(p1)) {
 		if(IS_Tunbox(p2)) {
@@ -1248,10 +1248,10 @@ static const knh_MapDPI_t* dmap_config(CTX ctx, knh_class_t p1, knh_class_t p2)
 /* ------------------------------------------------------------------------- */
 /* [casecmp] */
 
-static knh_uint64_t knh_strcaseuint64(knh_bytes_t t)
+static kuint64_t knh_strcaseuint64(kbytes_t t)
 {
 	int ch[8] = {0};
-	knh_uint64_t n = 0;
+	kuint64_t n = 0;
 	size_t i, c = 0;
 	for(i = 0; i < 8; i++) {
 		while(t.text[c] == '_') c++;
@@ -1260,20 +1260,20 @@ static knh_uint64_t knh_strcaseuint64(knh_bytes_t t)
 	}
 	if(i > 0) {
 		switch(i) {
-		default: n |= ((knh_uint64_t)ch[7]);
-		case 7: n |= (((knh_uint64_t)ch[6]) << (64-56));
-		case 6: n |= (((knh_uint64_t)ch[5]) << (64-48));
-		case 5: n |= (((knh_uint64_t)ch[4]) << (64-40));
-		case 4: n |= (((knh_uint64_t)ch[3]) << (64-32));
-		case 3: n |= (((knh_uint64_t)ch[2]) << (64-24));
-		case 2: n |= (((knh_uint64_t)ch[1]) << (64-16));
-		case 1: n |= (((knh_uint64_t)ch[0]) << (64-8));
+		default: n |= ((kuint64_t)ch[7]);
+		case 7: n |= (((kuint64_t)ch[6]) << (64-56));
+		case 6: n |= (((kuint64_t)ch[5]) << (64-48));
+		case 5: n |= (((kuint64_t)ch[4]) << (64-40));
+		case 4: n |= (((kuint64_t)ch[3]) << (64-32));
+		case 3: n |= (((kuint64_t)ch[2]) << (64-24));
+		case 2: n |= (((kuint64_t)ch[1]) << (64-16));
+		case 1: n |= (((kuint64_t)ch[0]) << (64-8));
 		}
 	}
 	return n;
 }
 
-int knh_bytes_strcasecmp2(knh_bytes_t t1, knh_bytes_t t2)
+int knh_bytes_strcasecmp2(kbytes_t t1, kbytes_t t2)
 {
 	const char *p1 = t1.text, *e1 = t1.text + t1.len;
 	const char *p2 = t2.text, *e2 = t2.text + t2.len;
@@ -1359,54 +1359,54 @@ KNHAPI2(Object*) knh_DictMap_valueAt(knh_DictMap_t *m, size_t n)
 	return dmap->dentry[n].value;
 }
 
-knh_uintptr_t knh_DictSet_valueAt(knh_DictSet_t *m, size_t n)
+kuintptr_t knh_DictSet_valueAt(knh_DictSet_t *m, size_t n)
 {
 	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	DBG_ASSERT(n < knh_Map_size(m));
-	return (knh_uintptr_t)dmap->dentry[n].nvalue;
+	return (kuintptr_t)dmap->dentry[n].nvalue;
 }
 
-knh_index_t knh_DictMap_index(knh_DictMap_t *m, knh_bytes_t key)
+kindex_t knh_DictMap_index(knh_DictMap_t *m, kbytes_t key)
 {
 	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 	}
 	return loc;
 }
 
-Object *knh_DictMap_getNULL(CTX ctx, knh_DictMap_t *m, knh_bytes_t key)
+Object *knh_DictMap_getNULL(CTX ctx, knh_DictMap_t *m, kbytes_t key)
 {
 	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 	}
 	return (loc == -1) ? NULL : dmap->dentry[loc].value;
 }
 
-knh_uintptr_t knh_DictSet_get(CTX ctx, knh_DictSet_t *m, knh_bytes_t key)
+kuintptr_t knh_DictSet_get(CTX ctx, knh_DictSet_t *m, kbytes_t key)
 {
 	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
-	knh_index_t loc = dmap_index(dmap, 0, dmap->sorted, key);
+	kindex_t loc = dmap_index(dmap, 0, dmap->sorted, key);
 	if(loc == -1) {
 		loc = dmap_index(dmap, dmap->sorted, dmap->size, key);
 	}
-	return (loc == -1) ? 0 : (knh_uintptr_t)dmap->dentry[loc].nvalue;
+	return (loc == -1) ? 0 : (kuintptr_t)dmap->dentry[loc].nvalue;
 }
 
 void knh_DictMap_set_(CTX ctx, knh_DictMap_t *m, knh_String_t *key, dynamic *v)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	KNH_SETv(ctx, kvsfp[1].o, v);
 	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
-void knh_DictSet_set(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintptr_t n)
+void knh_DictSet_set(CTX ctx, knh_DictSet_t *m, knh_String_t *key, kuintptr_t n)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	kvsfp[1].ivalue = n;
 	m->spi->set(ctx, m->mapptr, kvsfp);
@@ -1414,7 +1414,7 @@ void knh_DictSet_set(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintptr_t
 
 void knh_DictMap_append(CTX ctx, knh_DictMap_t *m, knh_String_t *key, knh_Object_t *v)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	KNH_SETv(ctx, kvsfp[1].o, v);
@@ -1427,9 +1427,9 @@ void knh_DictMap_append(CTX ctx, knh_DictMap_t *m, knh_String_t *key, knh_Object
 //	dmap_sort(dmap);
 //}
 
-void knh_DictSet_append(CTX ctx, knh_DictSet_t *m, knh_String_t *key, knh_uintptr_t n)
+void knh_DictSet_append(CTX ctx, knh_DictSet_t *m, knh_String_t *key, kuintptr_t n)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	knh_dmap_t *dmap = (knh_dmap_t*)m->mapptr;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	kvsfp[1].ivalue = n;
@@ -1456,7 +1456,7 @@ KNHAPI2(knh_Map_t*) new_DataMap(CTX ctx)
 
 KNHAPI2(void) knh_DataMap_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Object_t *value)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, key);
 	KNH_SETv(ctx, kvsfp[1].o, value);
 	m->spi->set(ctx, m->mapptr, kvsfp);
@@ -1464,23 +1464,23 @@ KNHAPI2(void) knh_DataMap_set(CTX ctx, knh_Map_t *m, knh_String_t *key, knh_Obje
 
 KNHAPI2(void) knh_DataMap_setString(CTX ctx, knh_Map_t *m, const char *key, const char *value)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
 	KNH_SETv(ctx, kvsfp[1].o, new_String2(ctx, CLASS_String, value, strlen(value), 0));
 	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
-KNHAPI2(void) knh_DataMap_setInt(CTX ctx, knh_Map_t *m, const char *key, knh_int_t value)
+KNHAPI2(void) knh_DataMap_setInt(CTX ctx, knh_Map_t *m, const char *key, kint_t value)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
 	KNH_SETv(ctx, kvsfp[1].o, new_Int_(ctx, CLASS_Int, value));
 	m->spi->set(ctx, m->mapptr, kvsfp);
 }
 
-KNHAPI2(void) knh_DataMap_setFloat(CTX ctx, knh_Map_t *m, const char *key, knh_float_t value)
+KNHAPI2(void) knh_DataMap_setFloat(CTX ctx, knh_Map_t *m, const char *key, kfloat_t value)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
 	KNH_SETv(ctx, kvsfp[1].o, new_Float_(ctx, CLASS_Float, value));
 	m->spi->set(ctx, m->mapptr, kvsfp);
@@ -1488,7 +1488,7 @@ KNHAPI2(void) knh_DataMap_setFloat(CTX ctx, knh_Map_t *m, const char *key, knh_f
 
 KNHAPI2(void) knh_DataMap_setBlob(CTX ctx, knh_Map_t *m, const char *key, const char *value, size_t size)
 {
-	knh_sfp_t* kvsfp = ctx->esp;
+	ksfp_t* kvsfp = ctx->esp;
 	knh_Bytes_t *ba = new_Bytes(ctx, NULL, size);
 	knh_Bytes_write2(ctx, ba, value, size);
 	KNH_SETv(ctx, kvsfp[0].o, new_String2(ctx, CLASS_String, key, strlen(key), K_SPOLICY_POOLALWAYS));
@@ -1507,12 +1507,12 @@ void knh_loadScriptDefaultMapDSPI(CTX ctx, knh_NameSpace_t *ns)
 
 /* ------------------------------------------------------------------------ */
 
-const knh_MapDPI_t *knh_getDefaultMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
+const knh_MapDPI_t *knh_getDefaultMapDSPI(CTX ctx, kclass_t p1, kclass_t p2)
 {
 	return hmap_config(ctx, p1, p2);
 }
 
-const knh_MapDPI_t *knh_getDictMapDSPI(CTX ctx, knh_class_t p1, knh_class_t p2)
+const knh_MapDPI_t *knh_getDictMapDSPI(CTX ctx, kclass_t p1, kclass_t p2)
 {
 	if(IS_Tstr(p1)) {
 		if(IS_Tunbox(p2)) {

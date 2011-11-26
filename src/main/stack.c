@@ -37,7 +37,7 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
+ksfp_t* knh_stack_initexpand(CTX ctx, ksfp_t *sfp, size_t n)
 {
 	knh_context_t *ctxo = (knh_context_t*)ctx;
 	size_t i, s = 0;
@@ -45,7 +45,7 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		DBG_ASSERT(ctxo->stacksize == 0);
 		s = 0;
 		ctxo->stacksize = n;
-		ctxo->stack = (knh_sfp_t*)KNH_MALLOC(ctx, sizeof(knh_sfp_t) * ctxo->stacksize);
+		ctxo->stack = (ksfp_t*)KNH_MALLOC(ctx, sizeof(ksfp_t) * ctxo->stacksize);
 		ctxo->esp = ctxo->stack;
 		ctxo->mtdcache = (knh_mtdcache_t*)KNH_MALLOC(ctx, K_MTDCACHE_SIZE * sizeof(knh_mtdcache_t));
 		knh_bzero(ctxo->mtdcache, K_MTDCACHE_SIZE * sizeof(knh_mtdcache_t));
@@ -56,8 +56,8 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 	}
 #ifdef K_USING_STACKEXPANSION
 	else if(ctxo->stacksize < K_STACK_MAXSIZ) {
-		knh_sfp_t **cstack_top = &sfp;
-		knh_sfp_t *oldstack = ctxo->stack;
+		ksfp_t **cstack_top = &sfp;
+		ksfp_t *oldstack = ctxo->stack;
 		size_t espidx = (ctxo->esp - ctxo->stack);
 		size_t size = ctxo->stacksize, newsize = ctxo->stacksize * 2;
 		if(newsize < size + n) newsize = size + n;
@@ -66,22 +66,22 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		KNH_TODO("stack rewriting");
 #endif
 		// Don't use realloc
-		ctxo->stack = (knh_sfp_t*)KNH_MALLOC(ctx, newsize*sizeof(knh_sfp_t));
-		knh_memcpy(ctxo->stack, oldstack, size*sizeof(knh_sfp_t));
+		ctxo->stack = (ksfp_t*)KNH_MALLOC(ctx, newsize*sizeof(ksfp_t));
+		knh_memcpy(ctxo->stack, oldstack, size*sizeof(ksfp_t));
 		KNH_MEMINFO(ctx, "realloc ctx->stack oldsize=%d, newsize=%d, oldblock=(%p,%p) newblock=(%p,%p)",
 			(int)size, (int)newsize, oldstack, oldstack+size, ctxo->stack, ctxo->stack+newsize);
 		if(oldstack != ctxo->stack) {
-			knh_sfp_t **p = (knh_sfp_t**)ctxo->cstack_bottom;
+			ksfp_t **p = (ksfp_t**)ctxo->cstack_bottom;
 			if(!(ctxo->cstack_bottom < (void*)cstack_top)) {
 				p = cstack_top;
-				cstack_top = (knh_sfp_t**)ctxo->cstack_bottom;
+				cstack_top = (ksfp_t**)ctxo->cstack_bottom;
 			}
 			while(p <= cstack_top) {
-				knh_uintptr_t addr = (knh_uintptr_t)p[0];
+				kuintptr_t addr = (kuintptr_t)p[0];
 				if((oldstack<= p[0] && p[0] < oldstack + size) && addr % sizeof(void*) == 0) {
-					knh_sfp_t *newsfp = p[0] + (ctxo->stack - oldstack);
+					ksfp_t *newsfp = p[0] + (ctxo->stack - oldstack);
 					KNH_ASSERT(ctxo->stack <= newsfp && newsfp < ctxo->stack + size);
-					//DBG_P("addr=%lld, sfp=%p[%d] => %p[%d]", (knh_int_t)(addr % sizeof(void*)), p[0], (int)(p[0]->ivalue), newsfp, (int)newsfp->ivalue);
+					//DBG_P("addr=%lld, sfp=%p[%d] => %p[%d]", (kint_t)(addr % sizeof(void*)), p[0], (int)(p[0]->ivalue), newsfp, (int)newsfp->ivalue);
 					KNH_ASSERT((p[0])->ndata == newsfp->ndata);
 					p[0] = newsfp;
 				}
@@ -90,7 +90,7 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 		}
 		ctxo->stacksize = newsize;
 		ctxo->esp = ctxo->stack + espidx;
-		KNH_FREE(ctx, oldstack, size*sizeof(knh_sfp_t));
+		KNH_FREE(ctx, oldstack, size*sizeof(ksfp_t));
 		s = size;
 	}
 #endif
@@ -107,7 +107,7 @@ knh_sfp_t* knh_stack_initexpand(CTX ctx, knh_sfp_t *sfp, size_t n)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_stack_clear(CTX ctx, knh_sfp_t *sfp)
+void knh_stack_clear(CTX ctx, ksfp_t *sfp)
 {
 	if(!(ctx->stack <= sfp && sfp < ctx->stack_uplimit)) {
 		sfp = ctx->stack; // sometimes, rewriting pointer is failed.
@@ -121,19 +121,19 @@ void knh_stack_clear(CTX ctx, knh_sfp_t *sfp)
 
 /* ------------------------------------------------------------------------ */
 
-knh_sfp_t* knh_stack_local(CTX ctx, size_t n)
+ksfp_t* knh_stack_local(CTX ctx, size_t n)
 {
 	long remaining = ctx->stacksize - ((ctx->esp - ctx->stack) + (n + 64));
 	if(remaining < 0) {
 		DBG_P("LACK OF STACK: stacksize=%d, remaining=%d", ctx->stacksize , remaining);
 		knh_stack_initexpand(ctx, ctx->esp, ctx->stacksize + n + 64);
 	}
-	knh_sfp_t *esp = ctx->esp;
+	ksfp_t *esp = ctx->esp;
 	((knh_context_t*)ctx)->esp = esp + n;
 	return esp;
 }
 
-void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp, const char *file, int line)
+void knh_checkSafePoint(CTX ctx, ksfp_t *sfp, const char *file, int line)
 {
 	int safepoint = ctx->safepoint;
 	WCTX(ctx)->safepoint = 0;
@@ -148,7 +148,7 @@ void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp, const char *file, int line)
 			KNH_ASSERT(ctx->signal < K_SIGNAL_MAX);
 			knh_Func_t *handler_func = (knh_Func_t *)ctx->sighandlers[ctx->signal];
 			if (handler_func != NULL) {
-				knh_sfp_t *lsfp = ctx->esp + 1; // for safety
+				ksfp_t *lsfp = ctx->esp + 1; // for safety
 				lsfp[K_CALLDELTA + 1].ivalue = ctx->signal;
 				knh_Func_invoke(ctx, handler_func, lsfp, 1/* argc */);
 			}
@@ -163,14 +163,14 @@ void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp, const char *file, int line)
 ///* ------------------------------------------------------------------------ */
 ///* [call] */
 //
-//void knh_stack_typecheck(CTX ctx, knh_sfp_t *sfp, knh_Method_t *mtd, knh_opline_t *pc)
+//void knh_stack_typecheck(CTX ctx, ksfp_t *sfp, knh_Method_t *mtd, knh_opline_t *pc)
 //{
-//	knh_class_t this_cid = O_cid(sfp[0].o);
+//	kclass_t this_cid = O_cid(sfp[0].o);
 //	int i, argc;
 //	DBG_ASSERT(IS_Method(sfp[K_MTDIDX].mtdNC));
 //	argc = ParamArray_isVARGs(DP(mtd)->mp) ? (ctx->esp - sfp) : knh_Method_psize(mtd);
 //	for(i = 1; i < argc; i++) {
-//		knh_type_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i - 1);
+//		ktype_t reqt = knh_Method_ptype(ctx, mtd, this_cid, i - 1);
 //		const knh_ClassTBL_t *t = O_cTBL(sfp[i].o);
 //		if(!ClassTBL_isa(t, reqt)) {
 //			THROW_ParamTypeError(ctx, sfp, (mtd)->mn, i, reqt, O_cid(sfp[i].o));
@@ -193,7 +193,7 @@ void knh_checkSafePoint(CTX ctx, knh_sfp_t *sfp, const char *file, int line)
 /* ------------------------------------------------------------------------ */
 /* [Event] */
 
-int event_isa(CTX ctx, knh_event_t eid, knh_event_t parent)
+int event_isa(CTX ctx, kevent_t eid, kevent_t parent)
 {
 	ASSERT_ebi(eid);
 	DBG_ASSERT(parent <= ctx->share->sizeEventTBL);
@@ -206,7 +206,7 @@ int event_isa(CTX ctx, knh_event_t eid, knh_event_t parent)
 
 /* ------------------------------------------------------------------------ */
 
-knh_String_t *knh_getEventName(CTX ctx, knh_event_t eid)
+knh_String_t *knh_getEventName(CTX ctx, kevent_t eid)
 {
 	ASSERT_ebi(eid);
 	return ctx->share->EventTBL[eid-1].name;
@@ -215,15 +215,15 @@ knh_String_t *knh_getEventName(CTX ctx, knh_event_t eid)
 /* ------------------------------------------------------------------------ */
 /* [TABLE] */
 
-knh_event_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_String_t *name, knh_class_t peid)
+kevent_t knh_addEvent(CTX ctx, kflag_t flag, knh_String_t *name, kclass_t peid)
 {
-	knh_event_t eid = 0;
+	kevent_t eid = 0;
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	if(ctx->share->sizeEventTBL == ctx->share->capacityEventTBL) {
 		knh_EventTBL_expand(ctx);
 	}
 	eid = ctx->share->sizeEventTBL;
-	((knh_share_t*)ctx->share)->sizeEventTBL += 1;
+	((kshare_t*)ctx->share)->sizeEventTBL += 1;
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 
 	{
@@ -239,28 +239,28 @@ knh_event_t knh_addEvent(CTX ctx, knh_flag_t flag, knh_String_t *name, knh_class
 	return eid;
 }
 
-knh_bool_t knh_isDefinedEvent(CTX ctx, knh_bytes_t t)
+kbool_t knh_isDefinedEvent(CTX ctx, kbytes_t t)
 {
 	int eid;
-	knh_intptr_t loc = knh_bytes_index(t, '!');
+	kintptr_t loc = knh_bytes_index(t, '!');
 	if(loc != -1) {
 		t = knh_bytes_first(t, loc);
 	}
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	eid = (knh_event_t)knh_DictSet_get(ctx, ctx->share->eventDictSet, t);
+	eid = (kevent_t)knh_DictSet_get(ctx, ctx->share->eventDictSet, t);
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	return (eid > 0) ;
 }
 
-knh_event_t knh_geteid(CTX ctx, knh_bytes_t t)
+kevent_t knh_geteid(CTX ctx, kbytes_t t)
 {
-	knh_event_t eid = EVENT_Exception;
-	knh_intptr_t loc = knh_bytes_index(t, '!');
+	kevent_t eid = EVENT_Exception;
+	kintptr_t loc = knh_bytes_index(t, '!');
 	if(loc != -1) {
 		t = knh_bytes_first(t, loc);
 	}
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	eid = (knh_event_t)knh_DictSet_get(ctx, ctx->share->eventDictSet, t);
+	eid = (kevent_t)knh_DictSet_get(ctx, ctx->share->eventDictSet, t);
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	if(eid == 0) {
 		return knh_addEvent(ctx, 0, new_String2(ctx, CLASS_String, t.text, t.len, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), EVENT_Exception);
@@ -287,10 +287,10 @@ void CTX_setThrowingException(CTX ctx, knh_Exception_t *e)
 }
 
 /* rbp is ok, because isCATCH is called from only vm */
-knh_bool_t isCATCH(CTX ctx, knh_rbp_t *rbp, int en, knh_event_t peid)
+kbool_t isCATCH(CTX ctx, krbp_t *rbp, int en, kevent_t peid)
 {
 	knh_Exception_t *e = ctx->e;
-	knh_event_t eid = knh_geteid(ctx, S_tobytes(e->emsg));
+	kevent_t eid = knh_geteid(ctx, S_tobytes(e->emsg));
 	int res = event_isa(ctx, eid, peid);
 	if(res == 1) {
 		KNH_SETv(ctx, rbp[en].o, e);
@@ -339,7 +339,7 @@ knh_ExceptionHandler_t* ExceptionHandler_setjmp(CTX ctx, knh_ExceptionHandler_t 
 #warning ExceptionHandler dose not work in your environment. Please define K_USING_SETJMP_=1
 #else
 #if defined(__GNUC__)
-	knh_uintptr_t rsp;
+	kuintptr_t rsp;
 	asm volatile ("mov " reg("sp") ", %0;" : "=r" (rsp));
 	DP(hdr)->return_address = __builtin_return_address(0);
 	DP(hdr)->frame_address = __builtin_frame_address(1);

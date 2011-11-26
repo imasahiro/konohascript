@@ -3,487 +3,487 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      843
+#define K_REVISION                      858
 #endif
-#define K_BUILDID                       1193
+#define K_BUILDID                       1194
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
 
 /* ------------------------------------------------------------------------ */
 /* Tvoid */
-#define CLASS_Tvoid             ((knh_class_t)0)
+#define CLASS_Tvoid             ((kclass_t)0)
 #define IS_Tvoid(o)             (O_cid(o) == CLASS_Tvoid)
 #define IS_bTvoid(o)            (O_bcid(o) == CLASS_Tvoid)
 #define TYPE_Tvoid              CLASS_Tvoid
-#define CFLAG_Tvoid             ((knh_flag_t)FLAG_Class_TypeVariable)
+#define CFLAG_Tvoid             ((kflag_t)FLAG_Class_TypeVariable)
 #define FLAG_Tvoid              KNH_MAGICFLAG(CFLAG_Tvoid)
 
 /* ------------------------------------------------------------------------ */
 /* Tvar */
-#define CLASS_Tvar              ((knh_class_t)1)
+#define CLASS_Tvar              ((kclass_t)1)
 #define IS_Tvar(o)              (O_cid(o) == CLASS_Tvar)
 #define IS_bTvar(o)             (O_bcid(o) == CLASS_Tvar)
 #define TYPE_Tvar               CLASS_Tvar
-#define CFLAG_Tvar              ((knh_flag_t)FLAG_Class_TypeVariable)
+#define CFLAG_Tvar              ((kflag_t)FLAG_Class_TypeVariable)
 #define FLAG_Tvar               KNH_MAGICFLAG(CFLAG_Tvar)
 
 /* ------------------------------------------------------------------------ */
 /* Object */
-#define CLASS_Object            ((knh_class_t)2)
+#define CLASS_Object            ((kclass_t)2)
 #define IS_Object(o)            (O_cid(o) == CLASS_Object)
 #define TYPE_Object             CLASS_Object
-#define CFLAG_Object            ((knh_flag_t)0)
+#define CFLAG_Object            ((kflag_t)0)
 #define FLAG_Object             KNH_MAGICFLAG(CFLAG_Object)
 
 /* ------------------------------------------------------------------------ */
 /* Boolean */
-#define CLASS_Boolean           ((knh_class_t)3)
+#define CLASS_Boolean           ((kclass_t)3)
 #define IS_Boolean(o)           (O_cid(o) == CLASS_Boolean)
 #define IS_bBoolean(o)          (O_bcid(o) == CLASS_Boolean)
 #define TYPE_Boolean            CLASS_Boolean
-#define CFLAG_Boolean           ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Boolean           ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Boolean            KNH_MAGICFLAG(CFLAG_Boolean)
 
 /* ------------------------------------------------------------------------ */
 /* Number */
-#define CLASS_Number            ((knh_class_t)4)
+#define CLASS_Number            ((kclass_t)4)
 #define IS_Number(o)            (O_cid(o) == CLASS_Number)
 #define IS_bNumber(o)           (O_bcid(o) == CLASS_Number)
 #define TYPE_Number             CLASS_Number
-#define CFLAG_Number            ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Number            ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Number             KNH_MAGICFLAG(CFLAG_Number)
 
 /* ------------------------------------------------------------------------ */
 /* Int */
-#define CLASS_Int               ((knh_class_t)5)
+#define CLASS_Int               ((kclass_t)5)
 #define IS_Int(o)               (O_cid(o) == CLASS_Int)
 #define IS_bInt(o)              (O_bcid(o) == CLASS_Int)
 #define TYPE_Int                CLASS_Int
-#define CFLAG_Int               ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Int               ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Int                KNH_MAGICFLAG(CFLAG_Int)
 
 /* ------------------------------------------------------------------------ */
 /* Float */
-#define CLASS_Float             ((knh_class_t)6)
+#define CLASS_Float             ((kclass_t)6)
 #define IS_Float(o)             (O_cid(o) == CLASS_Float)
 #define IS_bFloat(o)            (O_bcid(o) == CLASS_Float)
 #define TYPE_Float              CLASS_Float
-#define CFLAG_Float             ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Float             ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Float              KNH_MAGICFLAG(CFLAG_Float)
 
 /* ------------------------------------------------------------------------ */
 /* Date */
-#define CLASS_Date              ((knh_class_t)7)
+#define CLASS_Date              ((kclass_t)7)
 #define IS_Date(o)              (O_cid(o) == CLASS_Date)
 #define IS_bDate(o)             (O_bcid(o) == CLASS_Date)
 #define TYPE_Date               CLASS_Date
-#define CFLAG_Date              ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Date              ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Date               KNH_MAGICFLAG(CFLAG_Date)
 
 /* ------------------------------------------------------------------------ */
 /* String */
-#define CLASS_String            ((knh_class_t)8)
+#define CLASS_String            ((kclass_t)8)
 #define IS_String(o)            (O_cid(o) == CLASS_String)
 #define IS_bString(o)           (O_bcid(o) == CLASS_String)
 #define TYPE_String             CLASS_String
-#define CFLAG_String            ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_String            ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_String             KNH_MAGICFLAG(CFLAG_String)
 
 /* ------------------------------------------------------------------------ */
 /* Bytes */
-#define CLASS_Bytes             ((knh_class_t)9)
+#define CLASS_Bytes             ((kclass_t)9)
 #define IS_Bytes(o)             (O_cid(o) == CLASS_Bytes)
 #define IS_bBytes(o)            (O_bcid(o) == CLASS_Bytes)
 #define TYPE_Bytes              CLASS_Bytes
-#define CFLAG_Bytes             ((knh_flag_t)0)
+#define CFLAG_Bytes             ((kflag_t)0)
 #define FLAG_Bytes              KNH_MAGICFLAG(CFLAG_Bytes)
 
 /* ------------------------------------------------------------------------ */
 /* Pointer */
-#define CLASS_Pointer           ((knh_class_t)10)
+#define CLASS_Pointer           ((kclass_t)10)
 #define IS_Pointer(o)           (O_cid(o) == CLASS_Pointer)
 #define IS_bPointer(o)          (O_bcid(o) == CLASS_Pointer)
 #define TYPE_Pointer            CLASS_Pointer
-#define CFLAG_Pointer           ((knh_flag_t)0)
+#define CFLAG_Pointer           ((kflag_t)0)
 #define FLAG_Pointer            KNH_MAGICFLAG(CFLAG_Pointer)
 
 /* ------------------------------------------------------------------------ */
 /* Iterator */
-#define CLASS_Iterator          ((knh_class_t)11)
+#define CLASS_Iterator          ((kclass_t)11)
 #define IS_Iterator(o)          (O_cid(o) == CLASS_Iterator)
 #define IS_bIterator(o)         (O_bcid(o) == CLASS_Iterator)
 #define TYPE_Iterator           CLASS_Iterator
-#define CFLAG_Iterator          ((knh_flag_t)0)
+#define CFLAG_Iterator          ((kflag_t)0)
 #define FLAG_Iterator           KNH_MAGICFLAG(CFLAG_Iterator)
 
 /* ------------------------------------------------------------------------ */
 /* Tuple */
-#define CLASS_Tuple             ((knh_class_t)12)
+#define CLASS_Tuple             ((kclass_t)12)
 #define IS_Tuple(o)             (O_cid(o) == CLASS_Tuple)
 #define IS_bTuple(o)            (O_bcid(o) == CLASS_Tuple)
 #define TYPE_Tuple              CLASS_Tuple
-#define CFLAG_Tuple             ((knh_flag_t)0)
+#define CFLAG_Tuple             ((kflag_t)0)
 #define FLAG_Tuple              KNH_MAGICFLAG(CFLAG_Tuple)
 
 /* ------------------------------------------------------------------------ */
 /* Range */
-#define CLASS_Range             ((knh_class_t)13)
+#define CLASS_Range             ((kclass_t)13)
 #define IS_Range(o)             (O_cid(o) == CLASS_Range)
 #define IS_bRange(o)            (O_bcid(o) == CLASS_Range)
 #define TYPE_Range              CLASS_Range
-#define CFLAG_Range             ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Range             ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Range              KNH_MAGICFLAG(CFLAG_Range)
 
 /* ------------------------------------------------------------------------ */
 /* Array */
-#define CLASS_Array             ((knh_class_t)14)
+#define CLASS_Array             ((kclass_t)14)
 #define IS_Array(o)             (O_cid(o) == CLASS_Array)
 #define IS_bArray(o)            (O_bcid(o) == CLASS_Array)
 #define TYPE_Array              CLASS_Array
-#define CFLAG_Array             ((knh_flag_t)0)
+#define CFLAG_Array             ((kflag_t)0)
 #define FLAG_Array              KNH_MAGICFLAG(CFLAG_Array)
 
 /* ------------------------------------------------------------------------ */
 /* Map */
-#define CLASS_Map               ((knh_class_t)15)
+#define CLASS_Map               ((kclass_t)15)
 #define IS_Map(o)               (O_cid(o) == CLASS_Map)
 #define IS_bMap(o)              (O_bcid(o) == CLASS_Map)
 #define TYPE_Map                CLASS_Map
-#define CFLAG_Map               ((knh_flag_t)0)
+#define CFLAG_Map               ((kflag_t)0)
 #define FLAG_Map                KNH_MAGICFLAG(CFLAG_Map)
 
 /* ------------------------------------------------------------------------ */
 /* Class */
-#define CLASS_Class             ((knh_class_t)16)
+#define CLASS_Class             ((kclass_t)16)
 #define IS_Class(o)             (O_cid(o) == CLASS_Class)
 #define IS_bClass(o)            (O_bcid(o) == CLASS_Class)
 #define TYPE_Class              CLASS_Class
-#define CFLAG_Class             ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Class             ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Class              KNH_MAGICFLAG(CFLAG_Class)
 
 /* ------------------------------------------------------------------------ */
 /* ParamArray */
-#define CLASS_ParamArray        ((knh_class_t)17)
+#define CLASS_ParamArray        ((kclass_t)17)
 #define IS_ParamArray(o)        (O_cid(o) == CLASS_ParamArray)
 #define IS_bParamArray(o)       (O_bcid(o) == CLASS_ParamArray)
 #define TYPE_ParamArray         CLASS_ParamArray
-#define CFLAG_ParamArray        ((knh_flag_t)FLAG_Class_Immutable|FLAG_Class_Private)
+#define CFLAG_ParamArray        ((kflag_t)FLAG_Class_Immutable|FLAG_Class_Private)
 #define FLAG_ParamArray         KNH_MAGICFLAG(CFLAG_ParamArray)
 
 /* ------------------------------------------------------------------------ */
 /* Method */
-#define CLASS_Method            ((knh_class_t)18)
+#define CLASS_Method            ((kclass_t)18)
 #define IS_Method(o)            (O_cid(o) == CLASS_Method)
 #define IS_bMethod(o)           (O_bcid(o) == CLASS_Method)
 #define TYPE_Method             CLASS_Method
-#define CFLAG_Method            ((knh_flag_t)0)
+#define CFLAG_Method            ((kflag_t)0)
 #define FLAG_Method             KNH_MAGICFLAG(CFLAG_Method)
 
 /* ------------------------------------------------------------------------ */
 /* TypeMap */
-#define CLASS_TypeMap           ((knh_class_t)19)
+#define CLASS_TypeMap           ((kclass_t)19)
 #define IS_TypeMap(o)           (O_cid(o) == CLASS_TypeMap)
 #define IS_bTypeMap(o)          (O_bcid(o) == CLASS_TypeMap)
 #define TYPE_TypeMap            CLASS_TypeMap
-#define CFLAG_TypeMap           ((knh_flag_t)0)
+#define CFLAG_TypeMap           ((kflag_t)0)
 #define FLAG_TypeMap            KNH_MAGICFLAG(CFLAG_TypeMap)
 
 /* ------------------------------------------------------------------------ */
 /* Func */
-#define CLASS_Func              ((knh_class_t)20)
+#define CLASS_Func              ((kclass_t)20)
 #define IS_Func(o)              (O_cid(o) == CLASS_Func)
 #define IS_bFunc(o)             (O_bcid(o) == CLASS_Func)
 #define TYPE_Func               CLASS_Func
-#define CFLAG_Func              ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Func              ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Func               KNH_MAGICFLAG(CFLAG_Func)
 
 /* ------------------------------------------------------------------------ */
 /* Thunk */
-#define CLASS_Thunk             ((knh_class_t)21)
+#define CLASS_Thunk             ((kclass_t)21)
 #define IS_Thunk(o)             (O_cid(o) == CLASS_Thunk)
 #define IS_bThunk(o)            (O_bcid(o) == CLASS_Thunk)
 #define TYPE_Thunk              CLASS_Thunk
-#define CFLAG_Thunk             ((knh_flag_t)0)
+#define CFLAG_Thunk             ((kflag_t)0)
 #define FLAG_Thunk              KNH_MAGICFLAG(CFLAG_Thunk)
 
 /* ------------------------------------------------------------------------ */
 /* Exception */
-#define CLASS_Exception         ((knh_class_t)22)
+#define CLASS_Exception         ((kclass_t)22)
 #define IS_Exception(o)         (O_cid(o) == CLASS_Exception)
 #define IS_bException(o)        (O_bcid(o) == CLASS_Exception)
 #define TYPE_Exception          CLASS_Exception
-#define CFLAG_Exception         ((knh_flag_t)0)
+#define CFLAG_Exception         ((kflag_t)0)
 #define FLAG_Exception          KNH_MAGICFLAG(CFLAG_Exception)
 
 /* ------------------------------------------------------------------------ */
 /* ExceptionHandler */
-#define CLASS_ExceptionHandler  ((knh_class_t)23)
+#define CLASS_ExceptionHandler  ((kclass_t)23)
 #define IS_ExceptionHandler(o)  (O_cid(o) == CLASS_ExceptionHandler)
 #define IS_bExceptionHandler(o) (O_bcid(o) == CLASS_ExceptionHandler)
 #define TYPE_ExceptionHandler   CLASS_ExceptionHandler
-#define CFLAG_ExceptionHandler  ((knh_flag_t)FLAG_Class_Private)
+#define CFLAG_ExceptionHandler  ((kflag_t)FLAG_Class_Private)
 #define FLAG_ExceptionHandler   KNH_MAGICFLAG(CFLAG_ExceptionHandler)
 
 /* ------------------------------------------------------------------------ */
 /* Regex */
-#define CLASS_Regex             ((knh_class_t)24)
+#define CLASS_Regex             ((kclass_t)24)
 #define IS_Regex(o)             (O_cid(o) == CLASS_Regex)
 #define IS_bRegex(o)            (O_bcid(o) == CLASS_Regex)
 #define TYPE_Regex              CLASS_Regex
-#define CFLAG_Regex             ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Regex             ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Regex              KNH_MAGICFLAG(CFLAG_Regex)
 
 /* ------------------------------------------------------------------------ */
 /* Converter */
-#define CLASS_Converter         ((knh_class_t)25)
+#define CLASS_Converter         ((kclass_t)25)
 #define IS_Converter(o)         (O_cid(o) == CLASS_Converter)
 #define IS_bConverter(o)        (O_bcid(o) == CLASS_Converter)
 #define TYPE_Converter          CLASS_Converter
-#define CFLAG_Converter         ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Converter         ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Converter          KNH_MAGICFLAG(CFLAG_Converter)
 
 /* ------------------------------------------------------------------------ */
 /* StringEncoder */
-#define CLASS_StringEncoder     ((knh_class_t)26)
+#define CLASS_StringEncoder     ((kclass_t)26)
 #define IS_StringEncoder(o)     (O_cid(o) == CLASS_StringEncoder)
 #define IS_bStringEncoder(o)    (O_bcid(o) == CLASS_StringEncoder)
 #define TYPE_StringEncoder      CLASS_StringEncoder
-#define CFLAG_StringEncoder     ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_StringEncoder     ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_StringEncoder      KNH_MAGICFLAG(CFLAG_StringEncoder)
 
 /* ------------------------------------------------------------------------ */
 /* StringDecoder */
-#define CLASS_StringDecoder     ((knh_class_t)27)
+#define CLASS_StringDecoder     ((kclass_t)27)
 #define IS_StringDecoder(o)     (O_cid(o) == CLASS_StringDecoder)
 #define IS_bStringDecoder(o)    (O_bcid(o) == CLASS_StringDecoder)
 #define TYPE_StringDecoder      CLASS_StringDecoder
-#define CFLAG_StringDecoder     ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_StringDecoder     ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_StringDecoder      KNH_MAGICFLAG(CFLAG_StringDecoder)
 
 /* ------------------------------------------------------------------------ */
 /* StringConverter */
-#define CLASS_StringConverter   ((knh_class_t)28)
+#define CLASS_StringConverter   ((kclass_t)28)
 #define IS_StringConverter(o)   (O_cid(o) == CLASS_StringConverter)
 #define IS_bStringConverter(o)  (O_bcid(o) == CLASS_StringConverter)
 #define TYPE_StringConverter    CLASS_StringConverter
-#define CFLAG_StringConverter   ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_StringConverter   ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_StringConverter    KNH_MAGICFLAG(CFLAG_StringConverter)
 
 /* ------------------------------------------------------------------------ */
 /* Semantics */
-#define CLASS_Semantics         ((knh_class_t)29)
+#define CLASS_Semantics         ((kclass_t)29)
 #define IS_Semantics(o)         (O_cid(o) == CLASS_Semantics)
 #define IS_bSemantics(o)        (O_bcid(o) == CLASS_Semantics)
 #define TYPE_Semantics          CLASS_Semantics
-#define CFLAG_Semantics         ((knh_flag_t)FLAG_Class_Private)
+#define CFLAG_Semantics         ((kflag_t)FLAG_Class_Private)
 #define FLAG_Semantics          KNH_MAGICFLAG(CFLAG_Semantics)
 
 /* ------------------------------------------------------------------------ */
 /* Path */
-#define CLASS_Path              ((knh_class_t)30)
+#define CLASS_Path              ((kclass_t)30)
 #define IS_Path(o)              (O_cid(o) == CLASS_Path)
 #define IS_bPath(o)             (O_bcid(o) == CLASS_Path)
 #define TYPE_Path               CLASS_Path
-#define CFLAG_Path              ((knh_flag_t)0)
+#define CFLAG_Path              ((kflag_t)0)
 #define FLAG_Path               KNH_MAGICFLAG(CFLAG_Path)
 
 /* ------------------------------------------------------------------------ */
 /* InputStream */
-#define CLASS_InputStream       ((knh_class_t)31)
+#define CLASS_InputStream       ((kclass_t)31)
 #define IS_InputStream(o)       (O_cid(o) == CLASS_InputStream)
 #define IS_bInputStream(o)      (O_bcid(o) == CLASS_InputStream)
 #define TYPE_InputStream        CLASS_InputStream
-#define CFLAG_InputStream       ((knh_flag_t)0)
+#define CFLAG_InputStream       ((kflag_t)0)
 #define FLAG_InputStream        KNH_MAGICFLAG(CFLAG_InputStream)
 
 /* ------------------------------------------------------------------------ */
 /* OutputStream */
-#define CLASS_OutputStream      ((knh_class_t)32)
+#define CLASS_OutputStream      ((kclass_t)32)
 #define IS_OutputStream(o)      (O_cid(o) == CLASS_OutputStream)
 #define IS_bOutputStream(o)     (O_bcid(o) == CLASS_OutputStream)
 #define TYPE_OutputStream       CLASS_OutputStream
-#define CFLAG_OutputStream      ((knh_flag_t)0)
+#define CFLAG_OutputStream      ((kflag_t)0)
 #define FLAG_OutputStream       KNH_MAGICFLAG(CFLAG_OutputStream)
 
 /* ------------------------------------------------------------------------ */
 /* View */
-#define CLASS_View              ((knh_class_t)33)
+#define CLASS_View              ((kclass_t)33)
 #define IS_View(o)              (O_cid(o) == CLASS_View)
 #define IS_bView(o)             (O_bcid(o) == CLASS_View)
 #define TYPE_View               CLASS_View
-#define CFLAG_View              ((knh_flag_t)0)
+#define CFLAG_View              ((kflag_t)0)
 #define FLAG_View               KNH_MAGICFLAG(CFLAG_View)
 
 /* ------------------------------------------------------------------------ */
 /* NameSpace */
-#define CLASS_NameSpace         ((knh_class_t)34)
+#define CLASS_NameSpace         ((kclass_t)34)
 #define IS_NameSpace(o)         (O_cid(o) == CLASS_NameSpace)
 #define IS_bNameSpace(o)        (O_bcid(o) == CLASS_NameSpace)
 #define TYPE_NameSpace          CLASS_NameSpace
-#define CFLAG_NameSpace         ((knh_flag_t)0)
+#define CFLAG_NameSpace         ((kflag_t)0)
 #define FLAG_NameSpace          KNH_MAGICFLAG(CFLAG_NameSpace)
 
 /* ------------------------------------------------------------------------ */
 /* Script */
-#define CLASS_Script            ((knh_class_t)35)
+#define CLASS_Script            ((kclass_t)35)
 #define IS_Script(o)            (O_cid(o) == CLASS_Script)
 #define IS_bScript(o)           (O_bcid(o) == CLASS_Script)
 #define TYPE_Script             CLASS_Script
-#define CFLAG_Script            ((knh_flag_t)FLAG_Class_Singleton|FLAG_Class_Private)
+#define CFLAG_Script            ((kflag_t)FLAG_Class_Singleton|FLAG_Class_Private)
 #define FLAG_Script             KNH_MAGICFLAG(CFLAG_Script)
 
 /* ------------------------------------------------------------------------ */
 /* System */
-#define CLASS_System            ((knh_class_t)36)
+#define CLASS_System            ((kclass_t)36)
 #define IS_System(o)            (O_cid(o) == CLASS_System)
 #define IS_bSystem(o)           (O_bcid(o) == CLASS_System)
 #define TYPE_System             CLASS_System
-#define CFLAG_System            ((knh_flag_t)FLAG_Class_Singleton)
+#define CFLAG_System            ((kflag_t)FLAG_Class_Singleton)
 #define FLAG_System             KNH_MAGICFLAG(CFLAG_System)
 
 /* ------------------------------------------------------------------------ */
 /* Context */
-#define CLASS_Context           ((knh_class_t)37)
+#define CLASS_Context           ((kclass_t)37)
 #define IS_Context(o)           (O_cid(o) == CLASS_Context)
 #define IS_bContext(o)          (O_bcid(o) == CLASS_Context)
 #define TYPE_Context            CLASS_Context
-#define CFLAG_Context           ((knh_flag_t)0)
+#define CFLAG_Context           ((kflag_t)0)
 #define FLAG_Context            KNH_MAGICFLAG(CFLAG_Context)
 
 /* ------------------------------------------------------------------------ */
 /* Assurance */
-#define CLASS_Assurance         ((knh_class_t)38)
+#define CLASS_Assurance         ((kclass_t)38)
 #define IS_Assurance(o)         (O_cid(o) == CLASS_Assurance)
 #define IS_bAssurance(o)        (O_bcid(o) == CLASS_Assurance)
 #define TYPE_Assurance          CLASS_Assurance
-#define CFLAG_Assurance         ((knh_flag_t)0)
+#define CFLAG_Assurance         ((kflag_t)0)
 #define FLAG_Assurance          KNH_MAGICFLAG(CFLAG_Assurance)
 
 /* ------------------------------------------------------------------------ */
 /* Token */
-#define CLASS_Token             ((knh_class_t)39)
+#define CLASS_Token             ((kclass_t)39)
 #define IS_Token(o)             (O_cid(o) == CLASS_Token)
 #define IS_bToken(o)            (O_bcid(o) == CLASS_Token)
 #define TYPE_Token              CLASS_Token
-#define CFLAG_Token             ((knh_flag_t)0)
+#define CFLAG_Token             ((kflag_t)0)
 #define FLAG_Token              KNH_MAGICFLAG(CFLAG_Token)
 
 /* ------------------------------------------------------------------------ */
 /* Sugar */
-#define CLASS_Sugar             ((knh_class_t)40)
+#define CLASS_Sugar             ((kclass_t)40)
 #define IS_Sugar(o)             (O_cid(o) == CLASS_Sugar)
 #define IS_bSugar(o)            (O_bcid(o) == CLASS_Sugar)
 #define TYPE_Sugar              CLASS_Sugar
-#define CFLAG_Sugar             ((knh_flag_t)0)
+#define CFLAG_Sugar             ((kflag_t)0)
 #define FLAG_Sugar              KNH_MAGICFLAG(CFLAG_Sugar)
 
 /* ------------------------------------------------------------------------ */
 /* Expr */
-#define CLASS_Expr              ((knh_class_t)41)
+#define CLASS_Expr              ((kclass_t)41)
 #define IS_Expr(o)              (O_cid(o) == CLASS_Expr)
 #define IS_bExpr(o)             (O_bcid(o) == CLASS_Expr)
 #define TYPE_Expr               CLASS_Expr
-#define CFLAG_Expr              ((knh_flag_t)0)
+#define CFLAG_Expr              ((kflag_t)0)
 #define FLAG_Expr               KNH_MAGICFLAG(CFLAG_Expr)
 
 /* ------------------------------------------------------------------------ */
 /* Stmt */
-#define CLASS_Stmt              ((knh_class_t)42)
+#define CLASS_Stmt              ((kclass_t)42)
 #define IS_Stmt(o)              (O_cid(o) == CLASS_Stmt)
 #define IS_bStmt(o)             (O_bcid(o) == CLASS_Stmt)
 #define TYPE_Stmt               CLASS_Stmt
-#define CFLAG_Stmt              ((knh_flag_t)0)
+#define CFLAG_Stmt              ((kflag_t)0)
 #define FLAG_Stmt               KNH_MAGICFLAG(CFLAG_Stmt)
 
 /* ------------------------------------------------------------------------ */
 /* Block */
-#define CLASS_Block             ((knh_class_t)43)
+#define CLASS_Block             ((kclass_t)43)
 #define IS_Block(o)             (O_cid(o) == CLASS_Block)
 #define IS_bBlock(o)            (O_bcid(o) == CLASS_Block)
 #define TYPE_Block              CLASS_Block
-#define CFLAG_Block             ((knh_flag_t)0)
+#define CFLAG_Block             ((kflag_t)0)
 #define FLAG_Block              KNH_MAGICFLAG(CFLAG_Block)
 
 /* ------------------------------------------------------------------------ */
 /* Lang */
-#define CLASS_Lang              ((knh_class_t)44)
+#define CLASS_Lang              ((kclass_t)44)
 #define IS_Lang(o)              (O_cid(o) == CLASS_Lang)
 #define IS_bLang(o)             (O_bcid(o) == CLASS_Lang)
 #define TYPE_Lang               CLASS_Lang
-#define CFLAG_Lang              ((knh_flag_t)FLAG_Class_Singleton)
+#define CFLAG_Lang              ((kflag_t)FLAG_Class_Singleton)
 #define FLAG_Lang               KNH_MAGICFLAG(CFLAG_Lang)
 
 /* ------------------------------------------------------------------------ */
 /* Term */
-#define CLASS_Term              ((knh_class_t)45)
+#define CLASS_Term              ((kclass_t)45)
 #define IS_Term(o)              (O_cid(o) == CLASS_Term)
 #define IS_bTerm(o)             (O_bcid(o) == CLASS_Term)
 #define TYPE_Term               CLASS_Term
-#define CFLAG_Term              ((knh_flag_t)0)
+#define CFLAG_Term              ((kflag_t)0)
 #define FLAG_Term               KNH_MAGICFLAG(CFLAG_Term)
 
 /* ------------------------------------------------------------------------ */
 /* StmtExpr */
-#define CLASS_StmtExpr          ((knh_class_t)46)
+#define CLASS_StmtExpr          ((kclass_t)46)
 #define IS_StmtExpr(o)          (O_cid(o) == CLASS_StmtExpr)
 #define IS_bStmtExpr(o)         (O_bcid(o) == CLASS_StmtExpr)
 #define TYPE_StmtExpr           CLASS_StmtExpr
-#define CFLAG_StmtExpr          ((knh_flag_t)0)
+#define CFLAG_StmtExpr          ((kflag_t)0)
 #define FLAG_StmtExpr           KNH_MAGICFLAG(CFLAG_StmtExpr)
 
 /* ------------------------------------------------------------------------ */
 /* GammaBuilder */
-#define CLASS_GammaBuilder      ((knh_class_t)47)
+#define CLASS_GammaBuilder      ((kclass_t)47)
 #define IS_GammaBuilder(o)      (O_cid(o) == CLASS_GammaBuilder)
 #define IS_bGammaBuilder(o)     (O_bcid(o) == CLASS_GammaBuilder)
 #define TYPE_GammaBuilder       CLASS_GammaBuilder
-#define CFLAG_GammaBuilder      ((knh_flag_t)FLAG_Class_Private)
+#define CFLAG_GammaBuilder      ((kflag_t)FLAG_Class_Private)
 #define FLAG_GammaBuilder       KNH_MAGICFLAG(CFLAG_GammaBuilder)
 
 /* ------------------------------------------------------------------------ */
 /* BasicBlock */
-#define CLASS_BasicBlock        ((knh_class_t)48)
+#define CLASS_BasicBlock        ((kclass_t)48)
 #define IS_BasicBlock(o)        (O_cid(o) == CLASS_BasicBlock)
 #define IS_bBasicBlock(o)       (O_bcid(o) == CLASS_BasicBlock)
 #define TYPE_BasicBlock         CLASS_BasicBlock
-#define CFLAG_BasicBlock        ((knh_flag_t)0)
+#define CFLAG_BasicBlock        ((kflag_t)0)
 #define FLAG_BasicBlock         KNH_MAGICFLAG(CFLAG_BasicBlock)
 
 /* ------------------------------------------------------------------------ */
 /* KonohaCode */
-#define CLASS_KonohaCode        ((knh_class_t)49)
+#define CLASS_KonohaCode        ((kclass_t)49)
 #define IS_KonohaCode(o)        (O_cid(o) == CLASS_KonohaCode)
 #define IS_bKonohaCode(o)       (O_bcid(o) == CLASS_KonohaCode)
 #define TYPE_KonohaCode         CLASS_KonohaCode
-#define CFLAG_KonohaCode        ((knh_flag_t)0)
+#define CFLAG_KonohaCode        ((kflag_t)0)
 #define FLAG_KonohaCode         KNH_MAGICFLAG(CFLAG_KonohaCode)
 
 /* ------------------------------------------------------------------------ */
 /* Immutable */
-#define CLASS_Immutable         ((knh_class_t)50)
+#define CLASS_Immutable         ((kclass_t)50)
 #define IS_Immutable(o)         (O_cid(o) == CLASS_Immutable)
 #define IS_bImmutable(o)        (O_bcid(o) == CLASS_Immutable)
 #define TYPE_Immutable          CLASS_Immutable
-#define CFLAG_Immutable         ((knh_flag_t)FLAG_Class_Immutable)
+#define CFLAG_Immutable         ((kflag_t)FLAG_Class_Immutable)
 #define FLAG_Immutable          KNH_MAGICFLAG(CFLAG_Immutable)
 
 /* ------------------------------------------------------------------------ */
 /* KindOf */
-#define CLASS_KindOf            ((knh_class_t)51)
+#define CLASS_KindOf            ((kclass_t)51)
 #define IS_KindOf(o)            (O_cid(o) == CLASS_KindOf)
 #define IS_bKindOf(o)           (O_bcid(o) == CLASS_KindOf)
 #define TYPE_KindOf             CLASS_KindOf
-#define CFLAG_KindOf            ((knh_flag_t)0)
+#define CFLAG_KindOf            ((kflag_t)0)
 #define FLAG_KindOf             KNH_MAGICFLAG(CFLAG_KindOf)
 
 /* ------------------------------------------------------------------------ */
 /* Tdynamic */
-#define CLASS_Tdynamic          ((knh_class_t)52)
+#define CLASS_Tdynamic          ((kclass_t)52)
 #define IS_Tdynamic(o)          (O_cid(o) == CLASS_Tdynamic)
 #define IS_bTdynamic(o)         (O_bcid(o) == CLASS_Tdynamic)
 #define TYPE_Tdynamic           CLASS_Tdynamic
-#define CFLAG_Tdynamic          ((knh_flag_t)0)
+#define CFLAG_Tdynamic          ((kflag_t)0)
 #define FLAG_Tdynamic           KNH_MAGICFLAG(CFLAG_Tdynamic)
 
 #ifdef K_INTERNAL 
@@ -550,61 +550,61 @@
 
 /* ------------------------------------------------------------------------ */
 /* IteratorVar */
-#define CLASS_IteratorVar       ((knh_class_t)53)
+#define CLASS_IteratorVar       ((kclass_t)53)
 #define IS_IteratorVar(o)       (O_cid(o) == CLASS_IteratorVar)
 #define TYPE_IteratorVar        CLASS_IteratorVar
 
 /* ------------------------------------------------------------------------ */
 /* DataITR */
-#define CLASS_DataITR           ((knh_class_t)54)
+#define CLASS_DataITR           ((kclass_t)54)
 #define IS_DataITR(o)           (O_cid(o) == CLASS_DataITR)
 #define TYPE_DataITR            CLASS_DataITR
 
 /* ------------------------------------------------------------------------ */
 /* FuncEach */
-#define CLASS_FuncEach          ((knh_class_t)55)
+#define CLASS_FuncEach          ((kclass_t)55)
 #define IS_FuncEach(o)          (O_cid(o) == CLASS_FuncEach)
 #define TYPE_FuncEach           CLASS_FuncEach
 
 /* ------------------------------------------------------------------------ */
 /* FuncWhere */
-#define CLASS_FuncWhere         ((knh_class_t)56)
+#define CLASS_FuncWhere         ((kclass_t)56)
 #define IS_FuncWhere(o)         (O_cid(o) == CLASS_FuncWhere)
 #define TYPE_FuncWhere          CLASS_FuncWhere
 
 /* ------------------------------------------------------------------------ */
 /* RangeInt */
-#define CLASS_RangeInt          ((knh_class_t)57)
+#define CLASS_RangeInt          ((kclass_t)57)
 #define IS_RangeInt(o)          (O_cid(o) == CLASS_RangeInt)
 #define TYPE_RangeInt           CLASS_RangeInt
 
 /* ------------------------------------------------------------------------ */
 /* ArrayInt */
-#define CLASS_ArrayInt          ((knh_class_t)58)
+#define CLASS_ArrayInt          ((kclass_t)58)
 #define IS_ArrayInt(o)          (O_cid(o) == CLASS_ArrayInt)
 #define TYPE_ArrayInt           CLASS_ArrayInt
 
 /* ------------------------------------------------------------------------ */
 /* CmprT1 */
-#define CLASS_CmprT1            ((knh_class_t)59)
+#define CLASS_CmprT1            ((kclass_t)59)
 #define IS_CmprT1(o)            (O_cid(o) == CLASS_CmprT1)
 #define TYPE_CmprT1             CLASS_CmprT1
 
 /* ------------------------------------------------------------------------ */
 /* StringARRAY */
-#define CLASS_StringARRAY       ((knh_class_t)60)
+#define CLASS_StringARRAY       ((kclass_t)60)
 #define IS_StringARRAY(o)       (O_cid(o) == CLASS_StringARRAY)
 #define TYPE_StringARRAY        CLASS_StringARRAY
 
 /* ------------------------------------------------------------------------ */
 /* StringITR */
-#define CLASS_StringITR         ((knh_class_t)61)
+#define CLASS_StringITR         ((kclass_t)61)
 #define IS_StringITR(o)         (O_cid(o) == CLASS_StringITR)
 #define TYPE_StringITR          CLASS_StringITR
 
 /* ------------------------------------------------------------------------ */
 /* T1ARRAY */
-#define CLASS_T1ARRAY           ((knh_class_t)62)
+#define CLASS_T1ARRAY           ((kclass_t)62)
 #define IS_T1ARRAY(o)           (O_cid(o) == CLASS_T1ARRAY)
 #define TYPE_T1ARRAY            CLASS_T1ARRAY
 #define K_CLASS_INITSIZE                64
@@ -612,253 +612,253 @@
 /* ------------------------------------------------------------------------ */
 /* FLAG */
 
-#define FLAG_Object_Ref ((knh_uintptr_t)(1<<0))
-#define Object_hasRef(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Ref))
-#define Object_setRef(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Ref,b)
-#define FLAG_Object_NullObject ((knh_uintptr_t)(1<<1))
-#define Object_isNullObject(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_NullObject))
-#define Object_setNullObject(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_NullObject,b)
-#define FLAG_Object_XData ((knh_uintptr_t)(1<<2))
-#define Object_isXData(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_XData))
-#define Object_setXData(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_XData,b)
-#define FLAG_Object_Modified ((knh_uintptr_t)(1<<3))
-#define Object_isModified(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Modified))
-#define Object_setModified(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Modified,b)
-#define FLAG_Object_Local1 ((knh_uintptr_t)(1<<12))
-#define Object_isLocal1(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local1))
-#define Object_setLocal1(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local1,b)
-#define FLAG_Object_Local2 ((knh_uintptr_t)(1<<13))
-#define Object_isLocal2(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local2))
-#define Object_setLocal2(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local2,b)
-#define FLAG_Object_Local3 ((knh_uintptr_t)(1<<14))
-#define Object_isLocal3(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local3))
-#define Object_setLocal3(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local3,b)
-#define FLAG_Object_Local4 ((knh_uintptr_t)(1<<15))
-#define Object_isLocal4(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local4))
-#define Object_setLocal4(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Object_Local4,b)
+#define FLAG_Object_Ref ((kuintptr_t)(1<<0))
+#define Object_hasRef(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_Ref))
+#define Object_setRef(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_Ref,b)
+#define FLAG_Object_NullObject ((kuintptr_t)(1<<1))
+#define Object_isNullObject(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_NullObject))
+#define Object_setNullObject(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_NullObject,b)
+#define FLAG_Object_XData ((kuintptr_t)(1<<2))
+#define Object_isXData(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_XData))
+#define Object_setXData(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_XData,b)
+#define FLAG_Object_Modified ((kuintptr_t)(1<<3))
+#define Object_isModified(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_Modified))
+#define Object_setModified(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_Modified,b)
+#define FLAG_Object_Local1 ((kuintptr_t)(1<<12))
+#define Object_isLocal1(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local1))
+#define Object_setLocal1(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local1,b)
+#define FLAG_Object_Local2 ((kuintptr_t)(1<<13))
+#define Object_isLocal2(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local2))
+#define Object_setLocal2(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local2,b)
+#define FLAG_Object_Local3 ((kuintptr_t)(1<<14))
+#define Object_isLocal3(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local3))
+#define Object_setLocal3(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local3,b)
+#define FLAG_Object_Local4 ((kuintptr_t)(1<<15))
+#define Object_isLocal4(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local4))
+#define Object_setLocal4(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Object_Local4,b)
 #define FLAG_String_TextSgm FLAG_Object_Local1
-#define String_isTextSgm(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_String_TextSgm))
-#define String_setTextSgm(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_String_TextSgm,b)
+#define String_isTextSgm(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_String_TextSgm))
+#define String_setTextSgm(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_String_TextSgm,b)
 #define FLAG_String_ASCII FLAG_Object_Local2
-#define String_isASCII(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_String_ASCII))
-#define String_setASCII(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_String_ASCII,b)
+#define String_isASCII(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_String_ASCII))
+#define String_setASCII(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_String_ASCII,b)
 #define FLAG_String_Pooled FLAG_Object_Local3
-#define String_isPooled(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_String_Pooled))
-#define String_setPooled(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_String_Pooled,b)
+#define String_isPooled(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_String_Pooled))
+#define String_setPooled(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_String_Pooled,b)
 #define FLAG_Iterator_NDATA FLAG_Object_Local1
-#define Iterator_isNDATA(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Iterator_NDATA))
-#define Iterator_setNDATA(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Iterator_NDATA,b)
+#define Iterator_isNDATA(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Iterator_NDATA))
+#define Iterator_setNDATA(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Iterator_NDATA,b)
 #define FLAG_Range_NDATA FLAG_Object_Local1
-#define Range_isNDATA(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_NDATA))
-#define Range_setNDATA(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_NDATA,b)
+#define Range_isNDATA(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Range_NDATA))
+#define Range_setNDATA(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Range_NDATA,b)
 #define FLAG_Range_Inclusive FLAG_Object_Local2
-#define Range_isInclusive(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_Inclusive))
-#define Range_setInclusive(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Range_Inclusive,b)
+#define Range_isInclusive(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Range_Inclusive))
+#define Range_setInclusive(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Range_Inclusive,b)
 #define FLAG_Array_NDATA FLAG_Object_Local1
-#define Array_isNDATA(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Array_NDATA))
-#define Array_setNDATA(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Array_NDATA,b)
-#define FLAG_Class_Ref ((knh_flag_t)(1<<0))
-#define class_isRef(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Ref))
-#define FLAG_Class_Expando ((knh_flag_t)(1<<1))
-#define class_isExpando(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Expando))
-#define FLAG_Class_Immutable ((knh_flag_t)(1<<2))
-#define class_isImmutable(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Immutable))
-#define FLAG_Class_Private ((knh_flag_t)(1<<4))
-#define class_isPrivate(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Private))
-#define class_isPublic(o)  (!TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Private))
-#define FLAG_Class_Final ((knh_flag_t)(1<<5))
-#define class_isFinal(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Final))
-#define FLAG_Class_Singleton ((knh_flag_t)(1<<6))
-#define class_isSingleton(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Singleton))
-#define FLAG_Class_Unique ((knh_flag_t)(1<<7))
-#define class_isUnique(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Unique))
-#define FLAG_Class_Interface ((knh_flag_t)(1<<8))
-#define class_isInterface(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_Interface))
-#define FLAG_Class_TypeVariable ((knh_flag_t)(1<<9))
-#define class_isTypeVariable(o)  (TFLAG_is(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_TypeVariable))
-#define class_setTypeVariable(o,b) TFLAG_set(knh_flag_t,(ClassTBL(o))->cflag,FLAG_Class_TypeVariable,b)
+#define Array_isNDATA(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Array_NDATA))
+#define Array_setNDATA(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Array_NDATA,b)
+#define FLAG_Class_Ref ((kflag_t)(1<<0))
+#define class_isRef(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Ref))
+#define FLAG_Class_Expando ((kflag_t)(1<<1))
+#define class_isExpando(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Expando))
+#define FLAG_Class_Immutable ((kflag_t)(1<<2))
+#define class_isImmutable(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Immutable))
+#define FLAG_Class_Private ((kflag_t)(1<<4))
+#define class_isPrivate(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Private))
+#define class_isPublic(o)  (!TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Private))
+#define FLAG_Class_Final ((kflag_t)(1<<5))
+#define class_isFinal(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Final))
+#define FLAG_Class_Singleton ((kflag_t)(1<<6))
+#define class_isSingleton(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Singleton))
+#define FLAG_Class_Unique ((kflag_t)(1<<7))
+#define class_isUnique(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Unique))
+#define FLAG_Class_Interface ((kflag_t)(1<<8))
+#define class_isInterface(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_Interface))
+#define FLAG_Class_TypeVariable ((kflag_t)(1<<9))
+#define class_isTypeVariable(o)  (TFLAG_is(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_TypeVariable))
+#define class_setTypeVariable(o,b) TFLAG_set(kflag_t,(ClassTBL(o))->cflag,FLAG_Class_TypeVariable,b)
 #define FLAG_ParamArray_VARGs FLAG_Object_Local1
-#define ParamArray_isVARGs(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_ParamArray_VARGs))
-#define ParamArray_setVARGs(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_ParamArray_VARGs,b)
+#define ParamArray_isVARGs(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_VARGs))
+#define ParamArray_setVARGs(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_VARGs,b)
 #define FLAG_ParamArray_RVAR FLAG_Object_Local2
-#define ParamArray_isRVAR(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_ParamArray_RVAR))
-#define ParamArray_setRVAR(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_ParamArray_RVAR,b)
-#define FLAG_Method_Private ((knh_flag_t)(1<<0))
-#define Method_isPrivate(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Private))
-#define Method_isPublic(o)  (!TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Private))
-#define Method_setPrivate(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Private,b)
-#define Method_setPublic(o,b)  TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Private,(!(b)))
-#define FLAG_Method_Virtual ((knh_flag_t)(1<<1))
-#define Method_isVirtual(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Virtual))
-#define Method_isFinal(o)  (!TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Virtual))
-#define Method_setVirtual(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Virtual,b)
-#define Method_setFinal(o,b)  TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Virtual,(!(b)))
-#define FLAG_Method_Hidden ((knh_flag_t)(1<<2))
-#define Method_isHidden(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Hidden))
-#define Method_setHidden(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Hidden,b)
-#define FLAG_Method_Const ((knh_flag_t)(1<<3))
-#define Method_isConst(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Const))
-#define FLAG_Method_Static ((knh_flag_t)(1<<4))
-#define Method_isStatic(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Static))
-#define FLAG_Method_Smart ((knh_flag_t)(1<<5))
-#define Method_isSmart(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Smart))
-#define Method_setSmart(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Smart,b)
-#define FLAG_Method_Dynamic ((knh_flag_t)(1<<6))
-#define Method_isDynamic(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Dynamic))
-#define Method_setDynamic(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Dynamic,b)
-#define FLAG_Method_Immutable ((knh_flag_t)(1<<7))
-#define Method_isImmutable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Immutable))
-#define Method_setImmutable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Immutable,b)
-#define FLAG_Method_Iterative ((knh_flag_t)(1<<8))
-#define Method_isIterative(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Iterative))
-#define Method_setIterative(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Iterative,b)
-#define FLAG_Method_Throwable ((knh_flag_t)(1<<9))
-#define Method_isThrowable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Throwable))
-#define Method_setThrowable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Throwable,b)
-#define FLAG_Method_Message ((knh_flag_t)(1<<10))
-#define Method_isMessage(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Message))
-#define Method_setMessage(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Message,b)
-#define FLAG_Method_Restricted ((knh_flag_t)(1<<11))
-#define Method_isRestricted(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Restricted))
-#define Method_setRestricted(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Restricted,b)
-#define FLAG_Method_FastCall ((knh_flag_t)(1<<12))
-#define Method_isFastCall(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_FastCall))
-#define Method_setFastCall(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_FastCall,b)
-#define FLAG_Method_Overload ((knh_flag_t)(1<<13))
-#define Method_isOverload(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_Method_Overload))
-#define Method_setOverload(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_Method_Overload,b)
+#define ParamArray_isRVAR(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_RVAR))
+#define ParamArray_setRVAR(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_ParamArray_RVAR,b)
+#define FLAG_Method_Private ((kflag_t)(1<<0))
+#define Method_isPrivate(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Private))
+#define Method_isPublic(o)  (!TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Private))
+#define Method_setPrivate(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Private,b)
+#define Method_setPublic(o,b)  TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Private,(!(b)))
+#define FLAG_Method_Virtual ((kflag_t)(1<<1))
+#define Method_isVirtual(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Virtual))
+#define Method_isFinal(o)  (!TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Virtual))
+#define Method_setVirtual(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Virtual,b)
+#define Method_setFinal(o,b)  TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Virtual,(!(b)))
+#define FLAG_Method_Hidden ((kflag_t)(1<<2))
+#define Method_isHidden(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Hidden))
+#define Method_setHidden(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Hidden,b)
+#define FLAG_Method_Const ((kflag_t)(1<<3))
+#define Method_isConst(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Const))
+#define FLAG_Method_Static ((kflag_t)(1<<4))
+#define Method_isStatic(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
+#define FLAG_Method_Smart ((kflag_t)(1<<5))
+#define Method_isSmart(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Smart))
+#define Method_setSmart(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Smart,b)
+#define FLAG_Method_Dynamic ((kflag_t)(1<<6))
+#define Method_isDynamic(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Dynamic))
+#define Method_setDynamic(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Dynamic,b)
+#define FLAG_Method_Immutable ((kflag_t)(1<<7))
+#define Method_isImmutable(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Immutable))
+#define Method_setImmutable(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Immutable,b)
+#define FLAG_Method_Iterative ((kflag_t)(1<<8))
+#define Method_isIterative(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Iterative))
+#define Method_setIterative(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Iterative,b)
+#define FLAG_Method_Throwable ((kflag_t)(1<<9))
+#define Method_isThrowable(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Throwable))
+#define Method_setThrowable(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Throwable,b)
+#define FLAG_Method_Message ((kflag_t)(1<<10))
+#define Method_isMessage(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Message))
+#define Method_setMessage(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Message,b)
+#define FLAG_Method_Restricted ((kflag_t)(1<<11))
+#define Method_isRestricted(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Restricted))
+#define Method_setRestricted(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Restricted,b)
+#define FLAG_Method_FastCall ((kflag_t)(1<<12))
+#define Method_isFastCall(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_FastCall))
+#define Method_setFastCall(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_FastCall,b)
+#define FLAG_Method_Overload ((kflag_t)(1<<13))
+#define Method_isOverload(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Overload))
+#define Method_setOverload(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_Method_Overload,b)
 #define FLAG_TypeMap_Interface FLAG_Object_Local1
-#define TypeMap_isInterface(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface))
-#define TypeMap_setInterface(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface,b)
+#define TypeMap_isInterface(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface))
+#define TypeMap_setInterface(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_Interface,b)
 #define FLAG_TypeMap_Semantic FLAG_Object_Local2
-#define TypeMap_isSemantic(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Semantic))
-#define TypeMap_setSemantic(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Semantic,b)
+#define TypeMap_isSemantic(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_Semantic))
+#define TypeMap_setSemantic(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_Semantic,b)
 #define FLAG_TypeMap_Const FLAG_Object_Local3
-#define TypeMap_isConst(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const))
-#define TypeMap_setConst(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const,b)
+#define TypeMap_isConst(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const))
+#define TypeMap_setConst(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_Const,b)
 #define FLAG_TypeMap_NDATA FLAG_Object_Local4
-#define TypeMap_isNDATA(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_NDATA))
-#define TypeMap_setNDATA(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_TypeMap_NDATA,b)
+#define TypeMap_isNDATA(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_NDATA))
+#define TypeMap_setNDATA(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_TypeMap_NDATA,b)
 #define FLAG_Func_StoredEnv FLAG_Object_Local1
-#define Func_isStoredEnv(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv))
-#define Func_setStoredEnv(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv,b)
+#define Func_isStoredEnv(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv))
+#define Func_setStoredEnv(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Func_StoredEnv,b)
 #define FLAG_Thunk_Evaluated FLAG_Object_Local1
-#define Thunk_isEvaluated(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Thunk_Evaluated))
-#define Thunk_setEvaluated(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Thunk_Evaluated,b)
+#define Thunk_isEvaluated(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Thunk_Evaluated))
+#define Thunk_setEvaluated(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Thunk_Evaluated,b)
 #define FLAG_ExceptionHandler_Catching FLAG_Object_Local1
-#define ExceptionHandler_isCatching(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_ExceptionHandler_Catching))
-#define ExceptionHandler_setCatching(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_ExceptionHandler_Catching,b)
+#define ExceptionHandler_isCatching(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_ExceptionHandler_Catching))
+#define ExceptionHandler_setCatching(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_ExceptionHandler_Catching,b)
 #define FLAG_Regex_GlobalOption FLAG_Object_Local1
-#define Regex_isGlobalOption(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Regex_GlobalOption))
-#define Regex_setGlobalOption(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Regex_GlobalOption,b)
+#define Regex_isGlobalOption(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Regex_GlobalOption))
+#define Regex_setGlobalOption(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Regex_GlobalOption,b)
 #define FLAG_Path_Trusted FLAG_Object_Local1
-#define Path_isTrusted(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Path_Trusted))
-#define Path_setTrusted(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Path_Trusted,b)
+#define Path_isTrusted(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Path_Trusted))
+#define Path_setTrusted(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Path_Trusted,b)
 #define FLAG_Path_Temporary FLAG_Object_Local2
-#define Path_isTemporary(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Path_Temporary))
-#define Path_setTemporary(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Path_Temporary,b)
+#define Path_isTemporary(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Path_Temporary))
+#define Path_setTemporary(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Path_Temporary,b)
 #define FLAG_OutputStream_BOL FLAG_Object_Local1
-#define OutputStream_isBOL(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_BOL))
-#define OutputStream_setBOL(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_BOL,b)
+#define OutputStream_isBOL(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_BOL))
+#define OutputStream_setBOL(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_BOL,b)
 #define FLAG_OutputStream_AutoFlush FLAG_Object_Local2
-#define OutputStream_isAutoFlush(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_AutoFlush))
-#define OutputStream_setAutoFlush(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_AutoFlush,b)
+#define OutputStream_isAutoFlush(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_AutoFlush))
+#define OutputStream_setAutoFlush(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_AutoFlush,b)
 #define FLAG_OutputStream_UTF8 FLAG_Object_Local3
-#define OutputStream_hasUTF8(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8))
-#define OutputStream_setUTF8(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8,b)
-#define FLAG_Context_Debug ((knh_flag_t)(1<<1))
-#define CTX_isDebug(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug))
-#define CTX_setDebug(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug,b)
-#define FLAG_Context_CompileOnly ((knh_flag_t)(1<<2))
-#define CTX_isCompileOnly(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly))
-#define CTX_setCompileOnly(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly,b)
-#define FLAG_Context_Interactive ((knh_flag_t)(1<<3))
-#define CTX_isInteractive(o)  (TFLAG_is(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive))
-#define CTX_setInteractive(o,b) TFLAG_set(knh_flag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive,b)
+#define OutputStream_hasUTF8(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8))
+#define OutputStream_setUTF8(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_OutputStream_UTF8,b)
+#define FLAG_Context_Debug ((kflag_t)(1<<1))
+#define CTX_isDebug(o)  (TFLAG_is(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug))
+#define CTX_setDebug(o,b) TFLAG_set(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Debug,b)
+#define FLAG_Context_CompileOnly ((kflag_t)(1<<2))
+#define CTX_isCompileOnly(o)  (TFLAG_is(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly))
+#define CTX_setCompileOnly(o,b) TFLAG_set(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_CompileOnly,b)
+#define FLAG_Context_Interactive ((kflag_t)(1<<3))
+#define CTX_isInteractive(o)  (TFLAG_is(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive))
+#define CTX_setInteractive(o,b) TFLAG_set(kflag_t,((knh_context_t*)o)->flag,FLAG_Context_Interactive,b)
 #define FLAG_Assurance_CheckedIn FLAG_Object_Local1
-#define Assurance_isCheckedIn(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn))
-#define Assurance_setCheckedIn(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn,b)
-#define FLAG_Term_BOL ((knh_flag_t)(1<<0))
-#define Term_isBOL(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_BOL))
-#define Term_setBOL(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_BOL,b)
-#define FLAG_Term_DOT ((knh_flag_t)(1<<1))
-#define Term_isDOT(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_DOT))
-#define Term_setDOT(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_DOT,b)
-#define FLAG_Term_NWS ((knh_flag_t)(1<<2))
-#define Term_isNWS(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_NWS))
-#define Term_setNWS(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_NWS,b)
-#define FLAG_Term_ISBOOL ((knh_flag_t)(1<<3))
-#define Term_isISBOOL(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_ISBOOL))
-#define Term_setISBOOL(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_ISBOOL,b)
-#define FLAG_Term_Getter ((knh_flag_t)(1<<4))
-#define Term_isGetter(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_Getter))
-#define Term_setGetter(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_Getter,b)
-#define FLAG_Term_Setter ((knh_flag_t)(1<<5))
-#define Term_isSetter(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_Setter))
-#define Term_setSetter(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_Setter,b)
-#define FLAG_Term_ExceptionType ((knh_flag_t)(1<<6))
-#define Term_isExceptionType(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_ExceptionType))
-#define Term_setExceptionType(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_ExceptionType,b)
-#define FLAG_Term_Diamond ((knh_flag_t)(1<<7))
-#define Term_isDiamond(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_Diamond))
-#define Term_setDiamond(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_Diamond,b)
-#define FLAG_Term_MEMO1 ((knh_flag_t)(1<<8))
-#define Term_isMEMO1(o)  (TFLAG_is(knh_flag_t,SP(o)->flag0,FLAG_Term_MEMO1))
-#define Term_setMEMO1(o,b) TFLAG_set(knh_flag_t,SP(o)->flag0,FLAG_Term_MEMO1,b)
-#define FLAG_Stmt_STOPITR ((knh_flag_t)(1<<0))
-#define Stmt_isSTOPITR(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_STOPITR))
-#define Stmt_setSTOPITR(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_STOPITR,b)
-#define FLAG_Stmt_CONSTOLD ((knh_flag_t)(1<<2))
-#define Stmt_isCONSTOLD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_CONSTOLD))
-#define Stmt_setCONSTOLD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_CONSTOLD,b)
-#define FLAG_Stmt_Memo1 ((knh_flag_t)(1<<4))
-#define Stmt_isMemo1(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo1))
-#define Stmt_setMemo1(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo1,b)
-#define FLAG_Stmt_Memo2 ((knh_flag_t)(1<<5))
-#define Stmt_isMemo2(o)  (TFLAG_is(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2))
-#define Stmt_setMemo2(o,b) TFLAG_set(knh_flag_t,DP(o)->flag0,FLAG_Stmt_Memo2,b)
-#define FLAG_GammaBuilder_EnforceConst ((knh_flag_t)(1<<0))
-#define GammaBuilder_isEnforceConst(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_EnforceConst))
-#define GammaBuilder_setEnforceConst(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_EnforceConst,b)
-#define FLAG_GammaBuilder_Quiet ((knh_flag_t)(1<<1))
-#define GammaBuilder_isQuiet(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Quiet))
-#define GammaBuilder_setQuiet(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Quiet,b)
-#define FLAG_GammaBuilder_Throwable ((knh_flag_t)(1<<2))
-#define GammaBuilder_isThrowable(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Throwable))
-#define GammaBuilder_setThrowable(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_Throwable,b)
-#define FLAG_GammaBuilder_PROCEED ((knh_flag_t)(1<<3))
-#define GammaBuilder_hasPROCEED(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_PROCEED))
-#define GammaBuilder_foundPROCEED(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_PROCEED,b)
-#define FLAG_GammaBuilder_REGISTER ((knh_flag_t)(1<<4))
-#define GammaBuilder_hasREGISTER(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_REGISTER))
-#define GammaBuilder_foundREGISTER(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_REGISTER,b)
-#define FLAG_GammaBuilder_YEILD ((knh_flag_t)(1<<5))
-#define GammaBuilder_hasYEILD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_YEILD))
-#define GammaBuilder_foundYEILD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_YEILD,b)
-#define FLAG_GammaBuilder_FIELD ((knh_flag_t)(1<<6))
-#define GammaBuilder_hasFIELD(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_FIELD))
-#define GammaBuilder_foundFIELD(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_FIELD,b)
-#define FLAG_GammaBuilder_LexicalScope ((knh_flag_t)(1<<7))
-#define GammaBuilder_hasLexicalScope(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_LexicalScope))
-#define GammaBuilder_foundLexicalScope(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_LexicalScope,b)
-#define FLAG_GammaBuilder_SCRIPT ((knh_flag_t)(1<<8))
-#define GammaBuilder_hasSCRIPT(o)  (TFLAG_is(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_SCRIPT))
-#define GammaBuilder_foundSCRIPT(o,b) TFLAG_set(knh_flag_t,DP(o)->flag,FLAG_GammaBuilder_SCRIPT,b)
-#define FLAG_GammaBuilder_InlineFunction ((knh_flag_t)(1<<0))
-#define GammaBuilder_isInlineFunction(o)  (TFLAG_is(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_InlineFunction))
-#define GammaBuilder_setInlineFunction(o,b) TFLAG_set(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_InlineFunction,b)
-#define FLAG_GammaBuilder_TailRecursion ((knh_flag_t)(1<<1))
-#define GammaBuilder_isTailRecursion(o)  (TFLAG_is(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_TailRecursion))
-#define GammaBuilder_setTailRecursion(o,b) TFLAG_set(knh_flag_t,DP(o)->cflag,FLAG_GammaBuilder_TailRecursion,b)
+#define Assurance_isCheckedIn(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn))
+#define Assurance_setCheckedIn(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_Assurance_CheckedIn,b)
+#define FLAG_Term_BOL ((kflag_t)(1<<0))
+#define Term_isBOL(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_BOL))
+#define Term_setBOL(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_BOL,b)
+#define FLAG_Term_DOT ((kflag_t)(1<<1))
+#define Term_isDOT(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_DOT))
+#define Term_setDOT(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_DOT,b)
+#define FLAG_Term_NWS ((kflag_t)(1<<2))
+#define Term_isNWS(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_NWS))
+#define Term_setNWS(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_NWS,b)
+#define FLAG_Term_ISBOOL ((kflag_t)(1<<3))
+#define Term_isISBOOL(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_ISBOOL))
+#define Term_setISBOOL(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_ISBOOL,b)
+#define FLAG_Term_Getter ((kflag_t)(1<<4))
+#define Term_isGetter(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_Getter))
+#define Term_setGetter(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_Getter,b)
+#define FLAG_Term_Setter ((kflag_t)(1<<5))
+#define Term_isSetter(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_Setter))
+#define Term_setSetter(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_Setter,b)
+#define FLAG_Term_ExceptionType ((kflag_t)(1<<6))
+#define Term_isExceptionType(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_ExceptionType))
+#define Term_setExceptionType(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_ExceptionType,b)
+#define FLAG_Term_Diamond ((kflag_t)(1<<7))
+#define Term_isDiamond(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_Diamond))
+#define Term_setDiamond(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_Diamond,b)
+#define FLAG_Term_MEMO1 ((kflag_t)(1<<8))
+#define Term_isMEMO1(o)  (TFLAG_is(kflag_t,SP(o)->flag0,FLAG_Term_MEMO1))
+#define Term_setMEMO1(o,b) TFLAG_set(kflag_t,SP(o)->flag0,FLAG_Term_MEMO1,b)
+#define FLAG_Stmt_STOPITR ((kflag_t)(1<<0))
+#define Stmt_isSTOPITR(o)  (TFLAG_is(kflag_t,DP(o)->flag0,FLAG_Stmt_STOPITR))
+#define Stmt_setSTOPITR(o,b) TFLAG_set(kflag_t,DP(o)->flag0,FLAG_Stmt_STOPITR,b)
+#define FLAG_Stmt_CONSTOLD ((kflag_t)(1<<2))
+#define Stmt_isCONSTOLD(o)  (TFLAG_is(kflag_t,DP(o)->flag0,FLAG_Stmt_CONSTOLD))
+#define Stmt_setCONSTOLD(o,b) TFLAG_set(kflag_t,DP(o)->flag0,FLAG_Stmt_CONSTOLD,b)
+#define FLAG_Stmt_Memo1 ((kflag_t)(1<<4))
+#define Stmt_isMemo1(o)  (TFLAG_is(kflag_t,DP(o)->flag0,FLAG_Stmt_Memo1))
+#define Stmt_setMemo1(o,b) TFLAG_set(kflag_t,DP(o)->flag0,FLAG_Stmt_Memo1,b)
+#define FLAG_Stmt_Memo2 ((kflag_t)(1<<5))
+#define Stmt_isMemo2(o)  (TFLAG_is(kflag_t,DP(o)->flag0,FLAG_Stmt_Memo2))
+#define Stmt_setMemo2(o,b) TFLAG_set(kflag_t,DP(o)->flag0,FLAG_Stmt_Memo2,b)
+#define FLAG_GammaBuilder_EnforceConst ((kflag_t)(1<<0))
+#define GammaBuilder_isEnforceConst(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_EnforceConst))
+#define GammaBuilder_setEnforceConst(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_EnforceConst,b)
+#define FLAG_GammaBuilder_Quiet ((kflag_t)(1<<1))
+#define GammaBuilder_isQuiet(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_Quiet))
+#define GammaBuilder_setQuiet(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_Quiet,b)
+#define FLAG_GammaBuilder_Throwable ((kflag_t)(1<<2))
+#define GammaBuilder_isThrowable(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_Throwable))
+#define GammaBuilder_setThrowable(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_Throwable,b)
+#define FLAG_GammaBuilder_PROCEED ((kflag_t)(1<<3))
+#define GammaBuilder_hasPROCEED(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_PROCEED))
+#define GammaBuilder_foundPROCEED(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_PROCEED,b)
+#define FLAG_GammaBuilder_REGISTER ((kflag_t)(1<<4))
+#define GammaBuilder_hasREGISTER(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_REGISTER))
+#define GammaBuilder_foundREGISTER(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_REGISTER,b)
+#define FLAG_GammaBuilder_YEILD ((kflag_t)(1<<5))
+#define GammaBuilder_hasYEILD(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_YEILD))
+#define GammaBuilder_foundYEILD(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_YEILD,b)
+#define FLAG_GammaBuilder_FIELD ((kflag_t)(1<<6))
+#define GammaBuilder_hasFIELD(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_FIELD))
+#define GammaBuilder_foundFIELD(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_FIELD,b)
+#define FLAG_GammaBuilder_LexicalScope ((kflag_t)(1<<7))
+#define GammaBuilder_hasLexicalScope(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_LexicalScope))
+#define GammaBuilder_foundLexicalScope(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_LexicalScope,b)
+#define FLAG_GammaBuilder_SCRIPT ((kflag_t)(1<<8))
+#define GammaBuilder_hasSCRIPT(o)  (TFLAG_is(kflag_t,DP(o)->flag,FLAG_GammaBuilder_SCRIPT))
+#define GammaBuilder_foundSCRIPT(o,b) TFLAG_set(kflag_t,DP(o)->flag,FLAG_GammaBuilder_SCRIPT,b)
+#define FLAG_GammaBuilder_InlineFunction ((kflag_t)(1<<0))
+#define GammaBuilder_isInlineFunction(o)  (TFLAG_is(kflag_t,DP(o)->cflag,FLAG_GammaBuilder_InlineFunction))
+#define GammaBuilder_setInlineFunction(o,b) TFLAG_set(kflag_t,DP(o)->cflag,FLAG_GammaBuilder_InlineFunction,b)
+#define FLAG_GammaBuilder_TailRecursion ((kflag_t)(1<<1))
+#define GammaBuilder_isTailRecursion(o)  (TFLAG_is(kflag_t,DP(o)->cflag,FLAG_GammaBuilder_TailRecursion))
+#define GammaBuilder_setTailRecursion(o,b) TFLAG_set(kflag_t,DP(o)->cflag,FLAG_GammaBuilder_TailRecursion,b)
 #define FLAG_BasicBlock_Visited FLAG_Object_Local1
-#define BasicBlock_isVisited(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_BasicBlock_Visited))
-#define BasicBlock_setVisited(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_BasicBlock_Visited,b)
+#define BasicBlock_isVisited(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_BasicBlock_Visited))
+#define BasicBlock_setVisited(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_BasicBlock_Visited,b)
 #define FLAG_BasicBlock_StackChecked FLAG_Object_Local2
-#define BasicBlock_isStackChecked(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_BasicBlock_StackChecked))
-#define BasicBlock_setStackChecked(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_BasicBlock_StackChecked,b)
+#define BasicBlock_isStackChecked(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_BasicBlock_StackChecked))
+#define BasicBlock_setStackChecked(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_BasicBlock_StackChecked,b)
 #define FLAG_KonohaCode_NativeCompiled FLAG_Object_Local1
-#define KonohaCode_isNativeCompiled(o)  (TFLAG_is(knh_uintptr_t,(o)->h.magicflag,FLAG_KonohaCode_NativeCompiled))
-#define KonohaCode_setNativeCompiled(o,b) TFLAG_set(knh_uintptr_t,(o)->h.magicflag,FLAG_KonohaCode_NativeCompiled,b)
+#define KonohaCode_isNativeCompiled(o)  (TFLAG_is(kuintptr_t,(o)->h.magicflag,FLAG_KonohaCode_NativeCompiled))
+#define KonohaCode_setNativeCompiled(o,b) TFLAG_set(kuintptr_t,(o)->h.magicflag,FLAG_KonohaCode_NativeCompiled,b)
 /* ------------------------------------------------------------------------ */
 /* EVENT */
 #define EVENT_Exception         0

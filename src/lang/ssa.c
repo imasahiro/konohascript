@@ -111,7 +111,7 @@
 // * @param a   Target Array<int>
 // * @param v   Int value
 // */
-//static void IArray_add(CTX ctx, knh_Array_t *a, knh_int_t v)
+//static void IArray_add(CTX ctx, knh_Array_t *a, kint_t v)
 //{
 //	BEGIN_LOCAL(ctx, lsfp, 1);
 //	lsfp[0].ivalue = v;

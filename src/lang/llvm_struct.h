@@ -6,7 +6,7 @@ extern "C" {
 static const struct codeasm_field F_KNH_HOBJECT_T[] = {
 	{"magicflag", ASMCODE_TYPE_LONG},
 	{"cTBL", ASMCODE_TYPE_VOIDPTR},
-	{"refcknh_uintptr_t", ASMCODE_TYPE_LONG},
+	{"refckuintptr_t", ASMCODE_TYPE_LONG},
 	{"meta", ASMCODE_TYPE_VOIDPTR}
 };
 #define SIZE_F_KNH_HOBJECT_T 4
@@ -30,7 +30,7 @@ static const struct cstruct STRUCT_KNH_OBJECT_T = {
 };
 static const struct codeasm_field F_KNH_ARRAY_T[] = {
 	{"h", ASMCODE_TYPE_HOBJECT},
-	{"nlistknh_int_t*", ASMCODE_TYPE_VOIDPTR},
+	{"nlistkint_t*", ASMCODE_TYPE_VOIDPTR},
 	{"size", ASMCODE_TYPE_LONG},
 	{"dim", ASMCODE_TYPE_VOIDPTR},
 	{"api", ASMCODE_TYPE_VOIDPTR}
@@ -84,7 +84,7 @@ static const struct codeasm_field F_KNH_SFP_T[] = {
 };
 #define SIZE_F_KNH_SFP_T 2
 static const struct cstruct STRUCT_KNH_SFP_T = {
-	"knh_sfp_t",
+	"ksfp_t",
 	SIZE_F_KNH_SFP_T,
 	F_KNH_SFP_T
 };
@@ -150,7 +150,7 @@ static const struct cstruct STRUCT_KNH_ITERATOR_T = {
 	F_KNH_ITERATOR_T
 };
 static const struct codeasm_field F_KNH_CONTEXT_T[] = {
-	{"shareknh_share_t*", ASMCODE_TYPE_VOIDPTR},
+	{"sharekshare_t*", ASMCODE_TYPE_VOIDPTR},
 	{"stat", ASMCODE_TYPE_VOIDPTR},
 	{"spi", ASMCODE_TYPE_VOIDPTR},
 	{"api2", ASMCODE_TYPE_VOIDPTR},

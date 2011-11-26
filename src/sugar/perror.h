@@ -44,15 +44,15 @@ extern "C" {
 static void write_eline(CTX ctx, knh_OutputStream_t *w, kline_t uline, int lpos)
 {
 	if(uline != 0 /*&& uri != URI_unknown && line != 0*/) {
-		knh_uri_t uri = ULINE_uri(uline);
-		knh_uintptr_t line = ULINE_line(uline);
+		kuri_t uri = ULINE_uri(uline);
+		kuintptr_t line = ULINE_line(uline);
 		knh_putc(ctx, w, '(');
 		knh_write_ascii(ctx, w, knh_sfile(FILENAME__(uri)));
 		knh_putc(ctx, w, ':');
 		knh_write_dfmt(ctx, w, K_INTPTR_FMT, line);
 		if(lpos != -1) {
 			knh_putc(ctx, w, '+');
-			knh_write_dfmt(ctx, w, K_INTPTR_FMT, (knh_intptr_t)lpos);
+			knh_write_dfmt(ctx, w, K_INTPTR_FMT, (kintptr_t)lpos);
 		}
 		knh_putc(ctx, w, ')');
 		knh_putc(ctx, w, ' ');
@@ -120,7 +120,7 @@ static knh_String_t* knh_strerror(CTX ctx, int kerrno)
 	return NULL;
 }
 
-static void DEBUG_TokenAlias(CTX ctx, kline_t uline, int lpos, knh_bytes_t t, knh_String_t *alias)
+static void DEBUG_TokenAlias(CTX ctx, kline_t uline, int lpos, kbytes_t t, knh_String_t *alias)
 {
 	if(CTX_isDebug(ctx)) {
 		char buf[256] = {0};
@@ -153,25 +153,25 @@ static void ERROR_NotFoundCloseToken(CTX ctx, knh_Token_t *tk, int closech)
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "'%s' is not closed with '%s'", S_totext(tk->text), buf);
 }
 
-static knh_bool_t ERROR_SyntaxError(CTX ctx, kline_t uline)
+static kbool_t ERROR_SyntaxError(CTX ctx, kline_t uline)
 {
 	knh_perror(ctx, ERR_, uline, 0, "syntax error");
 	return 0;
 }
 
-static knh_bool_t ERROR_TokenError(CTX ctx, knh_Token_t *tk)
+static kbool_t ERROR_TokenError(CTX ctx, knh_Token_t *tk)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "syntax error: token '%s' is unavailable", S_totext(tk->text));
 	return 0;
 }
 
-static knh_bool_t ERROR_TokenMustBe(CTX ctx, knh_Token_t *tk, const char *token)
+static kbool_t ERROR_TokenMustBe(CTX ctx, knh_Token_t *tk, const char *token)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "syntax error: '%s' must be %s", S_totext(tk->text), token);
 	return 0;
 }
 
-static knh_Expr_t *ERROR_TokenUndefinedMethod(CTX ctx, knh_Token_t *tk, knh_class_t cid)
+static knh_Expr_t *ERROR_TokenUndefinedMethod(CTX ctx, knh_Token_t *tk, kclass_t cid)
 {
 	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "undefined method: %T.%s", cid, S_totext(tk->text));
 	return NULL;

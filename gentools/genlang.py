@@ -423,7 +423,7 @@ def write_hfile(f):
 ''' % (len(STMT_LIST), len(TOKEN_LIST), len(MN_)))
 	n = 0
 	for mn in MN_:
-		write_define(f, mn, '((knh_methodn_t)%d)' % n, 40)
+		write_define(f, mn, '((kmethodn_t)%d)' % n, 40)
 		n += 1
 
 	write_line(f)
@@ -442,8 +442,8 @@ def write_hfile(f):
 
 typedef struct {
 	const char *name;
-	knh_flag_t  flag;
-	knh_short_t to;
+	kflag_t  flag;
+	kshort_t to;
 } TERMDATA_t;
 
 #define _BIN 1
@@ -483,12 +483,12 @@ const char *TT__(knh_term_t tt)
 	return "UNDEFINED";
 }
 
-knh_bool_t TT_is(knh_term_t tt, knh_flag_t flag)
+kbool_t TT_is(knh_term_t tt, kflag_t flag)
 {
 	return FLAG_is(TERMDATA[tt].flag, flag);
 }
 
-knh_short_t TT_to(knh_term_t tt)
+kshort_t TT_to(knh_term_t tt)
 {
 	return TERMDATA[tt].to;
 }
@@ -533,8 +533,8 @@ void knh_loadScriptAliasTermData(CTX ctx)
 }
 
 typedef struct { 
-	knh_ushort_t priority;
-	knh_methodn_t mn;
+	kushort_t priority;
+	kmethodn_t mn;
 } OPDATA_t;
 
 static OPDATA_t OPDATA[] = {''')
@@ -569,7 +569,7 @@ int TT_priority(knh_term_t tt)
 	return 0;
 }
 
-knh_methodn_t TT_toMN(knh_term_t tt)
+kmethodn_t TT_toMN(knh_term_t tt)
 {
 	if(TT_LET <= tt && tt <= TT_TSUB) {
 		return OPDATA[tt - TT_LET].mn;
@@ -577,13 +577,13 @@ knh_methodn_t TT_toMN(knh_term_t tt)
 	return MN_NONAME;
 }
 
-const char* knh_getopname(knh_methodn_t mn)
+const char* knh_getopname(kmethodn_t mn)
 {
 	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
 	return OPNAME[mn];
 }
 
-const char* knh_getopMethodName(knh_methodn_t mn)
+const char* knh_getopMethodName(kmethodn_t mn)
 {
 	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
 	return MN_opNAME[mn];

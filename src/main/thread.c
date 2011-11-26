@@ -56,10 +56,10 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* [TLS] */
 
-knh_thread_t knh_thread_self(void)
+kthread_t kthread_self(void)
 {
 #if defined(K_USING_PTHREAD)
-	return (knh_thread_t)pthread_self();
+	return (kthread_t)pthread_self();
 #elif defined(K_USING_BTRON)
 	return b_get_tid();
 #elif defined(K_USING_WINTHREAD_)
@@ -75,11 +75,11 @@ knh_thread_t knh_thread_self(void)
 typedef struct {
 	void* (*func)(void*);
 	void* arg;
-} knh_thread_target_btron;
+} kthread_target_btron;
 
-static void knh_thread_btronEntryPoint(knh_thread_target_btron* arg)
+static void kthread_btronEntryPoint(kthread_target_btron* arg)
 {
-	knh_thread_target_btron target = *arg;
+	kthread_target_btron target = *arg;
 	free(arg);
 
 	// FIXME: return value is ignored
@@ -94,21 +94,21 @@ static void knh_thread_btronEntryPoint(knh_thread_target_btron* arg)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_thread_create(CTX ctx, knh_thread_t *thread, void *attr, knh_Fthread fgo, void * arg)
+int kthread_create(CTX ctx, kthread_t *thread, void *attr, knh_Fthread fgo, void * arg)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_create((pthread_t*)thread, (pthread_attr_t*)attr, fgo, arg);
 #elif defined(K_USING_BTRON)
 	// FIXME: attr is ignored
 	W err;
-	knh_thread_target_btron* target =
-		(knh_thread_target_btron*)malloc(sizeof(knh_thread_target_btron));
+	kthread_target_btron* target =
+		(kthread_target_btron*)malloc(sizeof(kthread_target_btron));
 	if (target == NULL) {
 		return -1;
 	}
 	target->func = fgo;
 	target->arg = arg;
-	err = b_cre_tsk((FP)knh_thread_btronEntryPoint, -1, (W)target);
+	err = b_cre_tsk((FP)kthread_btronEntryPoint, -1, (W)target);
 	if (err < 0) {
 		free(target);
 		return -1;
@@ -124,7 +124,7 @@ int knh_thread_create(CTX ctx, knh_thread_t *thread, void *attr, knh_Fthread fgo
 
 /* ------------------------------------------------------------------------ */
 
-int knh_thread_detach(CTX ctx, knh_thread_t th)
+int kthread_detach(CTX ctx, kthread_t th)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_detach((pthread_t)th);
@@ -138,7 +138,7 @@ int knh_thread_detach(CTX ctx, knh_thread_t th)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_thread_join(CTX ctx, knh_thread_t thread, void **ret)
+int kthread_join(CTX ctx, kthread_t thread, void **ret)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_join((pthread_t)thread, ret);
@@ -152,18 +152,18 @@ int knh_thread_join(CTX ctx, knh_thread_t thread, void **ret)
 /* ------------------------------------------------------------------------ */
 /* @data */
 
-typedef struct knh_threadcc_t {
+typedef struct kthreadcc_t {
 	CTX ctx;
-	knh_sfp_t *sfp;
-} knh_threadcc_t ;
+	ksfp_t *sfp;
+} kthreadcc_t ;
 
 //static void *threading(void *p)
 //{
-//	knh_threadcc_t ta = *((knh_threadcc_t*)p);
+//	kthreadcc_t ta = *((kthreadcc_t*)p);
 //	CTX ctx = new_ThreadContext(ta.ctx);
 //
 //	knh_beginContext(ctx);
-//	knh_sfp_t *lsfp = ctx->stack;
+//	ksfp_t *lsfp = ctx->stack;
 //
 //	KNH_SETv(ctx, lsfp[0].o, new_ExceptionHandler(ctx));
 //	KNH_TRY(ctx, L_CATCH, lsfp, 0);
@@ -198,12 +198,12 @@ typedef struct knh_threadcc_t {
 // sfp |   0   |   1   |   2   |   3  |
 //     |  self |  mtd  | arg1  | ...  |
 
-//void knh_stack_threadRun(CTX ctx, knh_sfp_t *sfp _RIX)
+//void knh_stack_threadRun(CTX ctx, ksfp_t *sfp _RIX)
 //{
-//	knh_thread_t th;
-//	knh_threadcc_t ta = {ctx, sfp + 1};
-//	knh_thread_create(ctx, &th, NULL, threading, (void*)&ta);
-//	//knh_thread_detach(ctx, th);
+//	kthread_t th;
+//	kthreadcc_t ta = {ctx, sfp + 1};
+//	kthread_create(ctx, &th, NULL, threading, (void*)&ta);
+//	//kthread_detach(ctx, th);
 //}
 
 /* ------------------------------------------------------------------------ */
@@ -214,7 +214,7 @@ typedef struct knh_threadcc_t {
 //release mutex lock 	pthread_mutex_unlock 	ReleaseMutex
 //destroy mutex 	pthread_mutex_destroy 	CloseHandle
 
-int knh_mutex_init(knh_mutex_t *m)
+int knh_mutex_init(kmutex_t *m)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_mutex_init((pthread_mutex_t*)m, NULL);
@@ -239,7 +239,7 @@ int knh_mutex_init(knh_mutex_t *m)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_mutex_lock(knh_mutex_t *m)
+int knh_mutex_lock(kmutex_t *m)
 {
 	//DBG_P("locking %p", m);
 #if defined(K_USING_PTHREAD)
@@ -264,7 +264,7 @@ int knh_mutex_lock(knh_mutex_t *m)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_mutex_trylock(knh_mutex_t *m)
+int kmutex_trylock(kmutex_t *m)
 {
 	//DBG_P("trylock %p", m);
 #if defined(K_USING_PTHREAD)
@@ -280,7 +280,7 @@ int knh_mutex_trylock(knh_mutex_t *m)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_mutex_unlock(knh_mutex_t *m)
+int knh_mutex_unlock(kmutex_t *m)
 {
 	//DBG_P("unlocking %p", m);
 #if defined(K_USING_PTHREAD)
@@ -305,7 +305,7 @@ int knh_mutex_unlock(knh_mutex_t *m)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_mutex_destroy(knh_mutex_t *m)
+int knh_mutex_destroy(kmutex_t *m)
 {
 	//DBG_P("destroying %p", m);
 #if defined(K_USING_PTHREAD)
@@ -327,17 +327,17 @@ int knh_mutex_destroy(knh_mutex_t *m)
 }
 
 
-knh_mutex_t *knh_mutex_malloc(CTX ctx)
+kmutex_t *knh_mutex_malloc(CTX ctx)
 {
-	knh_mutex_t *m = (knh_mutex_t*)malloc(sizeof(knh_mutex_t));
-	knh_bzero(m, sizeof(knh_mutex_t));
+	kmutex_t *m = (kmutex_t*)malloc(sizeof(kmutex_t));
+	knh_bzero(m, sizeof(kmutex_t));
 	if(knh_mutex_init(m) != 0) {
 		KNH_NTRACE2(ctx, "mutex_init", K_PERROR, KNH_LDATA(LOG_p("mutex", m)));
 	}
 	return m;
 }
 
-void knh_mutex_free(CTX ctx, knh_mutex_t *m)
+void knh_mutex_free(CTX ctx, kmutex_t *m)
 {
 	if(knh_mutex_destroy(m) != 0) {
 		KNH_NTRACE2(ctx, "mutex_destroy", K_PERROR, KNH_LDATA(LOG_p("mutex", m)));
@@ -347,24 +347,24 @@ void knh_mutex_free(CTX ctx, knh_mutex_t *m)
 
 #if defined(K_USING_PTHREAD)
 
-knh_cond_t *knh_thread_cond_init(CTX ctx)
+knh_cond_t *kthread_cond_init(CTX ctx)
 {
 	pthread_cond_t *c = (pthread_cond_t *)KNH_MALLOC(ctx, sizeof(pthread_cond_t));
 	pthread_cond_init(c, NULL);
 	return (knh_cond_t *)c;
 }
 
-int knh_thread_cond_wait(knh_cond_t *cond, knh_mutex_t *m)
+int kthread_cond_wait(knh_cond_t *cond, kmutex_t *m)
 {
 	return pthread_cond_wait((pthread_cond_t *)cond, (pthread_mutex_t *)m);
 }
 
-int knh_thread_cond_signal(knh_cond_t *cond)
+int kthread_cond_signal(knh_cond_t *cond)
 {
 	return pthread_cond_signal((pthread_cond_t *)cond);
 }
 
-int knh_thread_cond_broadcast(knh_cond_t *cond)
+int kthread_cond_broadcast(knh_cond_t *cond)
 {
 	return pthread_cond_broadcast((pthread_cond_t *)cond);
 }
@@ -373,7 +373,7 @@ int knh_thread_cond_broadcast(knh_cond_t *cond)
 
 // reference URL: http://www.cs.wustl.edu/~schmidt/win32-cv-1.html
 
-knh_cond_t *knh_thread_cond_init(CTX ctx)
+knh_cond_t *kthread_cond_init(CTX ctx)
 {
 	knh_cond_t *c = (knh_cond_t *)KNH_MALLOC(ctx, sizeof(knh_cond_t));
 	// Create an auto-reset event.
@@ -389,7 +389,7 @@ knh_cond_t *knh_thread_cond_init(CTX ctx)
 	return c;
 }
 
-int knh_thread_cond_wait(knh_cond_t *cond, knh_mutex_t *m)
+int kthread_cond_wait(knh_cond_t *cond, kmutex_t *m)
 {
 	// Release the <external_mutex> here and wait for either event
 	// to become signaled, due to <pthread_cond_signal> being
@@ -404,13 +404,13 @@ int knh_thread_cond_wait(knh_cond_t *cond, knh_mutex_t *m)
 	return 0;
 }
 
-int knh_thread_cond_signal(knh_cond_t *cond)
+int kthread_cond_signal(knh_cond_t *cond)
 {
 	// Try to release one waiting thread.
 	return PulseEvent(cond->events_[E_SIGNAL]);
 }
 
-int knh_thread_cond_broadcast(knh_cond_t *cond)
+int kthread_cond_broadcast(knh_cond_t *cond)
 {
 	// Try to release all waiting threads.
 	return PulseEvent(cond->events_[E_BROADCAST]);
@@ -431,13 +431,13 @@ static void destr(void *data)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_thread_key_create(knh_thread_key_t *key)
+int kthread_key_create(kthread_key_t *key)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_key_create((pthread_key_t*)key, destr);
 #elif defined(K_USING_WINTHREAD_)
 	DWORD v = TlsAlloc();
-	*key = (knh_thread_key_t)v;
+	*key = (kthread_key_t)v;
 	return (int)v;
 #else
 	return -1;
@@ -446,7 +446,7 @@ int knh_thread_key_create(knh_thread_key_t *key)
 
 /* ------------------------------------------------------------------------ */
 
-int thread_setspecific(knh_thread_key_t key, const void *data)
+int thread_setspecific(kthread_key_t key, const void *data)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_setspecific(key, data);
@@ -459,7 +459,7 @@ int thread_setspecific(knh_thread_key_t key, const void *data)
 
 /* ------------------------------------------------------------------------ */
 
-void* knh_thread_getspecific(knh_thread_key_t key)
+void* kthread_getspecific(kthread_key_t key)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_getspecific(key);
@@ -472,7 +472,7 @@ void* knh_thread_getspecific(knh_thread_key_t key)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_thread_key_delete(knh_thread_key_t key)
+int kthread_key_delete(kthread_key_t key)
 {
 #if defined(K_USING_PTHREAD)
 	return pthread_key_delete(key);

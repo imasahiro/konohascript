@@ -11,7 +11,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	RETURN_PKGINFO("konoha.cairo");
 }
-DEFAPI(void) defCairo(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defCairo(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Cairo";
 }
@@ -23,7 +23,7 @@ static int CairoRegion_equal(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
     return cairo_region_equal(a, b);
 }
 
-DEFAPI(void) defCairoRegion(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defCairoRegion(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "CairoRegion";
 	cdef->compareTo = CairoRegion_equal;
@@ -36,13 +36,13 @@ static int CairoFontOptions_equal(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
     return cairo_font_options_equal(a, b);
 }
 
-DEFAPI(void) defCairoFontOptions(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defCairoFontOptions(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "CairoFontOptions";
 	cdef->compareTo = CairoFontOptions_equal;
 }
 
-DEFAPI(void) constCairo(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constCairo(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	knh_IntData_t _CairoConstInt[] = {
 		{"VERSION", cairo_version()},
@@ -73,7 +73,7 @@ static void my_cairo_pattern_free(void *p)
     cairo_pattern_destroy(pattern);
 }
 //## @Native Cairo Cairo.new(CairoSurface target);
-KMETHOD Cairo_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_new(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* target = PKGRawPtr_to(cairo_surface_t*, 1);
     cairo_t* ret = cairo_create(target);
@@ -82,7 +82,7 @@ KMETHOD Cairo_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.destroy();
-KMETHOD Cairo_destroy(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_destroy(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_destroy(cr);
@@ -90,7 +90,7 @@ KMETHOD Cairo_destroy(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 ////## @Native cairo_t* Cairo.reference();
-//KMETHOD Cairo_reference(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Cairo_reference(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 //
@@ -100,7 +100,7 @@ KMETHOD Cairo_destroy(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 //
 ////## @Native int Cairo.get_reference_count();
-//KMETHOD Cairo_getReferenceCount(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Cairo_getReferenceCount(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 //
@@ -109,7 +109,7 @@ KMETHOD Cairo_destroy(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 //## @Native CairoData Cairo.get_user_data(CairoUserDataKey key);
-KMETHOD Cairo_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -120,7 +120,7 @@ KMETHOD Cairo_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.set_user_data(CairoUserDataKey key, CairoData user_data, cairo_destroy_func_t destroy);
-KMETHOD Cairo_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -133,7 +133,7 @@ KMETHOD Cairo_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.save();
-KMETHOD Cairo_save(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_save(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -142,7 +142,7 @@ KMETHOD Cairo_save(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.restore();
-KMETHOD Cairo_restore(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_restore(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -151,7 +151,7 @@ KMETHOD Cairo_restore(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.push_group();
-KMETHOD Cairo_pushGroup(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_pushGroup(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -160,7 +160,7 @@ KMETHOD Cairo_pushGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.push_group_with_content(int content);
-KMETHOD Cairo_pushGroupWithContent(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_pushGroupWithContent(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_content_t content = PKGInt_to(cairo_content_t, 1);
@@ -170,7 +170,7 @@ KMETHOD Cairo_pushGroupWithContent(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoPattern Cairo.pop_group();
-KMETHOD Cairo_popGroup(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_popGroup(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -180,7 +180,7 @@ KMETHOD Cairo_popGroup(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.pop_group_to_source();
-KMETHOD Cairo_popGroupToSource(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_popGroupToSource(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -189,7 +189,7 @@ KMETHOD Cairo_popGroupToSource(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_operator(int op);
-KMETHOD Cairo_setOperator(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setOperator(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_operator_t op = PKGInt_to(cairo_operator_t, 1);
@@ -199,7 +199,7 @@ KMETHOD Cairo_setOperator(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_source(CairoPattern source);
-KMETHOD Cairo_setSource(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setSource(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_pattern_t* source = PKGRawPtr_to(cairo_pattern_t*, 1);
@@ -209,7 +209,7 @@ KMETHOD Cairo_setSource(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_source_rgb(double red, double green, double blue);
-KMETHOD Cairo_setSourceRgb(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setSourceRgb(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double red = PKGFloat_to(double, 1);
@@ -221,7 +221,7 @@ KMETHOD Cairo_setSourceRgb(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_source_rgba(double red, double green, double blue, double alpha);
-KMETHOD Cairo_setSourceRgba(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setSourceRgba(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double red = PKGFloat_to(double, 1);
@@ -234,7 +234,7 @@ KMETHOD Cairo_setSourceRgba(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_source_surface(CairoSurface surface, double x, double y);
-KMETHOD Cairo_setSourceSurface(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setSourceSurface(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 1);
@@ -246,7 +246,7 @@ KMETHOD Cairo_setSourceSurface(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_tolerance(double tolerance);
-KMETHOD Cairo_setTolerance(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setTolerance(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double tolerance = PKGFloat_to(double, 1);
@@ -256,7 +256,7 @@ KMETHOD Cairo_setTolerance(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_antialias(int antialias);
-KMETHOD Cairo_setAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setAntialias(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_antialias_t antialias = PKGInt_to(cairo_antialias_t, 1);
@@ -266,7 +266,7 @@ KMETHOD Cairo_setAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_fill_rule(int fill_rule);
-KMETHOD Cairo_setFillRule(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setFillRule(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_fill_rule_t fill_rule = PKGInt_to(cairo_fill_rule_t, 1);
@@ -276,7 +276,7 @@ KMETHOD Cairo_setFillRule(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_line_width(double width);
-KMETHOD Cairo_setLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setLineWidth(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double width = PKGFloat_to(double, 1);
@@ -286,7 +286,7 @@ KMETHOD Cairo_setLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_line_cap(int line_cap);
-KMETHOD Cairo_setLineCap(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setLineCap(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_line_cap_t line_cap = PKGInt_to(cairo_line_cap_t, 1);
@@ -296,7 +296,7 @@ KMETHOD Cairo_setLineCap(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_line_join(int line_join);
-KMETHOD Cairo_setLineJoin(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setLineJoin(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_line_join_t line_join = PKGInt_to(cairo_line_join_t, 1);
@@ -306,7 +306,7 @@ KMETHOD Cairo_setLineJoin(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_dash(double[] dashes, int num_dashes, double offset);
-KMETHOD Cairo_setDash(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setDash(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* dashes = PKGFArray_to(double*, 1);
@@ -318,7 +318,7 @@ KMETHOD Cairo_setDash(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_miter_limit(double limit);
-KMETHOD Cairo_setMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setMiterLimit(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double limit = PKGFloat_to(double, 1);
@@ -328,7 +328,7 @@ KMETHOD Cairo_setMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.translate(double tx, double ty);
-KMETHOD Cairo_translate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_translate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double tx = PKGFloat_to(double, 1);
@@ -339,7 +339,7 @@ KMETHOD Cairo_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.scale(double sx, double sy);
-KMETHOD Cairo_scale(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_scale(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double sx = PKGFloat_to(double, 1);
@@ -350,7 +350,7 @@ KMETHOD Cairo_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.rotate(double angle);
-KMETHOD Cairo_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_rotate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double angle = PKGFloat_to(double, 1);
@@ -360,7 +360,7 @@ KMETHOD Cairo_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.transform(cairo_matrix_t* matrix);
-KMETHOD Cairo_transform(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_transform(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -370,7 +370,7 @@ KMETHOD Cairo_transform(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_matrix(cairo_matrix_t* matrix);
-KMETHOD Cairo_setMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -380,7 +380,7 @@ KMETHOD Cairo_setMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.identity_matrix();
-KMETHOD Cairo_identityMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_identityMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -389,7 +389,7 @@ KMETHOD Cairo_identityMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.user_to_device(double* x, double* y);
-KMETHOD Cairo_userToDevice(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_userToDevice(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* x = PKGFArray_to(double*, 1);
@@ -400,7 +400,7 @@ KMETHOD Cairo_userToDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.user_to_device_distance(double* dx, double* dy);
-KMETHOD Cairo_userToDeviceDistance(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_userToDeviceDistance(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* dx = PKGFArray_to(double*, 1);
@@ -411,7 +411,7 @@ KMETHOD Cairo_userToDeviceDistance(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.device_to_user(double* x, double* y);
-KMETHOD Cairo_deviceToUser(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_deviceToUser(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* x = PKGFArray_to(double*, 1);
@@ -422,7 +422,7 @@ KMETHOD Cairo_deviceToUser(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.device_to_user_distance(double* dx, double* dy);
-KMETHOD Cairo_deviceToUserDistance(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_deviceToUserDistance(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* dx = PKGFArray_to(double*, 1);
@@ -433,7 +433,7 @@ KMETHOD Cairo_deviceToUserDistance(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.new_path();
-KMETHOD Cairo_newPath(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_newPath(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -442,7 +442,7 @@ KMETHOD Cairo_newPath(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.move_to(double x, double y);
-KMETHOD Cairo_moveTo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_moveTo(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -453,7 +453,7 @@ KMETHOD Cairo_moveTo(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.new_sub_path();
-KMETHOD Cairo_newSubPath(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_newSubPath(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -462,7 +462,7 @@ KMETHOD Cairo_newSubPath(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.line_to(double x, double y);
-KMETHOD Cairo_lineTo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_lineTo(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -473,7 +473,7 @@ KMETHOD Cairo_lineTo(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.curve_to(double x1, double y1, double x2, double y2, double x3, double y3);
-KMETHOD Cairo_curveTo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_curveTo(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double x1 = PKGFloat_to(double, 1);
@@ -488,7 +488,7 @@ KMETHOD Cairo_curveTo(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.arc(double xc, double yc, double radius, double angle1, double angle2);
-KMETHOD Cairo_arc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_arc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double xc = PKGFloat_to(double, 1);
@@ -502,7 +502,7 @@ KMETHOD Cairo_arc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.arc_negative(double xc, double yc, double radius, double angle1, double angle2);
-KMETHOD Cairo_arcNegative(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_arcNegative(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double xc = PKGFloat_to(double, 1);
@@ -516,7 +516,7 @@ KMETHOD Cairo_arcNegative(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.rel_move_to(double dx, double dy);
-KMETHOD Cairo_relMoveTo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_relMoveTo(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double dx = PKGFloat_to(double, 1);
@@ -527,7 +527,7 @@ KMETHOD Cairo_relMoveTo(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.rel_line_to(double dx, double dy);
-KMETHOD Cairo_relLineTo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_relLineTo(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double dx = PKGFloat_to(double, 1);
@@ -538,7 +538,7 @@ KMETHOD Cairo_relLineTo(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.rel_curve_to(double dx1, double dy1, double dx2, double dy2, double dx3, double dy3);
-KMETHOD Cairo_relCurveTo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_relCurveTo(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double dx1 = PKGFloat_to(double, 1);
@@ -553,7 +553,7 @@ KMETHOD Cairo_relCurveTo(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.rectangle(double x, double y, double width, double height);
-KMETHOD Cairo_rectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_rectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -566,7 +566,7 @@ KMETHOD Cairo_rectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.close_path();
-KMETHOD Cairo_closePath(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_closePath(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -575,7 +575,7 @@ KMETHOD Cairo_closePath(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.path_extents(double* x1, double* y1, double* x2, double* y2);
-KMETHOD Cairo_pathExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_pathExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* x1 = PKGFArray_to(double*, 1);
@@ -588,7 +588,7 @@ KMETHOD Cairo_pathExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.paint();
-KMETHOD Cairo_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_paint(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -597,7 +597,7 @@ KMETHOD Cairo_paint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.paint_with_alpha(double alpha);
-KMETHOD Cairo_paintWithAlpha(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_paintWithAlpha(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double alpha = PKGFloat_to(double, 1);
@@ -607,7 +607,7 @@ KMETHOD Cairo_paintWithAlpha(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.mask(cairo_pattern_t* pattern);
-KMETHOD Cairo_mask(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_mask(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 1);
@@ -617,7 +617,7 @@ KMETHOD Cairo_mask(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.mask_surface(CairoSurface surface, double surface_x, double surface_y);
-KMETHOD Cairo_maskSurface(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_maskSurface(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 1);
@@ -629,7 +629,7 @@ KMETHOD Cairo_maskSurface(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.stroke();
-KMETHOD Cairo_stroke(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_stroke(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -638,7 +638,7 @@ KMETHOD Cairo_stroke(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.stroke_preserve();
-KMETHOD Cairo_strokePreserve(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_strokePreserve(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -647,7 +647,7 @@ KMETHOD Cairo_strokePreserve(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.fill();
-KMETHOD Cairo_fill(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_fill(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -656,7 +656,7 @@ KMETHOD Cairo_fill(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.fill_preserve();
-KMETHOD Cairo_fillPreserve(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_fillPreserve(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -665,7 +665,7 @@ KMETHOD Cairo_fillPreserve(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.copy_page();
-KMETHOD Cairo_copyPage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_copyPage(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -674,7 +674,7 @@ KMETHOD Cairo_copyPage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.show_page();
-KMETHOD Cairo_showPage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_showPage(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -683,7 +683,7 @@ KMETHOD Cairo_showPage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_bool_t Cairo.in_stroke(double x, double y);
-KMETHOD Cairo_inStroke(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_inStroke(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -694,7 +694,7 @@ KMETHOD Cairo_inStroke(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_bool_t Cairo.in_fill(double x, double y);
-KMETHOD Cairo_inFill(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_inFill(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -705,7 +705,7 @@ KMETHOD Cairo_inFill(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_bool_t Cairo.in_clip(double x, double y);
-KMETHOD Cairo_inClip(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_inClip(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -716,7 +716,7 @@ KMETHOD Cairo_inClip(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.stroke_extents(double* x1, double* y1, double* x2, double* y2);
-KMETHOD Cairo_strokeExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_strokeExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* x1 = PKGFArray_to(double*, 1);
@@ -729,7 +729,7 @@ KMETHOD Cairo_strokeExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.fill_extents(double* x1, double* y1, double* x2, double* y2);
-KMETHOD Cairo_fillExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_fillExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* x1 = PKGFArray_to(double*, 1);
@@ -742,7 +742,7 @@ KMETHOD Cairo_fillExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.reset_clip();
-KMETHOD Cairo_resetClip(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_resetClip(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -751,7 +751,7 @@ KMETHOD Cairo_resetClip(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.clip();
-KMETHOD Cairo_clip(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_clip(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -760,7 +760,7 @@ KMETHOD Cairo_clip(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.clip_preserve();
-KMETHOD Cairo_clipPreserve(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_clipPreserve(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -769,7 +769,7 @@ KMETHOD Cairo_clipPreserve(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.clip_extents(double* x1, double* y1, double* x2, double* y2);
-KMETHOD Cairo_clipExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_clipExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* x1 = PKGFArray_to(double*, 1);
@@ -787,7 +787,7 @@ static void my_cairo_rectangle_list_free(void *p)
 }
 
 //## @Native cairo_rectangle_list_t* Cairo.copy_clip_rectangle_list();
-KMETHOD Cairo_copyClipRectangleList(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_copyClipRectangleList(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -802,7 +802,7 @@ static void my_cairo_glyph_free(void *p)
     cairo_glyph_free(glyphs);
 }
 //## @Native cairo_glyph_t* Cairo.glyph_allocate(int num_glyphs);
-KMETHOD CairoGlyph_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoGlyph_new(CTX ctx, ksfp_t *sfp _RIX)
 {
     int num_glyphs = PKGInt_to(int, 1);
 
@@ -817,7 +817,7 @@ static void my_cairo_text_cluster_free(void *p)
     cairo_text_cluster_free(clusters);
 }
 //## @Native cairo_text_cluster_t* Cairo.text_cluster_allocate(int num_clusters);
-KMETHOD CairoTextCluster_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoTextCluster_new(CTX ctx, ksfp_t *sfp _RIX)
 {
     int num_clusters = PKGInt_to(int, 1);
 
@@ -831,7 +831,7 @@ static void my_cairo_font_options_free(void *p)
     cairo_font_options_destroy((cairo_font_options_t *)p);
 }
 //## @Native cairo_font_options_t* Cairo.font_options_create();
-KMETHOD CairoFontOptions_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     cairo_font_options_t* ret = cairo_font_options_create();
@@ -840,7 +840,7 @@ KMETHOD CairoFontOptions_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_options_t* Cairo.font_options_copy(cairo_font_options_t* original);
-KMETHOD CairoFontOptions_copy(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_copy(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* original = PKGRawPtr_to(cairo_font_options_t*, 0);
 
@@ -850,7 +850,7 @@ KMETHOD CairoFontOptions_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.font_options_status(cairo_font_options_t* options);
-KMETHOD CairoFontOptions_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
 
@@ -859,7 +859,7 @@ KMETHOD CairoFontOptions_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.font_options_merge(cairo_font_options_t* options, cairo_font_options_t* other);
-KMETHOD CairoFontOptions_merge(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_merge(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
     cairo_font_options_t* other = PKGRawPtr_to(cairo_font_options_t*, 1);
@@ -869,7 +869,7 @@ KMETHOD CairoFontOptions_merge(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native long Cairo.font_options_hash(cairo_font_options_t* options);
-KMETHOD CairoFontOptions_hash(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_hash(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
 
@@ -878,7 +878,7 @@ KMETHOD CairoFontOptions_hash(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.font_options_set_antialias(cairo_font_options_t* options, cairo_antialias_t antialias);
-KMETHOD CairoFontOptions_setAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_setAntialias(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
     cairo_antialias_t antialias = PKGInt_to(cairo_antialias_t, 1);
@@ -888,7 +888,7 @@ KMETHOD CairoFontOptions_setAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_antialias_t Cairo.font_options_get_antialias(cairo_font_options_t* options);
-KMETHOD CairoFontOptions_getAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_getAntialias(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
 
@@ -897,7 +897,7 @@ KMETHOD CairoFontOptions_getAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.font_options_set_subpixel_order(cairo_font_options_t* options, cairo_subpixel_order_t subpixel_order);
-KMETHOD CairoFontOptions_setSubpixelOrder(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_setSubpixelOrder(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
     cairo_subpixel_order_t subpixel_order = PKGInt_to(cairo_subpixel_order_t, 1);
@@ -907,7 +907,7 @@ KMETHOD CairoFontOptions_setSubpixelOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_subpixel_order_t Cairo.font_options_get_subpixel_order(cairo_font_options_t* options);
-KMETHOD CairoFontOptions_getSubpixelOrder(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_getSubpixelOrder(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
 
@@ -916,7 +916,7 @@ KMETHOD CairoFontOptions_getSubpixelOrder(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.font_options_set_hint_style(cairo_font_options_t* options, cairo_hint_style_t hint_style);
-KMETHOD CairoFontOptions_setHintStyle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_setHintStyle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
     cairo_hint_style_t hint_style = PKGInt_to(cairo_hint_style_t, 1);
@@ -926,7 +926,7 @@ KMETHOD CairoFontOptions_setHintStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_hint_style_t Cairo.font_options_get_hint_style(cairo_font_options_t* options);
-KMETHOD CairoFontOptions_getHintStyle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_getHintStyle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
 
@@ -935,7 +935,7 @@ KMETHOD CairoFontOptions_getHintStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.font_options_set_hint_metrics(cairo_font_options_t* options, cairo_hint_metrics_t hint_metrics);
-KMETHOD CairoFontOptions_setHintMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_setHintMetrics(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
     cairo_hint_metrics_t hint_metrics = PKGInt_to(cairo_hint_metrics_t, 1);
@@ -945,7 +945,7 @@ KMETHOD CairoFontOptions_setHintMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_hint_metrics_t Cairo.font_options_get_hint_metrics(cairo_font_options_t* options);
-KMETHOD CairoFontOptions_getHintMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontOptions_getHintMetrics(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 0);
 
@@ -954,7 +954,7 @@ KMETHOD CairoFontOptions_getHintMetrics(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.select_font_face(String family, int slant, int weight);
-KMETHOD Cairo_selectFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_selectFontFace(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     char* family = PKGString_to(char*, 1);
@@ -966,7 +966,7 @@ KMETHOD Cairo_selectFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_font_size(double size);
-KMETHOD Cairo_setFontSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setFontSize(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double size = PKGFloat_to(double, 1);
@@ -976,7 +976,7 @@ KMETHOD Cairo_setFontSize(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_font_matrix(cairo_matrix_t* matrix);
-KMETHOD Cairo_setFontMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setFontMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -986,7 +986,7 @@ KMETHOD Cairo_setFontMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.get_font_matrix(cairo_matrix_t* matrix);
-KMETHOD Cairo_getFontMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getFontMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -997,7 +997,7 @@ KMETHOD Cairo_getFontMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_font_options(cairo_font_options_t* options);
-KMETHOD Cairo_setFontOptions(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setFontOptions(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 1);
@@ -1007,7 +1007,7 @@ KMETHOD Cairo_setFontOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.get_font_options(cairo_font_options_t* options);
-KMETHOD Cairo_getFontOptions(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getFontOptions(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 1);
@@ -1028,7 +1028,7 @@ static void my_cairo_scaled_font(void *p)
 
 
 //## @Native void Cairo.set_font_face(cairo_font_face_t* font_face);
-KMETHOD Cairo_setFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setFontFace(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 1);
@@ -1038,7 +1038,7 @@ KMETHOD Cairo_setFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_face_t* Cairo.get_font_face();
-KMETHOD Cairo_getFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getFontFace(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1048,7 +1048,7 @@ KMETHOD Cairo_getFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.set_scaled_font(cairo_scaled_font_t* scaled_font);
-KMETHOD Cairo_setScaledFont(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_setScaledFont(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 1);
@@ -1058,7 +1058,7 @@ KMETHOD Cairo_setScaledFont(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_scaled_font_t* Cairo.get_scaled_font();
-KMETHOD Cairo_getScaledFont(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getScaledFont(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1068,7 +1068,7 @@ KMETHOD Cairo_getScaledFont(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.show_text(char* utf8);
-KMETHOD Cairo_showText(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_showText(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     char* utf8 = PKGString_to(char*, 1);
@@ -1078,7 +1078,7 @@ KMETHOD Cairo_showText(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.show_glyphs(cairo_glyph_t* glyphs, int num_glyphs);
-KMETHOD Cairo_showGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_showGlyphs(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_glyph_t* glyphs = PKGRawPtr_to(cairo_glyph_t*, 1);
@@ -1089,7 +1089,7 @@ KMETHOD Cairo_showGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.show_text_glyphs(char* utf8, int utf8_len, cairo_glyph_t* glyphs, int num_glyphs, cairo_text_cluster_t* clusters, int num_clusters, cairo_text_cluster_flags_t cluster_flags);
-KMETHOD Cairo_showTextGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_showTextGlyphs(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     char* utf8 = PKGString_to(char*, 1);
@@ -1105,7 +1105,7 @@ KMETHOD Cairo_showTextGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.text_path(char* utf8);
-KMETHOD Cairo_textPath(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_textPath(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     char* utf8 = PKGString_to(char*, 1);
@@ -1115,7 +1115,7 @@ KMETHOD Cairo_textPath(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.glyph_path(cairo_glyph_t* glyphs, int num_glyphs);
-KMETHOD CairoGlyph_path(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoGlyph_path(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_glyph_t* glyphs = PKGRawPtr_to(cairo_glyph_t*, 1);
@@ -1126,7 +1126,7 @@ KMETHOD CairoGlyph_path(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.text_extents(char* utf8, cairo_text_extents_t* extents);
-KMETHOD Cairo_textExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_textExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     char* utf8 = PKGString_to(char*, 1);
@@ -1137,7 +1137,7 @@ KMETHOD Cairo_textExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.glyph_extents(cairo_glyph_t* glyphs, int num_glyphs, cairo_text_extents_t* extents);
-KMETHOD CairoGlyph_extents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoGlyph_extents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_glyph_t* glyphs = PKGRawPtr_to(cairo_glyph_t*, 1);
@@ -1149,7 +1149,7 @@ KMETHOD CairoGlyph_extents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.font_extents(cairo_font_extents_t* extents);
-KMETHOD Cairo_fontExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_fontExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_font_extents_t* extents = PKGRawPtr_to(cairo_font_extents_t*, 1);
@@ -1159,7 +1159,7 @@ KMETHOD Cairo_fontExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_face_t* Cairo.font_face_reference(cairo_font_face_t* font_face);
-KMETHOD CairoFontFace_reference(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontFace_reference(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1170,7 +1170,7 @@ KMETHOD CairoFontFace_reference(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 ////## @Native int Cairo.font_face_get_reference_count(cairo_font_face_t* font_face);
-//KMETHOD CairoFontFace_getReferenceCount(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoFontFace_getReferenceCount(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 //
@@ -1179,7 +1179,7 @@ KMETHOD CairoFontFace_reference(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 //## @Native cairo_status_t Cairo.font_face_status(cairo_font_face_t* font_face);
-KMETHOD CairoFontFace_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontFace_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1188,7 +1188,7 @@ KMETHOD CairoFontFace_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_type_t Cairo.font_face_get_type(cairo_font_face_t* font_face);
-KMETHOD CairoFontFace_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontFace_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1197,7 +1197,7 @@ KMETHOD CairoFontFace_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void* Cairo.font_face_get_user_data(cairo_font_face_t* font_face, cairo_user_data_key_t* key);
-KMETHOD CairoFontFace_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontFace_getUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1208,7 +1208,7 @@ KMETHOD CairoFontFace_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.font_face_set_user_data(cairo_font_face_t* font_face, cairo_user_data_key_t* key, void* user_data, cairo_destroy_func_t destroy);
-KMETHOD CairoFontFace_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoFontFace_setUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1221,7 +1221,7 @@ KMETHOD CairoFontFace_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_scaled_font_t* Cairo.scaled_font_create(cairo_font_face_t* font_face, cairo_matrix_t* font_matrix, cairo_matrix_t* ctm, cairo_font_options_t* options);
-KMETHOD CairoScaledFont_create(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_create(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
     cairo_matrix_t* font_matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -1234,7 +1234,7 @@ KMETHOD CairoScaledFont_create(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_scaled_font_t* Cairo.scaled_font_reference(cairo_scaled_font_t* scaled_font);
-KMETHOD CairoScaledFont_reference(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_reference(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
 
@@ -1244,7 +1244,7 @@ KMETHOD CairoScaledFont_reference(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 ////## @Native int Cairo.scaled_font_get_reference_count(cairo_scaled_font_t* scaled_font);
-//KMETHOD CairoScaledFont_getReferenceCount(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoScaledFont_getReferenceCount(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
 //
@@ -1253,7 +1253,7 @@ KMETHOD CairoScaledFont_reference(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 //## @Native cairo_status_t Cairo.scaled_font_status(cairo_scaled_font_t* scaled_font);
-KMETHOD CairoScaledFont_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
 
@@ -1262,7 +1262,7 @@ KMETHOD CairoScaledFont_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_type_t Cairo.scaled_font_get_type(cairo_scaled_font_t* scaled_font);
-KMETHOD CairoScaledFont_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
 
@@ -1271,7 +1271,7 @@ KMETHOD CairoScaledFont_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void* Cairo.scaled_font_get_user_data(cairo_scaled_font_t* scaled_font, cairo_user_data_key_t* key);
-KMETHOD CairoScaledFont_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_getUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1282,7 +1282,7 @@ KMETHOD CairoScaledFont_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.scaled_font_set_user_data(cairo_scaled_font_t* scaled_font, cairo_user_data_key_t* key, void* user_data, cairo_destroy_func_t destroy);
-KMETHOD CairoScaledFont_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_setUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1294,7 +1294,7 @@ KMETHOD CairoScaledFont_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.scaled_font_extents(cairo_scaled_font_t* scaled_font, cairo_font_extents_t* extents);
-KMETHOD CairoScaledFont_extents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_extents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_font_extents_t* extents = PKGRawPtr_to(cairo_font_extents_t*, 1);
@@ -1304,7 +1304,7 @@ KMETHOD CairoScaledFont_extents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.scaled_font_text_extents(cairo_scaled_font_t* scaled_font, char* utf8, cairo_text_extents_t* extents);
-KMETHOD CairoScaledFont_textExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_textExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     char* utf8 = PKGString_to(char*, 1);
@@ -1315,7 +1315,7 @@ KMETHOD CairoScaledFont_textExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.scaled_font_glyph_extents(cairo_scaled_font_t* scaled_font, cairo_glyph_t* glyphs, int num_glyphs, cairo_text_extents_t* extents);
-KMETHOD CairoScaledFont_glyphExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_glyphExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_glyph_t* glyphs = PKGRawPtr_to(cairo_glyph_t*, 1);
@@ -1327,7 +1327,7 @@ KMETHOD CairoScaledFont_glyphExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.scaled_font_text_to_glyphs(cairo_scaled_font_t* scaled_font, double x, double y, char* utf8, int utf8_len, cairo_glyph_t** glyphs, int* num_glyphs, cairo_text_cluster_t** clusters, int* num_clusters, cairo_text_cluster_flags_t* cluster_flags);
-KMETHOD CairoScaledFont_textToGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_textToGlyphs(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -1346,7 +1346,7 @@ KMETHOD CairoScaledFont_textToGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_face_t* Cairo.scaled_font_get_font_face(cairo_scaled_font_t* scaled_font);
-KMETHOD CairoScaledFont_getFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_getFontFace(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
 
@@ -1356,7 +1356,7 @@ KMETHOD CairoScaledFont_getFontFace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.scaled_font_get_font_matrix(cairo_scaled_font_t* scaled_font, cairo_matrix_t* font_matrix);
-KMETHOD CairoScaledFont_getFontMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_getFontMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_matrix_t* font_matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -1366,7 +1366,7 @@ KMETHOD CairoScaledFont_getFontMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.scaled_font_get_ctm(cairo_scaled_font_t* scaled_font, cairo_matrix_t* ctm);
-KMETHOD CairoScaledFont_getCtm(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_getCtm(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_matrix_t* ctm = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -1378,7 +1378,7 @@ KMETHOD CairoScaledFont_getCtm(CTX ctx, knh_sfp_t *sfp _RIX)
 /*DONE*/
 
 //## @Native void Cairo.scaled_font_get_scale_matrix(cairo_scaled_font_t* scaled_font, cairo_matrix_t* scale_matrix);
-KMETHOD CairoScaledFont_getScaleMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_getScaleMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_matrix_t* scale_matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -1388,7 +1388,7 @@ KMETHOD CairoScaledFont_getScaleMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.scaled_font_get_font_options(cairo_scaled_font_t* scaled_font, cairo_font_options_t* options);
-KMETHOD CairoScaledFont_getFontOptions(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoScaledFont_getFontOptions(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_scaled_font_t* scaled_font = PKGRawPtr_to(cairo_scaled_font_t*, 0);
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 1);
@@ -1398,7 +1398,7 @@ KMETHOD CairoScaledFont_getFontOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_face_t* Cairo.toy_font_face_create(char* family, int slant, int weight);
-KMETHOD Cairo_toyFontFaceCreate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_toyFontFaceCreate(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* family = PKGString_to(char*, 0);
     cairo_font_slant_t slant = PKGInt_to(cairo_font_slant_t, 1);
@@ -1410,7 +1410,7 @@ KMETHOD Cairo_toyFontFaceCreate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native char* Cairo.toy_font_face_get_family(cairo_font_face_t* font_face);
-KMETHOD Cairo_toyFontFaceGetFamily(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_toyFontFaceGetFamily(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1420,7 +1420,7 @@ KMETHOD Cairo_toyFontFaceGetFamily(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.toy_font_face_get_slant(cairo_font_face_t* font_face);
-KMETHOD Cairo_toyFontFaceGetSlant(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_toyFontFaceGetSlant(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1429,7 +1429,7 @@ KMETHOD Cairo_toyFontFaceGetSlant(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.toy_font_face_get_weight(cairo_font_face_t* font_face);
-KMETHOD Cairo_toyFontFaceGetWeight(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_toyFontFaceGetWeight(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1438,7 +1438,7 @@ KMETHOD Cairo_toyFontFaceGetWeight(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_font_face_t* Cairo.user_font_face_create();
-KMETHOD CairoUserFontFace_create(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_create(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     cairo_font_face_t* ret = cairo_user_font_face_create();
@@ -1447,7 +1447,7 @@ KMETHOD CairoUserFontFace_create(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.user_font_face_set_init_func(cairo_font_face_t* font_face, cairo_user_scaled_font_init_func_t init_func);
-KMETHOD CairoUserFontFace_setInitFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_setInitFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
     cairo_user_scaled_font_init_func_t init_func = PKGRawPtr_to(cairo_user_scaled_font_init_func_t, 1);
@@ -1458,7 +1458,7 @@ KMETHOD CairoUserFontFace_setInitFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.user_font_face_set_render_glyph_func(cairo_font_face_t* font_face, cairo_user_scaled_font_render_glyph_func_t render_glyph_func);
-KMETHOD CairoUserFontFace_setRenderGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_setRenderGlyphFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
     cairo_user_scaled_font_render_glyph_func_t render_glyph_func = PKGRawPtr_to(cairo_user_scaled_font_render_glyph_func_t, 1);
@@ -1469,7 +1469,7 @@ KMETHOD CairoUserFontFace_setRenderGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.user_font_face_set_text_to_glyphs_func(cairo_font_face_t* font_face, cairo_user_scaled_font_text_to_glyphs_func_t text_to_glyphs_func);
-KMETHOD CairoUserFontFace_setTextToGlyphsFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_setTextToGlyphsFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
     cairo_user_scaled_font_text_to_glyphs_func_t text_to_glyphs_func = PKGRawPtr_to(cairo_user_scaled_font_text_to_glyphs_func_t, 1);
@@ -1480,7 +1480,7 @@ KMETHOD CairoUserFontFace_setTextToGlyphsFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.user_font_face_set_unicode_to_glyph_func(cairo_font_face_t* font_face, cairo_user_scaled_font_unicode_to_glyph_func_t unicode_to_glyph_func);
-KMETHOD CairoUserFontFace_setUnicodeToGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_setUnicodeToGlyphFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
     cairo_user_scaled_font_unicode_to_glyph_func_t unicode_to_glyph_func = PKGRawPtr_to(cairo_user_scaled_font_unicode_to_glyph_func_t, 1);
@@ -1491,7 +1491,7 @@ KMETHOD CairoUserFontFace_setUnicodeToGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_user_scaled_font_init_func_t Cairo.user_font_face_get_init_func(cairo_font_face_t* font_face);
-KMETHOD CairoUserFontFace_getInitFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_getInitFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1501,7 +1501,7 @@ KMETHOD CairoUserFontFace_getInitFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_user_scaled_font_render_glyph_func_t Cairo.user_font_face_get_render_glyph_func(cairo_font_face_t* font_face);
-KMETHOD CairoUserFontFace_getRenderGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_getRenderGlyphFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1511,7 +1511,7 @@ KMETHOD CairoUserFontFace_getRenderGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_user_scaled_font_text_to_glyphs_func_t Cairo.user_font_face_get_text_to_glyphs_func(cairo_font_face_t* font_face);
-KMETHOD CairoUserFontFace_getTextToGlyphsFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_getTextToGlyphsFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1521,7 +1521,7 @@ KMETHOD CairoUserFontFace_getTextToGlyphsFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_user_scaled_font_unicode_to_glyph_func_t Cairo.user_font_face_get_unicode_to_glyph_func(cairo_font_face_t* font_face);
-KMETHOD CairoUserFontFace_getUnicodeToGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoUserFontFace_getUnicodeToGlyphFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_font_face_t* font_face = PKGRawPtr_to(cairo_font_face_t*, 0);
 
@@ -1531,7 +1531,7 @@ KMETHOD CairoUserFontFace_getUnicodeToGlyphFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.get_operator();
-KMETHOD Cairo_getOperator(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getOperator(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1540,7 +1540,7 @@ KMETHOD Cairo_getOperator(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_pattern_t* Cairo.get_source();
-KMETHOD Cairo_getSource(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getSource(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1550,7 +1550,7 @@ KMETHOD Cairo_getSource(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native double Cairo.get_tolerance();
-KMETHOD Cairo_getTolerance(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getTolerance(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1559,7 +1559,7 @@ KMETHOD Cairo_getTolerance(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_antialias_t Cairo.get_antialias();
-KMETHOD Cairo_getAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getAntialias(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1568,7 +1568,7 @@ KMETHOD Cairo_getAntialias(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_bool_t Cairo.has_current_point();
-KMETHOD Cairo_hasCurrentPoint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_hasCurrentPoint(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1577,7 +1577,7 @@ KMETHOD Cairo_hasCurrentPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.get_current_point(double* x, double* y);
-KMETHOD Cairo_getCurrentPoint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getCurrentPoint(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* x = PKGFArray_to(double*, 1);
@@ -1588,7 +1588,7 @@ KMETHOD Cairo_getCurrentPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_fill_rule_t Cairo.get_fill_rule();
-KMETHOD Cairo_getFillRule(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getFillRule(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1597,7 +1597,7 @@ KMETHOD Cairo_getFillRule(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native double Cairo.get_line_width();
-KMETHOD Cairo_getLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getLineWidth(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1606,7 +1606,7 @@ KMETHOD Cairo_getLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_line_cap_t Cairo.get_line_cap();
-KMETHOD Cairo_getLineCap(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getLineCap(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1615,7 +1615,7 @@ KMETHOD Cairo_getLineCap(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.get_line_join();
-KMETHOD Cairo_getLineJoin(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getLineJoin(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1624,7 +1624,7 @@ KMETHOD Cairo_getLineJoin(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native double Cairo.get_miter_limit();
-KMETHOD Cairo_getMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getMiterLimit(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1633,7 +1633,7 @@ KMETHOD Cairo_getMiterLimit(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.get_dash_count();
-KMETHOD Cairo_getDashCount(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getDashCount(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1642,7 +1642,7 @@ KMETHOD Cairo_getDashCount(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.get_dash(double* dashes, double* offset);
-KMETHOD Cairo_getDash(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getDash(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     double* dashes = PKGFArray_to(double*, 1);
@@ -1653,7 +1653,7 @@ KMETHOD Cairo_getDash(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.get_matrix(cairo_matrix_t* matrix);
-KMETHOD Cairo_getMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -1668,7 +1668,7 @@ static void my_cairo_surface_free(void *p)
 }
 
 //## @Native CairoSurface Cairo.get_target();
-KMETHOD Cairo_getTarget(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getTarget(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1678,7 +1678,7 @@ KMETHOD Cairo_getTarget(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurface Cairo.get_group_target();
-KMETHOD Cairo_getGroupTarget(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_getGroupTarget(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1693,7 +1693,7 @@ static void my_cairo_path_free(void *p)
     cairo_path_destroy(path);
 }
 //## @Native cairo_path_t* Cairo.copy_path();
-KMETHOD Cairo_copyPath(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_copyPath(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1703,7 +1703,7 @@ KMETHOD Cairo_copyPath(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_path_t* Cairo.copy_path_flat();
-KMETHOD Cairo_copyPathFlat(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_copyPathFlat(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1713,7 +1713,7 @@ KMETHOD Cairo_copyPathFlat(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.append_path(cairo_path_t* path);
-KMETHOD Cairo_appendPath(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_appendPath(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
     cairo_path_t* path = PKGRawPtr_to(cairo_path_t*, 1);
@@ -1723,7 +1723,7 @@ KMETHOD Cairo_appendPath(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.status();
-KMETHOD Cairo_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_t* cr = PKGRawPtr_to(cairo_t*, 0);
 
@@ -1732,7 +1732,7 @@ KMETHOD Cairo_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native char* Cairo.status_to_string(cairo_status_t status);
-KMETHOD Cairo_statusToString(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_statusToString(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_status_t status = PKGInt_to(cairo_status_t, 0);
 
@@ -1747,7 +1747,7 @@ static void my_cairo_device_free(void *p)
     cairo_device_destroy(device);
 }
 ////## @Native cairo_device_t* Cairo.device_reference(cairo_device_t* device);
-//KMETHOD CairoDevice_reference(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoDevice_reference(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 //
@@ -1757,7 +1757,7 @@ static void my_cairo_device_free(void *p)
 //}
 
 //## @Native cairo_device_type_t Cairo.device_get_type(cairo_device_t* device);
-KMETHOD CairoDevice_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 
@@ -1766,7 +1766,7 @@ KMETHOD CairoDevice_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.device_status(cairo_device_t* device);
-KMETHOD CairoDevice_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 
@@ -1775,7 +1775,7 @@ KMETHOD CairoDevice_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.device_acquire(cairo_device_t* device);
-KMETHOD CairoDevice_acquire(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_acquire(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 
@@ -1784,7 +1784,7 @@ KMETHOD CairoDevice_acquire(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.device_release(cairo_device_t* device);
-KMETHOD CairoDevice_release(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_release(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 
@@ -1793,7 +1793,7 @@ KMETHOD CairoDevice_release(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.device_flush(cairo_device_t* device);
-KMETHOD CairoDevice_flush(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_flush(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 
@@ -1802,7 +1802,7 @@ KMETHOD CairoDevice_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.device_finish(cairo_device_t* device);
-KMETHOD CairoDevice_finish(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_finish(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 
@@ -1811,7 +1811,7 @@ KMETHOD CairoDevice_finish(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 ////## @Native int Cairo.device_get_reference_count(cairo_device_t* device);
-//KMETHOD CairoDevice_getReferenceCount(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoDevice_getReferenceCount(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
 //
@@ -1820,7 +1820,7 @@ KMETHOD CairoDevice_finish(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 //## @Native void* Cairo.device_get_user_data(cairo_device_t* device, cairo_user_data_key_t* key);
-KMETHOD CairoDevice_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_getUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1831,7 +1831,7 @@ KMETHOD CairoDevice_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.device_set_user_data(cairo_device_t* device, cairo_user_data_key_t* key, void* user_data, cairo_destroy_func_t destroy);
-KMETHOD CairoDevice_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoDevice_setUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_device_t* device = PKGRawPtr_to(cairo_device_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1845,7 +1845,7 @@ KMETHOD CairoDevice_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.surface_create_similar(cairo_surface_t* other, int content, int width, int height);
-KMETHOD CairoSurface_createSimilar(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_createSimilar(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* other = PKGRawPtr_to(cairo_surface_t*, 0);
     cairo_content_t content = PKGInt_to(cairo_content_t, 1);
@@ -1858,7 +1858,7 @@ KMETHOD CairoSurface_createSimilar(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.surface_create_for_rectangle(cairo_surface_t* target, double x, double y, double width, double height);
-KMETHOD CairoSurface_createForRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_createForRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* target = PKGRawPtr_to(cairo_surface_t*, 0);
     double x = PKGFloat_to(double, 1);
@@ -1872,7 +1872,7 @@ KMETHOD CairoSurface_createForRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.surface_reference(CairoSurface surface);
-KMETHOD CairoSurface_reference(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_reference(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -1882,7 +1882,7 @@ KMETHOD CairoSurface_reference(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_finish(CairoSurface surface);
-KMETHOD CairoSurface_finish(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_finish(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -1891,7 +1891,7 @@ KMETHOD CairoSurface_finish(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_device_t* Cairo.surface_get_device(CairoSurface surface);
-KMETHOD CairoSurface_getDevice(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getDevice(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -1901,7 +1901,7 @@ KMETHOD CairoSurface_getDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 ////## @Native int Cairo.surface_get_reference_count(CairoSurface surface);
-//KMETHOD CairoSurface_getReferenceCount(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoSurface_getReferenceCount(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 //
@@ -1910,7 +1910,7 @@ KMETHOD CairoSurface_getDevice(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 //## @Native cairo_status_t Cairo.surface_status(CairoSurface surface);
-KMETHOD CairoSurface_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -1919,7 +1919,7 @@ KMETHOD CairoSurface_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_surface_type_t Cairo.surface_get_type(CairoSurface surface);
-KMETHOD CairoSurface_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -1928,7 +1928,7 @@ KMETHOD CairoSurface_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.surface_get_content(CairoSurface surface);
-KMETHOD CairoSurface_getContent(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getContent(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -1937,7 +1937,7 @@ KMETHOD CairoSurface_getContent(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.surface_write_to_png(CairoSurface surface, char* filename);
-KMETHOD CairoSurface_writeToPng(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_writeToPng(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     char* filename = PKGString_to(char*, 1);
@@ -1947,7 +1947,7 @@ KMETHOD CairoSurface_writeToPng(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.surface_write_to_png_stream(CairoSurface surface, cairo_write_func_t write_func, void* closure);
-KMETHOD CairoSurface_writeToPngStream(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_writeToPngStream(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     cairo_write_func_t write_func = PKGRawPtr_to(cairo_write_func_t, 1);
@@ -1959,7 +1959,7 @@ KMETHOD CairoSurface_writeToPngStream(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void* Cairo.surface_get_user_data(CairoSurface surface, cairo_user_data_key_t* key);
-KMETHOD CairoSurface_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1970,7 +1970,7 @@ KMETHOD CairoSurface_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.surface_set_user_data(CairoSurface surface, cairo_user_data_key_t* key, void* user_data, cairo_destroy_func_t destroy);
-KMETHOD CairoSurface_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_setUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -1983,7 +1983,7 @@ KMETHOD CairoSurface_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_get_mime_data(CairoSurface surface, char* mime_type, char** data, long* length);
-KMETHOD CairoSurface_getMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getMimeData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     const char* mime_type = PKGString_to(const char*, 1);
@@ -1996,7 +1996,7 @@ KMETHOD CairoSurface_getMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.surface_set_mime_data(CairoSurface surface, char* mime_type, char* data, long length, cairo_destroy_func_t destroy, void* closure);
-KMETHOD CairoSurface_setMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_setMimeData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     const char* mime_type = PKGString_to(char*, 1);
@@ -2011,7 +2011,7 @@ KMETHOD CairoSurface_setMimeData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_get_font_options(CairoSurface surface, cairo_font_options_t* options);
-KMETHOD CairoSurface_getFontOptions(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getFontOptions(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     cairo_font_options_t* options = PKGRawPtr_to(cairo_font_options_t*, 1);
@@ -2021,7 +2021,7 @@ KMETHOD CairoSurface_getFontOptions(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_flush(CairoSurface surface);
-KMETHOD CairoSurface_flush(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_flush(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2030,7 +2030,7 @@ KMETHOD CairoSurface_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_mark_dirty(CairoSurface surface);
-KMETHOD CairoSurface_markDirty(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_markDirty(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2039,7 +2039,7 @@ KMETHOD CairoSurface_markDirty(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_mark_dirty_rectangle(CairoSurface surface, int x, int y, int width, int height);
-KMETHOD CairoSurface_markDirtyRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_markDirtyRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     int x = PKGInt_to(int, 1);
@@ -2052,7 +2052,7 @@ KMETHOD CairoSurface_markDirtyRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_set_device_offset(CairoSurface surface, double x_offset, double y_offset);
-KMETHOD CairoSurface_setDeviceOffset(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_setDeviceOffset(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     double x_offset = PKGFloat_to(double, 1);
@@ -2063,7 +2063,7 @@ KMETHOD CairoSurface_setDeviceOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_get_device_offset(CairoSurface surface, double* x_offset, double* y_offset);
-KMETHOD CairoSurface_getDeviceOffset(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getDeviceOffset(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     double* x_offset = PKGFArray_to(double*, 1);
@@ -2074,7 +2074,7 @@ KMETHOD CairoSurface_getDeviceOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_set_fallback_resolution(CairoSurface surface, double x_pixels_per_inch, double y_pixels_per_inch);
-KMETHOD CairoSurface_setFallbackResolution(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_setFallbackResolution(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     double x_pixels_per_inch = PKGFloat_to(double, 1);
@@ -2085,7 +2085,7 @@ KMETHOD CairoSurface_setFallbackResolution(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_get_fallback_resolution(CairoSurface surface, double* x_pixels_per_inch, double* y_pixels_per_inch);
-KMETHOD CairoSurface_getFallbackResolution(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_getFallbackResolution(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     double* x_pixels_per_inch = PKGFArray_to(double*, 1);
@@ -2096,7 +2096,7 @@ KMETHOD CairoSurface_getFallbackResolution(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_copy_page(CairoSurface surface);
-KMETHOD CairoSurface_copyPage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_copyPage(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2105,7 +2105,7 @@ KMETHOD CairoSurface_copyPage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.surface_show_page(CairoSurface surface);
-KMETHOD CairoSurface_showPage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_showPage(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2114,7 +2114,7 @@ KMETHOD CairoSurface_showPage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_bool_t Cairo.surface_has_show_text_glyphs(CairoSurface surface);
-KMETHOD CairoSurface_hasShowTextGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoSurface_hasShowTextGlyphs(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2123,7 +2123,7 @@ KMETHOD CairoSurface_hasShowTextGlyphs(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.image_surface_create(cairo_format_t format, int width, int height);
-KMETHOD CairoImageSurface_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_new(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_format_t format = PKGInt_to(cairo_format_t, 1);
     int width = PKGInt_to(int, 2);
@@ -2136,7 +2136,7 @@ KMETHOD CairoImageSurface_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.format_stride_for_width(cairo_format_t format, int width);
-KMETHOD Cairo_formatStrideForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_formatStrideForWidth(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_format_t format = PKGInt_to(cairo_format_t, 0);
     int width = PKGInt_to(int, 1);
@@ -2146,7 +2146,7 @@ KMETHOD Cairo_formatStrideForWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.image_surface_create_for_data(char* data, cairo_format_t format, int width, int height, int stride);
-KMETHOD CairoImageSurface_createForData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_createForData(CTX ctx, ksfp_t *sfp _RIX)
 {
     unsigned char* data = PKGString_to(unsigned char*, 0);
     cairo_format_t format = PKGInt_to(cairo_format_t, 1);
@@ -2160,7 +2160,7 @@ KMETHOD CairoImageSurface_createForData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native char* Cairo.image_surface_get_data(CairoSurface surface);
-KMETHOD CairoImageSurface_getData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_getData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2170,7 +2170,7 @@ KMETHOD CairoImageSurface_getData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_format_t Cairo.image_surface_get_format(CairoSurface surface);
-KMETHOD CairoImageSurface_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_getFormat(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2179,7 +2179,7 @@ KMETHOD CairoImageSurface_getFormat(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.image_surface_get_width(CairoSurface surface);
-KMETHOD CairoImageSurface_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_getWidth(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2188,7 +2188,7 @@ KMETHOD CairoImageSurface_getWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.image_surface_get_height(CairoSurface surface);
-KMETHOD CairoImageSurface_getHeight(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_getHeight(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2197,7 +2197,7 @@ KMETHOD CairoImageSurface_getHeight(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.image_surface_get_stride(CairoSurface surface);
-KMETHOD CairoImageSurface_getStride(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_getStride(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2206,7 +2206,7 @@ KMETHOD CairoImageSurface_getStride(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.image_surface_create_from_png(char* filename);
-KMETHOD CairoImageSurface_createFromPng(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_createFromPng(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* filename = PKGString_to(char*, 0);
 
@@ -2216,7 +2216,7 @@ KMETHOD CairoImageSurface_createFromPng(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.image_surface_create_from_png_stream(cairo_read_func_t read_func, void* closure);
-KMETHOD CairoImageSurface_createFromPngStream(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoImageSurface_createFromPngStream(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_read_func_t read_func = PKGRawPtr_to(cairo_read_func_t, 0);
     void* closure = PKGRawPtr_to(void*, 1);
@@ -2228,7 +2228,7 @@ KMETHOD CairoImageSurface_createFromPngStream(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native CairoSurFace Cairo.recording_surface_create(int content, cairo_rectangle_t* extents);
-KMETHOD Cairo_recordingSurfaceCreate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_recordingSurfaceCreate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_content_t content = PKGInt_to(cairo_content_t, 0);
     cairo_rectangle_t* extents = PKGRawPtr_to(cairo_rectangle_t*, 1);
@@ -2239,7 +2239,7 @@ KMETHOD Cairo_recordingSurfaceCreate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.recording_surface_ink_extents(CairoSurface surface, double* x0, double* y0, double* width, double* height);
-KMETHOD Cairo_recordingSurfaceInkExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Cairo_recordingSurfaceInkExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
     double* x0 = PKGFArray_to(double*, 1);
@@ -2252,7 +2252,7 @@ KMETHOD Cairo_recordingSurfaceInkExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_pattern_t* Cairo.pattern_create_rgb(double red, double green, double blue);
-KMETHOD CairoPattern_createRgb(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_createRgb(CTX ctx, ksfp_t *sfp _RIX)
 {
     double red = PKGFloat_to(double, 0);
     double green = PKGFloat_to(double, 1);
@@ -2264,7 +2264,7 @@ KMETHOD CairoPattern_createRgb(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_pattern_t* Cairo.pattern_create_rgba(double red, double green, double blue, double alpha);
-KMETHOD CairoPattern_createRgba(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_createRgba(CTX ctx, ksfp_t *sfp _RIX)
 {
     double red = PKGFloat_to(double, 0);
     double green = PKGFloat_to(double, 1);
@@ -2277,7 +2277,7 @@ KMETHOD CairoPattern_createRgba(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_pattern_t* Cairo.pattern_create_for_surface(CairoSurface surface);
-KMETHOD CairoPattern_createForSurface(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_createForSurface(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_surface_t* surface = PKGRawPtr_to(cairo_surface_t*, 0);
 
@@ -2287,7 +2287,7 @@ KMETHOD CairoPattern_createForSurface(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_pattern_t* Cairo.pattern_create_linear(double x0, double y0, double x1, double y1);
-KMETHOD CairoPattern_createLinear(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_createLinear(CTX ctx, ksfp_t *sfp _RIX)
 {
     double x0 = PKGFloat_to(double, 0);
     double y0 = PKGFloat_to(double, 1);
@@ -2300,7 +2300,7 @@ KMETHOD CairoPattern_createLinear(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_pattern_t* Cairo.pattern_create_radial(double cx0, double cy0, double radius0, double cx1, double cy1, double radius1);
-KMETHOD CairoPattern_createRadial(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_createRadial(CTX ctx, ksfp_t *sfp _RIX)
 {
     double cx0 = PKGFloat_to(double, 0);
     double cy0 = PKGFloat_to(double, 1);
@@ -2315,7 +2315,7 @@ KMETHOD CairoPattern_createRadial(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 ////## @Native cairo_pattern_t* Cairo.pattern_reference(cairo_pattern_t* pattern);
-//KMETHOD CairoPattern_reference(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoPattern_reference(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
 //
@@ -2325,7 +2325,7 @@ KMETHOD CairoPattern_createRadial(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 //
 ////## @Native int Cairo.pattern_get_reference_count(cairo_pattern_t* pattern);
-//KMETHOD CairoPattern_getReferenceCount(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoPattern_getReferenceCount(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
 //
@@ -2334,7 +2334,7 @@ KMETHOD CairoPattern_createRadial(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 //## @Native cairo_status_t Cairo.pattern_status(cairo_pattern_t* pattern);
-KMETHOD CairoPattern_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
 
@@ -2343,7 +2343,7 @@ KMETHOD CairoPattern_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void* Cairo.pattern_get_user_data(cairo_pattern_t* pattern, cairo_user_data_key_t* key);
-KMETHOD CairoPattern_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -2354,7 +2354,7 @@ KMETHOD CairoPattern_getUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.pattern_set_user_data(cairo_pattern_t* pattern, cairo_user_data_key_t* key, void* user_data, cairo_destroy_func_t destroy);
-KMETHOD CairoPattern_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_setUserData(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     cairo_user_data_key_t* key = PKGRawPtr_to(cairo_user_data_key_t*, 1);
@@ -2367,7 +2367,7 @@ KMETHOD CairoPattern_setUserData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_pattern_type_t Cairo.pattern_get_type(cairo_pattern_t* pattern);
-KMETHOD CairoPattern_getType(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
 
@@ -2376,7 +2376,7 @@ KMETHOD CairoPattern_getType(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.pattern_add_color_stop_rgb(cairo_pattern_t* pattern, double offset, double red, double green, double blue);
-KMETHOD CairoPattern_addColorStopRgb(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_addColorStopRgb(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     double offset = PKGFloat_to(double, 1);
@@ -2389,7 +2389,7 @@ KMETHOD CairoPattern_addColorStopRgb(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.pattern_add_color_stop_rgba(cairo_pattern_t* pattern, double offset, double red, double green, double blue, double alpha);
-KMETHOD CairoPattern_addColorStopRgba(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_addColorStopRgba(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     double offset = PKGFloat_to(double, 1);
@@ -2403,7 +2403,7 @@ KMETHOD CairoPattern_addColorStopRgba(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.pattern_set_matrix(cairo_pattern_t* pattern, cairo_matrix_t* matrix);
-KMETHOD CairoPattern_setMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_setMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -2413,7 +2413,7 @@ KMETHOD CairoPattern_setMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.pattern_get_matrix(cairo_pattern_t* pattern, cairo_matrix_t* matrix);
-KMETHOD CairoPattern_getMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -2424,7 +2424,7 @@ KMETHOD CairoPattern_getMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.pattern_set_extend(cairo_pattern_t* pattern, cairo_extend_t extend);
-KMETHOD CairoPattern_setExtend(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_setExtend(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     cairo_extend_t extend = PKGInt_to(cairo_extend_t, 1);
@@ -2434,7 +2434,7 @@ KMETHOD CairoPattern_setExtend(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_extend_t Cairo.pattern_get_extend(cairo_pattern_t* pattern);
-KMETHOD CairoPattern_getExtend(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getExtend(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
 
@@ -2443,7 +2443,7 @@ KMETHOD CairoPattern_getExtend(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.pattern_set_filter(cairo_pattern_t* pattern, cairo_filter_t filter);
-KMETHOD CairoPattern_setFilter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_setFilter(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     cairo_filter_t filter = PKGInt_to(cairo_filter_t, 1);
@@ -2453,7 +2453,7 @@ KMETHOD CairoPattern_setFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_filter_t Cairo.pattern_get_filter(cairo_pattern_t* pattern);
-KMETHOD CairoPattern_getFilter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getFilter(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
 
@@ -2462,7 +2462,7 @@ KMETHOD CairoPattern_getFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.pattern_get_rgba(cairo_pattern_t* pattern, double* red, double* green, double* blue, double* alpha);
-KMETHOD CairoPattern_getRgba(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getRgba(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     double* red = PKGFArray_to(double*, 1);
@@ -2475,7 +2475,7 @@ KMETHOD CairoPattern_getRgba(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.pattern_get_surface(cairo_pattern_t* pattern, cairo_surface_t** surface);
-KMETHOD CairoPattern_getSurface(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getSurface(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     cairo_surface_t** surface = PKGRawPtr_to(cairo_surface_t**, 1);
@@ -2486,7 +2486,7 @@ KMETHOD CairoPattern_getSurface(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.pattern_get_color_stop_rgba(cairo_pattern_t* pattern, int index, double* offset, double* red, double* green, double* blue, double* alpha);
-KMETHOD CairoPattern_getColorStopRgba(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getColorStopRgba(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     int index = PKGInt_to(int, 1);
@@ -2501,7 +2501,7 @@ KMETHOD CairoPattern_getColorStopRgba(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.pattern_get_color_stop_count(cairo_pattern_t* pattern, int* count);
-KMETHOD CairoPattern_getColorStopCount(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getColorStopCount(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     int* count = PKGIArray_to(int*, 1);
@@ -2511,7 +2511,7 @@ KMETHOD CairoPattern_getColorStopCount(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.pattern_get_linear_points(cairo_pattern_t* pattern, double* x0, double* y0, double* x1, double* y1);
-KMETHOD CairoPattern_getLinearPoints(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getLinearPoints(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     double* x0 = PKGFArray_to(double*, 1);
@@ -2524,7 +2524,7 @@ KMETHOD CairoPattern_getLinearPoints(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.pattern_get_radial_circles(cairo_pattern_t* pattern, double* x0, double* y0, double* r0, double* x1, double* y1, double* r1);
-KMETHOD CairoPattern_getRadialCircles(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoPattern_getRadialCircles(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_pattern_t* pattern = PKGRawPtr_to(cairo_pattern_t*, 0);
     double* x0 = PKGFArray_to(double*, 1);
@@ -2539,7 +2539,7 @@ KMETHOD CairoPattern_getRadialCircles(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_init(cairo_matrix_t* matrix, double xx, double yx, double xy, double yy, double x0, double y0);
-KMETHOD CairoMatrix_init(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_init(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double xx = PKGFloat_to(double, 1);
@@ -2554,7 +2554,7 @@ KMETHOD CairoMatrix_init(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_init_identity(cairo_matrix_t* matrix);
-KMETHOD CairoMatrix_initIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_initIdentity(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
 
@@ -2563,7 +2563,7 @@ KMETHOD CairoMatrix_initIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_init_translate(cairo_matrix_t* matrix, double tx, double ty);
-KMETHOD CairoMatrix_initTranslate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_initTranslate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double tx = PKGFloat_to(double, 1);
@@ -2574,7 +2574,7 @@ KMETHOD CairoMatrix_initTranslate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_init_scale(cairo_matrix_t* matrix, double sx, double sy);
-KMETHOD CairoMatrix_initScale(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_initScale(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double sx = PKGFloat_to(double, 1);
@@ -2585,7 +2585,7 @@ KMETHOD CairoMatrix_initScale(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_init_rotate(cairo_matrix_t* matrix, double radians);
-KMETHOD CairoMatrix_initRotate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_initRotate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double radians = PKGFloat_to(double, 1);
@@ -2595,7 +2595,7 @@ KMETHOD CairoMatrix_initRotate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_translate(cairo_matrix_t* matrix, double tx, double ty);
-KMETHOD CairoMatrix_translate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_translate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double tx = PKGFloat_to(double, 1);
@@ -2606,7 +2606,7 @@ KMETHOD CairoMatrix_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_scale(cairo_matrix_t* matrix, double sx, double sy);
-KMETHOD CairoMatrix_scale(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_scale(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double sx = PKGFloat_to(double, 1);
@@ -2617,7 +2617,7 @@ KMETHOD CairoMatrix_scale(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_rotate(cairo_matrix_t* matrix, double radians);
-KMETHOD CairoMatrix_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_rotate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double radians = PKGFloat_to(double, 1);
@@ -2627,7 +2627,7 @@ KMETHOD CairoMatrix_rotate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.matrix_invert(cairo_matrix_t* matrix);
-KMETHOD CairoMatrix_invert(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_invert(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
 
@@ -2636,7 +2636,7 @@ KMETHOD CairoMatrix_invert(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_multiply(cairo_matrix_t* result, cairo_matrix_t* a, cairo_matrix_t* b);
-KMETHOD CairoMatrix_multiply(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_multiply(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* result = PKGRawPtr_to(cairo_matrix_t*, 0);
     cairo_matrix_t* a = PKGRawPtr_to(cairo_matrix_t*, 1);
@@ -2647,7 +2647,7 @@ KMETHOD CairoMatrix_multiply(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_transform_distance(cairo_matrix_t* matrix, double* dx, double* dy);
-KMETHOD CairoMatrix_transformDistance(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_transformDistance(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double* dx = PKGFArray_to(double*, 1);
@@ -2658,7 +2658,7 @@ KMETHOD CairoMatrix_transformDistance(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.matrix_transform_point(cairo_matrix_t* matrix, double* x, double* y);
-KMETHOD CairoMatrix_transformPoint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoMatrix_transformPoint(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_matrix_t* matrix = PKGRawPtr_to(cairo_matrix_t*, 0);
     double* x = PKGFArray_to(double*, 1);
@@ -2674,7 +2674,7 @@ static void my_cairo_region_free(void *p)
     cairo_region_destroy(region);
 }
 //## @Native cairo_region_t* Cairo.region_create();
-KMETHOD CairoRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     cairo_region_t* ret = cairo_region_create();
@@ -2683,7 +2683,7 @@ KMETHOD CairoRegion_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_region_t* Cairo.region_create_rectangle(cairo_rectangle_int_t* rectangle);
-KMETHOD CairoRegion_createRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_createRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_rectangle_int_t* rectangle = PKGRawPtr_to(cairo_rectangle_int_t*, 0);
 
@@ -2693,7 +2693,7 @@ KMETHOD CairoRegion_createRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_region_t* Cairo.region_create_rectangles(cairo_rectangle_int_t* rects, int count);
-KMETHOD CairoRegion_createRectangles(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_createRectangles(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_rectangle_int_t* rects = PKGRawPtr_to(cairo_rectangle_int_t*, 0);
     int count = PKGInt_to(int, 1);
@@ -2704,7 +2704,7 @@ KMETHOD CairoRegion_createRectangles(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_region_t* Cairo.region_copy(cairo_region_t* original);
-KMETHOD CairoRegion_copy(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_copy(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* original = PKGRawPtr_to(cairo_region_t*, 1);
 
@@ -2714,7 +2714,7 @@ KMETHOD CairoRegion_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 ////## @Native cairo_region_t* Cairo.region_reference(cairo_region_t* region);
-//KMETHOD CairoRegion_reference(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD CairoRegion_reference(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
 //
@@ -2724,7 +2724,7 @@ KMETHOD CairoRegion_copy(CTX ctx, knh_sfp_t *sfp _RIX)
 //}
 
 //## @Native cairo_status_t Cairo.region_status(cairo_region_t* region);
-KMETHOD CairoRegion_status(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_status(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
 
@@ -2733,7 +2733,7 @@ KMETHOD CairoRegion_status(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.region_get_extents(cairo_region_t* region, cairo_rectangle_int_t* extents);
-KMETHOD CairoRegion_getExtents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_getExtents(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_rectangle_int_t* extents = PKGRawPtr_to(cairo_rectangle_int_t*, 1);
@@ -2743,7 +2743,7 @@ KMETHOD CairoRegion_getExtents(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Cairo.region_num_rectangles(cairo_region_t* region);
-KMETHOD CairoRegion_numRectangles(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_numRectangles(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
 
@@ -2752,7 +2752,7 @@ KMETHOD CairoRegion_numRectangles(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.region_get_rectangle(cairo_region_t* region, int nth, cairo_rectangle_int_t* rectangle);
-KMETHOD CairoRegion_getRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_getRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
     int nth = PKGInt_to(int, 1);
@@ -2763,7 +2763,7 @@ KMETHOD CairoRegion_getRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_bool_t Cairo.region_is_empty(cairo_region_t* region);
-KMETHOD CairoRegion_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_isEmpty(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
 
@@ -2772,7 +2772,7 @@ KMETHOD CairoRegion_isEmpty(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_region_overlap_t Cairo.region_contains_rectangle(cairo_region_t* region, cairo_rectangle_int_t* rectangle);
-KMETHOD CairoRegion_containsRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_containsRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_rectangle_int_t* rectangle = PKGRawPtr_to(cairo_rectangle_int_t*, 1);
@@ -2782,7 +2782,7 @@ KMETHOD CairoRegion_containsRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_bool_t Cairo.region_contains_point(cairo_region_t* region, int x, int y);
-KMETHOD CairoRegion_containsPoint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_containsPoint(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
     int x = PKGInt_to(int, 1);
@@ -2793,7 +2793,7 @@ KMETHOD CairoRegion_containsPoint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Cairo.region_translate(cairo_region_t* region, int dx, int dy);
-KMETHOD CairoRegion_translate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_translate(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* region = PKGRawPtr_to(cairo_region_t*, 0);
     int dx = PKGInt_to(int, 1);
@@ -2804,7 +2804,7 @@ KMETHOD CairoRegion_translate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_subtract(cairo_region_t* dst, cairo_region_t* other);
-KMETHOD CairoRegion_subtract(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_subtract(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_region_t* other = PKGRawPtr_to(cairo_region_t*, 1);
@@ -2814,7 +2814,7 @@ KMETHOD CairoRegion_subtract(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_subtract_rectangle(cairo_region_t* dst, cairo_rectangle_int_t* rectangle);
-KMETHOD CairoRegion_subtractRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_subtractRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_rectangle_int_t* rectangle = PKGRawPtr_to(cairo_rectangle_int_t*, 1);
@@ -2824,7 +2824,7 @@ KMETHOD CairoRegion_subtractRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_intersect(cairo_region_t* dst, cairo_region_t* other);
-KMETHOD CairoRegion_intersect(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_intersect(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_region_t* other = PKGRawPtr_to(cairo_region_t*, 1);
@@ -2834,7 +2834,7 @@ KMETHOD CairoRegion_intersect(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_intersect_rectangle(cairo_region_t* dst, cairo_rectangle_int_t* rectangle);
-KMETHOD CairoRegion_intersectRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_intersectRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_rectangle_int_t* rectangle = PKGRawPtr_to(cairo_rectangle_int_t*, 1);
@@ -2844,7 +2844,7 @@ KMETHOD CairoRegion_intersectRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_union(cairo_region_t* dst, cairo_region_t* other);
-KMETHOD CairoRegion_union(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_union(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_region_t* other = PKGRawPtr_to(cairo_region_t*, 1);
@@ -2854,7 +2854,7 @@ KMETHOD CairoRegion_union(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_union_rectangle(cairo_region_t* dst, cairo_rectangle_int_t* rectangle);
-KMETHOD CairoRegion_unionRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_unionRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_rectangle_int_t* rectangle = PKGRawPtr_to(cairo_rectangle_int_t*, 1);
@@ -2864,7 +2864,7 @@ KMETHOD CairoRegion_unionRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_xor(cairo_region_t* dst, cairo_region_t* other);
-KMETHOD CairoRegion_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_xor(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_region_t* other = PKGRawPtr_to(cairo_region_t*, 1);
@@ -2874,7 +2874,7 @@ KMETHOD CairoRegion_xor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native cairo_status_t Cairo.region_xor_rectangle(cairo_region_t* dst, cairo_rectangle_int_t* rectangle);
-KMETHOD CairoRegion_xorRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD CairoRegion_xorRectangle(CTX ctx, ksfp_t *sfp _RIX)
 {
     cairo_region_t* dst = PKGRawPtr_to(cairo_region_t*, 0);
     cairo_rectangle_int_t* rectangle = PKGRawPtr_to(cairo_rectangle_int_t*, 1);
@@ -2884,7 +2884,7 @@ KMETHOD CairoRegion_xorRectangle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 ////## @Native void Cairo.debug_reset_static_data();
-//KMETHOD Cairo_debug_reset_static_data(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Cairo_debug_reset_static_data(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    cairo_debug_reset_static_data();
 //    RETURNvoid_();

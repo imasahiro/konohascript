@@ -57,7 +57,7 @@ extern "C" {
 #define MTGC_(STMT)
 
 #define KNH_SWAPMOV(ctx, sfp, n, n2) {\
-		knh_sfp_t sfpN = sfp[n];\
+		ksfp_t sfpN = sfp[n];\
 		sfp[n] = sfp[n2];\
 		sfp[n2] = sfpN;\
 	}\
@@ -91,7 +91,7 @@ extern "C" {
 
 //static inline int knh_System_checkGC(CTX ctx)
 //{
-//	knh_stat_t *ctxstat = ctx->stat;
+//	kstatinfo_t *ctxstat = ctx->stat;
 //	size_t used = ctxstat->usedObjectSize;
 //	if(!(used < ctx->share->gcBoundary)) {
 //		return 1;

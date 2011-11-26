@@ -56,7 +56,7 @@ static void GslPerm_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defGslPerm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defGslPerm(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "GslPerm";
 	cdef->init = GslPerm_init;
@@ -64,7 +64,7 @@ DEFAPI(void) defGslPerm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 }
 
 //## @Native GslPerm GslPerm.new(int n);
-KMETHOD GslPerm_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t n = Int_to(size_t, sfp[1]);
 	knh_RawPtr_t *p = sfp[0].p;
@@ -74,7 +74,7 @@ KMETHOD GslPerm_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GslPerm.get(int i);
-KMETHOD GslPerm_get(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_get(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	const size_t i = Int_to(const size_t, sfp[1]);
@@ -82,7 +82,7 @@ KMETHOD GslPerm_get(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GslPerm.swap(int i, int j);
-KMETHOD GslPerm_swap(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_swap(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	const size_t i = Int_to(const size_t, sfp[1]);
@@ -91,14 +91,14 @@ KMETHOD GslPerm_swap(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GslPerm.size();
-KMETHOD GslPerm_size(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_size(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	RETURNi_(gsl_permutation_size(p));
 }
 
 //## @Native Array<int> GslPerm.data();
-KMETHOD GslPerm_data(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_data(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	size_t psize = gsl_permutation_size(p);
@@ -112,14 +112,14 @@ KMETHOD GslPerm_data(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GslPerm.valid();
-KMETHOD GslPerm_valid(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_valid(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	RETURNi_(gsl_permutation_valid(p));
 }
 
 //## @Native void GslPerm.reverse();
-KMETHOD GslPerm_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_reverse(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	gsl_permutation_reverse(p);
@@ -127,7 +127,7 @@ KMETHOD GslPerm_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GslPerm GslPerm.inverse();
-KMETHOD GslPerm_inverse(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_inverse(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const gsl_permutation *p = RawPtr_to(const gsl_permutation *, sfp[0]);
 	size_t psize = gsl_permutation_size(p);
@@ -137,21 +137,21 @@ KMETHOD GslPerm_inverse(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GslPerm.next();
-KMETHOD GslPerm_next(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_next(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	RETURNi_(gsl_permutation_next(p));
 }
 
 //## @Native int GslPerm.prev();
-KMETHOD GslPerm_prev(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_prev(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *p = RawPtr_to(gsl_permutation *, sfp[0]);
 	RETURNi_(gsl_permutation_prev(p));
 }
 
 //## @Native GslPerm GslPerm.mul(GslPerm pb);
-KMETHOD GslPerm_mul(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_mul(CTX ctx, ksfp_t *sfp _RIX)
 {
 	gsl_permutation *pa = RawPtr_to(gsl_permutation *, sfp[0]);
 	size_t psize = gsl_permutation_size(pa);
@@ -162,7 +162,7 @@ KMETHOD GslPerm_mul(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GslPerm.fprintf(OutputStream stream, string formatter);
-KMETHOD GslPerm_fprintf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_fprintf(CTX ctx, ksfp_t *sfp _RIX)
 {
 //	const gsl_permutation *p = RawPtr_to(const gsl_permutation *, sfp[0]);
 //	knh_OutputStream_t *w = sfp[1].w;
@@ -175,7 +175,7 @@ KMETHOD GslPerm_fprintf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GslPerm GslPerm.linearToCanonical();
-KMETHOD GslPerm_linearToCanonical(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_linearToCanonical(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const gsl_permutation *lp = RawPtr_to(const gsl_permutation *, sfp[0]);
 	size_t lpsize = gsl_permutation_size(lp);
@@ -185,7 +185,7 @@ KMETHOD GslPerm_linearToCanonical(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GslPerm GslPerm.canonicalToLinear();
-KMETHOD GslPerm_canonicalToLinear(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_canonicalToLinear(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const gsl_permutation *cp = RawPtr_to(const gsl_permutation *, sfp[0]);
 	size_t cpsize = gsl_permutation_size(cp);
@@ -195,21 +195,21 @@ KMETHOD GslPerm_canonicalToLinear(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GslPerm.inversions();
-KMETHOD GslPerm_inversions(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_inversions(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const gsl_permutation *p = RawPtr_to(const gsl_permutation *, sfp[0]);
 	RETURNi_(gsl_permutation_inversions(p));
 }
 
 //## @Native int GslPerm.linearCycles();
-KMETHOD GslPerm_linearCycles(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_linearCycles(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const gsl_permutation *lp = RawPtr_to(const gsl_permutation *, sfp[0]);
 	RETURNi_(gsl_permutation_linear_cycles(lp));
 }
 
 //## @Native int GslPerm.canonicalCycles();
-KMETHOD GslPerm_canonicalCycles(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GslPerm_canonicalCycles(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const gsl_permutation *cp = RawPtr_to(const gsl_permutation *, sfp[0]);
 	RETURNi_(gsl_permutation_canonical_cycles(cp));

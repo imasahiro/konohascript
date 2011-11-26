@@ -53,7 +53,7 @@ extern "C" {
 const char* knh_sfile(const char *file)
 {
 	if(file != NULL) {
-		knh_bytes_t t;
+		kbytes_t t;
 		t.text = file; t.len = knh_strlen(file);
 		int loc = knh_bytes_rindex(t, '/');
 		if(loc == -1) {
@@ -297,9 +297,9 @@ static void opt_logcached(int mode, const char *optstr)
 	knh_syslog = memcached_syslog;
 	knh_vsyslog = memcached_vsyslog;
 
-	knh_bytes_t host_port = B(optstr);
-	knh_bytes_t host = knh_bytes_head(host_port, ':');
-	knh_int_t port;
+	kbytes_t host_port = B(optstr);
+	kbytes_t host = knh_bytes_head(host_port, ':');
+	kint_t port;
 	if (!knh_bytes_parseint(knh_bytes_next(host_port, ':'), &port)) {
 		KNH_DIE("konoha: invalid arguments.");
 	}
@@ -337,12 +337,12 @@ static void opt_v(int mode, const char *optstr)
 		isVerbosePref   = 1;
 		isVerboseVM     = 1;
 		dump_sysinfo(NULL, NULL, 1/*isALL*/);
-		KNH_ASSERT(sizeof(knh_intptr_t) == sizeof(void*));
+		KNH_ASSERT(sizeof(kintptr_t) == sizeof(void*));
 		KNH_ASSERT(sizeof(knh_Term_t) <= sizeof(knh_Object_t));
 		KNH_ASSERT(sizeof(knh_StmtExpr_t) <= sizeof(knh_Object_t));
-		KNH_ASSERT(sizeof(knh_int_t) <= sizeof(knh_float_t));
+		KNH_ASSERT(sizeof(kint_t) <= sizeof(kfloat_t));
 #ifdef K_USING_RBP_
-		KNH_ASSERT(sizeof(knh_rbp_t) * 2 == sizeof(knh_sfp_t));
+		KNH_ASSERT(sizeof(krbp_t) * 2 == sizeof(ksfp_t));
 #endif
 	}
 	isVerbose = 1;
@@ -383,7 +383,7 @@ static int enforce_security = 0;
 static char role[64] = {0};
 
 /* added by Wakamori */
-static knh_bool_t method_isPermissionAllowed(CTX ctx, knh_Method_t *mtd)
+static kbool_t method_isPermissionAllowed(CTX ctx, knh_Method_t *mtd)
 {
 	knh_DictMap_t *dmap = ctx->share->securityDictMap;
 	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
@@ -783,7 +783,7 @@ static void knh_unsetsignal(CTX ctx, void *block, size_t n)
 	WCTX(ctx)->siginfo = NULL;
 }
 
-knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp)
+kbool_t knh_VirtualMachine_launch(CTX ctx, ksfp_t *sfp)
 {
 #ifdef K_USING_SIGNAL
 #if defined(K_USING_MINGW_)
@@ -793,7 +793,7 @@ knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp)
 	knh_bzero(sa_orig, sizeof(struct sigaction) * 32);
 	knh_setsignal(ctx, sa_orig, 32);
 #endif /* defined(K_USING_MINGW_) */
-	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
+	kbool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
 	if(ctx->signal != 0) {
 #if defined(K_USING_MINGW_)
 		if(ctx->signal == SIGSEGV || ctx->signal == SIGILL) {
@@ -810,7 +810,7 @@ knh_bool_t knh_VirtualMachine_launch(CTX ctx, knh_sfp_t *sfp)
 #endif /* defined(K_USING_MINGW_) */
 	return b;
 #else
-	knh_bool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
+	kbool_t b = (knh_VirtualMachine_run(ctx, sfp, CODE_LAUNCH) == NULL);
 #endif
 #if !defined(K_USING_MINGW_)
 	if(ctx->signal == SIGKILL) {
@@ -875,7 +875,7 @@ void konoha_ginit(int argc, const char **argv)
 				t += d->len;
 				if(t[0] == '=') t++;
 				if(isalnum(t[0])) {
-					knh_int_t v = 0;
+					kint_t v = 0;
 					knh_bytes_parseint(B((char*)t), &v);
 					optnum = (int)v;
 				}
@@ -939,7 +939,7 @@ void todo_p(const char *file, const char *func, int line, const char *fmt, ...)
 
 /* ------------------------------------------------------------------------ */
 
-static void knh_write_cline(CTX ctx, knh_OutputStream_t *w, const char *file, knh_uintptr_t line)
+static void knh_write_cline(CTX ctx, knh_OutputStream_t *w, const char *file, kuintptr_t line)
 {
 	knh_putc(ctx, w, '(');
 	knh_write_ascii(ctx, w, knh_sfile(file));
@@ -951,17 +951,17 @@ static void knh_write_cline(CTX ctx, knh_OutputStream_t *w, const char *file, kn
 
 void knh_write_uline(CTX ctx, knh_OutputStream_t *w, kline_t uline)
 {
-	knh_uri_t uri = ULINE_uri(uline);
-	knh_uintptr_t line = ULINE_line(uline);
+	kuri_t uri = ULINE_uri(uline);
+	kuintptr_t line = ULINE_line(uline);
 	if(uline != 0 && uri != URI_unknown && line != 0) {
 		knh_write_cline(ctx, w, FILENAME__(uri), line);
 	}
 }
 
-void knh_write_mline(CTX ctx, knh_OutputStream_t *w, knh_methodn_t mn, kline_t uline)
+void knh_write_mline(CTX ctx, knh_OutputStream_t *w, kmethodn_t mn, kline_t uline)
 {
-	knh_uri_t uri = ULINE_uri(uline);
-	knh_uintptr_t line = ULINE_line(uline);
+	kuri_t uri = ULINE_uri(uline);
+	kuintptr_t line = ULINE_line(uline);
 	if(uline != 0 && uri != URI_unknown && line != 0) {
 		if(mn == MN_) {
 			knh_write_cline(ctx, w, FILENAME__(uri), line);
@@ -996,7 +996,7 @@ static void readuline(FILE *fp, char *buf, size_t bufsiz)
 
 static const char* knh_readuline(CTX ctx, kline_t uline, char *buf, size_t bufsiz)
 {
-	knh_uri_t uri = ULINE_uri(uline);
+	kuri_t uri = ULINE_uri(uline);
 	size_t line = ULINE_line(uline);
 	buf[0] = 0;
 	if(uline != 0 && uri > URI_EVAL && line != 0) {
@@ -1028,7 +1028,7 @@ static const char* knh_readuline(CTX ctx, kline_t uline, char *buf, size_t bufsi
 /* ------------------------------------------------------------------------ */
 /* [throw] */
 
-static knh_bool_t isCalledMethod(CTX ctx, knh_sfp_t *sfp)
+static kbool_t isCalledMethod(CTX ctx, ksfp_t *sfp)
 {
 	knh_Method_t *mtd = sfp[0].mtdNC;
 	if(knh_isObject(ctx, UPCAST(mtd)) && IS_Method(mtd)) {
@@ -1038,7 +1038,7 @@ static knh_bool_t isCalledMethod(CTX ctx, knh_sfp_t *sfp)
 	return 0;
 }
 
-static kline_t sfp_uline(CTX ctx, knh_sfp_t *sfp)
+static kline_t sfp_uline(CTX ctx, ksfp_t *sfp)
 {
 	knh_opline_t *pc = sfp[K_PCIDX].pc;
 	DBG_ASSERT(isCalledMethod(ctx, sfp + K_MTDIDX));
@@ -1046,12 +1046,12 @@ static kline_t sfp_uline(CTX ctx, knh_sfp_t *sfp)
 	{
 		int line = (pc-1)->line;
 		while(pc->opcode != OPCODE_THCODE) pc--;
-		knh_uri_t uri = ((klr_THCODE_t*)pc)->uri;
+		kuri_t uri = ((klr_THCODE_t*)pc)->uri;
 		return new_ULINE(uri, line);
 	}
 }
 
-static kline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
+static kline_t knh_stack_uline(CTX ctx, ksfp_t *sfp)
 {
 	if(sfp != NULL) {
 		DBG_ASSERT(isCalledMethod(ctx, sfp + K_MTDIDX));
@@ -1070,14 +1070,14 @@ static kline_t knh_stack_uline(CTX ctx, knh_sfp_t *sfp)
 	return 0;
 }
 
-void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *sfp, int level)
+void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, ktype_t type, ksfp_t *sfp, int level)
 {
 	if(IS_Tunbox(type)) {
 		if(IS_Tint(type)) {
-			knh_write_ifmt(ctx, w, K_INT_FMT, sfp[0].ivalue);
+			knh_write_ifmt(ctx, w, KINT_FMT, sfp[0].ivalue);
 		}
 		else if(IS_Tfloat(type)) {
-			knh_write_ffmt(ctx, w, K_FLOAT_FMT, sfp[0].fvalue);
+			knh_write_ffmt(ctx, w, KFLOAT_FMT, sfp[0].fvalue);
 		}
 		else {
 			knh_write_bool(ctx, w, sfp[0].bvalue);
@@ -1088,7 +1088,7 @@ void knh_write_sfp(CTX ctx, knh_OutputStream_t *w, knh_type_t type, knh_sfp_t *s
 	}
 }
 
-static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *sfp)
+static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, ksfp_t *sfp)
 {
 	CWB_t cwbbuf, *cwb = CWB_open0(ctx, &cwbbuf);
 	knh_Method_t *mtd = sfp[K_MTDIDX].mtdNC;
@@ -1102,7 +1102,7 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 		knh_putc(ctx, cwb->w, '(');
 		for(i = 0; i < psize; i++) {
 			knh_param_t *p = knh_ParamArray_get(DP(mtd)->mp, i);
-			knh_type_t type = knh_type_tocid(ctx, p->type, O_cid(sfp[0].o));
+			ktype_t type = ktype_tocid(ctx, p->type, O_cid(sfp[0].o));
 			if(i > 0) {
 				knh_putc(ctx, cwb->w, ',');
 			}
@@ -1120,10 +1120,10 @@ static void knh_Exception_addStackTrace(CTX ctx, knh_Exception_t *e, knh_sfp_t *
 
 /* ------------------------------------------------------------------------ */
 
-void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
+void knh_throw(CTX ctx, ksfp_t *sfp, long start)
 {
 	if(IS_Exception(ctx->e)) {
-		knh_sfp_t *sp = (sfp == NULL) ? ctx->esp : sfp + start;
+		ksfp_t *sp = (sfp == NULL) ? ctx->esp : sfp + start;
 		knh_ExceptionHandler_t *hdr = ctx->ehdrNC;
 		if((ctx->e)->uline == 0) {
 			(ctx->e)->uline = knh_stack_uline(ctx, sfp);
@@ -1155,7 +1155,7 @@ void knh_throw(CTX ctx, knh_sfp_t *sfp, long start)
 	}
 }
 
-KNHAPI2(void) knh_nthrow(CTX ctx, knh_sfp_t *sfp, const char *fault, knh_ldata_t *ldata)
+KNHAPI2(void) knh_nthrow(CTX ctx, ksfp_t *sfp, const char *fault, knh_ldata_t *ldata)
 {
 	if(ctx->ehdrNC != NULL) {
 		kline_t uline = knh_stack_uline(ctx, sfp);
@@ -1173,7 +1173,7 @@ static knh_Exception_t* new_Assertion(CTX ctx, kline_t uline)
 	char *mbuf = buf + 13;
 	knh_readuline(ctx, uline, mbuf, sizeof(buf)-13);
 	if(mbuf[0] == 0) {
-		knh_uri_t uri = ULINE_uri(uline);
+		kuri_t uri = ULINE_uri(uline);
 		size_t line = ULINE_line(uline);
 		knh_snprintf(buf, sizeof(buf), "Assertion!!: %s at line %lu", FILENAME__(uri), line);
 	}
@@ -1182,13 +1182,13 @@ static knh_Exception_t* new_Assertion(CTX ctx, kline_t uline)
 	return e;
 }
 
-void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, kline_t uline)
+void knh_assert(CTX ctx, ksfp_t *sfp, long start, kline_t uline)
 {
 	CTX_setThrowingException(ctx, new_Assertion(ctx, uline));
 	knh_throw(ctx, sfp, start);
 }
 
-//void knh_record(CTX ctx, knh_sfp_t *sfp, int op, int pe, const char *action, const char *emsg, const knh_logdata_t *data, size_t datasize)
+//void knh_record(CTX ctx, ksfp_t *sfp, int op, int pe, const char *action, const char *emsg, const knh_logdata_t *data, size_t datasize)
 //{
 //	kline_t uline = 0;
 //	KNH_ASSERT(ctx->bufa != NULL);
@@ -1202,7 +1202,7 @@ void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, kline_t uline)
 //		}
 //		knh_write_ascii(ctx, cwb->w, ctx->trace);
 //		knh_putc(ctx, cwb->w, '+');
-//		knh_write_ifmt(ctx, cwb->w, K_INT_FMT, ctx->seq);
+//		knh_write_ifmt(ctx, cwb->w, KINT_FMT, ctx->seq);
 //		knh_putc(ctx, cwb->w, ' ');
 //		knh_write_uline(ctx, cwb->w, uline);
 //		knh_putc(ctx, cwb->w, ' ');
@@ -1246,11 +1246,11 @@ void knh_assert(CTX ctx, knh_sfp_t *sfp, long start, kline_t uline)
 
 typedef struct {
 	union {
-		knh_intptr_t    type;
+		kintptr_t    type;
 		const char     *key;
-		knh_intptr_t   ivalue;
-		knh_uintptr_t  uvalue;
-		knh_floatptr_t fvalue;
+		kintptr_t   ivalue;
+		kuintptr_t  uvalue;
+		kfloatptr_t fvalue;
 		const char    *svalue;
 		void          *ptr;
 		Object        *ovalue;
@@ -1311,9 +1311,9 @@ static char *write_key(char *p, char *ebuf, const char *key)
 	return p;
 }
 
-//static char *write_d(char *p, knh_uintptr_t uvalue)
+//static char *write_d(char *p, kuintptr_t uvalue)
 //{
-//	knh_uintptr_t d = uvalue / 10, r = uvalue % 10;
+//	kuintptr_t d = uvalue / 10, r = uvalue % 10;
 //	if(d != 0) {
 //		p = write_d(p, d);
 //	}
@@ -1334,7 +1334,7 @@ static void reverse(char *const start, char *const end, const int len)
 	}
 }
 
-static char *write_d(char *const p, const char *const end, knh_uintptr_t uvalue)
+static char *write_d(char *const p, const char *const end, kuintptr_t uvalue)
 {
 	int i = 0;
 	while (p + i < end) {
@@ -1352,12 +1352,12 @@ static char *write_d(char *const p, const char *const end, knh_uintptr_t uvalue)
 static char *write_i(char *p, char *ebuf, const knh_ldata2_t *d)
 {
 	if(ebuf - p < 32) return NULL;
-	knh_uintptr_t uvalue = d->uvalue;
+	kuintptr_t uvalue = d->uvalue;
 	if(d->ivalue < 0) {
 		p[0] = '-'; p++;
 		uvalue = -(d->ivalue);
 	}
-	knh_uintptr_t u = uvalue / 10, r = uvalue % 10;
+	kuintptr_t u = uvalue / 10, r = uvalue % 10;
 	if(u != 0) {
 		p = write_d(p, ebuf, u);
 	}
@@ -1368,7 +1368,7 @@ static char *write_i(char *p, char *ebuf, const knh_ldata2_t *d)
 static char *write_u(char *p, char *ebuf, const knh_ldata2_t *d)
 {
 	if(ebuf - p < 32) return NULL;
-	knh_uintptr_t u = d->uvalue / 10, r = d->uvalue % 10;
+	kuintptr_t u = d->uvalue / 10, r = d->uvalue % 10;
 	if(u != 0) {
 		p = write_d(p, ebuf, u);
 	}
@@ -1379,11 +1379,11 @@ static char *write_u(char *p, char *ebuf, const knh_ldata2_t *d)
 static char *write_f(char *p, char *ebuf, const knh_ldata2_t *d)
 {
 	if(ebuf - p < 32) return NULL;
-	knh_uintptr_t uvalue = (knh_uintptr_t)d->ivalue;
+	kuintptr_t uvalue = (kuintptr_t)d->ivalue;
 	if(d->ivalue < 0) {
 		p[0] = '-'; p++;
 	}
-	knh_uintptr_t u = uvalue / 1000, r = uvalue % 1000;
+	kuintptr_t u = uvalue / 1000, r = uvalue % 1000;
 	if(u != 0) {
 		p = write_d(p, ebuf, u);
 	}
@@ -1487,7 +1487,7 @@ static void ntrace(CTX ctx, const char *event, int pe, const knh_ldata2_t *d)
 //	}
 }
 
-knh_bool_t knh_isTrace(CTX ctx, const char *event)
+kbool_t knh_isTrace(CTX ctx, const char *event)
 {
 	if(isAudit > 1) return 1;
 	return 0;
@@ -1531,7 +1531,7 @@ void knh_dtrace(CTX ctx, const char *event, int pe, knh_DictMap_t *data)
 
 /* ------------------------------------------------------------------------ */
 
-void THROW_Halt(CTX ctx, knh_sfp_t *sfp, const char *msg)
+void THROW_Halt(CTX ctx, ksfp_t *sfp, const char *msg)
 {
 	KNH_NTHROW2(ctx, sfp, "Panic!!", "konoha", K_FAILED, KNH_LDATA(LOG_msg(msg)));
 }
@@ -1539,24 +1539,24 @@ void THROW_OutOfMemory(CTX ctx, size_t size)
 {
 	KNH_NTHROW2(ctx, NULL, "OutOfMemory!!", "malloc", K_FAILED, KNH_LDATA(LOG_u("requested_size:bytes", size), LOG_u("used_size", ctx->stat->usedMemorySize)));
 }
-void THROW_StackOverflow(CTX ctx, knh_sfp_t *sfp)
+void THROW_StackOverflow(CTX ctx, ksfp_t *sfp)
 {
 	KNH_NTHROW2(ctx, sfp, "Script!!", "konoha:stack", K_FAILED,
 			KNH_LDATA(LOG_msg("stack overflow"), LOG_u("stacksize", (ctx->esp - ctx->stack))));
 }
-void THROW_Arithmetic(CTX ctx, knh_sfp_t *sfp, const char *msg)
+void THROW_Arithmetic(CTX ctx, ksfp_t *sfp, const char *msg)
 {
 	KNH_NTHROW2(ctx, sfp, "Script!!", "arithmetic_operator", K_FAILED, KNH_LDATA(LOG_msg(msg)));
 }
-KNHAPI2(void) THROW_OutOfRange(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t max)
+KNHAPI2(void) THROW_OutOfRange(CTX ctx, ksfp_t *sfp, kint_t n, size_t max)
 {
 	KNH_NTHROW2(ctx, sfp, "Script!!", "array_indexing", K_FAILED, KNH_LDATA(LOG_msg("out of array range"), LOG_i("index", n), LOG_i("arraysize", max)));
 }
-void THROW_TypeError(CTX ctx, knh_sfp_t *sfp, knh_type_t reqt, knh_type_t type)
+void THROW_TypeError(CTX ctx, ksfp_t *sfp, ktype_t reqt, ktype_t type)
 {
 	KNH_NTHROW2(ctx, sfp, "Script!!: Type Error", "konoha:type", K_FAILED, KNH_LDATA(LOG_t("requested_type", reqt), LOG_t("given_type", type)));
 }
-void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t mn)
+void THROW_NoSuchMethod(CTX ctx, ksfp_t *sfp, kclass_t cid, kmethodn_t mn)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	char msg[256], mname[256];
@@ -1568,7 +1568,7 @@ void THROW_NoSuchMethod(CTX ctx, knh_sfp_t *sfp, knh_class_t cid, knh_methodn_t 
 	CWB_close(cwb);
 	KNH_NTHROW2(ctx, sfp, msg, "konoha:type", K_FAILED, KNH_LDATA(LOG_msg(msg), LOG_s("method", mname)));
 }
-void THROW_ParamTypeError(CTX ctx, knh_sfp_t *sfp, size_t n, knh_methodn_t mn, knh_class_t reqt, knh_class_t cid)
+void THROW_ParamTypeError(CTX ctx, ksfp_t *sfp, size_t n, kmethodn_t mn, kclass_t reqt, kclass_t cid)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	char msg[256], mname[256];

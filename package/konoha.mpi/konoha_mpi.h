@@ -57,7 +57,7 @@ typedef struct {
 		knh_String_t *s;
 	};
 	MPI_Datatype type;
-	knh_class_t cid;
+	kclass_t cid;
 	size_t offset;
 } knh_MPIData_t;
 

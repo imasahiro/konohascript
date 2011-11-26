@@ -61,9 +61,9 @@ static void SQLITE3_qfree(void *qcur)
 	m->nptr = NULL;
 }
 
-typedef ITRNEXT (*fsqlite3_next)(CTX, knh_sfp_t *, sqlite3_stmt* _RIX);
+typedef ITRNEXT (*fsqlite3_next)(CTX, ksfp_t *, sqlite3_stmt* _RIX);
 
-static ITRNEXT nextData(CTX ctx, knh_sfp_t *sfp, sqlite3_stmt *stmt _RIX)
+static ITRNEXT nextData(CTX ctx, ksfp_t *sfp, sqlite3_stmt *stmt _RIX)
 {
 	size_t i, column_size = (size_t)sqlite3_column_count(stmt);
 	knh_Map_t *dmap = new_DataMap(ctx);
@@ -72,11 +72,11 @@ static ITRNEXT nextData(CTX ctx, knh_sfp_t *sfp, sqlite3_stmt *stmt _RIX)
 		int type = sqlite3_column_type(stmt, i);
 		switch(type) {
 			case SQLITE_INTEGER: {
-				knh_DataMap_setInt(ctx, dmap, name, (knh_int_t)sqlite3_column_int64(stmt, i));
+				knh_DataMap_setInt(ctx, dmap, name, (kint_t)sqlite3_column_int64(stmt, i));
 				break;
 			}
 			case SQLITE_FLOAT: {
-				knh_DataMap_setFloat(ctx, dmap, name, (knh_float_t)sqlite3_column_double(stmt, i));
+				knh_DataMap_setFloat(ctx, dmap, name, (kfloat_t)sqlite3_column_double(stmt, i));
 				break;
 			}
 			case SQLITE_TEXT: {
@@ -96,7 +96,7 @@ static ITRNEXT nextData(CTX ctx, knh_sfp_t *sfp, sqlite3_stmt *stmt _RIX)
 	ITRNEXT_(dmap);
 }
 
-static ITRNEXT SQLITE3_next(CTX ctx, knh_sfp_t *sfp, fsqlite3_next fnext _RIX)
+static ITRNEXT SQLITE3_next(CTX ctx, ksfp_t *sfp, fsqlite3_next fnext _RIX)
 {
 	knh_Iterator_t *itr = ITR(sfp);
 	sqlite3_stmt *stmt = DP(itr)->m.qstmt;
@@ -120,7 +120,7 @@ static ITRNEXT SQLITE3_next(CTX ctx, knh_sfp_t *sfp, fsqlite3_next fnext _RIX)
 	ITREND_();
 }
 
-static ITRNEXT SQLITE3_nextData(CTX ctx, knh_sfp_t *sfp _RIX)
+static ITRNEXT SQLITE3_nextData(CTX ctx, ksfp_t *sfp _RIX)
 {
 	return SQLITE3_next(ctx, sfp, nextData, K_RIX);
 }

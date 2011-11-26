@@ -41,7 +41,7 @@
 //static const unsigned char alphabet[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 //#define EOL '\0'
 //
-//static knh_bool_t base64_enc(CTX ctx, knh_conv_t *conv, knh_bytes_t from, knh_Bytes_t *tobuf)
+//static kbool_t base64_enc(CTX ctx, knh_conv_t *conv, kbytes_t from, knh_Bytes_t *tobuf)
 //{
 //	int cols, bits, c, char_count;
 //	char f[BASE64_LINESIZE] = {0};
@@ -102,7 +102,7 @@
 //	return 1;
 //}
 //
-//static knh_bool_t base64_dec(CTX ctx, knh_conv_t *conv, knh_bytes_t from, knh_Bytes_t *tobuf)
+//static kbool_t base64_dec(CTX ctx, knh_conv_t *conv, kbytes_t from, knh_Bytes_t *tobuf)
 //{
 //	static char inalphabet[256], decoder[256];
 //	int i, bits, c, char_count, errors = 0;

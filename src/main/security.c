@@ -371,9 +371,9 @@ void knh_askSecurityAlert(CTX ctx)
 //	L_CHECK:;
 //	CWB_close(cwb);
 //	{
-//		knh_thread_t th;
-//		knh_thread_create(ctx, &th, NULL, knh_checkSecurityAlert, (void*)ctx);
-//		knh_thread_detach(ctx, th);
+//		kthread_t th;
+//		kthread_create(ctx, &th, NULL, knh_checkSecurityAlert, (void*)ctx);
+//		kthread_detach(ctx, th);
 //	}
 }
 #endif
@@ -392,7 +392,7 @@ void knh_askSecurityAlert(CTX ctx)
 
 /* ------------------------------------------------------------------------ */
 
-//knh_bool_t knh_isTrustedPath(CTX ctx, knh_bytes_t path)
+//kbool_t knh_isTrustedPath(CTX ctx, kbytes_t path)
 //{
 //	DBG_P("check: %s", (char*)path.buf);
 //	if(knh_bytes_startsWith_(path, STEXT("http:"))) {
@@ -404,7 +404,7 @@ void knh_askSecurityAlert(CTX ctx)
 /* ------------------------------------------------------------------------ */
 /* [password] */
 
-//const char* knh_getPassword(CTX ctx, knh_bytes_t url)
+//const char* knh_getPassword(CTX ctx, kbytes_t url)
 //{
 //	return "password";
 //}
@@ -412,10 +412,10 @@ void knh_askSecurityAlert(CTX ctx)
 /* ------------------------------------------------------------------------ */
 /* [Trusted] */
 
-void knh_checkSecurityManager(CTX ctx, knh_sfp_t *sfp)
+void knh_checkSecurityManager(CTX ctx, ksfp_t *sfp)
 {
 //	/* VERY SLOW */
-//	knh_sfp_t *sp = sfp - 2;
+//	ksfp_t *sp = sfp - 2;
 //	while(ctx->stack < sp) {
 //		if(IS_Method(sp[0].mtd)) {
 //			if(!URI_ISTRUSTED(DP(sp[0].mtd)->uri)) {
@@ -430,7 +430,7 @@ void knh_checkSecurityManager(CTX ctx, knh_sfp_t *sfp)
 
 /* ------------------------------------------------------------------------ */
 
-//knh_bool_t knh_isTrustedHost(CTX ctx, knh_bytes_t host)
+//kbool_t knh_isTrustedHost(CTX ctx, kbytes_t host)
 //{
 //	TODO();
 //	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);

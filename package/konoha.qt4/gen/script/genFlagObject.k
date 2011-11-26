@@ -5,7 +5,7 @@ String genFlagObjectCpp(String parent_class, Tuple<String, String>[] flag_object
 		if (flag_object[0] != parent_class) continue;
 		String cpp_src = """
 //## <P><C> <P><C>.new(int value);
-KMETHOD <P><C>_new(CTX ctx, knh_sfp_t *sfp _RIX) {
+KMETHOD <P><C>_new(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<E> i = Int_to(<P>::<E>, sfp[1]);
 	<P>::<C> *ret_v = new <P>::<C>(i);
@@ -14,7 +14,7 @@ KMETHOD <P><C>_new(CTX ctx, knh_sfp_t *sfp _RIX) {
 }
 
 //## <P><C> <P><C>.and(int mask);
-KMETHOD <P><C>_and(CTX ctx, knh_sfp_t *sfp _RIX) {
+KMETHOD <P><C>_and(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C>*, sfp[0]);
 	if (qp != NULL) {
@@ -29,7 +29,7 @@ KMETHOD <P><C>_and(CTX ctx, knh_sfp_t *sfp _RIX) {
 }
 
 //## <P><C> <P><C>.iand(<P>::<P><C> other);
-KMETHOD <P><C>_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
+KMETHOD <P><C>_iand(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C>*, sfp[0]);
 	if (qp != NULL) {
@@ -42,7 +42,7 @@ KMETHOD <P><C>_iand(CTX ctx, knh_sfp_t *sfp _RIX) {
 }
 
 //## <P><C> <P><C>.or(<P><C> f);
-KMETHOD <P><C>_or(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD <P><C>_or(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C>*, sfp[0]);
@@ -58,7 +58,7 @@ KMETHOD <P><C>_or(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## <P><C> <P><C>.ior(<P>::<P><C> other);
-KMETHOD <P><C>_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
+KMETHOD <P><C>_ior(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C>*, sfp[0]);
 	if (qp != NULL) {
@@ -71,7 +71,7 @@ KMETHOD <P><C>_ior(CTX ctx, knh_sfp_t *sfp _RIX) {
 }
 
 //## <P><C> <P><C>.xor(<P><C> f);
-KMETHOD <P><C>_xor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD <P><C>_xor(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C>*, sfp[0]);
@@ -87,7 +87,7 @@ KMETHOD <P><C>_xor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## <P><C> <P><C>.ixor(<P>::<P><C> other);
-KMETHOD <P><C>_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
+KMETHOD <P><C>_ixor(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C>*, sfp[0]);
 	if (qp != NULL) {
@@ -100,7 +100,7 @@ KMETHOD <P><C>_ixor(CTX ctx, knh_sfp_t *sfp _RIX) {
 }
 
 //## boolean <P><C>.testFlag(int flag);
-KMETHOD <P><C>_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
+KMETHOD <P><C>_testFlag(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C> *, sfp[0]);
 	if (qp != NULL) {
@@ -113,7 +113,7 @@ KMETHOD <P><C>_testFlag(CTX ctx, knh_sfp_t *sfp _RIX) {
 }
 
 //## int <P><C>.value();
-KMETHOD <P><C>_value(CTX ctx, knh_sfp_t *sfp _RIX) {
+KMETHOD <P><C>_value(CTX ctx, ksfp_t *sfp _RIX) {
 	(void)ctx;
 	<P>::<C> *qp = RawPtr_to(<P>::<C> *, sfp[0]);
 	if (qp != NULL) {
@@ -159,7 +159,7 @@ static int <P><C>_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 	}
 }
 
-DEFAPI(void) def<P><C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) def<P><C>(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	(void)ctx; (void) cid;
 	cdef->name = "<P><C>";

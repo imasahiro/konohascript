@@ -44,7 +44,7 @@ extern "C" {
 
 #define MD5_DIGEST_LENGTH 16
 
-static knh_bool_t md5digest(CTX ctx, knh_conv_t *conv, const char* buf, size_t len, knh_Bytes_t *tobuf)
+static kbool_t md5digest(CTX ctx, knh_conv_t *conv, const char* buf, size_t len, knh_Bytes_t *tobuf)
 {
 	MD5_CTX md5_ctx;
 	unsigned char md5buf[MD5_DIGEST_LENGTH] = {0};
@@ -55,7 +55,7 @@ static knh_bool_t md5digest(CTX ctx, knh_conv_t *conv, const char* buf, size_t l
 	return 1;
 }
 
-static knh_bool_t md5string(CTX ctx, knh_conv_t *conv, const char* buf, size_t len, knh_Bytes_t *tobuf)
+static kbool_t md5string(CTX ctx, knh_conv_t *conv, const char* buf, size_t len, knh_Bytes_t *tobuf)
 {
 	MD5_CTX md5_ctx;
 	unsigned char md5buf[MD5_DIGEST_LENGTH] = {0};

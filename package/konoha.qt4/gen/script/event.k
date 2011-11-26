@@ -283,7 +283,7 @@ K<C>::~K<C>()
 
 //================== Generate addEvent ====================//
 	String addEvent = """
-KMETHOD <C>_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD <C>_addEvent(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	<T>qp = RawPtr_to(<T>, sfp[0]);
@@ -306,7 +306,7 @@ KMETHOD <C>_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
 """;
 //================== Generate signalConnect ====================//
 	String signalConnect = """
-KMETHOD <C>_signalConnect(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD <C>_signalConnect(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	<T>qp = RawPtr_to(<T>, sfp[0]);
@@ -711,7 +711,7 @@ bool Dummy<C>::eventDispatcher(QEvent *event)
 		eventMethods += "{\n";
 		eventMethods += "\tif (<F> != NULL) {\n";
 		eventMethods += "\t\tCTX lctx = knh_getCurrentContext();\n";
-		eventMethods += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
+		eventMethods += "\t\tksfp_t *lsfp = lctx->esp;\n";
 		eventMethods += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
 		for (i = 0; i < |mtd.argtypes|; i++) {
 			if ("::" in? mtd.knh_argtypes[i]) {
@@ -754,7 +754,7 @@ bool Dummy<C>::eventDispatcher(QEvent *event)
 		slotMethods += "{\n";
 		slotMethods += "\tif (<F> != NULL) {\n";
 		slotMethods	+= "\t\tCTX lctx = knh_getCurrentContext();\n";
-		slotMethods += "\t\tknh_sfp_t *lsfp = lctx->esp;\n";
+		slotMethods += "\t\tksfp_t *lsfp = lctx->esp;\n";
 		slotMethods += "\t\tKNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));\n";
 		for (i = 0; i < |mtd.argtypes|; i++) {
 			// if ("::" in? mtd.knh_argtypes[i]) {

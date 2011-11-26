@@ -65,7 +65,7 @@ extern "C" {
 //#define K_USING_MEMLOG   1
 
 #ifdef K_USING_MEMLOG
-static knh_uint64_t memlog_start = 0;
+static kuint64_t memlog_start = 0;
 
 #define MEMLOG_INIT()  memlog_start = knh_getTimeMilliSecond()
 
@@ -86,7 +86,7 @@ static knh_uint64_t memlog_start = 0;
 
 #ifdef K_USING_MEMSTAT
 #define STAT_mem(ctx, SIZE) { \
-		knh_stat_t *stat = ctx->stat;\
+		kstatinfo_t *stat = ctx->stat;\
 		KNH_ATOMIC_ADD(stat->usedMemorySize, (SIZE));\
 		if(stat->usedMemorySize > stat->maxMemoryUsage) stat->maxMemoryUsage = stat->usedMemorySize;\
 	}\
@@ -159,13 +159,13 @@ void *knh_valloc(CTX ctx, size_t size)
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
-	if((knh_uintptr_t)block % K_PAGESIZE != 0) {
-		char *t2 = (char*)((((knh_uintptr_t)block / K_PAGESIZE) + 1) * K_PAGESIZE);
+	if((kuintptr_t)block % K_PAGESIZE != 0) {
+		char *t2 = (char*)((((kuintptr_t)block / K_PAGESIZE) + 1) * K_PAGESIZE);
 		void **p = (void**)(t2 + size);
 		DBG_ASSERT((char*)p < ((char*)block) + size + K_PAGESIZE);
 		p[0] = block;
 		block = (void*)t2;
-		DBG_ASSERT((knh_uintptr_t)block % K_PAGESIZE == 0);
+		DBG_ASSERT((kuintptr_t)block % K_PAGESIZE == 0);
 	}
 	else {
 		void **p = (void**)((char*)block + size);
@@ -326,10 +326,10 @@ void xmem_freeall(CTX ctx)
 /* ------------------------------------------------------------------------ */
 
 #ifndef K_USING_BMGC
-static void knh_fastmemset(void *p, size_t n, knh_intptr_t M)
+static void knh_fastmemset(void *p, size_t n, kintptr_t M)
 {
-	size_t i, size = n / sizeof(knh_intptr_t);
-	knh_intptr_t *np = (knh_intptr_t*)p;
+	size_t i, size = n / sizeof(kintptr_t);
+	kintptr_t *np = (kintptr_t*)p;
 	for(i = 0; i < size; i+=8) {
 		np[0] = M; np[1] = M; np[2] = M; np[3] = M;
 		np[4] = M; np[5] = M; np[6] = M; np[7] = M;
@@ -355,7 +355,7 @@ struct knh_MemoryArenaTBL_t {
 static knh_memslot_t *new_FastMemoryList(CTX ctx)
 {
 	KNH_MEMLOCK(ctx);
-	knh_share_t *ctxshare = (knh_share_t*)ctx->share;
+	kshare_t *ctxshare = (kshare_t*)ctx->share;
 	size_t pageindex = ctxshare->sizeMemoryArenaTBL;
 	if(unlikely(!(pageindex < ctxshare->capacityMemoryArenaTBL))) {
 		size_t newsize = ctxshare->capacityMemoryArenaTBL * 2;
@@ -395,7 +395,7 @@ struct knh_MemoryX2ArenaTBL_t {
 static knh_memslotX2_t *freeMemoryListX2(CTX ctx)
 {
 	OLD_LOCK(ctx, LOCK_MEMORY, NULL);
-	knh_share_t *ctxshare = (knh_share_t*)ctx->share;
+	kshare_t *ctxshare = (kshare_t*)ctx->share;
 	size_t pageindex = ctxshare->MemoryX2ArenaTBLSize;
 	if(unlikely(!(pageindex < ctxshare->capacityMemoryX2ArenaTBL))) {
 		size_t newsize = ctxshare->capacityMemoryX2ArenaTBL * 2;
@@ -439,7 +439,7 @@ struct knh_Memory256ArenaTBL_t {
 static knh_memslot256_t *freeMemoryList256(CTX ctx)
 {
 	OLD_LOCK(ctx, LOCK_MEMORY, NULL);
-	knh_share_t *ctxshare = (knh_share_t*)ctx->share;
+	kshare_t *ctxshare = (kshare_t*)ctx->share;
 	size_t pageindex = ctxshare->Memory256ArenaTBLSize;
 	if(unlikely(!(pageindex < ctxshare->capacityMemory256ArenaTBL))) {
 		size_t newsize = ctxshare->capacityMemory256ArenaTBL * 2;
@@ -543,14 +543,14 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 /* [Object] */
 
 #define K_OPAGEOFFSET(o, opage)\
-	(((knh_uintptr_t)o) / sizeof(knh_Object_t)) % (K_PAGESIZE / sizeof(knh_Object_t))
+	(((kuintptr_t)o) / sizeof(knh_Object_t)) % (K_PAGESIZE / sizeof(knh_Object_t))
 
-#define UINTPTR8 (sizeof(knh_uintptr_t) * 8)
+#define UINTPTR8 (sizeof(kuintptr_t) * 8)
 #define INDEX2OFFSET(index_) ((index_) / UINTPTR8)
 #if defined(__i386__) || defined(__power__)
-#define INDEX2MASK(n) (((knh_uintptr_t)1) << (n % UINTPTR8))
+#define INDEX2MASK(n) (((kuintptr_t)1) << (n % UINTPTR8))
 #else
-#define INDEX2MASK(n) (((knh_uintptr_t)1) << (n /*% UINTPTR8*/))
+#define INDEX2MASK(n) (((kuintptr_t)1) << (n /*% UINTPTR8*/))
 #endif
 
 #define bit_test(b, offset)   (b[INDEX2OFFSET(offset)] & INDEX2MASK(offset))
@@ -562,22 +562,22 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 
 #define O_set_tenure(o) {\
 		knh_ObjectPage_t *opage = K_OPAGE(o);\
-		knh_uintptr_t *tenure = opage->h.tenure;\
+		kuintptr_t *tenure = opage->h.tenure;\
 		size_t offset = K_OPAGEOFFSET(o, opage);\
 		bit_set(tenure, offset);\
 	}\
 
 #define O_unset_tenure(o) {\
 		knh_ObjectPage_t *opage = K_OPAGE(o);\
-		knh_uintptr_t *tenure = opage->h.tenure;\
+		kuintptr_t *tenure = opage->h.tenure;\
 		size_t offset = K_OPAGEOFFSET(o, opage);\
 		bit_unset(tenure, offset);\
 	}\
 
 typedef struct {
 	knh_hObject_t h;
-	knh_uintptr_t *bitmap;
-	knh_uintptr_t *tenure;
+	kuintptr_t *bitmap;
+	kuintptr_t *tenure;
 	knh_context_t *ctx;
 	void *unused;
 } knh_hOArena_t;
@@ -592,13 +592,13 @@ struct knh_ObjectArenaTBL_t {
 	knh_ObjectPage_t *head;
 	knh_ObjectPage_t *bottom;
 	size_t            arenasize;
-	knh_uintptr_t    *bitmap;
-	knh_uintptr_t     bitmapsize;
-	knh_uintptr_t    *tenure;
+	kuintptr_t    *bitmap;
+	kuintptr_t     bitmapsize;
+	kuintptr_t    *tenure;
 };
 
 #ifndef K_USING_BMGC
-void knh_share_initArena(CTX ctx, knh_share_t *share)
+void knh_share_initArena(CTX ctx, kshare_t *share)
 {
 	share->ObjectArenaTBL = (knh_ObjectArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_ObjectArenaTBL_t));
 	knh_bzero(share->ObjectArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_ObjectArenaTBL_t));
@@ -611,7 +611,7 @@ void knh_share_initArena(CTX ctx, knh_share_t *share)
 	share->capacityMemoryArenaTBL = K_ARENATBL_INITSIZE;
 }
 
-void knh_share_freeArena(CTX ctx, knh_share_t *share)
+void knh_share_freeArena(CTX ctx, kshare_t *share)
 {
 	size_t i;
 	DBG_ASSERT(share->ObjectArenaTBL != NULL);
@@ -651,7 +651,7 @@ static void ObjectArenaTBL_checkSize(knh_ObjectArenaTBL_t *oat, size_t arenasize
 	knh_Object_t *p = oat->head->slots;
 	while(p->ref != NULL) {
 		knh_ObjectPage_t *opage = K_OPAGE(p);
-		DBG_ASSERT(oat->bitmap <= opage->h.bitmap && opage->h.bitmap < oat->bitmap + ((arenasize/sizeof(knh_Object_t))/sizeof(knh_uintptr_t)));
+		DBG_ASSERT(oat->bitmap <= opage->h.bitmap && opage->h.bitmap < oat->bitmap + ((arenasize/sizeof(knh_Object_t))/sizeof(kuintptr_t)));
 		cnt2++;
 		p = (knh_Object_t*) p->ref;
 	}
@@ -663,27 +663,27 @@ static void ObjectArenaTBL_init(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t arena
 {
 	size_t object_count, bitmapsize = (arenasize/sizeof(knh_Object_t));
 	knh_ObjectPage_t *opage = (knh_ObjectPage_t*)KNH_VALLOC(ctx, arenasize);
-	knh_uintptr_t *bitmap = (knh_uintptr_t*)KNH_MALLOC(ctx, bitmapsize * K_NBITMAP);
-	KNH_ASSERT((knh_uintptr_t)opage % K_PAGESIZE == 0);
+	kuintptr_t *bitmap = (kuintptr_t*)KNH_MALLOC(ctx, bitmapsize * K_NBITMAP);
+	KNH_ASSERT((kuintptr_t)opage % K_PAGESIZE == 0);
 	oat->head =   opage;
 	oat->bottom = (knh_ObjectPage_t*)K_SHIFTPTR(opage, arenasize);
 	oat->bitmap = bitmap;
 	oat->arenasize = arenasize;
 	oat->bitmapsize = bitmapsize;
-	oat->tenure = (knh_uintptr_t*)K_SHIFTPTR(bitmap, bitmapsize);
-	knh_fastmemset(oat->tenure, bitmapsize, ((knh_intptr_t)-1));
+	oat->tenure = (kuintptr_t*)K_SHIFTPTR(bitmap, bitmapsize);
+	knh_fastmemset(oat->tenure, bitmapsize, ((kintptr_t)-1));
 	object_count = (oat->bottom - oat->head);
 	//knh_mlock(oat->bitmap, bitmapsize * K_NBITMAP);
 	for(; opage < oat->bottom; opage++) {
 		opage->h.bitmap = bitmap;
-		opage->h.tenure = (knh_uintptr_t*)K_SHIFTPTR(bitmap, bitmapsize);
-		bitmap += (K_PAGESIZE/sizeof(knh_Object_t))/sizeof(knh_uintptr_t);
+		opage->h.tenure = (kuintptr_t*)K_SHIFTPTR(bitmap, bitmapsize);
+		bitmap += (K_PAGESIZE/sizeof(knh_Object_t))/sizeof(kuintptr_t);
 		opage->h.ctx = NULL;
 		ObjectPage_init(opage);
 	}
 	(opage-1)->slots[K_PAGEOBJECTSIZE - 1].ref = NULL;
 
-	DBG_ASSERT((bitmap - oat->bitmap) * sizeof(knh_uintptr_t) == arenasize/sizeof(knh_Object_t));
+	DBG_ASSERT((bitmap - oat->bitmap) * sizeof(kuintptr_t) == arenasize/sizeof(knh_Object_t));
 	ctx->stat->gcObjectCount += (object_count * K_PAGEOBJECTSIZE);
 	DBG_(ObjectArenaTBL_checkSize(oat, arenasize, object_count););
 }
@@ -692,7 +692,7 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 {
 	OLD_LOCK(ctx, LOCK_MEMORY, NULL);
 	knh_ObjectArenaTBL_t *oat;
-	knh_share_t *ctxshare = (knh_share_t*)ctx->share;
+	kshare_t *ctxshare = (kshare_t*)ctx->share;
 	size_t pageindex = ctxshare->sizeObjectArenaTBL;
 	if(unlikely(!(pageindex < ctxshare->capacityObjectArenaTBL))) {
 		size_t newsize = ctxshare->capacityObjectArenaTBL * 2;
@@ -712,10 +712,10 @@ static knh_Object_t *new_ObjectArena(CTX ctx, size_t arenasize)
 	}
 }
 
-knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o)
+kbool_t knh_isObject(CTX ctx, knh_Object_t *o)
 {
 	void *ptr = (void*) o;
-	knh_uintptr_t n = (knh_uintptr_t)ptr;
+	kuintptr_t n = (kuintptr_t)ptr;
 	if(ptr != NULL && n % sizeof(knh_Object_t) == 0) {
 		size_t i, size = ctx->share->sizeObjectArenaTBL;
 		knh_ObjectArenaTBL_t *oat = ctx->share->ObjectArenaTBL;
@@ -741,7 +741,7 @@ static const char* addr_to_name(void* p)
 	return NULL;
 }
 
-static void dumpObject(CTX ctx, knh_uintptr_t* p)
+static void dumpObject(CTX ctx, kuintptr_t* p)
 {
 	knh_Object_t* o = (knh_Object_t*)(*p);
 	if (knh_isObject(ctx, (void*) o) && O_cTBL(o) != NULL) {
@@ -764,8 +764,8 @@ static void knh_dump_cstack(CTX ctx)
 	void* stack = __builtin_frame_address(0);
 	knh_printf(ctx, KNH_STDERR, "========== backtrace start ==========\n");
 	for (; stack < bottom; stack++) {
-		knh_uintptr_t** ptr = (knh_uintptr_t**) stack;
-		dumpObject(ctx, (knh_uintptr_t*) ptr);
+		kuintptr_t** ptr = (kuintptr_t**) stack;
+		dumpObject(ctx, (kuintptr_t*) ptr);
 		if (trace[i] == *ptr) {
 			knh_printf(ctx, KNH_STDERR, "TRACE: %p %s\n", trace[i], addr_to_name(trace[i]));
 			i++;
@@ -885,8 +885,8 @@ static knh_Object_t* get_memBlock(CTX ctx, size_t mbsize)
 
 
 #define K_OZERO2(o) {\
-		knh_intptr_t *p = (knh_intptr_t*)o;\
-		p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = p[6] = p[7] = K_INT0;\
+		kintptr_t *p = (kintptr_t*)o;\
+		p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = p[6] = p[7] = KINT0;\
 	}\
 
 #define OBJECT_REUSE(used) { \
@@ -947,7 +947,7 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	return o;
 }
 
-void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+void TR_NEW(CTX ctx, ksfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
 	knh_Object_t *o = NULL;
 	CHECK_UNUSED_OBJECT(ctx);
@@ -1164,12 +1164,12 @@ void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSiz
 
 /* ------------------------------------------------------------------------ */
 
-//#define BSHIFT ((K_PAGESIZE / sizeof(knh_Object_t)) / (sizeof(knh_uintptr_t) * 8))
+//#define BSHIFT ((K_PAGESIZE / sizeof(knh_Object_t)) / (sizeof(kuintptr_t) * 8))
 
-static inline int bit_test_and_set(knh_uintptr_t *b, size_t offset)
+static inline int bit_test_and_set(kuintptr_t *b, size_t offset)
 {
 	int x = INDEX2OFFSET(offset);
-	knh_uintptr_t mask = INDEX2MASK(offset);
+	kuintptr_t mask = INDEX2MASK(offset);
 	if (!(b[x] & mask)) {
 		b[x] |= mask;
 		return 0;
@@ -1193,7 +1193,7 @@ static void mark_ostack(CTX ctx, knh_Object_t *ref, knh_ostack_t *ostack)
 	knh_ObjectPage_t *opage = K_OPAGE(ref);
 	prefetch(opage);
 	size_t n = K_OPAGEOFFSET(ref, opage);
-	knh_uintptr_t *b = opage->h.bitmap;
+	kuintptr_t *b = opage->h.bitmap;
 	if(!(bit_test_and_set(b, n))) {
 		STAT_(ctx->stat->markedObject++;)
 		if(O_hasRef(ref)) {
@@ -1275,7 +1275,7 @@ static void gc_sweep(CTX ctx)
 		knh_ObjectPage_t *opage = oat[atindex].head;
 		for(;opage < oat[atindex].bottom; opage++) {
 			if(ctx == GET_PAGECTX(opage)) {
-				knh_uintptr_t i, *b = opage->h.bitmap;
+				kuintptr_t i, *b = opage->h.bitmap;
 				for(i = 1; i <= K_PAGEOBJECTSIZE; i++) {
 					knh_Object_t *o = &opage->slots[i-1];
 					if(!bit_test(b, (i))) {
@@ -1312,13 +1312,13 @@ static void gc_sweep(CTX ctx)
 	for(atindex = 0; atindex < size; atindex++) {
 		knh_ObjectPage_t *opage, *bottom = oat[atindex].bottom;
 		for (opage = oat[atindex].head; opage < bottom; opage++) {
-			knh_uintptr_t i, *bitmap = opage->h.bitmap;
+			kuintptr_t i, *bitmap = opage->h.bitmap;
 			if(GET_PAGECTX(opage) == ctx) {
 				listSize += K_PAGEOBJECTSIZE;
 				for(i = 0; i <= K_PAGEOBJECTSIZE/UINTPTR8; i++) {
-					knh_uintptr_t b = ~bitmap[i];
+					kuintptr_t b = ~bitmap[i];
 					while (b != 0) {
-						knh_uintptr_t n = CTZ(b);
+						kuintptr_t n = CTZ(b);
 						register knh_Object_t *o = &(opage->slots[i * UINTPTR8 + n - 1]);
 						Object_MSfree(ctx, o);
 						collected++;
@@ -1342,10 +1342,10 @@ static void gc_sweep(CTX ctx)
 //#ifndef K_USING_RCGC
 //static void gc_extendObjectArena(CTX ctx)
 //{
-//	knh_share_t *ctxshare = (knh_share_t*) ctx->share;
+//	kshare_t *ctxshare = (kshare_t*) ctx->share;
 //	knh_ObjectArenaTBL_t *oat = ctxshare->ObjectArenaTBL + (ctxshare->sizeObjectArenaTBL - 1);
 //	size_t arenasize = oat->arenasize;
-//	knh_uint64_t stime = knh_getTimeMilliSecond();
+//	kuint64_t stime = knh_getTimeMilliSecond();
 ////	const knh_sysinfo_t *sysinfo = knh_getsysinfo();
 ////	size_t max = (sysinfo->hw_usermem > 0) ? sysinfo->hw_usermem / 20 : 64 * (1024 * 1024);
 ////	if(arenasize <= max) arenasize *= 2;
@@ -1386,7 +1386,7 @@ static void gc_freeMemBlock(CTX ctx, knh_context_t *deadCtx)
 static void gc_freeCtx(CTX ctx)
 {
 	int i;
-	knh_share_t *share = ctx->wshare;
+	kshare_t *share = ctx->wshare;
 	for(i = knh_Array_size(share->contextListNULL) - 1; i >= 0; i--) {
 		knh_context_t *c = WCTX(((knh_Context_t *)knh_Array_n(share->contextListNULL, i))->ctx);
 		if(!IS_RUNNING(c)) {
@@ -1399,7 +1399,7 @@ static void gc_freeCtx(CTX ctx)
 
 static int stop_the_world(CTX ctx)
 {
-	knh_share_t *share = ctx->wshare;
+	kshare_t *share = ctx->wshare;
 	KNH_SYSLOCK(ctx);
 	if(share->gcStopCounter == 0) {
 		size_t i, size = knh_Array_size(share->contextListNULL);
@@ -1414,7 +1414,7 @@ static int stop_the_world(CTX ctx)
 			}
 			gc_freeCtx(ctx);
 			while(share->stopCounter != share->threadCounter) {
-				knh_thread_cond_wait(share->start_cond, share->syslock);
+				kthread_cond_wait(share->start_cond, share->syslock);
 			}
 		}
 		return 1;
@@ -1422,9 +1422,9 @@ static int stop_the_world(CTX ctx)
 		share->stopCounter++;
 		share->gcStopCounter++;
 		if(share->stopCounter == share->threadCounter) {
-			knh_thread_cond_signal(share->start_cond);
+			kthread_cond_signal(share->start_cond);
 		}
-		knh_thread_cond_wait(share->stop_cond, share->syslock);
+		kthread_cond_wait(share->stop_cond, share->syslock);
 		KNH_SYSUNLOCK(ctx);
 		return 0;
 	}
@@ -1434,7 +1434,7 @@ static void start_the_world(CTX ctx)
 {
 	ctx->wshare->stopCounter -= ctx->share->gcStopCounter;
 	ctx->wshare->gcStopCounter = 0;
-	knh_thread_cond_broadcast(ctx->share->stop_cond);
+	kthread_cond_broadcast(ctx->share->stop_cond);
 	KNH_SYSUNLOCK(ctx);
 }
 #endif /* K_USING_BMGC */
@@ -1445,9 +1445,9 @@ static void start_the_world(CTX ctx)
 
 void knh_System_gc(CTX ctx, int needsCStackTrace)
 {
-	knh_stat_t *ctxstat = ctx->stat;
+	kstatinfo_t *ctxstat = ctx->stat;
 	size_t avail = ctx->freeObjectListSize;
-	knh_uint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, sweep_time= 0, intval;
+	kuint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, sweep_time= 0, intval;
 	if(stop_the_world(ctx)) {
 #ifdef K_USING_CTRACE
 		knh_dump_cstack(ctx);

@@ -48,9 +48,9 @@ extern "C" {
 #define _DEF   (1<<2)
 typedef struct {
 	const char *name;
-	knh_flag_t   flag;
-	knh_ushort_t size;
-	knh_ushort_t types[6];
+	kflag_t   flag;
+	kushort_t size;
+	kushort_t types[6];
 } knh_OPDATA_t;
 
 static const knh_OPDATA_t OPDATA[] = {
@@ -407,14 +407,14 @@ size_t knh_opcode_size(knh_opcode_t opcode)
 }
 
 /* ------------------------------------------------------------------------ */
-knh_bool_t knh_opcode_hasjump(knh_opcode_t opcode)
+kbool_t knh_opcode_hasjump(knh_opcode_t opcode)
 {
 	return (OPDATA[opcode].types[0] == VMT_ADDR);
 }
 /* ------------------------------------------------------------------------ */
-knh_bool_t knh_opcode_usedef(knh_opcode_t opcode, int i)
+kbool_t knh_opcode_usedef(knh_opcode_t opcode, int i)
 {
-	knh_ushort_t type = OPDATA[opcode].types[i];
+	kushort_t type = OPDATA[opcode].types[i];
 	if ((type == VMT_SFPIDX) || (type == VMT_R) ||
 			(type == VMT_RN) || (type == VMT_RO)) {
 		return 1;
@@ -428,7 +428,7 @@ knh_Object_t** knh_opline_reftrace(CTX ctx, knh_opline_t *c FTRARG)
 	if(FLAG_is(OPDATA[c->opcode].flag, _CONST)) {
 		size_t i, size = OPDATA[c->opcode].size;
 		for(i = 0; i < size; i++) {
-			knh_ushort_t vtype = OPDATA[c->opcode].types[i];
+			kushort_t vtype = OPDATA[c->opcode].types[i];
 			if(vtype == VMT_OBJECT || vtype == VMT_STRING) {
 				KNH_ADDREF(ctx, c->p[i]);
 			}
@@ -443,12 +443,12 @@ knh_Object_t** knh_opline_reftrace(CTX ctx, knh_opline_t *c FTRARG)
 void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline_t *pc_start)
 {
 	size_t i, size = OPDATA[c->opcode].size;
-	const knh_ushort_t *vmt = OPDATA[c->opcode].types;
+	const kushort_t *vmt = OPDATA[c->opcode].types;
 	if(pc_start == NULL) {
-		knh_printf(ctx, w, "[%p:%d] %s(%d)", c, c->line, OPCODE__(c->opcode), (knh_intptr_t)c->opcode);
+		knh_printf(ctx, w, "[%p:%d] %s(%d)", c, c->line, OPCODE__(c->opcode), (kintptr_t)c->opcode);
 	}
 	else {
-		knh_printf(ctx, w, "L%d(%d): %s(%d)", c - pc_start, c->line, OPCODE__(c->opcode), (knh_intptr_t)c->opcode);
+		knh_printf(ctx, w, "L%d(%d): %s(%d)", c - pc_start, c->line, OPCODE__(c->opcode), (kintptr_t)c->opcode);
 	}
 	for(i = 0; i < size; i++) {
 		knh_putc(ctx, w, ' '); 
@@ -466,7 +466,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 			break;
 		case VMT_RN: 
 			RBP_ASSERT1(c->data[i]);
-			if(((knh_intptr_t)c->data[i]) < 0) {
+			if(((kintptr_t)c->data[i]) < 0) {
 				knh_printf(ctx, w, "r(%d)", c->data[i]); 
 			}
 			else {
@@ -481,7 +481,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 		case VMT_RO:
 			RBP_ASSERT0(c->data[i]);
 		case VMT_R: 
-			if(((knh_intptr_t)c->data[i]) < 0) {
+			if(((kintptr_t)c->data[i]) < 0) {
 				knh_printf(ctx, w, "r(%d)", c->data[i]); 
 			}
 			else {
@@ -517,11 +517,11 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 			break;
 		}
 		case VMT_INT: {
-			knh_int_t n = ((knh_int_t*)(&(c->p[i])))[0];
-			knh_write_ifmt(ctx, w, K_INT_FMT, n); break;
+			kint_t n = ((kint_t*)(&(c->p[i])))[0];
+			knh_write_ifmt(ctx, w, KINT_FMT, n); break;
 		}
 		case VMT_FLOAT:
-			knh_write_ffmt(ctx, w, K_FLOAT_FMT, *((knh_float_t*)&(c->p[i]))); break;
+			knh_write_ffmt(ctx, w, KFLOAT_FMT, *((kfloat_t*)&(c->p[i]))); break;
 		}
 	}
 	knh_write_EOL(ctx, w);
@@ -530,7 +530,7 @@ void knh_opcode_dump(CTX ctx, knh_opline_t *c, knh_OutputStream_t *w, knh_opline
 void knh_opcode_shift(knh_opline_t *c, int shift)
 {
 	size_t i, size = OPDATA[c->opcode].size;
-	const knh_ushort_t *vmt = OPDATA[c->opcode].types;
+	const kushort_t *vmt = OPDATA[c->opcode].types;
 	for(i = 0; i < size; i++) {
 		switch(vmt[i]) {
 			case VMT_SFPIDX: case VMT_R: case VMT_RN: case VMT_RO: case VMT_SFX: 
@@ -586,7 +586,7 @@ void knh_opcode_shift(knh_opline_t *c, int shift)
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 
-knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
+knh_opline_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, knh_opline_t *pc)
 {
 #ifdef K_USING_THCODE_
 	static void *OPJUMP[] = {
@@ -633,10 +633,10 @@ knh_opline_t* knh_VirtualMachine_run(CTX ctx, knh_sfp_t *sfp0, knh_opline_t *pc)
 		&&L_fJGTEC, &&L_CHKIDX, &&L_CHKIDXC, &&L_NOP, 
 	};
 #endif
-	knh_rbp_t *rbp = (knh_rbp_t*)sfp0;
+	krbp_t *rbp = (krbp_t*)sfp0;
 	USE_PROF(
-	knh_uint64_t _utime = knh_getTime();
-	static knh_uint64_t _UTIME[OPCODE_NOP+1] = {0};
+	kuint64_t _utime = knh_getTime();
+	static kuint64_t _UTIME[OPCODE_NOP+1] = {0};
 	static size_t _UC[OPCODE_NOP+1] = {0};)
 	DISPATCH_START(pc);
 

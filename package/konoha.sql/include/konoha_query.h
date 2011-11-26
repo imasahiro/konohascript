@@ -54,7 +54,7 @@ extern "C" {
 
 //typedef struct knh_Channel_t {
 //	knh_hObject_t h;
-//	knh_intptr_t sd;
+//	kintptr_t sd;
 //	struct knh_String_t *urn;
 //	struct knh_InputStream_t  *in;
 //	struct knh_OutputStream_t *out;
@@ -74,8 +74,8 @@ typedef struct knh_Connection_t {
 /* [ResultSet] */
 
 typedef struct {
-	knh_type_t type;
-	knh_ushort_t ctype;
+	ktype_t type;
+	kushort_t ctype;
 	knh_String_t *name;
 	size_t start;
 	size_t len;
@@ -89,8 +89,8 @@ typedef struct {
 	knh_qcur_t              *qcur;
 	void   (*qcurfree)(knh_qcur_t *); /* necessary if conn is closed before */
 	knh_String_t            *tableName;
-	knh_class_t              tcid;
-	knh_ushort_t             column_size;
+	kclass_t              tcid;
+	kushort_t             column_size;
 	knh_dbschema_t          *column;
 	knh_Bytes_t             *databuf;
 	size_t                   count;
@@ -106,23 +106,23 @@ typedef struct knh_ResultSet_t {
 
 void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_String_t *urn);
 void knh_Connection_close(CTX ctx, knh_Connection_t *c);
-knh_bool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o);
+kbool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o);
 knh_String_t *knh_ResultSet_getName(CTX ctx, knh_ResultSet_t *o, size_t n);
-int knh_ResultSet_findColumn(CTX ctx, knh_ResultSet_t *o, knh_bytes_t name);
+int knh_ResultSet_findColumn(CTX ctx, knh_ResultSet_t *o, kbytes_t name);
 knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n);
 void knh_ResultSet_close(CTX ctx, knh_ResultSet_t *o);
 
 KMETHOD knh_ResultSet_initColumn(CTX ctx, knh_ResultSet_t *o, size_t column_size);
-KMETHOD ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
-KMETHOD ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_float_t value);
-KMETHOD ResultSet_setInt(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_int_t value);
+KMETHOD ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, kbytes_t t);
+KMETHOD ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, kfloat_t value);
+KMETHOD ResultSet_setInt(CTX ctx, knh_ResultSet_t *rs, size_t n, kint_t value);
 KMETHOD ResultSet_setNULL(CTX ctx, knh_ResultSet_t *o, size_t n);
 KMETHOD ResultSet_setName(CTX ctx, knh_ResultSet_t *o, size_t n, knh_String_t *name);
-KMETHOD ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
+KMETHOD ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, kbytes_t t);
 
-knh_qconn_t *MYSQL_qopen(CTX ctx, knh_bytes_t url);
+knh_qconn_t *MYSQL_qopen(CTX ctx, kbytes_t url);
 int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs);
-knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, struct knh_ResultSet_t *rs);
+knh_qcur_t *MYSQL_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, struct knh_ResultSet_t *rs);
 void MYSQL_qclose(CTX ctx, knh_qconn_t *hdr);
 void MYSQL_qfree(knh_qcur_t *qcur);
 /* ------------------------------------------------------------------------ */
@@ -132,12 +132,12 @@ void MYSQL_qfree(knh_qcur_t *qcur);
 
 typedef struct knh_ResultSetDef_t {
 	KMETHOD (*initColumn)(CTX ctx, knh_ResultSet_t *o, size_t column_size);
-	KMETHOD (*setBlob)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
-	KMETHOD (*setFloat)(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_float_t value);
-	KMETHOD (*setInt)(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_int_t value);
+	KMETHOD (*setBlob)(CTX ctx, knh_ResultSet_t *o, size_t n, kbytes_t t);
+	KMETHOD (*setFloat)(CTX ctx, knh_ResultSet_t *rs, size_t n, kfloat_t value);
+	KMETHOD (*setInt)(CTX ctx, knh_ResultSet_t *rs, size_t n, kint_t value);
 	KMETHOD (*setNULL)(CTX ctx, knh_ResultSet_t *o, size_t n);
 	KMETHOD (*setName)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_String_t *name);
-	KMETHOD (*setText)(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t);
+	KMETHOD (*setText)(CTX ctx, knh_ResultSet_t *o, size_t n, kbytes_t t);
 } knh_ResultSetDef_t;
 
 static const knh_ResultSetDef_t ResultSetDef = {
@@ -155,8 +155,8 @@ static const knh_ResultSetDef_t ResultSetDef = {
 typedef struct _knh_QueryDPI_t {
 	int   type;
 	const char *name;
-	knh_qconn_t* (*qopen)(CTX ctx, knh_bytes_t);
-	knh_qcur_t* (*qexec)(CTX ctx, knh_qconn_t *, knh_bytes_t, knh_ResultSet_t*);
+	knh_qconn_t* (*qopen)(CTX ctx, kbytes_t);
+	knh_qcur_t* (*qexec)(CTX ctx, knh_qconn_t *, kbytes_t, knh_ResultSet_t*);
 	void   (*qclose)(CTX ctx, knh_qconn_t *);
 	int    (*qcurnext)(CTX, knh_qcur_t *, knh_ResultSet_t*);
 	void   (*qcurfree)(knh_qcur_t *);

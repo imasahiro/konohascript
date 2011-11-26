@@ -3,33 +3,33 @@
 /* ------------------------------------------------------------------------ */
 /* flag */
 
-static KMETHOD _String_isASCII(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD _String_isASCII(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(String_isASCII((knh_String_t*)sfp[0].o));
 }
 
-static KMETHOD _String_isPooled(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD _String_isPooled(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(String_isPooled((knh_String_t*)sfp[0].o));
 }
 
-static KMETHOD _OutputStream_isAutoFlush(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD _OutputStream_isAutoFlush(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(OutputStream_isAutoFlush((knh_OutputStream_t*)sfp[0].o));
 }
 
-static KMETHOD _OutputStream_setAutoFlush(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD _OutputStream_setAutoFlush(CTX ctx, ksfp_t *sfp _RIX)
 {
 	OutputStream_setAutoFlush((knh_OutputStream_t*)sfp[0].o, sfp[1].bvalue);
 	RETURNb_(sfp[1].bvalue);
 }
 
-static KMETHOD _Context_isDebug(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD _Context_isDebug(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(CTX_isDebug(((sfp[0].cx)->ctx)));
 }
 
-static KMETHOD _Context_setDebug(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD _Context_setDebug(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CTX_setDebug(((sfp[0].cx)->ctx), sfp[1].bvalue);
 	RETURNb_(sfp[1].bvalue);

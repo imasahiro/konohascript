@@ -221,7 +221,7 @@ const knh_sysinfo_t* knh_getsysinfo(void)
 	return sysinfo_;
 }
 
-static void dump_int(CTX ctx, knh_OutputStream_t *w, const char *name, knh_intptr_t data, int isALL)
+static void dump_int(CTX ctx, knh_OutputStream_t *w, const char *name, kintptr_t data, int isALL)
 {
 	if(data == -1) {
 		if(!isALL) return;
@@ -324,9 +324,9 @@ knh_Path_t* new_CurrentPath(CTX ctx)
 	return pth;
 }
 
-knh_bool_t knh_exists(CTX ctx, const char *fname)
+kbool_t knh_exists(CTX ctx, const char *fname)
 {
-	knh_bool_t res = 0;
+	kbool_t res = 0;
 	if(fname == NULL || fname[0] == 0) return 0;
 #if defined(K_USING_WINDOWS_)
 	DWORD attr = GetFileAttributesA(fname);
@@ -342,9 +342,9 @@ knh_bool_t knh_exists(CTX ctx, const char *fname)
 	return res;
 }
 
-knh_bool_t knh_isfile(CTX ctx, const char *phname)
+kbool_t knh_isfile(CTX ctx, const char *phname)
 {
-	knh_bool_t res = 1;
+	kbool_t res = 1;
 	if(phname[0] == 0) return 0;
 #if defined(K_USING_WINDOWS_)
 	DWORD attr = GetFileAttributesA(phname);
@@ -364,12 +364,12 @@ knh_bool_t knh_isfile(CTX ctx, const char *phname)
 	return res;
 }
 
-knh_bool_t knh_buff_isfile(CTX ctx, knh_Bytes_t *ba, size_t pos)
+kbool_t knh_buff_isfile(CTX ctx, knh_Bytes_t *ba, size_t pos)
 {
 	return knh_isfile(ctx, knh_Bytes_ensureZero(ctx, ba) + pos);
 }
 
-knh_bool_t knh_isdir(CTX ctx, const char *pname)
+kbool_t knh_isdir(CTX ctx, const char *pname)
 {
 #if defined(K_USING_WINDOWS_)
 	DWORD attr = GetFileAttributesA(pname);
@@ -386,12 +386,12 @@ knh_bool_t knh_isdir(CTX ctx, const char *pname)
 #endif
 }
 
-knh_bool_t knh_buff_isdir(CTX ctx, knh_Bytes_t *ba, size_t pos)
+kbool_t knh_buff_isdir(CTX ctx, knh_Bytes_t *ba, size_t pos)
 {
 	return knh_isdir(ctx, knh_Bytes_ensureZero(ctx, ba) + pos);
 }
 
-static knh_bool_t knh_mkdir(CTX ctx, const char *pname)
+static kbool_t knh_mkdir(CTX ctx, const char *pname)
 {
 	DBG_P("path='%s'", pname);
 #if defined(K_USING_WINDOWS_)
@@ -403,9 +403,9 @@ static knh_bool_t knh_mkdir(CTX ctx, const char *pname)
 #endif
 }
 
-knh_bool_t knh_buff_mkdir(CTX ctx, knh_Bytes_t *ba, size_t pos)
+kbool_t knh_buff_mkdir(CTX ctx, knh_Bytes_t *ba, size_t pos)
 {
-	knh_uchar_t *ubuf = ba->bu.ubuf;
+	kchar_t *ubuf = ba->bu.ubuf;
 	size_t i, len = BA_size(ba);
 	for(i = pos + 1; i < len; i++) {
 		int ch = ubuf[i];
@@ -438,7 +438,7 @@ void knh_System_initPath(CTX ctx)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_DictMap_t *sysprops = ctx->share->props;
-	knh_bytes_t home = {{NULL}, 0}, user = {{NULL}, 0};
+	kbytes_t home = {{NULL}, 0}, user = {{NULL}, 0};
 
 	// current working directory
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT("."));

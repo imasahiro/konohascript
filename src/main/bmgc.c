@@ -469,12 +469,12 @@ static void *call_malloc_aligned(CTX ctx, size_t size, size_t align)
     if (unlikely(block == NULL))
         goto L_OutOfMemory;
     if((uintptr_t)block % align != 0) {
-        char *t2 = (char*)((((knh_uintptr_t)block / align) + 1) * align);
+        char *t2 = (char*)((((kuintptr_t)block / align) + 1) * align);
         void **p = (void**)(t2 + size);
         DBG_ASSERT((char*)p < ((char*)block) + size + align);
         p[0] = block;
         block = (void*)t2;
-        DBG_ASSERT((knh_uintptr_t)block % align == 0);
+        DBG_ASSERT((kuintptr_t)block % align == 0);
     }
     else {
         void **p = (void**)((char*)block + size);
@@ -571,7 +571,7 @@ static GCInfo *BMGC_init(CTX ctx)
 #ifdef GC_CONFIG
     char *poolsize = knh_getenv("KONOHA_DEFAULT_MEMPOOL_SIZE");
     if (poolsize) {
-        knh_int_t tmp;
+        kint_t tmp;
         if (knh_bytes_parseint(B(poolsize), &tmp))
             default_size = (size_t) tmp;
     }
@@ -1453,7 +1453,7 @@ static void bitmapMarkingGC(CTX ctx, GCInfo *info)
 /* ------------------------------------------------------------------------ */
 /* [Object] */
 
-void knh_share_initArena(CTX ctx, knh_share_t *share)
+void knh_share_initArena(CTX ctx, kshare_t *share)
 {
     share->MemoryArenaTBL = (knh_MemoryArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_MemoryArenaTBL_t));
     knh_bzero(share->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_MemoryArenaTBL_t));
@@ -1461,7 +1461,7 @@ void knh_share_initArena(CTX ctx, knh_share_t *share)
     share->capacityMemoryArenaTBL = K_ARENATBL_INITSIZE;
 }
 
-void knh_share_freeArena(CTX ctx, knh_share_t *share)
+void knh_share_freeArena(CTX ctx, kshare_t *share)
 {
     size_t i;
     for(i = 0; i < share->sizeMemoryArenaTBL; i++) {
@@ -1485,7 +1485,7 @@ void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSiz
     ((knh_context_t*)ctx)->freeObjectList = NULL;
 }
 
-knh_bool_t knh_isObject(CTX ctx, knh_Object_t *o)
+kbool_t knh_isObject(CTX ctx, knh_Object_t *o)
 {
     HeapManager *mng = (HeapManager*) GCDATA(ctx);
 
@@ -1554,7 +1554,7 @@ knh_Object_t *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
     return o;
 }
 
-void TR_NEW(CTX ctx, knh_sfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
+void TR_NEW(CTX ctx, ksfp_t *sfp, knh_sfpidx_t c, const knh_ClassTBL_t *ct)
 {
     DBG_ASSERT(ct->struct_size > 0);
     knh_Object_t *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);

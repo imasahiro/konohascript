@@ -100,25 +100,25 @@
 //	o->rawptr = NULL;
 //}
 //
-//DEFAPI(const knh_ClassDef_t*) Symbol(CTX ctx)
+//DEFAPI(const kClassDef*) Symbol(CTX ctx)
 //{
-//	static knh_ClassDef_t cdef;
+//	static kClassDef cdef;
 //	cdef = *(knh_getDefaultClassDef());
 //	cdef.name = NAME(Symbol);
 //	cdef.init = Symbol_init;
 //	cdef.free = Symbol_free;
-//	return (const knh_ClassDef_t*)&cdef;
+//	return (const kClassDef*)&cdef;
 //}
 //
 ////## Symbol Symbol.new(String name);
-//KMETHOD Symbol_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Symbol_new(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Symbol_t *sym = (knh_Symbol_t*)sfp[0].o;
 //	RETURN_(sym);
 //}
 //
 ////## String Symbol.getOrigName();
-//KMETHOD Symbol_getOrigName(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Symbol_getOrigName(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Symbol_t *sym = (knh_Symbol_t*)sfp[0].o;
 //	RETURN_(sym);
@@ -127,7 +127,7 @@
 ///* ------------------------------------------------------------------------ */
 ///* [Instruction] */
 ////## Symbol Instruction.getDefineSymbol();
-//KMETHOD Instruction_getDefineSymbol(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getDefineSymbol(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = (knh_Instruction_t*)sfp[0].o;
 //	knh_Symbol_t *sym = inst->sym;
@@ -135,7 +135,7 @@
 //}
 //
 ////## Array<Symbol> Instruction.getUseSymbolList();
-//KMETHOD Instruction_getUseSymbolList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getUseSymbolList(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = (knh_Instruction_t*)sfp[0].o;
 //	(void)inst;
@@ -144,13 +144,13 @@
 //}
 //
 ////## Boolean Instruction.isMerging();
-//KMETHOD Instruction_isMErging(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_isMErging(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	RETURNb_(0);
 //}
 //
 ////## Boolean Instruction.approve(Int opcode);
-//KMETHOD Instruction_approve(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_approve(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	RETURNb_(0);
 //}
@@ -164,13 +164,13 @@
 //	bb->topsize = 0;
 //	bb->flag = 0;
 //	bb->kcode = new_Array(ctx, knh_getcid(ctx, B(NAME(Instruction))), 0);
-//	knh_class_t cid = knh_getcid(ctx, B(NAME(Basicblock)));
+//	kclass_t cid = knh_getcid(ctx, B(NAME(Basicblock)));
 //	bb->pred = new_Array(ctx, cid, 0);
 //	bb->succ = new_Array(ctx, cid, 0);
 //	return bb;
 //}
 //
-//static void depthFirstSearch(CTX ctx, KBlock_t *bb, int *depth, knh_bool_t flag)
+//static void depthFirstSearch(CTX ctx, KBlock_t *bb, int *depth, kbool_t flag)
 //{
 //	bb->id = *depth;
 //	bb->flag = flag;
@@ -258,7 +258,7 @@
 ////static knh_Array_t *KonohaCode_convertToInstructionArray(CTX ctx, knh_KonohaCode_t *kcode)
 ////{
 ////	size_t count = kcode->codesize / sizeof(knh_opline_t);
-////	knh_class_t cid = knh_getcid(ctx, B(NAME(Instruction)));
+////	kclass_t cid = knh_getcid(ctx, B(NAME(Instruction)));
 ////	knh_Array_t *ia = new_Array(ctx, cid, count);
 ////	int i = 0;
 ////	knh_opline_t *op;
@@ -273,18 +273,18 @@
 ////}
 //
 //////## Controlflow Method.getControlflow();
-////KMETHOD Method_getControlflow(CTX ctx, knh_sfp_t *sfp _RIX)
+////KMETHOD Method_getControlflow(CTX ctx, ksfp_t *sfp _RIX)
 ////{
 ////	knh_Method_t *mtd = sfp[0].mtd;
 ////	knh_KonohaCode_t *kcode = DP(mtd)->kcode;
-////	knh_class_t cid = knh_getcid(ctx, B(NAME(Controlflow)));
+////	kclass_t cid = knh_getcid(ctx, B(NAME(Controlflow)));
 ////	knh_Controlflow_t *cf = new_O(Controlflow, cid);
 ////	SP(cf)->ia = KonohaCode_convertToInstructionArray(ctx, kcode);
 ////	RETURN_(cf);
 ////}
 //
 ////## Array<Symbol> Controlflow.getAllSymbolList();
-//KMETHOD Controlflow_getAllSymbolList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getAllSymbolList(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -293,7 +293,7 @@
 //}
 //
 ////## Array<Instruction> Controlflow.getUseInstList(Symbol sym);
-//KMETHOD Controlflow_getUseInstList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getUseInstList(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -302,7 +302,7 @@
 //}
 //
 ////## Array<Basicblock> Controlflow.getBasicblockList(Symbol sym);
-//KMETHOD Controlflow_getBasicblockList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getBasicblockList(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -311,14 +311,14 @@
 //}
 //
 ////## Basicblock ByteCode.getEntryBlock();
-//KMETHOD ByteCode_getEntryBlock(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD ByteCode_getEntryBlock(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].p->rawptr;
 //	RETURN_(cf->root);
 //}
 //
 ////## Basicblock Controlflow.getDefineBB(Symbol sym);
-//KMETHOD Controlflow_getDefineBB(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Controlflow_getDefineBB(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*)sfp[0].o;
 //	(void)cf;
@@ -387,22 +387,22 @@
 //}
 //
 //
-//DEFAPI(const knh_ClassDef_t*) Basicblock(CTX ctx)
+//DEFAPI(const kClassDef*) Basicblock(CTX ctx)
 //{
-//	static knh_ClassDef_t cdef;
+//	static kClassDef cdef;
 //	cdef = *(knh_getDefaultClassDef());
 //	cdef.name = NAME(Basicblock);
 //	cdef.init = Basicblock_init;
 //	cdef.free = Basicblock_free;
 //	cdef.p    = Basicblock_p;
-//	return (const knh_ClassDef_t*)&cdef;
+//	return (const kClassDef*)&cdef;
 //}
 //
 //#define int3() asm volatile("int3");
 //#define BB(sfp) ((knh_Basicblock_t*)((sfp.p)->rawptr))
 //
 ////## Basicblock Basicblock.new(Basicblock _);
-//KMETHOD Basicblock_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_new(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = (knh_Basicblock_t*) malloc(sizeof(*bb));
 //	knh_RawPtr_t *o = new_RawPtr(ctx, sfp[1].p, bb);
@@ -410,7 +410,7 @@
 //}
 //
 ////## Instruction Basicblock.getInst(int i);
-//KMETHOD Basicblock_getInst(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getInst(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -420,7 +420,7 @@
 //}
 //
 ////## Instruction Basicblock.getDefineInst(Symbol sym);
-//KMETHOD Basicblock_getDefineInst(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getDefineInst(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -430,7 +430,7 @@
 //}
 //
 ////## Boolean Basicblock.removeInst(Instruction inst);
-//KMETHOD Basicblock_removeInst(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_removeInst(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -438,7 +438,7 @@
 //}
 //
 ////## Boolean Basicblock.insertBefore(Instruction inst1, Instruction inst2);
-//KMETHOD Basicblock_insertBefore(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_insertBefore(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -447,7 +447,7 @@
 //}
 //
 ////## Boolean Basicblock.insertAfter(Instruction inst1, Instruction inst2);
-//KMETHOD Basicblock_insertAfter(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_insertAfter(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	knh_RawPtr_t *insto1 = sfp[1].p;
@@ -471,7 +471,7 @@
 //}
 //
 ////## Array<Basicblock> Basicblock.getSuccessors();
-//KMETHOD Basicblock_getSuccessors(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getSuccessors(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -480,7 +480,7 @@
 //}
 //
 ////## Array<Basicblock> Basicblock.getPredecessors();
-//KMETHOD Basicblock_getPredecessors(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getPredecessors(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	(void)bb;
@@ -490,7 +490,7 @@
 //}
 //
 ////## Instruction Basicblock.getFirstInstruction()
-//KMETHOD Basicblock_getFirstInstruction(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Basicblock_getFirstInstruction(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Basicblock_t *bb = BB(sfp[0]);
 //	RETURN_(knh_Array_n(bb->kcode, 0));
@@ -516,7 +516,7 @@
 //
 //static knh_Array_t *gen_instlist(CTX ctx, knh_RawPtr_t *po, knh_KonohaCode_t *kcode)
 //{
-//	knh_class_t p1 = knh_getcid(ctx, B("Instruction"));
+//	kclass_t p1 = knh_getcid(ctx, B("Instruction"));
 //	knh_Array_t *a = new_Array(ctx, p1, SP(kcode)->codesize);
 //	knh_opline_t *pc = SP(kcode)->code;
 //	size_t i, codesize = 0;
@@ -543,7 +543,7 @@
 //
 //#define isNativeCompiled(kcode) (IS_KonohaCode(kcode) && KonohaCode_isNativeCompiled(kcode))
 ////## method Array<Instruction> Func.getInstList(Instruction _, Basicblock _);
-//KMETHOD Func_getInstList(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Func_getInstList(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Func_t *fo = sfp[0].fo;
 //	knh_RawPtr_t *oinst  = sfp[1].p;
@@ -560,7 +560,7 @@
 //}
 //
 ////## method ByteCode Func.getBytecodes(Instruction _, Basicblock _, Bytecode _);
-//KMETHOD Func_getBytecodes(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Func_getBytecodes(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Func_t *fo = sfp[0].fo;
 //	knh_RawPtr_t *oinst  = sfp[1].p;
@@ -607,26 +607,26 @@
 //	o->rawptr = NULL;
 //}
 //
-//DEFAPI(const knh_ClassDef_t*) Controlflow(CTX ctx)
+//DEFAPI(const kClassDef*) Controlflow(CTX ctx)
 //{
-//	static knh_ClassDef_t cdef;
+//	static kClassDef cdef;
 //	cdef = *(knh_getDefaultClassDef());
 //	cdef.name = NAME(Controlflow);
 //	cdef.init = Controlflow_init;
 //	cdef.reftrace = Controlflow_reftrace;
 //	cdef.free = Controlflow_free;
-//	return (const knh_ClassDef_t*)&cdef;
+//	return (const kClassDef*)&cdef;
 //}
 //
-//DEFAPI(const knh_ClassDef_t*) ByteCode(CTX ctx)
+//DEFAPI(const kClassDef*) ByteCode(CTX ctx)
 //{
-//	static knh_ClassDef_t cdef;
+//	static kClassDef cdef;
 //	cdef = *(knh_getDefaultClassDef());
 //	cdef.name = "ByteCode";
 //	cdef.init = Controlflow_init;
 //	cdef.reftrace = Controlflow_reftrace;
 //	cdef.free = Controlflow_free;
-//	return (const knh_ClassDef_t*)&cdef;
+//	return (const kClassDef*)&cdef;
 //}
 //
 //struct HasInst {
@@ -653,7 +653,7 @@
 //void BasicBlock_traverse(CTX ctx, knh_RawPtr_t *root, void *refbuf, bbtrace_t fbb);
 //
 ////##Instruction[] ByteCode.searchBBContains(int opcode);
-//KMETHOD ByteCode_searchBBContains(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD ByteCode_searchBBContains(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	struct HasInst hinst;
 //	knh_Controlflow_t *cfg = (knh_Controlflow_t*) sfp[0].p->rawptr;
@@ -700,19 +700,19 @@
 //	}
 //}
 //
-//DEFAPI(const knh_ClassDef_t*) Instruction(CTX ctx)
+//DEFAPI(const kClassDef*) Instruction(CTX ctx)
 //{
-//	static knh_ClassDef_t cdef;
+//	static kClassDef cdef;
 //	cdef = *(knh_getDefaultClassDef());
 //	cdef.name = NAME(Instruction);
 //	cdef.init = Instruction_init;
 //	cdef.p    = Instruction_p;
 //	cdef.free = Instruction_free;
-//	return (const knh_ClassDef_t*)&cdef;
+//	return (const kClassDef*)&cdef;
 //}
 //
 ////## Instruction Instruction.new(Int opcode, dynamic d1, dynamic d2, dynamic d3, dynamic d4, Instruction _);
-//KMETHOD Instruction_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_new(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = (knh_Instruction_t*) malloc(sizeof(knh_Instruction_t));
 //	knh_RawPtr_t *o = new_RawPtr(ctx, sfp[6].p, inst);
@@ -726,7 +726,7 @@
 //	size_t i;
 //	for (i = 0; i < OPDATA[op->opcode].size; i++) {
 //		knh_Object_t *o = sfp[i+2].o;
-//		knh_class_t cid = O_cid(o);
+//		kclass_t cid = O_cid(o);
 //		switch (cid) {
 //		case CLASS_String:
 //			//DBG_P("string \"%s\"", String_to(char *, sfp[i + 2]));
@@ -739,7 +739,7 @@
 //			break;
 //		case CLASS_Int: case CLASS_Float: case CLASS_Boolean:
 //			{
-//				knh_ndata_t n = O_ndata(o);
+//				kunbox_t n = O_ndata(o);
 //				//DBG_P("ndata %d", n);
 //				op->data[i] = n;
 //				break;
@@ -755,7 +755,7 @@
 //}
 //
 ////## Instruction Instruction.getNext();
-//KMETHOD Instruction_getNext(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getNext(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	knh_RawPtr_t *po = RAWPTR(KNH_NULL);
@@ -766,7 +766,7 @@
 //}
 //
 ////## Instruction Instruction.getPrev();
-//KMETHOD Instruction_getPrev(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getPrev(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	knh_RawPtr_t *po = RAWPTR(KNH_NULL);
@@ -777,7 +777,7 @@
 //}
 //
 ////## Method ByteCode.save();
-//KMETHOD ByteCode_save(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD ByteCode_save(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Controlflow_t *cf = (knh_Controlflow_t*) sfp[0].p->rawptr;
 //	knh_Method_t *org = cf->mtd;
@@ -860,7 +860,7 @@
 //static knh_IntData_t IntConstData[] = {
 //#include "./code_.h"
 //	{"PHI", OPCODE_MAX},
-//	{NULL, K_INT0}
+//	{NULL, KINT0}
 //};
 //
 //DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
@@ -870,7 +870,7 @@
 //	RETURN_PKGINFO("konoha.lang");
 //}
 //
-//DEFAPI(void) constInstruction(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+//DEFAPI(void) constInstruction(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 //{
 //	kapi->loadClassIntConst(ctx, cid, IntConstData);
 //}
@@ -886,7 +886,7 @@
 ////
 ////static void analyzeCallRegister(CTX ctx, knh_Array_t *a, KInst_t *inst)
 ////{
-////	knh_intptr_t max, min = OP(inst)->data[1];
+////	kintptr_t max, min = OP(inst)->data[1];
 ////	if (OP(inst)->opcode == OPCODE_FASTCALL0) {
 ////		if (OP(inst)->p[4] != NULL) {
 ////			max = min + 2 * (knh_Method_psize((knh_Method_t*)OP(inst)->p[4]) + 1);
@@ -960,7 +960,7 @@
 ////	}
 ////}
 ////
-////static void deconstructCfg(CTX ctx, knh_Array_t *klrcode, KBlock_t *bb, knh_bool_t flag, size_t codesize)
+////static void deconstructCfg(CTX ctx, knh_Array_t *klrcode, KBlock_t *bb, kbool_t flag, size_t codesize)
 ////{
 ////	bb->flag = flag;
 ////	bb->topsize = codesize;
@@ -1011,7 +1011,7 @@
 /////* [Func Method] */
 ////
 ////## method Array<KInst> Func.getKCode();
-////KMETHOD Func_getKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD Func_getKCode(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	knh_Func_t *fo = sfp[0].fo;
 ////	knh_Method_t *mtd = fo->mtd;
@@ -1022,7 +1022,7 @@
 ////	}
 ////	size_t count, i = 0;
 ////	count = kcode->codesize / sizeof(knh_opline_t);
-////	knh_class_t cid = knh_getcid(ctx, B(NAME(KInst)));
+////	kclass_t cid = knh_getcid(ctx, B(NAME(KInst)));
 ////	knh_Array_t *a = new_Array(ctx, cid, count);
 ////	KInst_t *pred, *inst = NULL;
 ////	while (1) {
@@ -1047,7 +1047,7 @@
 ////}
 ////
 //////## method Array<KInst> Func.setKCode(Array<KInst> kcode);
-////KMETHOD Func_setKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD Func_setKCode(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	knh_Func_t *fo = sfp[0].fo;
 ////	knh_Method_t *mtd = fo->mtd;
@@ -1089,14 +1089,14 @@
 /////* ------------------------------------------------------------------------ */
 /////* [KInst Method] */
 ////
-////KMETHOD Instruction_new(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD Instruction_new(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	knh_Instruction_t *inst = (knh_Instruction_t*)sfp[0].o;
 ////	RETURN_(inst);
 ////}
 ////
 //////## method dynamic KInst.get(Int n);
-////KMETHOD KInst_get(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_get(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	size_t n = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), OPDATA[OP(inst)->opcode].size);
@@ -1128,7 +1128,7 @@
 ////}
 ////
 //////## method dynamic KInst.set(Int n, dynamic n);
-////KMETHOD KInst_set(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_set(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	size_t n = knh_array_index(ctx, sfp, Int_to(size_t, sfp[1]), OPDATA[OP(inst)->opcode].size);
@@ -1165,7 +1165,7 @@
 ////}
 ////
 ////## method String Instruction.getOpname();
-//KMETHOD Instruction_getOpname(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getOpname(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	knh_String_t *s = new_String(ctx, OPDATA[inst->op->opcode].name);
@@ -1173,14 +1173,14 @@
 //}
 //
 ////## method Int Instruction.getOpcode();
-//KMETHOD Instruction_getOpcode(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Instruction_getOpcode(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Instruction_t *inst = INST(sfp[0].p);
 //	RETURNi_((inst)->op->opcode);
 //}
 //
 //////## method Int KInst.setOpcode(Int opcode);
-////KMETHOD KInst_setOpcode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_setOpcode(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	int opcode = Int_to(int, sfp[1]);
@@ -1193,7 +1193,7 @@
 ////}
 ////
 //////## method Int KInst.getJump();
-////KMETHOD KInst_getJump(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getJump(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	if (!knh_opcode_hasjump(OP(inst)->opcode)) {
@@ -1205,7 +1205,7 @@
 ////}
 ////
 //////## method Int KInst.setJump(Int label);
-////KMETHOD KInst_setJump(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_setJump(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	if (!knh_opcode_hasjump(OP(inst)->opcode)) {
@@ -1223,14 +1223,14 @@
 ////}
 ////
 //////## method Int KInst.getSize();
-////KMETHOD KInst_getSize(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getSize(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	RETURNi_(OPDATA[OP(inst)->opcode].size);
 ////}
 ////
 //////## method Array<Int> KInst.getDefList();
-////KMETHOD KInst_getDefList(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getDefList(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	knh_Array_t *a = new_Array(ctx, CLASS_Int, 0);
@@ -1273,7 +1273,7 @@
 ////}
 ////
 //////## method Array<Int> KInst.getUseList();
-////KMETHOD KInst_getUseList(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KInst_getUseList(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KInst_t *inst = RawPtr_to(KInst_t *, sfp[0]);
 ////	knh_Array_t *a = new_Array(ctx, CLASS_Int, 0);
@@ -1321,7 +1321,7 @@
 /////* ------------------------------------------------------------------------ */
 /////* [KCode Method] */
 //////## method Array<KInst> KCode.join(Array<KInst> kcode1, Array<KInst> kcode2);
-////KMETHOD KCode_join(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KCode_join(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	knh_Array_t *klrcode1 = sfp[1].a;
 ////	knh_Array_t *klrcode2 = sfp[2].a;
@@ -1347,17 +1347,17 @@
 ////}
 ////
 //////## method KBlock KCode.constructCfg(Array<KInst> kcode);
-////KMETHOD KCode_constructCfg(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KCode_constructCfg(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	knh_Array_t *klrcode = sfp[1].a;
-//////	knh_class_t cid = knh_getcid(ctx, B(NAME(KBlock)));
+//////	kclass_t cid = knh_getcid(ctx, B(NAME(KBlock)));
 //////	knh_Object_t *o = new_Object_init2(ctx, 0, ClassTBL(cid));
 ////	knh_RawPtr_t *bb = constructCfg(ctx, klrcode);
 ////	RETURN_(bb);
 ////}
 ////
 ////////## method Func KCode.generateFunc(Array<KInst> kcode);
-//////KMETHOD KCode_generateFunc(CTX ctx, knh_sfp_t *sfp, long rix)
+//////KMETHOD KCode_generateFunc(CTX ctx, ksfp_t *sfp, long rix)
 //////{
 //////	knh_Array_t *klrcode = sfp[1].a;
 //////	if (klrcode == NULL) {
@@ -1406,7 +1406,7 @@
 ////	bb->topsize = 0;
 ////	bb->flag = 0;
 ////	bb->kcode = new_Array(ctx, knh_getcid(ctx, B(NAME(KInst))), 0);
-////	knh_class_t cid = knh_getcid(ctx, B(NAME(KBlock)));
+////	kclass_t cid = knh_getcid(ctx, B(NAME(KBlock)));
 ////	bb->pred = new_Array(ctx, cid, 0);
 ////	bb->succ = new_Array(ctx, cid, 0);
 ////	return bb;
@@ -1421,7 +1421,7 @@
 ////	KNH_FREE(ctx, bb, sizeof(KBlock_t));
 ////}
 ////
-////static void knh_KBlock_init(CTX ctx, knh_sfp_t *sfp, KBlock_t *bb, size_t id)
+////static void knh_KBlock_init(CTX ctx, ksfp_t *sfp, KBlock_t *bb, size_t id)
 ////{
 ////	bb->id = id;
 ////}
@@ -1430,13 +1430,13 @@
 /////* [KBlock Method] */
 ////
 //////## method KBlock KBlock.new(Int id);
-////KMETHOD KBlock_new(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_new(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = knh_KBlock_malloc(ctx);
 ////	knh_KBlock_init(ctx, sfp, bb, Int_to(size_t, sfp[1]));
 //////	knh_RawPtr_t *p = new_RawPtr(ctx, bb, knh_KBlock_pfree, CLASS_Object, NAME(KBlock));
 //////	knh_ObjectField_t *of = (knh_ObjectField_t*)p;
-//////	knh_class_t cid = knh_getcid(ctx, B(NAME(KBlock)));
+//////	kclass_t cid = knh_getcid(ctx, B(NAME(KBlock)));
 //////	of->fields[8] = (Object*)new_Array(ctx, cid, 0); // bucket
 //////	of->fields[9] = (Object*)new_Array(ctx, cid, 0); // df
 //////	of->fields[10] = (Object*)new_Array(ctx, CLASS_Int, 0); // aorig
@@ -1444,21 +1444,21 @@
 ////}
 ////
 //////## method Array<KBlock> KBlock.getPred();
-////KMETHOD KBlock_getPred(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getPred(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURN_(bb->pred);
 ////}
 ////
 //////## method Array<KBlock> KBlock.getSucc();
-////KMETHOD KBlock_getSucc(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getSucc(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURN_(bb->succ);
 ////}
 ////
 //////## method Array<KBlock> KBlock.setSucc(Array<KBlock> succ);
-////KMETHOD KBlock_setSucc(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_setSucc(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	KNH_SETv(ctx, bb->succ, sfp[1].a);
@@ -1466,14 +1466,14 @@
 ////}
 ////
 //////## method Int KBlock.getId();
-////KMETHOD KBlock_getId(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getId(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURNi_(bb->id);
 ////}
 ////
 //////## method Int KBlock.setId(Int id);
-////KMETHOD KBlock_setId(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_setId(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	bb->id = Int_to(size_t, sfp[1]);
@@ -1486,7 +1486,7 @@
 //{
 //	knh_RawPtr_t *bbo = rootbb;
 //	KBlock_t *bb = (KBlock_t*)bbo->rawptr;
-//	knh_bool_t flag = !(bb->flag);
+//	kbool_t flag = !(bb->flag);
 //	bb->flag = flag;
 //	size_t i;
 //	BEGIN_LOCAL(ctx, lsfp, 1);
@@ -1521,14 +1521,14 @@
 //}
 //
 //////## method Array<KInst> KBlock.getKCode();
-////KMETHOD KBlock_getKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_getKCode(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	RETURN_(bb->kcode);
 ////}
 ////
 //////## method Array<KInst> KBlock.setKCode(Array<KInst> kcode);
-////KMETHOD KBlock_setKCode(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_setKCode(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
 ////	knh_Array_t *klrcode = sfp[1].a;
@@ -1537,10 +1537,10 @@
 ////}
 ////
 //////## method Array<KInst> KBlock.deconstructCfg();
-////KMETHOD KBlock_deconstructCfg(CTX ctx, knh_sfp_t *sfp, long rix)
+////KMETHOD KBlock_deconstructCfg(CTX ctx, ksfp_t *sfp, long rix)
 ////{
 ////	KBlock_t *bb = RawPtr_to(KBlock_t *, sfp[0]);
-////	knh_class_t cid = knh_getcid(ctx, B(NAME(KInst)));
+////	kclass_t cid = knh_getcid(ctx, B(NAME(KInst)));
 ////	knh_Array_t *klrcode = new_Array(ctx, cid, 0);
 ////	deconstructCfg(ctx, klrcode, bb, !bb->flag, 0);
 //////	fprintf(stderr, "klrcodesize=%ld\n", knh_Array_size(klrcode));

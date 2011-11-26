@@ -10,7 +10,7 @@
 /* [Dependable Glue] */
 
 typedef struct knh_GlueSPI_t {
-  knh_RawPtr_t* (*getFunc)(CTX, knh_sfp_t * _RIX);
+  knh_RawPtr_t* (*getFunc)(CTX, ksfp_t * _RIX);
   void (*component_free)(CTX, void *);
   void (*glue_free)(CTX, void *);
 } knh_GlueSPI_t;
@@ -59,7 +59,7 @@ static void Glue_free(CTX ctx, knh_RawPtr_t *po)
 }
 
 
-DEFAPI(void) defGlue(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defGlue(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Glue";
 	cdef->init = Glue_init;
@@ -69,7 +69,7 @@ DEFAPI(void) defGlue(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 /* ------------------------------------------------------------------------ */
 
 // @Native var Glue.getFunc(String symbol, Class_, Func _);
-KMETHOD Glue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Glue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
   knh_Glue_t *glue = (knh_Glue_t*)((sfp[0].p)->rawptr);
   knh_GlueSPI_t *gapi = glue->gapi;

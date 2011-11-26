@@ -5,7 +5,7 @@
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIComm.bcast(MPIData data, int count, int root_rank);
 
-KMETHOD MPIComm_bcast(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_bcast(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(data, sfp[1].o);
@@ -37,7 +37,7 @@ KMETHOD MPIComm_bcast(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIComm.scatter(MPIData sdata, int scount, MPIData rdata, int rcount, int root_rank);
 
-KMETHOD MPIComm_scatter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_scatter(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -68,7 +68,7 @@ KMETHOD MPIComm_scatter(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIComm.gather(MPIData sdata, int scount, MPIData rdata, int rcount, int root_rank);
 
-KMETHOD MPIComm_gather(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_gather(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -129,7 +129,7 @@ KMETHOD MPIComm_gather(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int MPIComm.allGather(MPIData sdata, int scount, MPIData rdata, int rcount);
 
-KMETHOD MPIComm_allGather(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_allGather(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -168,7 +168,7 @@ KMETHOD MPIComm_allGather(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int MPIComm.allToAll(MPIData sdata, int scount, MPIData rdata, int rcount);
 
-KMETHOD MPIComm_allToAll(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_allToAll(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -215,7 +215,7 @@ KMETHOD MPIComm_allToAll(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int MPIComm.reduce(MPIData sdata, MPIData rdata, int count, MPIOp op, int root_rank);
 
-KMETHOD MPIComm_reduce(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_reduce(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -245,7 +245,7 @@ KMETHOD MPIComm_reduce(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int MPIComm.allReduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op);
 
-KMETHOD MPIComm_allReduce(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_allReduce(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);

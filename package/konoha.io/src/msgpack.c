@@ -49,17 +49,17 @@ static inline void CWB_close(CTX ctx, CWB_t *cwb)
 }
 
 
-static void *msgpack_init(CTX ctx, knh_packer_t *pk)
+static void *msgpack_init(CTX ctx, kpackAPI_t *pk)
 {
 	pk->sbuffer = msgpack_sbuffer_new();
 	pk->pk = msgpack_packer_new(pk->sbuffer, msgpack_sbuffer_write);
 	return pk;
 }
 
-static void msgpack_flushfree(CTX ctx, knh_packer_t *pk)
+static void msgpack_flushfree(CTX ctx, kpackAPI_t *pk)
 {
 	msgpack_sbuffer *sbuffer = pk->sbuffer;
-	knh_bytes_t t = {{sbuffer->data}, sbuffer->size};
+	kbytes_t t = {{sbuffer->data}, sbuffer->size};
 	knh_OutputStream_write(ctx, pk->w, t);
 	knh_OutputStream_flush(ctx, pk->w); /* TODO need flush? */
 	msgpack_sbuffer_free(pk->sbuffer);
@@ -68,38 +68,38 @@ static void msgpack_flushfree(CTX ctx, knh_packer_t *pk)
 
 static void msgpack_null(CTX ctx, void *pkp)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	msgpack_pack_nil(pk->pk);
 }
 
 static void msgpack_bool(CTX ctx, void *pkp, int b)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	(b) ? msgpack_pack_true(pk->pk) : msgpack_pack_false(pk->pk);
 }
 
-static void msgpack_int(CTX ctx, void *pkp, knh_int_t i)
+static void msgpack_int(CTX ctx, void *pkp, kint_t i)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	msgpack_pack_int64(pk->pk, i);
 }
 
-static void msgpack_float(CTX ctx, void *pkp, knh_float_t f)
+static void msgpack_float(CTX ctx, void *pkp, kfloat_t f)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	msgpack_pack_double(pk->pk, f);
 }
 
 static void msgpack_string(CTX ctx, void *pkp, const char *str, size_t len)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	msgpack_pack_raw(pk->pk, len + 1);
 	msgpack_pack_raw_body(pk->pk, str, len + 1);
 }
 
 static void msgpack_raw(CTX ctx, void *pkp, const char *str, size_t len)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	msgpack_pack_raw(pk->pk, len + 1);
 	msgpack_pack_raw_body(pk->pk, str, len + 1);
 }
@@ -110,7 +110,7 @@ static void msgpack_putc(CTX ctx, void *pk, int ch)
 
 static void msgpack_array(CTX ctx, void *pkp, size_t array_size)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	msgpack_pack_array(pk->pk, array_size);
 }
 
@@ -120,7 +120,7 @@ static void msgpack_array_end(CTX ctx, void *pkp)
 
 static void msgpack_map(CTX ctx, void *pkp, size_t map_size)
 {
-	knh_packer_t *pk = (knh_packer_t *)pkp;
+	kpackAPI_t *pk = (kpackAPI_t *)pkp;
 	msgpack_pack_map(pk->pk, map_size);
 }
 
@@ -128,7 +128,7 @@ static void msgpack_map_end(CTX ctx, void *pkp)
 {
 }
 
-static knh_type_t msgpack_read(CTX ctx, msgpack_object obj, knh_sfp_t *sfp)
+static ktype_t msgpack_read(CTX ctx, msgpack_object obj, ksfp_t *sfp)
 {
 	switch (obj.type) {
 	case MSGPACK_OBJECT_NIL:
@@ -156,7 +156,7 @@ static knh_type_t msgpack_read(CTX ctx, msgpack_object obj, knh_sfp_t *sfp)
 		const msgpack_object *array_end = obj.via.array.ptr + asize;
 		KNH_SETv(ctx, sfp[0].o, new_Array(ctx, CLASS_Tdynamic, asize));
 		for (; a < array_end; a++) {
-			knh_type_t type = msgpack_read(ctx, *a, sfp+1);
+			ktype_t type = msgpack_read(ctx, *a, sfp+1);
 			knh_boxing(ctx, sfp+1, type);
 			knh_Array_add(ctx, sfp[0].a, sfp[1].o);
 		}
@@ -170,7 +170,7 @@ static knh_type_t msgpack_read(CTX ctx, msgpack_object obj, knh_sfp_t *sfp)
 			KNH_SETv(ctx, sfp[0].o, new_DataMap(ctx/*, obj.via.map.size*/));
 			for (; map < map_end; map++) {
 				const char *key = map->key.via.raw.ptr;
-				knh_type_t type = msgpack_read(ctx, map->val, sfp+1);
+				ktype_t type = msgpack_read(ctx, map->val, sfp+1);
 				knh_boxing(ctx, sfp+1, type);
 				klr_setesp(ctx, sfp+2);
 				knh_DataMap_set(ctx, sfp[0].m, new_String(ctx, key), sfp[1].o);
@@ -181,9 +181,9 @@ static knh_type_t msgpack_read(CTX ctx, msgpack_object obj, knh_sfp_t *sfp)
 	return CLASS_Tvoid;
 }
 
-static knh_type_t msgpack_unpackTo(CTX ctx, const char *buf, size_t size, knh_sfp_t *sfp)
+static ktype_t msgpack_unpackTo(CTX ctx, const char *buf, size_t size, ksfp_t *sfp)
 {
-	knh_type_t type;
+	ktype_t type;
 	msgpack_unpacker upk;
 	msgpack_unpacked result;
 	msgpack_unpacker_init(&upk, MSGPACK_UNPACKER_INIT_BUFFER_SIZE);
@@ -221,9 +221,9 @@ static const knh_PackSPI_t *knh_getMsgPackSPI()
 	return &pack;
 }
 
-static inline knh_bytes_t CWB_tobytes(CWB_t *cwb)
+static inline kbytes_t CWB_tobytes(CWB_t *cwb)
 {
-	knh_bytes_t t;
+	kbytes_t t;
 	t.text = (cwb->ba)->bu.text + cwb->pos;
 	t.len =  (cwb->ba)->bu.len - cwb->pos;
 	return t;
@@ -231,19 +231,19 @@ static inline knh_bytes_t CWB_tobytes(CWB_t *cwb)
 
 //## method void OutputStream.writeMsgPack(Object data);
 
-KMETHOD OutputStream_writeMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD OutputStream_writeMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_RawPtr_t *o = sfp[1].p;
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
-	knh_packer_t packer = {w, NULL, NULL};
-	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);
+	kpackAPI_t packer = {w, NULL, NULL};
+	kpackAPI_t *pkr = packspi->pack_init(ctx, &packer);
 	O_cTBL(o)->cdef->wdata(ctx, o, pkr, packspi);
 	packspi->pack_flushfree(ctx, pkr);
 	RETURNvoid_();
 }
 
-static void RETURN_T(CTX ctx, knh_sfp_t *sfp, knh_class_t scid, knh_class_t tcid, knh_sfp_t *vsfp _RIX)
+static void RETURN_T(CTX ctx, ksfp_t *sfp, kclass_t scid, kclass_t tcid, ksfp_t *vsfp _RIX)
 {
 	if(tcid != scid) {
 		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
@@ -263,27 +263,27 @@ static void RETURN_T(CTX ctx, knh_sfp_t *sfp, knh_class_t scid, knh_class_t tcid
 
 //## method Tvar InputStream.readMsgPack(Class _);
 
-KMETHOD InputStream_readMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD InputStream_readMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_InputStream_t *in = sfp[0].in;
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	io2_readAll(ctx, in->io2, cwb->ba);
-	knh_bytes_t blob = CWB_tobytes(cwb);
-	knh_type_t type = packspi->unpack(ctx, blob.text, blob.len, sfp+2);
+	kbytes_t blob = CWB_tobytes(cwb);
+	ktype_t type = packspi->unpack(ctx, blob.text, blob.len, sfp+2);
 	CWB_close(ctx, cwb);
 	RETURN_T(ctx, sfp, type, (sfp[1].c)->cid, sfp+2, K_RIX);
 }
 
 //## method void Bytes.writeMsgPack(Object data);
 
-KMETHOD Bytes_writeMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Bytes_writeMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_RawPtr_t *o = sfp[1].p;
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
 	KNH_SETv(ctx, sfp[0].o, new_BytesOutputStream(ctx, sfp[0].ba));
-	knh_packer_t packer = {sfp[0].w, NULL, NULL};
-	knh_packer_t *pkr = packspi->pack_init(ctx, &packer);
+	kpackAPI_t packer = {sfp[0].w, NULL, NULL};
+	kpackAPI_t *pkr = packspi->pack_init(ctx, &packer);
 	O_cTBL(o)->cdef->wdata(ctx, o, pkr, packspi);
 	packspi->pack_flushfree(ctx, pkr);
 	RETURNvoid_();
@@ -291,9 +291,9 @@ KMETHOD Bytes_writeMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //## method Tvar Bytes.readMsgPack(int offset, int len, Class _);
 
-KMETHOD Bytes_readMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Bytes_readMsgPack(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t b = BA_tobytes(sfp[0].ba);
+	kbytes_t b = BA_tobytes(sfp[0].ba);
 	if(sfp[1].ivalue > 0 && sfp[1].ivalue < b.len) {
 		b.text = b.text + (size_t)sfp[1].ivalue;
 		b.len  = b.len - (size_t)sfp[1].ivalue;
@@ -302,7 +302,7 @@ KMETHOD Bytes_readMsgPack(CTX ctx, knh_sfp_t *sfp _RIX)
 		b.len = (size_t)sfp[2].ivalue;
 	}
 	const knh_PackSPI_t *packspi = knh_getMsgPackSPI();
-	knh_type_t type = packspi->unpack(ctx, b.text, b.len, sfp+4);
+	ktype_t type = packspi->unpack(ctx, b.text, b.len, sfp+4);
 	RETURN_T(ctx, sfp, type, (sfp[3].c)->cid, sfp+4, K_RIX);
 }
 

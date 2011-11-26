@@ -16,18 +16,18 @@ static inline void RCinc(CTX ctx CC_UNUSED, Object *o)
 /* ------------------------------------------------------------------------ */
 /* [bytes] */
 
-static inline knh_bytes_t new_bytes(char *c_buf)
+static inline kbytes_t new_bytes(char *c_buf)
 {
 	DBG_ASSERT(c_buf != NULL);
-	knh_bytes_t t;
-	t.ubuf = (knh_uchar_t*)c_buf;
+	kbytes_t t;
+	t.ubuf = (kchar_t*)c_buf;
 	t.len = knh_strlen(t.text);
 	return t;
 }
 
-static inline knh_bytes_t new_bytes2(const char *text, size_t len)
+static inline kbytes_t new_bytes2(const char *text, size_t len)
 {
-	knh_bytes_t v;
+	kbytes_t v;
 	v.text = text;
 	v.len = len;
 	return v;
@@ -35,50 +35,50 @@ static inline knh_bytes_t new_bytes2(const char *text, size_t len)
 
 /* ------------------------------------------------------------------------ */
 
-static inline knh_bool_t knh_bytes_equals(knh_bytes_t v1, knh_bytes_t v2)
+static inline kbool_t knh_bytes_equals(kbytes_t v1, kbytes_t v2)
 {
 	return (v1.len == v2.len && knh_strncmp(v1.text, v2.text, v1.len) == 0);
 }
 
-static inline knh_bool_t knh_bytes_equalsIgnoreCase(knh_bytes_t v1, knh_bytes_t v2)
+static inline kbool_t knh_bytes_equalsIgnoreCase(kbytes_t v1, kbytes_t v2)
 {
 	return (v1.len == v2.len && knh_strncasecmp(v1.text, v2.text, v1.len) == 0);
 }
 
 #define knh_bytes_startsWith(t, T)   knh_bytes_startsWith_(t, STEXT(T))
-static inline int knh_bytes_startsWith_(knh_bytes_t v1, knh_bytes_t v2)
+static inline int knh_bytes_startsWith_(kbytes_t v1, kbytes_t v2)
 {
 	if(v1.len < v2.len) return 0;
 	return (knh_strncmp(v1.text, v2.text, v2.len) == 0);
 }
 
 #define knh_bytes_endsWith(t, T)   knh_bytes_endsWith_(t, STEXT(T))
-static inline knh_bool_t knh_bytes_endsWith_(knh_bytes_t v1, knh_bytes_t v2)
+static inline kbool_t knh_bytes_endsWith_(kbytes_t v1, kbytes_t v2)
 {
 	if(v1.len < v2.len) return 0;
-	knh_text_t *p = v1.text + (v1.len-v2.len);
+	kascii_t *p = v1.text + (v1.len-v2.len);
 	return (knh_strncmp(p, v2.text, v2.len) == 0);
 }
 
-static inline knh_index_t knh_bytes_index(knh_bytes_t v, int ch)
+static inline kindex_t knh_bytes_index(kbytes_t v, int ch)
 {
 	size_t i;
 	for(i = 0; i < v.len; i++) {
-		if(v.utext[i] == ch) return (knh_index_t)i;
+		if(v.utext[i] == ch) return (kindex_t)i;
 	}
 	return -1;
 }
 
-static inline knh_index_t knh_bytes_rindex(knh_bytes_t v, int ch)
+static inline kindex_t knh_bytes_rindex(kbytes_t v, int ch)
 {
-	knh_index_t i;
+	kindex_t i;
 	for(i = v.len - 1; i >= 0; i--) {
 		if(v.utext[i] == ch) return i;
 	}
 	return -1;
 }
 
-static inline knh_bytes_t knh_bytes_head(knh_bytes_t t, int ch)
+static inline kbytes_t knh_bytes_head(kbytes_t t, int ch)
 {
 	size_t i;
 	for(i = 0; i < t.len; i++) {
@@ -90,7 +90,7 @@ static inline knh_bytes_t knh_bytes_head(knh_bytes_t t, int ch)
 	return t;
 }
 
-static inline knh_bytes_t knh_bytes_rhead(knh_bytes_t t, int ch)
+static inline kbytes_t knh_bytes_rhead(kbytes_t t, int ch)
 {
 	long i;
 	for(i = t.len - 1; i >= 0; i--) {
@@ -102,7 +102,7 @@ static inline knh_bytes_t knh_bytes_rhead(knh_bytes_t t, int ch)
 	return t;
 }
 
-static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
+static inline kbytes_t knh_bytes_next(kbytes_t v, int ch)
 {
 	size_t i;
 	for(i = 0; i < v.len; i++) {
@@ -115,7 +115,7 @@ static inline knh_bytes_t knh_bytes_next(knh_bytes_t v, int ch)
 	return v;
 }
 
-static inline knh_bytes_t knh_bytes_rnext(knh_bytes_t v, int ch)
+static inline kbytes_t knh_bytes_rnext(kbytes_t v, int ch)
 {
 	long i;
 	for(i = v.len - 1; i >= 0; i--) {
@@ -128,15 +128,15 @@ static inline knh_bytes_t knh_bytes_rnext(knh_bytes_t v, int ch)
 	return v;
 }
 
-static inline knh_bytes_t knh_bytes_first(knh_bytes_t t, knh_intptr_t loc)
+static inline kbytes_t knh_bytes_first(kbytes_t t, kintptr_t loc)
 {
-	knh_bytes_t t2 = {{t.text}, loc};
+	kbytes_t t2 = {{t.text}, loc};
 	return t2;
 }
 
-static inline knh_bytes_t knh_bytes_last(knh_bytes_t t, knh_intptr_t loc)
+static inline kbytes_t knh_bytes_last(kbytes_t t, kintptr_t loc)
 {
-	knh_bytes_t t2 = {{t.text + loc}, t.len - loc};
+	kbytes_t t2 = {{t.text + loc}, t.len - loc};
 	return t2;
 }
 
@@ -201,7 +201,7 @@ static inline void CWB_putc(CTX ctx, CWB_t *cwb, int ch)
 	knh_Bytes_putc(ctx, (cwb->ba), ch);
 }
 
-static inline void CWB_write(CTX ctx, CWB_t *cwb, knh_bytes_t t)
+static inline void CWB_write(CTX ctx, CWB_t *cwb, kbytes_t t)
 {
 	knh_Bytes_write(ctx, (cwb->ba), t);
 }
@@ -211,9 +211,9 @@ static inline size_t CWB_size(CWB_t *cwb)
 	return (cwb->ba)->bu.len - cwb->pos;
 }
 
-static inline knh_bytes_t CWB_tobytes(CWB_t *cwb)
+static inline kbytes_t CWB_tobytes(CWB_t *cwb)
 {
-	knh_bytes_t t;
+	kbytes_t t;
 	t.text = (cwb->ba)->bu.text + cwb->pos;
 	t.len =  (cwb->ba)->bu.len - cwb->pos;
 	return t;
@@ -221,7 +221,7 @@ static inline knh_bytes_t CWB_tobytes(CWB_t *cwb)
 
 /* ------------------------------------------------------------------------ */
 
-static inline size_t knh_array_index(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_t size)
+static inline size_t knh_array_index(CTX ctx, ksfp_t *sfp, kint_t n, size_t size)
 {
 	size_t idx = (n < 0) ? size + n : n;
 	if(unlikely(!(idx < size))) {
@@ -244,22 +244,22 @@ static inline size_t knh_array_index(CTX ctx, knh_sfp_t *sfp, knh_int_t n, size_
 #include <btron/event.h>
 #endif
 
-static inline knh_uint_t knh_time(void)
+static inline kuint_t knh_time(void)
 {
 #if defined(K_USING_WINDOWS_)
-	return (knh_uint_t)time(NULL);
+	return (kuint_t)time(NULL);
 #elif defined(K_USING_POSIX_)
-	return (knh_uint_t)time(NULL);
+	return (kuint_t)time(NULL);
 #else
-	return K_INT_MAX;
+	return KINT_MAX;
 #endif
 }
 
-static inline knh_uint64_t knh_getTimeMilliSecond(void)
+static inline kuint64_t knh_getTimeMilliSecond(void)
 {
 #if defined(K_USING_WINDOWS_)
 	DWORD tickCount = GetTickCount();
-	return (knh_int64_t)tickCount;
+	return (kint64_t)tickCount;
 #elif defined(K_USING_POSIX_)
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -274,7 +274,7 @@ static inline knh_uint64_t knh_getTimeMilliSecond(void)
 		first = 0;
 	}
 	get_etm(&current);
-	return (knh_uint64_t)((current - start) & 0x7fffffff);
+	return (kuint64_t)((current - start) & 0x7fffffff);
 #else
 	return 0;
 #endif

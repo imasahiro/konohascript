@@ -37,7 +37,7 @@ extern "C" {
 #endif
 
 //## @Native void GL.glActiveTextureARB(GLenum texture);
-KMETHOD GL_glActiveTextureARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glActiveTextureARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum texture = PKGInt_to(GLenum, 1);
 
@@ -46,7 +46,7 @@ KMETHOD GL_glActiveTextureARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClientActiveTextureARB(GLenum texture);
-KMETHOD GL_glClientActiveTextureARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClientActiveTextureARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum texture = PKGInt_to(GLenum, 1);
 
@@ -55,7 +55,7 @@ KMETHOD GL_glClientActiveTextureARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1dARB(GLenum target, GLdouble s);
-KMETHOD GL_glMultiTexCoord1dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -65,7 +65,7 @@ KMETHOD GL_glMultiTexCoord1dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1dvARB(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord1dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -75,7 +75,7 @@ KMETHOD GL_glMultiTexCoord1dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1fARB(GLenum target, GLfloat s);
-KMETHOD GL_glMultiTexCoord1fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -85,7 +85,7 @@ KMETHOD GL_glMultiTexCoord1fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1fvARB(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord1fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -95,7 +95,7 @@ KMETHOD GL_glMultiTexCoord1fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1iARB(GLenum target, GLint s);
-KMETHOD GL_glMultiTexCoord1iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -105,7 +105,7 @@ KMETHOD GL_glMultiTexCoord1iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1ivARB(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord1ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -115,7 +115,7 @@ KMETHOD GL_glMultiTexCoord1ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1sARB(GLenum target, GLshort s);
-KMETHOD GL_glMultiTexCoord1sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -125,7 +125,7 @@ KMETHOD GL_glMultiTexCoord1sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1svARB(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord1svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -135,7 +135,7 @@ KMETHOD GL_glMultiTexCoord1svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2dARB(GLenum target, GLdouble s, GLdouble t);
-KMETHOD GL_glMultiTexCoord2dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -146,7 +146,7 @@ KMETHOD GL_glMultiTexCoord2dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2dvARB(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord2dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -156,7 +156,7 @@ KMETHOD GL_glMultiTexCoord2dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2fARB(GLenum target, GLfloat s, GLfloat t);
-KMETHOD GL_glMultiTexCoord2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -167,7 +167,7 @@ KMETHOD GL_glMultiTexCoord2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2fvARB(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -177,7 +177,7 @@ KMETHOD GL_glMultiTexCoord2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2iARB(GLenum target, GLint s, GLint t);
-KMETHOD GL_glMultiTexCoord2iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -188,7 +188,7 @@ KMETHOD GL_glMultiTexCoord2iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2ivARB(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord2ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -198,7 +198,7 @@ KMETHOD GL_glMultiTexCoord2ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2sARB(GLenum target, GLshort s, GLshort t);
-KMETHOD GL_glMultiTexCoord2sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -209,7 +209,7 @@ KMETHOD GL_glMultiTexCoord2sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2svARB(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord2svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -219,7 +219,7 @@ KMETHOD GL_glMultiTexCoord2svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3dARB(GLenum target, GLdouble s, GLdouble t, GLdouble r);
-KMETHOD GL_glMultiTexCoord3dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -231,7 +231,7 @@ KMETHOD GL_glMultiTexCoord3dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3dvARB(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord3dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -241,7 +241,7 @@ KMETHOD GL_glMultiTexCoord3dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3fARB(GLenum target, GLfloat s, GLfloat t, GLfloat r);
-KMETHOD GL_glMultiTexCoord3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -253,7 +253,7 @@ KMETHOD GL_glMultiTexCoord3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3fvARB(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -263,7 +263,7 @@ KMETHOD GL_glMultiTexCoord3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3iARB(GLenum target, GLint s, GLint t, GLint r);
-KMETHOD GL_glMultiTexCoord3iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -275,7 +275,7 @@ KMETHOD GL_glMultiTexCoord3iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3ivARB(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord3ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -285,7 +285,7 @@ KMETHOD GL_glMultiTexCoord3ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3sARB(GLenum target, GLshort s, GLshort t, GLshort r);
-KMETHOD GL_glMultiTexCoord3sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -297,7 +297,7 @@ KMETHOD GL_glMultiTexCoord3sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3svARB(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord3svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -307,7 +307,7 @@ KMETHOD GL_glMultiTexCoord3svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4dARB(GLenum target, GLdouble s, GLdouble t, GLdouble r, GLdouble q);
-KMETHOD GL_glMultiTexCoord4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -320,7 +320,7 @@ KMETHOD GL_glMultiTexCoord4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4dvARB(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -330,7 +330,7 @@ KMETHOD GL_glMultiTexCoord4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4fARB(GLenum target, GLfloat s, GLfloat t, GLfloat r, GLfloat q);
-KMETHOD GL_glMultiTexCoord4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -343,7 +343,7 @@ KMETHOD GL_glMultiTexCoord4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4fvARB(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -353,7 +353,7 @@ KMETHOD GL_glMultiTexCoord4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4iARB(GLenum target, GLint s, GLint t, GLint r, GLint q);
-KMETHOD GL_glMultiTexCoord4iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -366,7 +366,7 @@ KMETHOD GL_glMultiTexCoord4iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4ivARB(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord4ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -376,7 +376,7 @@ KMETHOD GL_glMultiTexCoord4ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4sARB(GLenum target, GLshort s, GLshort t, GLshort r, GLshort q);
-KMETHOD GL_glMultiTexCoord4sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -389,7 +389,7 @@ KMETHOD GL_glMultiTexCoord4sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4svARB(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord4svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -399,7 +399,7 @@ KMETHOD GL_glMultiTexCoord4svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadTransposeMatrixfARB(GLfloat* m);
-KMETHOD GL_glLoadTransposeMatrixfARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadTransposeMatrixfARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* m = PKG_Error_to(GLfloat*, 1);
 
@@ -408,7 +408,7 @@ KMETHOD GL_glLoadTransposeMatrixfARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadTransposeMatrixdARB(GLdouble* m);
-KMETHOD GL_glLoadTransposeMatrixdARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadTransposeMatrixdARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* m = PKG_Error_to(GLdouble*, 1);
 
@@ -417,7 +417,7 @@ KMETHOD GL_glLoadTransposeMatrixdARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultTransposeMatrixfARB(GLfloat* m);
-KMETHOD GL_glMultTransposeMatrixfARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultTransposeMatrixfARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* m = PKG_Error_to(GLfloat*, 1);
 
@@ -426,7 +426,7 @@ KMETHOD GL_glMultTransposeMatrixfARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultTransposeMatrixdARB(GLdouble* m);
-KMETHOD GL_glMultTransposeMatrixdARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultTransposeMatrixdARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* m = PKG_Error_to(GLdouble*, 1);
 
@@ -435,7 +435,7 @@ KMETHOD GL_glMultTransposeMatrixdARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSampleCoverageARB(GLclampf value, GLboolean invert);
-KMETHOD GL_glSampleCoverageARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSampleCoverageARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampf value = PKGFloat_to(GLclampf, 1);
     GLboolean invert = PKGInt_to(GLboolean, 2);
@@ -445,7 +445,7 @@ KMETHOD GL_glSampleCoverageARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexImage3DARB(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexImage3DARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexImage3DARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -462,7 +462,7 @@ KMETHOD GL_glCompressedTexImage3DARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexImage2DARB(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexImage2DARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexImage2DARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -478,7 +478,7 @@ KMETHOD GL_glCompressedTexImage2DARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexImage1DARB(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexImage1DARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexImage1DARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -493,7 +493,7 @@ KMETHOD GL_glCompressedTexImage1DARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexSubImage3DARB(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexSubImage3DARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexSubImage3DARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -512,7 +512,7 @@ KMETHOD GL_glCompressedTexSubImage3DARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexSubImage2DARB(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexSubImage2DARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexSubImage2DARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -529,7 +529,7 @@ KMETHOD GL_glCompressedTexSubImage2DARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexSubImage1DARB(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexSubImage1DARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexSubImage1DARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -544,7 +544,7 @@ KMETHOD GL_glCompressedTexSubImage1DARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetCompressedTexImageARB(GLenum target, GLint level, GLvoid* data);
-KMETHOD GL_glGetCompressedTexImageARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetCompressedTexImageARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -555,7 +555,7 @@ KMETHOD GL_glGetCompressedTexImageARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightbvARB(GLint size, GLbyte* weights);
-KMETHOD GL_glWeightbvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightbvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLbyte* weights = PKG_Error_to(GLbyte*, 2);
@@ -565,7 +565,7 @@ KMETHOD GL_glWeightbvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightsvARB(GLint size, GLshort* weights);
-KMETHOD GL_glWeightsvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightsvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLshort* weights = PKG_Error_to(GLshort*, 2);
@@ -575,7 +575,7 @@ KMETHOD GL_glWeightsvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightivARB(GLint size, GLint* weights);
-KMETHOD GL_glWeightivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLint* weights = PKG_Error_to(GLint*, 2);
@@ -585,7 +585,7 @@ KMETHOD GL_glWeightivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightfvARB(GLint size, GLfloat* weights);
-KMETHOD GL_glWeightfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightfvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLfloat* weights = PKG_Error_to(GLfloat*, 2);
@@ -595,7 +595,7 @@ KMETHOD GL_glWeightfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightdvARB(GLint size, GLdouble* weights);
-KMETHOD GL_glWeightdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightdvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLdouble* weights = PKG_Error_to(GLdouble*, 2);
@@ -605,7 +605,7 @@ KMETHOD GL_glWeightdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightubvARB(GLint size, GLubyte* weights);
-KMETHOD GL_glWeightubvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightubvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLubyte* weights = PKG_Error_to(GLubyte*, 2);
@@ -615,7 +615,7 @@ KMETHOD GL_glWeightubvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightusvARB(GLint size, GLushort* weights);
-KMETHOD GL_glWeightusvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightusvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLushort* weights = PKG_Error_to(GLushort*, 2);
@@ -625,7 +625,7 @@ KMETHOD GL_glWeightusvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightuivARB(GLint size, GLuint* weights);
-KMETHOD GL_glWeightuivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightuivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLuint* weights = PKG_Error_to(GLuint*, 2);
@@ -635,7 +635,7 @@ KMETHOD GL_glWeightuivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWeightPointerARB(GLint size, GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glWeightPointerARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWeightPointerARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -647,7 +647,7 @@ KMETHOD GL_glWeightPointerARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexBlendARB(GLint count);
-KMETHOD GL_glVertexBlendARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexBlendARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint count = PKGInt_to(GLint, 1);
 
@@ -656,7 +656,7 @@ KMETHOD GL_glVertexBlendARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2dARB(GLdouble x, GLdouble y);
-KMETHOD GL_glWindowPos2dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -666,7 +666,7 @@ KMETHOD GL_glWindowPos2dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2dvARB(GLdouble* p);
-KMETHOD GL_glWindowPos2dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* p = PKG_Error_to(GLdouble*, 1);
 
@@ -675,7 +675,7 @@ KMETHOD GL_glWindowPos2dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2fARB(GLfloat x, GLfloat y);
-KMETHOD GL_glWindowPos2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -685,7 +685,7 @@ KMETHOD GL_glWindowPos2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2fvARB(GLfloat* p);
-KMETHOD GL_glWindowPos2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* p = PKG_Error_to(GLfloat*, 1);
 
@@ -694,7 +694,7 @@ KMETHOD GL_glWindowPos2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2iARB(GLint x, GLint y);
-KMETHOD GL_glWindowPos2iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -704,7 +704,7 @@ KMETHOD GL_glWindowPos2iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2ivARB(GLint* p);
-KMETHOD GL_glWindowPos2ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* p = PKG_Error_to(GLint*, 1);
 
@@ -713,7 +713,7 @@ KMETHOD GL_glWindowPos2ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2sARB(GLshort x, GLshort y);
-KMETHOD GL_glWindowPos2sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -723,7 +723,7 @@ KMETHOD GL_glWindowPos2sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2svARB(GLshort* p);
-KMETHOD GL_glWindowPos2svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* p = PKG_Error_to(GLshort*, 1);
 
@@ -732,7 +732,7 @@ KMETHOD GL_glWindowPos2svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3dARB(GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glWindowPos3dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -743,7 +743,7 @@ KMETHOD GL_glWindowPos3dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3dvARB(GLdouble* p);
-KMETHOD GL_glWindowPos3dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* p = PKG_Error_to(GLdouble*, 1);
 
@@ -752,7 +752,7 @@ KMETHOD GL_glWindowPos3dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3fARB(GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glWindowPos3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -763,7 +763,7 @@ KMETHOD GL_glWindowPos3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3fvARB(GLfloat* p);
-KMETHOD GL_glWindowPos3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* p = PKG_Error_to(GLfloat*, 1);
 
@@ -772,7 +772,7 @@ KMETHOD GL_glWindowPos3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3iARB(GLint x, GLint y, GLint z);
-KMETHOD GL_glWindowPos3iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -783,7 +783,7 @@ KMETHOD GL_glWindowPos3iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3ivARB(GLint* p);
-KMETHOD GL_glWindowPos3ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* p = PKG_Error_to(GLint*, 1);
 
@@ -792,7 +792,7 @@ KMETHOD GL_glWindowPos3ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3sARB(GLshort x, GLshort y, GLshort z);
-KMETHOD GL_glWindowPos3sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -803,7 +803,7 @@ KMETHOD GL_glWindowPos3sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3svARB(GLshort* p);
-KMETHOD GL_glWindowPos3svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* p = PKG_Error_to(GLshort*, 1);
 
@@ -812,7 +812,7 @@ KMETHOD GL_glWindowPos3svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenQueriesARB(GLsizei n, GLuint* ids);
-KMETHOD GL_glGenQueriesARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenQueriesARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* ids = PKG_Error_to(GLuint*, 2);
@@ -822,7 +822,7 @@ KMETHOD GL_glGenQueriesARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteQueriesARB(GLsizei n, GLuint* ids);
-KMETHOD GL_glDeleteQueriesARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteQueriesARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* ids = PKG_Error_to(GLuint*, 2);
@@ -832,7 +832,7 @@ KMETHOD GL_glDeleteQueriesARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsQueryARB(GLuint id);
-KMETHOD GL_glIsQueryARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsQueryARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
 
@@ -841,7 +841,7 @@ KMETHOD GL_glIsQueryARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBeginQueryARB(GLenum target, GLuint id);
-KMETHOD GL_glBeginQueryARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBeginQueryARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint id = PKGInt_to(GLuint, 2);
@@ -851,7 +851,7 @@ KMETHOD GL_glBeginQueryARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEndQueryARB(GLenum target);
-KMETHOD GL_glEndQueryARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEndQueryARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -860,7 +860,7 @@ KMETHOD GL_glEndQueryARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryivARB(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetQueryivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -871,7 +871,7 @@ KMETHOD GL_glGetQueryivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryObjectivARB(GLuint id, GLenum pname, GLint* params);
-KMETHOD GL_glGetQueryObjectivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryObjectivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -882,7 +882,7 @@ KMETHOD GL_glGetQueryObjectivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryObjectuivARB(GLuint id, GLenum pname, GLuint* params);
-KMETHOD GL_glGetQueryObjectuivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryObjectuivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -893,7 +893,7 @@ KMETHOD GL_glGetQueryObjectuivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameterfARB(GLenum pname, GLfloat param);
-KMETHOD GL_glPointParameterfARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameterfARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -903,7 +903,7 @@ KMETHOD GL_glPointParameterfARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameterfvARB(GLenum pname, GLfloat* params);
-KMETHOD GL_glPointParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameterfvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat* params = PKG_Error_to(GLfloat*, 2);
@@ -913,7 +913,7 @@ KMETHOD GL_glPointParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindProgramARB(GLenum target, GLuint program);
-KMETHOD GL_glBindProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindProgramARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint program = PKGInt_to(GLuint, 2);
@@ -923,7 +923,7 @@ KMETHOD GL_glBindProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteProgramsARB(GLsizei n, GLuint* programs);
-KMETHOD GL_glDeleteProgramsARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteProgramsARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* programs = PKG_Error_to(GLuint*, 2);
@@ -933,7 +933,7 @@ KMETHOD GL_glDeleteProgramsARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenProgramsARB(GLsizei n, GLuint* programs);
-KMETHOD GL_glGenProgramsARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenProgramsARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* programs = PKG_Error_to(GLuint*, 2);
@@ -943,7 +943,7 @@ KMETHOD GL_glGenProgramsARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsProgramARB(GLuint program);
-KMETHOD GL_glIsProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsProgramARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
 
@@ -952,7 +952,7 @@ KMETHOD GL_glIsProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramEnvParameter4dARB(GLenum target, GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w);
-KMETHOD GL_glProgramEnvParameter4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramEnvParameter4dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -966,7 +966,7 @@ KMETHOD GL_glProgramEnvParameter4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramEnvParameter4dvARB(GLenum target, GLuint index, GLdouble* params);
-KMETHOD GL_glProgramEnvParameter4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramEnvParameter4dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -977,7 +977,7 @@ KMETHOD GL_glProgramEnvParameter4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramEnvParameter4fARB(GLenum target, GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-KMETHOD GL_glProgramEnvParameter4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramEnvParameter4fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -991,7 +991,7 @@ KMETHOD GL_glProgramEnvParameter4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramEnvParameter4fvARB(GLenum target, GLuint index, GLfloat* params);
-KMETHOD GL_glProgramEnvParameter4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramEnvParameter4fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1002,7 +1002,7 @@ KMETHOD GL_glProgramEnvParameter4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramLocalParameter4dARB(GLenum target, GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w);
-KMETHOD GL_glProgramLocalParameter4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramLocalParameter4dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1016,7 +1016,7 @@ KMETHOD GL_glProgramLocalParameter4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramLocalParameter4dvARB(GLenum target, GLuint index, GLdouble* params);
-KMETHOD GL_glProgramLocalParameter4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramLocalParameter4dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1027,7 +1027,7 @@ KMETHOD GL_glProgramLocalParameter4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramLocalParameter4fARB(GLenum target, GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-KMETHOD GL_glProgramLocalParameter4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramLocalParameter4fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1041,7 +1041,7 @@ KMETHOD GL_glProgramLocalParameter4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramLocalParameter4fvARB(GLenum target, GLuint index, GLfloat* params);
-KMETHOD GL_glProgramLocalParameter4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramLocalParameter4fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1052,7 +1052,7 @@ KMETHOD GL_glProgramLocalParameter4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramEnvParameterdvARB(GLenum target, GLuint index, GLdouble* params);
-KMETHOD GL_glGetProgramEnvParameterdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramEnvParameterdvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1063,7 +1063,7 @@ KMETHOD GL_glGetProgramEnvParameterdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramEnvParameterfvARB(GLenum target, GLuint index, GLfloat* params);
-KMETHOD GL_glGetProgramEnvParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramEnvParameterfvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1074,7 +1074,7 @@ KMETHOD GL_glGetProgramEnvParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramEnvParameters4fvEXT(GLenum target, GLuint index, GLsizei count, GLfloat* params);
-KMETHOD GL_glProgramEnvParameters4fvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramEnvParameters4fvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1086,7 +1086,7 @@ KMETHOD GL_glProgramEnvParameters4fvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramLocalParameters4fvEXT(GLenum target, GLuint index, GLsizei count, GLfloat* params);
-KMETHOD GL_glProgramLocalParameters4fvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramLocalParameters4fvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1098,7 +1098,7 @@ KMETHOD GL_glProgramLocalParameters4fvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramLocalParameterdvARB(GLenum target, GLuint index, GLdouble* params);
-KMETHOD GL_glGetProgramLocalParameterdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramLocalParameterdvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1109,7 +1109,7 @@ KMETHOD GL_glGetProgramLocalParameterdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramLocalParameterfvARB(GLenum target, GLuint index, GLfloat* params);
-KMETHOD GL_glGetProgramLocalParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramLocalParameterfvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -1120,7 +1120,7 @@ KMETHOD GL_glGetProgramLocalParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramStringARB(GLenum target, GLenum format, GLsizei len, GLvoid* string);
-KMETHOD GL_glProgramStringARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramStringARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum format = PKGInt_to(GLenum, 2);
@@ -1132,7 +1132,7 @@ KMETHOD GL_glProgramStringARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramStringARB(GLenum target, GLenum pname, GLvoid* string);
-KMETHOD GL_glGetProgramStringARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramStringARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1143,7 +1143,7 @@ KMETHOD GL_glGetProgramStringARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramivARB(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetProgramivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1154,7 +1154,7 @@ KMETHOD GL_glGetProgramivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1dARB(GLuint index, GLdouble x);
-KMETHOD GL_glVertexAttrib1dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -1164,7 +1164,7 @@ KMETHOD GL_glVertexAttrib1dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1dvARB(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib1dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -1174,7 +1174,7 @@ KMETHOD GL_glVertexAttrib1dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1fARB(GLuint index, GLfloat x);
-KMETHOD GL_glVertexAttrib1fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -1184,7 +1184,7 @@ KMETHOD GL_glVertexAttrib1fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1fvARB(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib1fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -1194,7 +1194,7 @@ KMETHOD GL_glVertexAttrib1fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1sARB(GLuint index, GLshort x);
-KMETHOD GL_glVertexAttrib1sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -1204,7 +1204,7 @@ KMETHOD GL_glVertexAttrib1sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1svARB(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib1svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -1214,7 +1214,7 @@ KMETHOD GL_glVertexAttrib1svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2dARB(GLuint index, GLdouble x, GLdouble y);
-KMETHOD GL_glVertexAttrib2dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -1225,7 +1225,7 @@ KMETHOD GL_glVertexAttrib2dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2dvARB(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib2dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -1235,7 +1235,7 @@ KMETHOD GL_glVertexAttrib2dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2fARB(GLuint index, GLfloat x, GLfloat y);
-KMETHOD GL_glVertexAttrib2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -1246,7 +1246,7 @@ KMETHOD GL_glVertexAttrib2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2fvARB(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -1256,7 +1256,7 @@ KMETHOD GL_glVertexAttrib2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2sARB(GLuint index, GLshort x, GLshort y);
-KMETHOD GL_glVertexAttrib2sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -1267,7 +1267,7 @@ KMETHOD GL_glVertexAttrib2sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2svARB(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib2svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -1277,7 +1277,7 @@ KMETHOD GL_glVertexAttrib2svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3dARB(GLuint index, GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glVertexAttrib3dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -1289,7 +1289,7 @@ KMETHOD GL_glVertexAttrib3dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3dvARB(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib3dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -1299,7 +1299,7 @@ KMETHOD GL_glVertexAttrib3dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3fARB(GLuint index, GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glVertexAttrib3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -1311,7 +1311,7 @@ KMETHOD GL_glVertexAttrib3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3fvARB(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -1321,7 +1321,7 @@ KMETHOD GL_glVertexAttrib3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3sARB(GLuint index, GLshort x, GLshort y, GLshort z);
-KMETHOD GL_glVertexAttrib3sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -1333,7 +1333,7 @@ KMETHOD GL_glVertexAttrib3sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3svARB(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib3svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -1343,7 +1343,7 @@ KMETHOD GL_glVertexAttrib3svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4NbvARB(GLuint index, GLbyte* v);
-KMETHOD GL_glVertexAttrib4NbvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4NbvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLbyte* v = PKG_Error_to(GLbyte*, 2);
@@ -1353,7 +1353,7 @@ KMETHOD GL_glVertexAttrib4NbvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4NivARB(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttrib4NivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4NivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -1363,7 +1363,7 @@ KMETHOD GL_glVertexAttrib4NivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4NsvARB(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib4NsvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4NsvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -1373,7 +1373,7 @@ KMETHOD GL_glVertexAttrib4NsvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4NubARB(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w);
-KMETHOD GL_glVertexAttrib4NubARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4NubARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLubyte x = PKGInt_to(GLubyte, 2);
@@ -1386,7 +1386,7 @@ KMETHOD GL_glVertexAttrib4NubARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4NubvARB(GLuint index, GLubyte* v);
-KMETHOD GL_glVertexAttrib4NubvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4NubvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLubyte* v = PKG_Error_to(GLubyte*, 2);
@@ -1396,7 +1396,7 @@ KMETHOD GL_glVertexAttrib4NubvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4NuivARB(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttrib4NuivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4NuivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -1406,7 +1406,7 @@ KMETHOD GL_glVertexAttrib4NuivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4NusvARB(GLuint index, GLushort* v);
-KMETHOD GL_glVertexAttrib4NusvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4NusvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLushort* v = PKG_Error_to(GLushort*, 2);
@@ -1416,7 +1416,7 @@ KMETHOD GL_glVertexAttrib4NusvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4bvARB(GLuint index, GLbyte* v);
-KMETHOD GL_glVertexAttrib4bvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4bvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLbyte* v = PKG_Error_to(GLbyte*, 2);
@@ -1426,7 +1426,7 @@ KMETHOD GL_glVertexAttrib4bvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4dARB(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w);
-KMETHOD GL_glVertexAttrib4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4dARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -1439,7 +1439,7 @@ KMETHOD GL_glVertexAttrib4dARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4dvARB(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4dvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -1449,7 +1449,7 @@ KMETHOD GL_glVertexAttrib4dvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4fARB(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-KMETHOD GL_glVertexAttrib4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -1462,7 +1462,7 @@ KMETHOD GL_glVertexAttrib4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4fvARB(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -1472,7 +1472,7 @@ KMETHOD GL_glVertexAttrib4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4ivARB(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttrib4ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -1482,7 +1482,7 @@ KMETHOD GL_glVertexAttrib4ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4sARB(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w);
-KMETHOD GL_glVertexAttrib4sARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4sARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -1495,7 +1495,7 @@ KMETHOD GL_glVertexAttrib4sARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4svARB(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib4svARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4svARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -1505,7 +1505,7 @@ KMETHOD GL_glVertexAttrib4svARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4ubvARB(GLuint index, GLubyte* v);
-KMETHOD GL_glVertexAttrib4ubvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4ubvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLubyte* v = PKG_Error_to(GLubyte*, 2);
@@ -1515,7 +1515,7 @@ KMETHOD GL_glVertexAttrib4ubvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4uivARB(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttrib4uivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4uivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -1525,7 +1525,7 @@ KMETHOD GL_glVertexAttrib4uivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4usvARB(GLuint index, GLushort* v);
-KMETHOD GL_glVertexAttrib4usvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4usvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLushort* v = PKG_Error_to(GLushort*, 2);
@@ -1535,7 +1535,7 @@ KMETHOD GL_glVertexAttrib4usvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribPointerARB(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glVertexAttribPointerARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribPointerARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint size = PKGInt_to(GLint, 2);
@@ -1549,7 +1549,7 @@ KMETHOD GL_glVertexAttribPointerARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDisableVertexAttribArrayARB(GLuint index);
-KMETHOD GL_glDisableVertexAttribArrayARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDisableVertexAttribArrayARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
 
@@ -1558,7 +1558,7 @@ KMETHOD GL_glDisableVertexAttribArrayARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEnableVertexAttribArrayARB(GLuint index);
-KMETHOD GL_glEnableVertexAttribArrayARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEnableVertexAttribArrayARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
 
@@ -1567,7 +1567,7 @@ KMETHOD GL_glEnableVertexAttribArrayARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribPointervARB(GLuint index, GLenum pname, GLvoid** pointer);
-KMETHOD GL_glGetVertexAttribPointervARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribPointervARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1578,7 +1578,7 @@ KMETHOD GL_glGetVertexAttribPointervARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribdvARB(GLuint index, GLenum pname, GLdouble* params);
-KMETHOD GL_glGetVertexAttribdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribdvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1589,7 +1589,7 @@ KMETHOD GL_glGetVertexAttribdvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribfvARB(GLuint index, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetVertexAttribfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribfvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1600,7 +1600,7 @@ KMETHOD GL_glGetVertexAttribfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribivARB(GLuint index, GLenum pname, GLint* params);
-KMETHOD GL_glGetVertexAttribivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1611,7 +1611,7 @@ KMETHOD GL_glGetVertexAttribivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteObjectARB(GLhandleARB obj);
-KMETHOD GL_glDeleteObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteObjectARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB obj = PKG_Error_to(GLhandleARB, 1);
 
@@ -1620,7 +1620,7 @@ KMETHOD GL_glDeleteObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLhandleARB GL.glGetHandleARB(GLenum pname);
-KMETHOD GL_glGetHandleARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetHandleARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
 
@@ -1629,7 +1629,7 @@ KMETHOD GL_glGetHandleARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDetachObjectARB(GLhandleARB containerObj, GLhandleARB attachedObj);
-KMETHOD GL_glDetachObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDetachObjectARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB containerObj = PKG_Error_to(GLhandleARB, 1);
     GLhandleARB attachedObj = PKG_Error_to(GLhandleARB, 2);
@@ -1639,7 +1639,7 @@ KMETHOD GL_glDetachObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLhandleARB GL.glCreateShaderObjectARB(GLenum shaderType);
-KMETHOD GL_glCreateShaderObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCreateShaderObjectARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum shaderType = PKGInt_to(GLenum, 1);
 
@@ -1648,7 +1648,7 @@ KMETHOD GL_glCreateShaderObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glShaderSourceARB(GLhandleARB shaderObj, GLsizei count, GLcharARB** string, GLint* length);
-KMETHOD GL_glShaderSourceARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glShaderSourceARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB shaderObj = PKG_Error_to(GLhandleARB, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1660,7 +1660,7 @@ KMETHOD GL_glShaderSourceARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompileShaderARB(GLhandleARB shaderObj);
-KMETHOD GL_glCompileShaderARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompileShaderARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB shaderObj = PKG_Error_to(GLhandleARB, 1);
 
@@ -1669,7 +1669,7 @@ KMETHOD GL_glCompileShaderARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLhandleARB GL.glCreateProgramObjectARB();
-KMETHOD GL_glCreateProgramObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCreateProgramObjectARB(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     GLhandleARB ret = glCreateProgramObjectARB();
@@ -1677,7 +1677,7 @@ KMETHOD GL_glCreateProgramObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glAttachObjectARB(GLhandleARB containerObj, GLhandleARB obj);
-KMETHOD GL_glAttachObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glAttachObjectARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB containerObj = PKG_Error_to(GLhandleARB, 1);
     GLhandleARB obj = PKG_Error_to(GLhandleARB, 2);
@@ -1687,7 +1687,7 @@ KMETHOD GL_glAttachObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLinkProgramARB(GLhandleARB programObj);
-KMETHOD GL_glLinkProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLinkProgramARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
 
@@ -1696,7 +1696,7 @@ KMETHOD GL_glLinkProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUseProgramObjectARB(GLhandleARB programObj);
-KMETHOD GL_glUseProgramObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUseProgramObjectARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
 
@@ -1705,7 +1705,7 @@ KMETHOD GL_glUseProgramObjectARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glValidateProgramARB(GLhandleARB programObj);
-KMETHOD GL_glValidateProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glValidateProgramARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
 
@@ -1714,7 +1714,7 @@ KMETHOD GL_glValidateProgramARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1fARB(GLint location, GLfloat v0);
-KMETHOD GL_glUniform1fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -1724,7 +1724,7 @@ KMETHOD GL_glUniform1fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2fARB(GLint location, GLfloat v0, GLfloat v1);
-KMETHOD GL_glUniform2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -1735,7 +1735,7 @@ KMETHOD GL_glUniform2fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3fARB(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-KMETHOD GL_glUniform3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -1747,7 +1747,7 @@ KMETHOD GL_glUniform3fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4fARB(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-KMETHOD GL_glUniform4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4fARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -1760,7 +1760,7 @@ KMETHOD GL_glUniform4fARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1iARB(GLint location, GLint v0);
-KMETHOD GL_glUniform1iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -1770,7 +1770,7 @@ KMETHOD GL_glUniform1iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2iARB(GLint location, GLint v0, GLint v1);
-KMETHOD GL_glUniform2iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -1781,7 +1781,7 @@ KMETHOD GL_glUniform2iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3iARB(GLint location, GLint v0, GLint v1, GLint v2);
-KMETHOD GL_glUniform3iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -1793,7 +1793,7 @@ KMETHOD GL_glUniform3iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4iARB(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-KMETHOD GL_glUniform4iARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4iARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -1806,7 +1806,7 @@ KMETHOD GL_glUniform4iARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1fvARB(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform1fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1817,7 +1817,7 @@ KMETHOD GL_glUniform1fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2fvARB(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1828,7 +1828,7 @@ KMETHOD GL_glUniform2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3fvARB(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1839,7 +1839,7 @@ KMETHOD GL_glUniform3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4fvARB(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1850,7 +1850,7 @@ KMETHOD GL_glUniform4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1ivARB(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform1ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1861,7 +1861,7 @@ KMETHOD GL_glUniform1ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2ivARB(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform2ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1872,7 +1872,7 @@ KMETHOD GL_glUniform2ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3ivARB(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform3ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1883,7 +1883,7 @@ KMETHOD GL_glUniform3ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4ivARB(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform4ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4ivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1894,7 +1894,7 @@ KMETHOD GL_glUniform4ivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix2fvARB(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix2fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1906,7 +1906,7 @@ KMETHOD GL_glUniformMatrix2fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix3fvARB(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix3fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1918,7 +1918,7 @@ KMETHOD GL_glUniformMatrix3fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix4fvARB(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix4fvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -1930,7 +1930,7 @@ KMETHOD GL_glUniformMatrix4fvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetObjectParameterfvARB(GLhandleARB obj, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetObjectParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetObjectParameterfvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB obj = PKG_Error_to(GLhandleARB, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1941,7 +1941,7 @@ KMETHOD GL_glGetObjectParameterfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetObjectParameterivARB(GLhandleARB obj, GLenum pname, GLint* params);
-KMETHOD GL_glGetObjectParameterivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetObjectParameterivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB obj = PKG_Error_to(GLhandleARB, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -1952,7 +1952,7 @@ KMETHOD GL_glGetObjectParameterivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetInfoLogARB(GLhandleARB obj, GLsizei maxLength, GLsizei* length, GLcharARB* infoLog);
-KMETHOD GL_glGetInfoLogARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetInfoLogARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB obj = PKG_Error_to(GLhandleARB, 1);
     GLsizei maxLength = PKGInt_to(GLsizei, 2);
@@ -1964,7 +1964,7 @@ KMETHOD GL_glGetInfoLogARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetAttachedObjectsARB(GLhandleARB containerObj, GLsizei maxCount, GLsizei* count, GLhandleARB* obj);
-KMETHOD GL_glGetAttachedObjectsARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetAttachedObjectsARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB containerObj = PKG_Error_to(GLhandleARB, 1);
     GLsizei maxCount = PKGInt_to(GLsizei, 2);
@@ -1976,7 +1976,7 @@ KMETHOD GL_glGetAttachedObjectsARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.glGetUniformLocationARB(GLhandleARB programObj, GLcharARB* name);
-KMETHOD GL_glGetUniformLocationARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformLocationARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
     GLcharARB* name = PKG_Error_to(GLcharARB*, 2);
@@ -1986,7 +1986,7 @@ KMETHOD GL_glGetUniformLocationARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetActiveUniformARB(GLhandleARB programObj, GLuint index, GLsizei maxLength, GLsizei* length, GLint* size, GLenum* type, GLcharARB* name);
-KMETHOD GL_glGetActiveUniformARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetActiveUniformARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -2001,7 +2001,7 @@ KMETHOD GL_glGetActiveUniformARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetUniformfvARB(GLhandleARB programObj, GLint location, GLfloat* params);
-KMETHOD GL_glGetUniformfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformfvARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -2012,7 +2012,7 @@ KMETHOD GL_glGetUniformfvARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetUniformivARB(GLhandleARB programObj, GLint location, GLint* params);
-KMETHOD GL_glGetUniformivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -2023,7 +2023,7 @@ KMETHOD GL_glGetUniformivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetShaderSourceARB(GLhandleARB obj, GLsizei maxLength, GLsizei* length, GLcharARB* source);
-KMETHOD GL_glGetShaderSourceARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetShaderSourceARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB obj = PKG_Error_to(GLhandleARB, 1);
     GLsizei maxLength = PKGInt_to(GLsizei, 2);
@@ -2035,7 +2035,7 @@ KMETHOD GL_glGetShaderSourceARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindAttribLocationARB(GLhandleARB programObj, GLuint index, GLcharARB* name);
-KMETHOD GL_glBindAttribLocationARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindAttribLocationARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -2046,7 +2046,7 @@ KMETHOD GL_glBindAttribLocationARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetActiveAttribARB(GLhandleARB programObj, GLuint index, GLsizei maxLength, GLsizei* length, GLint* size, GLenum* type, GLcharARB* name);
-KMETHOD GL_glGetActiveAttribARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetActiveAttribARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -2061,7 +2061,7 @@ KMETHOD GL_glGetActiveAttribARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.glGetAttribLocationARB(GLhandleARB programObj, GLcharARB* name);
-KMETHOD GL_glGetAttribLocationARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetAttribLocationARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLhandleARB programObj = PKG_Error_to(GLhandleARB, 1);
     GLcharARB* name = PKG_Error_to(GLcharARB*, 2);
@@ -2071,7 +2071,7 @@ KMETHOD GL_glGetAttribLocationARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindBufferARB(GLenum target, GLuint buffer);
-KMETHOD GL_glBindBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindBufferARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint buffer = PKGInt_to(GLuint, 2);
@@ -2081,7 +2081,7 @@ KMETHOD GL_glBindBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteBuffersARB(GLsizei n, GLuint* buffers);
-KMETHOD GL_glDeleteBuffersARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteBuffersARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* buffers = PKG_Error_to(GLuint*, 2);
@@ -2091,7 +2091,7 @@ KMETHOD GL_glDeleteBuffersARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenBuffersARB(GLsizei n, GLuint* buffers);
-KMETHOD GL_glGenBuffersARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenBuffersARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* buffers = PKG_Error_to(GLuint*, 2);
@@ -2101,7 +2101,7 @@ KMETHOD GL_glGenBuffersARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsBufferARB(GLuint buffer);
-KMETHOD GL_glIsBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsBufferARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint buffer = PKGInt_to(GLuint, 1);
 
@@ -2110,7 +2110,7 @@ KMETHOD GL_glIsBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBufferDataARB(GLenum target, GLsizeiptrARB size, GLvoid* data, GLenum usage);
-KMETHOD GL_glBufferDataARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBufferDataARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizeiptrARB size = PKGInt_to(GLsizeiptrARB, 2);
@@ -2122,7 +2122,7 @@ KMETHOD GL_glBufferDataARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBufferSubDataARB(GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid* data);
-KMETHOD GL_glBufferSubDataARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBufferSubDataARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLintptrARB offset = PKGInt_to(GLintptrARB, 2);
@@ -2134,7 +2134,7 @@ KMETHOD GL_glBufferSubDataARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBufferSubDataARB(GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid* data);
-KMETHOD GL_glGetBufferSubDataARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBufferSubDataARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLintptrARB offset = PKGInt_to(GLintptrARB, 2);
@@ -2146,7 +2146,7 @@ KMETHOD GL_glGetBufferSubDataARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLvoid* GL.glMapBufferARB(GLenum target, GLenum access);
-KMETHOD GL_glMapBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapBufferARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum access = PKGInt_to(GLenum, 2);
@@ -2156,7 +2156,7 @@ KMETHOD GL_glMapBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glUnmapBufferARB(GLenum target);
-KMETHOD GL_glUnmapBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUnmapBufferARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -2165,7 +2165,7 @@ KMETHOD GL_glUnmapBufferARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBufferParameterivARB(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetBufferParameterivARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBufferParameterivARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -2176,7 +2176,7 @@ KMETHOD GL_glGetBufferParameterivARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBufferPointervARB(GLenum target, GLenum pname, GLvoid** params);
-KMETHOD GL_glGetBufferPointervARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBufferPointervARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -2187,7 +2187,7 @@ KMETHOD GL_glGetBufferPointervARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawBuffersARB(GLsizei n, GLenum* bufs);
-KMETHOD GL_glDrawBuffersARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawBuffersARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLenum* bufs = PKG_Error_to(GLenum*, 2);
@@ -2197,7 +2197,7 @@ KMETHOD GL_glDrawBuffersARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClampColorARB(GLenum target, GLenum clamp);
-KMETHOD GL_glClampColorARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClampColorARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum clamp = PKGInt_to(GLenum, 2);
@@ -2207,7 +2207,7 @@ KMETHOD GL_glClampColorARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawArraysInstancedARB(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
-KMETHOD GL_glDrawArraysInstancedARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawArraysInstancedARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint first = PKGInt_to(GLint, 2);
@@ -2219,7 +2219,7 @@ KMETHOD GL_glDrawArraysInstancedARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawElementsInstancedARB(GLenum mode, GLsizei count, GLenum type, GLvoid* indices, GLsizei primcount);
-KMETHOD GL_glDrawElementsInstancedARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawElementsInstancedARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -2232,7 +2232,7 @@ KMETHOD GL_glDrawElementsInstancedARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribDivisorARB(GLuint index, GLuint divisor);
-KMETHOD GL_glVertexAttribDivisorARB(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribDivisorARB(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint divisor = PKGInt_to(GLuint, 2);
@@ -2242,7 +2242,7 @@ KMETHOD GL_glVertexAttribDivisorARB(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawElementsBaseVertex(GLenum mode, GLsizei count, GLenum type, GLvoid* indices, GLint base_vertex);
-KMETHOD GL_glDrawElementsBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawElementsBaseVertex(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -2255,7 +2255,7 @@ KMETHOD GL_glDrawElementsBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawRangeElementsBaseVertex(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLvoid* indices, GLint base_vertex);
-KMETHOD GL_glDrawRangeElementsBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawRangeElementsBaseVertex(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLuint start = PKGInt_to(GLuint, 2);
@@ -2270,7 +2270,7 @@ KMETHOD GL_glDrawRangeElementsBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawElementsInstancedBaseVertex(GLenum mode, GLsizei count, GLenum type, GLvoid* indices, GLsizei primcount, GLint base_vertex);
-KMETHOD GL_glDrawElementsInstancedBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawElementsInstancedBaseVertex(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -2284,7 +2284,7 @@ KMETHOD GL_glDrawElementsInstancedBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiDrawElementsBaseVertex(GLenum mode, GLsizei* count, GLenum type, GLvoid** indices, GLsizei primcount, GLint* base_vertex);
-KMETHOD GL_glMultiDrawElementsBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiDrawElementsBaseVertex(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLsizei* count = PKG_Error_to(GLsizei*, 2);
@@ -2298,7 +2298,7 @@ KMETHOD GL_glMultiDrawElementsBaseVertex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLsync GL.glFenceSync(GLenum condition, GLbitfield flags);
-KMETHOD GL_glFenceSync(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFenceSync(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum condition = PKGInt_to(GLenum, 1);
     GLbitfield flags = PKGInt_to(GLbitfield, 2);
@@ -2308,7 +2308,7 @@ KMETHOD GL_glFenceSync(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsSync(GLsync sync);
-KMETHOD GL_glIsSync(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsSync(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsync sync = PKG_Error_to(GLsync, 1);
 
@@ -2317,7 +2317,7 @@ KMETHOD GL_glIsSync(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteSync(GLsync sync);
-KMETHOD GL_glDeleteSync(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteSync(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsync sync = PKG_Error_to(GLsync, 1);
 
@@ -2326,7 +2326,7 @@ KMETHOD GL_glDeleteSync(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLenum GL.glClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout);
-KMETHOD GL_glClientWaitSync(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClientWaitSync(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsync sync = PKG_Error_to(GLsync, 1);
     GLbitfield flags = PKGInt_to(GLbitfield, 2);
@@ -2337,7 +2337,7 @@ KMETHOD GL_glClientWaitSync(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout);
-KMETHOD GL_glWaitSync(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWaitSync(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsync sync = PKG_Error_to(GLsync, 1);
     GLbitfield flags = PKGInt_to(GLbitfield, 2);
@@ -2348,7 +2348,7 @@ KMETHOD GL_glWaitSync(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetInteger64v(GLenum pname, GLint64* params);
-KMETHOD GL_glGetInteger64v(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetInteger64v(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint64* params = PKG_Error_to(GLint64*, 2);
@@ -2358,7 +2358,7 @@ KMETHOD GL_glGetInteger64v(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetSynciv(GLsync sync, GLenum pname, GLsizei bufSize, GLsizei* length, GLint* values);
-KMETHOD GL_glGetSynciv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetSynciv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsync sync = PKG_Error_to(GLsync, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -2371,7 +2371,7 @@ KMETHOD GL_glGetSynciv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendColorEXT(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-KMETHOD GL_glBlendColorEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendColorEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampf red = PKGFloat_to(GLclampf, 1);
     GLclampf green = PKGFloat_to(GLclampf, 2);
@@ -2383,7 +2383,7 @@ KMETHOD GL_glBlendColorEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendEquationEXT(GLenum mode);
-KMETHOD GL_glBlendEquationEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendEquationEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -2392,7 +2392,7 @@ KMETHOD GL_glBlendEquationEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawRangeElementsEXT(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLvoid* indices);
-KMETHOD GL_glDrawRangeElementsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawRangeElementsEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLuint start = PKGInt_to(GLuint, 2);
@@ -2406,7 +2406,7 @@ KMETHOD GL_glDrawRangeElementsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3bEXT(GLbyte red, GLbyte green, GLbyte blue);
-KMETHOD GL_glSecondaryColor3bEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3bEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte red = PKGInt_to(GLbyte, 1);
     GLbyte green = PKGInt_to(GLbyte, 2);
@@ -2417,7 +2417,7 @@ KMETHOD GL_glSecondaryColor3bEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3bvEXT(GLbyte* v);
-KMETHOD GL_glSecondaryColor3bvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3bvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte* v = PKG_Error_to(GLbyte*, 1);
 
@@ -2426,7 +2426,7 @@ KMETHOD GL_glSecondaryColor3bvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3dEXT(GLdouble red, GLdouble green, GLdouble blue);
-KMETHOD GL_glSecondaryColor3dEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3dEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble red = PKGFloat_to(GLdouble, 1);
     GLdouble green = PKGFloat_to(GLdouble, 2);
@@ -2437,7 +2437,7 @@ KMETHOD GL_glSecondaryColor3dEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3dvEXT(GLdouble* v);
-KMETHOD GL_glSecondaryColor3dvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3dvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -2446,7 +2446,7 @@ KMETHOD GL_glSecondaryColor3dvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3fEXT(GLfloat red, GLfloat green, GLfloat blue);
-KMETHOD GL_glSecondaryColor3fEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3fEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat red = PKGFloat_to(GLfloat, 1);
     GLfloat green = PKGFloat_to(GLfloat, 2);
@@ -2457,7 +2457,7 @@ KMETHOD GL_glSecondaryColor3fEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3fvEXT(GLfloat* v);
-KMETHOD GL_glSecondaryColor3fvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3fvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -2466,7 +2466,7 @@ KMETHOD GL_glSecondaryColor3fvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3iEXT(GLint red, GLint green, GLint blue);
-KMETHOD GL_glSecondaryColor3iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3iEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint red = PKGInt_to(GLint, 1);
     GLint green = PKGInt_to(GLint, 2);
@@ -2477,7 +2477,7 @@ KMETHOD GL_glSecondaryColor3iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3ivEXT(GLint* v);
-KMETHOD GL_glSecondaryColor3ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3ivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -2486,7 +2486,7 @@ KMETHOD GL_glSecondaryColor3ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3sEXT(GLshort red, GLshort green, GLshort blue);
-KMETHOD GL_glSecondaryColor3sEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3sEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort red = PKGInt_to(GLshort, 1);
     GLshort green = PKGInt_to(GLshort, 2);
@@ -2497,7 +2497,7 @@ KMETHOD GL_glSecondaryColor3sEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3svEXT(GLshort* v);
-KMETHOD GL_glSecondaryColor3svEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3svEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -2506,7 +2506,7 @@ KMETHOD GL_glSecondaryColor3svEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3ubEXT(GLubyte red, GLubyte green, GLubyte blue);
-KMETHOD GL_glSecondaryColor3ubEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3ubEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte red = PKGInt_to(GLubyte, 1);
     GLubyte green = PKGInt_to(GLubyte, 2);
@@ -2517,7 +2517,7 @@ KMETHOD GL_glSecondaryColor3ubEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3ubvEXT(GLubyte* v);
-KMETHOD GL_glSecondaryColor3ubvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3ubvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* v = PKG_Error_to(GLubyte*, 1);
 
@@ -2526,7 +2526,7 @@ KMETHOD GL_glSecondaryColor3ubvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3uiEXT(GLuint red, GLuint green, GLuint blue);
-KMETHOD GL_glSecondaryColor3uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint red = PKGInt_to(GLuint, 1);
     GLuint green = PKGInt_to(GLuint, 2);
@@ -2537,7 +2537,7 @@ KMETHOD GL_glSecondaryColor3uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3uivEXT(GLuint* v);
-KMETHOD GL_glSecondaryColor3uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint* v = PKG_Error_to(GLuint*, 1);
 
@@ -2546,7 +2546,7 @@ KMETHOD GL_glSecondaryColor3uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3usEXT(GLushort red, GLushort green, GLushort blue);
-KMETHOD GL_glSecondaryColor3usEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3usEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort red = PKGInt_to(GLushort, 1);
     GLushort green = PKGInt_to(GLushort, 2);
@@ -2557,7 +2557,7 @@ KMETHOD GL_glSecondaryColor3usEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3usvEXT(GLushort* v);
-KMETHOD GL_glSecondaryColor3usvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3usvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort* v = PKG_Error_to(GLushort*, 1);
 
@@ -2566,7 +2566,7 @@ KMETHOD GL_glSecondaryColor3usvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColorPointerEXT(GLint size, GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glSecondaryColorPointerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColorPointerEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -2578,7 +2578,7 @@ KMETHOD GL_glSecondaryColorPointerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiDrawArraysEXT(GLenum mode, GLint* first, GLsizei* count, GLsizei primcount);
-KMETHOD GL_glMultiDrawArraysEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiDrawArraysEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint* first = PKG_Error_to(GLint*, 2);
@@ -2590,7 +2590,7 @@ KMETHOD GL_glMultiDrawArraysEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiDrawElementsEXT(GLenum mode, GLsizei* count, GLenum type, GLvoid** indices, GLsizei primcount);
-KMETHOD GL_glMultiDrawElementsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiDrawElementsEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLsizei* count = PKG_Error_to(GLsizei*, 2);
@@ -2603,7 +2603,7 @@ KMETHOD GL_glMultiDrawElementsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoordfEXT(GLfloat coord);
-KMETHOD GL_glFogCoordfEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoordfEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat coord = PKGFloat_to(GLfloat, 1);
 
@@ -2612,7 +2612,7 @@ KMETHOD GL_glFogCoordfEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoordfvEXT(GLfloat* coord);
-KMETHOD GL_glFogCoordfvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoordfvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* coord = PKG_Error_to(GLfloat*, 1);
 
@@ -2621,7 +2621,7 @@ KMETHOD GL_glFogCoordfvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoorddEXT(GLdouble coord);
-KMETHOD GL_glFogCoorddEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoorddEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble coord = PKGFloat_to(GLdouble, 1);
 
@@ -2630,7 +2630,7 @@ KMETHOD GL_glFogCoorddEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoorddvEXT(GLdouble* coord);
-KMETHOD GL_glFogCoorddvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoorddvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* coord = PKG_Error_to(GLdouble*, 1);
 
@@ -2639,7 +2639,7 @@ KMETHOD GL_glFogCoorddvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoordPointerEXT(GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glFogCoordPointerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoordPointerEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
     GLsizei stride = PKGInt_to(GLsizei, 2);
@@ -2650,7 +2650,7 @@ KMETHOD GL_glFogCoordPointerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendFuncSeparateEXT(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
-KMETHOD GL_glBlendFuncSeparateEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendFuncSeparateEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum sfactorRGB = PKGInt_to(GLenum, 1);
     GLenum dfactorRGB = PKGInt_to(GLenum, 2);
@@ -2662,7 +2662,7 @@ KMETHOD GL_glBlendFuncSeparateEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glActiveStencilFaceEXT(GLenum face);
-KMETHOD GL_glActiveStencilFaceEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glActiveStencilFaceEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
 
@@ -2671,7 +2671,7 @@ KMETHOD GL_glActiveStencilFaceEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDepthBoundsEXT(GLclampd zmin, GLclampd zmax);
-KMETHOD GL_glDepthBoundsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDepthBoundsEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampd zmin = PKGFloat_to(GLclampd, 1);
     GLclampd zmax = PKGFloat_to(GLclampd, 2);
@@ -2681,7 +2681,7 @@ KMETHOD GL_glDepthBoundsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendEquationSeparateEXT(GLenum modeRGB, GLenum modeAlpha);
-KMETHOD GL_glBlendEquationSeparateEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendEquationSeparateEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum modeRGB = PKGInt_to(GLenum, 1);
     GLenum modeAlpha = PKGInt_to(GLenum, 2);
@@ -2691,7 +2691,7 @@ KMETHOD GL_glBlendEquationSeparateEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsRenderbufferEXT(GLuint renderbuffer);
-KMETHOD GL_glIsRenderbufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsRenderbufferEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint renderbuffer = PKGInt_to(GLuint, 1);
 
@@ -2700,7 +2700,7 @@ KMETHOD GL_glIsRenderbufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindRenderbufferEXT(GLenum target, GLuint renderbuffer);
-KMETHOD GL_glBindRenderbufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindRenderbufferEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint renderbuffer = PKGInt_to(GLuint, 2);
@@ -2710,7 +2710,7 @@ KMETHOD GL_glBindRenderbufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteRenderbuffersEXT(GLsizei n, GLuint* renderbuffers);
-KMETHOD GL_glDeleteRenderbuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteRenderbuffersEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* renderbuffers = PKG_Error_to(GLuint*, 2);
@@ -2720,7 +2720,7 @@ KMETHOD GL_glDeleteRenderbuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenRenderbuffersEXT(GLsizei n, GLuint* renderbuffers);
-KMETHOD GL_glGenRenderbuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenRenderbuffersEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* renderbuffers = PKG_Error_to(GLuint*, 2);
@@ -2730,7 +2730,7 @@ KMETHOD GL_glGenRenderbuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRenderbufferStorageEXT(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-KMETHOD GL_glRenderbufferStorageEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRenderbufferStorageEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -2742,7 +2742,7 @@ KMETHOD GL_glRenderbufferStorageEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetRenderbufferParameterivEXT(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetRenderbufferParameterivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetRenderbufferParameterivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -2753,7 +2753,7 @@ KMETHOD GL_glGetRenderbufferParameterivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsFramebufferEXT(GLuint framebuffer);
-KMETHOD GL_glIsFramebufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsFramebufferEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint framebuffer = PKGInt_to(GLuint, 1);
 
@@ -2762,7 +2762,7 @@ KMETHOD GL_glIsFramebufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindFramebufferEXT(GLenum target, GLuint framebuffer);
-KMETHOD GL_glBindFramebufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindFramebufferEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint framebuffer = PKGInt_to(GLuint, 2);
@@ -2772,7 +2772,7 @@ KMETHOD GL_glBindFramebufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteFramebuffersEXT(GLsizei n, GLuint* framebuffers);
-KMETHOD GL_glDeleteFramebuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteFramebuffersEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* framebuffers = PKG_Error_to(GLuint*, 2);
@@ -2782,7 +2782,7 @@ KMETHOD GL_glDeleteFramebuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenFramebuffersEXT(GLsizei n, GLuint* framebuffers);
-KMETHOD GL_glGenFramebuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenFramebuffersEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* framebuffers = PKG_Error_to(GLuint*, 2);
@@ -2792,7 +2792,7 @@ KMETHOD GL_glGenFramebuffersEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLenum GL.glCheckFramebufferStatusEXT(GLenum target);
-KMETHOD GL_glCheckFramebufferStatusEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCheckFramebufferStatusEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -2801,7 +2801,7 @@ KMETHOD GL_glCheckFramebufferStatusEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTexture1DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-KMETHOD GL_glFramebufferTexture1DEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTexture1DEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2814,7 +2814,7 @@ KMETHOD GL_glFramebufferTexture1DEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTexture2DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-KMETHOD GL_glFramebufferTexture2DEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTexture2DEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2827,7 +2827,7 @@ KMETHOD GL_glFramebufferTexture2DEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTexture3DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset);
-KMETHOD GL_glFramebufferTexture3DEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTexture3DEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2841,7 +2841,7 @@ KMETHOD GL_glFramebufferTexture3DEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferRenderbufferEXT(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-KMETHOD GL_glFramebufferRenderbufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferRenderbufferEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2853,7 +2853,7 @@ KMETHOD GL_glFramebufferRenderbufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetFramebufferAttachmentParameterivEXT(GLenum target, GLenum attachment, GLenum pname, GLint* params);
-KMETHOD GL_glGetFramebufferAttachmentParameterivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetFramebufferAttachmentParameterivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2865,7 +2865,7 @@ KMETHOD GL_glGetFramebufferAttachmentParameterivEXT(CTX ctx, knh_sfp_t *sfp _RIX
 }
 
 //## @Native void GL.glGenerateMipmapEXT(GLenum target);
-KMETHOD GL_glGenerateMipmapEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenerateMipmapEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -2874,7 +2874,7 @@ KMETHOD GL_glGenerateMipmapEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlitFramebufferEXT(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-KMETHOD GL_glBlitFramebufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlitFramebufferEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint srcX0 = PKGInt_to(GLint, 1);
     GLint srcY0 = PKGInt_to(GLint, 2);
@@ -2892,7 +2892,7 @@ KMETHOD GL_glBlitFramebufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRenderbufferStorageMultisampleEXT(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
-KMETHOD GL_glRenderbufferStorageMultisampleEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRenderbufferStorageMultisampleEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizei samples = PKGInt_to(GLsizei, 2);
@@ -2905,7 +2905,7 @@ KMETHOD GL_glRenderbufferStorageMultisampleEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProgramParameteriEXT(GLuint program, GLenum pname, GLint value);
-KMETHOD GL_glProgramParameteriEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProgramParameteriEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -2916,7 +2916,7 @@ KMETHOD GL_glProgramParameteriEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTextureEXT(GLenum target, GLenum attachment, GLuint texture, GLint level);
-KMETHOD GL_glFramebufferTextureEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTextureEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2928,7 +2928,7 @@ KMETHOD GL_glFramebufferTextureEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTextureFaceEXT(GLenum target, GLenum attachment, GLuint texture, GLint level, GLenum face);
-KMETHOD GL_glFramebufferTextureFaceEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTextureFaceEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2941,7 +2941,7 @@ KMETHOD GL_glFramebufferTextureFaceEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTextureLayerEXT(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer);
-KMETHOD GL_glFramebufferTextureLayerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTextureLayerEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -2954,7 +2954,7 @@ KMETHOD GL_glFramebufferTextureLayerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsRenderbuffer(GLuint renderbuffer);
-KMETHOD GL_glIsRenderbuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsRenderbuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint renderbuffer = PKGInt_to(GLuint, 1);
 
@@ -2963,7 +2963,7 @@ KMETHOD GL_glIsRenderbuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindRenderbuffer(GLenum target, GLuint renderbuffer);
-KMETHOD GL_glBindRenderbuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindRenderbuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint renderbuffer = PKGInt_to(GLuint, 2);
@@ -2973,7 +2973,7 @@ KMETHOD GL_glBindRenderbuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteRenderbuffers(GLsizei n, GLuint* renderbuffers);
-KMETHOD GL_glDeleteRenderbuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteRenderbuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* renderbuffers = PKG_Error_to(GLuint*, 2);
@@ -2983,7 +2983,7 @@ KMETHOD GL_glDeleteRenderbuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenRenderbuffers(GLsizei n, GLuint* renderbuffers);
-KMETHOD GL_glGenRenderbuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenRenderbuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* renderbuffers = PKG_Error_to(GLuint*, 2);
@@ -2993,7 +2993,7 @@ KMETHOD GL_glGenRenderbuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-KMETHOD GL_glRenderbufferStorage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRenderbufferStorage(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -3005,7 +3005,7 @@ KMETHOD GL_glRenderbufferStorage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetRenderbufferParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetRenderbufferParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetRenderbufferParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3016,7 +3016,7 @@ KMETHOD GL_glGetRenderbufferParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsFramebuffer(GLuint framebuffer);
-KMETHOD GL_glIsFramebuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsFramebuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint framebuffer = PKGInt_to(GLuint, 1);
 
@@ -3025,7 +3025,7 @@ KMETHOD GL_glIsFramebuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindFramebuffer(GLenum target, GLuint framebuffer);
-KMETHOD GL_glBindFramebuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindFramebuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint framebuffer = PKGInt_to(GLuint, 2);
@@ -3035,7 +3035,7 @@ KMETHOD GL_glBindFramebuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteFramebuffers(GLsizei n, GLuint* framebuffers);
-KMETHOD GL_glDeleteFramebuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteFramebuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* framebuffers = PKG_Error_to(GLuint*, 2);
@@ -3045,7 +3045,7 @@ KMETHOD GL_glDeleteFramebuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenFramebuffers(GLsizei n, GLuint* framebuffers);
-KMETHOD GL_glGenFramebuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenFramebuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* framebuffers = PKG_Error_to(GLuint*, 2);
@@ -3055,7 +3055,7 @@ KMETHOD GL_glGenFramebuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLenum GL.glCheckFramebufferStatus(GLenum target);
-KMETHOD GL_glCheckFramebufferStatus(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCheckFramebufferStatus(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -3064,7 +3064,7 @@ KMETHOD GL_glCheckFramebufferStatus(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTexture1D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-KMETHOD GL_glFramebufferTexture1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTexture1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -3077,7 +3077,7 @@ KMETHOD GL_glFramebufferTexture1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-KMETHOD GL_glFramebufferTexture2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTexture2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -3090,7 +3090,7 @@ KMETHOD GL_glFramebufferTexture2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTexture3D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset);
-KMETHOD GL_glFramebufferTexture3D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTexture3D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -3104,7 +3104,7 @@ KMETHOD GL_glFramebufferTexture3D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-KMETHOD GL_glFramebufferRenderbuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferRenderbuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -3116,7 +3116,7 @@ KMETHOD GL_glFramebufferRenderbuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetFramebufferAttachmentParameteriv(GLenum target, GLenum attachment, GLenum pname, GLint* params);
-KMETHOD GL_glGetFramebufferAttachmentParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetFramebufferAttachmentParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -3128,7 +3128,7 @@ KMETHOD GL_glGetFramebufferAttachmentParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenerateMipmap(GLenum target);
-KMETHOD GL_glGenerateMipmap(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenerateMipmap(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -3137,7 +3137,7 @@ KMETHOD GL_glGenerateMipmap(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-KMETHOD GL_glBlitFramebuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlitFramebuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint srcX0 = PKGInt_to(GLint, 1);
     GLint srcY0 = PKGInt_to(GLint, 2);
@@ -3155,7 +3155,7 @@ KMETHOD GL_glBlitFramebuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRenderbufferStorageMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
-KMETHOD GL_glRenderbufferStorageMultisample(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRenderbufferStorageMultisample(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizei samples = PKGInt_to(GLsizei, 2);
@@ -3168,7 +3168,7 @@ KMETHOD GL_glRenderbufferStorageMultisample(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFramebufferTextureLayer(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer);
-KMETHOD GL_glFramebufferTextureLayer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFramebufferTextureLayer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum attachment = PKGInt_to(GLenum, 2);
@@ -3181,7 +3181,7 @@ KMETHOD GL_glFramebufferTextureLayer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindBufferRangeEXT(GLenum target, GLuint index, GLuint buffer, GLintptr offset, GLsizeiptr size);
-KMETHOD GL_glBindBufferRangeEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindBufferRangeEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3194,7 +3194,7 @@ KMETHOD GL_glBindBufferRangeEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindBufferOffsetEXT(GLenum target, GLuint index, GLuint buffer, GLintptr offset);
-KMETHOD GL_glBindBufferOffsetEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindBufferOffsetEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3206,7 +3206,7 @@ KMETHOD GL_glBindBufferOffsetEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindBufferBaseEXT(GLenum target, GLuint index, GLuint buffer);
-KMETHOD GL_glBindBufferBaseEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindBufferBaseEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3217,7 +3217,7 @@ KMETHOD GL_glBindBufferBaseEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBeginTransformFeedbackEXT(GLenum primitiveMode);
-KMETHOD GL_glBeginTransformFeedbackEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBeginTransformFeedbackEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum primitiveMode = PKGInt_to(GLenum, 1);
 
@@ -3226,7 +3226,7 @@ KMETHOD GL_glBeginTransformFeedbackEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEndTransformFeedbackEXT();
-KMETHOD GL_glEndTransformFeedbackEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEndTransformFeedbackEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glEndTransformFeedbackEXT();
@@ -3234,7 +3234,7 @@ KMETHOD GL_glEndTransformFeedbackEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTransformFeedbackVaryingsEXT(GLuint program, GLsizei count, GLchar** varyings, GLenum bufferMode);
-KMETHOD GL_glTransformFeedbackVaryingsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTransformFeedbackVaryingsEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -3246,7 +3246,7 @@ KMETHOD GL_glTransformFeedbackVaryingsEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTransformFeedbackVaryingEXT(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLsizei* size, GLenum* type, GLchar* name);
-KMETHOD GL_glGetTransformFeedbackVaryingEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTransformFeedbackVaryingEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3261,7 +3261,7 @@ KMETHOD GL_glGetTransformFeedbackVaryingEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetIntegerIndexedvEXT(GLenum param, GLuint index, GLint* values);
-KMETHOD GL_glGetIntegerIndexedvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetIntegerIndexedvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum param = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3272,7 +3272,7 @@ KMETHOD GL_glGetIntegerIndexedvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBooleanIndexedvEXT(GLenum param, GLuint index, GLboolean* values);
-KMETHOD GL_glGetBooleanIndexedvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBooleanIndexedvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum param = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3283,7 +3283,7 @@ KMETHOD GL_glGetBooleanIndexedvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformBufferEXT(GLuint program, GLint location, GLuint buffer);
-KMETHOD GL_glUniformBufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformBufferEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -3294,7 +3294,7 @@ KMETHOD GL_glUniformBufferEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.glGetUniformBufferSizeEXT(GLuint program, GLint location);
-KMETHOD GL_glGetUniformBufferSizeEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformBufferSizeEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -3304,7 +3304,7 @@ KMETHOD GL_glGetUniformBufferSizeEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLintptr GL.glGetUniformOffsetEXT(GLuint program, GLint location);
-KMETHOD GL_glGetUniformOffsetEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformOffsetEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -3314,7 +3314,7 @@ KMETHOD GL_glGetUniformOffsetEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClearColorIiEXT(GLint r, GLint g, GLint b, GLint a );
-KMETHOD GL_glClearColorIiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClearColorIiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint r = PKGInt_to(GLint, 1);
     GLint g = PKGInt_to(GLint, 2);
@@ -3326,7 +3326,7 @@ KMETHOD GL_glClearColorIiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClearColorIuiEXT(GLuint r, GLuint g, GLuint b, GLuint a );
-KMETHOD GL_glClearColorIuiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClearColorIuiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint r = PKGInt_to(GLuint, 1);
     GLuint g = PKGInt_to(GLuint, 2);
@@ -3338,7 +3338,7 @@ KMETHOD GL_glClearColorIuiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexParameterIivEXT(GLenum target, GLenum pname, GLint* params );
-KMETHOD GL_glTexParameterIivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexParameterIivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3349,7 +3349,7 @@ KMETHOD GL_glTexParameterIivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexParameterIuivEXT(GLenum target, GLenum pname, GLuint* params );
-KMETHOD GL_glTexParameterIuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexParameterIuivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3360,7 +3360,7 @@ KMETHOD GL_glTexParameterIuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexParameterIivEXT(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetTexParameterIivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexParameterIivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3371,7 +3371,7 @@ KMETHOD GL_glGetTexParameterIivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexParameterIuivEXT(GLenum target, GLenum pname, GLuint* params);
-KMETHOD GL_glGetTexParameterIuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexParameterIuivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3382,7 +3382,7 @@ KMETHOD GL_glGetTexParameterIuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI1iEXT(GLuint index, GLint x);
-KMETHOD GL_glVertexAttribI1iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI1iEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint x = PKGInt_to(GLint, 2);
@@ -3392,7 +3392,7 @@ KMETHOD GL_glVertexAttribI1iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI2iEXT(GLuint index, GLint x, GLint y);
-KMETHOD GL_glVertexAttribI2iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI2iEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint x = PKGInt_to(GLint, 2);
@@ -3403,7 +3403,7 @@ KMETHOD GL_glVertexAttribI2iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI3iEXT(GLuint index, GLint x, GLint y, GLint z);
-KMETHOD GL_glVertexAttribI3iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI3iEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint x = PKGInt_to(GLint, 2);
@@ -3415,7 +3415,7 @@ KMETHOD GL_glVertexAttribI3iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4iEXT(GLuint index, GLint x, GLint y, GLint z, GLint w);
-KMETHOD GL_glVertexAttribI4iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4iEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint x = PKGInt_to(GLint, 2);
@@ -3428,7 +3428,7 @@ KMETHOD GL_glVertexAttribI4iEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI1uiEXT(GLuint index, GLuint x);
-KMETHOD GL_glVertexAttribI1uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI1uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint x = PKGInt_to(GLuint, 2);
@@ -3438,7 +3438,7 @@ KMETHOD GL_glVertexAttribI1uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI2uiEXT(GLuint index, GLuint x, GLuint y);
-KMETHOD GL_glVertexAttribI2uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI2uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint x = PKGInt_to(GLuint, 2);
@@ -3449,7 +3449,7 @@ KMETHOD GL_glVertexAttribI2uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI3uiEXT(GLuint index, GLuint x, GLuint y, GLuint z);
-KMETHOD GL_glVertexAttribI3uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI3uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint x = PKGInt_to(GLuint, 2);
@@ -3461,7 +3461,7 @@ KMETHOD GL_glVertexAttribI3uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4uiEXT(GLuint index, GLuint x, GLuint y, GLuint z, GLuint w);
-KMETHOD GL_glVertexAttribI4uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint x = PKGInt_to(GLuint, 2);
@@ -3474,7 +3474,7 @@ KMETHOD GL_glVertexAttribI4uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI1ivEXT(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttribI1ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI1ivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -3484,7 +3484,7 @@ KMETHOD GL_glVertexAttribI1ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI2ivEXT(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttribI2ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI2ivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -3494,7 +3494,7 @@ KMETHOD GL_glVertexAttribI2ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI3ivEXT(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttribI3ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI3ivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -3504,7 +3504,7 @@ KMETHOD GL_glVertexAttribI3ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4ivEXT(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttribI4ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4ivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -3514,7 +3514,7 @@ KMETHOD GL_glVertexAttribI4ivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI1uivEXT(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttribI1uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI1uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -3524,7 +3524,7 @@ KMETHOD GL_glVertexAttribI1uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI2uivEXT(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttribI2uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI2uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -3534,7 +3534,7 @@ KMETHOD GL_glVertexAttribI2uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI3uivEXT(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttribI3uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI3uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -3544,7 +3544,7 @@ KMETHOD GL_glVertexAttribI3uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4uivEXT(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttribI4uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -3554,7 +3554,7 @@ KMETHOD GL_glVertexAttribI4uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4bvEXT(GLuint index, GLbyte* v);
-KMETHOD GL_glVertexAttribI4bvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4bvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLbyte* v = PKG_Error_to(GLbyte*, 2);
@@ -3564,7 +3564,7 @@ KMETHOD GL_glVertexAttribI4bvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4svEXT(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttribI4svEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4svEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -3574,7 +3574,7 @@ KMETHOD GL_glVertexAttribI4svEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4ubvEXT(GLuint index, GLubyte* v);
-KMETHOD GL_glVertexAttribI4ubvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4ubvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLubyte* v = PKG_Error_to(GLubyte*, 2);
@@ -3584,7 +3584,7 @@ KMETHOD GL_glVertexAttribI4ubvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribI4usvEXT(GLuint index, GLushort* v);
-KMETHOD GL_glVertexAttribI4usvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribI4usvEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLushort* v = PKG_Error_to(GLushort*, 2);
@@ -3594,7 +3594,7 @@ KMETHOD GL_glVertexAttribI4usvEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribIPointerEXT(GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glVertexAttribIPointerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribIPointerEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint size = PKGInt_to(GLint, 2);
@@ -3607,7 +3607,7 @@ KMETHOD GL_glVertexAttribIPointerEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribIivEXT(GLuint index, GLenum pname, GLint* params);
-KMETHOD GL_glGetVertexAttribIivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribIivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3618,7 +3618,7 @@ KMETHOD GL_glGetVertexAttribIivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribIuivEXT(GLuint index, GLenum pname, GLuint* params);
-KMETHOD GL_glGetVertexAttribIuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribIuivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3629,7 +3629,7 @@ KMETHOD GL_glGetVertexAttribIuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1uiEXT(GLint location, GLuint v0);
-KMETHOD GL_glUniform1uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLuint v0 = PKGInt_to(GLuint, 2);
@@ -3639,7 +3639,7 @@ KMETHOD GL_glUniform1uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2uiEXT(GLint location, GLuint v0, GLuint v1);
-KMETHOD GL_glUniform2uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLuint v0 = PKGInt_to(GLuint, 2);
@@ -3650,7 +3650,7 @@ KMETHOD GL_glUniform2uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3uiEXT(GLint location, GLuint v0, GLuint v1, GLuint v2);
-KMETHOD GL_glUniform3uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLuint v0 = PKGInt_to(GLuint, 2);
@@ -3662,7 +3662,7 @@ KMETHOD GL_glUniform3uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4uiEXT(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3);
-KMETHOD GL_glUniform4uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4uiEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLuint v0 = PKGInt_to(GLuint, 2);
@@ -3675,7 +3675,7 @@ KMETHOD GL_glUniform4uiEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1uivEXT(GLint location, GLsizei count, GLuint* value);
-KMETHOD GL_glUniform1uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -3686,7 +3686,7 @@ KMETHOD GL_glUniform1uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2uivEXT(GLint location, GLsizei count, GLuint* value);
-KMETHOD GL_glUniform2uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -3697,7 +3697,7 @@ KMETHOD GL_glUniform2uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3uivEXT(GLint location, GLsizei count, GLuint* value);
-KMETHOD GL_glUniform3uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -3708,7 +3708,7 @@ KMETHOD GL_glUniform3uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4uivEXT(GLint location, GLsizei count, GLuint* value);
-KMETHOD GL_glUniform4uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4uivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -3719,7 +3719,7 @@ KMETHOD GL_glUniform4uivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetUniformuivEXT(GLuint program, GLint location, GLuint* params);
-KMETHOD GL_glGetUniformuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformuivEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -3730,7 +3730,7 @@ KMETHOD GL_glGetUniformuivEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindFragDataLocationEXT(GLuint program, GLuint colorNumber, GLchar* name);
-KMETHOD GL_glBindFragDataLocationEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindFragDataLocationEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLuint colorNumber = PKGInt_to(GLuint, 2);
@@ -3741,7 +3741,7 @@ KMETHOD GL_glBindFragDataLocationEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.glGetFragDataLocationEXT(GLuint program, GLchar* name);
-KMETHOD GL_glGetFragDataLocationEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetFragDataLocationEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLchar* name = PKG_Error_to(GLchar*, 2);
@@ -3751,7 +3751,7 @@ KMETHOD GL_glGetFragDataLocationEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorMaskIndexedEXT(GLuint index, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
-KMETHOD GL_glColorMaskIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorMaskIndexedEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLboolean r = PKGInt_to(GLboolean, 2);
@@ -3764,7 +3764,7 @@ KMETHOD GL_glColorMaskIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEnableIndexedEXT(GLenum target, GLuint index);
-KMETHOD GL_glEnableIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEnableIndexedEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3774,7 +3774,7 @@ KMETHOD GL_glEnableIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDisableIndexedEXT(GLenum target, GLuint index);
-KMETHOD GL_glDisableIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDisableIndexedEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3784,7 +3784,7 @@ KMETHOD GL_glDisableIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsEnabledIndexedEXT(GLenum target, GLuint index);
-KMETHOD GL_glIsEnabledIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsEnabledIndexedEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -3794,7 +3794,7 @@ KMETHOD GL_glIsEnabledIndexedEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProvokingVertexEXT(GLenum mode);
-KMETHOD GL_glProvokingVertexEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProvokingVertexEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -3803,7 +3803,7 @@ KMETHOD GL_glProvokingVertexEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glProvokingVertex(GLenum mode);
-KMETHOD GL_glProvokingVertex(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glProvokingVertex(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -3812,7 +3812,7 @@ KMETHOD GL_glProvokingVertex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryObjecti64vEXT(GLuint id, GLenum pname, GLint64EXT* params);
-KMETHOD GL_glGetQueryObjecti64vEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryObjecti64vEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3823,7 +3823,7 @@ KMETHOD GL_glGetQueryObjecti64vEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryObjectui64vEXT(GLuint id, GLenum pname, GLuint64EXT* params);
-KMETHOD GL_glGetQueryObjectui64vEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryObjectui64vEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3834,7 +3834,7 @@ KMETHOD GL_glGetQueryObjectui64vEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTextureRangeAPPLE(GLenum target, GLsizei length, GLvoid* pointer);
-KMETHOD GL_glTextureRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTextureRangeAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizei length = PKGInt_to(GLsizei, 2);
@@ -3845,7 +3845,7 @@ KMETHOD GL_glTextureRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexParameterPointervAPPLE(GLenum target, GLenum pname, GLvoid** params);
-KMETHOD GL_glGetTexParameterPointervAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexParameterPointervAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -3856,7 +3856,7 @@ KMETHOD GL_glGetTexParameterPointervAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexArrayRangeAPPLE(GLsizei length, GLvoid* pointer);
-KMETHOD GL_glVertexArrayRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexArrayRangeAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei length = PKGInt_to(GLsizei, 1);
     GLvoid* pointer = PKG_Error_to(GLvoid*, 2);
@@ -3866,7 +3866,7 @@ KMETHOD GL_glVertexArrayRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFlushVertexArrayRangeAPPLE(GLsizei length, GLvoid* pointer);
-KMETHOD GL_glFlushVertexArrayRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFlushVertexArrayRangeAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei length = PKGInt_to(GLsizei, 1);
     GLvoid* pointer = PKG_Error_to(GLvoid*, 2);
@@ -3876,7 +3876,7 @@ KMETHOD GL_glFlushVertexArrayRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexArrayParameteriAPPLE(GLenum pname, GLint param);
-KMETHOD GL_glVertexArrayParameteriAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexArrayParameteriAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -3886,7 +3886,7 @@ KMETHOD GL_glVertexArrayParameteriAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindVertexArrayAPPLE(GLuint id);
-KMETHOD GL_glBindVertexArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindVertexArrayAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
 
@@ -3895,7 +3895,7 @@ KMETHOD GL_glBindVertexArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteVertexArraysAPPLE(GLsizei n, GLuint* ids);
-KMETHOD GL_glDeleteVertexArraysAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteVertexArraysAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* ids = PKG_Error_to(GLuint*, 2);
@@ -3905,7 +3905,7 @@ KMETHOD GL_glDeleteVertexArraysAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenVertexArraysAPPLE(GLsizei n, GLuint* ids);
-KMETHOD GL_glGenVertexArraysAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenVertexArraysAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* ids = PKG_Error_to(GLuint*, 2);
@@ -3915,7 +3915,7 @@ KMETHOD GL_glGenVertexArraysAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsVertexArrayAPPLE(GLuint id);
-KMETHOD GL_glIsVertexArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsVertexArrayAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
 
@@ -3924,7 +3924,7 @@ KMETHOD GL_glIsVertexArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenFencesAPPLE(GLsizei n, GLuint* fences);
-KMETHOD GL_glGenFencesAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenFencesAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* fences = PKG_Error_to(GLuint*, 2);
@@ -3934,7 +3934,7 @@ KMETHOD GL_glGenFencesAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteFencesAPPLE(GLsizei n, GLuint* fences);
-KMETHOD GL_glDeleteFencesAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteFencesAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* fences = PKG_Error_to(GLuint*, 2);
@@ -3944,7 +3944,7 @@ KMETHOD GL_glDeleteFencesAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSetFenceAPPLE(GLuint fence);
-KMETHOD GL_glSetFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSetFenceAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint fence = PKGInt_to(GLuint, 1);
 
@@ -3953,7 +3953,7 @@ KMETHOD GL_glSetFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsFenceAPPLE(GLuint fence);
-KMETHOD GL_glIsFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsFenceAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint fence = PKGInt_to(GLuint, 1);
 
@@ -3962,7 +3962,7 @@ KMETHOD GL_glIsFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glTestFenceAPPLE(GLuint fence);
-KMETHOD GL_glTestFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTestFenceAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint fence = PKGInt_to(GLuint, 1);
 
@@ -3971,7 +3971,7 @@ KMETHOD GL_glTestFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFinishFenceAPPLE(GLuint fence);
-KMETHOD GL_glFinishFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFinishFenceAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint fence = PKGInt_to(GLuint, 1);
 
@@ -3980,7 +3980,7 @@ KMETHOD GL_glFinishFenceAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glTestObjectAPPLE(GLenum object, GLuint name);
-KMETHOD GL_glTestObjectAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTestObjectAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum object = PKGInt_to(GLenum, 1);
     GLuint name = PKGInt_to(GLuint, 2);
@@ -3990,7 +3990,7 @@ KMETHOD GL_glTestObjectAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFinishObjectAPPLE(GLenum object, GLuint name);
-KMETHOD GL_glFinishObjectAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFinishObjectAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum object = PKGInt_to(GLenum, 1);
     GLuint name = PKGInt_to(GLuint, 2);
@@ -4000,7 +4000,7 @@ KMETHOD GL_glFinishObjectAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glElementPointerAPPLE(GLenum type, GLvoid* pointer);
-KMETHOD GL_glElementPointerAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glElementPointerAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
     GLvoid* pointer = PKG_Error_to(GLvoid*, 2);
@@ -4010,7 +4010,7 @@ KMETHOD GL_glElementPointerAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawElementArrayAPPLE(GLenum mode, GLint first, GLsizei count);
-KMETHOD GL_glDrawElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawElementArrayAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint first = PKGInt_to(GLint, 2);
@@ -4021,7 +4021,7 @@ KMETHOD GL_glDrawElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawRangeElementArrayAPPLE(GLenum mode, GLuint start, GLuint end, GLint first, GLsizei count);
-KMETHOD GL_glDrawRangeElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawRangeElementArrayAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLuint start = PKGInt_to(GLuint, 2);
@@ -4034,7 +4034,7 @@ KMETHOD GL_glDrawRangeElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiDrawElementArrayAPPLE(GLenum mode, GLint* first, GLsizei* count, GLsizei primcount);
-KMETHOD GL_glMultiDrawElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiDrawElementArrayAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint* first = PKG_Error_to(GLint*, 2);
@@ -4046,7 +4046,7 @@ KMETHOD GL_glMultiDrawElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiDrawRangeElementArrayAPPLE(GLenum mode, GLuint start, GLuint end, GLint* first, GLsizei* count, GLsizei primcount);
-KMETHOD GL_glMultiDrawRangeElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiDrawRangeElementArrayAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLuint start = PKGInt_to(GLuint, 2);
@@ -4060,7 +4060,7 @@ KMETHOD GL_glMultiDrawRangeElementArrayAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFlushRenderAPPLE();
-KMETHOD GL_glFlushRenderAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFlushRenderAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glFlushRenderAPPLE();
@@ -4068,7 +4068,7 @@ KMETHOD GL_glFlushRenderAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFinishRenderAPPLE();
-KMETHOD GL_glFinishRenderAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFinishRenderAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glFinishRenderAPPLE();
@@ -4076,7 +4076,7 @@ KMETHOD GL_glFinishRenderAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSwapAPPLE();
-KMETHOD GL_glSwapAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSwapAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glSwapAPPLE();
@@ -4084,7 +4084,7 @@ KMETHOD GL_glSwapAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEnableVertexAttribAPPLE(GLuint index, GLenum pname);
-KMETHOD GL_glEnableVertexAttribAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEnableVertexAttribAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -4094,7 +4094,7 @@ KMETHOD GL_glEnableVertexAttribAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDisableVertexAttribAPPLE(GLuint index, GLenum pname);
-KMETHOD GL_glDisableVertexAttribAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDisableVertexAttribAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -4104,7 +4104,7 @@ KMETHOD GL_glDisableVertexAttribAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsVertexAttribEnabledAPPLE(GLuint index, GLenum pname);
-KMETHOD GL_glIsVertexAttribEnabledAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsVertexAttribEnabledAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -4114,7 +4114,7 @@ KMETHOD GL_glIsVertexAttribEnabledAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapVertexAttrib1dAPPLE(GLuint index, GLuint size, GLdouble u1, GLdouble u2, GLint stride, GLint order, GLdouble* points);
-KMETHOD GL_glMapVertexAttrib1dAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapVertexAttrib1dAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint size = PKGInt_to(GLuint, 2);
@@ -4129,7 +4129,7 @@ KMETHOD GL_glMapVertexAttrib1dAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapVertexAttrib1fAPPLE(GLuint index, GLuint size, GLfloat u1, GLfloat u2, GLint stride, GLint order, GLfloat* points);
-KMETHOD GL_glMapVertexAttrib1fAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapVertexAttrib1fAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint size = PKGInt_to(GLuint, 2);
@@ -4144,7 +4144,7 @@ KMETHOD GL_glMapVertexAttrib1fAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapVertexAttrib2dAPPLE(GLuint index, GLuint size, GLdouble u1, GLdouble u2, GLint ustride, GLint uorder, GLdouble v1, GLdouble v2, GLint vstride, GLint vorder, GLdouble* points);
-KMETHOD GL_glMapVertexAttrib2dAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapVertexAttrib2dAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint size = PKGInt_to(GLuint, 2);
@@ -4163,7 +4163,7 @@ KMETHOD GL_glMapVertexAttrib2dAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapVertexAttrib2fAPPLE(GLuint index, GLuint size, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder, GLfloat* points);
-KMETHOD GL_glMapVertexAttrib2fAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapVertexAttrib2fAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint size = PKGInt_to(GLuint, 2);
@@ -4182,7 +4182,7 @@ KMETHOD GL_glMapVertexAttrib2fAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBufferParameteriAPPLE(GLenum target, GLenum pname, GLint param);
-KMETHOD GL_glBufferParameteriAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBufferParameteriAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -4193,7 +4193,7 @@ KMETHOD GL_glBufferParameteriAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFlushMappedBufferRangeAPPLE(GLenum target, GLintptr offset, GLsizeiptr size);
-KMETHOD GL_glFlushMappedBufferRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFlushMappedBufferRangeAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLintptr offset = PKGInt_to(GLintptr, 2);
@@ -4204,7 +4204,7 @@ KMETHOD GL_glFlushMappedBufferRangeAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLenum GL.glObjectPurgeableAPPLE(GLenum objectType, GLuint name, GLenum option);
-KMETHOD GL_glObjectPurgeableAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glObjectPurgeableAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum objectType = PKGInt_to(GLenum, 1);
     GLuint name = PKGInt_to(GLuint, 2);
@@ -4215,7 +4215,7 @@ KMETHOD GL_glObjectPurgeableAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLenum GL.glObjectUnpurgeableAPPLE(GLenum objectType, GLuint name, GLenum option);
-KMETHOD GL_glObjectUnpurgeableAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glObjectUnpurgeableAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum objectType = PKGInt_to(GLenum, 1);
     GLuint name = PKGInt_to(GLuint, 2);
@@ -4226,7 +4226,7 @@ KMETHOD GL_glObjectUnpurgeableAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetObjectParameterivAPPLE(GLenum objectType, GLuint name, GLenum pname, GLint* params);
-KMETHOD GL_glGetObjectParameterivAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetObjectParameterivAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum objectType = PKGInt_to(GLenum, 1);
     GLuint name = PKGInt_to(GLuint, 2);
@@ -4238,7 +4238,7 @@ KMETHOD GL_glGetObjectParameterivAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointSizePointerAPPLE(GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glPointSizePointerAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointSizePointerAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
     GLsizei stride = PKGInt_to(GLsizei, 2);
@@ -4249,7 +4249,7 @@ KMETHOD GL_glPointSizePointerAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexPointSizefAPPLE(GLfloat size);
-KMETHOD GL_glVertexPointSizefAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexPointSizefAPPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat size = PKGFloat_to(GLfloat, 1);
 
@@ -4258,7 +4258,7 @@ KMETHOD GL_glVertexPointSizefAPPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPNTrianglesiATI(GLenum pname, GLint param);
-KMETHOD GL_glPNTrianglesiATI(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPNTrianglesiATI(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -4268,7 +4268,7 @@ KMETHOD GL_glPNTrianglesiATI(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPNTrianglesfATI(GLenum pname, GLfloat param);
-KMETHOD GL_glPNTrianglesfATI(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPNTrianglesfATI(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -4278,7 +4278,7 @@ KMETHOD GL_glPNTrianglesfATI(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendEquationSeparateATI(GLenum equationRGB, GLenum equationAlpha);
-KMETHOD GL_glBlendEquationSeparateATI(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendEquationSeparateATI(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum equationRGB = PKGInt_to(GLenum, 1);
     GLenum equationAlpha = PKGInt_to(GLenum, 2);
@@ -4288,7 +4288,7 @@ KMETHOD GL_glBlendEquationSeparateATI(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilOpSeparateATI(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
-KMETHOD GL_glStencilOpSeparateATI(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilOpSeparateATI(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum sfail = PKGInt_to(GLenum, 2);
@@ -4300,7 +4300,7 @@ KMETHOD GL_glStencilOpSeparateATI(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilFuncSeparateATI(GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask);
-KMETHOD GL_glStencilFuncSeparateATI(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilFuncSeparateATI(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum frontfunc = PKGInt_to(GLenum, 1);
     GLenum backfunc = PKGInt_to(GLenum, 2);
@@ -4312,7 +4312,7 @@ KMETHOD GL_glStencilFuncSeparateATI(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPNTrianglesiATIX(GLenum pname, GLint param);
-KMETHOD GL_glPNTrianglesiATIX(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPNTrianglesiATIX(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -4322,7 +4322,7 @@ KMETHOD GL_glPNTrianglesiATIX(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPNTrianglesfATIX(GLenum pname, GLfloat param);
-KMETHOD GL_glPNTrianglesfATIX(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPNTrianglesfATIX(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -4332,7 +4332,7 @@ KMETHOD GL_glPNTrianglesfATIX(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameteriNV(GLenum pname, GLint param);
-KMETHOD GL_glPointParameteriNV(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameteriNV(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -4342,7 +4342,7 @@ KMETHOD GL_glPointParameteriNV(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameterivNV(GLenum pname, GLint* params);
-KMETHOD GL_glPointParameterivNV(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameterivNV(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint* params = PKG_Error_to(GLint*, 2);
@@ -4352,7 +4352,7 @@ KMETHOD GL_glPointParameterivNV(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBeginConditionalRenderNV(GLuint id, GLenum mode);
-KMETHOD GL_glBeginConditionalRenderNV(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBeginConditionalRenderNV(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
     GLenum mode = PKGInt_to(GLenum, 2);
@@ -4362,7 +4362,7 @@ KMETHOD GL_glBeginConditionalRenderNV(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEndConditionalRenderNV();
-KMETHOD GL_glEndConditionalRenderNV(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEndConditionalRenderNV(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glEndConditionalRenderNV();
@@ -4370,7 +4370,7 @@ KMETHOD GL_glEndConditionalRenderNV(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glAccum(GLenum op, GLfloat value);
-KMETHOD GL_glAccum(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glAccum(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum op = PKGInt_to(GLenum, 1);
     GLfloat value = PKGFloat_to(GLfloat, 2);
@@ -4380,7 +4380,7 @@ KMETHOD GL_glAccum(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glAlphaFunc(GLenum func, GLclampf ref);
-KMETHOD GL_glAlphaFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glAlphaFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum func = PKGInt_to(GLenum, 1);
     GLclampf ref = PKGFloat_to(GLclampf, 2);
@@ -4390,7 +4390,7 @@ KMETHOD GL_glAlphaFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glAreTexturesResident(GLsizei n, GLuint* textures, GLboolean* residences);
-KMETHOD GL_glAreTexturesResident(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glAreTexturesResident(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* textures = PKG_Error_to(GLuint*, 2);
@@ -4401,7 +4401,7 @@ KMETHOD GL_glAreTexturesResident(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glArrayElement(GLint i);
-KMETHOD GL_glArrayElement(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glArrayElement(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint i = PKGInt_to(GLint, 1);
 
@@ -4410,7 +4410,7 @@ KMETHOD GL_glArrayElement(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBegin(GLenum mode);
-KMETHOD GL_glBegin(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBegin(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -4419,7 +4419,7 @@ KMETHOD GL_glBegin(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindTexture(GLenum target, GLuint texture);
-KMETHOD GL_glBindTexture(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindTexture(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint texture = PKGInt_to(GLuint, 2);
@@ -4429,7 +4429,7 @@ KMETHOD GL_glBindTexture(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove, GLubyte* bitmap);
-KMETHOD GL_glBitmap(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBitmap(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei width = PKGInt_to(GLsizei, 1);
     GLsizei height = PKGInt_to(GLsizei, 2);
@@ -4444,7 +4444,7 @@ KMETHOD GL_glBitmap(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-KMETHOD GL_glBlendColor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendColor(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampf red = PKGFloat_to(GLclampf, 1);
     GLclampf green = PKGFloat_to(GLclampf, 2);
@@ -4456,7 +4456,7 @@ KMETHOD GL_glBlendColor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendEquation(GLenum mode);
-KMETHOD GL_glBlendEquation(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendEquation(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -4465,7 +4465,7 @@ KMETHOD GL_glBlendEquation(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha);
-KMETHOD GL_glBlendEquationSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendEquationSeparate(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum modeRGB = PKGInt_to(GLenum, 1);
     GLenum modeAlpha = PKGInt_to(GLenum, 2);
@@ -4475,7 +4475,7 @@ KMETHOD GL_glBlendEquationSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendFunc(GLenum sfactor, GLenum dfactor);
-KMETHOD GL_glBlendFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum sfactor = PKGInt_to(GLenum, 1);
     GLenum dfactor = PKGInt_to(GLenum, 2);
@@ -4485,7 +4485,7 @@ KMETHOD GL_glBlendFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCallList(GLuint list);
-KMETHOD GL_glCallList(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCallList(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint list = PKGInt_to(GLuint, 1);
 
@@ -4494,7 +4494,7 @@ KMETHOD GL_glCallList(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCallLists(GLsizei n, GLenum type, GLvoid* lists);
-KMETHOD GL_glCallLists(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCallLists(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -4505,7 +4505,7 @@ KMETHOD GL_glCallLists(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClear(GLbitfield mask);
-KMETHOD GL_glClear(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClear(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbitfield mask = PKGInt_to(GLbitfield, 1);
 
@@ -4514,7 +4514,7 @@ KMETHOD GL_glClear(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClearAccum(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-KMETHOD GL_glClearAccum(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClearAccum(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat red = PKGFloat_to(GLfloat, 1);
     GLfloat green = PKGFloat_to(GLfloat, 2);
@@ -4526,7 +4526,7 @@ KMETHOD GL_glClearAccum(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
-KMETHOD GL_glClearColor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClearColor(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampf red = PKGFloat_to(GLclampf, 1);
     GLclampf green = PKGFloat_to(GLclampf, 2);
@@ -4538,7 +4538,7 @@ KMETHOD GL_glClearColor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClearDepth(GLclampd depth);
-KMETHOD GL_glClearDepth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClearDepth(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampd depth = PKGFloat_to(GLclampd, 1);
 
@@ -4547,7 +4547,7 @@ KMETHOD GL_glClearDepth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClearIndex(GLfloat c);
-KMETHOD GL_glClearIndex(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClearIndex(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat c = PKGFloat_to(GLfloat, 1);
 
@@ -4556,7 +4556,7 @@ KMETHOD GL_glClearIndex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClearStencil(GLint s);
-KMETHOD GL_glClearStencil(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClearStencil(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint s = PKGInt_to(GLint, 1);
 
@@ -4565,7 +4565,7 @@ KMETHOD GL_glClearStencil(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClipPlane(GLenum plane, GLdouble* equation);
-KMETHOD GL_glClipPlane(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClipPlane(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum plane = PKGInt_to(GLenum, 1);
     GLdouble* equation = PKG_Error_to(GLdouble*, 2);
@@ -4575,7 +4575,7 @@ KMETHOD GL_glClipPlane(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3b(GLbyte red, GLbyte green, GLbyte blue);
-KMETHOD GL_glColor3b(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3b(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte red = PKGInt_to(GLbyte, 1);
     GLbyte green = PKGInt_to(GLbyte, 2);
@@ -4586,7 +4586,7 @@ KMETHOD GL_glColor3b(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3bv(GLbyte* v);
-KMETHOD GL_glColor3bv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3bv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte* v = PKG_Error_to(GLbyte*, 1);
 
@@ -4595,7 +4595,7 @@ KMETHOD GL_glColor3bv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3d(GLdouble red, GLdouble green, GLdouble blue);
-KMETHOD GL_glColor3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble red = PKGFloat_to(GLdouble, 1);
     GLdouble green = PKGFloat_to(GLdouble, 2);
@@ -4606,7 +4606,7 @@ KMETHOD GL_glColor3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3dv(GLdouble* v);
-KMETHOD GL_glColor3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -4615,7 +4615,7 @@ KMETHOD GL_glColor3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3f(GLfloat red, GLfloat green, GLfloat blue);
-KMETHOD GL_glColor3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat red = PKGFloat_to(GLfloat, 1);
     GLfloat green = PKGFloat_to(GLfloat, 2);
@@ -4626,7 +4626,7 @@ KMETHOD GL_glColor3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3fv(GLfloat* v);
-KMETHOD GL_glColor3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -4635,7 +4635,7 @@ KMETHOD GL_glColor3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3i(GLint red, GLint green, GLint blue);
-KMETHOD GL_glColor3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint red = PKGInt_to(GLint, 1);
     GLint green = PKGInt_to(GLint, 2);
@@ -4646,7 +4646,7 @@ KMETHOD GL_glColor3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3iv(GLint* v);
-KMETHOD GL_glColor3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -4655,7 +4655,7 @@ KMETHOD GL_glColor3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3s(GLshort red, GLshort green, GLshort blue);
-KMETHOD GL_glColor3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort red = PKGInt_to(GLshort, 1);
     GLshort green = PKGInt_to(GLshort, 2);
@@ -4666,7 +4666,7 @@ KMETHOD GL_glColor3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3sv(GLshort* v);
-KMETHOD GL_glColor3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -4675,7 +4675,7 @@ KMETHOD GL_glColor3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3ub(GLubyte red, GLubyte green, GLubyte blue);
-KMETHOD GL_glColor3ub(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3ub(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte red = PKGInt_to(GLubyte, 1);
     GLubyte green = PKGInt_to(GLubyte, 2);
@@ -4686,7 +4686,7 @@ KMETHOD GL_glColor3ub(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3ubv(GLubyte* v);
-KMETHOD GL_glColor3ubv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3ubv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* v = PKG_Error_to(GLubyte*, 1);
 
@@ -4695,7 +4695,7 @@ KMETHOD GL_glColor3ubv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3ui(GLuint red, GLuint green, GLuint blue);
-KMETHOD GL_glColor3ui(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3ui(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint red = PKGInt_to(GLuint, 1);
     GLuint green = PKGInt_to(GLuint, 2);
@@ -4706,7 +4706,7 @@ KMETHOD GL_glColor3ui(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3uiv(GLuint* v);
-KMETHOD GL_glColor3uiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3uiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint* v = PKG_Error_to(GLuint*, 1);
 
@@ -4715,7 +4715,7 @@ KMETHOD GL_glColor3uiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3us(GLushort red, GLushort green, GLushort blue);
-KMETHOD GL_glColor3us(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3us(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort red = PKGInt_to(GLushort, 1);
     GLushort green = PKGInt_to(GLushort, 2);
@@ -4726,7 +4726,7 @@ KMETHOD GL_glColor3us(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor3usv(GLushort* v);
-KMETHOD GL_glColor3usv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor3usv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort* v = PKG_Error_to(GLushort*, 1);
 
@@ -4735,7 +4735,7 @@ KMETHOD GL_glColor3usv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4b(GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha);
-KMETHOD GL_glColor4b(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4b(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte red = PKGInt_to(GLbyte, 1);
     GLbyte green = PKGInt_to(GLbyte, 2);
@@ -4747,7 +4747,7 @@ KMETHOD GL_glColor4b(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4bv(GLbyte* v);
-KMETHOD GL_glColor4bv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4bv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte* v = PKG_Error_to(GLbyte*, 1);
 
@@ -4756,7 +4756,7 @@ KMETHOD GL_glColor4bv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4d(GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha);
-KMETHOD GL_glColor4d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble red = PKGFloat_to(GLdouble, 1);
     GLdouble green = PKGFloat_to(GLdouble, 2);
@@ -4768,7 +4768,7 @@ KMETHOD GL_glColor4d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4dv(GLdouble* v);
-KMETHOD GL_glColor4dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -4777,7 +4777,7 @@ KMETHOD GL_glColor4dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
-KMETHOD GL_glColor4f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat red = PKGFloat_to(GLfloat, 1);
     GLfloat green = PKGFloat_to(GLfloat, 2);
@@ -4789,7 +4789,7 @@ KMETHOD GL_glColor4f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4fv(GLfloat* v);
-KMETHOD GL_glColor4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -4798,7 +4798,7 @@ KMETHOD GL_glColor4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4i(GLint red, GLint green, GLint blue, GLint alpha);
-KMETHOD GL_glColor4i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint red = PKGInt_to(GLint, 1);
     GLint green = PKGInt_to(GLint, 2);
@@ -4810,7 +4810,7 @@ KMETHOD GL_glColor4i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4iv(GLint* v);
-KMETHOD GL_glColor4iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -4819,7 +4819,7 @@ KMETHOD GL_glColor4iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4s(GLshort red, GLshort green, GLshort blue, GLshort alpha);
-KMETHOD GL_glColor4s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort red = PKGInt_to(GLshort, 1);
     GLshort green = PKGInt_to(GLshort, 2);
@@ -4831,7 +4831,7 @@ KMETHOD GL_glColor4s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4sv(GLshort* v);
-KMETHOD GL_glColor4sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -4840,7 +4840,7 @@ KMETHOD GL_glColor4sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha);
-KMETHOD GL_glColor4ub(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4ub(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte red = PKGInt_to(GLubyte, 1);
     GLubyte green = PKGInt_to(GLubyte, 2);
@@ -4852,7 +4852,7 @@ KMETHOD GL_glColor4ub(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4ubv(GLubyte* v);
-KMETHOD GL_glColor4ubv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4ubv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* v = PKG_Error_to(GLubyte*, 1);
 
@@ -4861,7 +4861,7 @@ KMETHOD GL_glColor4ubv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4ui(GLuint red, GLuint green, GLuint blue, GLuint alpha);
-KMETHOD GL_glColor4ui(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4ui(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint red = PKGInt_to(GLuint, 1);
     GLuint green = PKGInt_to(GLuint, 2);
@@ -4873,7 +4873,7 @@ KMETHOD GL_glColor4ui(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4uiv(GLuint* v);
-KMETHOD GL_glColor4uiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4uiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint* v = PKG_Error_to(GLuint*, 1);
 
@@ -4882,7 +4882,7 @@ KMETHOD GL_glColor4uiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4us(GLushort red, GLushort green, GLushort blue, GLushort alpha);
-KMETHOD GL_glColor4us(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4us(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort red = PKGInt_to(GLushort, 1);
     GLushort green = PKGInt_to(GLushort, 2);
@@ -4894,7 +4894,7 @@ KMETHOD GL_glColor4us(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColor4usv(GLushort* v);
-KMETHOD GL_glColor4usv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColor4usv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort* v = PKG_Error_to(GLushort*, 1);
 
@@ -4903,7 +4903,7 @@ KMETHOD GL_glColor4usv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
-KMETHOD GL_glColorMask(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorMask(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLboolean red = PKGInt_to(GLboolean, 1);
     GLboolean green = PKGInt_to(GLboolean, 2);
@@ -4915,7 +4915,7 @@ KMETHOD GL_glColorMask(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorMaterial(GLenum face, GLenum mode);
-KMETHOD GL_glColorMaterial(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorMaterial(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum mode = PKGInt_to(GLenum, 2);
@@ -4925,7 +4925,7 @@ KMETHOD GL_glColorMaterial(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorPointer(GLint size, GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glColorPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -4937,7 +4937,7 @@ KMETHOD GL_glColorPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorSubTable(GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, GLvoid* data);
-KMETHOD GL_glColorSubTable(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorSubTable(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizei start = PKGInt_to(GLsizei, 2);
@@ -4951,7 +4951,7 @@ KMETHOD GL_glColorSubTable(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorTable(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* table);
-KMETHOD GL_glColorTable(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorTable(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -4965,7 +4965,7 @@ KMETHOD GL_glColorTable(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorTableParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glColorTableParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorTableParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -4976,7 +4976,7 @@ KMETHOD GL_glColorTableParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glColorTableParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glColorTableParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glColorTableParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -4987,7 +4987,7 @@ KMETHOD GL_glColorTableParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glConvolutionFilter1D(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type, GLvoid* image);
-KMETHOD GL_glConvolutionFilter1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glConvolutionFilter1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -5001,7 +5001,7 @@ KMETHOD GL_glConvolutionFilter1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glConvolutionFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* image);
-KMETHOD GL_glConvolutionFilter2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glConvolutionFilter2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -5016,7 +5016,7 @@ KMETHOD GL_glConvolutionFilter2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glConvolutionParameterf(GLenum target, GLenum pname, GLfloat params);
-KMETHOD GL_glConvolutionParameterf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glConvolutionParameterf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5027,7 +5027,7 @@ KMETHOD GL_glConvolutionParameterf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glConvolutionParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glConvolutionParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glConvolutionParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5038,7 +5038,7 @@ KMETHOD GL_glConvolutionParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glConvolutionParameteri(GLenum target, GLenum pname, GLint params);
-KMETHOD GL_glConvolutionParameteri(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glConvolutionParameteri(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5049,7 +5049,7 @@ KMETHOD GL_glConvolutionParameteri(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glConvolutionParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glConvolutionParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glConvolutionParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5060,7 +5060,7 @@ KMETHOD GL_glConvolutionParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyColorSubTable(GLenum target, GLsizei start, GLint x, GLint y, GLsizei width);
-KMETHOD GL_glCopyColorSubTable(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyColorSubTable(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizei start = PKGInt_to(GLsizei, 2);
@@ -5073,7 +5073,7 @@ KMETHOD GL_glCopyColorSubTable(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyColorTable(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width);
-KMETHOD GL_glCopyColorTable(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyColorTable(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -5086,7 +5086,7 @@ KMETHOD GL_glCopyColorTable(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyConvolutionFilter1D(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width);
-KMETHOD GL_glCopyConvolutionFilter1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyConvolutionFilter1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -5099,7 +5099,7 @@ KMETHOD GL_glCopyConvolutionFilter1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyConvolutionFilter2D(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height);
-KMETHOD GL_glCopyConvolutionFilter2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyConvolutionFilter2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -5113,7 +5113,7 @@ KMETHOD GL_glCopyConvolutionFilter2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum type);
-KMETHOD GL_glCopyPixels(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyPixels(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -5126,7 +5126,7 @@ KMETHOD GL_glCopyPixels(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyTexImage1D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border);
-KMETHOD GL_glCopyTexImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyTexImage1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -5141,7 +5141,7 @@ KMETHOD GL_glCopyTexImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
-KMETHOD GL_glCopyTexImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyTexImage2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -5157,7 +5157,7 @@ KMETHOD GL_glCopyTexImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width);
-KMETHOD GL_glCopyTexSubImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyTexSubImage1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -5171,7 +5171,7 @@ KMETHOD GL_glCopyTexSubImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height);
-KMETHOD GL_glCopyTexSubImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyTexSubImage2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -5187,7 +5187,7 @@ KMETHOD GL_glCopyTexSubImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
-KMETHOD GL_glCopyTexSubImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCopyTexSubImage3D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -5204,7 +5204,7 @@ KMETHOD GL_glCopyTexSubImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCullFace(GLenum mode);
-KMETHOD GL_glCullFace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCullFace(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -5213,7 +5213,7 @@ KMETHOD GL_glCullFace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteLists(GLuint list, GLsizei range);
-KMETHOD GL_glDeleteLists(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteLists(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint list = PKGInt_to(GLuint, 1);
     GLsizei range = PKGInt_to(GLsizei, 2);
@@ -5223,7 +5223,7 @@ KMETHOD GL_glDeleteLists(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteTextures(GLsizei n, GLuint* textures);
-KMETHOD GL_glDeleteTextures(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteTextures(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* textures = PKG_Error_to(GLuint*, 2);
@@ -5233,7 +5233,7 @@ KMETHOD GL_glDeleteTextures(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDepthFunc(GLenum func);
-KMETHOD GL_glDepthFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDepthFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum func = PKGInt_to(GLenum, 1);
 
@@ -5242,7 +5242,7 @@ KMETHOD GL_glDepthFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDepthMask(GLboolean flag);
-KMETHOD GL_glDepthMask(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDepthMask(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLboolean flag = PKGInt_to(GLboolean, 1);
 
@@ -5251,7 +5251,7 @@ KMETHOD GL_glDepthMask(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDepthRange(GLclampd zNear, GLclampd zFar);
-KMETHOD GL_glDepthRange(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDepthRange(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampd zNear = PKGFloat_to(GLclampd, 1);
     GLclampd zFar = PKGFloat_to(GLclampd, 2);
@@ -5261,7 +5261,7 @@ KMETHOD GL_glDepthRange(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDisable(GLenum cap);
-KMETHOD GL_glDisable(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDisable(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum cap = PKGInt_to(GLenum, 1);
 
@@ -5270,7 +5270,7 @@ KMETHOD GL_glDisable(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDisableClientState(GLenum array);
-KMETHOD GL_glDisableClientState(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDisableClientState(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum array = PKGInt_to(GLenum, 1);
 
@@ -5279,7 +5279,7 @@ KMETHOD GL_glDisableClientState(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawArrays(GLenum mode, GLint first, GLsizei count);
-KMETHOD GL_glDrawArrays(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawArrays(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint first = PKGInt_to(GLint, 2);
@@ -5290,7 +5290,7 @@ KMETHOD GL_glDrawArrays(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawBuffer(GLenum mode);
-KMETHOD GL_glDrawBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -5299,7 +5299,7 @@ KMETHOD GL_glDrawBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawElements(GLenum mode, GLsizei count, GLenum type, GLvoid* indices);
-KMETHOD GL_glDrawElements(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawElements(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -5311,7 +5311,7 @@ KMETHOD GL_glDrawElements(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawPixels(GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glDrawPixels(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawPixels(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei width = PKGInt_to(GLsizei, 1);
     GLsizei height = PKGInt_to(GLsizei, 2);
@@ -5324,7 +5324,7 @@ KMETHOD GL_glDrawPixels(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, GLvoid* indices);
-KMETHOD GL_glDrawRangeElements(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawRangeElements(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLuint start = PKGInt_to(GLuint, 2);
@@ -5338,7 +5338,7 @@ KMETHOD GL_glDrawRangeElements(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEdgeFlag(GLboolean flag);
-KMETHOD GL_glEdgeFlag(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEdgeFlag(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLboolean flag = PKGInt_to(GLboolean, 1);
 
@@ -5347,7 +5347,7 @@ KMETHOD GL_glEdgeFlag(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEdgeFlagPointer(GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glEdgeFlagPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEdgeFlagPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei stride = PKGInt_to(GLsizei, 1);
     GLvoid* pointer = PKG_Error_to(GLvoid*, 2);
@@ -5357,7 +5357,7 @@ KMETHOD GL_glEdgeFlagPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEdgeFlagv(GLboolean* flag);
-KMETHOD GL_glEdgeFlagv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEdgeFlagv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLboolean* flag = PKG_Error_to(GLboolean*, 1);
 
@@ -5366,7 +5366,7 @@ KMETHOD GL_glEdgeFlagv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEnable(GLenum cap);
-KMETHOD GL_glEnable(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEnable(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum cap = PKGInt_to(GLenum, 1);
 
@@ -5375,7 +5375,7 @@ KMETHOD GL_glEnable(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEnableClientState(GLenum array);
-KMETHOD GL_glEnableClientState(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEnableClientState(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum array = PKGInt_to(GLenum, 1);
 
@@ -5384,7 +5384,7 @@ KMETHOD GL_glEnableClientState(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEnd();
-KMETHOD GL_glEnd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEnd(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glEnd();
@@ -5392,7 +5392,7 @@ KMETHOD GL_glEnd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEndList();
-KMETHOD GL_glEndList(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEndList(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glEndList();
@@ -5400,7 +5400,7 @@ KMETHOD GL_glEndList(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord1d(GLdouble u);
-KMETHOD GL_glEvalCoord1d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord1d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble u = PKGFloat_to(GLdouble, 1);
 
@@ -5409,7 +5409,7 @@ KMETHOD GL_glEvalCoord1d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord1dv(GLdouble* u);
-KMETHOD GL_glEvalCoord1dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord1dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* u = PKG_Error_to(GLdouble*, 1);
 
@@ -5418,7 +5418,7 @@ KMETHOD GL_glEvalCoord1dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord1f(GLfloat u);
-KMETHOD GL_glEvalCoord1f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord1f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat u = PKGFloat_to(GLfloat, 1);
 
@@ -5427,7 +5427,7 @@ KMETHOD GL_glEvalCoord1f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord1fv(GLfloat* u);
-KMETHOD GL_glEvalCoord1fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord1fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* u = PKG_Error_to(GLfloat*, 1);
 
@@ -5436,7 +5436,7 @@ KMETHOD GL_glEvalCoord1fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord2d(GLdouble u, GLdouble v);
-KMETHOD GL_glEvalCoord2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble u = PKGFloat_to(GLdouble, 1);
     GLdouble v = PKGFloat_to(GLdouble, 2);
@@ -5446,7 +5446,7 @@ KMETHOD GL_glEvalCoord2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord2dv(GLdouble* u);
-KMETHOD GL_glEvalCoord2dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord2dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* u = PKG_Error_to(GLdouble*, 1);
 
@@ -5455,7 +5455,7 @@ KMETHOD GL_glEvalCoord2dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord2f(GLfloat u, GLfloat v);
-KMETHOD GL_glEvalCoord2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat u = PKGFloat_to(GLfloat, 1);
     GLfloat v = PKGFloat_to(GLfloat, 2);
@@ -5465,7 +5465,7 @@ KMETHOD GL_glEvalCoord2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalCoord2fv(GLfloat* u);
-KMETHOD GL_glEvalCoord2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalCoord2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* u = PKG_Error_to(GLfloat*, 1);
 
@@ -5474,7 +5474,7 @@ KMETHOD GL_glEvalCoord2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalMesh1(GLenum mode, GLint i1, GLint i2);
-KMETHOD GL_glEvalMesh1(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalMesh1(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint i1 = PKGInt_to(GLint, 2);
@@ -5485,7 +5485,7 @@ KMETHOD GL_glEvalMesh1(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalMesh2(GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2);
-KMETHOD GL_glEvalMesh2(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalMesh2(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint i1 = PKGInt_to(GLint, 2);
@@ -5498,7 +5498,7 @@ KMETHOD GL_glEvalMesh2(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalPoint1(GLint i);
-KMETHOD GL_glEvalPoint1(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalPoint1(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint i = PKGInt_to(GLint, 1);
 
@@ -5507,7 +5507,7 @@ KMETHOD GL_glEvalPoint1(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEvalPoint2(GLint i, GLint j);
-KMETHOD GL_glEvalPoint2(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEvalPoint2(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint i = PKGInt_to(GLint, 1);
     GLint j = PKGInt_to(GLint, 2);
@@ -5517,7 +5517,7 @@ KMETHOD GL_glEvalPoint2(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFeedbackBuffer(GLsizei size, GLenum type, GLfloat* buffer);
-KMETHOD GL_glFeedbackBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFeedbackBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei size = PKGInt_to(GLsizei, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -5528,7 +5528,7 @@ KMETHOD GL_glFeedbackBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFinish();
-KMETHOD GL_glFinish(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFinish(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glFinish();
@@ -5536,7 +5536,7 @@ KMETHOD GL_glFinish(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFlush();
-KMETHOD GL_glFlush(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFlush(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glFlush();
@@ -5544,7 +5544,7 @@ KMETHOD GL_glFlush(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogf(GLenum pname, GLfloat param);
-KMETHOD GL_glFogf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -5554,7 +5554,7 @@ KMETHOD GL_glFogf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogfv(GLenum pname, GLfloat* params);
-KMETHOD GL_glFogfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat* params = PKG_Error_to(GLfloat*, 2);
@@ -5564,7 +5564,7 @@ KMETHOD GL_glFogfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogi(GLenum pname, GLint param);
-KMETHOD GL_glFogi(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogi(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -5574,7 +5574,7 @@ KMETHOD GL_glFogi(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogiv(GLenum pname, GLint* params);
-KMETHOD GL_glFogiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint* params = PKG_Error_to(GLint*, 2);
@@ -5584,7 +5584,7 @@ KMETHOD GL_glFogiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFrontFace(GLenum mode);
-KMETHOD GL_glFrontFace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFrontFace(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -5593,7 +5593,7 @@ KMETHOD GL_glFrontFace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFrustum(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
-KMETHOD GL_glFrustum(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFrustum(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble left = PKGFloat_to(GLdouble, 1);
     GLdouble right = PKGFloat_to(GLdouble, 2);
@@ -5607,7 +5607,7 @@ KMETHOD GL_glFrustum(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLuint GL.glGenLists(GLsizei range);
-KMETHOD GL_glGenLists(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenLists(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei range = PKGInt_to(GLsizei, 1);
 
@@ -5616,7 +5616,7 @@ KMETHOD GL_glGenLists(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenTextures(GLsizei n, GLuint* textures);
-KMETHOD GL_glGenTextures(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenTextures(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* textures = PKG_Error_to(GLuint*, 2);
@@ -5626,7 +5626,7 @@ KMETHOD GL_glGenTextures(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBooleanv(GLenum pname, GLboolean* params);
-KMETHOD GL_glGetBooleanv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBooleanv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLboolean* params = PKG_Error_to(GLboolean*, 2);
@@ -5636,7 +5636,7 @@ KMETHOD GL_glGetBooleanv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetClipPlane(GLenum plane, GLdouble* equation);
-KMETHOD GL_glGetClipPlane(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetClipPlane(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum plane = PKGInt_to(GLenum, 1);
     GLdouble* equation = PKG_Error_to(GLdouble*, 2);
@@ -5646,7 +5646,7 @@ KMETHOD GL_glGetClipPlane(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetColorTable(GLenum target, GLenum format, GLenum type, GLvoid* table);
-KMETHOD GL_glGetColorTable(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetColorTable(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum format = PKGInt_to(GLenum, 2);
@@ -5658,7 +5658,7 @@ KMETHOD GL_glGetColorTable(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetColorTableParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetColorTableParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetColorTableParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5669,7 +5669,7 @@ KMETHOD GL_glGetColorTableParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetColorTableParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetColorTableParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetColorTableParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5680,7 +5680,7 @@ KMETHOD GL_glGetColorTableParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetConvolutionFilter(GLenum target, GLenum format, GLenum type, GLvoid* image);
-KMETHOD GL_glGetConvolutionFilter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetConvolutionFilter(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum format = PKGInt_to(GLenum, 2);
@@ -5692,7 +5692,7 @@ KMETHOD GL_glGetConvolutionFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetConvolutionParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetConvolutionParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetConvolutionParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5703,7 +5703,7 @@ KMETHOD GL_glGetConvolutionParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetConvolutionParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetConvolutionParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetConvolutionParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5714,7 +5714,7 @@ KMETHOD GL_glGetConvolutionParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetDoublev(GLenum pname, GLdouble* params);
-KMETHOD GL_glGetDoublev(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetDoublev(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLdouble* params = PKG_Error_to(GLdouble*, 2);
@@ -5724,7 +5724,7 @@ KMETHOD GL_glGetDoublev(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLenum GL.glGetError();
-KMETHOD GL_glGetError(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetError(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     GLenum ret = glGetError();
@@ -5732,7 +5732,7 @@ KMETHOD GL_glGetError(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetFloatv(GLenum pname, GLfloat* params);
-KMETHOD GL_glGetFloatv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetFloatv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat* params = PKG_Error_to(GLfloat*, 2);
@@ -5742,7 +5742,7 @@ KMETHOD GL_glGetFloatv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetHistogram(GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid* values);
-KMETHOD GL_glGetHistogram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetHistogram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLboolean reset = PKGInt_to(GLboolean, 2);
@@ -5755,7 +5755,7 @@ KMETHOD GL_glGetHistogram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetHistogramParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetHistogramParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetHistogramParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5766,7 +5766,7 @@ KMETHOD GL_glGetHistogramParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetHistogramParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetHistogramParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetHistogramParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5777,7 +5777,7 @@ KMETHOD GL_glGetHistogramParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetIntegerv(GLenum pname, GLint* params);
-KMETHOD GL_glGetIntegerv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetIntegerv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint* params = PKG_Error_to(GLint*, 2);
@@ -5787,7 +5787,7 @@ KMETHOD GL_glGetIntegerv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetLightfv(GLenum light, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetLightfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetLightfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum light = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5798,7 +5798,7 @@ KMETHOD GL_glGetLightfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetLightiv(GLenum light, GLenum pname, GLint* params);
-KMETHOD GL_glGetLightiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetLightiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum light = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5809,7 +5809,7 @@ KMETHOD GL_glGetLightiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMapdv(GLenum target, GLenum query, GLdouble* v);
-KMETHOD GL_glGetMapdv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMapdv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum query = PKGInt_to(GLenum, 2);
@@ -5820,7 +5820,7 @@ KMETHOD GL_glGetMapdv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMapfv(GLenum target, GLenum query, GLfloat* v);
-KMETHOD GL_glGetMapfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMapfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum query = PKGInt_to(GLenum, 2);
@@ -5831,7 +5831,7 @@ KMETHOD GL_glGetMapfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMapiv(GLenum target, GLenum query, GLint* v);
-KMETHOD GL_glGetMapiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMapiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum query = PKGInt_to(GLenum, 2);
@@ -5842,7 +5842,7 @@ KMETHOD GL_glGetMapiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMaterialfv(GLenum face, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetMaterialfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMaterialfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5853,7 +5853,7 @@ KMETHOD GL_glGetMaterialfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMaterialiv(GLenum face, GLenum pname, GLint* params);
-KMETHOD GL_glGetMaterialiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMaterialiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5864,7 +5864,7 @@ KMETHOD GL_glGetMaterialiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMinmax(GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid* values);
-KMETHOD GL_glGetMinmax(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMinmax(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLboolean reset = PKGInt_to(GLboolean, 2);
@@ -5877,7 +5877,7 @@ KMETHOD GL_glGetMinmax(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMinmaxParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetMinmaxParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMinmaxParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5888,7 +5888,7 @@ KMETHOD GL_glGetMinmaxParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetMinmaxParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetMinmaxParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetMinmaxParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5899,7 +5899,7 @@ KMETHOD GL_glGetMinmaxParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetPixelMapfv(GLenum map, GLfloat* values);
-KMETHOD GL_glGetPixelMapfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetPixelMapfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum map = PKGInt_to(GLenum, 1);
     GLfloat* values = PKG_Error_to(GLfloat*, 2);
@@ -5909,7 +5909,7 @@ KMETHOD GL_glGetPixelMapfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetPixelMapuiv(GLenum map, GLuint* values);
-KMETHOD GL_glGetPixelMapuiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetPixelMapuiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum map = PKGInt_to(GLenum, 1);
     GLuint* values = PKG_Error_to(GLuint*, 2);
@@ -5919,7 +5919,7 @@ KMETHOD GL_glGetPixelMapuiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetPixelMapusv(GLenum map, GLushort* values);
-KMETHOD GL_glGetPixelMapusv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetPixelMapusv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum map = PKGInt_to(GLenum, 1);
     GLushort* values = PKG_Error_to(GLushort*, 2);
@@ -5929,7 +5929,7 @@ KMETHOD GL_glGetPixelMapusv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetPointerv(GLenum pname, GLvoid** params);
-KMETHOD GL_glGetPointerv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetPointerv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLvoid** params = PKG_Error_to(GLvoid**, 2);
@@ -5939,7 +5939,7 @@ KMETHOD GL_glGetPointerv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetPolygonStipple(GLubyte* mask);
-KMETHOD GL_glGetPolygonStipple(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetPolygonStipple(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* mask = PKG_Error_to(GLubyte*, 1);
 
@@ -5948,7 +5948,7 @@ KMETHOD GL_glGetPolygonStipple(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetSeparableFilter(GLenum target, GLenum format, GLenum type, GLvoid* row, GLvoid* column, GLvoid* span);
-KMETHOD GL_glGetSeparableFilter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetSeparableFilter(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum format = PKGInt_to(GLenum, 2);
@@ -5962,7 +5962,7 @@ KMETHOD GL_glGetSeparableFilter(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLubyte* GL.glGetString(GLenum name);
-KMETHOD GL_glGetString(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetString(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum name = PKGInt_to(GLenum, 1);
 
@@ -5971,7 +5971,7 @@ KMETHOD GL_glGetString(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexEnvfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetTexEnvfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexEnvfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5982,7 +5982,7 @@ KMETHOD GL_glGetTexEnvfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexEnviv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetTexEnviv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexEnviv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -5993,7 +5993,7 @@ KMETHOD GL_glGetTexEnviv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexGendv(GLenum coord, GLenum pname, GLdouble* params);
-KMETHOD GL_glGetTexGendv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexGendv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6004,7 +6004,7 @@ KMETHOD GL_glGetTexGendv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexGenfv(GLenum coord, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetTexGenfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexGenfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6015,7 +6015,7 @@ KMETHOD GL_glGetTexGenfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexGeniv(GLenum coord, GLenum pname, GLint* params);
-KMETHOD GL_glGetTexGeniv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexGeniv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6026,7 +6026,7 @@ KMETHOD GL_glGetTexGeniv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glGetTexImage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexImage(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -6039,7 +6039,7 @@ KMETHOD GL_glGetTexImage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetTexLevelParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexLevelParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -6051,7 +6051,7 @@ KMETHOD GL_glGetTexLevelParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint* params);
-KMETHOD GL_glGetTexLevelParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexLevelParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -6063,7 +6063,7 @@ KMETHOD GL_glGetTexLevelParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetTexParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6074,7 +6074,7 @@ KMETHOD GL_glGetTexParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetTexParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetTexParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetTexParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6085,7 +6085,7 @@ KMETHOD GL_glGetTexParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glHint(GLenum target, GLenum mode);
-KMETHOD GL_glHint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glHint(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum mode = PKGInt_to(GLenum, 2);
@@ -6095,7 +6095,7 @@ KMETHOD GL_glHint(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glHistogram(GLenum target, GLsizei width, GLenum internalformat, GLboolean sink);
-KMETHOD GL_glHistogram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glHistogram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizei width = PKGInt_to(GLsizei, 2);
@@ -6107,7 +6107,7 @@ KMETHOD GL_glHistogram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexMask(GLuint mask);
-KMETHOD GL_glIndexMask(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexMask(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint mask = PKGInt_to(GLuint, 1);
 
@@ -6116,7 +6116,7 @@ KMETHOD GL_glIndexMask(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexPointer(GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glIndexPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
     GLsizei stride = PKGInt_to(GLsizei, 2);
@@ -6127,7 +6127,7 @@ KMETHOD GL_glIndexPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexd(GLdouble c);
-KMETHOD GL_glIndexd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexd(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble c = PKGFloat_to(GLdouble, 1);
 
@@ -6136,7 +6136,7 @@ KMETHOD GL_glIndexd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexdv(GLdouble* c);
-KMETHOD GL_glIndexdv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexdv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* c = PKG_Error_to(GLdouble*, 1);
 
@@ -6145,7 +6145,7 @@ KMETHOD GL_glIndexdv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexf(GLfloat c);
-KMETHOD GL_glIndexf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat c = PKGFloat_to(GLfloat, 1);
 
@@ -6154,7 +6154,7 @@ KMETHOD GL_glIndexf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexfv(GLfloat* c);
-KMETHOD GL_glIndexfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* c = PKG_Error_to(GLfloat*, 1);
 
@@ -6163,7 +6163,7 @@ KMETHOD GL_glIndexfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexi(GLint c);
-KMETHOD GL_glIndexi(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexi(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint c = PKGInt_to(GLint, 1);
 
@@ -6172,7 +6172,7 @@ KMETHOD GL_glIndexi(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexiv(GLint* c);
-KMETHOD GL_glIndexiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* c = PKG_Error_to(GLint*, 1);
 
@@ -6181,7 +6181,7 @@ KMETHOD GL_glIndexiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexs(GLshort c);
-KMETHOD GL_glIndexs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexs(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort c = PKGInt_to(GLshort, 1);
 
@@ -6190,7 +6190,7 @@ KMETHOD GL_glIndexs(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexsv(GLshort* c);
-KMETHOD GL_glIndexsv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexsv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* c = PKG_Error_to(GLshort*, 1);
 
@@ -6199,7 +6199,7 @@ KMETHOD GL_glIndexsv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexub(GLubyte c);
-KMETHOD GL_glIndexub(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexub(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte c = PKGInt_to(GLubyte, 1);
 
@@ -6208,7 +6208,7 @@ KMETHOD GL_glIndexub(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glIndexubv(GLubyte* c);
-KMETHOD GL_glIndexubv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIndexubv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* c = PKG_Error_to(GLubyte*, 1);
 
@@ -6217,7 +6217,7 @@ KMETHOD GL_glIndexubv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glInitNames();
-KMETHOD GL_glInitNames(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glInitNames(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glInitNames();
@@ -6225,7 +6225,7 @@ KMETHOD GL_glInitNames(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glInterleavedArrays(GLenum format, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glInterleavedArrays(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glInterleavedArrays(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum format = PKGInt_to(GLenum, 1);
     GLsizei stride = PKGInt_to(GLsizei, 2);
@@ -6236,7 +6236,7 @@ KMETHOD GL_glInterleavedArrays(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsEnabled(GLenum cap);
-KMETHOD GL_glIsEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsEnabled(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum cap = PKGInt_to(GLenum, 1);
 
@@ -6245,7 +6245,7 @@ KMETHOD GL_glIsEnabled(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsList(GLuint list);
-KMETHOD GL_glIsList(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsList(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint list = PKGInt_to(GLuint, 1);
 
@@ -6254,7 +6254,7 @@ KMETHOD GL_glIsList(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsTexture(GLuint texture);
-KMETHOD GL_glIsTexture(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsTexture(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint texture = PKGInt_to(GLuint, 1);
 
@@ -6263,7 +6263,7 @@ KMETHOD GL_glIsTexture(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLightModelf(GLenum pname, GLfloat param);
-KMETHOD GL_glLightModelf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLightModelf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -6273,7 +6273,7 @@ KMETHOD GL_glLightModelf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLightModelfv(GLenum pname, GLfloat* params);
-KMETHOD GL_glLightModelfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLightModelfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat* params = PKG_Error_to(GLfloat*, 2);
@@ -6283,7 +6283,7 @@ KMETHOD GL_glLightModelfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLightModeli(GLenum pname, GLint param);
-KMETHOD GL_glLightModeli(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLightModeli(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -6293,7 +6293,7 @@ KMETHOD GL_glLightModeli(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLightModeliv(GLenum pname, GLint* params);
-KMETHOD GL_glLightModeliv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLightModeliv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint* params = PKG_Error_to(GLint*, 2);
@@ -6303,7 +6303,7 @@ KMETHOD GL_glLightModeliv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLightf(GLenum light, GLenum pname, GLfloat param);
-KMETHOD GL_glLightf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLightf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum light = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6314,7 +6314,7 @@ KMETHOD GL_glLightf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLightfv(GLenum light, GLenum pname, GLfloat* params);
-KMETHOD GL_glLightfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLightfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum light = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6325,7 +6325,7 @@ KMETHOD GL_glLightfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLighti(GLenum light, GLenum pname, GLint param);
-KMETHOD GL_glLighti(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLighti(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum light = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6336,7 +6336,7 @@ KMETHOD GL_glLighti(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLightiv(GLenum light, GLenum pname, GLint* params);
-KMETHOD GL_glLightiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLightiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum light = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6347,7 +6347,7 @@ KMETHOD GL_glLightiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLineStipple(GLint factor, GLushort pattern);
-KMETHOD GL_glLineStipple(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLineStipple(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint factor = PKGInt_to(GLint, 1);
     GLushort pattern = PKGInt_to(GLushort, 2);
@@ -6357,7 +6357,7 @@ KMETHOD GL_glLineStipple(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLineWidth(GLfloat width);
-KMETHOD GL_glLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLineWidth(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat width = PKGFloat_to(GLfloat, 1);
 
@@ -6366,7 +6366,7 @@ KMETHOD GL_glLineWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glListBase(GLuint base);
-KMETHOD GL_glListBase(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glListBase(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint base = PKGInt_to(GLuint, 1);
 
@@ -6375,7 +6375,7 @@ KMETHOD GL_glListBase(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadIdentity();
-KMETHOD GL_glLoadIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadIdentity(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glLoadIdentity();
@@ -6383,7 +6383,7 @@ KMETHOD GL_glLoadIdentity(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadMatrixd(GLdouble* m);
-KMETHOD GL_glLoadMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadMatrixd(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* m = PKG_Error_to(GLdouble*, 1);
 
@@ -6392,7 +6392,7 @@ KMETHOD GL_glLoadMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadMatrixf(GLfloat* m);
-KMETHOD GL_glLoadMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadMatrixf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* m = PKG_Error_to(GLfloat*, 1);
 
@@ -6401,7 +6401,7 @@ KMETHOD GL_glLoadMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadName(GLuint name);
-KMETHOD GL_glLoadName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadName(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint name = PKGInt_to(GLuint, 1);
 
@@ -6410,7 +6410,7 @@ KMETHOD GL_glLoadName(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLogicOp(GLenum opcode);
-KMETHOD GL_glLogicOp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLogicOp(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum opcode = PKGInt_to(GLenum, 1);
 
@@ -6419,7 +6419,7 @@ KMETHOD GL_glLogicOp(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMap1d(GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLint order, GLdouble* points);
-KMETHOD GL_glMap1d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMap1d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble u1 = PKGFloat_to(GLdouble, 2);
@@ -6433,7 +6433,7 @@ KMETHOD GL_glMap1d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMap1f(GLenum target, GLfloat u1, GLfloat u2, GLint stride, GLint order, GLfloat* points);
-KMETHOD GL_glMap1f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMap1f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat u1 = PKGFloat_to(GLfloat, 2);
@@ -6447,7 +6447,7 @@ KMETHOD GL_glMap1f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMap2d(GLenum target, GLdouble u1, GLdouble u2, GLint ustride, GLint uorder, GLdouble v1, GLdouble v2, GLint vstride, GLint vorder, GLdouble* points);
-KMETHOD GL_glMap2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMap2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble u1 = PKGFloat_to(GLdouble, 2);
@@ -6465,7 +6465,7 @@ KMETHOD GL_glMap2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMap2f(GLenum target, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder, GLfloat* points);
-KMETHOD GL_glMap2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMap2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat u1 = PKGFloat_to(GLfloat, 2);
@@ -6483,7 +6483,7 @@ KMETHOD GL_glMap2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapGrid1d(GLint un, GLdouble u1, GLdouble u2);
-KMETHOD GL_glMapGrid1d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapGrid1d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint un = PKGInt_to(GLint, 1);
     GLdouble u1 = PKGFloat_to(GLdouble, 2);
@@ -6494,7 +6494,7 @@ KMETHOD GL_glMapGrid1d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapGrid1f(GLint un, GLfloat u1, GLfloat u2);
-KMETHOD GL_glMapGrid1f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapGrid1f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint un = PKGInt_to(GLint, 1);
     GLfloat u1 = PKGFloat_to(GLfloat, 2);
@@ -6505,7 +6505,7 @@ KMETHOD GL_glMapGrid1f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapGrid2d(GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble v1, GLdouble v2);
-KMETHOD GL_glMapGrid2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapGrid2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint un = PKGInt_to(GLint, 1);
     GLdouble u1 = PKGFloat_to(GLdouble, 2);
@@ -6519,7 +6519,7 @@ KMETHOD GL_glMapGrid2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMapGrid2f(GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat v2);
-KMETHOD GL_glMapGrid2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapGrid2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint un = PKGInt_to(GLint, 1);
     GLfloat u1 = PKGFloat_to(GLfloat, 2);
@@ -6533,7 +6533,7 @@ KMETHOD GL_glMapGrid2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMaterialf(GLenum face, GLenum pname, GLfloat param);
-KMETHOD GL_glMaterialf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMaterialf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6544,7 +6544,7 @@ KMETHOD GL_glMaterialf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMaterialfv(GLenum face, GLenum pname, GLfloat* params);
-KMETHOD GL_glMaterialfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMaterialfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6555,7 +6555,7 @@ KMETHOD GL_glMaterialfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMateriali(GLenum face, GLenum pname, GLint param);
-KMETHOD GL_glMateriali(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMateriali(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6566,7 +6566,7 @@ KMETHOD GL_glMateriali(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMaterialiv(GLenum face, GLenum pname, GLint* params);
-KMETHOD GL_glMaterialiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMaterialiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -6577,7 +6577,7 @@ KMETHOD GL_glMaterialiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMatrixMode(GLenum mode);
-KMETHOD GL_glMatrixMode(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMatrixMode(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -6586,7 +6586,7 @@ KMETHOD GL_glMatrixMode(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMinmax(GLenum target, GLenum internalformat, GLboolean sink);
-KMETHOD GL_glMinmax(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMinmax(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -6597,7 +6597,7 @@ KMETHOD GL_glMinmax(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultMatrixd(GLdouble* m);
-KMETHOD GL_glMultMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultMatrixd(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* m = PKG_Error_to(GLdouble*, 1);
 
@@ -6606,7 +6606,7 @@ KMETHOD GL_glMultMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultMatrixf(GLfloat* m);
-KMETHOD GL_glMultMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultMatrixf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* m = PKG_Error_to(GLfloat*, 1);
 
@@ -6615,7 +6615,7 @@ KMETHOD GL_glMultMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNewList(GLuint list, GLenum mode);
-KMETHOD GL_glNewList(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNewList(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint list = PKGInt_to(GLuint, 1);
     GLenum mode = PKGInt_to(GLenum, 2);
@@ -6625,7 +6625,7 @@ KMETHOD GL_glNewList(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3b(GLbyte nx, GLbyte ny, GLbyte nz);
-KMETHOD GL_glNormal3b(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3b(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte nx = PKGInt_to(GLbyte, 1);
     GLbyte ny = PKGInt_to(GLbyte, 2);
@@ -6636,7 +6636,7 @@ KMETHOD GL_glNormal3b(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3bv(GLbyte* v);
-KMETHOD GL_glNormal3bv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3bv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte* v = PKG_Error_to(GLbyte*, 1);
 
@@ -6645,7 +6645,7 @@ KMETHOD GL_glNormal3bv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3d(GLdouble nx, GLdouble ny, GLdouble nz);
-KMETHOD GL_glNormal3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble nx = PKGFloat_to(GLdouble, 1);
     GLdouble ny = PKGFloat_to(GLdouble, 2);
@@ -6656,7 +6656,7 @@ KMETHOD GL_glNormal3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3dv(GLdouble* v);
-KMETHOD GL_glNormal3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -6665,7 +6665,7 @@ KMETHOD GL_glNormal3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz);
-KMETHOD GL_glNormal3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat nx = PKGFloat_to(GLfloat, 1);
     GLfloat ny = PKGFloat_to(GLfloat, 2);
@@ -6676,7 +6676,7 @@ KMETHOD GL_glNormal3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3fv(GLfloat* v);
-KMETHOD GL_glNormal3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -6685,7 +6685,7 @@ KMETHOD GL_glNormal3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3i(GLint nx, GLint ny, GLint nz);
-KMETHOD GL_glNormal3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint nx = PKGInt_to(GLint, 1);
     GLint ny = PKGInt_to(GLint, 2);
@@ -6696,7 +6696,7 @@ KMETHOD GL_glNormal3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3iv(GLint* v);
-KMETHOD GL_glNormal3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -6705,7 +6705,7 @@ KMETHOD GL_glNormal3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3s(GLshort nx, GLshort ny, GLshort nz);
-KMETHOD GL_glNormal3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort nx = PKGInt_to(GLshort, 1);
     GLshort ny = PKGInt_to(GLshort, 2);
@@ -6716,7 +6716,7 @@ KMETHOD GL_glNormal3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormal3sv(GLshort* v);
-KMETHOD GL_glNormal3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormal3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -6725,7 +6725,7 @@ KMETHOD GL_glNormal3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glNormalPointer(GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glNormalPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glNormalPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
     GLsizei stride = PKGInt_to(GLsizei, 2);
@@ -6736,7 +6736,7 @@ KMETHOD GL_glNormalPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar);
-KMETHOD GL_glOrtho(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glOrtho(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble left = PKGFloat_to(GLdouble, 1);
     GLdouble right = PKGFloat_to(GLdouble, 2);
@@ -6750,7 +6750,7 @@ KMETHOD GL_glOrtho(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPassThrough(GLfloat token);
-KMETHOD GL_glPassThrough(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPassThrough(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat token = PKGFloat_to(GLfloat, 1);
 
@@ -6759,7 +6759,7 @@ KMETHOD GL_glPassThrough(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelMapfv(GLenum map, GLint mapsize, GLfloat* values);
-KMETHOD GL_glPixelMapfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelMapfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum map = PKGInt_to(GLenum, 1);
     GLint mapsize = PKGInt_to(GLint, 2);
@@ -6770,7 +6770,7 @@ KMETHOD GL_glPixelMapfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelMapuiv(GLenum map, GLint mapsize, GLuint* values);
-KMETHOD GL_glPixelMapuiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelMapuiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum map = PKGInt_to(GLenum, 1);
     GLint mapsize = PKGInt_to(GLint, 2);
@@ -6781,7 +6781,7 @@ KMETHOD GL_glPixelMapuiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelMapusv(GLenum map, GLint mapsize, GLushort* values);
-KMETHOD GL_glPixelMapusv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelMapusv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum map = PKGInt_to(GLenum, 1);
     GLint mapsize = PKGInt_to(GLint, 2);
@@ -6792,7 +6792,7 @@ KMETHOD GL_glPixelMapusv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelStoref(GLenum pname, GLfloat param);
-KMETHOD GL_glPixelStoref(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelStoref(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -6802,7 +6802,7 @@ KMETHOD GL_glPixelStoref(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelStorei(GLenum pname, GLint param);
-KMETHOD GL_glPixelStorei(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelStorei(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -6812,7 +6812,7 @@ KMETHOD GL_glPixelStorei(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelTransferf(GLenum pname, GLfloat param);
-KMETHOD GL_glPixelTransferf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelTransferf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -6822,7 +6822,7 @@ KMETHOD GL_glPixelTransferf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelTransferi(GLenum pname, GLint param);
-KMETHOD GL_glPixelTransferi(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelTransferi(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -6832,7 +6832,7 @@ KMETHOD GL_glPixelTransferi(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPixelZoom(GLfloat xfactor, GLfloat yfactor);
-KMETHOD GL_glPixelZoom(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPixelZoom(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat xfactor = PKGFloat_to(GLfloat, 1);
     GLfloat yfactor = PKGFloat_to(GLfloat, 2);
@@ -6842,7 +6842,7 @@ KMETHOD GL_glPixelZoom(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointSize(GLfloat size);
-KMETHOD GL_glPointSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointSize(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat size = PKGFloat_to(GLfloat, 1);
 
@@ -6851,7 +6851,7 @@ KMETHOD GL_glPointSize(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPolygonMode(GLenum face, GLenum mode);
-KMETHOD GL_glPolygonMode(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPolygonMode(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum mode = PKGInt_to(GLenum, 2);
@@ -6861,7 +6861,7 @@ KMETHOD GL_glPolygonMode(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPolygonOffset(GLfloat factor, GLfloat units);
-KMETHOD GL_glPolygonOffset(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPolygonOffset(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat factor = PKGFloat_to(GLfloat, 1);
     GLfloat units = PKGFloat_to(GLfloat, 2);
@@ -6871,7 +6871,7 @@ KMETHOD GL_glPolygonOffset(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPolygonStipple(GLubyte* mask);
-KMETHOD GL_glPolygonStipple(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPolygonStipple(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* mask = PKG_Error_to(GLubyte*, 1);
 
@@ -6880,7 +6880,7 @@ KMETHOD GL_glPolygonStipple(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPopAttrib();
-KMETHOD GL_glPopAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPopAttrib(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glPopAttrib();
@@ -6888,7 +6888,7 @@ KMETHOD GL_glPopAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPopClientAttrib();
-KMETHOD GL_glPopClientAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPopClientAttrib(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glPopClientAttrib();
@@ -6896,7 +6896,7 @@ KMETHOD GL_glPopClientAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPopMatrix();
-KMETHOD GL_glPopMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPopMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glPopMatrix();
@@ -6904,7 +6904,7 @@ KMETHOD GL_glPopMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPopName();
-KMETHOD GL_glPopName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPopName(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glPopName();
@@ -6912,7 +6912,7 @@ KMETHOD GL_glPopName(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPrioritizeTextures(GLsizei n, GLuint* textures, GLclampf* priorities);
-KMETHOD GL_glPrioritizeTextures(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPrioritizeTextures(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* textures = PKG_Error_to(GLuint*, 2);
@@ -6923,7 +6923,7 @@ KMETHOD GL_glPrioritizeTextures(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPushAttrib(GLbitfield mask);
-KMETHOD GL_glPushAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPushAttrib(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbitfield mask = PKGInt_to(GLbitfield, 1);
 
@@ -6932,7 +6932,7 @@ KMETHOD GL_glPushAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPushClientAttrib(GLbitfield mask);
-KMETHOD GL_glPushClientAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPushClientAttrib(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbitfield mask = PKGInt_to(GLbitfield, 1);
 
@@ -6941,7 +6941,7 @@ KMETHOD GL_glPushClientAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPushMatrix();
-KMETHOD GL_glPushMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPushMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glPushMatrix();
@@ -6949,7 +6949,7 @@ KMETHOD GL_glPushMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPushName(GLuint name);
-KMETHOD GL_glPushName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPushName(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint name = PKGInt_to(GLuint, 1);
 
@@ -6958,7 +6958,7 @@ KMETHOD GL_glPushName(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2d(GLdouble x, GLdouble y);
-KMETHOD GL_glRasterPos2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -6968,7 +6968,7 @@ KMETHOD GL_glRasterPos2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2dv(GLdouble* v);
-KMETHOD GL_glRasterPos2dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -6977,7 +6977,7 @@ KMETHOD GL_glRasterPos2dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2f(GLfloat x, GLfloat y);
-KMETHOD GL_glRasterPos2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -6987,7 +6987,7 @@ KMETHOD GL_glRasterPos2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2fv(GLfloat* v);
-KMETHOD GL_glRasterPos2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -6996,7 +6996,7 @@ KMETHOD GL_glRasterPos2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2i(GLint x, GLint y);
-KMETHOD GL_glRasterPos2i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -7006,7 +7006,7 @@ KMETHOD GL_glRasterPos2i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2iv(GLint* v);
-KMETHOD GL_glRasterPos2iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -7015,7 +7015,7 @@ KMETHOD GL_glRasterPos2iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2s(GLshort x, GLshort y);
-KMETHOD GL_glRasterPos2s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -7025,7 +7025,7 @@ KMETHOD GL_glRasterPos2s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos2sv(GLshort* v);
-KMETHOD GL_glRasterPos2sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos2sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -7034,7 +7034,7 @@ KMETHOD GL_glRasterPos2sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3d(GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glRasterPos3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -7045,7 +7045,7 @@ KMETHOD GL_glRasterPos3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3dv(GLdouble* v);
-KMETHOD GL_glRasterPos3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -7054,7 +7054,7 @@ KMETHOD GL_glRasterPos3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3f(GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glRasterPos3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -7065,7 +7065,7 @@ KMETHOD GL_glRasterPos3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3fv(GLfloat* v);
-KMETHOD GL_glRasterPos3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -7074,7 +7074,7 @@ KMETHOD GL_glRasterPos3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3i(GLint x, GLint y, GLint z);
-KMETHOD GL_glRasterPos3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -7085,7 +7085,7 @@ KMETHOD GL_glRasterPos3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3iv(GLint* v);
-KMETHOD GL_glRasterPos3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -7094,7 +7094,7 @@ KMETHOD GL_glRasterPos3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3s(GLshort x, GLshort y, GLshort z);
-KMETHOD GL_glRasterPos3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -7105,7 +7105,7 @@ KMETHOD GL_glRasterPos3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos3sv(GLshort* v);
-KMETHOD GL_glRasterPos3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -7114,7 +7114,7 @@ KMETHOD GL_glRasterPos3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4d(GLdouble x, GLdouble y, GLdouble z, GLdouble w);
-KMETHOD GL_glRasterPos4d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -7126,7 +7126,7 @@ KMETHOD GL_glRasterPos4d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4dv(GLdouble* v);
-KMETHOD GL_glRasterPos4dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -7135,7 +7135,7 @@ KMETHOD GL_glRasterPos4dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-KMETHOD GL_glRasterPos4f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -7147,7 +7147,7 @@ KMETHOD GL_glRasterPos4f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4fv(GLfloat* v);
-KMETHOD GL_glRasterPos4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -7156,7 +7156,7 @@ KMETHOD GL_glRasterPos4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4i(GLint x, GLint y, GLint z, GLint w);
-KMETHOD GL_glRasterPos4i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -7168,7 +7168,7 @@ KMETHOD GL_glRasterPos4i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4iv(GLint* v);
-KMETHOD GL_glRasterPos4iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -7177,7 +7177,7 @@ KMETHOD GL_glRasterPos4iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4s(GLshort x, GLshort y, GLshort z, GLshort w);
-KMETHOD GL_glRasterPos4s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -7189,7 +7189,7 @@ KMETHOD GL_glRasterPos4s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRasterPos4sv(GLshort* v);
-KMETHOD GL_glRasterPos4sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRasterPos4sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -7198,7 +7198,7 @@ KMETHOD GL_glRasterPos4sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glReadBuffer(GLenum mode);
-KMETHOD GL_glReadBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glReadBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -7207,7 +7207,7 @@ KMETHOD GL_glReadBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glReadPixels(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glReadPixels(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -7222,7 +7222,7 @@ KMETHOD GL_glReadPixels(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRectd(GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2);
-KMETHOD GL_glRectd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRectd(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x1 = PKGFloat_to(GLdouble, 1);
     GLdouble y1 = PKGFloat_to(GLdouble, 2);
@@ -7234,7 +7234,7 @@ KMETHOD GL_glRectd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRectdv(GLdouble* v1, GLdouble* v2);
-KMETHOD GL_glRectdv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRectdv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v1 = PKG_Error_to(GLdouble*, 1);
     GLdouble* v2 = PKG_Error_to(GLdouble*, 2);
@@ -7244,7 +7244,7 @@ KMETHOD GL_glRectdv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRectf(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2);
-KMETHOD GL_glRectf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRectf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x1 = PKGFloat_to(GLfloat, 1);
     GLfloat y1 = PKGFloat_to(GLfloat, 2);
@@ -7256,7 +7256,7 @@ KMETHOD GL_glRectf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRectfv(GLfloat* v1, GLfloat* v2);
-KMETHOD GL_glRectfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRectfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v1 = PKG_Error_to(GLfloat*, 1);
     GLfloat* v2 = PKG_Error_to(GLfloat*, 2);
@@ -7266,7 +7266,7 @@ KMETHOD GL_glRectfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRecti(GLint x1, GLint y1, GLint x2, GLint y2);
-KMETHOD GL_glRecti(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRecti(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x1 = PKGInt_to(GLint, 1);
     GLint y1 = PKGInt_to(GLint, 2);
@@ -7278,7 +7278,7 @@ KMETHOD GL_glRecti(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRectiv(GLint* v1, GLint* v2);
-KMETHOD GL_glRectiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRectiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v1 = PKG_Error_to(GLint*, 1);
     GLint* v2 = PKG_Error_to(GLint*, 2);
@@ -7288,7 +7288,7 @@ KMETHOD GL_glRectiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRects(GLshort x1, GLshort y1, GLshort x2, GLshort y2);
-KMETHOD GL_glRects(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRects(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x1 = PKGInt_to(GLshort, 1);
     GLshort y1 = PKGInt_to(GLshort, 2);
@@ -7300,7 +7300,7 @@ KMETHOD GL_glRects(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRectsv(GLshort* v1, GLshort* v2);
-KMETHOD GL_glRectsv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRectsv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v1 = PKG_Error_to(GLshort*, 1);
     GLshort* v2 = PKG_Error_to(GLshort*, 2);
@@ -7310,7 +7310,7 @@ KMETHOD GL_glRectsv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.glRenderMode(GLenum mode);
-KMETHOD GL_glRenderMode(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRenderMode(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -7319,7 +7319,7 @@ KMETHOD GL_glRenderMode(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glResetHistogram(GLenum target);
-KMETHOD GL_glResetHistogram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glResetHistogram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -7328,7 +7328,7 @@ KMETHOD GL_glResetHistogram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glResetMinmax(GLenum target);
-KMETHOD GL_glResetMinmax(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glResetMinmax(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -7337,7 +7337,7 @@ KMETHOD GL_glResetMinmax(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRotated(GLdouble angle, GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glRotated(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRotated(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble angle = PKGFloat_to(GLdouble, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -7349,7 +7349,7 @@ KMETHOD GL_glRotated(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glRotatef(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glRotatef(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat angle = PKGFloat_to(GLfloat, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -7361,7 +7361,7 @@ KMETHOD GL_glRotatef(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glScaled(GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glScaled(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glScaled(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -7372,7 +7372,7 @@ KMETHOD GL_glScaled(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glScalef(GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glScalef(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glScalef(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -7383,7 +7383,7 @@ KMETHOD GL_glScalef(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glScissor(GLint x, GLint y, GLsizei width, GLsizei height);
-KMETHOD GL_glScissor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glScissor(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -7395,7 +7395,7 @@ KMETHOD GL_glScissor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSelectBuffer(GLsizei size, GLuint* buffer);
-KMETHOD GL_glSelectBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSelectBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei size = PKGInt_to(GLsizei, 1);
     GLuint* buffer = PKG_Error_to(GLuint*, 2);
@@ -7405,7 +7405,7 @@ KMETHOD GL_glSelectBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSeparableFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* row, GLvoid* column);
-KMETHOD GL_glSeparableFilter2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSeparableFilter2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum internalformat = PKGInt_to(GLenum, 2);
@@ -7421,7 +7421,7 @@ KMETHOD GL_glSeparableFilter2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glShadeModel(GLenum mode);
-KMETHOD GL_glShadeModel(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glShadeModel(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 
@@ -7430,7 +7430,7 @@ KMETHOD GL_glShadeModel(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilFunc(GLenum func, GLint ref, GLuint mask);
-KMETHOD GL_glStencilFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum func = PKGInt_to(GLenum, 1);
     GLint ref = PKGInt_to(GLint, 2);
@@ -7441,7 +7441,7 @@ KMETHOD GL_glStencilFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilMask(GLuint mask);
-KMETHOD GL_glStencilMask(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilMask(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint mask = PKGInt_to(GLuint, 1);
 
@@ -7450,7 +7450,7 @@ KMETHOD GL_glStencilMask(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilOp(GLenum fail, GLenum zfail, GLenum zpass);
-KMETHOD GL_glStencilOp(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilOp(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum fail = PKGInt_to(GLenum, 1);
     GLenum zfail = PKGInt_to(GLenum, 2);
@@ -7461,7 +7461,7 @@ KMETHOD GL_glStencilOp(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1d(GLdouble s);
-KMETHOD GL_glTexCoord1d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble s = PKGFloat_to(GLdouble, 1);
 
@@ -7470,7 +7470,7 @@ KMETHOD GL_glTexCoord1d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1dv(GLdouble* v);
-KMETHOD GL_glTexCoord1dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -7479,7 +7479,7 @@ KMETHOD GL_glTexCoord1dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1f(GLfloat s);
-KMETHOD GL_glTexCoord1f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat s = PKGFloat_to(GLfloat, 1);
 
@@ -7488,7 +7488,7 @@ KMETHOD GL_glTexCoord1f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1fv(GLfloat* v);
-KMETHOD GL_glTexCoord1fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -7497,7 +7497,7 @@ KMETHOD GL_glTexCoord1fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1i(GLint s);
-KMETHOD GL_glTexCoord1i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint s = PKGInt_to(GLint, 1);
 
@@ -7506,7 +7506,7 @@ KMETHOD GL_glTexCoord1i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1iv(GLint* v);
-KMETHOD GL_glTexCoord1iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -7515,7 +7515,7 @@ KMETHOD GL_glTexCoord1iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1s(GLshort s);
-KMETHOD GL_glTexCoord1s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort s = PKGInt_to(GLshort, 1);
 
@@ -7524,7 +7524,7 @@ KMETHOD GL_glTexCoord1s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord1sv(GLshort* v);
-KMETHOD GL_glTexCoord1sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord1sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -7533,7 +7533,7 @@ KMETHOD GL_glTexCoord1sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2d(GLdouble s, GLdouble t);
-KMETHOD GL_glTexCoord2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble s = PKGFloat_to(GLdouble, 1);
     GLdouble t = PKGFloat_to(GLdouble, 2);
@@ -7543,7 +7543,7 @@ KMETHOD GL_glTexCoord2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2dv(GLdouble* v);
-KMETHOD GL_glTexCoord2dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -7552,7 +7552,7 @@ KMETHOD GL_glTexCoord2dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2f(GLfloat s, GLfloat t);
-KMETHOD GL_glTexCoord2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat s = PKGFloat_to(GLfloat, 1);
     GLfloat t = PKGFloat_to(GLfloat, 2);
@@ -7562,7 +7562,7 @@ KMETHOD GL_glTexCoord2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2fv(GLfloat* v);
-KMETHOD GL_glTexCoord2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -7571,7 +7571,7 @@ KMETHOD GL_glTexCoord2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2i(GLint s, GLint t);
-KMETHOD GL_glTexCoord2i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint s = PKGInt_to(GLint, 1);
     GLint t = PKGInt_to(GLint, 2);
@@ -7581,7 +7581,7 @@ KMETHOD GL_glTexCoord2i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2iv(GLint* v);
-KMETHOD GL_glTexCoord2iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -7590,7 +7590,7 @@ KMETHOD GL_glTexCoord2iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2s(GLshort s, GLshort t);
-KMETHOD GL_glTexCoord2s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort s = PKGInt_to(GLshort, 1);
     GLshort t = PKGInt_to(GLshort, 2);
@@ -7600,7 +7600,7 @@ KMETHOD GL_glTexCoord2s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord2sv(GLshort* v);
-KMETHOD GL_glTexCoord2sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord2sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -7609,7 +7609,7 @@ KMETHOD GL_glTexCoord2sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3d(GLdouble s, GLdouble t, GLdouble r);
-KMETHOD GL_glTexCoord3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble s = PKGFloat_to(GLdouble, 1);
     GLdouble t = PKGFloat_to(GLdouble, 2);
@@ -7620,7 +7620,7 @@ KMETHOD GL_glTexCoord3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3dv(GLdouble* v);
-KMETHOD GL_glTexCoord3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -7629,7 +7629,7 @@ KMETHOD GL_glTexCoord3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3f(GLfloat s, GLfloat t, GLfloat r);
-KMETHOD GL_glTexCoord3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat s = PKGFloat_to(GLfloat, 1);
     GLfloat t = PKGFloat_to(GLfloat, 2);
@@ -7640,7 +7640,7 @@ KMETHOD GL_glTexCoord3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3fv(GLfloat* v);
-KMETHOD GL_glTexCoord3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -7649,7 +7649,7 @@ KMETHOD GL_glTexCoord3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3i(GLint s, GLint t, GLint r);
-KMETHOD GL_glTexCoord3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint s = PKGInt_to(GLint, 1);
     GLint t = PKGInt_to(GLint, 2);
@@ -7660,7 +7660,7 @@ KMETHOD GL_glTexCoord3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3iv(GLint* v);
-KMETHOD GL_glTexCoord3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -7669,7 +7669,7 @@ KMETHOD GL_glTexCoord3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3s(GLshort s, GLshort t, GLshort r);
-KMETHOD GL_glTexCoord3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort s = PKGInt_to(GLshort, 1);
     GLshort t = PKGInt_to(GLshort, 2);
@@ -7680,7 +7680,7 @@ KMETHOD GL_glTexCoord3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord3sv(GLshort* v);
-KMETHOD GL_glTexCoord3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -7689,7 +7689,7 @@ KMETHOD GL_glTexCoord3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4d(GLdouble s, GLdouble t, GLdouble r, GLdouble q);
-KMETHOD GL_glTexCoord4d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble s = PKGFloat_to(GLdouble, 1);
     GLdouble t = PKGFloat_to(GLdouble, 2);
@@ -7701,7 +7701,7 @@ KMETHOD GL_glTexCoord4d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4dv(GLdouble* v);
-KMETHOD GL_glTexCoord4dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -7710,7 +7710,7 @@ KMETHOD GL_glTexCoord4dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4f(GLfloat s, GLfloat t, GLfloat r, GLfloat q);
-KMETHOD GL_glTexCoord4f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat s = PKGFloat_to(GLfloat, 1);
     GLfloat t = PKGFloat_to(GLfloat, 2);
@@ -7722,7 +7722,7 @@ KMETHOD GL_glTexCoord4f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4fv(GLfloat* v);
-KMETHOD GL_glTexCoord4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -7731,7 +7731,7 @@ KMETHOD GL_glTexCoord4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4i(GLint s, GLint t, GLint r, GLint q);
-KMETHOD GL_glTexCoord4i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint s = PKGInt_to(GLint, 1);
     GLint t = PKGInt_to(GLint, 2);
@@ -7743,7 +7743,7 @@ KMETHOD GL_glTexCoord4i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4iv(GLint* v);
-KMETHOD GL_glTexCoord4iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -7752,7 +7752,7 @@ KMETHOD GL_glTexCoord4iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4s(GLshort s, GLshort t, GLshort r, GLshort q);
-KMETHOD GL_glTexCoord4s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort s = PKGInt_to(GLshort, 1);
     GLshort t = PKGInt_to(GLshort, 2);
@@ -7764,7 +7764,7 @@ KMETHOD GL_glTexCoord4s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoord4sv(GLshort* v);
-KMETHOD GL_glTexCoord4sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoord4sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -7773,7 +7773,7 @@ KMETHOD GL_glTexCoord4sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexCoordPointer(GLint size, GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glTexCoordPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexCoordPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -7785,7 +7785,7 @@ KMETHOD GL_glTexCoordPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexEnvf(GLenum target, GLenum pname, GLfloat param);
-KMETHOD GL_glTexEnvf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexEnvf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7796,7 +7796,7 @@ KMETHOD GL_glTexEnvf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexEnvfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glTexEnvfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexEnvfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7807,7 +7807,7 @@ KMETHOD GL_glTexEnvfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexEnvi(GLenum target, GLenum pname, GLint param);
-KMETHOD GL_glTexEnvi(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexEnvi(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7818,7 +7818,7 @@ KMETHOD GL_glTexEnvi(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexEnviv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glTexEnviv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexEnviv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7829,7 +7829,7 @@ KMETHOD GL_glTexEnviv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexGend(GLenum coord, GLenum pname, GLdouble param);
-KMETHOD GL_glTexGend(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexGend(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7840,7 +7840,7 @@ KMETHOD GL_glTexGend(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexGendv(GLenum coord, GLenum pname, GLdouble* params);
-KMETHOD GL_glTexGendv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexGendv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7851,7 +7851,7 @@ KMETHOD GL_glTexGendv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexGenf(GLenum coord, GLenum pname, GLfloat param);
-KMETHOD GL_glTexGenf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexGenf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7862,7 +7862,7 @@ KMETHOD GL_glTexGenf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexGenfv(GLenum coord, GLenum pname, GLfloat* params);
-KMETHOD GL_glTexGenfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexGenfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7873,7 +7873,7 @@ KMETHOD GL_glTexGenfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexGeni(GLenum coord, GLenum pname, GLint param);
-KMETHOD GL_glTexGeni(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexGeni(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7884,7 +7884,7 @@ KMETHOD GL_glTexGeni(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexGeniv(GLenum coord, GLenum pname, GLint* params);
-KMETHOD GL_glTexGeniv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexGeniv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum coord = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7895,7 +7895,7 @@ KMETHOD GL_glTexGeniv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glTexImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexImage1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -7911,7 +7911,7 @@ KMETHOD GL_glTexImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glTexImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexImage2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -7928,7 +7928,7 @@ KMETHOD GL_glTexImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glTexImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexImage3D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -7946,7 +7946,7 @@ KMETHOD GL_glTexImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexParameterf(GLenum target, GLenum pname, GLfloat param);
-KMETHOD GL_glTexParameterf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexParameterf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7957,7 +7957,7 @@ KMETHOD GL_glTexParameterf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexParameterfv(GLenum target, GLenum pname, GLfloat* params);
-KMETHOD GL_glTexParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7968,7 +7968,7 @@ KMETHOD GL_glTexParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexParameteri(GLenum target, GLenum pname, GLint param);
-KMETHOD GL_glTexParameteri(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexParameteri(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7979,7 +7979,7 @@ KMETHOD GL_glTexParameteri(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glTexParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -7990,7 +7990,7 @@ KMETHOD GL_glTexParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glTexSubImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexSubImage1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8005,7 +8005,7 @@ KMETHOD GL_glTexSubImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glTexSubImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexSubImage2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8022,7 +8022,7 @@ KMETHOD GL_glTexSubImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLvoid* pixels);
-KMETHOD GL_glTexSubImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTexSubImage3D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8041,7 +8041,7 @@ KMETHOD GL_glTexSubImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTranslated(GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glTranslated(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTranslated(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -8052,7 +8052,7 @@ KMETHOD GL_glTranslated(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glTranslatef(GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glTranslatef(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glTranslatef(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -8063,7 +8063,7 @@ KMETHOD GL_glTranslatef(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2d(GLdouble x, GLdouble y);
-KMETHOD GL_glVertex2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -8073,7 +8073,7 @@ KMETHOD GL_glVertex2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2dv(GLdouble* v);
-KMETHOD GL_glVertex2dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -8082,7 +8082,7 @@ KMETHOD GL_glVertex2dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2f(GLfloat x, GLfloat y);
-KMETHOD GL_glVertex2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -8092,7 +8092,7 @@ KMETHOD GL_glVertex2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2fv(GLfloat* v);
-KMETHOD GL_glVertex2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -8101,7 +8101,7 @@ KMETHOD GL_glVertex2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2i(GLint x, GLint y);
-KMETHOD GL_glVertex2i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -8111,7 +8111,7 @@ KMETHOD GL_glVertex2i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2iv(GLint* v);
-KMETHOD GL_glVertex2iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -8120,7 +8120,7 @@ KMETHOD GL_glVertex2iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2s(GLshort x, GLshort y);
-KMETHOD GL_glVertex2s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -8130,7 +8130,7 @@ KMETHOD GL_glVertex2s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex2sv(GLshort* v);
-KMETHOD GL_glVertex2sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex2sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -8139,7 +8139,7 @@ KMETHOD GL_glVertex2sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3d(GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glVertex3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -8150,7 +8150,7 @@ KMETHOD GL_glVertex3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3dv(GLdouble* v);
-KMETHOD GL_glVertex3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -8159,7 +8159,7 @@ KMETHOD GL_glVertex3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3f(GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glVertex3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -8170,7 +8170,7 @@ KMETHOD GL_glVertex3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3fv(GLfloat* v);
-KMETHOD GL_glVertex3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -8179,7 +8179,7 @@ KMETHOD GL_glVertex3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3i(GLint x, GLint y, GLint z);
-KMETHOD GL_glVertex3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -8190,7 +8190,7 @@ KMETHOD GL_glVertex3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3iv(GLint* v);
-KMETHOD GL_glVertex3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -8199,7 +8199,7 @@ KMETHOD GL_glVertex3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3s(GLshort x, GLshort y, GLshort z);
-KMETHOD GL_glVertex3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -8210,7 +8210,7 @@ KMETHOD GL_glVertex3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex3sv(GLshort* v);
-KMETHOD GL_glVertex3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -8219,7 +8219,7 @@ KMETHOD GL_glVertex3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4d(GLdouble x, GLdouble y, GLdouble z, GLdouble w);
-KMETHOD GL_glVertex4d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -8231,7 +8231,7 @@ KMETHOD GL_glVertex4d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4dv(GLdouble* v);
-KMETHOD GL_glVertex4dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -8240,7 +8240,7 @@ KMETHOD GL_glVertex4dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-KMETHOD GL_glVertex4f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -8252,7 +8252,7 @@ KMETHOD GL_glVertex4f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4fv(GLfloat* v);
-KMETHOD GL_glVertex4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -8261,7 +8261,7 @@ KMETHOD GL_glVertex4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4i(GLint x, GLint y, GLint z, GLint w);
-KMETHOD GL_glVertex4i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -8273,7 +8273,7 @@ KMETHOD GL_glVertex4i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4iv(GLint* v);
-KMETHOD GL_glVertex4iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -8282,7 +8282,7 @@ KMETHOD GL_glVertex4iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4s(GLshort x, GLshort y, GLshort z, GLshort w);
-KMETHOD GL_glVertex4s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -8294,7 +8294,7 @@ KMETHOD GL_glVertex4s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertex4sv(GLshort* v);
-KMETHOD GL_glVertex4sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertex4sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -8303,7 +8303,7 @@ KMETHOD GL_glVertex4sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexPointer(GLint size, GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glVertexPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -8315,7 +8315,7 @@ KMETHOD GL_glVertexPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
-KMETHOD GL_glViewport(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glViewport(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -8327,7 +8327,7 @@ KMETHOD GL_glViewport(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSampleCoverage(GLclampf value, GLboolean invert);
-KMETHOD GL_glSampleCoverage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSampleCoverage(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLclampf value = PKGFloat_to(GLclampf, 1);
     GLboolean invert = PKGInt_to(GLboolean, 2);
@@ -8337,7 +8337,7 @@ KMETHOD GL_glSampleCoverage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadTransposeMatrixf(GLfloat* m);
-KMETHOD GL_glLoadTransposeMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadTransposeMatrixf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* m = PKG_Error_to(GLfloat*, 1);
 
@@ -8346,7 +8346,7 @@ KMETHOD GL_glLoadTransposeMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLoadTransposeMatrixd(GLdouble* m);
-KMETHOD GL_glLoadTransposeMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLoadTransposeMatrixd(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* m = PKG_Error_to(GLdouble*, 1);
 
@@ -8355,7 +8355,7 @@ KMETHOD GL_glLoadTransposeMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultTransposeMatrixf(GLfloat* m);
-KMETHOD GL_glMultTransposeMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultTransposeMatrixf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* m = PKG_Error_to(GLfloat*, 1);
 
@@ -8364,7 +8364,7 @@ KMETHOD GL_glMultTransposeMatrixf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultTransposeMatrixd(GLdouble* m);
-KMETHOD GL_glMultTransposeMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultTransposeMatrixd(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* m = PKG_Error_to(GLdouble*, 1);
 
@@ -8373,7 +8373,7 @@ KMETHOD GL_glMultTransposeMatrixd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexImage3D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8390,7 +8390,7 @@ KMETHOD GL_glCompressedTexImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexImage2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8406,7 +8406,7 @@ KMETHOD GL_glCompressedTexImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexImage1D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexImage1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8421,7 +8421,7 @@ KMETHOD GL_glCompressedTexImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexSubImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexSubImage3D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8440,7 +8440,7 @@ KMETHOD GL_glCompressedTexSubImage3D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexSubImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexSubImage2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8457,7 +8457,7 @@ KMETHOD GL_glCompressedTexSubImage2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompressedTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, GLvoid* data);
-KMETHOD GL_glCompressedTexSubImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompressedTexSubImage1D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint level = PKGInt_to(GLint, 2);
@@ -8472,7 +8472,7 @@ KMETHOD GL_glCompressedTexSubImage1D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetCompressedTexImage(GLenum target, GLint lod, GLvoid* img);
-KMETHOD GL_glGetCompressedTexImage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetCompressedTexImage(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint lod = PKGInt_to(GLint, 2);
@@ -8483,7 +8483,7 @@ KMETHOD GL_glGetCompressedTexImage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glActiveTexture(GLenum texture);
-KMETHOD GL_glActiveTexture(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glActiveTexture(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum texture = PKGInt_to(GLenum, 1);
 
@@ -8492,7 +8492,7 @@ KMETHOD GL_glActiveTexture(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glClientActiveTexture(GLenum texture);
-KMETHOD GL_glClientActiveTexture(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glClientActiveTexture(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum texture = PKGInt_to(GLenum, 1);
 
@@ -8501,7 +8501,7 @@ KMETHOD GL_glClientActiveTexture(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1d(GLenum target, GLdouble s);
-KMETHOD GL_glMultiTexCoord1d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -8511,7 +8511,7 @@ KMETHOD GL_glMultiTexCoord1d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1dv(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord1dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -8521,7 +8521,7 @@ KMETHOD GL_glMultiTexCoord1dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1f(GLenum target, GLfloat s);
-KMETHOD GL_glMultiTexCoord1f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -8531,7 +8531,7 @@ KMETHOD GL_glMultiTexCoord1f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1fv(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord1fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -8541,7 +8541,7 @@ KMETHOD GL_glMultiTexCoord1fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1i(GLenum target, GLint s);
-KMETHOD GL_glMultiTexCoord1i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -8551,7 +8551,7 @@ KMETHOD GL_glMultiTexCoord1i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1iv(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord1iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -8561,7 +8561,7 @@ KMETHOD GL_glMultiTexCoord1iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1s(GLenum target, GLshort s);
-KMETHOD GL_glMultiTexCoord1s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -8571,7 +8571,7 @@ KMETHOD GL_glMultiTexCoord1s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord1sv(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord1sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord1sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -8581,7 +8581,7 @@ KMETHOD GL_glMultiTexCoord1sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2d(GLenum target, GLdouble s, GLdouble t);
-KMETHOD GL_glMultiTexCoord2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -8592,7 +8592,7 @@ KMETHOD GL_glMultiTexCoord2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2dv(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord2dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -8602,7 +8602,7 @@ KMETHOD GL_glMultiTexCoord2dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2f(GLenum target, GLfloat s, GLfloat t);
-KMETHOD GL_glMultiTexCoord2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -8613,7 +8613,7 @@ KMETHOD GL_glMultiTexCoord2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2fv(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -8623,7 +8623,7 @@ KMETHOD GL_glMultiTexCoord2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2i(GLenum target, GLint s, GLint t);
-KMETHOD GL_glMultiTexCoord2i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -8634,7 +8634,7 @@ KMETHOD GL_glMultiTexCoord2i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2iv(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord2iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -8644,7 +8644,7 @@ KMETHOD GL_glMultiTexCoord2iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2s(GLenum target, GLshort s, GLshort t);
-KMETHOD GL_glMultiTexCoord2s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -8655,7 +8655,7 @@ KMETHOD GL_glMultiTexCoord2s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord2sv(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord2sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord2sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -8665,7 +8665,7 @@ KMETHOD GL_glMultiTexCoord2sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3d(GLenum target, GLdouble s, GLdouble t, GLdouble r);
-KMETHOD GL_glMultiTexCoord3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -8677,7 +8677,7 @@ KMETHOD GL_glMultiTexCoord3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3dv(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -8687,7 +8687,7 @@ KMETHOD GL_glMultiTexCoord3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3f(GLenum target, GLfloat s, GLfloat t, GLfloat r);
-KMETHOD GL_glMultiTexCoord3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -8699,7 +8699,7 @@ KMETHOD GL_glMultiTexCoord3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3fv(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -8709,7 +8709,7 @@ KMETHOD GL_glMultiTexCoord3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3i(GLenum target, GLint s, GLint t, GLint r);
-KMETHOD GL_glMultiTexCoord3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -8721,7 +8721,7 @@ KMETHOD GL_glMultiTexCoord3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3iv(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -8731,7 +8731,7 @@ KMETHOD GL_glMultiTexCoord3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3s(GLenum target, GLshort s, GLshort t, GLshort r);
-KMETHOD GL_glMultiTexCoord3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -8743,7 +8743,7 @@ KMETHOD GL_glMultiTexCoord3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord3sv(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -8753,7 +8753,7 @@ KMETHOD GL_glMultiTexCoord3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4d(GLenum target, GLdouble s, GLdouble t, GLdouble r, GLdouble q);
-KMETHOD GL_glMultiTexCoord4d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble s = PKGFloat_to(GLdouble, 2);
@@ -8766,7 +8766,7 @@ KMETHOD GL_glMultiTexCoord4d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4dv(GLenum target, GLdouble* v);
-KMETHOD GL_glMultiTexCoord4dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -8776,7 +8776,7 @@ KMETHOD GL_glMultiTexCoord4dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4f(GLenum target, GLfloat s, GLfloat t, GLfloat r, GLfloat q);
-KMETHOD GL_glMultiTexCoord4f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat s = PKGFloat_to(GLfloat, 2);
@@ -8789,7 +8789,7 @@ KMETHOD GL_glMultiTexCoord4f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4fv(GLenum target, GLfloat* v);
-KMETHOD GL_glMultiTexCoord4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -8799,7 +8799,7 @@ KMETHOD GL_glMultiTexCoord4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4i(GLenum target, GLint s, GLint t, GLint r, GLint q);
-KMETHOD GL_glMultiTexCoord4i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint s = PKGInt_to(GLint, 2);
@@ -8812,7 +8812,7 @@ KMETHOD GL_glMultiTexCoord4i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4iv(GLenum target, GLint* v);
-KMETHOD GL_glMultiTexCoord4iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -8822,7 +8822,7 @@ KMETHOD GL_glMultiTexCoord4iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4s(GLenum target, GLshort s, GLshort t, GLshort r, GLshort q);
-KMETHOD GL_glMultiTexCoord4s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort s = PKGInt_to(GLshort, 2);
@@ -8835,7 +8835,7 @@ KMETHOD GL_glMultiTexCoord4s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiTexCoord4sv(GLenum target, GLshort* v);
-KMETHOD GL_glMultiTexCoord4sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiTexCoord4sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -8845,7 +8845,7 @@ KMETHOD GL_glMultiTexCoord4sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoordf(GLfloat coord);
-KMETHOD GL_glFogCoordf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoordf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat coord = PKGFloat_to(GLfloat, 1);
 
@@ -8854,7 +8854,7 @@ KMETHOD GL_glFogCoordf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoordfv(GLfloat* coord);
-KMETHOD GL_glFogCoordfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoordfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* coord = PKG_Error_to(GLfloat*, 1);
 
@@ -8863,7 +8863,7 @@ KMETHOD GL_glFogCoordfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoordd(GLdouble coord);
-KMETHOD GL_glFogCoordd(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoordd(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble coord = PKGFloat_to(GLdouble, 1);
 
@@ -8872,7 +8872,7 @@ KMETHOD GL_glFogCoordd(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoorddv(GLdouble* coord);
-KMETHOD GL_glFogCoorddv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoorddv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* coord = PKG_Error_to(GLdouble*, 1);
 
@@ -8881,7 +8881,7 @@ KMETHOD GL_glFogCoorddv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glFogCoordPointer(GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glFogCoordPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glFogCoordPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
     GLsizei stride = PKGInt_to(GLsizei, 2);
@@ -8892,7 +8892,7 @@ KMETHOD GL_glFogCoordPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3b(GLbyte red, GLbyte green, GLbyte blue);
-KMETHOD GL_glSecondaryColor3b(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3b(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte red = PKGInt_to(GLbyte, 1);
     GLbyte green = PKGInt_to(GLbyte, 2);
@@ -8903,7 +8903,7 @@ KMETHOD GL_glSecondaryColor3b(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3bv(GLbyte* v);
-KMETHOD GL_glSecondaryColor3bv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3bv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLbyte* v = PKG_Error_to(GLbyte*, 1);
 
@@ -8912,7 +8912,7 @@ KMETHOD GL_glSecondaryColor3bv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3d(GLdouble red, GLdouble green, GLdouble blue);
-KMETHOD GL_glSecondaryColor3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble red = PKGFloat_to(GLdouble, 1);
     GLdouble green = PKGFloat_to(GLdouble, 2);
@@ -8923,7 +8923,7 @@ KMETHOD GL_glSecondaryColor3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3dv(GLdouble* v);
-KMETHOD GL_glSecondaryColor3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -8932,7 +8932,7 @@ KMETHOD GL_glSecondaryColor3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3f(GLfloat red, GLfloat green, GLfloat blue);
-KMETHOD GL_glSecondaryColor3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat red = PKGFloat_to(GLfloat, 1);
     GLfloat green = PKGFloat_to(GLfloat, 2);
@@ -8943,7 +8943,7 @@ KMETHOD GL_glSecondaryColor3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3fv(GLfloat* v);
-KMETHOD GL_glSecondaryColor3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -8952,7 +8952,7 @@ KMETHOD GL_glSecondaryColor3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3i(GLint red, GLint green, GLint blue);
-KMETHOD GL_glSecondaryColor3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint red = PKGInt_to(GLint, 1);
     GLint green = PKGInt_to(GLint, 2);
@@ -8963,7 +8963,7 @@ KMETHOD GL_glSecondaryColor3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3iv(GLint* v);
-KMETHOD GL_glSecondaryColor3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -8972,7 +8972,7 @@ KMETHOD GL_glSecondaryColor3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3s(GLshort red, GLshort green, GLshort blue);
-KMETHOD GL_glSecondaryColor3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort red = PKGInt_to(GLshort, 1);
     GLshort green = PKGInt_to(GLshort, 2);
@@ -8983,7 +8983,7 @@ KMETHOD GL_glSecondaryColor3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3sv(GLshort* v);
-KMETHOD GL_glSecondaryColor3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -8992,7 +8992,7 @@ KMETHOD GL_glSecondaryColor3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3ub(GLubyte red, GLubyte green, GLubyte blue);
-KMETHOD GL_glSecondaryColor3ub(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3ub(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte red = PKGInt_to(GLubyte, 1);
     GLubyte green = PKGInt_to(GLubyte, 2);
@@ -9003,7 +9003,7 @@ KMETHOD GL_glSecondaryColor3ub(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3ubv(GLubyte* v);
-KMETHOD GL_glSecondaryColor3ubv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3ubv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* v = PKG_Error_to(GLubyte*, 1);
 
@@ -9012,7 +9012,7 @@ KMETHOD GL_glSecondaryColor3ubv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3ui(GLuint red, GLuint green, GLuint blue);
-KMETHOD GL_glSecondaryColor3ui(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3ui(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint red = PKGInt_to(GLuint, 1);
     GLuint green = PKGInt_to(GLuint, 2);
@@ -9023,7 +9023,7 @@ KMETHOD GL_glSecondaryColor3ui(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3uiv(GLuint* v);
-KMETHOD GL_glSecondaryColor3uiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3uiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint* v = PKG_Error_to(GLuint*, 1);
 
@@ -9032,7 +9032,7 @@ KMETHOD GL_glSecondaryColor3uiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3us(GLushort red, GLushort green, GLushort blue);
-KMETHOD GL_glSecondaryColor3us(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3us(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort red = PKGInt_to(GLushort, 1);
     GLushort green = PKGInt_to(GLushort, 2);
@@ -9043,7 +9043,7 @@ KMETHOD GL_glSecondaryColor3us(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColor3usv(GLushort* v);
-KMETHOD GL_glSecondaryColor3usv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColor3usv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLushort* v = PKG_Error_to(GLushort*, 1);
 
@@ -9052,7 +9052,7 @@ KMETHOD GL_glSecondaryColor3usv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glSecondaryColorPointer(GLint size, GLenum type, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glSecondaryColorPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glSecondaryColorPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint size = PKGInt_to(GLint, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -9064,7 +9064,7 @@ KMETHOD GL_glSecondaryColorPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameterf(GLenum pname, GLfloat param);
-KMETHOD GL_glPointParameterf(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameterf(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat param = PKGFloat_to(GLfloat, 2);
@@ -9074,7 +9074,7 @@ KMETHOD GL_glPointParameterf(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameterfv(GLenum pname, GLfloat* params);
-KMETHOD GL_glPointParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameterfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLfloat* params = PKG_Error_to(GLfloat*, 2);
@@ -9084,7 +9084,7 @@ KMETHOD GL_glPointParameterfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameteri(GLenum pname, GLint param);
-KMETHOD GL_glPointParameteri(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameteri(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint param = PKGInt_to(GLint, 2);
@@ -9094,7 +9094,7 @@ KMETHOD GL_glPointParameteri(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glPointParameteriv(GLenum pname, GLint* params);
-KMETHOD GL_glPointParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glPointParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum pname = PKGInt_to(GLenum, 1);
     GLint* params = PKG_Error_to(GLint*, 2);
@@ -9104,7 +9104,7 @@ KMETHOD GL_glPointParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBlendFuncSeparate(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha);
-KMETHOD GL_glBlendFuncSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBlendFuncSeparate(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum srcRGB = PKGInt_to(GLenum, 1);
     GLenum dstRGB = PKGInt_to(GLenum, 2);
@@ -9116,7 +9116,7 @@ KMETHOD GL_glBlendFuncSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiDrawArrays(GLenum mode, GLint* first, GLsizei* count, GLsizei primcount);
-KMETHOD GL_glMultiDrawArrays(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiDrawArrays(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLint* first = PKG_Error_to(GLint*, 2);
@@ -9128,7 +9128,7 @@ KMETHOD GL_glMultiDrawArrays(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glMultiDrawElements(GLenum mode, GLsizei* count, GLenum type, GLvoid** indices, GLsizei primcount);
-KMETHOD GL_glMultiDrawElements(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMultiDrawElements(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
     GLsizei* count = PKG_Error_to(GLsizei*, 2);
@@ -9141,7 +9141,7 @@ KMETHOD GL_glMultiDrawElements(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2d(GLdouble x, GLdouble y);
-KMETHOD GL_glWindowPos2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -9151,7 +9151,7 @@ KMETHOD GL_glWindowPos2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2dv(GLdouble* v);
-KMETHOD GL_glWindowPos2dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -9160,7 +9160,7 @@ KMETHOD GL_glWindowPos2dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2f(GLfloat x, GLfloat y);
-KMETHOD GL_glWindowPos2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -9170,7 +9170,7 @@ KMETHOD GL_glWindowPos2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2fv(GLfloat* v);
-KMETHOD GL_glWindowPos2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -9179,7 +9179,7 @@ KMETHOD GL_glWindowPos2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2i(GLint x, GLint y);
-KMETHOD GL_glWindowPos2i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -9189,7 +9189,7 @@ KMETHOD GL_glWindowPos2i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2iv(GLint* v);
-KMETHOD GL_glWindowPos2iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -9198,7 +9198,7 @@ KMETHOD GL_glWindowPos2iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2s(GLshort x, GLshort y);
-KMETHOD GL_glWindowPos2s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -9208,7 +9208,7 @@ KMETHOD GL_glWindowPos2s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos2sv(GLshort* v);
-KMETHOD GL_glWindowPos2sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos2sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -9217,7 +9217,7 @@ KMETHOD GL_glWindowPos2sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3d(GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glWindowPos3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -9228,7 +9228,7 @@ KMETHOD GL_glWindowPos3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3dv(GLdouble* v);
-KMETHOD GL_glWindowPos3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble* v = PKG_Error_to(GLdouble*, 1);
 
@@ -9237,7 +9237,7 @@ KMETHOD GL_glWindowPos3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3f(GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glWindowPos3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat x = PKGFloat_to(GLfloat, 1);
     GLfloat y = PKGFloat_to(GLfloat, 2);
@@ -9248,7 +9248,7 @@ KMETHOD GL_glWindowPos3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3fv(GLfloat* v);
-KMETHOD GL_glWindowPos3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLfloat* v = PKG_Error_to(GLfloat*, 1);
 
@@ -9257,7 +9257,7 @@ KMETHOD GL_glWindowPos3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3i(GLint x, GLint y, GLint z);
-KMETHOD GL_glWindowPos3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint x = PKGInt_to(GLint, 1);
     GLint y = PKGInt_to(GLint, 2);
@@ -9268,7 +9268,7 @@ KMETHOD GL_glWindowPos3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3iv(GLint* v);
-KMETHOD GL_glWindowPos3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint* v = PKG_Error_to(GLint*, 1);
 
@@ -9277,7 +9277,7 @@ KMETHOD GL_glWindowPos3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3s(GLshort x, GLshort y, GLshort z);
-KMETHOD GL_glWindowPos3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort x = PKGInt_to(GLshort, 1);
     GLshort y = PKGInt_to(GLshort, 2);
@@ -9288,7 +9288,7 @@ KMETHOD GL_glWindowPos3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glWindowPos3sv(GLshort* v);
-KMETHOD GL_glWindowPos3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glWindowPos3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLshort* v = PKG_Error_to(GLshort*, 1);
 
@@ -9297,7 +9297,7 @@ KMETHOD GL_glWindowPos3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenQueries(GLsizei n, GLuint* ids);
-KMETHOD GL_glGenQueries(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenQueries(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* ids = PKG_Error_to(GLuint*, 2);
@@ -9307,7 +9307,7 @@ KMETHOD GL_glGenQueries(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteQueries(GLsizei n, GLuint* ids);
-KMETHOD GL_glDeleteQueries(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteQueries(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* ids = PKG_Error_to(GLuint*, 2);
@@ -9317,7 +9317,7 @@ KMETHOD GL_glDeleteQueries(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsQuery(GLuint id);
-KMETHOD GL_glIsQuery(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsQuery(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
 
@@ -9326,7 +9326,7 @@ KMETHOD GL_glIsQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBeginQuery(GLenum target, GLuint id);
-KMETHOD GL_glBeginQuery(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBeginQuery(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint id = PKGInt_to(GLuint, 2);
@@ -9336,7 +9336,7 @@ KMETHOD GL_glBeginQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEndQuery(GLenum target);
-KMETHOD GL_glEndQuery(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEndQuery(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -9345,7 +9345,7 @@ KMETHOD GL_glEndQuery(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryiv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetQueryiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9356,7 +9356,7 @@ KMETHOD GL_glGetQueryiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryObjectiv(GLuint id, GLenum pname, GLint* params);
-KMETHOD GL_glGetQueryObjectiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryObjectiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9367,7 +9367,7 @@ KMETHOD GL_glGetQueryObjectiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetQueryObjectuiv(GLuint id, GLenum pname, GLuint* params);
-KMETHOD GL_glGetQueryObjectuiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetQueryObjectuiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint id = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9378,7 +9378,7 @@ KMETHOD GL_glGetQueryObjectuiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindBuffer(GLenum target, GLuint buffer);
-KMETHOD GL_glBindBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLuint buffer = PKGInt_to(GLuint, 2);
@@ -9388,7 +9388,7 @@ KMETHOD GL_glBindBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteBuffers(GLsizei n, GLuint* buffers);
-KMETHOD GL_glDeleteBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteBuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* buffers = PKG_Error_to(GLuint*, 2);
@@ -9398,7 +9398,7 @@ KMETHOD GL_glDeleteBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGenBuffers(GLsizei n, GLuint* buffers);
-KMETHOD GL_glGenBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGenBuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLuint* buffers = PKG_Error_to(GLuint*, 2);
@@ -9408,7 +9408,7 @@ KMETHOD GL_glGenBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsBuffer(GLuint buffer);
-KMETHOD GL_glIsBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint buffer = PKGInt_to(GLuint, 1);
 
@@ -9417,7 +9417,7 @@ KMETHOD GL_glIsBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBufferData(GLenum target, GLsizeiptr size, GLvoid* data, GLenum usage);
-KMETHOD GL_glBufferData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBufferData(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLsizeiptr size = PKGInt_to(GLsizeiptr, 2);
@@ -9429,7 +9429,7 @@ KMETHOD GL_glBufferData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data);
-KMETHOD GL_glBufferSubData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBufferSubData(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLintptr offset = PKGInt_to(GLintptr, 2);
@@ -9441,7 +9441,7 @@ KMETHOD GL_glBufferSubData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, GLvoid* data);
-KMETHOD GL_glGetBufferSubData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBufferSubData(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLintptr offset = PKGInt_to(GLintptr, 2);
@@ -9453,7 +9453,7 @@ KMETHOD GL_glGetBufferSubData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLvoid* GL.glMapBuffer(GLenum target, GLenum access);
-KMETHOD GL_glMapBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glMapBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum access = PKGInt_to(GLenum, 2);
@@ -9463,7 +9463,7 @@ KMETHOD GL_glMapBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glUnmapBuffer(GLenum target);
-KMETHOD GL_glUnmapBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUnmapBuffer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
 
@@ -9472,7 +9472,7 @@ KMETHOD GL_glUnmapBuffer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBufferParameteriv(GLenum target, GLenum pname, GLint* params);
-KMETHOD GL_glGetBufferParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBufferParameteriv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9483,7 +9483,7 @@ KMETHOD GL_glGetBufferParameteriv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetBufferPointerv(GLenum target, GLenum pname, GLvoid** params);
-KMETHOD GL_glGetBufferPointerv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetBufferPointerv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9494,7 +9494,7 @@ KMETHOD GL_glGetBufferPointerv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDrawBuffers(GLsizei n, GLenum* bufs);
-KMETHOD GL_glDrawBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDrawBuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLsizei n = PKGInt_to(GLsizei, 1);
     GLenum* bufs = PKG_Error_to(GLenum*, 2);
@@ -9504,7 +9504,7 @@ KMETHOD GL_glDrawBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1d(GLuint index, GLdouble x);
-KMETHOD GL_glVertexAttrib1d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -9514,7 +9514,7 @@ KMETHOD GL_glVertexAttrib1d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1dv(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib1dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -9524,7 +9524,7 @@ KMETHOD GL_glVertexAttrib1dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1f(GLuint index, GLfloat x);
-KMETHOD GL_glVertexAttrib1f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -9534,7 +9534,7 @@ KMETHOD GL_glVertexAttrib1f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1fv(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib1fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -9544,7 +9544,7 @@ KMETHOD GL_glVertexAttrib1fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1s(GLuint index, GLshort x);
-KMETHOD GL_glVertexAttrib1s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -9554,7 +9554,7 @@ KMETHOD GL_glVertexAttrib1s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib1sv(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib1sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib1sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -9564,7 +9564,7 @@ KMETHOD GL_glVertexAttrib1sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2d(GLuint index, GLdouble x, GLdouble y);
-KMETHOD GL_glVertexAttrib2d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -9575,7 +9575,7 @@ KMETHOD GL_glVertexAttrib2d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2dv(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib2dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -9585,7 +9585,7 @@ KMETHOD GL_glVertexAttrib2dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2f(GLuint index, GLfloat x, GLfloat y);
-KMETHOD GL_glVertexAttrib2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -9596,7 +9596,7 @@ KMETHOD GL_glVertexAttrib2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2fv(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -9606,7 +9606,7 @@ KMETHOD GL_glVertexAttrib2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2s(GLuint index, GLshort x, GLshort y);
-KMETHOD GL_glVertexAttrib2s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -9617,7 +9617,7 @@ KMETHOD GL_glVertexAttrib2s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib2sv(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib2sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib2sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -9627,7 +9627,7 @@ KMETHOD GL_glVertexAttrib2sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3d(GLuint index, GLdouble x, GLdouble y, GLdouble z);
-KMETHOD GL_glVertexAttrib3d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -9639,7 +9639,7 @@ KMETHOD GL_glVertexAttrib3d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3dv(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib3dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -9649,7 +9649,7 @@ KMETHOD GL_glVertexAttrib3dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z);
-KMETHOD GL_glVertexAttrib3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -9661,7 +9661,7 @@ KMETHOD GL_glVertexAttrib3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3fv(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -9671,7 +9671,7 @@ KMETHOD GL_glVertexAttrib3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3s(GLuint index, GLshort x, GLshort y, GLshort z);
-KMETHOD GL_glVertexAttrib3s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -9683,7 +9683,7 @@ KMETHOD GL_glVertexAttrib3s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib3sv(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib3sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib3sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -9693,7 +9693,7 @@ KMETHOD GL_glVertexAttrib3sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4Nbv(GLuint index, GLbyte* v);
-KMETHOD GL_glVertexAttrib4Nbv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4Nbv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLbyte* v = PKG_Error_to(GLbyte*, 2);
@@ -9703,7 +9703,7 @@ KMETHOD GL_glVertexAttrib4Nbv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4Niv(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttrib4Niv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4Niv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -9713,7 +9713,7 @@ KMETHOD GL_glVertexAttrib4Niv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4Nsv(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib4Nsv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4Nsv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -9723,7 +9723,7 @@ KMETHOD GL_glVertexAttrib4Nsv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4Nub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w);
-KMETHOD GL_glVertexAttrib4Nub(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4Nub(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLubyte x = PKGInt_to(GLubyte, 2);
@@ -9736,7 +9736,7 @@ KMETHOD GL_glVertexAttrib4Nub(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4Nubv(GLuint index, GLubyte* v);
-KMETHOD GL_glVertexAttrib4Nubv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4Nubv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLubyte* v = PKG_Error_to(GLubyte*, 2);
@@ -9746,7 +9746,7 @@ KMETHOD GL_glVertexAttrib4Nubv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4Nuiv(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttrib4Nuiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4Nuiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -9756,7 +9756,7 @@ KMETHOD GL_glVertexAttrib4Nuiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4Nusv(GLuint index, GLushort* v);
-KMETHOD GL_glVertexAttrib4Nusv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4Nusv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLushort* v = PKG_Error_to(GLushort*, 2);
@@ -9766,7 +9766,7 @@ KMETHOD GL_glVertexAttrib4Nusv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4bv(GLuint index, GLbyte* v);
-KMETHOD GL_glVertexAttrib4bv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4bv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLbyte* v = PKG_Error_to(GLbyte*, 2);
@@ -9776,7 +9776,7 @@ KMETHOD GL_glVertexAttrib4bv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4d(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w);
-KMETHOD GL_glVertexAttrib4d(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4d(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble x = PKGFloat_to(GLdouble, 2);
@@ -9789,7 +9789,7 @@ KMETHOD GL_glVertexAttrib4d(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4dv(GLuint index, GLdouble* v);
-KMETHOD GL_glVertexAttrib4dv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4dv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLdouble* v = PKG_Error_to(GLdouble*, 2);
@@ -9799,7 +9799,7 @@ KMETHOD GL_glVertexAttrib4dv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
-KMETHOD GL_glVertexAttrib4f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat x = PKGFloat_to(GLfloat, 2);
@@ -9812,7 +9812,7 @@ KMETHOD GL_glVertexAttrib4f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4fv(GLuint index, GLfloat* v);
-KMETHOD GL_glVertexAttrib4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLfloat* v = PKG_Error_to(GLfloat*, 2);
@@ -9822,7 +9822,7 @@ KMETHOD GL_glVertexAttrib4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4iv(GLuint index, GLint* v);
-KMETHOD GL_glVertexAttrib4iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint* v = PKG_Error_to(GLint*, 2);
@@ -9832,7 +9832,7 @@ KMETHOD GL_glVertexAttrib4iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4s(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w);
-KMETHOD GL_glVertexAttrib4s(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4s(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort x = PKGInt_to(GLshort, 2);
@@ -9845,7 +9845,7 @@ KMETHOD GL_glVertexAttrib4s(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4sv(GLuint index, GLshort* v);
-KMETHOD GL_glVertexAttrib4sv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4sv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLshort* v = PKG_Error_to(GLshort*, 2);
@@ -9855,7 +9855,7 @@ KMETHOD GL_glVertexAttrib4sv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4ubv(GLuint index, GLubyte* v);
-KMETHOD GL_glVertexAttrib4ubv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4ubv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLubyte* v = PKG_Error_to(GLubyte*, 2);
@@ -9865,7 +9865,7 @@ KMETHOD GL_glVertexAttrib4ubv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4uiv(GLuint index, GLuint* v);
-KMETHOD GL_glVertexAttrib4uiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4uiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLuint* v = PKG_Error_to(GLuint*, 2);
@@ -9875,7 +9875,7 @@ KMETHOD GL_glVertexAttrib4uiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttrib4usv(GLuint index, GLushort* v);
-KMETHOD GL_glVertexAttrib4usv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttrib4usv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLushort* v = PKG_Error_to(GLushort*, 2);
@@ -9885,7 +9885,7 @@ KMETHOD GL_glVertexAttrib4usv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLvoid* pointer);
-KMETHOD GL_glVertexAttribPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glVertexAttribPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLint size = PKGInt_to(GLint, 2);
@@ -9899,7 +9899,7 @@ KMETHOD GL_glVertexAttribPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glEnableVertexAttribArray(GLuint index);
-KMETHOD GL_glEnableVertexAttribArray(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glEnableVertexAttribArray(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
 
@@ -9908,7 +9908,7 @@ KMETHOD GL_glEnableVertexAttribArray(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDisableVertexAttribArray(GLuint index);
-KMETHOD GL_glDisableVertexAttribArray(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDisableVertexAttribArray(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
 
@@ -9917,7 +9917,7 @@ KMETHOD GL_glDisableVertexAttribArray(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribdv(GLuint index, GLenum pname, GLdouble* params);
-KMETHOD GL_glGetVertexAttribdv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribdv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9928,7 +9928,7 @@ KMETHOD GL_glGetVertexAttribdv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribfv(GLuint index, GLenum pname, GLfloat* params);
-KMETHOD GL_glGetVertexAttribfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9939,7 +9939,7 @@ KMETHOD GL_glGetVertexAttribfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribiv(GLuint index, GLenum pname, GLint* params);
-KMETHOD GL_glGetVertexAttribiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9950,7 +9950,7 @@ KMETHOD GL_glGetVertexAttribiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetVertexAttribPointerv(GLuint index, GLenum pname, GLvoid** pointer);
-KMETHOD GL_glGetVertexAttribPointerv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetVertexAttribPointerv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint index = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -9961,7 +9961,7 @@ KMETHOD GL_glGetVertexAttribPointerv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteShader(GLuint shader);
-KMETHOD GL_glDeleteShader(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteShader(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint shader = PKGInt_to(GLuint, 1);
 
@@ -9970,7 +9970,7 @@ KMETHOD GL_glDeleteShader(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDetachShader(GLuint program, GLuint shader);
-KMETHOD GL_glDetachShader(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDetachShader(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLuint shader = PKGInt_to(GLuint, 2);
@@ -9980,7 +9980,7 @@ KMETHOD GL_glDetachShader(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLuint GL.glCreateShader(GLenum type);
-KMETHOD GL_glCreateShader(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCreateShader(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
 
@@ -9989,7 +9989,7 @@ KMETHOD GL_glCreateShader(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glShaderSource(GLuint shader, GLsizei count, GLchar** string, GLint* length);
-KMETHOD GL_glShaderSource(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glShaderSource(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint shader = PKGInt_to(GLuint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10001,7 +10001,7 @@ KMETHOD GL_glShaderSource(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glCompileShader(GLuint shader);
-KMETHOD GL_glCompileShader(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCompileShader(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint shader = PKGInt_to(GLuint, 1);
 
@@ -10010,7 +10010,7 @@ KMETHOD GL_glCompileShader(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLuint GL.glCreateProgram();
-KMETHOD GL_glCreateProgram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glCreateProgram(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     GLuint ret = glCreateProgram();
@@ -10018,7 +10018,7 @@ KMETHOD GL_glCreateProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glAttachShader(GLuint program, GLuint shader);
-KMETHOD GL_glAttachShader(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glAttachShader(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLuint shader = PKGInt_to(GLuint, 2);
@@ -10028,7 +10028,7 @@ KMETHOD GL_glAttachShader(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glLinkProgram(GLuint program);
-KMETHOD GL_glLinkProgram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glLinkProgram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
 
@@ -10037,7 +10037,7 @@ KMETHOD GL_glLinkProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUseProgram(GLuint program);
-KMETHOD GL_glUseProgram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUseProgram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
 
@@ -10046,7 +10046,7 @@ KMETHOD GL_glUseProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glDeleteProgram(GLuint program);
-KMETHOD GL_glDeleteProgram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glDeleteProgram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
 
@@ -10055,7 +10055,7 @@ KMETHOD GL_glDeleteProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glValidateProgram(GLuint program);
-KMETHOD GL_glValidateProgram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glValidateProgram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
 
@@ -10064,7 +10064,7 @@ KMETHOD GL_glValidateProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1f(GLint location, GLfloat v0);
-KMETHOD GL_glUniform1f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -10074,7 +10074,7 @@ KMETHOD GL_glUniform1f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2f(GLint location, GLfloat v0, GLfloat v1);
-KMETHOD GL_glUniform2f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -10085,7 +10085,7 @@ KMETHOD GL_glUniform2f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
-KMETHOD GL_glUniform3f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -10097,7 +10097,7 @@ KMETHOD GL_glUniform3f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-KMETHOD GL_glUniform4f(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4f(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLfloat v0 = PKGFloat_to(GLfloat, 2);
@@ -10110,7 +10110,7 @@ KMETHOD GL_glUniform4f(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1i(GLint location, GLint v0);
-KMETHOD GL_glUniform1i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -10120,7 +10120,7 @@ KMETHOD GL_glUniform1i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2i(GLint location, GLint v0, GLint v1);
-KMETHOD GL_glUniform2i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -10131,7 +10131,7 @@ KMETHOD GL_glUniform2i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3i(GLint location, GLint v0, GLint v1, GLint v2);
-KMETHOD GL_glUniform3i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -10143,7 +10143,7 @@ KMETHOD GL_glUniform3i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
-KMETHOD GL_glUniform4i(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4i(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLint v0 = PKGInt_to(GLint, 2);
@@ -10156,7 +10156,7 @@ KMETHOD GL_glUniform4i(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1fv(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform1fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10167,7 +10167,7 @@ KMETHOD GL_glUniform1fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2fv(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10178,7 +10178,7 @@ KMETHOD GL_glUniform2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3fv(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10189,7 +10189,7 @@ KMETHOD GL_glUniform3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4fv(GLint location, GLsizei count, GLfloat* value);
-KMETHOD GL_glUniform4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10200,7 +10200,7 @@ KMETHOD GL_glUniform4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform1iv(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform1iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform1iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10211,7 +10211,7 @@ KMETHOD GL_glUniform1iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform2iv(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform2iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform2iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10222,7 +10222,7 @@ KMETHOD GL_glUniform2iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform3iv(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform3iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform3iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10233,7 +10233,7 @@ KMETHOD GL_glUniform3iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniform4iv(GLint location, GLsizei count, GLint* value);
-KMETHOD GL_glUniform4iv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniform4iv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10244,7 +10244,7 @@ KMETHOD GL_glUniform4iv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10256,7 +10256,7 @@ KMETHOD GL_glUniformMatrix2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10268,7 +10268,7 @@ KMETHOD GL_glUniformMatrix3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10280,7 +10280,7 @@ KMETHOD GL_glUniformMatrix4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsShader(GLuint shader);
-KMETHOD GL_glIsShader(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsShader(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint shader = PKGInt_to(GLuint, 1);
 
@@ -10289,7 +10289,7 @@ KMETHOD GL_glIsShader(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.glIsProgram(GLuint program);
-KMETHOD GL_glIsProgram(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glIsProgram(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
 
@@ -10298,7 +10298,7 @@ KMETHOD GL_glIsProgram(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetShaderiv(GLuint shader, GLenum pname, GLint* params);
-KMETHOD GL_glGetShaderiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetShaderiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint shader = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -10309,7 +10309,7 @@ KMETHOD GL_glGetShaderiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramiv(GLuint program, GLenum pname, GLint* params);
-KMETHOD GL_glGetProgramiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLenum pname = PKGInt_to(GLenum, 2);
@@ -10320,7 +10320,7 @@ KMETHOD GL_glGetProgramiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders);
-KMETHOD GL_glGetAttachedShaders(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetAttachedShaders(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLsizei maxCount = PKGInt_to(GLsizei, 2);
@@ -10332,7 +10332,7 @@ KMETHOD GL_glGetAttachedShaders(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
-KMETHOD GL_glGetShaderInfoLog(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetShaderInfoLog(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint shader = PKGInt_to(GLuint, 1);
     GLsizei bufSize = PKGInt_to(GLsizei, 2);
@@ -10344,7 +10344,7 @@ KMETHOD GL_glGetShaderInfoLog(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
-KMETHOD GL_glGetProgramInfoLog(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetProgramInfoLog(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLsizei bufSize = PKGInt_to(GLsizei, 2);
@@ -10356,7 +10356,7 @@ KMETHOD GL_glGetProgramInfoLog(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.glGetUniformLocation(GLuint program, GLchar* name);
-KMETHOD GL_glGetUniformLocation(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformLocation(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLchar* name = PKG_Error_to(GLchar*, 2);
@@ -10366,7 +10366,7 @@ KMETHOD GL_glGetUniformLocation(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
-KMETHOD GL_glGetActiveUniform(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetActiveUniform(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -10381,7 +10381,7 @@ KMETHOD GL_glGetActiveUniform(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetUniformfv(GLuint program, GLint location, GLfloat* params);
-KMETHOD GL_glGetUniformfv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformfv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -10392,7 +10392,7 @@ KMETHOD GL_glGetUniformfv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetUniformiv(GLuint program, GLint location, GLint* params);
-KMETHOD GL_glGetUniformiv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetUniformiv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLint location = PKGInt_to(GLint, 2);
@@ -10403,7 +10403,7 @@ KMETHOD GL_glGetUniformiv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* source);
-KMETHOD GL_glGetShaderSource(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetShaderSource(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint shader = PKGInt_to(GLuint, 1);
     GLsizei bufSize = PKGInt_to(GLsizei, 2);
@@ -10415,7 +10415,7 @@ KMETHOD GL_glGetShaderSource(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glBindAttribLocation(GLuint program, GLuint index, GLchar* name);
-KMETHOD GL_glBindAttribLocation(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glBindAttribLocation(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -10426,7 +10426,7 @@ KMETHOD GL_glBindAttribLocation(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufSize, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
-KMETHOD GL_glGetActiveAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetActiveAttrib(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLuint index = PKGInt_to(GLuint, 2);
@@ -10441,7 +10441,7 @@ KMETHOD GL_glGetActiveAttrib(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.glGetAttribLocation(GLuint program, GLchar* name);
-KMETHOD GL_glGetAttribLocation(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glGetAttribLocation(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLuint program = PKGInt_to(GLuint, 1);
     GLchar* name = PKG_Error_to(GLchar*, 2);
@@ -10451,7 +10451,7 @@ KMETHOD GL_glGetAttribLocation(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilFuncSeparate(GLenum face, GLenum func, GLint ref, GLuint mask);
-KMETHOD GL_glStencilFuncSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilFuncSeparate(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum func = PKGInt_to(GLenum, 2);
@@ -10463,7 +10463,7 @@ KMETHOD GL_glStencilFuncSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilOpSeparate(GLenum face, GLenum fail, GLenum zfail, GLenum zpass);
-KMETHOD GL_glStencilOpSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilOpSeparate(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLenum fail = PKGInt_to(GLenum, 2);
@@ -10475,7 +10475,7 @@ KMETHOD GL_glStencilOpSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glStencilMaskSeparate(GLenum face, GLuint mask);
-KMETHOD GL_glStencilMaskSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glStencilMaskSeparate(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum face = PKGInt_to(GLenum, 1);
     GLuint mask = PKGInt_to(GLuint, 2);
@@ -10485,7 +10485,7 @@ KMETHOD GL_glStencilMaskSeparate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix2x3fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix2x3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix2x3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10497,7 +10497,7 @@ KMETHOD GL_glUniformMatrix2x3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix3x2fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix3x2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix3x2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10509,7 +10509,7 @@ KMETHOD GL_glUniformMatrix3x2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix2x4fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix2x4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix2x4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10521,7 +10521,7 @@ KMETHOD GL_glUniformMatrix2x4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix4x2fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix4x2fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix4x2fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10533,7 +10533,7 @@ KMETHOD GL_glUniformMatrix4x2fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix3x4fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix3x4fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix3x4fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10545,7 +10545,7 @@ KMETHOD GL_glUniformMatrix3x4fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glUniformMatrix4x3fv(GLint location, GLsizei count, GLboolean transpose, GLfloat* value);
-KMETHOD GL_glUniformMatrix4x3fv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glUniformMatrix4x3fv(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLint location = PKGInt_to(GLint, 1);
     GLsizei count = PKGInt_to(GLsizei, 2);
@@ -10557,7 +10557,7 @@ KMETHOD GL_glUniformMatrix4x3fv(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluBeginCurve(GLUnurbs* nurb);
-KMETHOD GL_gluBeginCurve(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBeginCurve(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
 
@@ -10566,7 +10566,7 @@ KMETHOD GL_gluBeginCurve(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluBeginPolygon(GLUtesselator* tess);
-KMETHOD GL_gluBeginPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBeginPolygon(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
 
@@ -10575,7 +10575,7 @@ KMETHOD GL_gluBeginPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluBeginSurface(GLUnurbs* nurb);
-KMETHOD GL_gluBeginSurface(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBeginSurface(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
 
@@ -10584,7 +10584,7 @@ KMETHOD GL_gluBeginSurface(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluBeginTrim(GLUnurbs* nurb);
-KMETHOD GL_gluBeginTrim(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBeginTrim(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
 
@@ -10593,7 +10593,7 @@ KMETHOD GL_gluBeginTrim(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluBuild1DMipmapLevels(GLenum target, GLint internalFormat, GLsizei width, GLenum format, GLenum type, GLint level, GLint base, GLint max, void* data);
-KMETHOD GL_gluBuild1DMipmapLevels(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBuild1DMipmapLevels(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint internalFormat = PKGInt_to(GLint, 2);
@@ -10610,7 +10610,7 @@ KMETHOD GL_gluBuild1DMipmapLevels(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluBuild1DMipmaps(GLenum target, GLint internalFormat, GLsizei width, GLenum format, GLenum type, void* data);
-KMETHOD GL_gluBuild1DMipmaps(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBuild1DMipmaps(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint internalFormat = PKGInt_to(GLint, 2);
@@ -10624,7 +10624,7 @@ KMETHOD GL_gluBuild1DMipmaps(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluBuild2DMipmapLevels(GLenum target, GLint internalFormat, GLsizei width, GLsizei height, GLenum format, GLenum type, GLint level, GLint base, GLint max, void* data);
-KMETHOD GL_gluBuild2DMipmapLevels(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBuild2DMipmapLevels(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint internalFormat = PKGInt_to(GLint, 2);
@@ -10642,7 +10642,7 @@ KMETHOD GL_gluBuild2DMipmapLevels(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluBuild2DMipmaps(GLenum target, GLint internalFormat, GLsizei width, GLsizei height, GLenum format, GLenum type, void* data);
-KMETHOD GL_gluBuild2DMipmaps(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBuild2DMipmaps(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint internalFormat = PKGInt_to(GLint, 2);
@@ -10657,7 +10657,7 @@ KMETHOD GL_gluBuild2DMipmaps(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluBuild3DMipmapLevels(GLenum target, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, GLint level, GLint base, GLint max, void* data);
-KMETHOD GL_gluBuild3DMipmapLevels(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBuild3DMipmapLevels(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint internalFormat = PKGInt_to(GLint, 2);
@@ -10676,7 +10676,7 @@ KMETHOD GL_gluBuild3DMipmapLevels(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluBuild3DMipmaps(GLenum target, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, void* data);
-KMETHOD GL_gluBuild3DMipmaps(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluBuild3DMipmaps(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum target = PKGInt_to(GLenum, 1);
     GLint internalFormat = PKGInt_to(GLint, 2);
@@ -10692,7 +10692,7 @@ KMETHOD GL_gluBuild3DMipmaps(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLboolean GL.gluCheckExtension(GLubyte* extName, GLubyte* extString);
-KMETHOD GL_gluCheckExtension(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluCheckExtension(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLubyte* extName = PKG_Error_to(GLubyte*, 1);
     GLubyte* extString = PKG_Error_to(GLubyte*, 2);
@@ -10702,7 +10702,7 @@ KMETHOD GL_gluCheckExtension(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluCylinder(GLUquadric* quad, GLdouble base, GLdouble top, GLdouble height, GLint slices, GLint stacks);
-KMETHOD GL_gluCylinder(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluCylinder(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLdouble base = PKGFloat_to(GLdouble, 2);
@@ -10716,7 +10716,7 @@ KMETHOD GL_gluCylinder(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluDeleteNurbsRenderer(GLUnurbs* nurb);
-KMETHOD GL_gluDeleteNurbsRenderer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluDeleteNurbsRenderer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
 
@@ -10725,7 +10725,7 @@ KMETHOD GL_gluDeleteNurbsRenderer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluDeleteQuadric(GLUquadric* quad);
-KMETHOD GL_gluDeleteQuadric(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluDeleteQuadric(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
 
@@ -10734,7 +10734,7 @@ KMETHOD GL_gluDeleteQuadric(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluDeleteTess(GLUtesselator* tess);
-KMETHOD GL_gluDeleteTess(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluDeleteTess(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
 
@@ -10743,7 +10743,7 @@ KMETHOD GL_gluDeleteTess(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluDisk(GLUquadric* quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops);
-KMETHOD GL_gluDisk(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluDisk(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLdouble inner = PKGFloat_to(GLdouble, 2);
@@ -10756,7 +10756,7 @@ KMETHOD GL_gluDisk(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluEndCurve(GLUnurbs* nurb);
-KMETHOD GL_gluEndCurve(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluEndCurve(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
 
@@ -10765,7 +10765,7 @@ KMETHOD GL_gluEndCurve(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluEndPolygon(GLUtesselator* tess);
-KMETHOD GL_gluEndPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluEndPolygon(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
 
@@ -10774,7 +10774,7 @@ KMETHOD GL_gluEndPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluEndSurface(GLUnurbs* nurb);
-KMETHOD GL_gluEndSurface(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluEndSurface(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
 
@@ -10783,7 +10783,7 @@ KMETHOD GL_gluEndSurface(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluEndTrim(GLUnurbs* nurb);
-KMETHOD GL_gluEndTrim(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluEndTrim(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
 
@@ -10792,7 +10792,7 @@ KMETHOD GL_gluEndTrim(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLubyte* GL.gluErrorString(GLenum error);
-KMETHOD GL_gluErrorString(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluErrorString(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum error = PKGInt_to(GLenum, 1);
 
@@ -10801,7 +10801,7 @@ KMETHOD GL_gluErrorString(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluGetNurbsProperty(GLUnurbs* nurb, GLenum property, GLfloat* data);
-KMETHOD GL_gluGetNurbsProperty(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluGetNurbsProperty(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLenum property = PKGInt_to(GLenum, 2);
@@ -10812,7 +10812,7 @@ KMETHOD GL_gluGetNurbsProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLubyte* GL.gluGetString(GLenum name);
-KMETHOD GL_gluGetString(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluGetString(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum name = PKGInt_to(GLenum, 1);
 
@@ -10821,7 +10821,7 @@ KMETHOD GL_gluGetString(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluGetTessProperty(GLUtesselator* tess, GLenum which, GLdouble* data);
-KMETHOD GL_gluGetTessProperty(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluGetTessProperty(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
     GLenum which = PKGInt_to(GLenum, 2);
@@ -10832,7 +10832,7 @@ KMETHOD GL_gluGetTessProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluLoadSamplingMatrices(GLUnurbs* nurb, GLfloat* model, GLfloat* perspective, GLint* view);
-KMETHOD GL_gluLoadSamplingMatrices(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluLoadSamplingMatrices(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLfloat* model = PKG_Error_to(GLfloat*, 2);
@@ -10844,7 +10844,7 @@ KMETHOD GL_gluLoadSamplingMatrices(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluLookAt(GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ, GLdouble centerX, GLdouble centerY, GLdouble centerZ, GLdouble upX, GLdouble upY, GLdouble upZ);
-KMETHOD GL_gluLookAt(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluLookAt(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble eyeX = PKGFloat_to(GLdouble, 1);
     GLdouble eyeY = PKGFloat_to(GLdouble, 2);
@@ -10861,7 +10861,7 @@ KMETHOD GL_gluLookAt(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLUnurbs* GL.gluNewNurbsRenderer();
-KMETHOD GL_gluNewNurbsRenderer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNewNurbsRenderer(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     GLUnurbs* ret = gluNewNurbsRenderer();
@@ -10869,7 +10869,7 @@ KMETHOD GL_gluNewNurbsRenderer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLUquadric* GL.gluNewQuadric();
-KMETHOD GL_gluNewQuadric(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNewQuadric(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     GLUquadric* ret = gluNewQuadric();
@@ -10877,7 +10877,7 @@ KMETHOD GL_gluNewQuadric(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLUtesselator* GL.gluNewTess();
-KMETHOD GL_gluNewTess(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNewTess(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     GLUtesselator* ret = gluNewTess();
@@ -10885,7 +10885,7 @@ KMETHOD GL_gluNewTess(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluNextContour(GLUtesselator* tess, GLenum type);
-KMETHOD GL_gluNextContour(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNextContour(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
     GLenum type = PKGInt_to(GLenum, 2);
@@ -10895,7 +10895,7 @@ KMETHOD GL_gluNextContour(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluNurbsCallbackData(GLUnurbs* nurb, GLvoid* userData);
-KMETHOD GL_gluNurbsCallbackData(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNurbsCallbackData(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLvoid* userData = PKG_Error_to(GLvoid*, 2);
@@ -10905,7 +10905,7 @@ KMETHOD GL_gluNurbsCallbackData(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluNurbsCallbackDataEXT(GLUnurbs* nurb, GLvoid* userData);
-KMETHOD GL_gluNurbsCallbackDataEXT(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNurbsCallbackDataEXT(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLvoid* userData = PKG_Error_to(GLvoid*, 2);
@@ -10915,7 +10915,7 @@ KMETHOD GL_gluNurbsCallbackDataEXT(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluNurbsCurve(GLUnurbs* nurb, GLint knotCount, GLfloat* knots, GLint stride, GLfloat* control, GLint order, GLenum type);
-KMETHOD GL_gluNurbsCurve(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNurbsCurve(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLint knotCount = PKGInt_to(GLint, 2);
@@ -10930,7 +10930,7 @@ KMETHOD GL_gluNurbsCurve(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluNurbsProperty(GLUnurbs* nurb, GLenum property, GLfloat value);
-KMETHOD GL_gluNurbsProperty(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNurbsProperty(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLenum property = PKGInt_to(GLenum, 2);
@@ -10941,7 +10941,7 @@ KMETHOD GL_gluNurbsProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluNurbsSurface(GLUnurbs* nurb, GLint sKnotCount, GLfloat* sKnots, GLint tKnotCount, GLfloat* tKnots, GLint sStride, GLint tStride, GLfloat* control, GLint sOrder, GLint tOrder, GLenum type);
-KMETHOD GL_gluNurbsSurface(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluNurbsSurface(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLint sKnotCount = PKGInt_to(GLint, 2);
@@ -10960,7 +10960,7 @@ KMETHOD GL_gluNurbsSurface(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluOrtho2D(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top);
-KMETHOD GL_gluOrtho2D(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluOrtho2D(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble left = PKGFloat_to(GLdouble, 1);
     GLdouble right = PKGFloat_to(GLdouble, 2);
@@ -10972,7 +10972,7 @@ KMETHOD GL_gluOrtho2D(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluPartialDisk(GLUquadric* quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops, GLdouble start, GLdouble sweep);
-KMETHOD GL_gluPartialDisk(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluPartialDisk(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLdouble inner = PKGFloat_to(GLdouble, 2);
@@ -10987,7 +10987,7 @@ KMETHOD GL_gluPartialDisk(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
-KMETHOD GL_gluPerspective(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluPerspective(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble fovy = PKGFloat_to(GLdouble, 1);
     GLdouble aspect = PKGFloat_to(GLdouble, 2);
@@ -10999,7 +10999,7 @@ KMETHOD GL_gluPerspective(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluPickMatrix(GLdouble x, GLdouble y, GLdouble delX, GLdouble delY, GLint* viewport);
-KMETHOD GL_gluPickMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluPickMatrix(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble x = PKGFloat_to(GLdouble, 1);
     GLdouble y = PKGFloat_to(GLdouble, 2);
@@ -11012,7 +11012,7 @@ KMETHOD GL_gluPickMatrix(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluProject(GLdouble objX, GLdouble objY, GLdouble objZ, GLdouble* model, GLdouble* proj, GLint* view, GLdouble* winX, GLdouble* winY, GLdouble* winZ);
-KMETHOD GL_gluProject(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluProject(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble objX = PKGFloat_to(GLdouble, 1);
     GLdouble objY = PKGFloat_to(GLdouble, 2);
@@ -11029,7 +11029,7 @@ KMETHOD GL_gluProject(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluPwlCurve(GLUnurbs* nurb, GLint count, GLfloat* data, GLint stride, GLenum type);
-KMETHOD GL_gluPwlCurve(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluPwlCurve(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUnurbs* nurb = PKG_Error_to(GLUnurbs*, 1);
     GLint count = PKGInt_to(GLint, 2);
@@ -11042,7 +11042,7 @@ KMETHOD GL_gluPwlCurve(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluQuadricDrawStyle(GLUquadric* quad, GLenum draw);
-KMETHOD GL_gluQuadricDrawStyle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluQuadricDrawStyle(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLenum draw = PKGInt_to(GLenum, 2);
@@ -11052,7 +11052,7 @@ KMETHOD GL_gluQuadricDrawStyle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluQuadricNormals(GLUquadric* quad, GLenum normal);
-KMETHOD GL_gluQuadricNormals(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluQuadricNormals(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLenum normal = PKGInt_to(GLenum, 2);
@@ -11062,7 +11062,7 @@ KMETHOD GL_gluQuadricNormals(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluQuadricOrientation(GLUquadric* quad, GLenum orientation);
-KMETHOD GL_gluQuadricOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluQuadricOrientation(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLenum orientation = PKGInt_to(GLenum, 2);
@@ -11072,7 +11072,7 @@ KMETHOD GL_gluQuadricOrientation(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluQuadricTexture(GLUquadric* quad, GLboolean texture);
-KMETHOD GL_gluQuadricTexture(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluQuadricTexture(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLboolean texture = PKGInt_to(GLboolean, 2);
@@ -11082,7 +11082,7 @@ KMETHOD GL_gluQuadricTexture(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluScaleImage(GLenum format, GLsizei wIn, GLsizei hIn, GLenum typeIn, void* dataIn, GLsizei wOut, GLsizei hOut, GLenum typeOut, GLvoid* dataOut);
-KMETHOD GL_gluScaleImage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluScaleImage(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum format = PKGInt_to(GLenum, 1);
     GLsizei wIn = PKGInt_to(GLsizei, 2);
@@ -11099,7 +11099,7 @@ KMETHOD GL_gluScaleImage(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluSphere(GLUquadric* quad, GLdouble radius, GLint slices, GLint stacks);
-KMETHOD GL_gluSphere(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluSphere(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUquadric* quad = PKG_Error_to(GLUquadric*, 1);
     GLdouble radius = PKGFloat_to(GLdouble, 2);
@@ -11111,7 +11111,7 @@ KMETHOD GL_gluSphere(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluTessBeginContour(GLUtesselator* tess);
-KMETHOD GL_gluTessBeginContour(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluTessBeginContour(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
 
@@ -11120,7 +11120,7 @@ KMETHOD GL_gluTessBeginContour(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluTessBeginPolygon(GLUtesselator* tess, GLvoid* data);
-KMETHOD GL_gluTessBeginPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluTessBeginPolygon(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
     GLvoid* data = PKG_Error_to(GLvoid*, 2);
@@ -11130,7 +11130,7 @@ KMETHOD GL_gluTessBeginPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluTessEndContour(GLUtesselator* tess);
-KMETHOD GL_gluTessEndContour(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluTessEndContour(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
 
@@ -11139,7 +11139,7 @@ KMETHOD GL_gluTessEndContour(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluTessEndPolygon(GLUtesselator* tess);
-KMETHOD GL_gluTessEndPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluTessEndPolygon(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
 
@@ -11148,7 +11148,7 @@ KMETHOD GL_gluTessEndPolygon(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluTessNormal(GLUtesselator* tess, GLdouble valueX, GLdouble valueY, GLdouble valueZ);
-KMETHOD GL_gluTessNormal(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluTessNormal(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
     GLdouble valueX = PKGFloat_to(GLdouble, 2);
@@ -11160,7 +11160,7 @@ KMETHOD GL_gluTessNormal(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluTessProperty(GLUtesselator* tess, GLenum which, GLdouble data);
-KMETHOD GL_gluTessProperty(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluTessProperty(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
     GLenum which = PKGInt_to(GLenum, 2);
@@ -11171,7 +11171,7 @@ KMETHOD GL_gluTessProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.gluTessVertex(GLUtesselator* tess, GLdouble* location, GLvoid* data);
-KMETHOD GL_gluTessVertex(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluTessVertex(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLUtesselator* tess = PKG_Error_to(GLUtesselator*, 1);
     GLdouble* location = PKG_Error_to(GLdouble*, 2);
@@ -11182,7 +11182,7 @@ KMETHOD GL_gluTessVertex(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluUnProject(GLdouble winX, GLdouble winY, GLdouble winZ, GLdouble* model, GLdouble* proj, GLint* view, GLdouble* objX, GLdouble* objY, GLdouble* objZ);
-KMETHOD GL_gluUnProject(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluUnProject(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble winX = PKGFloat_to(GLdouble, 1);
     GLdouble winY = PKGFloat_to(GLdouble, 2);
@@ -11199,7 +11199,7 @@ KMETHOD GL_gluUnProject(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLint GL.gluUnProject4(GLdouble winX, GLdouble winY, GLdouble winZ, GLdouble clipW, GLdouble* model, GLdouble* proj, GLint* view, GLdouble nearPlane, GLdouble farPlane, GLdouble* objX, GLdouble* objY, GLdouble* objZ, GLdouble* objW);
-KMETHOD GL_gluUnProject4(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_gluUnProject4(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble winX = PKGFloat_to(GLdouble, 1);
     GLdouble winY = PKGFloat_to(GLdouble, 2);
@@ -11220,7 +11220,7 @@ KMETHOD GL_gluUnProject4(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutInit(String[] argv);
-KMETHOD GL_glutInit(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutInit(CTX ctx, ksfp_t *sfp _RIX)
 {
     /* FIXED */
     knh_Array_t *a = sfp[1].a;
@@ -11235,7 +11235,7 @@ KMETHOD GL_glutInit(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutInitDisplayMode(unsigned int mode);
-KMETHOD GL_glutInitDisplayMode(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutInitDisplayMode(CTX ctx, ksfp_t *sfp _RIX)
 {
     unsigned int v= PKG_Error_to(unsigned int, 1);
 
@@ -11244,7 +11244,7 @@ KMETHOD GL_glutInitDisplayMode(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutInitDisplayString(char* string);
-KMETHOD GL_glutInitDisplayString(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutInitDisplayString(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* string = PKGString_to(char*, 1);
 
@@ -11253,7 +11253,7 @@ KMETHOD GL_glutInitDisplayString(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutInitWindowPosition(int x, int y);
-KMETHOD GL_glutInitWindowPosition(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutInitWindowPosition(CTX ctx, ksfp_t *sfp _RIX)
 {
     int x = PKGInt_to(int, 1);
     int y = PKGInt_to(int, 2);
@@ -11263,7 +11263,7 @@ KMETHOD GL_glutInitWindowPosition(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutInitWindowSize(int width, int height);
-KMETHOD GL_glutInitWindowSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutInitWindowSize(CTX ctx, ksfp_t *sfp _RIX)
 {
     int width = PKGInt_to(int, 1);
     int height = PKGInt_to(int, 2);
@@ -11273,7 +11273,7 @@ KMETHOD GL_glutInitWindowSize(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutMainLoop();
-KMETHOD GL_glutMainLoop(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutMainLoop(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutMainLoop();
@@ -11281,7 +11281,7 @@ KMETHOD GL_glutMainLoop(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutCreateWindow(char* title);
-KMETHOD GL_glutCreateWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutCreateWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* title = PKGString_to(char*, 1);
 
@@ -11290,7 +11290,7 @@ KMETHOD GL_glutCreateWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutCreateSubWindow(int win, int x, int y, int width, int height);
-KMETHOD GL_glutCreateSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutCreateSubWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
     int win = PKGInt_to(int, 1);
     int x = PKGInt_to(int, 2);
@@ -11303,7 +11303,7 @@ KMETHOD GL_glutCreateSubWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutDestroyWindow(int win);
-KMETHOD GL_glutDestroyWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutDestroyWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
     int win = PKGInt_to(int, 1);
 
@@ -11312,7 +11312,7 @@ KMETHOD GL_glutDestroyWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutPostRedisplay();
-KMETHOD GL_glutPostRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutPostRedisplay(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutPostRedisplay();
@@ -11320,7 +11320,7 @@ KMETHOD GL_glutPostRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutPostWindowRedisplay(int win);
-KMETHOD GL_glutPostWindowRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutPostWindowRedisplay(CTX ctx, ksfp_t *sfp _RIX)
 {
     int win = PKGInt_to(int, 1);
 
@@ -11329,7 +11329,7 @@ KMETHOD GL_glutPostWindowRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSwapBuffers();
-KMETHOD GL_glutSwapBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSwapBuffers(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutSwapBuffers();
@@ -11337,7 +11337,7 @@ KMETHOD GL_glutSwapBuffers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutGetWindow();
-KMETHOD GL_glutGetWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGetWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     int ret = glutGetWindow();
@@ -11345,7 +11345,7 @@ KMETHOD GL_glutGetWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetWindow(int win);
-KMETHOD GL_glutSetWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
     int win = PKGInt_to(int, 1);
 
@@ -11354,7 +11354,7 @@ KMETHOD GL_glutSetWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetWindowTitle(char* title);
-KMETHOD GL_glutSetWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetWindowTitle(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* title = PKGString_to(char*, 1);
 
@@ -11363,7 +11363,7 @@ KMETHOD GL_glutSetWindowTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetIconTitle(char* title);
-KMETHOD GL_glutSetIconTitle(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetIconTitle(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* title = PKGString_to(char*, 1);
 
@@ -11372,7 +11372,7 @@ KMETHOD GL_glutSetIconTitle(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutPositionWindow(int x, int y);
-KMETHOD GL_glutPositionWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutPositionWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
     int x = PKGInt_to(int, 1);
     int y = PKGInt_to(int, 2);
@@ -11382,7 +11382,7 @@ KMETHOD GL_glutPositionWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutReshapeWindow(int width, int height);
-KMETHOD GL_glutReshapeWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutReshapeWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
     int width = PKGInt_to(int, 1);
     int height = PKGInt_to(int, 2);
@@ -11392,7 +11392,7 @@ KMETHOD GL_glutReshapeWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutPopWindow();
-KMETHOD GL_glutPopWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutPopWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutPopWindow();
@@ -11400,7 +11400,7 @@ KMETHOD GL_glutPopWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutPushWindow();
-KMETHOD GL_glutPushWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutPushWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutPushWindow();
@@ -11408,7 +11408,7 @@ KMETHOD GL_glutPushWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutIconifyWindow();
-KMETHOD GL_glutIconifyWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutIconifyWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutIconifyWindow();
@@ -11416,7 +11416,7 @@ KMETHOD GL_glutIconifyWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutShowWindow();
-KMETHOD GL_glutShowWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutShowWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutShowWindow();
@@ -11424,7 +11424,7 @@ KMETHOD GL_glutShowWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutHideWindow();
-KMETHOD GL_glutHideWindow(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutHideWindow(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutHideWindow();
@@ -11432,7 +11432,7 @@ KMETHOD GL_glutHideWindow(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutFullScreen();
-KMETHOD GL_glutFullScreen(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutFullScreen(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutFullScreen();
@@ -11440,7 +11440,7 @@ KMETHOD GL_glutFullScreen(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetCursor(int cursor);
-KMETHOD GL_glutSetCursor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetCursor(CTX ctx, ksfp_t *sfp _RIX)
 {
     int cursor = PKGInt_to(int, 1);
 
@@ -11449,7 +11449,7 @@ KMETHOD GL_glutSetCursor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWarpPointer(int x, int y);
-KMETHOD GL_glutWarpPointer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWarpPointer(CTX ctx, ksfp_t *sfp _RIX)
 {
     int x = PKGInt_to(int, 1);
     int y = PKGInt_to(int, 2);
@@ -11459,7 +11459,7 @@ KMETHOD GL_glutWarpPointer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutCheckLoop();
-KMETHOD GL_glutCheckLoop(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutCheckLoop(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutCheckLoop();
@@ -11467,7 +11467,7 @@ KMETHOD GL_glutCheckLoop(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutEstablishOverlay();
-KMETHOD GL_glutEstablishOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutEstablishOverlay(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutEstablishOverlay();
@@ -11475,7 +11475,7 @@ KMETHOD GL_glutEstablishOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutRemoveOverlay();
-KMETHOD GL_glutRemoveOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutRemoveOverlay(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutRemoveOverlay();
@@ -11483,7 +11483,7 @@ KMETHOD GL_glutRemoveOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutUseLayer(GLenum layer);
-KMETHOD GL_glutUseLayer(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutUseLayer(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum layer = PKGInt_to(GLenum, 1);
 
@@ -11492,7 +11492,7 @@ KMETHOD GL_glutUseLayer(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutPostOverlayRedisplay();
-KMETHOD GL_glutPostOverlayRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutPostOverlayRedisplay(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutPostOverlayRedisplay();
@@ -11500,7 +11500,7 @@ KMETHOD GL_glutPostOverlayRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutPostWindowOverlayRedisplay(int win);
-KMETHOD GL_glutPostWindowOverlayRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutPostWindowOverlayRedisplay(CTX ctx, ksfp_t *sfp _RIX)
 {
     int win = PKGInt_to(int, 1);
 
@@ -11509,7 +11509,7 @@ KMETHOD GL_glutPostWindowOverlayRedisplay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutShowOverlay();
-KMETHOD GL_glutShowOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutShowOverlay(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutShowOverlay();
@@ -11517,7 +11517,7 @@ KMETHOD GL_glutShowOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutHideOverlay();
-KMETHOD GL_glutHideOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutHideOverlay(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutHideOverlay();
@@ -11525,7 +11525,7 @@ KMETHOD GL_glutHideOverlay(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutDestroyMenu(int menu);
-KMETHOD GL_glutDestroyMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutDestroyMenu(CTX ctx, ksfp_t *sfp _RIX)
 {
     int menu = PKGInt_to(int, 1);
 
@@ -11534,7 +11534,7 @@ KMETHOD GL_glutDestroyMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutGetMenu();
-KMETHOD GL_glutGetMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGetMenu(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     int ret = glutGetMenu();
@@ -11542,7 +11542,7 @@ KMETHOD GL_glutGetMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetMenu(int menu);
-KMETHOD GL_glutSetMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetMenu(CTX ctx, ksfp_t *sfp _RIX)
 {
     int menu = PKGInt_to(int, 1);
 
@@ -11551,7 +11551,7 @@ KMETHOD GL_glutSetMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutAddMenuEntry(char* label, int value);
-KMETHOD GL_glutAddMenuEntry(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutAddMenuEntry(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* label = PKGString_to(char*, 1);
     int value = PKGInt_to(int, 2);
@@ -11561,7 +11561,7 @@ KMETHOD GL_glutAddMenuEntry(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutAddSubMenu(char* label, int submenu);
-KMETHOD GL_glutAddSubMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutAddSubMenu(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* label = PKGString_to(char*, 1);
     int submenu = PKGInt_to(int, 2);
@@ -11571,7 +11571,7 @@ KMETHOD GL_glutAddSubMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutChangeToMenuEntry(int item, char* label, int value);
-KMETHOD GL_glutChangeToMenuEntry(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutChangeToMenuEntry(CTX ctx, ksfp_t *sfp _RIX)
 {
     int item = PKGInt_to(int, 1);
     char* label = PKGString_to(char*, 2);
@@ -11582,7 +11582,7 @@ KMETHOD GL_glutChangeToMenuEntry(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutChangeToSubMenu(int item, char* label, int submenu);
-KMETHOD GL_glutChangeToSubMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutChangeToSubMenu(CTX ctx, ksfp_t *sfp _RIX)
 {
     int item = PKGInt_to(int, 1);
     char* label = PKGString_to(char*, 2);
@@ -11593,7 +11593,7 @@ KMETHOD GL_glutChangeToSubMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutRemoveMenuItem(int item);
-KMETHOD GL_glutRemoveMenuItem(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutRemoveMenuItem(CTX ctx, ksfp_t *sfp _RIX)
 {
     int item = PKGInt_to(int, 1);
 
@@ -11602,7 +11602,7 @@ KMETHOD GL_glutRemoveMenuItem(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutAttachMenu(int button);
-KMETHOD GL_glutAttachMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutAttachMenu(CTX ctx, ksfp_t *sfp _RIX)
 {
     int button = PKGInt_to(int, 1);
 
@@ -11611,7 +11611,7 @@ KMETHOD GL_glutAttachMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutDetachMenu(int button);
-KMETHOD GL_glutDetachMenu(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutDetachMenu(CTX ctx, ksfp_t *sfp _RIX)
 {
     int button = PKGInt_to(int, 1);
 
@@ -11620,7 +11620,7 @@ KMETHOD GL_glutDetachMenu(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetColor(int, GLfloat red, GLfloat green, GLfloat blue);
-KMETHOD GL_glutSetColor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetColor(CTX ctx, ksfp_t *sfp _RIX)
 {
     int arg0 = PKGInt_to(int, 1);
     GLfloat red = PKGFloat_to(GLfloat, 2);
@@ -11632,7 +11632,7 @@ KMETHOD GL_glutSetColor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native GLfloat GL.glutGetColor(int ndx, int component);
-KMETHOD GL_glutGetColor(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGetColor(CTX ctx, ksfp_t *sfp _RIX)
 {
     int ndx = PKGInt_to(int, 1);
     int component = PKGInt_to(int, 2);
@@ -11642,7 +11642,7 @@ KMETHOD GL_glutGetColor(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutCopyColormap(int win);
-KMETHOD GL_glutCopyColormap(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutCopyColormap(CTX ctx, ksfp_t *sfp _RIX)
 {
     int win = PKGInt_to(int, 1);
 
@@ -11651,7 +11651,7 @@ KMETHOD GL_glutCopyColormap(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutGet(GLenum type);
-KMETHOD GL_glutGet(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGet(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
 
@@ -11660,7 +11660,7 @@ KMETHOD GL_glutGet(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutDeviceGet(GLenum type);
-KMETHOD GL_glutDeviceGet(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutDeviceGet(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
 
@@ -11669,7 +11669,7 @@ KMETHOD GL_glutDeviceGet(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutExtensionSupported(char* name);
-KMETHOD GL_glutExtensionSupported(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutExtensionSupported(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* name = PKGString_to(char*, 1);
 
@@ -11678,7 +11678,7 @@ KMETHOD GL_glutExtensionSupported(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutGetModifiers();
-KMETHOD GL_glutGetModifiers(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGetModifiers(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     int ret = glutGetModifiers();
@@ -11686,7 +11686,7 @@ KMETHOD GL_glutGetModifiers(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutLayerGet(GLenum type);
-KMETHOD GL_glutLayerGet(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutLayerGet(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum type = PKGInt_to(GLenum, 1);
 
@@ -11695,7 +11695,7 @@ KMETHOD GL_glutLayerGet(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void* GL.glutGetProcAddress(char* procName);
-KMETHOD GL_glutGetProcAddress(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGetProcAddress(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* procName = PKGString_to(char*, 1);
 
@@ -11704,7 +11704,7 @@ KMETHOD GL_glutGetProcAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutBitmapCharacter(void* font, int character);
-KMETHOD GL_glutBitmapCharacter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutBitmapCharacter(CTX ctx, ksfp_t *sfp _RIX)
 {
     void* font = PKG_Error_to(void*, 1);
     int character = PKGInt_to(int, 2);
@@ -11714,7 +11714,7 @@ KMETHOD GL_glutBitmapCharacter(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutBitmapWidth(void* font, int character);
-KMETHOD GL_glutBitmapWidth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutBitmapWidth(CTX ctx, ksfp_t *sfp _RIX)
 {
     void* font = PKG_Error_to(void*, 1);
     int character = PKGInt_to(int, 2);
@@ -11724,7 +11724,7 @@ KMETHOD GL_glutBitmapWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutStrokeCharacter(void* font, int character);
-KMETHOD GL_glutStrokeCharacter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutStrokeCharacter(CTX ctx, ksfp_t *sfp _RIX)
 {
     void* font = PKG_Error_to(void*, 1);
     int character = PKGInt_to(int, 2);
@@ -11734,7 +11734,7 @@ KMETHOD GL_glutStrokeCharacter(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutStrokeWidth(void* font, int character);
-KMETHOD GL_glutStrokeWidth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutStrokeWidth(CTX ctx, ksfp_t *sfp _RIX)
 {
     void* font = PKG_Error_to(void*, 1);
     int character = PKGInt_to(int, 2);
@@ -11744,7 +11744,7 @@ KMETHOD GL_glutStrokeWidth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutBitmapLength(void* font, unsigned char* string);
-KMETHOD GL_glutBitmapLength(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutBitmapLength(CTX ctx, ksfp_t *sfp _RIX)
 {
     void* font = PKG_Error_to(void*, 1);
     unsigned char* s = PKG_Error_to(unsigned char *, 2);
@@ -11754,7 +11754,7 @@ KMETHOD GL_glutBitmapLength(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutStrokeLength(void* font, unsigned char* string);
-KMETHOD GL_glutStrokeLength(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutStrokeLength(CTX ctx, ksfp_t *sfp _RIX)
 {
     void* font = PKG_Error_to(void*, 1);
     unsigned char* s = PKG_Error_to(unsigned char *, 2);
@@ -11764,7 +11764,7 @@ KMETHOD GL_glutStrokeLength(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireSphere(GLdouble radius, GLint slices, GLint stacks);
-KMETHOD GL_glutWireSphere(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireSphere(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble radius = PKGFloat_to(GLdouble, 1);
     GLint slices = PKGInt_to(GLint, 2);
@@ -11775,7 +11775,7 @@ KMETHOD GL_glutWireSphere(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidSphere(GLdouble radius, GLint slices, GLint stacks);
-KMETHOD GL_glutSolidSphere(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidSphere(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble radius = PKGFloat_to(GLdouble, 1);
     GLint slices = PKGInt_to(GLint, 2);
@@ -11786,7 +11786,7 @@ KMETHOD GL_glutSolidSphere(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireCone(GLdouble base, GLdouble height, GLint slices, GLint stacks);
-KMETHOD GL_glutWireCone(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireCone(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble base = PKGFloat_to(GLdouble, 1);
     GLdouble height = PKGFloat_to(GLdouble, 2);
@@ -11798,7 +11798,7 @@ KMETHOD GL_glutWireCone(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidCone(GLdouble base, GLdouble height, GLint slices, GLint stacks);
-KMETHOD GL_glutSolidCone(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidCone(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble base = PKGFloat_to(GLdouble, 1);
     GLdouble height = PKGFloat_to(GLdouble, 2);
@@ -11810,7 +11810,7 @@ KMETHOD GL_glutSolidCone(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireCube(GLdouble size);
-KMETHOD GL_glutWireCube(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireCube(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble size = PKGFloat_to(GLdouble, 1);
 
@@ -11819,7 +11819,7 @@ KMETHOD GL_glutWireCube(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidCube(GLdouble size);
-KMETHOD GL_glutSolidCube(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidCube(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble size = PKGFloat_to(GLdouble, 1);
 
@@ -11828,7 +11828,7 @@ KMETHOD GL_glutSolidCube(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireTorus(GLdouble innerRadius, GLdouble outerRadius, GLint sides, GLint rings);
-KMETHOD GL_glutWireTorus(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireTorus(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble innerRadius = PKGFloat_to(GLdouble, 1);
     GLdouble outerRadius = PKGFloat_to(GLdouble, 2);
@@ -11840,7 +11840,7 @@ KMETHOD GL_glutWireTorus(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidTorus(GLdouble innerRadius, GLdouble outerRadius, GLint sides, GLint rings);
-KMETHOD GL_glutSolidTorus(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidTorus(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble innerRadius = PKGFloat_to(GLdouble, 1);
     GLdouble outerRadius = PKGFloat_to(GLdouble, 2);
@@ -11852,7 +11852,7 @@ KMETHOD GL_glutSolidTorus(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireDodecahedron();
-KMETHOD GL_glutWireDodecahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireDodecahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutWireDodecahedron();
@@ -11860,7 +11860,7 @@ KMETHOD GL_glutWireDodecahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidDodecahedron();
-KMETHOD GL_glutSolidDodecahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidDodecahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutSolidDodecahedron();
@@ -11868,7 +11868,7 @@ KMETHOD GL_glutSolidDodecahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireTeapot(GLdouble size);
-KMETHOD GL_glutWireTeapot(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireTeapot(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble size = PKGFloat_to(GLdouble, 1);
 
@@ -11877,7 +11877,7 @@ KMETHOD GL_glutWireTeapot(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidTeapot(GLdouble size);
-KMETHOD GL_glutSolidTeapot(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidTeapot(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLdouble size = PKGFloat_to(GLdouble, 1);
 
@@ -11886,7 +11886,7 @@ KMETHOD GL_glutSolidTeapot(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireOctahedron();
-KMETHOD GL_glutWireOctahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireOctahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutWireOctahedron();
@@ -11894,7 +11894,7 @@ KMETHOD GL_glutWireOctahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidOctahedron();
-KMETHOD GL_glutSolidOctahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidOctahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutSolidOctahedron();
@@ -11902,7 +11902,7 @@ KMETHOD GL_glutSolidOctahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireTetrahedron();
-KMETHOD GL_glutWireTetrahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireTetrahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutWireTetrahedron();
@@ -11910,7 +11910,7 @@ KMETHOD GL_glutWireTetrahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidTetrahedron();
-KMETHOD GL_glutSolidTetrahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidTetrahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutSolidTetrahedron();
@@ -11918,7 +11918,7 @@ KMETHOD GL_glutSolidTetrahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutWireIcosahedron();
-KMETHOD GL_glutWireIcosahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutWireIcosahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutWireIcosahedron();
@@ -11926,7 +11926,7 @@ KMETHOD GL_glutWireIcosahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSolidIcosahedron();
-KMETHOD GL_glutSolidIcosahedron(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSolidIcosahedron(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutSolidIcosahedron();
@@ -11934,7 +11934,7 @@ KMETHOD GL_glutSolidIcosahedron(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutVideoResizeGet(GLenum param);
-KMETHOD GL_glutVideoResizeGet(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutVideoResizeGet(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum param = PKGInt_to(GLenum, 1);
 
@@ -11943,7 +11943,7 @@ KMETHOD GL_glutVideoResizeGet(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetupVideoResizing();
-KMETHOD GL_glutSetupVideoResizing(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetupVideoResizing(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutSetupVideoResizing();
@@ -11951,7 +11951,7 @@ KMETHOD GL_glutSetupVideoResizing(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutStopVideoResizing();
-KMETHOD GL_glutStopVideoResizing(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutStopVideoResizing(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutStopVideoResizing();
@@ -11959,7 +11959,7 @@ KMETHOD GL_glutStopVideoResizing(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutVideoResize(int x, int y, int width, int height);
-KMETHOD GL_glutVideoResize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutVideoResize(CTX ctx, ksfp_t *sfp _RIX)
 {
     int x = PKGInt_to(int, 1);
     int y = PKGInt_to(int, 2);
@@ -11971,7 +11971,7 @@ KMETHOD GL_glutVideoResize(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutVideoPan(int x, int y, int width, int height);
-KMETHOD GL_glutVideoPan(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutVideoPan(CTX ctx, ksfp_t *sfp _RIX)
 {
     int x = PKGInt_to(int, 1);
     int y = PKGInt_to(int, 2);
@@ -11983,7 +11983,7 @@ KMETHOD GL_glutVideoPan(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutReportErrors();
-KMETHOD GL_glutReportErrors(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutReportErrors(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutReportErrors();
@@ -11991,7 +11991,7 @@ KMETHOD GL_glutReportErrors(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutIgnoreKeyRepeat(int ignore);
-KMETHOD GL_glutIgnoreKeyRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutIgnoreKeyRepeat(CTX ctx, ksfp_t *sfp _RIX)
 {
     int ignore = PKGInt_to(int, 1);
 
@@ -12000,7 +12000,7 @@ KMETHOD GL_glutIgnoreKeyRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutSetKeyRepeat(int repeatMode);
-KMETHOD GL_glutSetKeyRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutSetKeyRepeat(CTX ctx, ksfp_t *sfp _RIX)
 {
     int repeatMode = PKGInt_to(int, 1);
 
@@ -12009,7 +12009,7 @@ KMETHOD GL_glutSetKeyRepeat(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutForceJoystickFunc();
-KMETHOD GL_glutForceJoystickFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutForceJoystickFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutForceJoystickFunc();
@@ -12017,7 +12017,7 @@ KMETHOD GL_glutForceJoystickFunc(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutGameModeString(char* string);
-KMETHOD GL_glutGameModeString(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGameModeString(CTX ctx, ksfp_t *sfp _RIX)
 {
     char* string = PKGString_to(char*, 1);
 
@@ -12026,7 +12026,7 @@ KMETHOD GL_glutGameModeString(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutEnterGameMode();
-KMETHOD GL_glutEnterGameMode(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutEnterGameMode(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     int ret = glutEnterGameMode();
@@ -12034,7 +12034,7 @@ KMETHOD GL_glutEnterGameMode(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void GL.glutLeaveGameMode();
-KMETHOD GL_glutLeaveGameMode(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutLeaveGameMode(CTX ctx, ksfp_t *sfp _RIX)
 {
 
     glutLeaveGameMode();
@@ -12042,7 +12042,7 @@ KMETHOD GL_glutLeaveGameMode(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int GL.glutGameModeGet(GLenum mode);
-KMETHOD GL_glutGameModeGet(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD GL_glutGameModeGet(CTX ctx, ksfp_t *sfp _RIX)
 {
     GLenum mode = PKGInt_to(GLenum, 1);
 

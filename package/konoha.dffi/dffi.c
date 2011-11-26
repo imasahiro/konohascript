@@ -55,7 +55,7 @@ static void Clib_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defClib(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defClib(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Clib";
 	cdef->init = Clib_init;
@@ -83,7 +83,7 @@ static void Process_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defProcess(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defProcess(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Process";
 	cdef->init = Process_init;
@@ -164,7 +164,7 @@ static void ProcessGlue_free(CTX ctx, void *ptr)
 
 /* ------------------------------------------------------------------------ */
 //@Native Clib Clib.new(String libname, Clib _);
-KMETHOD Clib_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Clib_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const char *libname = String_to(const char *, sfp[1]);
 	knh_CLib_t *clib = (knh_CLib_t*)KNH_MALLOC(ctx, sizeof(knh_CLib_t));
@@ -173,9 +173,9 @@ KMETHOD Clib_new(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(po);
 }
 
-static KMETHOD Fmethod_wrapCLib(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_wrapCLib(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
+	ktype_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
 	knh_Func_t *fo = sfp[0].fo;
 	knh_ClibGlue_t *cglue = (knh_ClibGlue_t*)(((fo->mtd)->b)->cfunc);
 	//  fprintf(stderr, "fptr:%p, %p, %d, %p, %p\n", 
@@ -201,11 +201,11 @@ static KMETHOD Fmethod_wrapCLib(CTX ctx, knh_sfp_t *sfp _RIX)
 	if(rtype != TYPE_void) {
 		if(IS_Tunbox(rtype)) {
 			if (rtype == TYPE_Int || rtype == TYPE_Boolean) {
-				knh_int_t return_i = 0;
+				kint_t return_i = 0;
 				if (ffi_prep_cif(&(cglue->cif), FFI_DEFAULT_ABI, cglue->argCount,
 							cglue->retT, cglue->argT) == FFI_OK) {
 					ffi_call(&(cglue->cif), cglue->fptr, &(cglue->retV), cglue->argV);
-					return_i = *(knh_int_t*)(&cglue->retV);
+					return_i = *(kint_t*)(&cglue->retV);
 				} else {
 					fprintf(stderr, "prep_cif FAILED\n:");
 				}
@@ -250,7 +250,7 @@ static KMETHOD Fmethod_wrapCLib(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-static knh_RawPtr_t *ClibGlue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+static knh_RawPtr_t *ClibGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Glue_t *glue = (knh_Glue_t*)((sfp[0].p)->rawptr);
 	knh_ClibGlue_t *cglue = (knh_ClibGlue_t*)(glue->glueInfo);
@@ -326,7 +326,7 @@ static knh_GlueSPI_t CLibGlueSPI = {
 };
 
 // @Native Glue Clib_genGlue (Glue _)
-KMETHOD Clib_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Clib_genGlue(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_CLib_t *clib = (knh_CLib_t *)((sfp[0].p)->rawptr);
 	if (clib != NULL) {
@@ -348,7 +348,7 @@ KMETHOD Clib_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
 #define PROCESS_PATH_MAX 256
 
 //@Native Process Process.new(String path, Process _);
-KMETHOD Process_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Process_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Process_t *proc = (knh_Process_t*)KNH_MALLOC(ctx, sizeof(knh_Process_t));
 	char *pname = String_to(char *, sfp[1]);
@@ -363,9 +363,9 @@ KMETHOD Process_new(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 //#include <crt_externs.h>
-static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_wrapProcess(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_type_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
+	ktype_t rtype = knh_ParamArray_rtype(DP(sfp[K_MTDIDX].mtdNC)->mp);
 	knh_Func_t *fo = sfp[0].fo;
 	knh_ProcessGlue_t *pglue = (knh_ProcessGlue_t*)(((fo->mtd)->b)->cfunc);
 	char *arg1 = String_to(char *, sfp[1]);
@@ -414,7 +414,7 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 		while(1) {
 			size_t size = read(pipe_c2p[0], buf, K_PAGESIZE);
 			if (size > 0) {
-				knh_bytes_t t = {{buf}, size};
+				kbytes_t t = {{buf}, size};
 				knh_Bytes_write(ctx, cwb->ba, t);
 			} else {
 				break;
@@ -443,7 +443,7 @@ static KMETHOD Fmethod_wrapProcess(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 }
 
-static knh_RawPtr_t *ProcessGlue_getFunc(CTX ctx, knh_sfp_t *sfp _RIX)
+static knh_RawPtr_t *ProcessGlue_getFunc(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_RawPtr_t *po = sfp[0].p;
 	knh_Glue_t *glue = (knh_Glue_t*)po->rawptr;
@@ -478,7 +478,7 @@ static knh_GlueSPI_t ProcessGlueSPI = {
 };
 
 // @Native Glue Clib_genGlue (Glue _)
-KMETHOD Process_genGlue(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Process_genGlue(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Process_t *proc = (knh_Process_t*)((sfp[0].p)->rawptr);
 	if (proc != NULL) {

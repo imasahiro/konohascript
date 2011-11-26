@@ -87,7 +87,7 @@ static void knh_MPIRequest_init(CTX ctx, knh_RawPtr_t *o)
 
 #ifdef _KNH_ON_T2K
 
-static const knh_ClassDef_t MPICommDef = {
+static const kClassDef MPICommDef = {
 	knh_MPIComm_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -96,7 +96,7 @@ static const knh_ClassDef_t MPICommDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static const knh_ClassDef_t MPIOpDef = {
+static const kClassDef MPIOpDef = {
 	knh_MPIOp_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -105,7 +105,7 @@ static const knh_ClassDef_t MPIOpDef = {
 	NULL, DEFAULT_4, DEFAULT_5, DEFAULT_6,
 };
 
-static const knh_ClassDef_t MPIRequestDef = {
+static const kClassDef MPIRequestDef = {
 	DEFAULT_init, DEFAULT_initcopy, DEFAULT_reftrace, DEFAULT_free,
 	DEFAULT_checkin, DEFAULT_checkout, DEFAULT_compareTo, DEFAULT_p,
 	DEFAULT_getkey, DEFAULT_hashCode, DEFAULT_0, DEFAULT_1,
@@ -116,14 +116,14 @@ static const knh_ClassDef_t MPIRequestDef = {
 
 #else /* ifdef _KNH_ON_T2K */
 
-DEFAPI(void) defMPIComm(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defMPIComm(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "MPIComm";
 	cdef->init = knh_MPIComm_init;
 	cdef->free = knh_MPIComm_free;
 }
 
-DEFAPI(void) defMPIData(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defMPIData(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "MPIData";
 	cdef->init = knh_MPIData_init;
@@ -131,13 +131,13 @@ DEFAPI(void) defMPIData(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 	cdef->p = knh_MPIData_p;
 }
 
-DEFAPI(void) defMPIRequest(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defMPIRequest(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "MPIRequest";
 	cdef->init = knh_MPIRequest_init;
 }
 
-DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defMPIOp(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "MPIOp";
 	cdef->init = knh_MPIOp_init;
@@ -149,7 +149,7 @@ DEFAPI(void) defMPIOp(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 /* ------------------------------------------------------------------------ */
 /* Const */
 
-static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
+static void knh_MPI_initWorld(CTX ctx, kclass_t cid)
 {
 	MPIC(world, new_O(MPIComm, cid));
 	MPIC_COMM(world) = MPI_COMM_WORLD;
@@ -159,20 +159,20 @@ static void knh_MPI_initWorld(CTX ctx, knh_class_t cid)
 }
 
 static knh_IntData_t MPIConstOp[] = {
-	{"MAX",  (knh_int_t)MPI_MAX},
-	{"MIN",  (knh_int_t)MPI_MIN},
-	{"SUM",  (knh_int_t)MPI_SUM},
-	{"PROD", (knh_int_t)MPI_PROD},
-	{"LAND", (knh_int_t)MPI_LAND},
-	{"BAND", (knh_int_t)MPI_BAND},
-	{"LOD",  (knh_int_t)MPI_LOR},
-	{"BOR",  (knh_int_t)MPI_BOR},
-	{"LXOR", (knh_int_t)MPI_LXOR},
-	{"BXOR", (knh_int_t)MPI_BXOR},
+	{"MAX",  (kint_t)MPI_MAX},
+	{"MIN",  (kint_t)MPI_MIN},
+	{"SUM",  (kint_t)MPI_SUM},
+	{"PROD", (kint_t)MPI_PROD},
+	{"LAND", (kint_t)MPI_LAND},
+	{"BAND", (kint_t)MPI_BAND},
+	{"LOD",  (kint_t)MPI_LOR},
+	{"BOR",  (kint_t)MPI_BOR},
+	{"LXOR", (kint_t)MPI_LXOR},
+	{"BXOR", (kint_t)MPI_BXOR},
 	{NULL, 0},
 };
 
-static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
+static void knh_MPI_initOp(CTX ctx, kclass_t cid)
 {
 	knh_IntData_t *d;
 	for (d = &MPIConstOp[0]; d->ivalue > 0; d++) {
@@ -185,7 +185,7 @@ static void knh_MPI_initOp(CTX ctx, knh_class_t cid)
 
 #ifndef _KNH_ON_T2K
 
-static void knh_MPI_initSelf(CTX ctx, knh_class_t cid)
+static void knh_MPI_initSelf(CTX ctx, kclass_t cid)
 {
 	MPIC(self, new_O(MPIComm, cid));
 	MPIC_COMM(self) = MPI_COMM_SELF;
@@ -194,7 +194,7 @@ static void knh_MPI_initSelf(CTX ctx, knh_class_t cid)
 	knh_addClassConst(ctx, cid, new_String(ctx, "SELF"), (knh_Object_t*)self);
 }
 
-static void knh_MPI_initParent(CTX ctx, knh_class_t cid)
+static void knh_MPI_initParent(CTX ctx, kclass_t cid)
 {
 	MPIC(parent, new_O(MPIComm, cid));
 	if (MPI_Comm_get_parent(&MPIC_COMM(parent)) == MPI_SUCCESS) {
@@ -204,7 +204,7 @@ static void knh_MPI_initParent(CTX ctx, knh_class_t cid)
 	}
 }
 
-DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constMPIComm(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
 	MPI_Initialized(&init);
@@ -215,17 +215,17 @@ DEFAPI(void) constMPIComm(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
 	}
 }
 
-DEFAPI(void) constMPIData(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constMPIData(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	;
 }
 
-DEFAPI(void) constMPIRequest(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constMPIRequest(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	;
 }
 
-DEFAPI(void) constMPIOp(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constMPIOp(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
 	MPI_Initialized(&init);

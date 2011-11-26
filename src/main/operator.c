@@ -35,7 +35,7 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-static knh_bool_t bytes_startsWithLink(knh_bytes_t t, knh_bytes_t scheme)
+static kbool_t bytes_startsWithLink(kbytes_t t, kbytes_t scheme)
 {
 	if(knh_bytes_startsWith_(t, scheme)) {
 		if(t.text[scheme.len] == ':') return 1;
@@ -43,7 +43,7 @@ static knh_bool_t bytes_startsWithLink(knh_bytes_t t, knh_bytes_t scheme)
 	return 0;
 }
 
-static knh_bytes_t bytes_trim(knh_bytes_t t)
+static kbytes_t bytes_trim(kbytes_t t)
 {
 	while(isspace(t.utext[0])) {
 		t.utext++;
@@ -62,17 +62,17 @@ static knh_bytes_t bytes_trim(knh_bytes_t t)
 
 //## @Hidden method This Object.new();
 
-static KMETHOD Object_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(sfp[0].o);
 }
 
 /* ------------------------------------------------------------------------ */
 
-//static void ObjectField_setValue(CTX ctx, knh_ObjectField_t *of, knh_index_t idx, knh_type_t type, Object *value)
+//static void ObjectField_setValue(CTX ctx, knh_ObjectField_t *of, kindex_t idx, ktype_t type, Object *value)
 //{
-//	knh_class_t tcid = CLASS_t(type);
-//	knh_class_t scid = O_cid(value);
+//	kclass_t tcid = CLASS_t(type);
+//	kclass_t scid = O_cid(value);
 //	DBG_ASSERT_cid(tcid);
 //	DBG_ASSERT_cid(scid);
 //	if(scid == tcid || knh_class_instanceof(ctx, scid, tcid)) {
@@ -89,15 +89,15 @@ static KMETHOD Object_new(CTX ctx, knh_sfp_t *sfp _RIX)
 //
 //	L_SETVAL:;
 //	if(IS_Tint(type)) {
-//		knh_int_t *data = (knh_int_t*)(of->fields + idx);
+//		kint_t *data = (kint_t*)(of->fields + idx);
 //		data[0] = N_toint(value);
 //	}
 //	else if(IS_Tfloat(type)) {
-//		knh_float_t *data = (knh_float_t*)(of->fields + idx);
+//		kfloat_t *data = (kfloat_t*)(of->fields + idx);
 //		data[0] = N_tofloat(value);
 //	}
 //	else if(IS_Tbool(type)) {
-//		knh_boolean_t *data = (knh_boolean_t*)(of->fields +idx);
+//		kbool_t *data = (kbool_t*)(of->fields +idx);
 //		data[0] = N_tobool(value);
 //	}
 //	else {
@@ -109,20 +109,20 @@ static KMETHOD Object_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Object.new:MAP(dynamic value, ...);
 
-static KMETHOD Object_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_newMAP(CTX ctx, ksfp_t *sfp _RIX)
 {
 //	knh_ObjectField_t *of = (knh_ObjectField_t*)sfp[0].o;
-//	knh_class_t cid = O_cid(of);
-//	knh_sfp_t *v = sfp + 1;
+//	kclass_t cid = O_cid(of);
+//	ksfp_t *v = sfp + 1;
 //	size_t i, ac = knh_stack_argc(ctx, v);
 //	for(i = 0; i < ac; i+= 2) {
 //		if(IS_bString(v[i].s)) {
 //			ksymbol_t fn = knh_getfnq(ctx, S_tobytes(v[i].s), FN_NONAME);
 //			if(fn == FN_NONAME) continue;
-//			knh_index_t idx = knh_Class_queryField(ctx, cid, fn);
+//			kindex_t idx = knh_Class_queryField(ctx, cid, fn);
 //			if(idx == -1) continue;
-//			knh_fields_t *cf = knh_Class_fieldAt(ctx, cid, idx);
-//			knh_type_t type = knh_type_tocid(ctx, cf->type, cid);
+//			kfieldinfo_t *cf = knh_Class_fieldAt(ctx, cid, idx);
+//			ktype_t type = ktype_tocid(ctx, cf->type, cid);
 //			if(type == TYPE_void) continue;
 //			DBG_P("[%d] %s %s", (int)(idx), TYPE__(type), S_totext(v[i].s));
 //			ObjectField_setValue(ctx, of, idx, type, v[i+1].o);
@@ -134,7 +134,7 @@ static KMETHOD Object_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @FastCall method Class! Object.getClass();
 
-static KMETHOD Object_getClass(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_getClass(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(new_Type(ctx, O_cid(sfp[0].o)));
 }
@@ -142,7 +142,7 @@ static KMETHOD Object_getClass(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @FastCall @Const method Int Object.hashCode();
 
-static KMETHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_hashCode(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cdef->hashCode(ctx, sfp[0].p);
 	RETURNi_(h);
@@ -151,7 +151,7 @@ static KMETHOD Object_hashCode(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden @FastCall method Boolean Object.isNull();
 
-static KMETHOD Object_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_isNull(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(IS_NULL(sfp[0].o));
 }
@@ -159,7 +159,7 @@ static KMETHOD Object_isNull(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden @FastCall method Boolean Object.isNotNull();
 
-static KMETHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_isNotNull(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(IS_NOTNULL(sfp[0].o));
 }
@@ -167,7 +167,7 @@ static KMETHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## @Const @Hidden @FastCall method String Object.getKey();
 //
-//static KMETHOD Object_getKey(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Object_getKey(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_String_t *s = ClassTBL(O_bcid(sfp[0].o))->cdef->getkey(ctx, sfp);
 //	KNH_ASSERT(IS_String(s));
@@ -177,10 +177,10 @@ static KMETHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## @Const @Hidden method This Object.copy();
 //
-//static KMETHOD Object_copy(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Object_copy(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	knh_Object_t *src = sfp[0].o;
-//	knh_class_t cid = O_cid(src);
+//	kclass_t cid = O_cid(src);
 //	if(knh_class_canObjectCopy(ctx, cid) && IS_NOTNULL(src)) {
 //		const knh_ClassTBL_t *ct = O_cTBL(src);
 //		knh_Object_t *o = new_hObject_(ctx, ct);
@@ -195,7 +195,7 @@ static KMETHOD Object_isNotNull(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden @Private method dyn Object.cast(TypeMap tmr);
 
-static KMETHOD Object_cast(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_cast(CTX ctx, ksfp_t *sfp _RIX)
 {
 	sfp[0].ndata = O_ndata(sfp[0].o); // UNBOX
 	knh_TypeMap_exec(ctx, sfp[1].tmr, sfp, K_RIX);
@@ -204,9 +204,9 @@ static KMETHOD Object_cast(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden @Private method dynamic Object.to(Class auto);
 
-static KMETHOD Object_to(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_to(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_class_t scid = O_cid(sfp[0].o), tcid = (sfp[1].c)->cid;
+	kclass_t scid = O_cid(sfp[0].o), tcid = (sfp[1].c)->cid;
 	if(scid != tcid) {
 		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
 		if(tmr != NULL) {
@@ -226,9 +226,9 @@ static KMETHOD Object_to(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden @Private method dynamic Object.typeCheck(Class auto);
 
-static KMETHOD Object_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_typeCheck(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_class_t scid = O_cid(sfp[0].o), tcid = (sfp[1].c)->cid;
+	kclass_t scid = O_cid(sfp[0].o), tcid = (sfp[1].c)->cid;
 	if(scid != tcid && !class_isa(scid, tcid)) {
 		knh_TypeMap_t *tmr = knh_findTypeMapNULL(ctx, scid, tcid);
 		if(tmr != NULL && TypeMap_isSemantic(tmr)) {
@@ -249,7 +249,7 @@ static KMETHOD Object_typeCheck(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method dynamic Object.opWITH(Map data, NameSpace _, Boolean _);
 
-static KMETHOD Object_opWITH(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opWITH(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Object_setData(ctx, sfp[0].o, sfp[1].m, sfp[2].ns, sfp[3].bvalue);
 	RETURN_(sfp[0].o);
@@ -259,7 +259,7 @@ static KMETHOD Object_opWITH(CTX ctx, knh_sfp_t *sfp _RIX)
 /* %empty */
 
 //## method void Object.%empty();
-static KMETHOD Object__empty(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object__empty(CTX ctx, ksfp_t *sfp _RIX)
 {
 	if(CTX_isDebug(ctx)) {
 		KNH_LOG("%%empty(%s)", O__(sfp[1].o));
@@ -270,7 +270,7 @@ static KMETHOD Object__empty(CTX ctx, knh_sfp_t *sfp _RIX)
 /* %s */
 
 //## method void Object.%s();
-static KMETHOD Object__s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object__s(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_s);
 }
@@ -279,7 +279,7 @@ static KMETHOD Object__s(CTX ctx, knh_sfp_t *sfp _RIX)
 /* %s */
 
 //## method void Object.%k();
-static KMETHOD Object__k(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object__k(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_line);
 }
@@ -288,7 +288,7 @@ static KMETHOD Object__k(CTX ctx, knh_sfp_t *sfp _RIX)
 /* %s */
 
 //## method void Object.%data();
-static KMETHOD Object__data(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object__data(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_data);
 }
@@ -297,7 +297,7 @@ static KMETHOD Object__data(CTX ctx, knh_sfp_t *sfp _RIX)
 /* %s */
 
 //## method void Object.%dump();
-static KMETHOD Object__dump(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object__dump(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_write_Object(ctx, sfp[0].w, sfp[1].o, FMT_dump);
 }
@@ -305,9 +305,9 @@ static KMETHOD Object__dump(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method Tdynamic Tdynamic.opLINK(String path, NameSpace _);
 
-static KMETHOD Tdynamic_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Tdynamic_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = knh_bytes_next(S_tobytes(sfp[1].s), ':');
+	kbytes_t t = knh_bytes_next(S_tobytes(sfp[1].s), ':');
 	const knh_ClassTBL_t *ct = knh_NameSpace_getLinkClassTBLNULL(ctx, sfp[2].ns, t, CLASS_Tdynamic);
 	if(ct != NULL) {
 		RETURN_(new_Type(ctx, ct->cid));
@@ -321,7 +321,7 @@ static KMETHOD Tdynamic_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Boolean.%data();
 //## method void Boolean.%dump();
 
-static KMETHOD Boolean__s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Boolean__s(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_write_bool(ctx, sfp[0].w, sfp[1].bvalue);
 }
@@ -330,18 +330,18 @@ static KMETHOD Boolean__s(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Int.%s();
 //## method void Int.%d();
 
-static KMETHOD Int__s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int__s(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_ifmt(ctx, sfp[0].w, K_INT_FMT, sfp[1].ivalue);
+	knh_write_ifmt(ctx, sfp[0].w, KINT_FMT, sfp[1].ivalue);
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Float.%s();
 //## method void Float.%f();
 
-static KMETHOD Float__s(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float__s(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_ffmt(ctx, sfp[0].w, K_FLOAT_FMT, sfp[1].fvalue);
+	knh_write_ffmt(ctx, sfp[0].w, KFLOAT_FMT, sfp[1].fvalue);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -349,13 +349,13 @@ static KMETHOD Float__s(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Int.%data();
 //## method void Int.%dump();
 
-static KMETHOD Int__k(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int__k(CTX ctx, ksfp_t *sfp _RIX)
 {
 #if defined(K_USING_SEMANTICS)
 	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[1].o));
 	knh_write_intx(ctx, sfp[0].w, u, sfp[1].ivalue);
 #else
-	knh_write_ifmt(ctx, sfp[0].w, K_INT_FMT, sfp[1].ivalue);
+	knh_write_ifmt(ctx, sfp[0].w, KINT_FMT, sfp[1].ivalue);
 #endif
 }
 
@@ -364,22 +364,22 @@ static KMETHOD Int__k(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Float.%data();
 //## method void Float.%dump();
 
-static KMETHOD Float__k(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float__k(CTX ctx, ksfp_t *sfp _RIX)
 {
 #if defined(K_USING_SEMANTICS)
 	knh_Semantics_t *u = knh_getSemantics(ctx, O_cid(sfp[1].o));
 	knh_write_floatx(ctx, sfp[0].w, u, sfp[1].fvalue);
 #else
-	knh_write_ffmt(ctx, sfp[0].w, K_FLOAT_FMT, sfp[1].fvalue);
+	knh_write_ffmt(ctx, sfp[0].w, KFLOAT_FMT, sfp[1].fvalue);
 #endif
 }
 
 /* ------------------------------------------------------------------------ */
 //## @Static @FastCall method void System.setRandomSeed(Int seed);
 
-static KMETHOD System_setRandomSeed(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_setRandomSeed(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_uint_t seed = Int_to(knh_uint_t, sfp[1]);
+	kuint_t seed = Int_to(kuint_t, sfp[1]);
 	knh_srand(seed);
 	RETURNvoid_();
 }
@@ -387,10 +387,10 @@ static KMETHOD System_setRandomSeed(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static @FastCall method Int Int.random(Int n);
 
-static KMETHOD Int_random(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_random(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_uint_t n = knh_rand();
-	knh_uint_t max = Int_to(knh_uint_t, sfp[1]);
+	kuint_t n = knh_rand();
+	kuint_t max = Int_to(kuint_t, sfp[1]);
 	if(max > 0) {
 		n = n % max;
 	}
@@ -400,18 +400,18 @@ static KMETHOD Int_random(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static @FastCall method Float! Float.random();
 
-static KMETHOD Float_random(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_random(CTX ctx, ksfp_t *sfp _RIX)
 {
-	RETURNf_(knh_float_rand());
+	RETURNf_(kfloat_rand());
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Int.%c();
 
-static KMETHOD Int__c(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int__c(CTX ctx, ksfp_t *sfp _RIX)
 {
 	char buf[16];
-	knh_uint_t c = (knh_uint_t) sfp[1].ivalue;
+	kuint_t c = (kuint_t) sfp[1].ivalue;
 	knh_format_utf8(buf, sizeof(buf), c);
 	knh_write(ctx, sfp[0].w, B(buf));
 }
@@ -419,33 +419,33 @@ static KMETHOD Int__c(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Int.%u();
 
-static KMETHOD Int__u(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int__u(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_ifmt(ctx, sfp[0].w, K_UINT_FMT, sfp[1].ivalue);
+	knh_write_ifmt(ctx, sfp[0].w, KUINT_FMT, sfp[1].ivalue);
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Int.%f();
 
-static KMETHOD Int__f(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int__f(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_ffmt(ctx, sfp[0].w, K_FLOAT_FMT, (knh_float_t)sfp[1].ivalue);
+	knh_write_ffmt(ctx, sfp[0].w, KFLOAT_FMT, (kfloat_t)sfp[1].ivalue);
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Int.%x();
 
-static KMETHOD Int__x(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int__x(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_ifmt(ctx, sfp[0].w, K_INT_XFMT, sfp[1].ivalue);
+	knh_write_ifmt(ctx, sfp[0].w, KINT_XFMT, sfp[1].ivalue);
 }
 
 /* ------------------------------------------------------------------------ */
 
-static void knh_write_bits(CTX ctx, knh_OutputStream_t *w, knh_uint64_t n, size_t bits)
+static void knh_write_bits(CTX ctx, knh_OutputStream_t *w, kuint64_t n, size_t bits)
 {
 	size_t i;
-	knh_uint64_t flag = 1ULL << (bits - 1);
+	kuint64_t flag = 1ULL << (bits - 1);
 	for(i = 0; i < bits; i++) {
 		if(i > 0 && i % 8 == 0) {
 			knh_putc(ctx, w, ' ');
@@ -462,31 +462,31 @@ static void knh_write_bits(CTX ctx, knh_OutputStream_t *w, knh_uint64_t n, size_
 /* ------------------------------------------------------------------------ */
 //## method void Int.%bits();
 
-static KMETHOD Int__bits(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int__bits(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_bits(ctx, sfp[0].w, sfp[1].ivalue, sizeof(knh_int_t) * 8);
+	knh_write_bits(ctx, sfp[0].w, sfp[1].ivalue, sizeof(kint_t) * 8);
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Float.%d();
 
-static KMETHOD Float__d(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float__d(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_ifmt(ctx, sfp[0].w, K_INT_FMT, (knh_int_t)sfp[1].fvalue);
+	knh_write_ifmt(ctx, sfp[0].w, KINT_FMT, (kint_t)sfp[1].fvalue);
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Float.%bits();
 
-static KMETHOD Float__bits(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float__bits(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_write_bits(ctx, sfp[0].w, sfp[1].ndata, sizeof(knh_float_t) * 8);
+	knh_write_bits(ctx, sfp[0].w, sfp[1].ndata, sizeof(kfloat_t) * 8);
 }
 
 /* ------------------------------------------------------------------------ */
 //## @Const mapper Boolean String;
 
-static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Boolean_String(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s = (Boolean_to(int, (sfp[0]))) ? new_T("true") : new_T("false");
 	RETURN_(s);
@@ -495,38 +495,38 @@ static TYPEMAP Boolean_String(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const mapper Int String;
 
-static TYPEMAP Int_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Int_String(CTX ctx, ksfp_t *sfp _RIX)
 {
 	char buf[80];
-	knh_snprintf(buf, sizeof(buf), K_INT_FMT, sfp[0].ivalue);
+	knh_snprintf(buf, sizeof(buf), KINT_FMT, sfp[0].ivalue);
 	RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS));
 }
 
 /* ------------------------------------------------------------------------ */
 //## @Const  mapper Float String;
 
-static TYPEMAP Float_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Float_String(CTX ctx, ksfp_t *sfp _RIX)
 {
 	char buf[256];
-	knh_snprintf(buf, sizeof(buf), K_FLOAT_FMT, sfp[0].fvalue);
+	knh_snprintf(buf, sizeof(buf), KFLOAT_FMT, sfp[0].fvalue);
 	RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS));
 }
 
 /* ------------------------------------------------------------------------ */
 //## @Const @Semantic mapper Float Int;
 
-static TYPEMAP Float_Int(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Float_Int(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_int_t v = (knh_int_t)sfp[0].fvalue;
+	kint_t v = (kint_t)sfp[0].fvalue;
 	RETURNi_(v);
 }
 
 /* ------------------------------------------------------------------------ */
 //## @Const @Semantic mapper Int Float;
 
-static TYPEMAP Int_Float(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Int_Float(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_float_t v = (knh_float_t)sfp[0].ivalue;
+	kfloat_t v = (kfloat_t)sfp[0].ivalue;
 	RETURNf_(v);
 }
 
@@ -534,25 +534,25 @@ static TYPEMAP Int_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static void Date_reset(knh_date_t *dt)
 {
-	dt->year  = (knh_short_t)0;
-	dt->month = (knh_short_t)0;
-	dt->day   = (knh_short_t)0;
-	dt->hour  = (knh_short_t)0;
-	dt->min   = (knh_short_t)0;
-	dt->sec   = (knh_short_t)0;
+	dt->year  = (kshort_t)0;
+	dt->month = (kshort_t)0;
+	dt->day   = (kshort_t)0;
+	dt->hour  = (kshort_t)0;
+	dt->min   = (kshort_t)0;
+	dt->sec   = (kshort_t)0;
 }
 
-static void Date_setsfp(knh_date_t *dt, knh_sfp_t *sfp)
+static void Date_setsfp(knh_date_t *dt, ksfp_t *sfp)
 {
-	dt->year  = (knh_short_t)sfp[1].ivalue;
-	dt->month = (knh_short_t)sfp[2].ivalue;
-	dt->day   = (knh_short_t)sfp[3].ivalue;
-	dt->hour  = (knh_short_t)(sfp[4].ivalue % 60);
-	dt->min   = (knh_short_t)(sfp[5].ivalue % 60);
-	dt->sec   = (knh_short_t)(sfp[6].ivalue % 60);
+	dt->year  = (kshort_t)sfp[1].ivalue;
+	dt->month = (kshort_t)sfp[2].ivalue;
+	dt->day   = (kshort_t)sfp[3].ivalue;
+	dt->hour  = (kshort_t)(sfp[4].ivalue % 60);
+	dt->min   = (kshort_t)(sfp[5].ivalue % 60);
+	dt->sec   = (kshort_t)(sfp[6].ivalue % 60);
 }
 
-static knh_bool_t bytes_parsedt(knh_bytes_t *t, knh_short_t *value, int delim, knh_short_t def)
+static kbool_t bytes_parsedt(kbytes_t *t, kshort_t *value, int delim, kshort_t def)
 {
 	if(t->len == 0) {
 		value[0] = def;
@@ -566,13 +566,13 @@ static knh_bool_t bytes_parsedt(knh_bytes_t *t, knh_short_t *value, int delim, k
 			p++;
 			t->text += (p);
 			t->len  -= (p);
-			value[0] = (knh_short_t)num;
+			value[0] = (kshort_t)num;
 			return 1;
 		}
 		if(ch == 0) {
 			t->text = "";
 			t->len  = 0;
-			value[0] = (knh_short_t)num;
+			value[0] = (kshort_t)num;
 			return 1;
 		}
 		num *= 10;
@@ -583,14 +583,14 @@ static knh_bool_t bytes_parsedt(knh_bytes_t *t, knh_short_t *value, int delim, k
 /* ------------------------------------------------------------------------ */
 //## method Date Date.new(Int year, Int month, Int day, Int hour, Int min, Int sec);
 
-static KMETHOD Date_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Date_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Date_t *dt = sfp[0].dt;
 	if(sfp[2].ivalue > 0) {
 		Date_setsfp(&dt->dt, sfp);
 		if(sfp[1].ivalue != 0) {
 			Date_reset(&dt->dt);
-			dt->dt.year = (knh_short_t)sfp[1].ivalue;
+			dt->dt.year = (kshort_t)sfp[1].ivalue;
 		}
 	}
 	RETURN_(dt);
@@ -599,9 +599,9 @@ static KMETHOD Date_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method Date Date.opLINK(String path, NameSpace _);
 
-static KMETHOD Date_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Date_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = knh_bytes_next(S_tobytes(sfp[1].s), ':');
+	kbytes_t t = knh_bytes_next(S_tobytes(sfp[1].s), ':');
 	knh_Date_t *dt = (knh_Date_t*)new_Object_init2(ctx, ClassTBL(CLASS_Date));
 	KNH_SETv(ctx, sfp[2].o, dt); // TO AVOIDGC
 	if(bytes_parsedt(&t, &dt->dt.year, '-', 0)   &&
@@ -619,7 +619,7 @@ static KMETHOD Date_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## @Const mapper Date String;
-static TYPEMAP Date_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Date_String(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Date_t *dt = (knh_Date_t*)sfp[0].o;
 	char buf[80];
@@ -632,7 +632,7 @@ static TYPEMAP Date_String(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method Path Path.opLINK(String path, NameSpace _);
 
-static KMETHOD Path_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Path_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const knh_PathDPI_t *dpi = knh_NameSpace_getStreamDPINULL(ctx, sfp[2].ns, S_tobytes(sfp[1].s));
 	knh_Path_t *pth = new_(Path);
@@ -645,7 +645,7 @@ static KMETHOD Path_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Semantic mapper String Path;
 
-static TYPEMAP String_Path(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Path(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(new_Path(ctx, sfp[K_TMRIDX].s));
 }
@@ -653,7 +653,7 @@ static TYPEMAP String_Path(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Semantic mapper Path String;
 
-static TYPEMAP Path_String(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Path_String(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = (knh_Path_t*)sfp[K_TMRIDX].o;
 	RETURN_(pth->urn);
@@ -662,7 +662,7 @@ static TYPEMAP Path_String(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## mapper Path Boolean;
 
-static TYPEMAP Path_Boolean(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Path_Boolean(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = (knh_Path_t*)sfp[K_TMRIDX].o;
 	RETURNb_(pth->dpi->existsSPI(ctx, pth));
@@ -671,7 +671,7 @@ static TYPEMAP Path_Boolean(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## mapper Path InputStream;
 
-static TYPEMAP Path_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Path_InputStream(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Path_t *path = (knh_Path_t*)sfp[K_TMRIDX].o;
 	knh_InputStream_t *in = new_InputStream(ctx, NULL, path);
@@ -682,12 +682,12 @@ static TYPEMAP Path_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.new(Int init);
 
-static KMETHOD Bytes_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t init = sfp[1].ivalue <= K_FASTMALLOC_SIZE ? K_FASTMALLOC_SIZE : k_goodsize(Int_to(size_t, sfp[1]));
 	DBG_ASSERT(ba->dim->capacity == 0);
-	ba->bu.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, init);
+	ba->bu.ubuf = (kchar_t*)KNH_MALLOC(ctx, init);
 	knh_bzero(ba->bu.ubuf, init);
 	ba->dim = new_dim(ctx, init, 1);
 	ba->bu.len = 0;
@@ -697,7 +697,7 @@ static KMETHOD Bytes_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.new:ARRAY(Int init);
 
-static KMETHOD Bytes_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_newARRAY(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t size = sfp[1].ivalue <=0 ? 0 : Int_to(size_t, sfp[1]);
 	Bytes_new(ctx, sfp, K_RIX);
@@ -707,7 +707,7 @@ static KMETHOD Bytes_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Final mapper Bytes Pointer;
 
-static TYPEMAP Bytes_Pointer(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Bytes_Pointer(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Pointer_t *p = new_(Pointer);
 	KNH_SETv(ctx, p->gcref, sfp[0].o);
@@ -720,11 +720,11 @@ static TYPEMAP Bytes_Pointer(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Pointer Pointer.opADD(int n);
 
-static KMETHOD Pointer_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Pointer_opADD(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Pointer_t *p = (knh_Pointer_t*)sfp[0].o;
 	knh_Pointer_t *np = new_(Pointer);
-	knh_intptr_t n = (knh_intptr_t)sfp[1].ivalue * p->wsize;
+	kintptr_t n = (kintptr_t)sfp[1].ivalue * p->wsize;
 	np->uptr = p->uptr + n;
 	np->wsize = p->wsize;
 	np->size = p->size - n;
@@ -735,7 +735,7 @@ static KMETHOD Pointer_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method String String.new(Bytes buf, StringDecoder c);
 
-static KMETHOD String_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s;
 	if(IS_NULL(sfp[2].o)) {
@@ -753,7 +753,7 @@ static KMETHOD String_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Regex Regex.new(String pattern, String option);
 
-static KMETHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Regex_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = (knh_Regex_t*)sfp[0].o;
 	const char *ptn = S_totext(sfp[1].s);
@@ -770,9 +770,9 @@ static KMETHOD Regex_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Private method dynamic String.opLINK(String path, NameSpace _, Class _);
 
-static KMETHOD String_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_class_t cid = (sfp[3].c)->cid;
+	kclass_t cid = (sfp[3].c)->cid;
 	DBG_ASSERT(IS_NameSpace(sfp[2].ns));
 	DBG_ASSERT(IS_String(sfp[1].s));
 	if(!bytes_startsWithLink(S_tobytes(sfp[1].s), S_tobytes(sfp[0].s))) {
@@ -790,7 +790,7 @@ static KMETHOD String_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method Boolean String.opEXISTS(NameSpace _);
 
-static KMETHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_opEXISTS(CTX ctx, ksfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_NameSpace(sfp[1].ns));
 	knh_Object_t* btf = knh_NameSpace_newObject(ctx, sfp[1].ns, sfp[0].s, CLASS_Boolean);
@@ -801,7 +801,7 @@ static KMETHOD String_opEXISTS(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.equals(String s);
 
-static KMETHOD String_equals(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_equals(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_((S_size(sfp[0].s) == S_size(sfp[1].s) &&
 		knh_bytes_strcmp(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)) == 0));
@@ -810,7 +810,7 @@ static KMETHOD String_equals(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.startsWith(String s);
 
-static KMETHOD String_startsWith(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_startsWith(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_strncmp(S_totext(sfp[0].s), S_totext(sfp[1].s), S_size(sfp[1].s)) == 0);
 	//RETURNb_(knh_bytes_startsWith_(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s))); older
@@ -819,7 +819,7 @@ static KMETHOD String_startsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.endsWith(String s);
 
-static KMETHOD String_endsWith(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_endsWith(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_bytes_endsWith_(S_tobytes(sfp[0].s), S_tobytes(sfp[1].s)));
 }
@@ -828,7 +828,7 @@ static KMETHOD String_endsWith(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Const method String String.concat(Object value, ...);
 //## @Const method String String.opADD(dynamic value);
 
-static KMETHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_concat(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int i, ac = knh_stack_argc(ctx, sfp);
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
@@ -846,10 +846,10 @@ static KMETHOD String_concat(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int String.indexOf(String s);
 
-static KMETHOD String_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_indexOf(CTX ctx, ksfp_t *sfp _RIX)
 {
 	long loc = -1;
-	knh_bytes_t base = S_tobytes(sfp[0].s);
+	kbytes_t base = S_tobytes(sfp[0].s);
 	char *p = strstr(base.text, S_totext(sfp[1].s));
 	if (p != NULL) {
 		loc = p - base.text;
@@ -864,16 +864,16 @@ static KMETHOD String_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int String.lastIndexOf(String s);
 
-static KMETHOD String_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_lastIndexOf(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t base = S_tobytes(sfp[0].s);
+	kbytes_t base = S_tobytes(sfp[0].s);
 	if (IS_NULL(sfp[1].o)) RETURNi_(-1);
-	knh_bytes_t delim = S_tobytes(sfp[1].s);
-	knh_index_t loc = base.len - delim.len;
+	kbytes_t delim = S_tobytes(sfp[1].s);
+	kindex_t loc = base.len - delim.len;
 	if(delim.len == 0) loc--;
 	for(; loc >= 0; loc--) {
 		if(base.utext[loc] == delim.utext[0]) {
-			knh_bytes_t sub = {{base.text + loc}, delim.len};
+			kbytes_t sub = {{base.text + loc}, delim.len};
 			if(knh_bytes_strcmp(sub, delim) == 0) break;
 		}
 	}
@@ -896,7 +896,7 @@ static void regmatch_init(knh_regmatch_t *pmatch, int nmatch)
 	}
 }
 
-static void LOG_regex(CTX ctx, knh_sfp_t *sfp, int res, knh_Regex_t *re, const char *str)
+static void LOG_regex(CTX ctx, ksfp_t *sfp, int res, knh_Regex_t *re, const char *str)
 {
 	char ebuf[512] = {0};
 	if (re->spi->regerror(res, re->reg, ebuf, 512) > 0) {
@@ -904,7 +904,7 @@ static void LOG_regex(CTX ctx, knh_sfp_t *sfp, int res, knh_Regex_t *re, const c
 	}
 }
 
-static void CWB_write_regexfmt(CTX ctx, CWB_t *cwb, knh_bytes_t *fmt, const char *base, knh_regmatch_t *r, size_t matched)
+static void CWB_write_regexfmt(CTX ctx, CWB_t *cwb, kbytes_t *fmt, const char *base, knh_regmatch_t *r, size_t matched)
 {
 	const char *ch = fmt->text;
 	const char *eof = ch + fmt->len; // end of fmt
@@ -953,7 +953,7 @@ static size_t knh_regex_matched(knh_regmatch_t* r, size_t maxmatch)
 
 static knh_Array_t *knh_String_toCharArray(CTX ctx, knh_String_t *bs, int istrim)
 {
-	knh_bytes_t base = S_tobytes(bs);
+	kbytes_t base = S_tobytes(bs);
 	size_t i, n = base.len;
 	knh_Array_t *a = new_Array(ctx, CLASS_String, n);
 	if(String_isASCII(bs)) {
@@ -966,7 +966,7 @@ static knh_Array_t *knh_String_toCharArray(CTX ctx, knh_String_t *bs, int istrim
 		n = knh_bytes_mlen(base);
 		for(i = 0; i < n; i++) {
 			if(istrim && isspace(base.utext[i])) continue;
-			knh_bytes_t sub = knh_bytes_mofflen(base, i, 1);
+			kbytes_t sub = knh_bytes_mofflen(base, i, 1);
 			knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, sub.text, sub.len, _ALWAYS|((sub.len == 1) ? _ASCII:_UTF8)));
 		}
 	}
@@ -976,10 +976,10 @@ static knh_Array_t *knh_String_toCharArray(CTX ctx, knh_String_t *bs, int istrim
 /* ------------------------------------------------------------------------ */
 //## @Const method Int String.search(Regex re);
 
-static KMETHOD String_search(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_search(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = sfp[1].re;
-	knh_index_t loc = -1;
+	kindex_t loc = -1;
 	if(!IS_NULL(re) && S_size(re->pattern) > 0) {
 		knh_regmatch_t pmatch[2]; // modified by @utrhira
 		const char *str = S_totext(sfp[0].s);  // necessary
@@ -987,7 +987,7 @@ static KMETHOD String_search(CTX ctx, knh_sfp_t *sfp _RIX)
 		if(res == 0) {
 			loc = pmatch[0].rm_so;
 			if (loc != -1 && !String_isASCII(sfp[0].s)) {
-				knh_bytes_t base = {{str}, loc};
+				kbytes_t base = {{str}, loc};
 				loc = knh_bytes_mlen(base);
 			}
 		}
@@ -1001,7 +1001,7 @@ static KMETHOD String_search(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String[] String.match(Regex re);
 
-static KMETHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_match(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s0 = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
@@ -1024,7 +1024,7 @@ static KMETHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 			for(p = pmatch, i = 0; i < nmatch; p++, i++) {
 				if (p->rm_so == -1) break;
 				//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, p->rm_so, p->rm_eo);
-				knh_bytes_t sub = {{str + (p->rm_so)}, ((p->rm_eo) - (p->rm_so))};
+				kbytes_t sub = {{str + (p->rm_so)}, ((p->rm_eo) - (p->rm_so))};
 				knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, sub.text, sub.len, _SUB(s0)));
 			}
 			if(isGlobalOption) {
@@ -1043,11 +1043,11 @@ static KMETHOD String_match(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.replace(Regex re, String s);
 
-static KMETHOD String_replace(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_replace(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s0 = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
-	knh_bytes_t fmt = S_tobytes(sfp[2].s);
+	kbytes_t fmt = S_tobytes(sfp[2].s);
 	knh_String_t *s = s0;
 	if(IS_NOTNULL(re) && S_size(re->pattern) > 0) {
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
@@ -1085,7 +1085,7 @@ static KMETHOD String_replace(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String[] String.split(Regex re);
 
-static KMETHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_split(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s0 = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
@@ -1102,7 +1102,7 @@ static KMETHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 				if (res == 0) {
 					size_t len = pmatch[0].rm_eo;
 					if (len > 0) {
-						knh_bytes_t sub = {{str},  pmatch[0].rm_so};
+						kbytes_t sub = {{str},  pmatch[0].rm_so};
 						knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, sub.text, sub.len, _SUB(s0)));
 						str += len;
 						continue;
@@ -1124,7 +1124,7 @@ static KMETHOD String_split(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Map String.extract(Regex re);
 
-static KMETHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_extract(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s = sfp[0].s;
 	knh_Regex_t *re = sfp[1].re;
@@ -1157,9 +1157,9 @@ static KMETHOD String_extract(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method Converter Converter.opLINK(String path, NameSpace _);
 
-static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Converter_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = S_tobytes(sfp[1].s);
+	kbytes_t t = S_tobytes(sfp[1].s);
 	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->conv != NULL) {
 		knh_Converter_t *c = new_(Converter);
@@ -1173,9 +1173,9 @@ static KMETHOD Converter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method StringEncoder StringEncoder.opLINK(String path, NameSpace _);
 
-static KMETHOD StringEncoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD StringEncoder_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = S_tobytes(sfp[1].s);
+	kbytes_t t = S_tobytes(sfp[1].s);
 	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->enc != NULL) {
 		knh_StringEncoder_t *c = new_(StringEncoder);
@@ -1189,9 +1189,9 @@ static KMETHOD StringEncoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method StringDecoder StringDecoder.opLINK(String path, NameSpace _);
 
-static KMETHOD StringDecoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD StringDecoder_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = S_tobytes(sfp[1].s);
+	kbytes_t t = S_tobytes(sfp[1].s);
 	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->dec != NULL) {
 		knh_StringDecoder_t *c = new_(StringDecoder);
@@ -1205,9 +1205,9 @@ static KMETHOD StringDecoder_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method StringConverter StringConverter.opLINK(String path, NameSpace _);
 
-static KMETHOD StringConverter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD StringConverter_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = S_tobytes(sfp[1].s);
+	kbytes_t t = S_tobytes(sfp[1].s);
 	const knh_ConverterDPI_t *dpi = knh_NameSpace_getConverterDPINULL(ctx, sfp[2].ns, t);
 	if(dpi != NULL && dpi->sconv != NULL) {
 		knh_StringConverter_t *c = new_(StringConverter);
@@ -1221,11 +1221,11 @@ static KMETHOD StringConverter_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Bytes Bytes.(Converter enc);
 
-static KMETHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_convert(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
-	knh_bytes_t t = BA_tobytes(sfp[0].ba);
+	kbytes_t t = BA_tobytes(sfp[0].ba);
 	c->dpi->conv(ctx, c->conv, t.text, t.len, cwb->ba);
 	knh_Bytes_t *ba = new_Bytes(ctx, NULL, CWB_size(cwb));
 	knh_Bytes_write(ctx, ba, CWB_tobytes(cwb));
@@ -1236,7 +1236,7 @@ static KMETHOD Bytes_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Bytes String.encode(StringEncoder enc);
 
-static KMETHOD String_encode(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_encode(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
@@ -1251,7 +1251,7 @@ static KMETHOD String_encode(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String Bytes.decode(StringDecoder c);
 
-static KMETHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_toString(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
@@ -1263,7 +1263,7 @@ static KMETHOD Bytes_toString(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Const method String String.(StringConverter c);
 //## @Const method String String.convert(StringConverter c);
 
-static KMETHOD String_convert(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_convert(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_Converter_t *c = sfp[1].conv;
@@ -1276,11 +1276,11 @@ static KMETHOD String_convert(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.trim();
 
-static KMETHOD String_trim(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_trim(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s = sfp[0].s;
-	knh_bytes_t t = S_tobytes(s);
-	knh_bytes_t t2 = bytes_trim(t);
+	kbytes_t t = S_tobytes(s);
+	kbytes_t t2 = bytes_trim(t);
 	if(t.len > t2.len) {
 		s = new_String2(ctx, CLASS_String, t2.text, t2.len, _SUB(s));
 	}
@@ -1290,7 +1290,7 @@ static KMETHOD String_trim(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Regex.opHAS(String s);
 
-static KMETHOD Regex_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Regex_opHAS(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = sfp[0].re;
 	knh_regmatch_t pmatch[2]; // modified by @utrhira
@@ -1302,9 +1302,9 @@ static KMETHOD Regex_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const mapper String Int;
 
-static TYPEMAP String_Int(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Int(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_int_t v = 0;
+	kint_t v = 0;
 	if(!knh_bytes_parseint(S_tobytes(sfp[K_TMRIDX].s), &v)) {
 		KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Int));
 	}
@@ -1314,9 +1314,9 @@ static TYPEMAP String_Int(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const mapper String Float;
 
-static TYPEMAP String_Float(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Float(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_float_t v = 0.0;
+	kfloat_t v = 0.0;
 	if(!knh_bytes_parsefloat(S_tobytes(sfp[K_TMRIDX].s), &v)) {
 		KNH_SETv(ctx, sfp[K_RIX].o, KNH_NULVAL(CLASS_Float));
 	}
@@ -1326,7 +1326,7 @@ static TYPEMAP String_Float(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const mapper String Bytes;
 
-static TYPEMAP String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Bytes(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Bytes_t *b = new_Bytes(ctx, "UTF8", S_size(sfp[K_TMRIDX].s) + 1);
 	knh_Bytes_write(ctx, b, S_tobytes(sfp[K_TMRIDX].s));
@@ -1335,14 +1335,14 @@ static TYPEMAP String_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp _RIX)
+static ITRNEXT String_nextChar(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = ITR(sfp);
 	knh_String_t *s = (knh_String_t*)DP(itr)->source;
-	knh_bytes_t base = S_tobytes(s);
+	kbytes_t base = S_tobytes(s);
 	size_t pos = (size_t)DP(itr)->m.index;
 	if(pos < knh_bytes_mlen(base)) {
-		knh_bytes_t sub = knh_bytes_mofflen(base, pos, 1);
+		kbytes_t sub = knh_bytes_mofflen(base, pos, 1);
 		s = new_String2(ctx, CLASS_String, sub.text, sub.len, _SUB(s));
 		DP(itr)->m.index = pos + 1;
 		ITRNEXT_(s);
@@ -1353,7 +1353,7 @@ static ITRNEXT String_nextChar(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method String.. String.opITR();
 
-static TYPEMAP String_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP String_Iterator(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, String_nextChar));
 }
@@ -1361,7 +1361,7 @@ static TYPEMAP String_Iterator(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## mapper Bytes InputStream;
 
-static TYPEMAP Bytes_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Bytes_InputStream(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(new_BytesInputStream(ctx, sfp[0].ba->bu.text, sfp[0].ba->bu.len));
 }
@@ -1369,7 +1369,7 @@ static TYPEMAP Bytes_InputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Semantic mapper String Regex!;
 
-static KMETHOD String_Regex(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_Regex(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Regex_t *re = new_(Regex);
 	const char *ptn = S_totext(sfp[0].s);
@@ -1383,15 +1383,15 @@ static KMETHOD String_Regex(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method This Tuple.new:TUPLE(dynamic value, ...);
 
-static KMETHOD Tuple_newTUPLE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Tuple_newTUPLE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Tuple_t *tpl = (knh_Tuple_t*)sfp[0].o;
-	knh_sfp_t *v = sfp + 1;
+	ksfp_t *v = sfp + 1;
 	size_t i, ti = 0, ac = knh_stack_argc(ctx, v);
-	knh_fields_t *tf = O_cTBL(tpl)->fields;
+	kfieldinfo_t *tf = O_cTBL(tpl)->fields;
 	for(i = 0; i < ac; i++) {
 		if(tf[ti].israw == 1) {
-			knh_ndata_t *n = (knh_ndata_t*)(tpl->fields + ti);
+			kunbox_t *n = (kunbox_t*)(tpl->fields + ti);
 			n[0] = v[i].ndata;
 			DBG_P("i=%d, ti=%d, n=%d", i, ti, n[0]);
 			ti++;
@@ -1408,7 +1408,7 @@ static KMETHOD Tuple_newTUPLE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method This Range.new:LIST(T1 start, T1 end);
 
-static KMETHOD Range_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Range_newLIST(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Range_t *rng = (knh_Range_t*)sfp[0].o;
 	if(Range_isNDATA(rng)) {
@@ -1427,7 +1427,7 @@ static KMETHOD Range_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //## method This Array.new(Int initCapacity);
 
-static KMETHOD Array_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_grow(ctx, sfp[0].a, Int_to(size_t, sfp[1]), 0);
 	DBG_ASSERT((sfp[0].a)->size == 0);
@@ -1437,10 +1437,10 @@ static KMETHOD Array_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Array.new:ARRAY(Int size, ...);
 
-static KMETHOD Array_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_newARRAY(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	knh_int_t init, x = 0, y = 1, z = 1, w = 1;
+	kint_t init, x = 0, y = 1, z = 1, w = 1;
 	size_t dim = knh_stack_argc(ctx, sfp+1);
 	switch(dim) {
 		case 4: w = sfp[4].ivalue;
@@ -1454,7 +1454,7 @@ static KMETHOD Array_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 		knh_Array_grow(ctx, a, (size_t)init, 0);
 		a->size = (size_t)init;
 		if(!Array_isNDATA(a)) {
-			knh_class_t p1 = O_p1(a);
+			kclass_t p1 = O_p1(a);
 			Object *v = knh_getClassDefaultValue(ctx, p1);
 			size_t i;
 			for(i = 0; i < a->size; i++) {
@@ -1477,7 +1477,7 @@ static KMETHOD Array_newARRAY(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Array.new:LIST(T1 value, ...);
 
-static KMETHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_newLIST(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	a->api->multiadd(ctx, a, sfp+1);
@@ -1486,11 +1486,11 @@ static KMETHOD Array_newLIST(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static ITRNEXT Iterator_next(CTX ctx, knh_sfp_t *sfp _RIX)
+static ITRNEXT Iterator_next(CTX ctx, ksfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	DBG_ASSERT(sfp < lsfp);
 	long rtnidx_ = 0, thisidx = rtnidx_ + K_CALLDELTA;
 	KNH_SETv(ctx, lsfp[thisidx].o, DP(itr)->source);
@@ -1506,7 +1506,7 @@ static ITRNEXT Iterator_next(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Iterator.new(Object value, Method mtd);
 
-static KMETHOD Iterator_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Iterator_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Iterator_t *it = sfp[0].it;
 	KNH_SETv(ctx, DP(it)->source, sfp[1].o);
@@ -1519,21 +1519,21 @@ static KMETHOD Iterator_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Immutable method T1 Array.get(Int n);
 
-static KMETHOD Array_get(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_get(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	size_t n2 = a->api->index(ctx, sfp, Int_to(knh_int_t, ctx->esp[-1]), a->size);
+	size_t n2 = a->api->index(ctx, sfp, Int_to(kint_t, ctx->esp[-1]), a->size);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
 
 /* ------------------------------------------------------------------------ */
 //## @Immutable @Hidden method T1 Array.get2(Int x, Int y);
 
-static KMETHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_get2(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
-	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
+	kint_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
@@ -1541,11 +1541,11 @@ static KMETHOD Array_get2(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Immutable @Hidden method T1 Array.get3(Int x, Int y, Int z);
 
-static KMETHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_get3(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
-	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
+	kint_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
@@ -1553,11 +1553,11 @@ static KMETHOD Array_get3(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Immutable @Hidden method T1 Array.get4(Int x, Int y, Int z, Int w);
 
-static KMETHOD Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_get4(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = a->dim;
-	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy) + (sfp[4].ivalue * dim->xyz);
+	kint_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy) + (sfp[4].ivalue * dim->xyz);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
 }
@@ -1565,10 +1565,10 @@ static KMETHOD Array_get4(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method T1 Array.set(Int n, T1 v);
 
-static KMETHOD Array_set(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_set(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	knh_int_t n = sfp[1].ivalue;
+	kint_t n = sfp[1].ivalue;
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, sfp[0].a, n2, sfp+2);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
@@ -1577,11 +1577,11 @@ static KMETHOD Array_set(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method T1 Array.set2(Int x, Int y, T1 v);
 
-static KMETHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_set2(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
-	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
+	kint_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+3);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
@@ -1590,11 +1590,11 @@ static KMETHOD Array_set2(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method T1 Array.set3(Int x, Int y, Int z, T1 v);
 
-static KMETHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_set3(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
-	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
+	kint_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+4);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
@@ -1603,11 +1603,11 @@ static KMETHOD Array_set3(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method T1 Array.set4(Int x, Int y, Int z, Int, w, T1 v);
 
-static KMETHOD Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_set4(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	const knh_dim_t *dim = (sfp[0].a)->dim;
-	knh_int_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy) + (sfp[4].ivalue * dim->xyz);
+	kint_t n = sfp[1].ivalue + (sfp[2].ivalue * dim->x) + (sfp[3].ivalue * dim->xy) + (sfp[4].ivalue * dim->xyz);
 	size_t n2 = a->api->index(ctx, sfp, n, a->size);
 	a->api->set(ctx, a, n2, sfp+5);
 	a->api->fastget(ctx, sfp, n2, K_RIX);
@@ -1616,7 +1616,7 @@ static KMETHOD Array_set4(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method T1 Array.setAll(T1 v);
 
-static KMETHOD Array_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_setAll(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t i;
 	for(i = 0; i < (sfp[0].a)->size; i++) {
@@ -1635,7 +1635,7 @@ static KMETHOD Array_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method void Array.add(T1 value, ...);
 //## method void Array.send(T1 value, ...);
 
-static KMETHOD Array_add(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_add(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	a->api->multiadd(ctx, a, sfp+1);
@@ -1645,17 +1645,17 @@ static KMETHOD Array_add(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Array.insert(Int n, T1 value);
 
-static KMETHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_insert(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	size_t n = a->api->index(ctx, sfp, Int_to(knh_int_t, sfp[1]), a->size);
+	size_t n = a->api->index(ctx, sfp, Int_to(kint_t, sfp[1]), a->size);
 	const knh_dim_t *dim = a->dim;
 //	BEGIN_LOCAL(ctx, lsfp, 1);
 	if(a->size == dim->capacity) {
 		knh_Array_grow(ctx, a, k_grow(dim->capacity), a->size + 1);
 	}
 	if(Array_isNDATA(a)) {
-		knh_memmove(a->nlist+(n+1), a->nlist+n, sizeof(knh_ndata_t) * (a->size - n));
+		knh_memmove(a->nlist+(n+1), a->nlist+n, sizeof(kunbox_t) * (a->size - n));
 	}else {
 		knh_memmove(a->list+(n+1), a->list+n, sizeof(knh_Object_t*) * (a->size - n));
 		KNH_INITv(a->list[n], KNH_NULL); // for RCGC
@@ -1669,7 +1669,7 @@ static KMETHOD Array_insert(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @FastCall method void Array.clear();
 
-static KMETHOD Array_clear(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_clear(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_clear(ctx, sfp[0].a, 0);
 	RETURNvoid_();
@@ -1678,10 +1678,10 @@ static KMETHOD Array_clear(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Array.remove(Int n);
 
-static KMETHOD Array_remove(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_remove(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *o = (knh_Array_t*)sfp[0].o;
-	size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), o->size);
+	size_t n = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), o->size);
 	knh_Array_remove_(ctx, o, n);
 	RETURNvoid_();
 }
@@ -1689,14 +1689,14 @@ static KMETHOD Array_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @FastCall method T1! Array.pop();
 
-static KMETHOD Array_pop(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_pop(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	if (a->size > 0) {
 		(a)->api->fastget(ctx, sfp, a->size - 1, K_RIX);
 		knh_Array_clear(ctx, a, a->size - 1);
 	} else {
-		knh_class_t p1 = O_p1(a);
+		kclass_t p1 = O_p1(a);
 		knh_Object_t *o = KNH_NULVAL(p1);
 		if (IS_Tunbox(p1)) {
 			RETURNd_(O_data(o));
@@ -1708,13 +1708,13 @@ static KMETHOD Array_pop(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int Array.indexOf(T1 value);
 
-static KMETHOD Array_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_indexOf(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	knh_int_t res = -1;
+	kint_t res = -1;
 	size_t i;
 	if(Array_isNDATA(a)) {
-		knh_ndata_t ndata = sfp[1].ndata;
+		kunbox_t ndata = sfp[1].ndata;
 		for(i = 0; i < a->size; i++) {
 			if(a->nlist[i] == ndata) {
 				res = i; break;
@@ -1733,12 +1733,12 @@ static KMETHOD Array_indexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int Array.lastIndexOf(T1 value);
 
-static KMETHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_lastIndexOf(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
 	long i;
 	if(Array_isNDATA(a)) {
-		knh_ndata_t ndata = sfp[1].ndata;
+		kunbox_t ndata = sfp[1].ndata;
 		for(i = a->size - 1; i >= 0; i--) {
 			if(a->nlist[i] == ndata) {
 				break;
@@ -1759,16 +1759,16 @@ static KMETHOD Array_lastIndexOf(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static int qsort_icmp(const void* ap, const void* bp)
 {
-	knh_int_t a = *((knh_int_t*)ap);
-	knh_int_t b = *((knh_int_t*)bp);
+	kint_t a = *((kint_t*)ap);
+	kint_t b = *((kint_t*)bp);
 	if(a < b) return -1;
 	return (a > b);
 }
 
 static int qsort_fcmp(const void* ap, const void* bp)
 {
-	knh_float_t a = *((knh_float_t*)ap);
-	knh_float_t b = *((knh_float_t*)bp);
+	kfloat_t a = *((kfloat_t*)ap);
+	kfloat_t b = *((kfloat_t*)bp);
 	if(a < b) return -1;
 	return (a > b);
 }
@@ -1777,8 +1777,8 @@ static int qsort_ocmp(const void *ap, const void* bp)
 {
 	knh_RawPtr_t* o1 = *((knh_RawPtr_t**)ap);
 	knh_RawPtr_t* o2 = *((knh_RawPtr_t**)bp);
-	knh_class_t bcid1 = O_bcid(o1);
-	knh_class_t bcid2 = O_bcid(o2);
+	kclass_t bcid1 = O_bcid(o1);
+	kclass_t bcid2 = O_bcid(o2);
 	int res;
 	if(bcid1 == bcid2) {
 		res = O_cTBL(o1)->cdef->compareTo(o1, o2);
@@ -1792,8 +1792,8 @@ static int qsort_ocmp(const void *ap, const void* bp)
 // added by @shinpei_NKT
 static int knh_compare_i(knh_Func_t *fo, const void *v1, const void *v2)
 {
-	knh_int_t a = *((knh_int_t*)v1);
-	knh_int_t b = *((knh_int_t*)v2);
+	kint_t a = *((kint_t*)v1);
+	kint_t b = *((kint_t*)v2);
 	CLOSURE_start(2);
 	CLOSURE_putArg(1, Int, a);
 	CLOSURE_putArg(2, Int, b);
@@ -1809,8 +1809,8 @@ static int dummyCallbackCompareInt(const void *v1, const void *v2)
 
 static int knh_compare_f(knh_Func_t *fo, const void *v1, const void *v2)
 {
-	knh_float_t a = *((knh_float_t*)v1);
-	knh_float_t b = *((knh_float_t*)v2);
+	kfloat_t a = *((kfloat_t*)v1);
+	kfloat_t b = *((kfloat_t*)v2);
 	CLOSURE_start(2);
 	CLOSURE_putArg(1, Float, a);
 	CLOSURE_putArg(2, Float, b);
@@ -1851,13 +1851,13 @@ struct asortf {
 	knh_Map_t *map; /* TODO Map<Func, fcmp2(generated)> */
 };
 struct asortf asorts[] = {
-	{sizeof(knh_boolean_t), qsort_icmp, dummyCallbackCompareInt   , knh_compare_i, NULL},
-	{sizeof(knh_int_t)    , qsort_icmp, dummyCallbackCompareInt   , knh_compare_i, NULL},
-	{sizeof(knh_float_t)  , qsort_fcmp, dummyCallbackCompareFloat , knh_compare_f, NULL},
+	{sizeof(kbool_t), qsort_icmp, dummyCallbackCompareInt   , knh_compare_i, NULL},
+	{sizeof(kint_t)    , qsort_icmp, dummyCallbackCompareInt   , knh_compare_i, NULL},
+	{sizeof(kfloat_t)  , qsort_fcmp, dummyCallbackCompareFloat , knh_compare_f, NULL},
 	{sizeof(knh_Object_t*), qsort_ocmp, dummyCallbackCompareObject, knh_compare_o, NULL},
 };
 
-static struct asortf *getasortf(CTX ctx, knh_class_t cid)
+static struct asortf *getasortf(CTX ctx, kclass_t cid)
 {
 	switch (cid) {
 		case CLASS_Boolean: return &asorts[0];
@@ -1870,7 +1870,7 @@ static struct asortf *getasortf(CTX ctx, knh_class_t cid)
 /* ------------------------------------------------------------------------ */
 //## method void Array.sort(CmprT1 cmr);
 
-static KMETHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_sort(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a  = sfp[0].a;
 	knh_Func_t  *fo = sfp[1].fo;
@@ -1889,14 +1889,14 @@ static KMETHOD Array_sort(CTX ctx, knh_sfp_t *sfp _RIX)
 
 static inline void NArray_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)
 {
-	knh_ndata_t temp = a->nlist[n];
+	kunbox_t temp = a->nlist[n];
 	a->nlist[n] = a->nlist[m];
 	a->nlist[m] = temp;
 }
 
 static inline void OArray_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)
 {
-	knh_sfp_t *esp1 = ctx->esp + 1;
+	ksfp_t *esp1 = ctx->esp + 1;
 	esp1[0].o = a->list[n];
 	a->list[n] = a->list[m];
 	a->list[m] = esp1[0].o;
@@ -1905,11 +1905,11 @@ static inline void OArray_swap(CTX ctx, knh_Array_t *a, size_t n, size_t m)
 /* ------------------------------------------------------------------------ */
 //## method void Array.swap(Int m, Int n);
 
-static KMETHOD Array_swap(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_swap(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = sfp[0].a;
-	size_t m = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), a->size);
-	size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), a->size);
+	size_t m = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), a->size);
+	size_t n = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), a->size);
 	if(Array_isNDATA(a)) {
 		NArray_swap(ctx, a, n, m);
 	}
@@ -1922,7 +1922,7 @@ static KMETHOD Array_swap(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Array.shuffle();
 
-static KMETHOD Array_shuffle(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_shuffle(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t i;
 	knh_Array_t *a = sfp[0].a;
@@ -1946,7 +1946,7 @@ static KMETHOD Array_shuffle(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Array.reverse();
 
-static KMETHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_reverse(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t i;
 	knh_Array_t *a = sfp[0].a;
@@ -1967,11 +1967,11 @@ static KMETHOD Array_reverse(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static ITRNEXT ITR_where(CTX ctx, knh_sfp_t *sfp _RIX)
+static ITRNEXT ITR_where(CTX ctx, ksfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	DBG_ASSERT(sfp < lsfp);
 	long rtnidx_ = 0, thisidx = rtnidx_ + K_CALLDELTA;
 	knh_Iterator_t *itrIN = (knh_Iterator_t*)DP(itr)->source;
@@ -1990,11 +1990,11 @@ static ITRNEXT ITR_where(CTX ctx, knh_sfp_t *sfp _RIX)
 	ITREND_();
 }
 
-static ITRNEXT ITR_each(CTX ctx, knh_sfp_t *sfp _RIX)
+static ITRNEXT ITR_each(CTX ctx, ksfp_t *sfp _RIX)
 {
 	DBG_ASSERT(IS_bIterator(sfp[0].it));
 	knh_Iterator_t *itr = ITR(sfp);
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	DBG_ASSERT(sfp < lsfp);
 	long rtnidx_ = 0, thisidx = rtnidx_ + K_CALLDELTA;
 	knh_Iterator_t *itrIN = (knh_Iterator_t*)DP(itr)->source;
@@ -2012,7 +2012,7 @@ static ITRNEXT ITR_each(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Iterator.opWHERE(FuncWhere f);
 
-static KMETHOD Iterator_opWHERE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Iterator_opWHERE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Iterator_t *it = (knh_Iterator_t*)new_Object_init2(ctx, O_cTBL(sfp[0].it));
 	KNH_SETv(ctx, DP(it)->source, sfp[1].o);
@@ -2024,7 +2024,7 @@ static KMETHOD Iterator_opWHERE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Iterator.opEACH(FuncEach f);
 
-static KMETHOD Iterator_opEACH(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Iterator_opEACH(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Iterator_t *it = (knh_Iterator_t*)new_Object_init2(ctx, O_cTBL(sfp[0].it));
 	KNH_SETv(ctx, DP(it)->source, sfp[1].o);
@@ -2037,7 +2037,7 @@ static KMETHOD Iterator_opEACH(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method This Map.new(Int init);
 
-static KMETHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = (knh_Map_t *)sfp[0].o;
 	size_t init = sfp[1].ivalue <= 0 ? 0: Int_to(size_t, sfp[1]);
@@ -2049,10 +2049,10 @@ static KMETHOD Map_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method This Map.new:MAP(T1 value, ...);
 
-static KMETHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_newMAP(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
-	knh_sfp_t *v = sfp + 1;
+	ksfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
 	m->spi = knh_getDictMapDSPI(ctx, O_p1(m), O_p2(m));
 	KNH_ASSERT(m->spi != NULL); // if NULL, it is unsupported
@@ -2066,7 +2066,7 @@ static KMETHOD Map_newMAP(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static @Throwable @Smart method Map Map.open(String path, Map _, NameSpace _, Class _);
 
-static KMETHOD Map_open(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_open(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const knh_ClassTBL_t *ct = (sfp[4].c)->cTBL;
 	const knh_MapDPI_t *spi = knh_NameSpace_getMapDPINULL(ctx, sfp[3].ns, S_tobytes(sfp[1].s));
@@ -2101,7 +2101,7 @@ static KMETHOD Map_open(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Exception! Exception.new(String event, String msg);
 
-static KMETHOD Exception_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Exception_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	knh_write(ctx, cwb->w, S_tobytes(sfp[1].s));
@@ -2119,7 +2119,7 @@ static KMETHOD Exception_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method This Func.new(dynamic base, Method method);
 
-static KMETHOD Func_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Func_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Func_t   *fo = sfp[0].fo;
 	knh_Method_t *mtd = sfp[2].mtd;
@@ -2134,7 +2134,7 @@ static KMETHOD Func_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Assurance Assurance.new(String msg);
 
-static KMETHOD Assurance_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Assurance_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Assurance_t *Assurance = sfp[0].as;
 	KNH_SETv(ctx, Assurance->msg, sfp[1].s);
@@ -2147,7 +2147,7 @@ static KMETHOD Assurance_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Object.opADDR();
 
-static KMETHOD Object_opADDR(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opADDR(CTX ctx, ksfp_t *sfp _RIX)
 {
 	void *p = NULL;
 	if(IS_Boolean(sfp[0].o)) {
@@ -2156,15 +2156,15 @@ static KMETHOD Object_opADDR(CTX ctx, knh_sfp_t *sfp _RIX)
 	else {
 		p = (void*)sfp[0].o;
 	}
-	RETURNi_((knh_uintptr_t)p);
+	RETURNi_((kuintptr_t)p);
 }
 
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opOF(Class c);
 
-static KMETHOD Object_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opOF(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_type_t reqt = Class_tocid(sfp[1]);
+	ktype_t reqt = Class_tocid(sfp[1]);
 	DBG_P("cid=%s", O__(sfp[0].o));
 	RETURNb_(ClassTBL_isa(O_cTBL(sfp[0].o), reqt));
 }
@@ -2172,7 +2172,7 @@ static KMETHOD Object_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opEQ(dynamic value);
 
-static KMETHOD Object_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opEQ(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) == 0);
 }
@@ -2180,7 +2180,7 @@ static KMETHOD Object_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opNOTEQ(dynamic value);
 
-static KMETHOD Object_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opNOTEQ(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) != 0);
 }
@@ -2188,7 +2188,7 @@ static KMETHOD Object_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opLT(dynamic value);
 
-static KMETHOD Object_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opLT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) < 0);
 }
@@ -2196,7 +2196,7 @@ static KMETHOD Object_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opLTE(dynamic value);
 
-static KMETHOD Object_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opLTE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) <= 0);
 }
@@ -2204,7 +2204,7 @@ static KMETHOD Object_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opGT(dynamic value);
 
-static KMETHOD Object_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opGT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) > 0);
 }
@@ -2212,7 +2212,7 @@ static KMETHOD Object_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opGTE(dynamic value);
 
-static KMETHOD Object_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opGTE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(knh_Object_compareTo(sfp[0].o, sfp[1].o) >= 0);
 }
@@ -2220,7 +2220,7 @@ static KMETHOD Object_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opEQ(Int value);
 
-static KMETHOD Int_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opEQ(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue == sfp[1].ivalue);
 }
@@ -2228,7 +2228,7 @@ static KMETHOD Int_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const  method Boolean Int.opNOTEQ(Int value);
 
-static KMETHOD Int_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opNOTEQ(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue != sfp[1].ivalue);
 }
@@ -2236,7 +2236,7 @@ static KMETHOD Int_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opLT(Int value);
 
-static KMETHOD Int_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opLT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue < sfp[1].ivalue);
 }
@@ -2244,7 +2244,7 @@ static KMETHOD Int_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opLTE(Int value);
 
-static KMETHOD Int_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opLTE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue <= sfp[1].ivalue);
 }
@@ -2252,7 +2252,7 @@ static KMETHOD Int_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opGT(Int value);
 
-static KMETHOD Int_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opGT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue > sfp[1].ivalue);
 }
@@ -2260,7 +2260,7 @@ static KMETHOD Int_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Int.opGTE(Int value);
 
-static KMETHOD Int_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opGTE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].ivalue >= sfp[1].ivalue);
 }
@@ -2268,7 +2268,7 @@ static KMETHOD Int_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opEQ(Float value);
 
-static KMETHOD Float_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opEQ(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue == sfp[1].fvalue);
 }
@@ -2276,7 +2276,7 @@ static KMETHOD Float_opEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opNOTEQ(Float value);
 
-static KMETHOD Float_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opNOTEQ(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue != sfp[1].fvalue);
 }
@@ -2284,7 +2284,7 @@ static KMETHOD Float_opNOTEQ(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opLT(Float! value);
 
-static KMETHOD Float_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opLT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue < sfp[1].fvalue);
 }
@@ -2292,7 +2292,7 @@ static KMETHOD Float_opLT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opLTE(Float! value);
 
-static KMETHOD Float_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opLTE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue <= sfp[1].fvalue);
 }
@@ -2300,7 +2300,7 @@ static KMETHOD Float_opLTE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opGT(Float! value);
 
-static KMETHOD Float_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opGT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue > sfp[1].fvalue);
 }
@@ -2308,7 +2308,7 @@ static KMETHOD Float_opGT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Float.opGTE(Float! value);
 
-static KMETHOD Float_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opGTE(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(sfp[0].fvalue >= sfp[1].fvalue);
 }
@@ -2319,7 +2319,7 @@ static KMETHOD Float_opGTE(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean String.opHAS(String s);
 
-static KMETHOD String_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_opHAS(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(strstr(S_totext(sfp[0].s), S_totext(sfp[1].s)) != NULL);
 }
@@ -2327,15 +2327,15 @@ static KMETHOD String_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## method Boolean Range.opHAS(dynamic v);
 //
-//static KMETHOD Range_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Range_opHAS(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	int res = 0/*NotFound*/;
 //	knh_Range_t *o = sfp[0].range;
 //	if(IS_Int((o)->start) && IS_Float(sfp[1].o)) {
-//		KNH_SETv(ctx, sfp[1].o, new_Int_(ctx, CLASS_Int, (knh_int_t)sfp[1].fvalue));
+//		KNH_SETv(ctx, sfp[1].o, new_Int_(ctx, CLASS_Int, (kint_t)sfp[1].fvalue));
 //	}
 //	else if(IS_Float((o)->start) && IS_Int(sfp[1].o)) {
-//		KNH_SETv(ctx, sfp[1].o, new_Float_(ctx, CLASS_Float, (knh_float_t)sfp[1].ivalue));
+//		KNH_SETv(ctx, sfp[1].o, new_Float_(ctx, CLASS_Float, (kfloat_t)sfp[1].ivalue));
 //	}
 //	else {
 //		knh_stack_boxing(ctx, sfp + 1);
@@ -2358,12 +2358,12 @@ static KMETHOD String_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Boolean Array.opHAS(dynamic v);
 
-static KMETHOD Array_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_opHAS(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = (knh_Array_t*)sfp[0].o;
 	size_t i, res = 0/*NotFound*/;
 	if(Array_isNDATA(a)) {
-		knh_ndata_t d = O_data(sfp[1].o);
+		kunbox_t d = O_data(sfp[1].o);
 		for(i = 0; i < knh_Array_size(a); i++) {
 			if(d == a->nlist[i]) { res = 1; break; }
 		}
@@ -2381,7 +2381,7 @@ static KMETHOD Array_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## method Boolean Tuple.opHAS(dynamic v);
 
-//static KMETHOD Tuple_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD Tuple_opHAS(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	if(Tuple_isTriple(sfp[0].tuple)) {
 //		knh_Tuple_t *t = sfp[0].tuple;
@@ -2403,10 +2403,10 @@ static KMETHOD Array_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Object.opIS(dynamic v);
 
-static KMETHOD Object_opIS(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Object_opIS(CTX ctx, ksfp_t *sfp _RIX)
 {
-//	knh_class_t scid = O_cid(sfp[0].o);
-//	knh_class_t tcid = O_cid(sfp[1].o);
+//	kclass_t scid = O_cid(sfp[0].o);
+//	kclass_t tcid = O_cid(sfp[1].o);
 //	DBG_P("Semantic Matching %s === %s", CLASS__(scid), CLASS__(tcid));
 //	if(scid == tcid) {
 //		Object_opEQ(ctx, sfp. rix);
@@ -2435,7 +2435,7 @@ static KMETHOD Object_opIS(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Boolean Map.opHAS(T1 key);
 
-static KMETHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_opHAS(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	RETURNb_(m->spi->get(ctx, m->mapptr, sfp + 1, sfp + K_RIX));
@@ -2444,11 +2444,11 @@ static KMETHOD Map_opHAS(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method T2 Map.get(T1 key);
 
-static KMETHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_get(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	if(!m->spi->get(ctx, m->mapptr, sfp + 1, sfp + K_RIX)) {
-		knh_class_t cid = O_cTBL(m)->p2;
+		kclass_t cid = O_cTBL(m)->p2;
 		sfp[K_RIX].ndata = 0;
 		RETURN_(KNH_NULVAL(cid));
 	}
@@ -2457,7 +2457,7 @@ static KMETHOD Map_get(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Map.set(T1 key, T2 value);
 
-static KMETHOD Map_set(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_set(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	m->spi->set(ctx, m->mapptr, sfp + 1);
@@ -2467,7 +2467,7 @@ static KMETHOD Map_set(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void Map.remove(T1 key);
 
-static KMETHOD Map_remove(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_remove(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	m->spi->remove(ctx, m->mapptr, sfp + 1);
@@ -2477,13 +2477,13 @@ static KMETHOD Map_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method T1[] Map.keys();
 
-static KMETHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Map_keys(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	size_t size = m->spi->size(ctx, m->mapptr);
-	knh_class_t p1 = O_cTBL(m)->p1;
+	kclass_t p1 = O_cTBL(m)->p1;
 	knh_Array_t *a = new_Array(ctx, p1, size);
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	knh_nitr_t mitrbuf = K_NITR_INIT, *mitr = &mitrbuf;
 	klr_setesp(ctx, lsfp+1);
 	while(m->spi->next(ctx, m->mapptr, mitr, lsfp)) {
@@ -2501,7 +2501,7 @@ static KMETHOD Map_keys(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //## @Const method Int Int.opADD(Int v);
 
-static KMETHOD Int_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opADD(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue + sfp[1].ivalue);
 }
@@ -2509,7 +2509,7 @@ static KMETHOD Int_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opNEG();
 
-static KMETHOD Int_opNEG(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opNEG(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(-(sfp[0].ivalue));
 }
@@ -2517,7 +2517,7 @@ static KMETHOD Int_opNEG(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opSUB(Int n);
 
-static KMETHOD Int_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opSUB(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue - sfp[1].ivalue);
 }
@@ -2525,7 +2525,7 @@ static KMETHOD Int_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opMUL(Int n);
 
-static KMETHOD Int_opMUL(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opMUL(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue * sfp[1].ivalue);
 }
@@ -2533,7 +2533,7 @@ static KMETHOD Int_opMUL(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opDIV(Int n);
 
-static KMETHOD Int_opDIV(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opDIV(CTX ctx, ksfp_t *sfp _RIX)
 {
 	SYSLOG_iZERODIV(ctx, sfp, sfp[1].ivalue);
 	RETURNi_(sfp[0].ivalue / sfp[1].ivalue);
@@ -2542,7 +2542,7 @@ static KMETHOD Int_opDIV(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opMOD(Int n);
 
-static KMETHOD Int_opMOD(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opMOD(CTX ctx, ksfp_t *sfp _RIX)
 {
 	SYSLOG_iZERODIV(ctx, sfp, sfp[1].ivalue);
 	RETURNi_(sfp[0].ivalue % sfp[1].ivalue);
@@ -2552,7 +2552,7 @@ static KMETHOD Int_opMOD(CTX ctx, knh_sfp_t *sfp _RIX)
 /* [Float] */
 //## @Const method Float! Float.opADD(Float! v);
 
-static KMETHOD Float_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opADD(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(sfp[0].fvalue + sfp[1].fvalue);
 }
@@ -2560,7 +2560,7 @@ static KMETHOD Float_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opNEG();
 
-static KMETHOD Float_opNEG(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opNEG(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(-(sfp[0].fvalue));
 }
@@ -2568,7 +2568,7 @@ static KMETHOD Float_opNEG(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opSUB(Float! n);
 
-static KMETHOD Float_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opSUB(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(sfp[0].fvalue - sfp[1].fvalue);
 }
@@ -2576,7 +2576,7 @@ static KMETHOD Float_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opMUL(Float! n);
 
-static KMETHOD Float_opMUL(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opMUL(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(sfp[0].fvalue * sfp[1].fvalue);
 }
@@ -2584,7 +2584,7 @@ static KMETHOD Float_opMUL(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Float! Float.opDIV(Float! n);
 
-static KMETHOD Float_opDIV(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_opDIV(CTX ctx, ksfp_t *sfp _RIX)
 {
 	SYSLOG_fZERODIV(ctx, sfp, sfp[1].fvalue);
 	RETURNf_(sfp[0].fvalue / sfp[1].fvalue);
@@ -2593,11 +2593,11 @@ static KMETHOD Float_opDIV(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.opSUB(String s);
 
-static KMETHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_opSUB(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t base = S_tobytes(sfp[0].s);
-	knh_bytes_t t = S_tobytes(sfp[1].s);
-	knh_uchar_t c = t.utext[0];
+	kbytes_t base = S_tobytes(sfp[0].s);
+	kbytes_t t = S_tobytes(sfp[1].s);
+	kchar_t c = t.utext[0];
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	size_t i;
 	for(i = 0; i < base.len; i++) {
@@ -2625,7 +2625,7 @@ static KMETHOD String_opSUB(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Boolean Boolean.opNOT();
 
-static KMETHOD Boolean_opNOT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Boolean_opNOT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(!sfp[0].bvalue);
 }
@@ -2633,10 +2633,10 @@ static KMETHOD Boolean_opNOT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLAND(Int n, ...);
 
-static KMETHOD Int_opLAND(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opLAND(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t i, ac = knh_stack_argc(ctx, sfp);
-	knh_int_t n = sfp[0].ivalue;
+	kint_t n = sfp[0].ivalue;
 	for(i = 1; i < ac; i++) {
 		n = n & sfp[i].ivalue;
 	}
@@ -2646,10 +2646,10 @@ static KMETHOD Int_opLAND(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLOR(Int n, ...);
 
-static KMETHOD Int_opLOR(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opLOR(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t i, ac = knh_stack_argc(ctx, sfp);
-	knh_int_t n = sfp[0].ivalue;
+	kint_t n = sfp[0].ivalue;
 	for(i = 1; i < ac; i++) {
 		n = n | sfp[i].ivalue;
 	}
@@ -2659,7 +2659,7 @@ static KMETHOD Int_opLOR(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLXOR(Int n);
 
-static KMETHOD Int_opLXOR(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opLXOR(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue ^ sfp[1].ivalue);
 }
@@ -2667,7 +2667,7 @@ static KMETHOD Int_opLXOR(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opLNOT();
 
-static KMETHOD Int_opLNOT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opLNOT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(~(sfp[0].ivalue));
 }
@@ -2676,7 +2676,7 @@ static KMETHOD Int_opLNOT(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Const method Int Int.opLSFT(Int n);
 //## @Const @Hidden method Int Int.send(Int n);
 
-static KMETHOD Int_opLSFT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opLSFT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue << sfp[1].ivalue);
 }
@@ -2684,7 +2684,7 @@ static KMETHOD Int_opLSFT(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method Int Int.opRSFT(Int n);
 
-static KMETHOD Int_opRSFT(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_opRSFT(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(sfp[0].ivalue >> sfp[1].ivalue);
 }
@@ -2693,7 +2693,7 @@ static KMETHOD Int_opRSFT(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method Int Bytes.getSize();
 //## method Int Array.getSize();
 
-KMETHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Bytes_getSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	//fprintf(stderr, "** rix=%ld sfp[K_RIX]=%p\n", rix, sfp + rix);
 	RETURNi_((sfp[0].ba)->bu.len);
@@ -2702,7 +2702,7 @@ KMETHOD Bytes_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int Tuple.getSize();
 
-KMETHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Tuple_getSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(O_cTBL(sfp[0].o)->cparam->psize);
 }
@@ -2710,7 +2710,7 @@ KMETHOD Tuple_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method @Const Int String.getSize();
 
-static KMETHOD String_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_getSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t size = IS_bString(sfp[0].s) ? S_size(sfp[0].s) : 0;
 	if(!String_isASCII(sfp[0].s)) {
@@ -2722,7 +2722,7 @@ static KMETHOD String_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int Map.getSize();
 
-KMETHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Map_getSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Map_t *m = sfp[0].m;
 	RETURNi_(m->spi->size(ctx, m->mapptr));
@@ -2734,28 +2734,28 @@ KMETHOD Map_getSize(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int Bytes.get(Int n);
 
-static KMETHOD Bytes_get(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_get(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
-	size_t n2 = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), ba->bu.len);
+	size_t n2 = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), ba->bu.len);
 	RETURNi_(ba->bu.utext[n2]);
 }
 
 /* ------------------------------------------------------------------------ */
 //## method Int Bytes.set(Int n, Int c);
 
-static KMETHOD Bytes_set(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_set(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
-	size_t n2 = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), ba->bu.len);
-	ba->bu.ubuf[n2] = Int_to(knh_uchar_t, sfp[2]);
+	size_t n2 = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), ba->bu.len);
+	ba->bu.ubuf[n2] = Int_to(kchar_t, sfp[2]);
 	RETURNi_(ba->bu.utext[n2]);
 }
 
 /* ------------------------------------------------------------------------ */
 //## method void Bytes.setAll(Int c);
 
-static KMETHOD Bytes_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_setAll(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Bytes_t *ba = sfp[0].ba;
 	size_t i, n = Int_to(size_t, sfp[1]);
@@ -2768,17 +2768,17 @@ static KMETHOD Bytes_setAll(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.get(Int n);
 
-static KMETHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_get(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t base = S_tobytes(sfp[0].s);
+	kbytes_t base = S_tobytes(sfp[0].s);
 	knh_String_t *s;
 	if(String_isASCII(sfp[0].s)) {
-		size_t n = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), S_size(sfp[0].s));
+		size_t n = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), S_size(sfp[0].s));
 		s = new_String2(ctx, CLASS_String, base.text + n, 1, _ALWAYS|_ASCII);
 	}
 	else {
-		size_t off = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), knh_bytes_mlen(base));
-		knh_bytes_t sub = knh_bytes_mofflen(base, off, 1);
+		size_t off = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), knh_bytes_mlen(base));
+		kbytes_t sub = knh_bytes_mofflen(base, off, 1);
 		s = new_String2(ctx, CLASS_String, sub.text, sub.len, _ALWAYS|_CHARSIZE(sub.len));
 	}
 	RETURN_(s);
@@ -2787,16 +2787,16 @@ static KMETHOD String_get(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [range] */
 
-static void _rangeUNTIL(CTX ctx, knh_sfp_t *sfp, size_t size, size_t *s, size_t *e)
+static void _rangeUNTIL(CTX ctx, ksfp_t *sfp, size_t size, size_t *s, size_t *e)
 {
-	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), size);
-	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), size);
+	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), size);
+	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), size);
 }
 
-static void _rangeTO(CTX ctx, knh_sfp_t *sfp, size_t size, size_t *s, size_t *e)
+static void _rangeTO(CTX ctx, ksfp_t *sfp, size_t size, size_t *s, size_t *e)
 {
-	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), size);
-	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), size) + 1;
+	*s = sfp[1].ivalue == 0 ? 0 : knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), size);
+	*e = sfp[2].ivalue == 0 ? (size) : knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), size) + 1;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -2813,7 +2813,7 @@ static knh_Bytes_t *new_BytesRANGE(CTX ctx, knh_Bytes_t *ba, size_t s, size_t e)
 		size_t capacity = newsize;
 		if(newsize > 0) {
 			if(capacity < 256) capacity = 256;
-			newa->bu.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, capacity);
+			newa->bu.ubuf = (kchar_t*)KNH_MALLOC(ctx, capacity);
 			knh_bzero(newa->bu.ubuf, capacity);
 			knh_memcpy(newa->bu.ubuf, ba->bu.utext + s, newsize);
 		}
@@ -2829,7 +2829,7 @@ static knh_Bytes_t *new_BytesRANGE(CTX ctx, knh_Bytes_t *ba, size_t s, size_t e)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.opUNTIL(Int s, Int e);
 
-static KMETHOD Bytes_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_opUNTIL(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeUNTIL(ctx, sfp, (sfp[0].ba)->bu.len, &s, &e);
@@ -2839,7 +2839,7 @@ static KMETHOD Bytes_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Bytes Bytes.opTO(Int s, Int e);
 
-static KMETHOD Bytes_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Bytes_opTO(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeTO(ctx, sfp, (sfp[0].ba)->bu.len, &s, &e);
@@ -2849,13 +2849,13 @@ static KMETHOD Bytes_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.substring(Int offset, Int length);
 
-static KMETHOD String_substring(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_substring(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_String_t *s;
-	knh_bytes_t base = S_tobytes(sfp[0].s);
-	knh_bytes_t t;
+	kbytes_t base = S_tobytes(sfp[0].s);
+	kbytes_t t;
 	if(String_isASCII(sfp[0].s)) {
-		size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), base.len);
+		size_t offset = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), base.len);
 		t = knh_bytes_last(base, offset);
 		if(sfp[2].ivalue != 0) {
 			size_t len = (size_t)sfp[2].ivalue;
@@ -2864,7 +2864,7 @@ static KMETHOD String_substring(CTX ctx, knh_sfp_t *sfp _RIX)
 	}
 	else { // multibytes
 		size_t mlen = knh_bytes_mlen(base);
-		size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), mlen);
+		size_t offset = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), mlen);
 		size_t length = sfp[2].ivalue == 0  ? (mlen - offset) : (size_t)sfp[2].ivalue;
 		t = knh_bytes_mofflen(base, offset, length);
 	}
@@ -2875,20 +2875,20 @@ static KMETHOD String_substring(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.opUNTIL(Int s, Int e);
 
-static KMETHOD String_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_opUNTIL(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = S_tobytes(sfp[0].s);
+	kbytes_t t = S_tobytes(sfp[0].s);
 	if(sfp[2].ivalue != 0) {
 		if(!String_isASCII(sfp[0].s)) {
 			size_t mlen = knh_bytes_mlen(t);
-			size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), mlen);
-			size_t length = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), mlen) - offset;
+			size_t offset = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), mlen);
+			size_t length = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), mlen) - offset;
 			t = knh_bytes_mofflen(t, offset, length);
 			RETURN_(new_String2(ctx, CLASS_String, t.text, t.len, 0));
 		}
 		else {
 			size_t offset = Int_to(size_t, sfp[1]);
-			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), (sfp[0].s)->str.len) - offset;
+			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), (sfp[0].s)->str.len) - offset;
 		}
 	}
 	String_substring(ctx, sfp, K_RIX);
@@ -2897,20 +2897,20 @@ static KMETHOD String_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const method String String.opTO(Int s, Int e);
 
-static KMETHOD String_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_opTO(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = S_tobytes(sfp[0].s);
+	kbytes_t t = S_tobytes(sfp[0].s);
 	if(sfp[2].ivalue != 0) {
 		if(!String_isASCII(sfp[0].s)) {
 			size_t mlen = knh_bytes_mlen(t);
-			size_t offset = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[1]), mlen);
-			size_t length = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), mlen) - offset + 1;
+			size_t offset = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), mlen);
+			size_t length = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), mlen) - offset + 1;
 			t = knh_bytes_mofflen(t, offset, length);
 			RETURN_(new_String2(ctx, CLASS_String, t.text, t.len, 0));
 		}
 		else {
 			size_t offset = Int_to(size_t, sfp[1]);
-			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), (sfp[0].s)->str.len) - offset + 1;
+			sfp[2].ivalue = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), (sfp[0].s)->str.len) - offset + 1;
 		}
 	}
 	String_substring(ctx, sfp, K_RIX);
@@ -2947,7 +2947,7 @@ static knh_Array_t *new_ArrayRANGE(CTX ctx, knh_Array_t *a, size_t s, size_t e /
 /* ------------------------------------------------------------------------ */
 //## method This Array.opUNTIL(Int s, Int e);
 
-static KMETHOD Array_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_opUNTIL(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeUNTIL(ctx, sfp, knh_Array_size(sfp[0].a), &s, &e);
@@ -2957,7 +2957,7 @@ static KMETHOD Array_opUNTIL(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method This Array.opTO(Int s, Int e);
 
-static KMETHOD Array_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Array_opTO(CTX ctx, ksfp_t *sfp _RIX)
 {
 	size_t s, e;
 	_rangeTO(ctx, sfp, knh_Array_size(sfp[0].a), &s, &e);
@@ -2967,7 +2967,7 @@ static KMETHOD Array_opTO(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method void Func.();
 
-static KMETHOD Func_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Func_invoke(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Func_t* fo = sfp[0].fo;
 	if(fo->baseNULL != NULL) {
@@ -2980,7 +2980,7 @@ static KMETHOD Func_invoke(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method T1 Thunk.();
 
-static KMETHOD Fmethod_returnConst(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Fmethod_returnConst(CTX ctx, ksfp_t *sfp _RIX)
 {
 	// return values are always set at sfp[_rix] correctly
 }
@@ -2988,11 +2988,11 @@ static KMETHOD Fmethod_returnConst(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method T1 Thunk.eval();
 
-static KMETHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Thunk_eval(CTX ctx, ksfp_t *sfp _RIX)
 {
 
 	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
-	knh_sfp_t *lsfp = ctx->esp;
+	ksfp_t *lsfp = ctx->esp;
 	//DBG_P("rix=%d, sfpidx=%d, espidx=%d", rix, sfp-ctx->stack, ctx->esp - ctx->stack);
 	knh_Method_t *mtd = (thk)->envsfp[K_CALLDELTA+K_MTDIDX].mtdNC;
 	size_t i;
@@ -3012,7 +3012,7 @@ static KMETHOD Thunk_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 //## method T1 Thunk.getValue();
 //## mapper Thunk Tvoid;
 
-static KMETHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Thunk_value(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Thunk_t *thk = (knh_Thunk_t*)sfp[0].o;
 	if(Thunk_isEvaluated(thk)) {
@@ -3027,7 +3027,7 @@ static KMETHOD Thunk_value(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Throwable method InputStream InputStream.new(Path urn, String mode, Map _);
 
-static KMETHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_InputStream_t *in = sfp[0].in;
 	knh_Path_t *pth = sfp[1].pth;
@@ -3043,7 +3043,7 @@ static KMETHOD InputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void InputStream.close();
 
-static KMETHOD InputStream_close(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_close(CTX ctx, ksfp_t *sfp _RIX)
 {
 	io2_close(ctx, (sfp[0].in)->io2);
 }
@@ -3051,7 +3051,7 @@ static KMETHOD InputStream_close(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Iterative method String InputStream.readLine();
 
-static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD InputStream_readLine(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(io2_readLine(ctx, (sfp[0].in)->io2, (sfp[0].in)->decNULL));
 }
@@ -3059,7 +3059,7 @@ static KMETHOD InputStream_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [iterators] */
 
-static ITRNEXT InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
+static ITRNEXT InputStream_nextLine(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = sfp[0].it;
 	knh_InputStream_t *in = (knh_InputStream_t*)DP(itr)->source;
@@ -3074,7 +3074,7 @@ static ITRNEXT InputStream_nextLine(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Final mapper InputStream String..;
 //## method String.. InputStream.opITR();
 
-static TYPEMAP InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP InputStream_String__(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Iterator_t *itr = new_IteratorG(ctx, CLASS_StringITR, sfp[0].o, InputStream_nextLine);
 	RETURN_(itr);
@@ -3084,7 +3084,7 @@ static TYPEMAP InputStream_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 //## @Final mapper Path String..;
 //## method String.. Path.opITR();
 
-static TYPEMAP Path_String__(CTX ctx, knh_sfp_t *sfp _RIX)
+static TYPEMAP Path_String__(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Path_t *path = (knh_Path_t*)sfp[K_TMRIDX].o;
 	knh_Iterator_t *itr;
@@ -3103,7 +3103,7 @@ static TYPEMAP Path_String__(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //## @Throwable method OutputStream OutputStream.new(Path path, String mode, Map _);
 
-static KMETHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
 	knh_Path_t *pth = sfp[1].pth;
@@ -3119,10 +3119,10 @@ static KMETHOD OutputStream_new(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.write(Bytes buf, Int offset, Int length);
 
-static KMETHOD OutputStream_write(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_write(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bytes_t t = BA_tobytes(sfp[1].ba);
-	size_t offset = (sfp[2].ivalue == 0) ? 0 : knh_array_index(ctx, sfp, Int_to(knh_int_t, sfp[2]), t.len);
+	kbytes_t t = BA_tobytes(sfp[1].ba);
+	size_t offset = (sfp[2].ivalue == 0) ? 0 : knh_array_index(ctx, sfp, Int_to(kint_t, sfp[2]), t.len);
 	size_t len = (sfp[3].ivalue == 0) ? (t.len - offset) : Int_to(size_t, sfp[3]);
 	if(offset + len > t.len) len = t.len - offset;
 	t.utext = &(t.utext[offset]);
@@ -3134,10 +3134,10 @@ static KMETHOD OutputStream_write(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.print(Object value, ...);
 
-static KMETHOD OutputStream_print(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_print(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
-	knh_sfp_t *v = sfp + 1;
+	ksfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
 	for(i = 0; i < ac; i++) {
 		knh_write_Object(ctx, w, v[i].o, FMT_s);
@@ -3148,10 +3148,10 @@ static KMETHOD OutputStream_print(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.println(dynamic value, ...);
 
-static KMETHOD OutputStream_println(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_println(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
-	knh_sfp_t *v = sfp + 1;
+	ksfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
 	for(i = 0; i < ac; i++) {
 		knh_write_Object(ctx, w, v[i].o, FMT_s);
@@ -3163,10 +3163,10 @@ static KMETHOD OutputStream_println(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method void OutputStream.send(String s, ...);
 
-static KMETHOD OutputStream_send(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_send(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_t *w = sfp[0].w;
-	knh_sfp_t *v = sfp + 1;
+	ksfp_t *v = sfp + 1;
 	size_t i, ac = knh_stack_argc(ctx, v);
 	for(i = 0; i < ac; i++) {
 		knh_String_t *s = v[i].s;
@@ -3183,7 +3183,7 @@ static KMETHOD OutputStream_send(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.flush();
 
-static KMETHOD OutputStream_flush(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_flush(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_OutputStream_flush(ctx, sfp[0].w);
 	RETURNvoid_();
@@ -3192,7 +3192,7 @@ static KMETHOD OutputStream_flush(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method void OutputStream.close();
 
-static KMETHOD OutputStream_close(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD OutputStream_close(CTX ctx, ksfp_t *sfp _RIX)
 {
 	io2_close(ctx, sfp[0].w->io2);
 	RETURNvoid_();
@@ -3201,7 +3201,7 @@ static KMETHOD OutputStream_close(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 /* [format] */
 
-static const char *newfmt(char *buf, size_t bufsiz, knh_bytes_t fmt, const char *t)
+static const char *newfmt(char *buf, size_t bufsiz, kbytes_t fmt, const char *t)
 {
 	char *p = buf + (fmt.len - 1);
 	strncpy(buf, fmt.text, bufsiz);
@@ -3213,16 +3213,16 @@ static const char *newfmt(char *buf, size_t bufsiz, knh_bytes_t fmt, const char 
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method String Int.format(String fmt);
 
-static KMETHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Int_format(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_sfp_t *arg = ctx->esp - 1;
+	ksfp_t *arg = ctx->esp - 1;
 	DBG_ASSERT(arg == sfp+1);
-	knh_bytes_t fmt = S_tobytes(arg[0].s);
+	kbytes_t fmt = S_tobytes(arg[0].s);
 	L_RETRY:;
 	int ch = fmt.utext[fmt.len - 1];
 	if(fmt.utext[0] == '%' && (ch == 'u' || ch == 'd' || ch == 'x')) {
 		char fmtbuf[40], buf[80];
-		const char *ifmt = (ch == 'd') ? K_INT_FMT : ((ch == 'x') ? K_INT_XFMT : K_UINT_FMT);
+		const char *ifmt = (ch == 'd') ? KINT_FMT : ((ch == 'x') ? KINT_XFMT : KUINT_FMT);
 		knh_snprintf(buf, sizeof(buf), newfmt(fmtbuf, sizeof(fmtbuf), fmt, ifmt + 1), sfp[0].ivalue);
 		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
@@ -3236,16 +3236,16 @@ static KMETHOD Int_format(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method String Float.format(String fmt);
 
-static KMETHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Float_format(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_sfp_t *arg = ctx->esp - 1;
+	ksfp_t *arg = ctx->esp - 1;
 	DBG_ASSERT(arg == sfp+1);
-	knh_bytes_t fmt = S_tobytes(arg[0].s);
+	kbytes_t fmt = S_tobytes(arg[0].s);
 	L_RETRY:;
 	int ch = fmt.utext[fmt.len - 1];
 	if(fmt.utext[0] == '%' && (ch == 'f' || ch == 'e')) {
 		char fmtbuf[40], buf[80];
-		const char *ifmt = (ch == 'f') ? K_FLOAT_FMT : K_FLOAT_FMTE;
+		const char *ifmt = (ch == 'f') ? KFLOAT_FMT : KFLOAT_FMTE;
 		knh_snprintf(buf, sizeof(buf), newfmt(fmtbuf, sizeof(fmtbuf), fmt, ifmt + strlen(ifmt)-1), sfp[0].fvalue);
 		RETURN_(new_String2(ctx, CLASS_String, buf, knh_strlen(buf), _ALWAYS|_ASCII));
 	}
@@ -3259,11 +3259,11 @@ static KMETHOD Float_format(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Const method String String.format(String fmt);
 
-static KMETHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD String_format(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_sfp_t *arg = ctx->esp - 1;
+	ksfp_t *arg = ctx->esp - 1;
 	DBG_ASSERT(arg == sfp+1);
-	knh_bytes_t fmt = S_tobytes(arg[0].s);
+	kbytes_t fmt = S_tobytes(arg[0].s);
 	if(fmt.utext[0] == '%' && fmt.utext[fmt.len-1] == 's') {
 		char buf[256];
 		knh_snprintf(buf, sizeof(buf), fmt.text, S_totext(sfp[0].s));
@@ -3277,7 +3277,7 @@ static KMETHOD String_format(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static knh_bool_t knh_NameSpace_addLinkObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, knh_Object_t *o, int typeCheck)
+static kbool_t knh_NameSpace_addLinkObject(CTX ctx, knh_NameSpace_t *ns, knh_String_t *name, knh_Object_t *o, int typeCheck)
 {
 	if(DP(ns)->linkDictMapNULL == NULL) {
 		KNH_INITv(DP(ns)->linkDictMapNULL, new_DictMap0(ctx, 0, 1/*isCaseMap*/, "linkDictMap"));
@@ -3289,7 +3289,7 @@ static knh_bool_t knh_NameSpace_addLinkObject(CTX ctx, knh_NameSpace_t *ns, knh_
 	return 1;
 }
 
-static Object *knh_NameSpace_getLinkObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh_bytes_t path)
+static Object *knh_NameSpace_getLinkObjectNULL(CTX ctx, knh_NameSpace_t *ns, kbytes_t path)
 {
 	while(ns != NULL) {
 		if(DP(ns)->linkDictMapNULL != NULL) {
@@ -3301,11 +3301,11 @@ static Object *knh_NameSpace_getLinkObjectNULL(CTX ctx, knh_NameSpace_t *ns, knh
 	return NULL;
 }
 
-void knh_DataMap_log(CTX ctx, knh_DictMap_t *conf, knh_type_t type, const char *key)
+void knh_DataMap_log(CTX ctx, knh_DictMap_t *conf, ktype_t type, const char *key)
 {
 	if(conf->uline != 0) {
-		knh_uri_t uri = ULINE_uri(conf->uline);
-		knh_uintptr_t line = ULINE_line(conf->uline);
+		kuri_t uri = ULINE_uri(conf->uline);
+		kuintptr_t line = ULINE_line(conf->uline);
 		knh_logprintf("CONFIG", 1, "(%s:%ld) key='%s' must have type %s", FILENAME__(uri), line, key, TYPE__(type));
 	}
 	else {
@@ -3313,9 +3313,9 @@ void knh_DataMap_log(CTX ctx, knh_DictMap_t *conf, knh_type_t type, const char *
 	}
 }
 
-knh_bool_t knh_DataMap_check(CTX ctx, knh_DictMap_t *conf, knh_type_t type, const char *key, const char *key2)
+kbool_t knh_DataMap_check(CTX ctx, knh_DictMap_t *conf, ktype_t type, const char *key, const char *key2)
 {
-	knh_bytes_t t = {{key}, knh_strlen(key)};
+	kbytes_t t = {{key}, knh_strlen(key)};
 	knh_Object_t *v = knh_DictMap_getNULL(ctx, conf, t);
 	if(v == NULL) {
 		if(key2 != NULL) {
@@ -3336,7 +3336,7 @@ knh_bool_t knh_DataMap_check(CTX ctx, knh_DictMap_t *conf, knh_type_t type, cons
 
 knh_String_t *knh_DataMap_getString(CTX ctx, knh_DictMap_t *conf, const char *key, const char *key2, knh_String_t *def)
 {
-	knh_bytes_t t = {{key}, knh_strlen(key)};
+	kbytes_t t = {{key}, knh_strlen(key)};
 	knh_String_t *v = (knh_String_t*)knh_DictMap_getNULL(ctx, conf, t);
 	if(v == NULL) {
 		if(key2 != NULL) {
@@ -3359,7 +3359,7 @@ knh_String_t *knh_View_getQuery(CTX ctx, knh_View_t *view)
 	return knh_DataMap_getString(ctx, view->conf, "query", NULL, TS_EMPTY);
 }
 
-static void THROW_Undefined(CTX ctx, knh_sfp_t *sfp, const char *whatis, const char *what)
+static void THROW_Undefined(CTX ctx, ksfp_t *sfp, const char *whatis, const char *what)
 {
 //	KNH_NTHROW(ctx, sfp, "Script!!", "Undefined", KNH_LDATA(LOG_s("driver", what)));
 }
@@ -3367,9 +3367,9 @@ static void THROW_Undefined(CTX ctx, knh_sfp_t *sfp, const char *whatis, const c
 /* ------------------------------------------------------------------------ */
 //## @Static method void View.addView(String name, NameSpace _, Map _);
 
-static KMETHOD View_addView(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD View_addView(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_bool_t tf = 0;
+	kbool_t tf = 0;
 	knh_DictMap_t *conf = knh_toDictMap(ctx, sfp[3].m, 1/*isCreation*/);
 	KNH_SETv(ctx, sfp[3].o, conf);
 	tf = knh_DataMap_check(ctx, conf, TYPE_Path, "path", NULL);
@@ -3404,7 +3404,7 @@ static KMETHOD View_addView(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden @Static @Const method View View.opLINK(String path, NameSpace _);
 
-static KMETHOD View_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD View_opLINK(CTX ctx, ksfp_t *sfp _RIX)
 {
 	Object *o = knh_NameSpace_getLinkObjectNULL(ctx, sfp[2].ns, S_tobytes(sfp[1].s));
 	if(o != NULL) {
@@ -3416,7 +3416,7 @@ static KMETHOD View_opLINK(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method DataITR View.opITR();
 
-static KMETHOD View_opITR(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD View_opITR(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_View_t *view = sfp[0].rel;
 	knh_Path_t *path = view->path;
@@ -3430,7 +3430,7 @@ static KMETHOD View_opITR(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static method InputStream System.getIn();
 
-static KMETHOD System_getIn(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_getIn(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(ctx->share->in);
 }
@@ -3438,7 +3438,7 @@ static KMETHOD System_getIn(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static method OutputStream System.getOut();
 
-static KMETHOD System_getOut(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_getOut(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(ctx->share->out);
 }
@@ -3446,7 +3446,7 @@ static KMETHOD System_getOut(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static method OutputStream System.getErr();
 
-static KMETHOD System_getErr(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_getErr(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(ctx->share->err);
 }
@@ -3454,7 +3454,7 @@ static KMETHOD System_getErr(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static method dynamic System.getProperty(String key);
 
-static KMETHOD System_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_getProperty(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Object_t *v = (knh_Object_t*)knh_getPropertyNULL(ctx, S_tobytes(sfp[1].s));
 	if(v == NULL) {
@@ -3468,7 +3468,7 @@ static KMETHOD System_getProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static method dynamic System.setProperty(String key, dynamic value);
 
-static KMETHOD System_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_setProperty(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_setProperty(ctx, sfp[1].s, sfp[2].o);
 	sfp[K_RIX].ndata = O_ndata(sfp[2].o);
@@ -3477,7 +3477,7 @@ static KMETHOD System_setProperty(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 
-static knh_bool_t bytes_matchWildCard(knh_bytes_t t, knh_bytes_t p)
+static kbool_t bytes_matchWildCard(kbytes_t t, kbytes_t p)
 {
 	if(p.utext[0] == '*') {
 		p.utext = p.utext + 1;
@@ -3489,7 +3489,7 @@ static knh_bool_t bytes_matchWildCard(knh_bytes_t t, knh_bytes_t p)
 		return knh_bytes_startsWith_(t, p);
 	}
 	else {
-		knh_index_t idx = knh_bytes_index(p, '*');
+		kindex_t idx = knh_bytes_index(p, '*');
 		if(idx == -1) {
 			return knh_bytes_startsWith_(t, p);
 		}
@@ -3503,10 +3503,10 @@ static knh_bool_t bytes_matchWildCard(knh_bytes_t t, knh_bytes_t p)
 /* ------------------------------------------------------------------------ */
 //## @Hidden method String[] System.listProperties(String key);
 
-static KMETHOD System_listProperties(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_listProperties(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Array_t *a = new_Array(ctx, CLASS_String, 0);
-	knh_bytes_t prefix = IS_NULL(sfp[1].s) ? STEXT("") : S_tobytes(sfp[1].s);
+	kbytes_t prefix = IS_NULL(sfp[1].s) ? STEXT("") : S_tobytes(sfp[1].s);
 	knh_DictMap_t *map = ctx->share->props;
 	size_t i;
 	for(i = 0; i < knh_Map_size(map); i++) {
@@ -3521,7 +3521,7 @@ static KMETHOD System_listProperties(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static method void System.gc();
 
-static KMETHOD System_gc(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_gc(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_System_gc(ctx, 0/*needsStackTrace*/);
 }
@@ -3529,7 +3529,7 @@ static KMETHOD System_gc(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int System.getTime();
 
-static KMETHOD System_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_getTime(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(knh_getTimeMilliSecond());
 }
@@ -3537,7 +3537,7 @@ static KMETHOD System_getTime(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Restricted method void System.exit(Int status);
 
-static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_exit(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int status = IS_NULL(sfp[1].o) ? 0 : Int_to(size_t, sfp[1]);
 	KNH_NTRACE2(ctx, "exit", K_NOTICE, KNH_LDATA(LOG_i("user_specified_status", status)));
@@ -3547,7 +3547,7 @@ static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## @Static method InputStream Context.setIn(InputStream? in);
 //
-//static KMETHOD CTX_setIn(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD CTX_setIn(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	KNH_SETv(ctx, ((knh_context_t*)ctx)->in, sfp[1].o);
 //	RETURN_(sfp[1].o);
@@ -3556,7 +3556,7 @@ static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## @Static method OutputStream Context.setOut(OutputStream? out);
 //
-//static KMETHOD CTX_setOut(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD CTX_setOut(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	KNH_SETv(ctx, ((knh_context_t*)ctx)->out, sfp[1].o);
 //	RETURN_(sfp[1].o);
@@ -3565,7 +3565,7 @@ static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## @Static method OutputStream Context.setErr(OutputStream? out);
 //
-//static KMETHOD CTX_setErr(CTX ctx, knh_sfp_t *sfp _RIX)
+//static KMETHOD CTX_setErr(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	KNH_SETv(ctx, ((knh_context_t*)ctx)->err, sfp[1].o);
 //	RETURN_(sfp[1].o);
@@ -3574,7 +3574,7 @@ static KMETHOD System_exit(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method String Context.getTrace();
 
-static KMETHOD Context_getTrace(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Context_getTrace(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(new_String(ctx, ctx->trace));
 }
@@ -3582,7 +3582,7 @@ static KMETHOD Context_getTrace(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Int Context.getSeq();
 
-static KMETHOD Context_getSeq(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Context_getSeq(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(ctx->seq);
 }
@@ -3590,10 +3590,10 @@ static KMETHOD Context_getSeq(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method Boolean Exception.opOF(String event);
 
-static KMETHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD Exception_opOF(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_event_t eid = knh_geteid(ctx, S_tobytes(sfp[1].s));
-	knh_event_t eid0 = knh_geteid(ctx, S_tobytes((sfp[0].e)->emsg));
+	kevent_t eid = knh_geteid(ctx, S_tobytes(sfp[1].s));
+	kevent_t eid0 = knh_geteid(ctx, S_tobytes((sfp[0].e)->emsg));
 	int isa = event_isa(ctx, eid0, eid);
 	RETURNb_(isa);
 }
@@ -3601,7 +3601,7 @@ static KMETHOD Exception_opOF(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Static @Restricted method String System.exec(String cmd);
 
-static KMETHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_exec(CTX ctx, ksfp_t *sfp _RIX)
 {
 #ifdef K_DEOS_TRACE
 	char cmd[1024];
@@ -3622,7 +3622,7 @@ static KMETHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 		while(1) {
 			size_t size = fread(buf, 1, sizeof(buf), fp);
 			if(size > 0) {
-				knh_bytes_t t = {{buf}, size};
+				kbytes_t t = {{buf}, size};
 				knh_Bytes_write(ctx, cwb->ba, t);
 			}
 			else {
@@ -3642,13 +3642,13 @@ static KMETHOD System_exec(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Restricted method Tvar System.eval(String cmd, Script _, NameSpace _, Class _);
 
-static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_eval(CTX ctx, ksfp_t *sfp _RIX)
 {
 //	fprintf(stderr, "TESTING: '%s'\n", 	S_totext(sfp[1].s));
 //	fprintf(stderr, "RETURN VALUE: '%s'\n", CLASS__(sfp[4].c->cid));
 	knh_Script_t *scr = ctx->gma->scr;
 	knh_NameSpace_t *ns = K_GMANS;
-	knh_class_t tcid = sfp[4].c->cid;
+	kclass_t tcid = sfp[4].c->cid;
 	if(scr != sfp[2].scr) {
 		KNH_SETv(ctx, ctx->gma->scr, sfp[2].scr);
 		sfp[2].scr = scr;
@@ -3695,7 +3695,7 @@ static KMETHOD System_eval(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method String System.readLine(String cmd)
 
-static KMETHOD System_readLine(CTX ctx, knh_sfp_t *sfp _RIX)
+static KMETHOD System_readLine(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const char *line = ctx->spi->readline(S_totext(sfp[1].s));
 	knh_String_t *s = new_String(ctx, line);

@@ -164,7 +164,7 @@ static int findclose(toks_t *toks, int c, int opench, int closech)
 	return -1;
 }
 
-static knh_bool_t subBetween(toks_t *dst, toks_t *src, int opench, int closech)
+static kbool_t subBetween(toks_t *dst, toks_t *src, int opench, int closech)
 {
 	int c = findclose(src, src->cur+1, opench, closech);
 	if(c == -1) return 0;
@@ -341,7 +341,7 @@ static int matchStmt(CTX ctx, toks_t *toks, knh_Stmt_t *stmt)
 
 // @Ensure #(n < 1)
 
-static knh_bool_t skipAnotation(toks_t *toks)
+static kbool_t skipAnotation(toks_t *toks)
 {
 	int c = toks->cur;
 	for(;c < toks->eol; c++) {
@@ -601,7 +601,7 @@ static knh_Expr_t* matchType(CTX ctx, toks_t *toks)
 	knh_Token_t *tk0 = tkN(toks, 0);
 	knh_Expr_t *expr = NULL;
 	if(tk0->token == TK_USYMBOL) {
-		knh_class_t cid = knh_NameSpace_getcid(ctx, toks->ns, S_tobytes(tk0->text));
+		kclass_t cid = knh_NameSpace_getcid(ctx, toks->ns, S_tobytes(tk0->text));
 		if(cid != CLASS_unknown) {
 			expr = new_Expr(ctx, toks, TEXPR_TYPE, tk0);
 			KNH_SETv(ctx, expr->data, new_Type(ctx, cid));
@@ -622,7 +622,7 @@ static knh_Expr_t *new_SugarExpr(CTX ctx, knh_Sugar_t *sgr, toks_t *toks)
 	return expr;
 }
 
-//static knh_bool_t matchExprLeftRule(CTX ctx, toks_t *rule, toks_t *toks)
+//static kbool_t matchExprLeftRule(CTX ctx, toks_t *rule, toks_t *toks)
 //{
 //	toks_t sub;
 //	while(hasN(rule, 0)) {
@@ -742,7 +742,7 @@ static knh_Expr_t* new_ConsExpr(CTX ctx, kexpr_t etype, knh_Token_t *tk)
 	return expr;
 }
 
-static knh_bool_t Expr_add(CTX ctx, knh_Expr_t *expr, knh_Expr_t *e)
+static kbool_t Expr_add(CTX ctx, knh_Expr_t *expr, knh_Expr_t *e)
 {
 	DBG_ASSERT(IS_Array(expr->cons));
 	if(e != NULL) {

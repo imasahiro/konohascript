@@ -2,7 +2,7 @@ String ClassDef(String class_name)
 {
 	String ret = """
 
-DEFAPI(void) def<C>(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) def<C>(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	(void)ctx; (void) cid;
 	cdef->name = \"<C>\";
@@ -162,7 +162,7 @@ String InitFunc()
 // #endif
 
 // //Array<String> System.parents(Object c);
-// KMETHOD System_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+// KMETHOD System_parents(CTX ctx, ksfp_t *sfp _RIX)
 // {
 // 	(void)ctx;
 // 	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
@@ -180,11 +180,11 @@ String InitFunc()
 // }
 
 //Array<String> System.getClassParents(String class_name);
-KMETHOD System_getClassParents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getClassParents(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	knh_String_t *class_name = sfp[1].s;
-	knh_bytes_t lname = class_name->str;
+	kbytes_t lname = class_name->str;
 	const knh_ClassTBL_t *ct = (const knh_ClassTBL_t *)knh_DictSet_get(ctx, ctx->share->classNameDictSet, lname);
 	if(ct != 0) {
 		knh_Array_t *a = new_Array0(ctx, 10);
@@ -223,7 +223,7 @@ String EnumKeyPair(String key, String class_name)
 String EnumLoad(String class_name)
 {
 	String ret = """
-DEFAPI(void) constCLASS(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi) {
+DEFAPI(void) constCLASS(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi) {
 	kapi->loadClassIntConst(ctx, cid, CLASSConstInt);
 }
 """
@@ -441,7 +441,7 @@ String RETURNa_(String type)
 	String ret = """
 		int list_size = ret_v.size();
 		knh_Array_t *a = new_Array0(ctx, list_size);
-		knh_class_t cid = knh_getcid(ctx, STEXT(\"TYPE\"));
+		kclass_t cid = knh_getcid(ctx, STEXT(\"TYPE\"));
 		for (int n = 0; n < list_size; n++) {ADDED_SRC
 			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), RETVALUE);
 			knh_Array_add(ctx, a, (knh_Object_t *)p);
@@ -833,7 +833,7 @@ String EventArgPassing(boolean event_flag, String arg_type, String mtd_name)
 		ret += """
 		int size = <V>.length();
 		knh_Array_t *p<N> = new_Array0(lctx, size);
-		knh_class_t cid = knh_getcid(lctx, STEXT(\"<T>\"));
+		kclass_t cid = knh_getcid(lctx, STEXT(\"<T>\"));
 		for (int i = 0; i < size; i++) {
 			<T> *<V>_ = new <T>(<V>[i]);
 			knh_RawPtr_t *p = new_RawPtr(lctx, lctx->share->ClassTBL[cid], <V>_);
@@ -936,7 +936,7 @@ static int <CLASS>_compareTo(knh_RawPtr_t *p1, knh_RawPtr_t *p2)
 String QApplicationNew()
 {
 	String ret = """
-KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QApplication_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int dummy = 0;
 	char **argv = (char **)malloc(1 * sizeof(char *));
@@ -955,7 +955,7 @@ KMETHOD QApplication_new(CTX ctx, knh_sfp_t *sfp _RIX)
 String QApplicationExec()
 {
 	String ret = """
-KMETHOD QApplication_exec(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QApplication_exec(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	if (true) {
@@ -977,7 +977,7 @@ String FUNC_PARENTS(String class_name)
 	String array_size = "10";
 	String ret = """
 //Array<String> <C>.parents();
-KMETHOD <C>_parents(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD <C>_parents(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	<C> *qp = RawPtr_to(<C>*, sfp[0]);
@@ -1004,7 +1004,7 @@ String FUNC_PAINT(String class_name) //qp cast "KQ~" and
 {
 	String ret = """
 // //@Virtual void <C>.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
-// KMETHOD <C>_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+// KMETHOD <C>_paint(CTX ctx, ksfp_t *sfp _RIX)
 // {
 // 	(void)ctx;
 // 	K<C> *  qp = RawPtr_to(K<C> *, sfp[0]);
@@ -1017,7 +1017,7 @@ String FUNC_PAINT(String class_name) //qp cast "KQ~" and
 // }
 
 //@Virtual void <C>.paint(QPainter painter, QStyleOptionGraphicsItem option, QWidget widget);
-KMETHOD <C>_paint(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD <C>_paint(CTX ctx, ksfp_t *sfp _RIX)
 {
 	(void)ctx;
 	K<C> *  qp = RawPtr_to(K<C> *, sfp[0]);
@@ -1034,7 +1034,7 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 {
 	if (dummy->paint_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
-		knh_sfp_t *lsfp = lctx->esp;
+		ksfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
 		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
@@ -1064,7 +1064,7 @@ void K<C>::paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWi
 // 	String ret = "";
 // 	ret += ""
 
-// KMETHOD <C>_parentCall(CTX ctx, knh_sfp_t *sfp, _RIX)
+// KMETHOD <C>_parentCall(CTX ctx, ksfp_t *sfp, _RIX)
 // {
 // 	<C> *qp = RawPtr_to(<C> *, sfp[0]);
 // 	if (qp) {

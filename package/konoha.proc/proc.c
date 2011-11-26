@@ -56,7 +56,7 @@ static knh_IntData_t ProcConstInt[] = {
 	{NULL, 0}
 };
 
-DEFAPI(void) constProc(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constProc(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, ProcConstInt);
 }
@@ -66,7 +66,7 @@ typedef struct {
 	knh_io_t out; // used as stdin for child
 	knh_io_t in; // used as stdout for child
 	knh_io_t err; // used as stderr for child
-	knh_intptr_t pid;
+	kintptr_t pid;
 } knh_Proc_t;
 
 static void Proc_init(CTX ctx, knh_RawPtr_t *po)
@@ -104,7 +104,7 @@ static void Proc_free(CTX ctx, knh_RawPtr_t *po)
 /* ------------------------------------------------------------------------ */
 // [StreamDPI]
 
-static knh_bool_t PROC_exists(CTX ctx, knh_Path_t *path)
+static kbool_t PROC_exists(CTX ctx, knh_Path_t *path)
 {
 	return 0;
 }
@@ -131,7 +131,7 @@ static inline CWB_t *CWB_open(CTX ctx, CWB_t *cwb)
 	return cwb;
 }
 
-static inline void CWB_write(CTX ctx, CWB_t *cwb, knh_bytes_t t)
+static inline void CWB_write(CTX ctx, CWB_t *cwb, kbytes_t t)
 {
 	knh_Bytes_write(ctx, (cwb->ba), t);
 }
@@ -154,7 +154,7 @@ static inline void CWB_close(CTX ctx, CWB_t *cwb)
 /* ------------------------------------------------------------------------ */
 // [process]
 
-static void child(CTX ctx, knh_sfp_t *sfp, knh_Array_t *args, knh_DictMap_t *env)
+static void child(CTX ctx, ksfp_t *sfp, knh_Array_t *args, knh_DictMap_t *env)
 {
 	size_t i, asize = knh_Array_size(args), msize = env->spi->size(ctx, env->mapptr);
 	char *p, *s, *cargs[asize + 1], *cenv[msize + 1];
@@ -208,7 +208,7 @@ static void trapPIPE (int sig, siginfo_t *si, void *ptr)
 #include <signal.h>
 //## @Native Proc Proc.new(String[] args, Map<String, String> env);
 
-KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Proc_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
 	knh_Array_t *args = sfp[1].a;
@@ -298,7 +298,7 @@ KMETHOD Proc_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native InputStream Proc.getInputStream();
-KMETHOD Proc_getInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Proc_getInputStream(CTX ctx, ksfp_t *sfp _RIX)
 {
 	KNH_TODO(__FUNCTION__);
 	//knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
@@ -306,7 +306,7 @@ KMETHOD Proc_getInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native OutputStream Proc.getOutputStream();
-KMETHOD Proc_getOutputStream(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Proc_getOutputStream(CTX ctx, ksfp_t *sfp _RIX)
 {
 	KNH_TODO(__FUNCTION__);
 	//knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
@@ -314,7 +314,7 @@ KMETHOD Proc_getOutputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native InputStream Proc.getErrorInputStream();
-KMETHOD Proc_getErrorInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Proc_getErrorInputStream(CTX ctx, ksfp_t *sfp _RIX)
 {
 	KNH_TODO(__FUNCTION__);
 	//knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
@@ -322,7 +322,7 @@ KMETHOD Proc_getErrorInputStream(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void Proc.terminate();
-KMETHOD Proc_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Proc_terminate(CTX ctx, ksfp_t *sfp _RIX)
 {
 	// [TODO] FIXME
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
@@ -339,7 +339,7 @@ KMETHOD Proc_terminate(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int Proc.wait();
-KMETHOD Proc_wait(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Proc_wait(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
 	int status = 0;
@@ -363,7 +363,7 @@ KMETHOD Proc_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean Proc.isAlive();
-KMETHOD Proc_isAlive(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Proc_isAlive(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Proc_t *sp = (knh_Proc_t *)sfp[0].o;
 	int status = 0;
@@ -393,7 +393,7 @@ KMETHOD Proc_isAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ======================================================================== */
 // [DEFAPI]
 
-DEFAPI(void) defProc(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defProc(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Proc";
 	cdef->init = Proc_init;

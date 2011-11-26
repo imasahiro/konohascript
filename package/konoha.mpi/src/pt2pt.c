@@ -5,7 +5,7 @@
 /* ------------------------------------------------------------------------ */
 //## method int MPIComm.send(MPIData sdata, int count, int dest, int tag);
 
-KMETHOD MPIComm_send(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_send(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -19,7 +19,7 @@ KMETHOD MPIComm_send(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method int MPIComm.recv(MPIData rdata, int offset, int count, int src_rank, int tag);
 
-KMETHOD MPIComm_recv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(rdata, sfp[1].o);
@@ -48,7 +48,7 @@ KMETHOD MPIComm_recv(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method int MPIComm.sendrecv(MPIData sdata, int scount, int dest_rank, int stag, MPIData rdata, int rcount, int src_rank,  int rtag);
 
-KMETHOD MPIComm_sendrecv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_sendrecv(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -80,7 +80,7 @@ KMETHOD MPIComm_sendrecv(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method MPIRequest MPIComm.iSend(MPIData sdata, int count, int dest_rank, int tag, MPIRequest _);
 
-KMETHOD MPIComm_iSend(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_iSend(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(sdata, sfp[1].o);
@@ -97,7 +97,7 @@ KMETHOD MPIComm_iSend(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method MPIRequest MPIComm.iRecv(MPIData rdata, int count, int src_rank, int tag, MPIRequest _);
 
-KMETHOD MPIComm_iRecv(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIComm_iRecv(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIC(comm, sfp[0].o);
 	MPID(rdata, sfp[1].o);
@@ -130,7 +130,7 @@ KMETHOD MPIComm_iRecv(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIRequest.test();
 
-KMETHOD MPIRequest_test(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIRequest_test(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIR(req, sfp[0].o);
 	MPI_Status stat;
@@ -151,7 +151,7 @@ KMETHOD MPIRequest_test(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIRequest.wait();
 
-KMETHOD MPIRequest_wait(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIRequest_wait(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIR(req, sfp[0].o);
 	MPI_Status stat;
@@ -171,7 +171,7 @@ KMETHOD MPIRequest_wait(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIRequest.cancel();
 
-KMETHOD MPIRequest_cancel(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIRequest_cancel(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIR(req, sfp[0].o);
 	RETURNb_(MPI_Cancel(MPIR_REQ(req)) == MPI_SUCCESS ? 1 : 0);

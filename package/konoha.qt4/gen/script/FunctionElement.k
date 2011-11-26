@@ -484,7 +484,7 @@ class FunctionElement {
 			}
 			break;
 		default:
-			bind += ("KMETHOD " + class_name + "_" + func_name + "(CTX ctx, knh_sfp_t *sfp _RIX)\n");
+			bind += ("KMETHOD " + class_name + "_" + func_name + "(CTX ctx, ksfp_t *sfp _RIX)\n");
 			bind += "{\n";
 			bind += "\t(void)ctx;\n";
 			if (staticFlag) {

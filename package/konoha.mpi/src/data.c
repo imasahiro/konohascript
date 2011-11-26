@@ -5,7 +5,7 @@
 /* ------------------------------------------------------------------------ */
 /* TYPEMAP */
 
-TYPEMAP Int_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP Int_MPIData(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->i = new_Int(ctx, sfp[1].ivalue);
@@ -15,7 +15,7 @@ TYPEMAP Int_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data);
 }
 
-TYPEMAP int___MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP int___MPIData(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->a = sfp[1].a;
@@ -25,7 +25,7 @@ TYPEMAP int___MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data);
 }
 
-TYPEMAP Float_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP Float_MPIData(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->f = new_Float_(ctx, CLASS_Float, sfp[1].fvalue);
@@ -35,7 +35,7 @@ TYPEMAP Float_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data);
 }
 
-TYPEMAP float___MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP float___MPIData(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->a = sfp[1].a;
@@ -45,7 +45,7 @@ TYPEMAP float___MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data);
 }
 
-TYPEMAP Bytes_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP Bytes_MPIData(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->ba = sfp[1].ba;
@@ -55,7 +55,7 @@ TYPEMAP Bytes_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data);
 }
 
-TYPEMAP String_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP String_MPIData(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->s = sfp[1].s;
@@ -65,7 +65,7 @@ TYPEMAP String_MPIData(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data);
 }
 
-TYPEMAP MPIData_int__(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP MPIData_int__(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, sfp[1].o);
 	if (MPID_DCID(data) != CLASS_Array || MPID_TYPE(data) != MPI_LONG) {
@@ -74,7 +74,7 @@ TYPEMAP MPIData_int__(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data->a);
 }
 
-TYPEMAP MPIData_float__(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP MPIData_float__(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, sfp[1].o);
 	if (MPID_DCID(data) != CLASS_Array || MPID_TYPE(data) != MPI_DOUBLE) {
@@ -83,7 +83,7 @@ TYPEMAP MPIData_float__(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(data->a);
 }
 
-TYPEMAP MPIData_Bytes(CTX ctx, knh_sfp_t *sfp _RIX)
+TYPEMAP MPIData_Bytes(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, sfp[1].o);
 	if (MPID_DCID(data) != CLASS_Bytes || MPID_TYPE(data) != MPI_CHAR) {
@@ -203,7 +203,7 @@ void  knh_MPIData_checkCount(knh_MPIData_t *data, int *count)
 /* ------------------------------------------------------------------------ */
 //## method Class MPIData.getContentClass();
 
-KMETHOD MPIData_getContentClass(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIData_getContentClass(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, sfp[0].o);
 	RETURN_(new_Type(ctx, O_cid(data->o)));
@@ -212,7 +212,7 @@ KMETHOD MPIData_getContentClass(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## method MPIData MPIData.opADD(int offset);
 
-KMETHOD MPIData_opADD(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIData_opADD(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, sfp[0].o);
 	MPID(newdata, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));

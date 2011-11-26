@@ -55,7 +55,7 @@ extern "C" {
 //	XmlDoc_free(ctx, po);
 //}
 //
-//DEFAPI(void) defXmlDoc(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+//DEFAPI(void) defXmlDoc(CTX ctx, kclass_t cid, kClassDef *cdef)
 //{
 //	cdef->name = "XmlDoc";
 //	cdef->init = XmlDoc_init;
@@ -85,13 +85,13 @@ extern "C" {
 ////		{NULL} // end of const
 ////};
 ////
-////DEFAPI(void) constXmlDoc(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+////DEFAPI(void) constXmlDoc(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 ////{
 ////	kapi->loadClassIntConst(ctx, cid, XmlDocConstint);
 ////}
 //
 ////## @Native @Throwable XmlDoc XmlDoc.new(String version, XmlDoc _);
-//KMETHOD XmlDoc_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlDoc_new(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //	xmlChar* version = String_to(xmlChar*, sfp[1]);
 //	xmlDocPtr doc = xmlNewDoc(version);
@@ -99,7 +99,7 @@ extern "C" {
 //	RETURN_(po);
 //}
 
-//KMETHOD Xml_setAttr(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Xml_setAttr(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlDocPtr doc = Glue_to(xmlDocPtr, sfp[0]);
 //    xmlChar *name  = String_to(xmlChar*, sfp[1]);
@@ -108,7 +108,7 @@ extern "C" {
 //    KNH_RETURN_void(ctx,sfp);
 //}
 //
-//KMETHOD Xml_createNode(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Xml_createNode(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlDocPtr doc = Glue_to(xmlDocPtr, sfp[0]);
 //    xmlChar *name = String_to(xmlChar*, sfp[1]);
@@ -116,14 +116,14 @@ extern "C" {
 //    RETURN_(new_Glue(ctx,(char*)"libxml2.XmlNode",doc->children,NULL));
 //}
 //
-//KMETHOD Xml_getRoot(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Xml_getRoot(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlDocPtr doc = Glue_to(xmlDocPtr, sfp[0]);
 //    xmlNodePtr node = xmlDocGetRootElement(doc);
 //    RETURN_(new_Glue(ctx,(char*)"libxml2.XmlNode",node,NULL));
 //}
 //
-//KMETHOD Xml_dump(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Xml_dump(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlDocPtr doc = Glue_to(xmlDocPtr, sfp[0]);
 //    xmlChar* ret;
@@ -132,7 +132,7 @@ extern "C" {
 //    KNH_RETURN(ctx, sfp, new_String(ctx, B((char*)ret), NULL));
 //}
 //
-//KMETHOD Xml_dumpEnc(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD Xml_dumpEnc(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlDocPtr doc = Glue_to(xmlDocPtr, sfp[0]);
 //    char* enc = String_to(char*, sfp[1]);
@@ -143,7 +143,7 @@ extern "C" {
 //}
 //
 ///* XmlNode */
-//KMETHOD XmlNode_createNode(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_createNode(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr parent = Glue_to(xmlNodePtr, sfp[0]);
 //    xmlChar *name = String_to(xmlChar*, sfp[1]);
@@ -153,7 +153,7 @@ extern "C" {
 //    RETURN_(new_Glue(ctx,(char*)"libxml2.XmlNode",node,NULL));
 //}
 //
-//KMETHOD XmlNode_addChild(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_addChild(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr parent = (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlNodePtr child  = (xmlNodePtr) p_cptr(sfp[1]);
@@ -161,7 +161,7 @@ extern "C" {
 //    KNH_RETURN_void(ctx,sfp);
 //}
 //
-//KMETHOD XmlNode_setAttr(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_setAttr(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node= (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlChar *name = String_to(xmlChar *, sfp[1]);
@@ -170,7 +170,7 @@ extern "C" {
 //    KNH_RETURN_void(ctx,sfp);
 //}
 //
-//KMETHOD XmlNode_getContent(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_getContent(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node= (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlChar* ret = (xmlChar *)"";
@@ -181,7 +181,7 @@ extern "C" {
 //    KNH_RETURN(ctx, sfp, new_String(ctx, B((char*)ret), NULL));
 //}
 //
-//KMETHOD XmlNode_getName(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_getName(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node= (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlChar* ret = (xmlChar *)"";
@@ -191,7 +191,7 @@ extern "C" {
 //    KNH_RETURN(ctx, sfp, new_String(ctx, B((char*)ret), NULL));
 //}
 //
-//KMETHOD XmlNode_getAttr(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_getAttr(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node= (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlChar *name = String_to(xmlChar *, sfp[1]);
@@ -203,7 +203,7 @@ extern "C" {
 //}
 //
 //
-//KMETHOD XmlNode_getChild(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_getChild(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node  = (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlNodePtr child = (xmlNodePtr) node->children;
@@ -213,7 +213,7 @@ extern "C" {
 //    RETURN_(new_Glue(ctx,(char*)"libxml2.XmlNode",child,NULL));
 //}
 //
-//KMETHOD XmlNode_getNext(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_getNext(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node = (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlNodePtr next = (xmlNodePtr) node->next;
@@ -223,7 +223,7 @@ extern "C" {
 //    RETURN_(new_Glue(ctx,(char*)"libxml2.XmlNode",next,NULL));
 //}
 //
-//KMETHOD XmlNode_hasChild(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_hasChild(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node= (xmlNodePtr) p_cptr(sfp[0]);
 //    if(node->children) {
@@ -232,7 +232,7 @@ extern "C" {
 //    KNH_RETURN_boolean(ctx, sfp, 0);
 //}
 //
-//KMETHOD XmlNode_hasNext(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_hasNext(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node= (xmlNodePtr) p_cptr(sfp[0]);
 //    if(node->next) {
@@ -243,7 +243,7 @@ extern "C" {
 //
 ///*
 //static xmlDocPtr document = NULL;
-//KMETHOD XmlNode_dump(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XmlNode_dump(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlNodePtr node= (xmlNodePtr) p_cptr(sfp[0]);
 //    xmlElemDump(stdout,document,node);
@@ -259,7 +259,7 @@ extern "C" {
 //    xmlCleanupParser();
 //}
 //
-//KMETHOD XPath_new(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XPath_new(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlDocPtr doc = (xmlDocPtr) p_cptr(sfp[1]);
 //    xmlXPathContextPtr xctx;
@@ -270,7 +270,7 @@ extern "C" {
 //    RETURN_(sfp[0].o);
 //}
 //
-//KMETHOD XPath_find(CTX ctx, knh_sfp_t *sfp _RIX)
+//KMETHOD XPath_find(CTX ctx, ksfp_t *sfp _RIX)
 //{
 //    xmlXPathContextPtr xctx = (xmlXPathContextPtr) p_cptr(sfp[0]);
 //    xmlChar *xpath = String_to(xmlChar *, sfp[1]);
@@ -308,7 +308,7 @@ static void XmlReader_checkout(CTX ctx, knh_RawPtr_t *po, int isFailed)
 	XmlReader_free(ctx, po);
 }
 
-DEFAPI(void) defXmlReader(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defXmlReader(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "XmlReader";
 	cdef->init = XmlReader_init;
@@ -338,13 +338,13 @@ static knh_IntData_t XmlReaderConstint[] = {
 		{NULL} // end of const
 };
 
-DEFAPI(void) constXmlReader(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constXmlReader(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, XmlReaderConstint);
 }
 
 //## @Native @Throwable XmlReader XmlReader.new(Path _);
-KMETHOD XmlReader_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Path_t *pth = sfp[1].pth;
 	xmlTextReaderPtr reader = xmlNewTextReaderFilename(pth->ospath);
@@ -357,7 +357,7 @@ KMETHOD XmlReader_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native void XmlReader.close();
-KMETHOD XmlReader_close(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_close(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr)(sfp[0].p)->rawptr;
 	if(reader != NULL) {
@@ -367,7 +367,7 @@ KMETHOD XmlReader_close(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.getQuoteChar();
-KMETHOD XmlReader_getQuoteChar(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_getQuoteChar(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char buf[4] = {0};
@@ -381,7 +381,7 @@ KMETHOD XmlReader_getQuoteChar(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.read();
-KMETHOD XmlReader_read(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_read(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr)(sfp[0].p)->rawptr;
 	int ret = 0;
@@ -392,7 +392,7 @@ KMETHOD XmlReader_read(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int XmlReader.readState();
-KMETHOD XmlReader_readState(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_readState(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderReadState(reader) : 0;
@@ -400,7 +400,7 @@ KMETHOD XmlReader_readState(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int XmlReader.nodeType();
-KMETHOD XmlReader_nodeType(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_nodeType(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderNodeType(reader) : 0;
@@ -408,7 +408,7 @@ KMETHOD XmlReader_nodeType(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.isNamespaceDecl();
-KMETHOD XmlReader_isNamespaceDecl(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_isNamespaceDecl(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderIsNamespaceDecl(reader) : 0;
@@ -416,7 +416,7 @@ KMETHOD XmlReader_isNamespaceDecl(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.isEmptyElement();
-KMETHOD XmlReader_isEmptyElement(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_isEmptyElement(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderIsEmptyElement(reader) : 0;
@@ -424,7 +424,7 @@ KMETHOD XmlReader_isEmptyElement(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.hasAttributes();
-KMETHOD XmlReader_hasAttributes(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_hasAttributes(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderHasAttributes(reader) : 0;
@@ -432,7 +432,7 @@ KMETHOD XmlReader_hasAttributes(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.hasValue();
-KMETHOD XmlReader_hasValue(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_hasValue(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderHasValue(reader) : 0;
@@ -440,7 +440,7 @@ KMETHOD XmlReader_hasValue(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int XmlReader.getDepth();
-KMETHOD XmlReader_getDepth(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_getDepth(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderDepth(reader) : 0;
@@ -448,7 +448,7 @@ KMETHOD XmlReader_getDepth(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int XmlReader.getAttributeCount();
-KMETHOD XmlReader_getAttributeCount(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_getAttributeCount(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderAttributeCount(reader) : 0;
@@ -456,7 +456,7 @@ KMETHOD XmlReader_getAttributeCount(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.moveToFirstAttribute();
-KMETHOD XmlReader_moveToFirstAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_moveToFirstAttribute(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderMoveToFirstAttribute(reader) : 0;
@@ -464,7 +464,7 @@ KMETHOD XmlReader_moveToFirstAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.moveToNextAttribute();
-KMETHOD XmlReader_moveToNextAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_moveToNextAttribute(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderMoveToNextAttribute(reader) : 0;
@@ -472,7 +472,7 @@ KMETHOD XmlReader_moveToNextAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean XmlReader.moveToElement();
-KMETHOD XmlReader_moveToElement(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_moveToElement(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderMoveToElement(reader) : 0;
@@ -480,7 +480,7 @@ KMETHOD XmlReader_moveToElement(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constBaseUri();
-KMETHOD XmlReader_constBaseUri(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constBaseUri(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*) xmlTextReaderConstBaseUri(reader) : NULL;
@@ -488,7 +488,7 @@ KMETHOD XmlReader_constBaseUri(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constEncoding();
-KMETHOD XmlReader_constEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constEncoding(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*)xmlTextReaderConstEncoding(reader) : NULL;
@@ -496,7 +496,7 @@ KMETHOD XmlReader_constEncoding(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constValue();
-KMETHOD XmlReader_constValue(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constValue(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*) xmlTextReaderConstValue(reader) : NULL;
@@ -504,7 +504,7 @@ KMETHOD XmlReader_constValue(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constNamespaceUri();
-KMETHOD XmlReader_constNamespaceUri(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constNamespaceUri(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*) xmlTextReaderConstNamespaceUri(reader) : NULL;
@@ -512,7 +512,7 @@ KMETHOD XmlReader_constNamespaceUri(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constLocalName();
-KMETHOD XmlReader_constLocalName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constLocalName(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*) xmlTextReaderConstLocalName(reader) : NULL;
@@ -520,7 +520,7 @@ KMETHOD XmlReader_constLocalName(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constName();
-KMETHOD XmlReader_constName(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constName(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*) xmlTextReaderConstName(reader) : NULL;
@@ -528,7 +528,7 @@ KMETHOD XmlReader_constName(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constXmlLang();
-KMETHOD XmlReader_constXmlLang(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constXmlLang(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*) xmlTextReaderConstXmlLang(reader) : NULL;
@@ -536,7 +536,7 @@ KMETHOD XmlReader_constXmlLang(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.constPrefix();
-KMETHOD XmlReader_constPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_constPrefix(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	char* ret = (reader != NULL) ? (char*) xmlTextReaderConstPrefix(reader) : NULL;
@@ -545,7 +545,7 @@ KMETHOD XmlReader_constPrefix(CTX ctx, knh_sfp_t *sfp _RIX)
 
 
 //## @Native String XmlReader.getAttribute();
-KMETHOD XmlReader_getAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_getAttribute(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	xmlChar * ns = String_to(xmlChar *, sfp[1]);
@@ -554,7 +554,7 @@ KMETHOD XmlReader_getAttribute(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.getAttributeNo(int numer);
-KMETHOD XmlReader_getAttributeNo(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_getAttributeNo(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int num = (int)(sfp[1].ivalue);
@@ -563,7 +563,7 @@ KMETHOD XmlReader_getAttributeNo(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.getAttributeNs(String ns, String name);
-KMETHOD XmlReader_getAttributeNs(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_getAttributeNs(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	xmlChar* ns   = String_to(xmlChar*, sfp[1]);
@@ -573,7 +573,7 @@ KMETHOD XmlReader_getAttributeNs(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String XmlReader.lookupNameSpace(String ns);
-KMETHOD XmlReader_lookupNameSpace(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_lookupNameSpace(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	xmlChar* ns   = String_to(xmlChar*, sfp[1]);
@@ -582,7 +582,7 @@ KMETHOD XmlReader_lookupNameSpace(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native int XmlReader.normalization();
-KMETHOD XmlReader_normalization(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD XmlReader_normalization(CTX ctx, ksfp_t *sfp _RIX)
 {
 	xmlTextReaderPtr reader = (xmlTextReaderPtr) (sfp[0].p)->rawptr;
 	int ret = (reader != NULL) ? xmlTextReaderNormalization(reader) : 0;

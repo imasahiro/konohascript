@@ -46,9 +46,9 @@ static knh_Expr_t *Expr_setConst_(CTX ctx, knh_Expr_t *expr, knh_Object_t *data)
 	return expr;
 }
 
-static knh_Expr_t* Expr_typeCheck(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, knh_class_t reqt);
+static knh_Expr_t* Expr_typeCheck(CTX ctx, knh_Expr_t *expr, knh_Gamma_t *gma, kclass_t reqt);
 
-static knh_Object_t *Expr_getConst(CTX ctx, knh_Expr_t *expr, knh_class_t cid)
+static knh_Object_t *Expr_getConst(CTX ctx, knh_Expr_t *expr, kclass_t cid)
 {
 	if(Expr_typeCheck(ctx, expr, NULL, cid)) {
 		if(expr->kexpr == TEXPR_CONST) {
@@ -78,20 +78,20 @@ static knh_Object_t *Expr_getConst(CTX ctx, knh_Expr_t *expr, knh_class_t cid)
 typedef struct flagop_t {
 	const char *key;
 	size_t keysize;
-	knh_flag_t flag;
+	kflag_t flag;
 } flagop_t ;
 
-static knh_flag_t Stmt_flag(CTX ctx, knh_Stmt_t *stmt, flagop_t *fop, knh_flag_t flag)
+static kflag_t Stmt_flag(CTX ctx, knh_Stmt_t *stmt, flagop_t *fop, kflag_t flag)
 {
 	while(fop->key != NULL) {
-		knh_bytes_t n = {{fop->key}, fop->keysize};
+		kbytes_t n = {{fop->key}, fop->keysize};
 		knh_Object_t *op = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, n);
 		if(op != NULL) flag |= fop->flag;
 	}
 	return flag;
 }
 
-static knh_Object_t* Stmt_getConst_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_class_t cid)
+static knh_Object_t* Stmt_getConst_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, kclass_t cid)
 {
 	knh_Object_t *term = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
 	if(term != NULL && IS_Expr(term)) {
@@ -100,7 +100,7 @@ static knh_Object_t* Stmt_getConst_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name,
 	return NULL;
 }
 
-static knh_int_t Stmt_getint_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_int_t defn)
+static kint_t Stmt_getint_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, kint_t defn)
 {
 	knh_Object_t *o = Stmt_getConst_(ctx, stmt, name, CLASS_Int);
 	if(o != NULL) {
@@ -110,7 +110,7 @@ static knh_int_t Stmt_getint_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_i
 }
 
 
-static knh_Token_t *Stmt_getTokenNULL_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name)
+static knh_Token_t *Stmt_getTokenNULL_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name)
 {
 	knh_Object_t *term = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
 	if(term != NULL && IS_Expr(term)) {
@@ -119,7 +119,7 @@ static knh_Token_t *Stmt_getTokenNULL_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t na
 	return NULL;
 }
 
-static knh_Block_t *Stmt_getBlock_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name)
+static knh_Block_t *Stmt_getBlock_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name)
 {
 	knh_Block_t *bk = (knh_Block_t*)knh_DictMap_getNULL(ctx, stmt->clauseDictMap, name);
 	if(bk != NULL && IS_Block(bk)) {
@@ -128,14 +128,14 @@ static knh_Block_t *Stmt_getBlock_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name)
 	return KNH_TNULL(Block);
 }
 
-static knh_class_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_NameSpace_t *ns, knh_class_t defcid)
+static kclass_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, knh_NameSpace_t *ns, kclass_t defcid)
 {
 //	knh_Expr_t *expr = Stmt_getExprNULL_(ctx, stmt, name);
 //	if(expr == NULL) {
 //		return defcid;
 //	}
 //	if(expr->kexpr == UEXPR_TOKEN) {
-//		knh_class_t cid = knh_NameSpace_getcid(ctx, ns, S_tobytes(expr->token->text));
+//		kclass_t cid = knh_NameSpace_getcid(ctx, ns, S_tobytes(expr->token->text));
 //		if(cid == CLASS_unknown) {
 //			ERROR_TokenUndefined(ctx, tk, "class");
 //			ERROR_TokenAlternativeClass(ctx, tk, defcid);
@@ -162,7 +162,7 @@ static knh_class_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh
 //	return fn;
 //}
 //
-//static knh_methodn_t Term_mn(CTX ctx, knh_Term_t *tk)
+//static kmethodn_t Term_mn(CTX ctx, knh_Term_t *tk)
 //{
 //	if(TT_(tk) == TT_FUNCNAME || TT_(tk) == TT_NAME || TT_(tk) == TT_UNAME || TT_(tk) == TT_UFUNCNAME) {
 //		TT_(tk) = TT_MN;
@@ -188,19 +188,19 @@ static knh_class_t Stmt_getcid_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh
 //	return (tk)->mn;
 //}
 
-static ksymbol_t Stmt_getfn_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, ksymbol_t deffn)
+static ksymbol_t Stmt_getfn_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, ksymbol_t deffn)
 {
 	return deffn;
 }
 
-static knh_methodn_t Stmt_getmn_(CTX ctx, knh_Stmt_t *stmt, knh_bytes_t name, knh_methodn_t defmn)
+static kmethodn_t Stmt_getmn_(CTX ctx, knh_Stmt_t *stmt, kbytes_t name, kmethodn_t defmn)
 {
 //	knh_Expr_t *expr = Stmt_getExprNULL_(ctx, stmt, name);
 //	if(expr == NULL) {
 //		return defmn;
 //	}
 //	if(expr->kexpr == UEXPR_TOKEN) {
-//		knh_methodn_t mn = knh_getmn(ctx, TK_tobytes(tk), defmn);
+//		kmethodn_t mn = knh_getmn(ctx, TK_tobytes(tk), defmn);
 //		expr->kexpr = EXPR_METHOD;
 //		expr->mn   = mn;
 //	}

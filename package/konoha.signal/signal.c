@@ -96,7 +96,7 @@ void signal_handler(int signum)
 // [KMETHODS]
 
 //## @Native void Signal.signal(int signum, Func<int> sighandler);
-KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Signal_signal(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int signum = Int_to(int, sfp[1]);
 	if(ctx->sighandlers == NULL) {
@@ -128,7 +128,7 @@ KMETHOD Signal_signal(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean Signal.kill(int pid, int signal);
-KMETHOD Signal_kill(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Signal_kill(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int pe = (kill(Int_to(int, sfp[1]), Int_to(int, sfp[2])) == -1) ? K_PERROR : K_OK;
 	KNH_NTRACE2(ctx, "kill", pe, KNH_LDATA(
@@ -138,7 +138,7 @@ KMETHOD Signal_kill(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native boolean Signal.raise(int signal);
-KMETHOD Signal_raise(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Signal_raise(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int pe = (raise(Int_to(int, sfp[1])) == -1) ? K_PERROR : K_OK;
 	KNH_NTRACE2(ctx, "raise", pe, KNH_LDATA(LOG_i("signal", Int_to(int, sfp[1]))));
@@ -147,7 +147,7 @@ KMETHOD Signal_raise(CTX ctx, knh_sfp_t *sfp _RIX)
 
 //## @Native int Signal.alarm(int seconds);
 
-KMETHOD Signal_alarm(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Signal_alarm(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(alarm(Int_to(unsigned int, sfp[1])));
 }
@@ -156,12 +156,12 @@ KMETHOD Signal_alarm(CTX ctx, knh_sfp_t *sfp _RIX)
 // [DEFAPI]
 
 
-DEFAPI(void) defSignal(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defSignal(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Signal";
 }
 
-DEFAPI(void) constSignal(CTX ctx, knh_class_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constSignal(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, SignalConstInt);
 }

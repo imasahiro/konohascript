@@ -174,7 +174,7 @@ knh_Term_t* ERROR_SingleParam(CTX ctx)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("syntax error: always takes only one parameter"));
 }
-//knh_Term_t* ErrorExtendingFinalClass(CTX ctx, knh_class_t cid)
+//knh_Term_t* ErrorExtendingFinalClass(CTX ctx, kclass_t cid)
 //{
 //	return GammaBuilder_perror(ctx, KC_ERR, _("cannot extends final class %C"), cid);
 //}
@@ -226,7 +226,7 @@ knh_Term_t* ErrorMisplaced(CTX ctx)
 //	DBG_ABORT("stop why?");
 //	return tkERR;
 //}
-knh_Term_t* ERROR_UnableToAdd(CTX ctx, knh_class_t cid, const char *whatis)
+knh_Term_t* ERROR_UnableToAdd(CTX ctx, kclass_t cid, const char *whatis)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("%T is unable to add new %s"), cid, whatis);
 }
@@ -277,7 +277,7 @@ knh_Term_t* ERROR_RegexCompilation(CTX ctx, knh_Term_t *tk, const char *regname,
 {
 	return knh_Term_toERR(ctx, tk, _("%s compile error: %s"), regname, regdata);
 }
-knh_Term_t* ERROR_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Term_t *tk)
+knh_Term_t* ERROR_Undefined(CTX ctx, const char *whatis, kclass_t cid, knh_Term_t *tk)
 {
 	if(cid != CLASS_unknown) {
 		return knh_Term_toERR(ctx, tk, _("undefined %s: %T.%O"), whatis, cid, tk);
@@ -290,7 +290,7 @@ knh_Term_t* ERROR_UndefinedName(CTX ctx, knh_Term_t *tk)
 {
 	return knh_Term_toERR(ctx, tk, _("undefined name: %O"), tk);
 }
-void WARN_Undefined(CTX ctx, const char *whatis, knh_class_t cid, knh_Term_t *tk)
+void WARN_Undefined(CTX ctx, const char *whatis, kclass_t cid, knh_Term_t *tk)
 {
 	if(cid != CLASS_unknown) {
 		GammaBuilder_perror(ctx, KC_EWARN, _("undefined %s: %T.%O"), whatis, cid, tk);
@@ -307,7 +307,7 @@ void WARN_AlreadyDefined(CTX ctx, const char *whatis, Object *o)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("already defined %s: %O"), whatis, o);
 }
-void WARN_AlreadyDefinedClass(CTX ctx, knh_class_t cid, knh_class_t oldcid)
+void WARN_AlreadyDefinedClass(CTX ctx, kclass_t cid, kclass_t oldcid)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("%C is already defined: %C"), cid, oldcid);
 }
@@ -315,7 +315,7 @@ knh_Term_t* ERROR_Denied(CTX ctx, const char *why, knh_Term_t *tk)
 {
 	return knh_Term_toERR(ctx, tk, _("%s: %O"), why, tk);
 }
-void WarningUnknownClass(CTX ctx, knh_Term_t *tk, knh_class_t defc)
+void WarningUnknownClass(CTX ctx, knh_Term_t *tk, kclass_t defc)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("unknown class: %L ==> %T"), tk, defc);
 }
@@ -323,7 +323,7 @@ knh_Term_t* ERROR_UnableToAssign(CTX ctx, knh_Term_t *tk)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("unable to make assignment"));
 }
-knh_Term_t* ErrorUnsupportedConstructor(CTX ctx, knh_class_t mtd_cid)
+knh_Term_t* ErrorUnsupportedConstructor(CTX ctx, kclass_t mtd_cid)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("the constructor of %T is not supported"), mtd_cid);
 }
@@ -331,7 +331,7 @@ knh_Term_t* ERROR_UndefinedBehavior(CTX ctx, const char *token)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("undefined behavior: %s"), token);
 }
-knh_Term_t* ERROR_CompilerControlledParameter(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn, int n)
+knh_Term_t* ERROR_CompilerControlledParameter(CTX ctx, kclass_t mtd_cid, kmethodn_t mn, int n)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("compiler controlled parameter: %C.%M(#%d)"), mtd_cid, mn, n);
 }
@@ -340,18 +340,18 @@ knh_Term_t* ERROR_RequiredParameter(CTX ctx)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("needs a parameter to infer its type"));
 }
-void WARN_WrongTypeParam(CTX ctx, knh_class_t cid)
+void WARN_WrongTypeParam(CTX ctx, kclass_t cid)
 {
 	if(cid != CLASS_unknown) {
-		knh_bytes_t bname = C_bname(cid);
+		kbytes_t bname = C_bname(cid);
 		GammaBuilder_perror(ctx, KC_DWARN, "%B<>: wrong type parameter", bname);
 	}
 }
-void INFO_Typing(CTX ctx, const char *prefix, knh_bytes_t name, knh_type_t type)
+void INFO_Typing(CTX ctx, const char *prefix, kbytes_t name, ktype_t type)
 {
 	GammaBuilder_perror(ctx, KC_TINFO, "suppose %s%B has %T type", prefix, name, type);
 }
-void WARN_Overflow(CTX ctx, const char *floatorint, knh_bytes_t t)
+void WARN_Overflow(CTX ctx, const char *floatorint, kbytes_t t)
 {
 	GammaBuilder_perror(ctx, KC_EWARN, _("%s overflow: %B"), floatorint, t);
 }
@@ -362,7 +362,7 @@ void WARN_Unused(CTX ctx, knh_Term_t *tk, ksymbol_t fn)
 	GammaBuilder_perror(ctx, KC_DWARN, _("unused %N"), fn);
 	ctx->gma->uline = uline;
 }
-knh_Term_t* ERROR_AlreadyDefinedType(CTX ctx, ksymbol_t fn, knh_type_t type)
+knh_Term_t* ERROR_AlreadyDefinedType(CTX ctx, ksymbol_t fn, ktype_t type)
 {
 	return GammaBuilder_perror(ctx, KC_TERROR, _("already defined: previous type %T %N"), type, fn);
 }
@@ -374,7 +374,7 @@ knh_Term_t* ErrorTooManyVariables(CTX ctx)
 //{
 //	GammaBuilder_perror(ctx, KC_DWARN, _("too many return values"));
 //}
-void WARN_UseDefaultValue(CTX ctx, const char *whatis, knh_type_t type)
+void WARN_UseDefaultValue(CTX ctx, const char *whatis, ktype_t type)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("%s default value of %T"), whatis, type);
 }
@@ -404,7 +404,7 @@ void WARN_MethodIs(CTX ctx, knh_Method_t *mtd, const char *how)
 		GammaBuilder_perror(ctx, KC_DWARN, _("method is %s"), how);
 	}
 }
-knh_Term_t *ERROR_Unsupported(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
+knh_Term_t *ERROR_Unsupported(CTX ctx, const char *whatis, kclass_t cid, const char *symbol)
 {
 	if(symbol == NULL) {
 		return GammaBuilder_perror(ctx, KC_ERR, "unsupported %s", whatis);
@@ -420,7 +420,7 @@ void WARN_Unsupported(CTX ctx, const char *msg)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("unsupported %s"), msg);
 }
-void WARN_Ignored(CTX ctx, const char *whatis, knh_class_t cid, const char *symbol)
+void WARN_Ignored(CTX ctx, const char *whatis, kclass_t cid, const char *symbol)
 {
 	if(symbol == NULL) {
 		GammaBuilder_perror(ctx, KC_DWARN, "ignored %s", whatis, symbol);
@@ -457,28 +457,28 @@ knh_Term_t* ERROR_MustBe(CTX ctx, const char *whatis, const char* token)
 		return GammaBuilder_perror(ctx, KC_ERR, "%s must be %s", token, whatis);
 	}
 }
-knh_Term_t* ERROR_OutOfIndex(CTX ctx, knh_int_t s, knh_int_t n, knh_int_t e)
+knh_Term_t* ERROR_OutOfIndex(CTX ctx, kint_t s, kint_t n, kint_t e)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, "index must be %i <= %i < %i", s, n, e);
 }
-void WarningNullable(CTX ctx, knh_class_t cid)
+void WarningNullable(CTX ctx, kclass_t cid)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, "%C doesn't take null", cid);
 }
-knh_Term_t* ErrorComparedDiffrentType(CTX ctx, knh_type_t t1, knh_type_t t2)
+knh_Term_t* ErrorComparedDiffrentType(CTX ctx, ktype_t t1, ktype_t t2)
 {
 	return GammaBuilder_perror(ctx, KC_TERROR, _("comparison of different type: %T %T"), t1, t2);
 }
 /* type error */
-knh_Term_t *TERROR_Term(CTX ctx, knh_Term_t *tk, knh_class_t type, knh_class_t reqt)
+knh_Term_t *TERROR_Term(CTX ctx, knh_Term_t *tk, kclass_t type, kclass_t reqt)
 {
 	return knh_Term_toERR(ctx, tk, ("%O has type %T, not %T"), tk, reqt, type);
 }
-knh_Term_t *TypeErrorStmtNN(CTX ctx, knh_StmtExpr_t *stmt, int n, knh_type_t reqt, knh_type_t type)
+knh_Term_t *TypeErrorStmtNN(CTX ctx, knh_StmtExpr_t *stmt, int n, ktype_t reqt, ktype_t type)
 {
 	return GammaBuilder_perror(ctx, KC_TERROR, _("%s(%d) has type %T, not %T"), TT__(SP(stmt)->stt), n, reqt, type);
 }
-knh_Term_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, knh_class_t reqt, knh_class_t type)
+knh_Term_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, kclass_t reqt, kclass_t type)
 {
 	if(IS_Method(mtd)) {
 		return GammaBuilder_perror(ctx, KC_TERROR, _("%C.%M(#%d) has type %T, not %T"), (mtd)->cid, (mtd)->mn, n - 1, reqt, type);
@@ -489,11 +489,11 @@ knh_Term_t* TypeErrorCallParam(CTX ctx, int n, knh_Method_t *mtd, knh_class_t re
 		return GammaBuilder_perror(ctx, KC_TERROR, _("%s(#d) has type %T, not %T"), fname, n - 1, reqt, type);
 	}
 }
-void WARN_Cast(CTX ctx, const char *whatis, knh_class_t tcid, knh_class_t scid)
+void WARN_Cast(CTX ctx, const char *whatis, kclass_t tcid, kclass_t scid)
 {
 	GammaBuilder_perror(ctx, KC_EWARN, _("%s (%T)%T"), whatis, tcid, scid);
 }
-knh_Term_t* ERROR_ForeachNotIterative(CTX ctx, knh_class_t p1, knh_class_t type)
+knh_Term_t* ERROR_ForeachNotIterative(CTX ctx, kclass_t p1, kclass_t type)
 {
 	if(p1 == CLASS_Tvar) {
 		return GammaBuilder_perror(ctx, KC_ERR, "foreach %T is not iterative", type);
@@ -514,7 +514,7 @@ void WarningAlwaysFalseAssertion(CTX ctx)
 {
 GammaBuilder_perror(ctx, KC_EWARN, _("always throw Assertion!!"));
 }
-void WarningDifferentMethodClass(CTX ctx, knh_bytes_t name, knh_class_t cid)
+void WarningDifferentMethodClass(CTX ctx, kbytes_t name, kclass_t cid)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("different class: %B ==> %C"), name, cid);
 }
@@ -522,11 +522,11 @@ void WarningDeprecated(CTX ctx, const char *msg)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("depreciated %s"), msg);
 }
-knh_Term_t* ErrorFinalMethod(CTX ctx, knh_class_t cid, knh_methodn_t mn)
+knh_Term_t* ErrorFinalMethod(CTX ctx, kclass_t cid, kmethodn_t mn)
 {
 	return GammaBuilder_perror(ctx, KC_ERR, _("%C.%M is final"), cid, mn);
 }
-knh_Term_t* ErrorDifferentlyDefinedMethod(CTX ctx, knh_class_t mtd_cid, knh_methodn_t mn)
+knh_Term_t* ErrorDifferentlyDefinedMethod(CTX ctx, kclass_t mtd_cid, kmethodn_t mn)
 {
 	return GammaBuilder_perror(ctx, KC_TERROR, _("%C.%M must be defined the same"), mtd_cid, mn);
 }
@@ -550,7 +550,7 @@ void WARN_DividedByZero(CTX ctx)
 	GammaBuilder_perror(ctx, KC_DWARN, _("divided by zero"));
 }
 
-void WarningUndefinedFmt(CTX ctx, knh_class_t cid, knh_methodn_t mn)
+void WarningUndefinedFmt(CTX ctx, kclass_t cid, kmethodn_t mn)
 {
 	GammaBuilder_perror(ctx, KC_DWARN, _("undefined formatter: %M for %C"), mn, cid);
 }

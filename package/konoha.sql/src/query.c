@@ -50,11 +50,11 @@ extern knh_QueryDSPI_t DB__mysql;
 static void NOP_qfree(knh_qcur_t *qcur)
 {
 }
-static knh_qconn_t *NOP_qopen(CTX ctx, knh_bytes_t url)
+static knh_qconn_t *NOP_qopen(CTX ctx, kbytes_t url)
 {
 	return NULL;
 }
-static knh_qcur_t *NOP_query(CTX ctx, knh_qconn_t *hdr, knh_bytes_t sql, knh_ResultSet_t *rs)
+static knh_qcur_t *NOP_query(CTX ctx, knh_qconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
 {
 	return NULL;
 }
@@ -76,10 +76,10 @@ typedef struct knh_DSPI_t{
 	const char* name;
 }knh_DSPI_t;
 
-const knh_DSPI_t *knh_getDSPINULL(CTX ctx, int type, knh_bytes_t path)
+const knh_DSPI_t *knh_getDSPINULL(CTX ctx, int type, kbytes_t path)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_index_t idx = knh_bytes_index(path, ':');
+	kindex_t idx = knh_bytes_index(path, ':');
 	if (idx == -1) {
 		knh_write(ctx, cwb->w, path);
 	}
@@ -87,7 +87,7 @@ const knh_DSPI_t *knh_getDSPINULL(CTX ctx, int type, knh_bytes_t path)
 		knh_write(ctx, cwb->w, knh_bytes_first(path, idx));
 	}
 	knh_putc(ctx, cwb->w, ':');
-	knh_write_ifmt(ctx, cwb->w, K_INT_FMT, type);
+	knh_write_ifmt(ctx, cwb->w, KINT_FMT, type);
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	const knh_DSPI_t *p = (const knh_DSPI_t*)knh_DictSet_get(ctx, ctx->share->urnDictSet, CWB_tobytes(cwb));
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
@@ -95,7 +95,7 @@ const knh_DSPI_t *knh_getDSPINULL(CTX ctx, int type, knh_bytes_t path)
 	return p;
 }
 
-knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, knh_bytes_t path)
+knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, kbytes_t path)
 {
 	if(path.len == 0) {
 		return &NOP_DSPI;
@@ -114,7 +114,7 @@ knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, knh_bytes_t path)
 
 void knh_Connection_open(CTX ctx, knh_Connection_t *c, knh_String_t *urn)
 {
-	knh_bytes_t u = S_tobytes(urn);
+	kbytes_t u = S_tobytes(urn);
 	KNH_SETv(ctx, (c)->urn, urn);
 #ifdef K_USING_MYSQL
 	(c)->dspi = &DB__mysql;
@@ -142,7 +142,7 @@ void knh_Connection_close(CTX ctx, knh_Connection_t *c)
 /* ------------------------------------------------------------------------ */
 /* [ResultSet] */
 
-knh_bool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o)
+kbool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o)
 {
 	if(DP(o)->qcur != NULL) {
 		if(DP(o)->conn->dspi->qcurnext(ctx, DP(o)->qcur, o)) {
@@ -150,7 +150,7 @@ knh_bool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o)
 			return 1;
 		}
 		else {
-			knh_bytes_t t = {{""}, 0};
+			kbytes_t t = {{""}, 0};
 			DP(o)->qcurfree(DP(o)->qcur);
 			DP(o)->qcur = NULL;
 			DP(o)->qcurfree = knh_getQueryDSPI(ctx, t)->qcurfree;
@@ -162,7 +162,7 @@ knh_bool_t knh_ResultSet_next(CTX ctx, knh_ResultSet_t *o)
 void knh_ResultSet_close(CTX ctx, knh_ResultSet_t *o)
 {
 	if(DP(o)->qcur != NULL) {
-		knh_bytes_t t = {{""}, 0};
+		kbytes_t t = {{""}, 0};
 		DP(o)->qcurfree(DP(o)->qcur);
 		DP(o)->qcur = NULL;
 		DP(o)->qcurfree = knh_getQueryDSPI(ctx, t)->qcurfree;
@@ -198,7 +198,7 @@ KMETHOD knh_ResultSet_initColumn(CTX ctx, knh_ResultSet_t *o, size_t column_size
 }
 
 
-void knh_ResultSet_initTargetClass(knh_ResultSet_t *o, knh_class_t tcid)
+void knh_ResultSet_initTargetClass(knh_ResultSet_t *o, kclass_t tcid)
 {
 	DP(o)->tcid = tcid;
 }
@@ -221,7 +221,7 @@ knh_String_t *knh_ResultSet_getName(CTX ctx, knh_ResultSet_t *o, size_t n)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_ResultSet_findColumn(CTX ctx, knh_ResultSet_t *o, knh_bytes_t name)
+int knh_ResultSet_findColumn(CTX ctx, knh_ResultSet_t *o, kbytes_t name)
 {
 	size_t i = 0;
 	for(i = 0; i < DP(o)->column_size; i++) {
@@ -232,7 +232,7 @@ int knh_ResultSet_findColumn(CTX ctx, knh_ResultSet_t *o, knh_bytes_t name)
 
 /* ------------------------------------------------------------------------ */
 
-knh_type_t knh_ResultSet_get_type(CTX ctx, knh_ResultSet_t *o, size_t n)
+ktype_t knh_ResultSet_get_type(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	return DP(o)->column[n].type;
@@ -254,25 +254,25 @@ void knh_ResultSet_initData(CTX ctx, knh_ResultSet_t *rs)
 
 /* ------------------------------------------------------------------------ */
 
-KMETHOD ResultSet_setInt(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_int_t value)
+KMETHOD ResultSet_setInt(CTX ctx, knh_ResultSet_t *rs, size_t n, kint_t value)
 {
 	KNH_ASSERT(n < DP(rs)->column_size);
-	knh_bytes_t t = {{(const char*)(&value)}, sizeof(knh_int_t)};
+	kbytes_t t = {{(const char*)(&value)}, sizeof(kint_t)};
 	DP(rs)->column[n].ctype = knh_ResultSet_CTYPE__integer;
 	DP(rs)->column[n].start = BA_size(DP(rs)->databuf);
-	DP(rs)->column[n].len = sizeof(knh_int_t);
+	DP(rs)->column[n].len = sizeof(kint_t);
 	knh_Bytes_write(ctx, DP(rs)->databuf, t);
 }
 
 /* ------------------------------------------------------------------------ */
 
-KMETHOD ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_float_t value)
+KMETHOD ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, kfloat_t value)
 {
 	KNH_ASSERT(n < DP(rs)->column_size);
-	knh_bytes_t t = {{(const char*)(&value)}, sizeof(knh_float_t)};
+	kbytes_t t = {{(const char*)(&value)}, sizeof(kfloat_t)};
 	DP(rs)->column[n].ctype = knh_ResultSet_CTYPE__float;
 	DP(rs)->column[n].start = BA_size(DP(rs)->databuf);
-	DP(rs)->column[n].len = sizeof(knh_float_t);
+	DP(rs)->column[n].len = sizeof(kfloat_t);
 	knh_Bytes_write(ctx, DP(rs)->databuf, t);
 	int i, c = t.len % sizeof(void*);
 	for(i = 0; i < c; i++) knh_Bytes_putc(ctx, DP(rs)->databuf, 0);    /* zero */
@@ -280,7 +280,7 @@ KMETHOD ResultSet_setFloat(CTX ctx, knh_ResultSet_t *rs, size_t n, knh_float_t v
 
 /* ------------------------------------------------------------------------ */
 
-KMETHOD ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t)
+KMETHOD ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, kbytes_t t)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	DP(o)->column[n].ctype = knh_ResultSet_CTYPE__text;
@@ -293,7 +293,7 @@ KMETHOD ResultSet_setText(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t)
 
 /* ------------------------------------------------------------------------ */
 
-KMETHOD ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, knh_bytes_t t)
+KMETHOD ResultSet_setBlob(CTX ctx, knh_ResultSet_t *o, size_t n, kbytes_t t)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	DP(o)->column[n].ctype = knh_ResultSet_CTYPE__bytes;
@@ -316,7 +316,7 @@ KMETHOD ResultSet_setNULL(CTX ctx, knh_ResultSet_t *o, size_t n)
 
 /* ------------------------------------------------------------------------ */
 
-knh_int_t knh_ResultSet_getInt(CTX ctx, knh_ResultSet_t *o, size_t n)
+kint_t knh_ResultSet_getInt(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
@@ -324,49 +324,49 @@ knh_int_t knh_ResultSet_getInt(CTX ctx, knh_ResultSet_t *o, size_t n)
 	case knh_ResultSet_CTYPE__null :
 		return 0;
 	case knh_ResultSet_CTYPE__integer :
-		return (knh_int_t)(*((knh_int_t*)p));
+		return (kint_t)(*((kint_t*)p));
 	case knh_ResultSet_CTYPE__float :
-		return (knh_int_t)(*((knh_float_t*)p));
+		return (kint_t)(*((kfloat_t*)p));
 	case knh_ResultSet_CTYPE__bytes :
 		TODO();
-//		return knh_bytes_toint(B2(p, DP(o)->column[n].len));
+//		return kbytes_toint(B2(p, DP(o)->column[n].len));
 	}
 	return 0;
 }
 
 /* ------------------------------------------------------------------------ */
 
-knh_float_t knh_ResultSet_getFloat(CTX ctx, knh_ResultSet_t *o, size_t n)
+kfloat_t knh_ResultSet_getFloat(CTX ctx, knh_ResultSet_t *o, size_t n)
 {
 	KNH_ASSERT(n < DP(o)->column_size);
 	const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 	switch(DP(o)->column[n].ctype) {
 	case knh_ResultSet_CTYPE__null :
-		return K_FLOAT_ZERO;
+		return KFLOAT_ZERO;
 	case knh_ResultSet_CTYPE__integer :
-		return (knh_float_t)(*((knh_int_t*)p));
+		return (kfloat_t)(*((kint_t*)p));
 	case knh_ResultSet_CTYPE__float :
-		return (knh_float_t)(*((knh_float_t*)p));
+		return (kfloat_t)(*((kfloat_t*)p));
 	case knh_ResultSet_CTYPE__bytes :
 		TODO();
-//		return knh_bytes_tofloat(B2(p, DP(o)->column[n].len));
+//		return kbytes_tofloat(B2(p, DP(o)->column[n].len));
 	}
-	return K_FLOAT_ZERO;
+	return KFLOAT_ZERO;
 }
 
 /* ------------------------------------------------------------------------ */
 
-static knh_String_t *new_String__int(CTX ctx, knh_int_t n)
+static knh_String_t *new_String__int(CTX ctx, kint_t n)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_write_ifmt(ctx, cwb->w, K_INT_FMT, n);
+	knh_write_ifmt(ctx, cwb->w, KINT_FMT, n);
 	return CWB_newString0(ctx, cwb);
 }
 
-static knh_String_t *new_String__float(CTX ctx, knh_float_t n)
+static knh_String_t *new_String__float(CTX ctx, kfloat_t n)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
-	knh_write_ffmt(ctx, cwb->w, K_FLOAT_FMT, n);
+	knh_write_ffmt(ctx, cwb->w, KFLOAT_FMT, n);
 	return CWB_newString0(ctx, cwb);
 }
 
@@ -378,11 +378,11 @@ knh_String_t* knh_ResultSet_getString(CTX ctx, knh_ResultSet_t *o, size_t n)
 	const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 	switch(DP(o)->column[n].ctype) {
 	case knh_ResultSet_CTYPE__integer :
-		return new_String__int(ctx, (knh_int_t)(*((knh_int_t*)p)));
+		return new_String__int(ctx, (kint_t)(*((kint_t*)p)));
 	case knh_ResultSet_CTYPE__float :
-		return new_String__float(ctx, (knh_float_t)(*((knh_float_t*)p)));
+		return new_String__float(ctx, (kfloat_t)(*((kfloat_t*)p)));
 	case knh_ResultSet_CTYPE__text : {
-		knh_bytes_t t = {{p}, DP(o)->column[n].len};
+		kbytes_t t = {{p}, DP(o)->column[n].len};
 		return new_S(t.text, t.len);
 		}
 	case knh_ResultSet_CTYPE__null :
@@ -442,14 +442,14 @@ static void ResultSet_free(CTX ctx, knh_RawPtr_t *po)
 	KNH_FREE(ctx, rs, sizeof(knh_Object_t));
 }
 
-DEFAPI(void) defConnection(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defConnection(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Connection";
 	cdef->init = Connection_init;
 	cdef->free = Connection_free;
 }
 
-DEFAPI(void) defResultSet(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defResultSet(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "ResultSet";
 	cdef->init = ResultSet_init;

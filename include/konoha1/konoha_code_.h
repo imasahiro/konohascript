@@ -14,7 +14,7 @@ typedef struct klr_HALT_t {
 typedef struct klr_THCODE_t {
 	KCODE_HEAD;
 	klr_Fth th;
-	knh_uintptr_t uri;
+	kuintptr_t uri;
 } klr_THCODE_t;
 
 #define OPCODE_ENTER ((knh_opcode_t)2)
@@ -61,7 +61,7 @@ typedef struct klr_THROW_t {
 typedef struct klr_ASSERT_t {
 	KCODE_HEAD;
 	knh_sfpidx_t start;
-	knh_uintptr_t uline;
+	kuintptr_t uline;
 } klr_ASSERT_t;
 
 #define OPCODE_CATCH ((knh_opcode_t)10)
@@ -69,7 +69,7 @@ typedef struct klr_CATCH_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_ro_t en;
-	knh_int_t eid;
+	kint_t eid;
 } klr_CATCH_t;
 
 #define OPCODE_CHKIN ((knh_opcode_t)11)
@@ -97,7 +97,7 @@ typedef struct klr_ERROR_t {
 typedef struct klr_P_t {
 	KCODE_HEAD;
 	klr_Fprint print;
-	knh_uintptr_t flag;
+	kuintptr_t flag;
 	knh_String_t* msg;
 	knh_sfpidx_t n;
 } klr_P_t;
@@ -107,8 +107,8 @@ typedef struct klr_PROBE_t {
 	KCODE_HEAD;
 	knh_sfpidx_t sfpidx;
 	klr_Fprobe probe;
-	knh_uintptr_t n;
-	knh_uintptr_t n2;
+	kuintptr_t n;
+	kuintptr_t n2;
 } klr_PROBE_t;
 
 #define OPCODE_EXIT ((knh_opcode_t)16)
@@ -120,7 +120,7 @@ typedef struct klr_EXIT_t {
 typedef struct klr_NSET_t {
 	KCODE_HEAD;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_NSET_t;
 
 #define OPCODE_NMOV ((knh_opcode_t)18)
@@ -143,27 +143,27 @@ typedef struct klr_NNMOV_t {
 typedef struct klr_NSET2_t {
 	KCODE_HEAD;
 	knh_rn_t a;
-	knh_int_t n;
-	knh_int_t n2;
+	kint_t n;
+	kint_t n2;
 } klr_NSET2_t;
 
 #define OPCODE_NSET3 ((knh_opcode_t)21)
 typedef struct klr_NSET3_t {
 	KCODE_HEAD;
 	knh_rn_t a;
-	knh_uintptr_t n;
-	knh_uintptr_t n2;
-	knh_uintptr_t n3;
+	kuintptr_t n;
+	kuintptr_t n2;
+	kuintptr_t n3;
 } klr_NSET3_t;
 
 #define OPCODE_NSET4 ((knh_opcode_t)22)
 typedef struct klr_NSET4_t {
 	KCODE_HEAD;
 	knh_rn_t a;
-	knh_uintptr_t n;
-	knh_uintptr_t n2;
-	knh_uintptr_t n3;
-	knh_uintptr_t n4;
+	kuintptr_t n;
+	kuintptr_t n2;
+	kuintptr_t n3;
+	kuintptr_t n4;
 } klr_NSET4_t;
 
 #define OPCODE_NMOVx ((knh_opcode_t)23)
@@ -177,7 +177,7 @@ typedef struct klr_NMOVx_t {
 typedef struct klr_XNSET_t {
 	KCODE_HEAD;
 	knh_sfx_t a;
-	knh_int_t b;
+	kint_t b;
 } klr_XNSET_t;
 
 #define OPCODE_XNMOV ((knh_opcode_t)25)
@@ -390,7 +390,7 @@ typedef struct klr_iADDC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iADDC_t;
 
 #define OPCODE_iSUBC ((knh_opcode_t)53)
@@ -398,7 +398,7 @@ typedef struct klr_iSUBC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iSUBC_t;
 
 #define OPCODE_iMULC ((knh_opcode_t)54)
@@ -406,7 +406,7 @@ typedef struct klr_iMULC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iMULC_t;
 
 #define OPCODE_iDIVC ((knh_opcode_t)55)
@@ -414,7 +414,7 @@ typedef struct klr_iDIVC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iDIVC_t;
 
 #define OPCODE_iMODC ((knh_opcode_t)56)
@@ -422,7 +422,7 @@ typedef struct klr_iMODC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iMODC_t;
 
 #define OPCODE_iEQC ((knh_opcode_t)57)
@@ -430,7 +430,7 @@ typedef struct klr_iEQC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iEQC_t;
 
 #define OPCODE_iNEQC ((knh_opcode_t)58)
@@ -438,7 +438,7 @@ typedef struct klr_iNEQC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iNEQC_t;
 
 #define OPCODE_iLTC ((knh_opcode_t)59)
@@ -446,7 +446,7 @@ typedef struct klr_iLTC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iLTC_t;
 
 #define OPCODE_iLTEC ((knh_opcode_t)60)
@@ -454,7 +454,7 @@ typedef struct klr_iLTEC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iLTEC_t;
 
 #define OPCODE_iGTC ((knh_opcode_t)61)
@@ -462,7 +462,7 @@ typedef struct klr_iGTC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iGTC_t;
 
 #define OPCODE_iGTEC ((knh_opcode_t)62)
@@ -470,7 +470,7 @@ typedef struct klr_iGTEC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iGTEC_t;
 
 #define OPCODE_iANDC ((knh_opcode_t)63)
@@ -478,7 +478,7 @@ typedef struct klr_iANDC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iANDC_t;
 
 #define OPCODE_iORC ((knh_opcode_t)64)
@@ -486,7 +486,7 @@ typedef struct klr_iORC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iORC_t;
 
 #define OPCODE_iXORC ((knh_opcode_t)65)
@@ -494,7 +494,7 @@ typedef struct klr_iXORC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iXORC_t;
 
 #define OPCODE_iLSFTC ((knh_opcode_t)66)
@@ -502,7 +502,7 @@ typedef struct klr_iLSFTC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iLSFTC_t;
 
 #define OPCODE_iRSFTC ((knh_opcode_t)67)
@@ -510,7 +510,7 @@ typedef struct klr_iRSFTC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iRSFTC_t;
 
 #define OPCODE_fADD ((knh_opcode_t)68)
@@ -598,7 +598,7 @@ typedef struct klr_fADDC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fADDC_t;
 
 #define OPCODE_fSUBC ((knh_opcode_t)79)
@@ -606,7 +606,7 @@ typedef struct klr_fSUBC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fSUBC_t;
 
 #define OPCODE_fMULC ((knh_opcode_t)80)
@@ -614,7 +614,7 @@ typedef struct klr_fMULC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fMULC_t;
 
 #define OPCODE_fDIVC ((knh_opcode_t)81)
@@ -622,7 +622,7 @@ typedef struct klr_fDIVC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fDIVC_t;
 
 #define OPCODE_fEQC ((knh_opcode_t)82)
@@ -630,7 +630,7 @@ typedef struct klr_fEQC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fEQC_t;
 
 #define OPCODE_fNEQC ((knh_opcode_t)83)
@@ -638,7 +638,7 @@ typedef struct klr_fNEQC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fNEQC_t;
 
 #define OPCODE_fLTC ((knh_opcode_t)84)
@@ -646,7 +646,7 @@ typedef struct klr_fLTC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fLTC_t;
 
 #define OPCODE_fLTEC ((knh_opcode_t)85)
@@ -654,7 +654,7 @@ typedef struct klr_fLTEC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fLTEC_t;
 
 #define OPCODE_fGTC ((knh_opcode_t)86)
@@ -662,7 +662,7 @@ typedef struct klr_fGTC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fGTC_t;
 
 #define OPCODE_fGTEC ((knh_opcode_t)87)
@@ -670,7 +670,7 @@ typedef struct klr_fGTEC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fGTEC_t;
 
 #define OPCODE_RCINC ((knh_opcode_t)88)
@@ -839,7 +839,7 @@ typedef struct klr_FASTCALL0_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t thisidx;
-	knh_intptr_t rix;
+	kintptr_t rix;
 	knh_sfpidx_t espshift;
 	klr_Ffcall fcall;
 } klr_FASTCALL0_t;
@@ -854,7 +854,7 @@ typedef struct klr_TR_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t b;
-	knh_intptr_t rix;
+	kintptr_t rix;
 	const knh_ClassTBL_t* cid;
 	klr_Ftr tr;
 } klr_TR_t;
@@ -864,7 +864,7 @@ typedef struct klr_SCAST_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t b;
-	knh_intptr_t rix;
+	kintptr_t rix;
 	knh_sfpidx_t espshift;
 	knh_TypeMap_t* cast;
 } klr_SCAST_t;
@@ -874,7 +874,7 @@ typedef struct klr_TCAST_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t b;
-	knh_intptr_t rix;
+	kintptr_t rix;
 	knh_sfpidx_t espshift;
 	knh_TypeMap_t* cast;
 } klr_TCAST_t;
@@ -884,7 +884,7 @@ typedef struct klr_ACAST_t {
 	KCODE_HEAD;
 	knh_r_t a;
 	knh_sfpidx_t b;
-	knh_intptr_t rix;
+	kintptr_t rix;
 	knh_sfpidx_t espshift;
 	knh_TypeMap_t* cast;
 } klr_ACAST_t;
@@ -934,7 +934,7 @@ typedef struct klr_NEXT_t {
 	knh_opline_t  *jumppc;
 	knh_r_t a;
 	knh_sfpidx_t b;
-	knh_intptr_t rix;
+	kintptr_t rix;
 	knh_sfpidx_t espshift;
 } klr_NEXT_t;
 
@@ -960,7 +960,7 @@ typedef struct klr_BGETIDXC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_ro_t a;
-	knh_uintptr_t n;
+	kuintptr_t n;
 } klr_BGETIDXC_t;
 
 #define OPCODE_BSETIDXC ((knh_opcode_t)125)
@@ -968,7 +968,7 @@ typedef struct klr_BSETIDXC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_ro_t a;
-	knh_uintptr_t n;
+	kuintptr_t n;
 	knh_rn_t v;
 } klr_BSETIDXC_t;
 
@@ -994,7 +994,7 @@ typedef struct klr_NGETIDXC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_ro_t a;
-	knh_uintptr_t n;
+	kuintptr_t n;
 } klr_NGETIDXC_t;
 
 #define OPCODE_NSETIDXC ((knh_opcode_t)129)
@@ -1002,7 +1002,7 @@ typedef struct klr_NSETIDXC_t {
 	KCODE_HEAD;
 	knh_rn_t c;
 	knh_ro_t a;
-	knh_uintptr_t n;
+	kuintptr_t n;
 	knh_rn_t v;
 } klr_NSETIDXC_t;
 
@@ -1028,7 +1028,7 @@ typedef struct klr_OGETIDXC_t {
 	KCODE_HEAD;
 	knh_ro_t c;
 	knh_ro_t a;
-	knh_uintptr_t n;
+	kuintptr_t n;
 } klr_OGETIDXC_t;
 
 #define OPCODE_OSETIDXC ((knh_opcode_t)133)
@@ -1036,7 +1036,7 @@ typedef struct klr_OSETIDXC_t {
 	KCODE_HEAD;
 	knh_ro_t c;
 	knh_ro_t a;
-	knh_uintptr_t n;
+	kuintptr_t n;
 	knh_ro_t v;
 } klr_OSETIDXC_t;
 
@@ -1114,7 +1114,7 @@ typedef struct klr_iJEQC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iJEQC_t;
 
 #define OPCODE_iJNEQC ((knh_opcode_t)144)
@@ -1122,7 +1122,7 @@ typedef struct klr_iJNEQC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iJNEQC_t;
 
 #define OPCODE_iJLTC ((knh_opcode_t)145)
@@ -1130,7 +1130,7 @@ typedef struct klr_iJLTC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iJLTC_t;
 
 #define OPCODE_iJLTEC ((knh_opcode_t)146)
@@ -1138,7 +1138,7 @@ typedef struct klr_iJLTEC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iJLTEC_t;
 
 #define OPCODE_iJGTC ((knh_opcode_t)147)
@@ -1146,7 +1146,7 @@ typedef struct klr_iJGTC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iJGTC_t;
 
 #define OPCODE_iJGTEC ((knh_opcode_t)148)
@@ -1154,7 +1154,7 @@ typedef struct klr_iJGTEC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_int_t n;
+	kint_t n;
 } klr_iJGTEC_t;
 
 #define OPCODE_fJEQ ((knh_opcode_t)149)
@@ -1210,7 +1210,7 @@ typedef struct klr_fJEQC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fJEQC_t;
 
 #define OPCODE_fJNEQC ((knh_opcode_t)156)
@@ -1218,7 +1218,7 @@ typedef struct klr_fJNEQC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fJNEQC_t;
 
 #define OPCODE_fJLTC ((knh_opcode_t)157)
@@ -1226,7 +1226,7 @@ typedef struct klr_fJLTC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fJLTC_t;
 
 #define OPCODE_fJLTEC ((knh_opcode_t)158)
@@ -1234,7 +1234,7 @@ typedef struct klr_fJLTEC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fJLTEC_t;
 
 #define OPCODE_fJGTC ((knh_opcode_t)159)
@@ -1242,7 +1242,7 @@ typedef struct klr_fJGTC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fJGTC_t;
 
 #define OPCODE_fJGTEC ((knh_opcode_t)160)
@@ -1250,7 +1250,7 @@ typedef struct klr_fJGTEC_t {
 	KCODE_HEAD;
 	knh_opline_t  *jumppc;
 	knh_rn_t a;
-	knh_float_t n;
+	kfloat_t n;
 } klr_fJGTEC_t;
 
 #define OPCODE_CHKIDX ((knh_opcode_t)161)
@@ -1264,7 +1264,7 @@ typedef struct klr_CHKIDX_t {
 typedef struct klr_CHKIDXC_t {
 	KCODE_HEAD;
 	knh_ro_t a;
-	knh_uintptr_t n;
+	kuintptr_t n;
 } klr_CHKIDXC_t;
 
 #define OPCODE_NOP ((knh_opcode_t)163)

@@ -9,47 +9,47 @@ extern "C" {
 #define STT_MAX  (58)
 #define TT_MAX   (143)
 #define MN_OPSIZE  (41)
-#define MN_opNOT                        ((knh_methodn_t)0)
-#define MN_opEXISTS                     ((knh_methodn_t)1)
-#define MN_opLINK                       ((knh_methodn_t)2)
-#define MN_opQUERY                      ((knh_methodn_t)3)
-#define MN_opFROM                       ((knh_methodn_t)4)
-#define MN_opUNTIL                      ((knh_methodn_t)5)
-#define MN_opIS                         ((knh_methodn_t)6)
-#define MN_opOF                         ((knh_methodn_t)7)
-#define MN_opHAS                        ((knh_methodn_t)8)
-#define MN_opTO                         ((knh_methodn_t)9)
-#define MN_opEQ                         ((knh_methodn_t)10)
-#define MN_opNOTEQ                      ((knh_methodn_t)11)
-#define MN_opLT                         ((knh_methodn_t)12)
-#define MN_opLTE                        ((knh_methodn_t)13)
-#define MN_opGT                         ((knh_methodn_t)14)
-#define MN_opGTE                        ((knh_methodn_t)15)
-#define MN_opWITH                       ((knh_methodn_t)16)
-#define MN_opMATCH                      ((knh_methodn_t)17)
-#define MN_opAS                         ((knh_methodn_t)18)
-#define MN_opWHERE                      ((knh_methodn_t)19)
-#define MN_opEACH                       ((knh_methodn_t)20)
-#define MN_opLOR                        ((knh_methodn_t)21)
-#define MN_opLXOR                       ((knh_methodn_t)22)
-#define MN_opLAND                       ((knh_methodn_t)23)
-#define MN_opADD                        ((knh_methodn_t)24)
-#define MN_opSUB                        ((knh_methodn_t)25)
-#define MN_opDIV                        ((knh_methodn_t)26)
-#define MN_opMOD                        ((knh_methodn_t)27)
-#define MN_opMUL                        ((knh_methodn_t)28)
-#define MN_opLSFT                       ((knh_methodn_t)29)
-#define MN_opRSFT                       ((knh_methodn_t)30)
-#define MN_opLNOT                       ((knh_methodn_t)31)
-#define MN_opNEXT                       ((knh_methodn_t)32)
-#define MN_opPREV                       ((knh_methodn_t)33)
-#define MN_opITR                        ((knh_methodn_t)34)
-#define MN_opSEQ                        ((knh_methodn_t)35)
-#define MN_opEXPT                       ((knh_methodn_t)36)
-#define MN_opADDR                       ((knh_methodn_t)37)
-#define MN_opCAST                       ((knh_methodn_t)38)
-#define MN_opPLUS                       ((knh_methodn_t)39)
-#define MN_opNEG                        ((knh_methodn_t)40)
+#define MN_opNOT                        ((kmethodn_t)0)
+#define MN_opEXISTS                     ((kmethodn_t)1)
+#define MN_opLINK                       ((kmethodn_t)2)
+#define MN_opQUERY                      ((kmethodn_t)3)
+#define MN_opFROM                       ((kmethodn_t)4)
+#define MN_opUNTIL                      ((kmethodn_t)5)
+#define MN_opIS                         ((kmethodn_t)6)
+#define MN_opOF                         ((kmethodn_t)7)
+#define MN_opHAS                        ((kmethodn_t)8)
+#define MN_opTO                         ((kmethodn_t)9)
+#define MN_opEQ                         ((kmethodn_t)10)
+#define MN_opNOTEQ                      ((kmethodn_t)11)
+#define MN_opLT                         ((kmethodn_t)12)
+#define MN_opLTE                        ((kmethodn_t)13)
+#define MN_opGT                         ((kmethodn_t)14)
+#define MN_opGTE                        ((kmethodn_t)15)
+#define MN_opWITH                       ((kmethodn_t)16)
+#define MN_opMATCH                      ((kmethodn_t)17)
+#define MN_opAS                         ((kmethodn_t)18)
+#define MN_opWHERE                      ((kmethodn_t)19)
+#define MN_opEACH                       ((kmethodn_t)20)
+#define MN_opLOR                        ((kmethodn_t)21)
+#define MN_opLXOR                       ((kmethodn_t)22)
+#define MN_opLAND                       ((kmethodn_t)23)
+#define MN_opADD                        ((kmethodn_t)24)
+#define MN_opSUB                        ((kmethodn_t)25)
+#define MN_opDIV                        ((kmethodn_t)26)
+#define MN_opMOD                        ((kmethodn_t)27)
+#define MN_opMUL                        ((kmethodn_t)28)
+#define MN_opLSFT                       ((kmethodn_t)29)
+#define MN_opRSFT                       ((kmethodn_t)30)
+#define MN_opLNOT                       ((kmethodn_t)31)
+#define MN_opNEXT                       ((kmethodn_t)32)
+#define MN_opPREV                       ((kmethodn_t)33)
+#define MN_opITR                        ((kmethodn_t)34)
+#define MN_opSEQ                        ((kmethodn_t)35)
+#define MN_opEXPT                       ((kmethodn_t)36)
+#define MN_opADDR                       ((kmethodn_t)37)
+#define MN_opCAST                       ((kmethodn_t)38)
+#define MN_opPLUS                       ((kmethodn_t)39)
+#define MN_opNEG                        ((kmethodn_t)40)
 
 /* ------------------------------------------------------------------------ */
 
@@ -261,8 +261,8 @@ extern "C" {
 
 typedef struct {
 	const char *name;
-	knh_flag_t  flag;
-	knh_short_t to;
+	kflag_t  flag;
+	kshort_t to;
 } TERMDATA_t;
 
 #define _BIN 1
@@ -496,12 +496,12 @@ const char *TT__(knh_term_t tt)
 	return "UNDEFINED";
 }
 
-knh_bool_t TT_is(knh_term_t tt, knh_flag_t flag)
+kbool_t TT_is(knh_term_t tt, kflag_t flag)
 {
 	return FLAG_is(TERMDATA[tt].flag, flag);
 }
 
-knh_short_t TT_to(knh_term_t tt)
+kshort_t TT_to(knh_term_t tt)
 {
 	return TERMDATA[tt].to;
 }
@@ -568,8 +568,8 @@ void knh_loadScriptAliasTermData(CTX ctx)
 }
 
 typedef struct { 
-	knh_ushort_t priority;
-	knh_methodn_t mn;
+	kushort_t priority;
+	kmethodn_t mn;
 } OPDATA_t;
 
 static OPDATA_t OPDATA[] = {
@@ -722,7 +722,7 @@ int TT_priority(knh_term_t tt)
 	return 0;
 }
 
-knh_methodn_t TT_toMN(knh_term_t tt)
+kmethodn_t TT_toMN(knh_term_t tt)
 {
 	if(TT_LET <= tt && tt <= TT_TSUB) {
 		return OPDATA[tt - TT_LET].mn;
@@ -730,13 +730,13 @@ knh_methodn_t TT_toMN(knh_term_t tt)
 	return MN_NONAME;
 }
 
-const char* knh_getopname(knh_methodn_t mn)
+const char* knh_getopname(kmethodn_t mn)
 {
 	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
 	return OPNAME[mn];
 }
 
-const char* knh_getopMethodName(knh_methodn_t mn)
+const char* knh_getopMethodName(kmethodn_t mn)
 {
 	DBG_ASSERT(mn + TT_NOT <= TT_TSUB);
 	return MN_opNAME[mn];

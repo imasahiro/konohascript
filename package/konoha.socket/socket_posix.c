@@ -74,14 +74,14 @@ static void Socket_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defSocket(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "Socket";
 	cdef->init = Socket_init;
 	cdef->free = Socket_free;
 }
 
-//static knh_bool_t SOCKET_exists(CTX ctx, knh_Path_t *pth)
+//static kbool_t SOCKET_exists(CTX ctx, knh_Path_t *pth)
 //{
 //	return 0; // dummy
 //}
@@ -90,7 +90,7 @@ DEFAPI(void) defSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 //	return NULL; // Always opened by external
 //}
 
-static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int port)
+static knh_io_t open_socket(CTX ctx, ksfp_t *sfp, const char *ip_or_host, int port)
 {
 	int sd = IO_NULL;
 	struct in_addr addr = {0};
@@ -133,7 +133,7 @@ static knh_io_t open_socket(CTX ctx, knh_sfp_t *sfp, const char *ip_or_host, int
 }
 
 //## @Throwable Socket Socket.new(String host, int port);
-KMETHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD Socket_new(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
@@ -148,21 +148,21 @@ KMETHOD Socket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 }
 
 //## InputStream Socket.getInputStream();
-KMETHOD Socket_getInputStream(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD Socket_getInputStream(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	RETURN_(new_InputStream(ctx, new_io2(ctx, so->sd, 256), KNH_TNULL(Path)));
 }
 
 //## OutputStream Socket.getOutputStream();
-KMETHOD Socket_getOutputStream(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD Socket_getOutputStream(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	RETURN_(new_OutputStream(ctx, new_io2(ctx, so->sd, 256), KNH_TNULL(Path)));
 }
 
 //## void Socket.close();
-KMETHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD Socket_close(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	if (so->sd != IO_NULL) {
@@ -171,12 +171,12 @@ KMETHOD Socket_close(CTX ctx, knh_sfp_t* sfp _RIX)
 	}
 }
 
-KMETHOD Socket_getLocalPort(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_getLocalPort(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNi_(((knh_Socket_t*)sfp[0].o)->port);
 }
 
-KMETHOD Socket_getSendBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_getSendBufferSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	int ret = 0;
@@ -186,7 +186,7 @@ KMETHOD Socket_getSendBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-KMETHOD Socket_getReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_getReuseAddress(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	int ret = 0;
@@ -201,7 +201,7 @@ KMETHOD Socket_getReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 
-KMETHOD Socket_getSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_getSoTimeout(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	struct timeval ret = {0, 0};
@@ -215,7 +215,7 @@ KMETHOD Socket_getSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret.tv_sec * 1000 + ret.tv_sec / 1000);
 }
 
-KMETHOD Socket_getKeepAlive(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_getKeepAlive(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	int ret = 0;
@@ -229,7 +229,7 @@ KMETHOD Socket_getKeepAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(ret);
 }
 
-KMETHOD Socket_setSendBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_setSendBufferSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	int ret = Int_to(int, sfp[1]);
@@ -243,7 +243,7 @@ KMETHOD Socket_setSendBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-KMETHOD Socket_setReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_setReuseAddress(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	int ret = Int_to(int, sfp[1]); // sould be a boolean
@@ -256,7 +256,7 @@ KMETHOD Socket_setReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD Socket_setSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_setSoTimeout(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	int msec = Int_to(int, sfp[1]);
@@ -272,7 +272,7 @@ KMETHOD Socket_setSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD Socket_setKeepAlive(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_setKeepAlive(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	int ret = Int_to(int, sfp[1]); // sould be a boolean
@@ -285,7 +285,7 @@ KMETHOD Socket_setKeepAlive(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD Socket_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Socket_isClosed(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_Socket_t *so = (knh_Socket_t*)sfp[0].o;
 	char buffer[32];
@@ -322,7 +322,7 @@ static void ServerSocket_free(CTX ctx, knh_RawPtr_t *po)
 	}
 }
 
-DEFAPI(void) defServerSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defServerSocket(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->name = "ServerSocket";
 	cdef->init = ServerSocket_init;
@@ -330,7 +330,7 @@ DEFAPI(void) defServerSocket(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
 }
 
 ////## @Throwable ServerSocket ServerSocket.new(Int port, Int maxConnection);
-KMETHOD ServerSocket_new(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_new(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t*)((sfp[0].p)->rawptr);
 	int port = Int_to(int ,sfp[1]);
@@ -390,7 +390,7 @@ KMETHOD ServerSocket_new(CTX ctx, knh_sfp_t* sfp _RIX)
 }
 
 ////## Socket ServerSocket.accept(Socket _);
-KMETHOD ServerSocket_accept(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_accept(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	knh_RawPtr_t *so = NULL;
@@ -410,7 +410,7 @@ KMETHOD ServerSocket_accept(CTX ctx, knh_sfp_t* sfp _RIX)
 	while (1) {
 		struct sockaddr_in client_address;
 		socklen_t client_len = sizeof(struct sockaddr_in);
-		knh_intptr_t fd = accept(ss->sd,
+		kintptr_t fd = accept(ss->sd,
 				(struct sockaddr*)&client_address, &client_len);
 
 		if (fd == -1) {
@@ -431,7 +431,7 @@ L_RETURN:
 	RETURN_(so);
 }
 
-KMETHOD ServerSocket_close(CTX ctx, knh_sfp_t* sfp _RIX)
+KMETHOD ServerSocket_close(CTX ctx, ksfp_t* sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	if(ss->sd != IO_NULL) {
@@ -441,13 +441,13 @@ KMETHOD ServerSocket_close(CTX ctx, knh_sfp_t* sfp _RIX)
 	}
 }
 
-KMETHOD ServerSocket_getLocalPort(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_getLocalPort(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	RETURNi_(ss->port);
 }
 
-KMETHOD ServerSocket_getReceiveBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_getReceiveBufferSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	int ret = 0;
@@ -461,7 +461,7 @@ KMETHOD ServerSocket_getReceiveBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-KMETHOD ServerSocket_getReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_getReuseAddress(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	int ret = 0;
@@ -475,7 +475,7 @@ KMETHOD ServerSocket_getReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNb_(ret);
 }
 
-KMETHOD ServerSocket_getSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_getSoTimeout(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	struct timeval ret = {0, 0};
@@ -489,7 +489,7 @@ KMETHOD ServerSocket_getSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret.tv_sec * 1000 + ret.tv_sec / 1000);
 }
 
-KMETHOD ServerSocket_setReceiveBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_setReceiveBufferSize(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	int ret = Int_to(int, sfp[1]);
@@ -503,7 +503,7 @@ KMETHOD ServerSocket_setReceiveBufferSize(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNi_(ret);
 }
 
-KMETHOD ServerSocket_setReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_setReuseAddress(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	int ret = Int_to(int, sfp[1]); // sould be a boolean
@@ -515,7 +515,7 @@ KMETHOD ServerSocket_setReuseAddress(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD ServerSocket_setSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_setSoTimeout(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	int msec = Int_to(int, sfp[1]);
@@ -529,7 +529,7 @@ KMETHOD ServerSocket_setSoTimeout(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD ServerSocket_isClosed(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD ServerSocket_isClosed(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_serversocket_t *ss = (knh_serversocket_t *)((sfp[0].p)->rawptr);
 	char buffer[32];

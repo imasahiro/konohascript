@@ -20,7 +20,7 @@ static knh_MPIData_t* new_MPIData_Bytes(CTX ctx, void *vec, int vlen)
 static knh_MPIData_t* new_MPIData_ArrayInt(CTX ctx, void *vec, int vlen)
 {
 	knh_Array_t *a = new_Array(ctx, CLASS_Int, vlen);
-	knh_memcpy(a->ilist, vec, sizeof(knh_int_t) * vlen);
+	knh_memcpy(a->ilist, vec, sizeof(kint_t) * vlen);
 	knh_Array_size(a) = vlen;
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->a = a;
@@ -32,7 +32,7 @@ static knh_MPIData_t* new_MPIData_ArrayInt(CTX ctx, void *vec, int vlen)
 static knh_MPIData_t* new_MPIData_ArrayFloat(CTX ctx, void *vec, int vlen)
 {
 	knh_Array_t *a = new_Array(ctx, CLASS_Float, vlen);
-	knh_memcpy(a->flist, vec, sizeof(knh_float_t) * vlen);
+	knh_memcpy(a->flist, vec, sizeof(kfloat_t) * vlen);
 	knh_Array_size(a) = vlen;
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	data->a = a;
@@ -54,11 +54,11 @@ void knh_reduce(knh_Func_t *fo, void *ivec, void *iovec, int *len, MPI_Datatype 
 	}
 	else if (*dtype == MPI_LONG) {
 		new_func = new_MPIData_ArrayInt;
-		rsize = sizeof(knh_int_t) * vlen;
+		rsize = sizeof(kint_t) * vlen;
 	}
 	else if (*dtype == MPI_DOUBLE) {
 		new_func = new_MPIData_ArrayFloat;
-		rsize = sizeof(knh_float_t) * vlen;
+		rsize = sizeof(kfloat_t) * vlen;
 	}
 	else {
 		KNH_NTHROW2(lctx, lsfp, "Script!!", "MPI_Reduce failed", K_FAILED, KNH_LDATA(LOG_i("unsupported datatype", *dtype)));
@@ -78,7 +78,7 @@ void dummyMPIOpFunc(void *invec, void *inoutvec, int *len, MPI_Datatype *dtype)
 	return knh_reduce((knh_Func_t*)CALLBACK_MARKER, invec, inoutvec, len, dtype);
 }
 
-KMETHOD MPIOp_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD MPIOp_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIO(op, sfp[0].o);
 	knh_Func_t *fo = (knh_Func_t*)sfp[1].fo;

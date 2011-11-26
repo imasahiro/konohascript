@@ -59,7 +59,7 @@ static void Pasori_free(CTX ctx, knh_RawPtr_t *po)
 // [KMETHODS]
 
 //## @Native Pasori Pasori.new();
-KMETHOD Pasori_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Pasori_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	nfc_device_t *pnd = nfc_connect(NULL);
 	if (pnd == NULL) {
@@ -71,7 +71,7 @@ KMETHOD Pasori_new(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //## @Native String Pasori.readId();
-KMETHOD Pasori_readId(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Pasori_readId(CTX ctx, ksfp_t *sfp _RIX)
 {
 	nfc_device_t *pnd = RawPtr_to(nfc_device_t *, sfp[0]);
 	if (pnd == NULL) RETURN_(KNH_TNULL(String));
@@ -102,7 +102,7 @@ KMETHOD Pasori_readId(CTX ctx, knh_sfp_t *sfp _RIX)
 /* ======================================================================== */
 // [DEFAPIS]
 
-DEFAPI(void) defPasori(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defPasori(CTX ctx, kclass_t cid, kClassDef *cdef)
 {
 	cdef->init = Pasori_init;
 	cdef->free = Pasori_free;

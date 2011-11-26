@@ -56,7 +56,7 @@ static void ClassNAME_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t *
 	knh_write_EOL(ctx, w);
 
 	while(ct->supcid != CLASS_Object) {
-		knh_class_t cid = ct->supcid;
+		kclass_t cid = ct->supcid;
 		knh_write_TAB(ctx, w);
 		knh_write_ascii(ctx, w, _("extends "));
 		knh_write_cid(ctx, w, cid);
@@ -83,7 +83,7 @@ static void ClassCONST_man(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_t 
 	}
 }
 
-static const char *MNOP__(knh_methodn_t mn)
+static const char *MNOP__(kmethodn_t mn)
 {
 	switch(mn) {
 	case MN_opNOT: return "!x";
@@ -170,7 +170,7 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 	if(Method_isAbstract(o)) {
 		knh_write_ascii(ctx, w, "@Abstract ");
 	}
-	knh_write_type(ctx, w, knh_type_tocid(ctx, knh_ParamArray_rtype(DP(o)->mp), ct->cid));
+	knh_write_type(ctx, w, ktype_tocid(ctx, knh_ParamArray_rtype(DP(o)->mp), ct->cid));
 	knh_putc(ctx, w, ' ');
 	if(Method_isStatic(o)) {
 		knh_write_ascii(ctx, w, S_totext(ct->sname));
@@ -184,7 +184,7 @@ static void knh_write_Method(CTX ctx, knh_OutputStream_t *w, const knh_ClassTBL_
 		if(i > 0) {
 			knh_write_delim(ctx, w);
 		}
-		knh_write_type(ctx, w, knh_type_tocid(ctx, p->type, ct->cid));
+		knh_write_type(ctx, w, ktype_tocid(ctx, p->type, ct->cid));
 		knh_putc(ctx, w, ' ');
 		knh_write_ascii(ctx, w, FN__(p->fn));
 	}
@@ -279,7 +279,7 @@ static void _System_man(CTX ctx, const knh_ClassTBL_t *ct, knh_NameSpace_t *ns)
 }
 
 //## @Static method void System.man(Object c, NameSpace ns);
-KMETHOD System_man(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_man(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(sfp[1].o);
 	knh_NameSpace_t *ns = sfp[2].ns;

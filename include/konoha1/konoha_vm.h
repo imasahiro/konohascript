@@ -50,10 +50,10 @@ extern "C" {
 #define Rx_(x)    (rshift(rbp,x)->ox)
 
 #define RXo_(x)    (Rx_(x.i)->fields[x.n])
-#define RXd_(x)   (*((knh_ndata_t*) &RXo_(x)))
-#define SFP(rbp)  ((knh_sfp_t*)(rbp))
+#define RXd_(x)   (*((kunbox_t*) &RXo_(x)))
+#define SFP(rbp)  ((ksfp_t*)(rbp))
 #define SFPIDX(n) ((n)/2)
-#define RBP(sfp)  ((knh_rbp_t*)(sfp))
+#define RBP(sfp)  ((krbp_t*)(sfp))
 
 #define PC_NEXT(pc)   pc+1
 #define PC_PREV(pc)   pc-1
@@ -61,7 +61,7 @@ extern "C" {
 #define USE_PROF(C)
 
 #define VMPROF(OPCODE) USE_PROF({\
-		knh_uint64_t t = knh_getTime();\
+		kuint64_t t = knh_getTime();\
 		_UTIME[OPCODE] += (t - _utime);\
 		_UC[OPCODE] += 1;\
 		_utime = t;\
@@ -206,7 +206,7 @@ extern "C" {
 #define KLR_SCALL(ctx, rtnidx, thisidx, espshift, mtdO) { \
 		knh_Method_t *mtd_ = mtdO;\
 		/*prefetch((mtd_)->fcall_1);*/\
-		knh_sfp_t *sfp_ = SFP(rshift(rbp, thisidx)); \
+		ksfp_t *sfp_ = SFP(rshift(rbp, thisidx)); \
 		sfp_[K_SHIFTIDX].shift = thisidx; \
 		sfp_[K_PCIDX].pc = PC_NEXT(pc);\
 		sfp_[K_MTDIDX].mtdNC = mtd_;\
@@ -253,7 +253,7 @@ extern "C" {
 #define KLR_JMP_(ctx, PC, JUMP)   KLR_RET(ctx)
 
 #define KLR_RET(ctx) { \
-		knh_intptr_t vshift = rbp[K_SHIFTIDX2].shift;\
+		kintptr_t vshift = rbp[K_SHIFTIDX2].shift;\
 		knh_opline_t *vpc = rbp[K_PCIDX2].pc;\
 		rbp[K_MTDIDX2].mtdNC = NULL;\
 		rbp = rshift(rbp, -vshift); \
@@ -298,7 +298,7 @@ extern "C" {
 #define KLR_THUNK(ctx, rtnidx, thisidx, espshift, mtdO) { \
 		knh_Method_t *mtd_ = mtdO == NULL ? rbp[thisidx+K_MTDIDX2].mtdNC : mtdO;\
 		klr_setesp(ctx, SFP(rshift(rbp, espshift)));\
-		knh_stack_newThunk(ctx, (knh_sfp_t*)rshift(rbp, thisidx));\
+		knh_stack_newThunk(ctx, (ksfp_t*)rshift(rbp, thisidx));\
 	} \
 
 #define KLR_FUNCCALL(ctx) { \
@@ -337,11 +337,11 @@ extern "C" {
 /* ------------------------------------------------------------------------- */
 
 #define KLR_iCAST(ctx, c, a) {\
-	Ri_(c) = (knh_int_t)Rf_(a); \
+	Ri_(c) = (kint_t)Rf_(a); \
 }\
 
 #define KLR_fCAST(ctx, c, a) {\
-	Rf_(c) = (knh_float_t)Ri_(a); \
+	Rf_(c) = (kfloat_t)Ri_(a); \
 }\
 
 #define KLR_SCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
@@ -351,8 +351,8 @@ extern "C" {
 
 #define KLR_TCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
 		knh_TypeMap_t *tmr_ = tmr; \
-		knh_sfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
-		knh_class_t scid = SP(tmr_)->scid, this_cid = O_cid(sfp_[0].o);\
+		ksfp_t *sfp_ = SFP(rshift(rbp,thisidx));\
+		kclass_t scid = SP(tmr_)->scid, this_cid = O_cid(sfp_[0].o);\
 		if(this_cid != scid) {\
 			tmr_ = knh_findTypeMapNULL(ctx, scid, SP(tmr)->tcid);\
 			KNH_SETv(ctx, ((klr_TCAST_t*)op)->cast, tmr_);\
@@ -363,9 +363,9 @@ extern "C" {
 
 #define KLR_ACAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
 		knh_TypeMap_t *tmr_ = tmr; \
-		knh_class_t tcid = SP(tmr_)->tcid, this_cid = O_cid(Ro_(thisidx));\
+		kclass_t tcid = SP(tmr_)->tcid, this_cid = O_cid(Ro_(thisidx));\
 		if(!class_isa(this_cid, tcid)) {\
-			knh_class_t scid = SP(tmr_)->scid;\
+			kclass_t scid = SP(tmr_)->scid;\
 			if(this_cid != scid) {\
 				tmr_ = knh_findTypeMapNULL(ctx, scid, tcid);\
 				KNH_SETv(ctx, ((klr_ACAST_t*)op)->cast, tmr_);\
@@ -405,7 +405,7 @@ extern "C" {
 #define KLR_SAFEPOINT(ctx, espidx) \
 	if(ctx->safepoint != 0) { \
 		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
-		knh_checkSafePoint(ctx, (knh_sfp_t*)rbp, __FILE__, __LINE__); \
+		knh_checkSafePoint(ctx, (ksfp_t*)rbp, __FILE__, __LINE__); \
 	} \
 
 #else
@@ -415,7 +415,7 @@ extern "C" {
 /* ------------------------------------------------------------------------- */
 
 #define KLR_NEXT(ctx, PC, JUMP, rtnidx, ib, rix, espidx) { \
-	knh_sfp_t *itrsfp_ = SFP(rshift(rbp, ib)); \
+	ksfp_t *itrsfp_ = SFP(rshift(rbp, ib)); \
 	DBG_ASSERT(IS_bIterator(itrsfp_[0].it));\
 	klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
 	if(!((itrsfp_[0].it)->fnext_1(ctx, itrsfp_, rix))) { \
@@ -691,7 +691,7 @@ extern "C" {
 	}\
 
 #define KLR_BGETIDXC(ctx, cidx, aidx, N) {\
-		knh_bytes_t *b_ = &BA_tobytes(rbp[aidx].ba);\
+		kbytes_t *b_ = &BA_tobytes(rbp[aidx].ba);\
 		size_t n_ = klr_array_index(ctx, N, b_->len);\
 		klr_array_check(n_, b_->len);\
 		Ri_(cidx) = b_->utext[n_];\
@@ -700,10 +700,10 @@ extern "C" {
 #define KLR_BGETIDX(ctx, cidx, aidx, nidx) KLR_BGETIDXC(ctx, cidx, aidx, Ri_(nidx))
 
 #define KLR_BSETIDXC(ctx, cidx, aidx, N, vidx) {\
-		knh_bytes_t *b_ = &BA_tobytes(Rba_(aidx));\
+		kbytes_t *b_ = &BA_tobytes(Rba_(aidx));\
 		size_t n_ = klr_array_index(ctx, N, b_->len);\
 		klr_array_check(n_, b_->len);\
-		b_->ubuf[n_] = (knh_uchar_t)Ri_(vidx);\
+		b_->ubuf[n_] = (kchar_t)Ri_(vidx);\
 		Ri_(cidx) = Ri_(vidx);\
 	}\
 

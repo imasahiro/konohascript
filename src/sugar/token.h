@@ -43,7 +43,7 @@ typedef struct {
 	knh_Array_t *list;
 	union {
 		const char *s;
-		const knh_uchar_t *line;
+		const kchar_t *line;
 	};
 	const char *bol;
 	knh_Bytes_t *buf;
@@ -65,7 +65,7 @@ static knh_Token_t *new_Token(CTX ctx, ktoken_t token, kline_t uline, int lpos, 
 	knh_Token_t *tk = new_(Token);
 	tk->token = token;
 	tk->uline = uline;
-	tk->lpos = (knh_ushort_t)lpos;
+	tk->lpos = (kushort_t)lpos;
 	tk->topch = 0;
 	KNH_SETv(ctx, tk->text, text);
 	return tk;
@@ -214,7 +214,7 @@ static size_t addBlock(CTX ctx, tenv_t *tenv, size_t pos, int lpos)
 
 static knh_String_t *getAliasNULL(CTX ctx, tenv_t *tenv, const char *s, size_t len)
 {
-	knh_bytes_t t = {{s}, len};
+	kbytes_t t = {{s}, len};
 	knh_Lang_t *lang = tenv->lang;
 	while(lang != NULL) {
 		if(DP(lang)->tokenRulesNULL != NULL) {
@@ -345,7 +345,7 @@ static size_t addRawQuote(CTX ctx, tenv_t *tenv, size_t pos, int quote)
 		if(ch == quote) {
 			if(!isTriple || (pos-3 >= tok_start && tenv->line[pos-2] == quote && tenv->line[pos-3] == quote)) {
 				knh_String_t *text = new_String2(ctx, CLASS_String, tenv->s + tok_start, (pos-1)-tok_start, 0);
-				knh_type_t ttype = (quote == '"') ? TK_TEXT : TK_STEXT;
+				ktype_t ttype = (quote == '"') ? TK_TEXT : TK_STEXT;
 				addToken(ctx, tenv, new_Token(ctx, ttype, uline, lpos(tenv, tenv->s + tok_start), text));
 				return pos;
 			}

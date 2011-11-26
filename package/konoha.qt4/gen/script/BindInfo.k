@@ -92,18 +92,18 @@ class BindInfo {
 
 	void genSrc() {
 		String bind = "";
-		String knh_interface = "";
+		String kinterface = "";
 		foreach (FunctionElement fe in fea) {
 			bind = "";
 			bind = fe.genBind(make_rapper_class_flag, have_private_destructor_flag);
 			bind = checkRenameFunctionList(bind);
-			knh_interface = "";
-			knh_interface = fe.genKonohaInterface();
-			knh_interface = checkRenameFunctionList(knh_interface);
-			bind = "//" + knh_interface + bind;
+			kinterface = "";
+			kinterface = fe.genKonohaInterface();
+			kinterface = checkRenameFunctionList(kinterface);
+			bind = "//" + kinterface + bind;
 			if (fe.overloadFlag || checkUnusedMethod(fe)) {
 				bind = "/*\n" + bind + "*/";
-				knh_interface = "//" + knh_interface;
+				kinterface = "//" + kinterface;
 			}
 			bind += "\n";
 			if (inherits_qgraphicsitem_flag &&
@@ -112,12 +112,12 @@ class BindInfo {
 			} else {
 				func_bind += bind;
 			}
-			if (knh_interface == "") {
+			if (kinterface == "") {
 //				print "error bind";
 //				print bind;
 			} else {
-				knh_interface = knh_interface.replace("QList<", "Array<");
-				k_src += knh_interface;
+				kinterface = kinterface.replace("QList<", "Array<");
+				k_src += kinterface;
 			}
 		}
 		if (inherits_qgraphicsitem_flag) {

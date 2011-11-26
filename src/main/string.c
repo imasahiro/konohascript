@@ -38,9 +38,9 @@ extern "C" {
 
 /* ------------------------------------------------------------------------ */
 
-int knh_bytes_parseint(knh_bytes_t t, knh_int_t *value)
+int knh_bytes_parseint(kbytes_t t, kint_t *value)
 {
-	knh_uint_t n = 0, prev = 0, base = 10;
+	kuint_t n = 0, prev = 0, base = 10;
 	size_t i = 0;
 	if(t.len > 1) {
 		if(t.utext[0] == '0') {
@@ -82,18 +82,18 @@ int knh_bytes_parseint(knh_bytes_t t, knh_int_t *value)
 			return 0;
 		}
 	}
-	if(t.utext[0] == '-') n = -((knh_int_t)n);
+	if(t.utext[0] == '-') n = -((kint_t)n);
 	*value = n;
 	return 1;
 }
 
-int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
+int knh_bytes_parsefloat(kbytes_t t, kfloat_t *value)
 {
 #if defined(K_USING_NOFLOAT)
 	{
-		knh_int_t v = 0;
+		kint_t v = 0;
 		knh_bytes_parseint(t, &v);
-		*value = (knh_float_t)v;
+		*value = (kfloat_t)v;
 	}
 #else
 	*value = strtod(t.text, NULL);
@@ -101,15 +101,15 @@ int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
 	return 1;
 }
 
-//knh_index_t knh_bytes_indexOf(knh_bytes_t base, knh_bytes_t sub)
+//kindex_t knh_bytes_indexOf(kbytes_t base, kbytes_t sub)
 //{
 //	const char *const str0 = base.text;  /* ide version */
 //	const char *const str1 = sub.text;
-//	knh_index_t len  = sub.len;
-//	knh_index_t loop = base.len - len;
-//	knh_index_t index = -1;
+//	kindex_t len  = sub.len;
+//	kindex_t loop = base.len - len;
+//	kindex_t index = -1;
 //	if (loop >= 0) {
-//		knh_index_t i;
+//		kindex_t i;
 //		const char *s0 = str0, *s1 = str1;
 //		const char *const s0end = s0 + loop;
 //		while(s0 <= s0end) {
@@ -128,15 +128,15 @@ int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
 //	return index;
 //}
 
-//knh_index_t knh_bytes_indexOf_new(knh_bytes_t *base, knh_bytes_t *sub)
+//kindex_t knh_bytes_indexOf_new(kbytes_t *base, kbytes_t *sub)
 //{
 //	const char *const str0 = base->text;
 //	const char *const str1 = sub->text;
-//	knh_index_t len  = sub->len;
-//	knh_index_t loop = base->len - len;
-//	knh_index_t index = -1;
+//	kindex_t len  = sub->len;
+//	kindex_t loop = base->len - len;
+//	kindex_t index = -1;
 //	if (loop >= 0) {
-//		knh_index_t i;
+//		kindex_t i;
 //		const char *s0 = str0, *s1 = str1;
 //		const char *const s0end = s0 + loop;
 //		while(s0 <= s0end) {
@@ -155,7 +155,7 @@ int knh_bytes_parsefloat(knh_bytes_t t, knh_float_t *value)
 //	return index;
 //}
 
-int knh_bytes_strcmp(knh_bytes_t v1, knh_bytes_t v2)
+int knh_bytes_strcmp(kbytes_t v1, kbytes_t v2)
 {
 	int len, res1, res;
 	if (v1.len == v2.len)     { len = v1.len; res1 =  0;}
@@ -174,7 +174,7 @@ int knh_bytes_strcmp(knh_bytes_t v1, knh_bytes_t v2)
 #define utf8_isTrail(c)     ((0x80 <= c) && (c <= 0xBF))
 #define utf8_isSingleton(c) (c <= 0x7f)
 
-static const knh_uchar_t _utf8len[] = {
+static const kchar_t _utf8len[] = {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -193,7 +193,7 @@ static const knh_uchar_t _utf8len[] = {
 		4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 0, 0,
 };
 
-#define utf8len(c)    _utf8len[(knh_uchar_t)c]
+#define utf8len(c)    _utf8len[(kchar_t)c]
 
 int knh_utf8len(int c)
 {
@@ -202,7 +202,7 @@ int knh_utf8len(int c)
 
 /* ------------------------------------------------------------------------ */
 
-knh_bool_t knh_bytes_checkENCODING(knh_bytes_t v)
+kbool_t knh_bytes_checkENCODING(kbytes_t v)
 {
 #ifdef K_USING_UTF8
 	const unsigned char *s = v.utext;
@@ -233,7 +233,7 @@ knh_bool_t knh_bytes_checkENCODING(knh_bytes_t v)
 #endif
 }
 
-size_t knh_bytes_mlen(knh_bytes_t v)
+size_t knh_bytes_mlen(kbytes_t v)
 {
 #ifdef K_USING_UTF8
 	size_t size = 0;
@@ -250,7 +250,7 @@ size_t knh_bytes_mlen(knh_bytes_t v)
 #endif
 }
 
-knh_bytes_t knh_bytes_mofflen(knh_bytes_t v, size_t moff, size_t mlen)
+kbytes_t knh_bytes_mofflen(kbytes_t v, size_t moff, size_t mlen)
 {
 #ifdef K_USING_UTF8
 	size_t i;
@@ -259,7 +259,7 @@ knh_bytes_t knh_bytes_mofflen(knh_bytes_t v, size_t moff, size_t mlen)
 	for(i = 0; i < moff; i++) {
 		s += utf8len(s[0]);
 	}
-	v.ubuf = (knh_uchar_t*)s;
+	v.ubuf = (kchar_t*)s;
 	for(i = 0; i < mlen; i++) {
 		s += utf8len(s[0]);
 	}
@@ -271,15 +271,15 @@ knh_bytes_t knh_bytes_mofflen(knh_bytes_t v, size_t moff, size_t mlen)
 #endif
 }
 
-knh_int_t knh_uchar_toucs4(knh_utext_t *utf8)   /* utf8 -> ucs4 */
+kint_t kchar_toucs4(kutext_t *utf8)   /* utf8 -> ucs4 */
 {
 #if defined(K_USING_UTF8)
-	knh_int_t ucs4 = 0;
+	kint_t ucs4 = 0;
 	int i= 0;
-	knh_uchar_t ret = 0;
+	kchar_t ret = 0;
 	if (!utf8_isSingleton(utf8[0])) {
-		knh_ushort_t length_utf8 = utf8len(utf8[i]);
-		knh_uchar_t mask = (knh_uchar_t)(1 << 0 | 1 << 1 | 1 << 2 | 1 << 3);
+		kushort_t length_utf8 = utf8len(utf8[i]);
+		kchar_t mask = (kchar_t)(1 << 0 | 1 << 1 | 1 << 2 | 1 << 3);
 
 		switch(length_utf8){
 		case 2:
@@ -312,22 +312,22 @@ knh_int_t knh_uchar_toucs4(knh_utext_t *utf8)   /* utf8 -> ucs4 */
 	}
 	return ucs4;
 #else
-	return (knh_int_t)utf8[0];
+	return (kint_t)utf8[0];
 #endif
 }
 
 /* ------------------------------------------------------------------------ */
 /* ucs4 -> utf8 */
 
-char *knh_format_utf8(char *buf, size_t bufsiz, knh_uint_t ucs4)
+char *knh_format_utf8(char *buf, size_t bufsiz, kuint_t ucs4)
 {
 	/* TODO: here, we assume that BOM bigEndian
 	 and only 3 bytes or 1 byte UTF
 	 */
-	knh_uint_t mask = 0x0;
-	knh_uint_t byte1 = 0x7F;
-	knh_uint_t byte2 = 0x7FF;
-	knh_uint_t byte3 = 0xFFFF;
+	kuint_t mask = 0x0;
+	kuint_t byte1 = 0x7F;
+	kuint_t byte2 = 0x7FF;
+	kuint_t byte3 = 0xFFFF;
 
 	char *ret = buf;
 	unsigned char utf8[8];
@@ -367,7 +367,7 @@ static void knh_String_checkASCII(knh_String_t *o)
 {
 	unsigned char ch = 0;
 	long len = S_size(o);
-	const knh_uchar_t *p = (const knh_uchar_t *) S_totext(o);
+	const kchar_t *p = (const kchar_t *) S_totext(o);
 #ifdef K_USING_FASTESTFASTMODE /* written by ide */
 	int len = S_size(o), n = (len + 3) / 4;
 	/* Duff's device */
@@ -379,7 +379,7 @@ static void knh_String_checkASCII(knh_String_t *o)
 	} while(--n>0);
 	}
 #else
-	const knh_uchar_t *const e = p + len;
+	const kchar_t *const e = p + len;
 	while(p < e) {
 		int n = len % 8;
 		switch(n) {
@@ -426,7 +426,7 @@ static void knh_String_checkASCII(knh_String_t *o)
 #define K_USING_STRINGPOOL_MAXSIZ 100000
 #endif
 
-static knh_bool_t checkStringPooling(const char *text, size_t len)
+static kbool_t checkStringPooling(const char *text, size_t len)
 {
 	size_t i;
 	for(i = 0; i < len; i++) {
@@ -437,7 +437,7 @@ static knh_bool_t checkStringPooling(const char *text, size_t len)
 }
 
 
-knh_String_t* new_String2(CTX ctx, knh_class_t cid, const char *text, size_t len, int policy)
+knh_String_t* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, int policy)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
 	int isPooling = 0;
@@ -456,7 +456,7 @@ knh_String_t* new_String2(CTX ctx, knh_class_t cid, const char *text, size_t len
 		String_setTextSgm(s, 1);
 	}
 	else if(len + 1 < sizeof(void*) * 2) {
-		s->str.ubuf = (knh_uchar_t*)(&(s->hashCode));
+		s->str.ubuf = (kchar_t*)(&(s->hashCode));
 		s->str.len = len;
 		knh_memcpy(s->str.ubuf, text, len);
 		s->str.ubuf[len] = '\0';
@@ -464,7 +464,7 @@ knh_String_t* new_String2(CTX ctx, knh_class_t cid, const char *text, size_t len
 	}
 	else {
 		s->str.len = len;
-		s->str.ubuf = (knh_uchar_t*)KNH_MALLOC(ctx, KNH_SIZE(len+1));
+		s->str.ubuf = (kchar_t*)KNH_MALLOC(ctx, KNH_SIZE(len+1));
 		knh_memcpy(s->str.ubuf, text, len);
 		s->str.ubuf[len] = '\0';
 		s->hashCode = 0;
@@ -518,12 +518,12 @@ static knh_conv_t* strconv_open(CTX ctx, const char* to, const char *from)
 	return (knh_conv_t*)rc;
 }
 
-static knh_bool_t strconv(CTX ctx, knh_conv_t *iconvp, const char *text, size_t len, knh_Bytes_t *to)
+static kbool_t strconv(CTX ctx, knh_conv_t *iconvp, const char *text, size_t len, knh_Bytes_t *to)
 {
 	char buffer[4096], *ibuf = (char*)text;
 	size_t ilen = len, rsize = 0;//, ilen_prev = ilen;
 	knh_iconv_t cd = (knh_iconv_t)iconvp;
-	knh_bytes_t bbuf = {{(const char*)buffer}, 0};
+	kbytes_t bbuf = {{(const char*)buffer}, 0};
 	while(ilen > 0) {
 		char *obuf = buffer;
 		size_t olen = sizeof(buffer);
@@ -554,7 +554,7 @@ static knh_ConverterDPI_t SCONV = {
 	NULL
 };
 
-knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t)
+knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, kbytes_t t)
 {
 	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
 		return KNH_TNULL(StringDecoder);
@@ -571,7 +571,7 @@ knh_StringDecoder_t* new_StringDecoderNULL(CTX ctx, knh_bytes_t t)
 	return NULL;
 }
 
-knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, knh_bytes_t t)
+knh_StringEncoder_t* new_StringEncoderNULL(CTX ctx, kbytes_t t)
 {
 	if(knh_bytes_strcasecmp(t, STEXT(K_ENCODING)) == 0) {
 		return KNH_TNULL(StringEncoder);
@@ -595,7 +595,7 @@ knh_String_t *CWB_newStringDECODE(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *c)
 	BEGIN_LOCAL(ctx, lsfp, 1);
 	LOCAL_NEW(ctx, lsfp, 0, knh_String_t*, s, CWB_newString(ctx, cwb, 0));
 	if(!String_isASCII(s)) {
-		knh_bytes_t t = S_tobytes(s);
+		kbytes_t t = S_tobytes(s);
 		c->dpi->dec(ctx, c->conv, t.text, t.len, cwb->ba);
 		s = CWB_newString(ctx, cwb, K_SPOLICY_UTF8);
 		KNH_SETv(ctx, lsfp[0].o, KNH_NULL); //
@@ -606,7 +606,7 @@ knh_String_t *CWB_newStringDECODE(CTX ctx, CWB_t *cwb, knh_StringDecoder_t *c)
 
 /* ------------------------------------------------------------------------ */
 
-int knh_bytes_strcasecmp(knh_bytes_t v1, knh_bytes_t v2)
+int knh_bytes_strcasecmp(kbytes_t v1, kbytes_t v2)
 {
 	if(v1.len < v2.len) {
 		int res = knh_strncasecmp(v1.text, v2.text, v1.len);
@@ -685,7 +685,7 @@ const knh_RegexSPI_t* knh_getStrRegexSPI(void)
 	return &REGEX_STR;
 }
 
-knh_bool_t Regex_isSTRREGEX(knh_Regex_t *re)
+kbool_t Regex_isSTRREGEX(knh_Regex_t *re)
 {
 	return (re->spi == &REGEX_STR);
 }
@@ -782,7 +782,7 @@ static int  (*_pcre_fullinfo)(const pcre *, const pcre_extra *, int, void *);
 static pcre* (*_pcre_compile)(const char *, int, const char **, int *, const unsigned char *);
 static int  (*_pcre_exec)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int);
 
-static knh_bool_t knh_linkDynamicPCRE(CTX ctx)
+static kbool_t knh_linkDynamicPCRE(CTX ctx)
 {
 	void *h = knh_dlopen(ctx, "libpcre" K_OSDLLEXT);
 	if(h == NULL) return 0;
@@ -930,7 +930,7 @@ static const knh_RegexSPI_t REGEX_PCRE = {
 /* ------------------------------------------------------------------------ */
 /* [re2] */
 
-static knh_bool_t knh_linkDynamicRe2(CTX ctx)
+static kbool_t knh_linkDynamicRe2(CTX ctx)
 {
 #if defined(__cplusplus) && defined(K_USING_RE2)
 	void *h = knh_dlopen(ctx, "libre2" K_OSDLLEXT);
@@ -1111,7 +1111,7 @@ static void (*_onig_free)(OnigRegex);
 static OnigEncoding encutf8;
 static OnigSyntaxType** defaultsyntax;
 
-static knh_bool_t knh_linkDynamicOnig(CTX ctx)
+static kbool_t knh_linkDynamicOnig(CTX ctx)
 {
 	void *h = knh_dlopen(ctx, "libonig" K_OSDLLEXT);
 	if(h == NULL) return 0;

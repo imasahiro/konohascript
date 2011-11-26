@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------------ */
 //## @Static method void System.disableLog();
 
-KMETHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_disableLog(CTX ctx, ksfp_t *sfp _RIX)
 {
 	knh_closelog();
 	RETURNvoid_();
@@ -11,7 +11,7 @@ KMETHOD System_disableLog(CTX ctx, knh_sfp_t *sfp _RIX)
 
 /* ------------------------------------------------------------------------ */
 //## @Static method Float System.getMPIWtime();
-KMETHOD System_getMPIWtime(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD System_getMPIWtime(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNf_(MPI_Wtime());
 }

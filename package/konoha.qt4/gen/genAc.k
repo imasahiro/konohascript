@@ -428,8 +428,8 @@ assure \"<M>\" {
 String knhReturnType(FunctionElement fe)
 {
 	fe.genBind();
-	String knh_interface = fe.genKonohaInterface();
-	String[] token = knh_interface.split(" ");
+	String kinterface = fe.genKonohaInterface();
+	String[] token = kinterface.split(" ");
 	int i = 0;
 	for (i = 0; i < |token|; i++) {
 		if (!("@" in? token[i])) break;
