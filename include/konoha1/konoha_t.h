@@ -869,16 +869,6 @@ typedef struct {
 #define KNH_SYSTEM          (ctx->sys)
 #define knh_Object_sweep    knh_Object_RCsweep
 
-typedef struct knameinfo_t knameinfo_t;
-
-struct knameinfo_t { // FIXME
-	struct knh_String_t *name;
-	kmethodn_t parent_mn;
-	kmethodn_t parentMF;
-	kclass_t   principle_mtd;
-	kclass_t   mtdfCID;
-};
-
 /* ------------------------------------------------------------------------ */
 /* Arena */
 
@@ -983,9 +973,8 @@ typedef struct kshare_t {
 	struct knh_String_t*       enc;
 
 	struct knh_DictSet_t       *tokenDictSet;
-	struct knh_DictSet_t       *nameDictCaseSet;  // fn, mn
-	size_t                      namecapacity;
-	knameinfo_t                *nameinfo;
+	struct knh_DictSet_t       *symbolDictCaseSet;
+	struct knh_Array_t         *symbolList;
 	struct knh_DictSet_t       *urnDictSet;
 	struct knh_Array_t         *urns;
 //	struct knh_DictMap_t       *URNAliasDictMap;

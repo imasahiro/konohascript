@@ -130,17 +130,12 @@ int knh_addClassConst(CTX ctx, kclass_t cid, knh_String_t* name, Object *value)
 
 ksymbol_t knh_addname(CTX ctx, knh_String_t *s, knh_Fdictset f)
 {
-	size_t n = knh_Map_size(ctx->share->nameDictCaseSet);
-	if(n == ctx->share->namecapacity) {
-		ctx->wshare->namecapacity = k_grow(n);
-		ctx->wshare->nameinfo = (knameinfo_t*)KNH_REALLOC(ctx, "nameinfo", ctx->share->nameinfo, n, ctx->share->namecapacity, sizeof(knameinfo_t));
-	}
-	DBG_ASSERT(n < ctx->share->namecapacity);
-	KNH_INITv(ctx->share->nameinfo[n].name, s);
+	size_t n = knh_Map_size(ctx->share->symbolDictCaseSet);
 	if(unlikely(!(n+1 < KFLAG_MN_SETTER))) {  /* Integer overflowed */
 		KNH_DIE("too many names, last nameid(fn)=%d < %d", (int)(n+1), (int)KFLAG_MN_SETTER);
 	}
-	f(ctx, ctx->share->nameDictCaseSet, s, n + 1);
+	knh_Array_add(ctx, ctx->share->symbolList, s);
+	f(ctx, ctx->share->symbolDictCaseSet, s, n + 1);
 	return (ksymbol_t)(n);
 }
 
@@ -160,14 +155,13 @@ static ksymbol_t addSymbol(CTX ctx, kbytes_t t)
 		if(!(pos < sizeof(symbuf) - 2)) break;
 	}
 	symbuf[pos] = 0;
-	DBG_P("symbuf='%s', t='%s'", symbuf, t.buf);
 	return knh_addname(ctx, new_String2(ctx, CLASS_String, (const char*)symbuf, pos, K_SPOLICY_ASCII|K_SPOLICY_POOLALWAYS), knh_DictSet_set);
 }
 
 static ksymbol_t getSymbol(CTX ctx, kbytes_t n, ksymbol_t def)
 {
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
-	kindex_t idx = knh_DictSet_index(ctx->share->nameDictCaseSet, n);
+	kindex_t idx = knh_DictSet_index(ctx->share->symbolDictCaseSet, n);
 	if(idx == -1) {
 		if(def == FN_NEWID) {
 			idx = addSymbol(ctx, n);
@@ -177,20 +171,10 @@ static ksymbol_t getSymbol(CTX ctx, kbytes_t n, ksymbol_t def)
 		}
 	}
 	else {
-		idx = knh_DictSet_valueAt(ctx->share->nameDictCaseSet, idx) - 1;
+		idx = knh_DictSet_valueAt(ctx->share->symbolDictCaseSet, idx) - 1;
 	}
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
 	return (ksymbol_t)idx + MN_OPSIZE;
-}
-
-static knameinfo_t *knh_getnameinfo(CTX ctx, ksymbol_t fn)
-{
-	size_t n = (FN_UNMASK(fn) - MN_OPSIZE);
-	DBG_(
-		size_t size = knh_Map_size(ctx->share->nameDictCaseSet);
-		DBG_ASSERT(n < size);
-	);
-	return ctx->share->nameinfo + n;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -205,7 +189,7 @@ KNHAPI2(knh_String_t*) knh_getFieldName(CTX ctx, ksymbol_t fn)
 		return new_T(knh_getopMethodName(fn));
 	}
 	else {
-		return knh_getnameinfo(ctx, fn)->name;
+		return ctx->share->symbolList->strings[fn - MN_OPSIZE];
 	}
 }
 

@@ -333,9 +333,8 @@ static knh_context_t* new_RootContext(void)
 	KNH_INITv(share->err,   new_OutputStreamStdErr(ctx, share->enc));
 
 	KNH_INITv(share->props, new_DictMap0(ctx, 20, 1/*isCaseMap*/, "System.props"));
-	KNH_INITv(share->nameDictCaseSet, new_DictSet0(ctx, K_TFIELD_SIZE + 10, 1/*isCaseMap*/, "System.nameDictSet"));
-	share->namecapacity = k_goodsize2(K_TFIELD_SIZE + 10, sizeof(knameinfo_t));
-	share->nameinfo = (knameinfo_t*)KNH_REALLOC(ctx, "nameinfo", NULL, 0, share->namecapacity, sizeof(knameinfo_t));
+	KNH_INITv(share->symbolDictCaseSet, new_DictSet0(ctx, K_TFIELD_SIZE + 10, 1/*isCaseMap*/, "System.symbolDictSet"));
+	KNH_INITv(share->symbolList, new_Array0(ctx, K_TFIELD_SIZE + 10));
 	KNH_INITv(share->urnDictSet, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "System.urnDictSet"));
 	KNH_INITv(share->urns, new_Array0(ctx, 1));
 	KNH_INITv(share->corelang, new_(Lang));
@@ -489,22 +488,18 @@ static knh_Object_t **share_reftrace(CTX ctx, kshare_t *share FTRARG)
 	KNH_ADDREF(ctx,   share->emptyArray);
 	KNH_ADDREF(ctx,   share->cwdPath);
 
-	size = knh_Map_size(share->nameDictCaseSet);
 	KNH_ADDREF(ctx, (share->enc));
 	KNH_ADDREF(ctx, (share->in));
 	KNH_ADDREF(ctx, (share->out));
 	KNH_ADDREF(ctx, (share->err));
 	KNH_ADDREF(ctx, (share->props));
-	KNH_ADDREF(ctx, (share->nameDictCaseSet));
+	KNH_ADDREF(ctx, (share->symbolDictCaseSet));
+	KNH_ADDREF(ctx, (share->symbolList));
 	KNH_ADDREF(ctx, (share->urnDictSet));
 	KNH_ADDREF(ctx, (share->urns));
 	KNH_ADDREF(ctx, (share->tokenDictSet));
 	KNH_ADDREF(ctx, (share->corelang));
 //	KNH_ADDREF(ctx, (share->URNAliasDictMap));
-	KNH_ENSUREREF(ctx, size);
-	for(i = 0; i < size; i++) {
-		KNH_ADDREF(ctx, share->nameinfo[i].name);
-	}
 
 	KNH_ADDREF(ctx,   share->rootns);
 	KNH_ADDREF(ctx,   share->funcDictSet);
@@ -557,7 +552,6 @@ static knh_Object_t **share_reftrace(CTX ctx, kshare_t *share FTRARG)
 static void share_free(CTX ctx, kshare_t *share)
 {
 	size_t i;
-	KNH_FREE(ctx, share->nameinfo, sizeof(knameinfo_t)*share->namecapacity);
 	KNH_FREE(ctx, (void*)share->EventTBL, SIZEOF_TEXPT(ctx->share->capacityEventTBL));
 	share->EventTBL = NULL;
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
