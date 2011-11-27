@@ -143,24 +143,24 @@ static void setFloatProperty(CTX ctx, const char *name, kfloat_t data)
 
 #define _MAX 1024
 
-static kbytes_t knh_data_tobytes(knh_data_t data)
+static kbytes_t kloaddata_tobytes(kloaddata_t data)
 {
 	char *p = (char*)data;
 	return B(p);
 }
 
-static kParam *knh_loadScriptParam(CTX ctx, const knh_data_t **d, kuintptr_t uflag, int step)
+static kParam *knh_loadScriptParam(CTX ctx, const kloaddata_t **d, kuintptr_t uflag, int step)
 {
 	kParam *pa = new_Param(ctx);
-	const knh_data_t *data = (*d) + step;
+	const kloaddata_t *data = (*d) + step;
 	long i, psize = (long)data[0];
 	long rsize = (long)data[1];
 	data += 2;
 	for(i = 0; i < psize+rsize; i++) {
 		ktype_t type = (data[0] < _MAX || (TYPE_This <= data[0] && data[0] <= TYPE_T3)) ?
-			(ktype_t)data[0] : knh_NameSpace_gettype(ctx, K_GMANS, knh_data_tobytes(data[0]));
+			(ktype_t)data[0] : knh_NameSpace_gettype(ctx, K_GMANS, kloaddata_tobytes(data[0]));
 		ksymbol_t fn = (data[1] < _MAX) ?
-			(ksymbol_t)data[1] : knh_getfnq(ctx, knh_data_tobytes(data[1]), FN_NEWID);
+			(ksymbol_t)data[1] : knh_getfnq(ctx, kloaddata_tobytes(data[1]), FN_NEWID);
 		kparam_t p = {type, fn};
 		knh_Param_add(ctx, pa, p);
 		data += 2;
@@ -172,10 +172,10 @@ static kParam *knh_loadScriptParam(CTX ctx, const knh_data_t **d, kuintptr_t ufl
 	return pa;
 }
 
-#define _CID(d)  (d < _MAX) ? (kclass_t)(d) : knh_NameSpace_getcid(ctx, K_GMANS, knh_data_tobytes(d))
-#define _EXPTID(d)  (d < _MAX) ? (kevent_t)(d) : knh_geteid(ctx, knh_data_tobytes(d))
+#define _CID(d)  (d < _MAX) ? (kclass_t)(d) : knh_NameSpace_getcid(ctx, K_GMANS, kloaddata_tobytes(d))
+#define _EXPTID(d)  (d < _MAX) ? (kevent_t)(d) : knh_geteid(ctx, kloaddata_tobytes(d))
 
-static void knh_loadSystemData(CTX ctx, const knh_data_t *data, kParam **buf)
+static void knh_loadSystemData(CTX ctx, const kloaddata_t *data, kParam **buf)
 {
 	size_t c = 0;
 	while(1) {
@@ -262,7 +262,7 @@ static void knh_loadSystemData(CTX ctx, const knh_data_t *data, kParam **buf)
 		case DATA_METHOD : {
 			kclass_t cid = _CID(data[0]);
 			kmethodn_t mn = (datatype == DATA_METHOD)
-				? knh_getmn(ctx, knh_data_tobytes(data[1]), MN_NEWID) : (kmethodn_t)data[1];
+				? knh_getmn(ctx, kloaddata_tobytes(data[1]), MN_NEWID) : (kmethodn_t)data[1];
 			kflag_t flag = (kflag_t)data[2];
 			knh_Fmethod func = (knh_Fmethod)data[3];
 			kMethod *mtd;

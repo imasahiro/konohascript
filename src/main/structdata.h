@@ -55,7 +55,7 @@ static const char * StringData0[] = {
 	NULL
 };
 
-static knh_data_t StructData0[] = {
+static kloaddata_t StructData0[] = {
 	DATA_STRUCT0, CLASS_Tvoid, _DATA(&TvoidDef), CFLAG_Tvoid,
 	DATA_STRUCT0, CLASS_Tvar, _DATA(&TvarDef), CFLAG_Tvar,
 	DATA_STRUCT0, CLASS_Object, _DATA(&ObjectDef), CFLAG_Object,
@@ -112,7 +112,7 @@ static knh_data_t StructData0[] = {
 	0
 };
 
-static knh_data_t ClassData0[] = {
+static kloaddata_t ClassData0[] = {
 	DATA_CLASS0, CLASS_Tvoid, _DATA("konoha.Tvoid"), CFLAG_Tvoid, CLASS_Tvoid, CLASS_Tvoid, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Tvar, _DATA("konoha.Tvar"), CFLAG_Tvar, CLASS_Tvar, CLASS_Tvoid, 0 + 0 /*0*/,
 	DATA_CLASS0, CLASS_Object, _DATA("konoha.Object"), CFLAG_Object, CLASS_ObjectField, CLASS_Object, 19 + 5 /*0*/,
@@ -184,7 +184,7 @@ static knh_data_t ClassData0[] = {
 	0
 };
 
-static knh_FieldNameData0_t FieldNameData0[] = {
+static kloadsymbol_t FieldNameData0[] = {
 	{"", FN_},
 	{"2", FN_2},
 	{"3", FN_3},
@@ -322,7 +322,7 @@ static knh_FieldNameData0_t FieldNameData0[] = {
 	{NULL}
 };
 
-static knh_data_t ParamData0[] = {
+static kloaddata_t ParamData0[] = {
 	DATA_PARAM/*0*/, 0, 0, 0, 
 	DATA_PARAM/*1*/, 0, 0, 1, TYPE_This, FN_return,
 	DATA_PARAM/*2*/, FLAG_Param_VARGs, 1, 1, TYPE_dynamic, FN_value, TYPE_This, FN_return,
@@ -437,7 +437,7 @@ static knh_data_t ParamData0[] = {
 };
 #define K_PARAM0_SIZE                   110
 
-static knh_data_t APIData0[] = {
+static kloaddata_t APIData0[] = {
 	DATA_METHOD0, CLASS_Object, MN_new, FLAG_Method_Hidden, _DATA(Object_new), /*P=*/1,
 	DATA_METHOD0, CLASS_Object, MN_new__MAP, FLAG_Method_Hidden, _DATA(Object_newMAP), /*P=*/2,
 	DATA_METHOD0, CLASS_Object, MN_getClass, FLAG_Method_Const|FLAG_Method_FastCall, _DATA(Object_getClass), /*P=*/3,

@@ -1286,7 +1286,7 @@ static kMethod* new_NoSuchMethod(CTX ctx, kclass_t cid, kmethodn_t mn)
 static inline kMethod *Cache_setMethod(knh_mtdcache_t *mcache, kclass_t cid, kmethodn_t mn, kMethod *mtd)
 {
 	DBG_ASSERT(mtd != NULL);
-	knh_hashcode_t h = hashcode_mtd(cid, mn, K_MTDCACHE_SIZE);
+	khashcode_t h = hashcode_mtd(cid, mn, K_MTDCACHE_SIZE);
 	mcache = mcache + h;
 	DBG_(
 	if(mcache->cid != cid || mcache->mn != mn) {
@@ -1336,7 +1336,7 @@ kMethod* knh_ClassTBL_findMethodNULL(CTX ctx, const knh_ClassTBL_t *ct, kmethodn
 {
 	{
 		kclass_t cid = ct->cid;
-		knh_hashcode_t h = hashcode_mtd(cid, mn, K_MTDCACHE_SIZE);
+		khashcode_t h = hashcode_mtd(cid, mn, K_MTDCACHE_SIZE);
 		knh_mtdcache_t *mcache = ctx->mtdcache + h;
 		if(mcache->cid == ct->cid && mcache->mn == mn) {
 			//DBG_P("HIT h=%d mcache=%d.%d %d.%d", h, mcache->cid, mcache->mn, t->cid, mn);
@@ -1513,7 +1513,7 @@ KNHAPI2(void) knh_Func_invoke(CTX ctx, kFunc *fo, ksfp_t *rtnsfp, int argc)
 
 static inline kTypeMap *Cache_getTypeMap(CTX ctx, kclass_t scid, kclass_t tcid)
 {
-	knh_hashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
+	khashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
 	knh_tmrcache_t *cache = ctx->tmrcache + h;
 	if(cache->scid  == scid && cache->tcid == tcid) {
 		return cache->tmr;
@@ -1523,7 +1523,7 @@ static inline kTypeMap *Cache_getTypeMap(CTX ctx, kclass_t scid, kclass_t tcid)
 
 static inline kTypeMap *Cache_setTypeMap(CTX ctx, kclass_t scid, kclass_t tcid, kTypeMap *tmr)
 {
-	knh_hashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
+	khashcode_t h = hashcode_tmr(scid, tcid, K_TMAPCACHE_SIZE);
 	knh_tmrcache_t *cache = ctx->tmrcache + h;
 	cache->scid = scid;
 	cache->tcid = tcid;
@@ -1771,7 +1771,7 @@ kbool_t TypeMap_isNoSuchMapping(kTypeMap *tmr)
 
 void knh_addTypeMapRule(CTX ctx, kclass_t scid, kclass_t tcid, knh_Ftypemaprule func)
 {
-	knh_hashcode_t hkey = (knh_hashcode_t)scid;
+	khashcode_t hkey = (khashcode_t)scid;
 	hkey = (hkey << (sizeof(kclass_t) * 8)) + tcid;
 	void *f = knh_PtrMap_get(ctx, ctx->share->inferPtrMap, (void*)hkey);
 	if(f != NULL) {
@@ -1782,7 +1782,7 @@ void knh_addTypeMapRule(CTX ctx, kclass_t scid, kclass_t tcid, knh_Ftypemaprule 
 
 static knh_Ftypemaprule knh_getTypeMapRule(CTX ctx, kclass_t scid, kclass_t tcid)
 {
-	knh_hashcode_t hkey = (knh_hashcode_t)scid;
+	khashcode_t hkey = (khashcode_t)scid;
 	hkey = (hkey << (sizeof(kclass_t) * 8)) + tcid;
 	return (knh_Ftypemaprule)knh_PtrMap_get(ctx, ctx->share->inferPtrMap, (void*)hkey);
 }
@@ -1818,7 +1818,7 @@ KNHAPI2(kTypeMap*) knh_findTypeMapNULL(CTX ctx, kclass_t scid0, kclass_t tcid0)
 	//if(scid0 == CLASS_Tvoid) return NULL;
 	DBG_ASSERT(scid0 != CLASS_Tvar);
 	{
-		knh_hashcode_t h = hashcode_tmr(scid0, tcid0, K_TMAPCACHE_SIZE);
+		khashcode_t h = hashcode_tmr(scid0, tcid0, K_TMAPCACHE_SIZE);
 		knh_tmrcache_t *cache = ctx->tmrcache + h;
 		if(cache->scid  == scid0 && cache->tcid == tcid0) {
 			DBG_P("?(%s=>%s) HIT %s=>%s",CLASS__(scid0), CLASS__(tcid0), TYPE__(cache->tmr->scid), TYPE__(cache->tmr->tcid));

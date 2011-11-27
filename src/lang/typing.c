@@ -1646,7 +1646,7 @@ static kTerm *DECL_typing(CTX ctx, kStmtExpr *stmt) /* LOCAL*/
 
 static kfieldinfo_t *ClassTBL_expandFields(CTX ctx, knh_ClassTBL_t *ct)
 {
-	size_t newsize = (ct->fcapacity == 0) ? sizeof(kObjectUnused) / sizeof(kfieldinfo_t) : ct->fcapacity * 2;
+	size_t newsize = (ct->fcapacity == 0) ? K_FASTMALLOC_SIZE / sizeof(kfieldinfo_t) : ct->fcapacity * 2;
 	ct->fields = (kfieldinfo_t*)KNH_REALLOC(ctx, "fields", ct->fields, ct->fcapacity, newsize, sizeof(kfieldinfo_t));
 	ct->fcapacity = newsize;
 	return ct->fields;

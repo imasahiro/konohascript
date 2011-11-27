@@ -199,7 +199,6 @@ def write_class_h(f, c, cid):
     write_section(f, c.cname)
     if c.struct != None:
         write_define(f, CLASS_(c.cname), '((kclass_t)%d)' % cid, 32)
-        #write_define(f, STRUCT_(c.cname), '((knh_struct_t)%d)' % cid, 32)
     else :
         write_define(f, CLASS_(c.cname), '((kclass_t)%d)' % cid, 32)
         #write_define(f, STRUCT_(c.cname), STRUCT_(c.base), 32)
@@ -289,7 +288,7 @@ def write_flag_h(f, fg):
 def write_flag_c(f, fg, data):
     funcbase = '%s' % fg.cname
     methodbase = '_%s' % (fg.cname)
-    a1 = '(knh_%s_t*)sfp[0].o' % fg.cname
+    a1 = '(k%s*)sfp[0].o' % fg.cname
     if fg.cname == 'Class': 
         funcbase = funcbase.replace('Class', 'class')
         a1 = 'knh_Class_cid(sfp[0].c)'
@@ -820,7 +819,7 @@ def write_KNHAPI2(f, data):
 	f.write('''
 #endif
 
-typedef struct knh_api2_t {
+typedef struct kpackageapi_t {
 	size_t crc32;''')
 	data.KNHAPI2_LIST.sort()
 	t=''
@@ -835,12 +834,12 @@ typedef struct knh_api2_t {
 		f.write('''
 	%s;''' % p)
 	f.write('''
-} knh_api2_t;
+} kpackageapi_t;
 	
 #define K_API2_CRC32 ((size_t)%d)
 #ifdef K_DEFINE_API2
-static const knh_api2_t* getapi2(void) {
-	static const knh_api2_t DATA_API2 = {
+static const kpackageapi_t* getapi2(void) {
+	static const kpackageapi_t DATA_API2 = {
 		K_API2_CRC32,''' % binascii.crc32(t))
 	for p in data.KNHAPI2_LIST:
 		p = p.replace('(', ' ')
@@ -883,7 +882,7 @@ def write_Data(f, data):
         dlist0.append(fmt)
         dlist.append(c.StructData())
     #write_data(f, 'char *', 'StructNameData', dlist0, 'NULL')
-    write_data(f, 'knh_data_t', 'StructData0', dlist, '0')
+    write_data(f, 'kloaddata_t', 'StructData0', dlist, '0')
     #
     dlist=[]
     for c in data.CLASS_LIST :
@@ -897,7 +896,7 @@ def write_Data(f, data):
     #dlist=[]
     for c in data.EVENT_LIST :
         dlist.append(c.ExptData())
-    write_data(f, 'knh_data_t', 'ClassData0', dlist, '0')
+    write_data(f, 'kloaddata_t', 'ClassData0', dlist, '0')
     #
     dlist = []
     l = data.NAME.items()
@@ -906,23 +905,23 @@ def write_Data(f, data):
         fmt = '''
 \t{"%s", %s},''' % (fn, FN_(fn))
         dlist.append(fmt)
-    write_data(f, 'knh_FieldNameData0_t', 'FieldNameData0', dlist)
+    write_data(f, 'kloadsymbol_t', 'FieldNameData0', dlist)
     #
     dlist = ['\n\tDATA_PARAM/*0*/, 0, 0, 0, ']
     for mtd in data.METHODFIELD_LIST:
         dlist.append(mtd.ParamData())
-    write_data(f, 'knh_data_t', 'ParamData0', dlist, '0')
+    write_data(f, 'kloaddata_t', 'ParamData0', dlist, '0')
     write_define(f, 'K_PARAM0_SIZE', '%d' % len(dlist))
     #
     dlist = []
     for mtd in data.METHOD_LIST:
         dlist.append(mtd.MethodData())
-    #write_data(f, 'knh_data_t', 'MethodData0', dlist, '0')
+    #write_data(f, 'kloaddata_t', 'MethodData0', dlist, '0')
     #
     #dlist = []
     for mpr in data.TYPEMAP_LIST:
         dlist.append(mpr.TypeMapData())
-    write_data(f, 'knh_data_t', 'APIData0', dlist, '0')
+    write_data(f, 'kloaddata_t', 'APIData0', dlist, '0')
     #write_KNHAPI2(f, data)
     pass
 

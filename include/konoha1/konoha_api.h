@@ -72,15 +72,11 @@ KNHAPI2(void) knh_setPropertyText(CTX ctx, char *key, char *value);
 KNHAPI2(kString*) knh_getFieldName(CTX ctx, ksymbol_t fn);
 #endif
 
-typedef struct knh_api2_t {
+typedef struct kpackageapi_t {
 	size_t crc32;
 	Object*  (*DictMap_valueAt)(kDictMap *m, size_t n);
 	Object*  (*getClassDefaultValue)(CTX ctx, kclass_t cid);
 	int  (*isVerbose)(void);
-	kascii_t* (*CWB_totext)(CTX ctx, CWB_t *cwb);
-	kbool_t (*Method_isAbstract)(kMethod *mtd);
-	kbool_t  (*eval)(CTX ctx, const char *script, kline_t uline, kOutputStream *w);
-	kclass_t (*ktype_tocid)(CTX ctx, ktype_t ptype, kclass_t this_cid);
 	kArray* (*new_Array)(CTX ctx, kclass_t p1, size_t capacity);
 	kFloat* (*new_Float)(CTX ctx, kfloat_t value);
 	kInputStream* (*new_InputStream)(CTX ctx, kio_t *io2, kPath *path);
@@ -100,6 +96,10 @@ typedef struct knh_api2_t {
 	kTypeMap*  (*findTypeMapNULL)(CTX ctx, kclass_t scid0, kclass_t tcid0);
 	kTypeMap* (*new_TypeMap)(CTX ctx, kflag_t flag, kclass_t scid, kclass_t tcid, knh_Ftypemap func);
 	kTypeMap* (*new_TypeMapData)(CTX ctx, kflag_t flag, kclass_t scid, kclass_t tcid, knh_Ftypemap func, Object *mapdata);
+	kascii_t* (*CWB_totext)(CTX ctx, CWB_t *cwb);
+	kbool_t (*Method_isAbstract)(kMethod *mtd);
+	kbool_t  (*eval)(CTX ctx, const char *script, kline_t uline, kOutputStream *w);
+	kclass_t (*ktype_tocid)(CTX ctx, ktype_t ptype, kclass_t this_cid);
 	kcontext_t*  (*getCurrentContext)(void);
 	kparam_t*  (*Param_get)(kParam *pa, size_t n);
 	ktype_t  (*Method_ptype)(CTX ctx, kMethod *mtd, size_t n, kclass_t this_cid);
@@ -107,6 +107,7 @@ typedef struct knh_api2_t {
 	ktype_t  (*Param_rtype)(kParam *pa);
 	size_t  (*Method_psize)(kMethod *mtd);
 	void (*THROW_OutOfRange)(CTX ctx, ksfp_t *sfp, kint_t n, size_t max);
+	void (*kObjectoNULL_)(CTX ctx, Object *o);
 	void  (*Array_add_)(CTX ctx, kArray *a, kObject *value);
 	void  (*Array_remove_)(CTX ctx, kArray *a, size_t n);
 	void  (*Array_swap)(CTX ctx, kArray *a, size_t n, size_t m);
@@ -118,7 +119,6 @@ typedef struct knh_api2_t {
 	void  (*DataMap_setInt)(CTX ctx, kMap *m, const char *key, kint_t value);
 	void  (*DataMap_setString)(CTX ctx, kMap *m, const char *key, const char *value);
 	void  (*Func_invoke)(CTX ctx, kFunc *fo, ksfp_t *rtnsfp, int argc);
-	void  (*Object_toNULL_)(CTX ctx, Object *o);
 	void  (*OutputStream_flush)(CTX ctx, kOutputStream *w);
 	void  (*OutputStream_p)(CTX ctx, kOutputStream *w, kbytes_t buf);
 	void  (*OutputStream_putc)(CTX ctx, kOutputStream *w, int ch);
@@ -137,20 +137,16 @@ typedef struct knh_api2_t {
 	void  (*write_mn)(CTX ctx, kOutputStream *w, kmethodn_t mn);
 	void  (*write_type)(CTX ctx, kOutputStream *w, ktype_t type);
 	void  (*write_utf8)(CTX ctx, kOutputStream *w, kbytes_t t, int hasUTF8);
-} knh_api2_t;
+} kpackageapi_t;
 	
-#define K_API2_CRC32 ((size_t)1488503916)
+#define K_API2_CRC32 ((size_t)1134416443)
 #ifdef K_DEFINE_API2
-static const knh_api2_t* getapi2(void) {
-	static const knh_api2_t DATA_API2 = {
+static const kpackageapi_t* getapi2(void) {
+	static const kpackageapi_t DATA_API2 = {
 		K_API2_CRC32,
 		knh_DictMap_valueAt,
 		knh_getClassDefaultValue,
 		knh_isVerbose,
-		CWB_totext,
-		Method_isAbstract,
-		knh_eval,
-		ktype_tocid,
 		new_Array,
 		new_Float,
 		new_InputStream,
@@ -170,6 +166,10 @@ static const knh_api2_t* getapi2(void) {
 		knh_findTypeMapNULL,
 		new_TypeMap,
 		new_TypeMapData,
+		CWB_totext,
+		Method_isAbstract,
+		knh_eval,
+		ktype_tocid,
 		knh_getCurrentContext,
 		knh_Param_get,
 		knh_Method_ptype,
@@ -177,6 +177,7 @@ static const knh_api2_t* getapi2(void) {
 		knh_Param_rtype,
 		knh_Method_psize,
 		THROW_OutOfRange,
+		kObjectoNULL_,
 		knh_Array_add_,
 		knh_Array_remove_,
 		knh_Array_swap,
@@ -188,7 +189,6 @@ static const knh_api2_t* getapi2(void) {
 		knh_DataMap_setInt,
 		knh_DataMap_setString,
 		knh_Func_invoke,
-		kObjectoNULL_,
 		knh_OutputStream_flush,
 		knh_OutputStream_p,
 		knh_OutputStream_putc,
@@ -216,10 +216,6 @@ static const knh_api2_t* getapi2(void) {
 #define knh_DictMap_valueAt   ctx->api2->DictMap_valueAt
 #define knh_getClassDefaultValue   ctx->api2->getClassDefaultValue
 #define knh_isVerbose   ctx->api2->isVerbose
-#define CWB_totext   ctx->api2->CWB_totext
-#define Method_isAbstract   ctx->api2->Method_isAbstract
-#define knh_eval   ctx->api2->eval
-#define ktype_tocid   ctx->api2->ktype_tocid
 #define new_Array   ctx->api2->new_Array
 #define new_Float   ctx->api2->new_Float
 #define new_InputStream   ctx->api2->new_InputStream
@@ -239,6 +235,10 @@ static const knh_api2_t* getapi2(void) {
 #define knh_findTypeMapNULL   ctx->api2->findTypeMapNULL
 #define new_TypeMap   ctx->api2->new_TypeMap
 #define new_TypeMapData   ctx->api2->new_TypeMapData
+#define CWB_totext   ctx->api2->CWB_totext
+#define Method_isAbstract   ctx->api2->Method_isAbstract
+#define knh_eval   ctx->api2->eval
+#define ktype_tocid   ctx->api2->ktype_tocid
 #define knh_getCurrentContext   ctx->api2->getCurrentContext
 #define knh_Param_get   ctx->api2->Param_get
 #define knh_Method_ptype   ctx->api2->Method_ptype
@@ -246,6 +246,7 @@ static const knh_api2_t* getapi2(void) {
 #define knh_Param_rtype   ctx->api2->Param_rtype
 #define knh_Method_psize   ctx->api2->Method_psize
 #define THROW_OutOfRange   ctx->api2->THROW_OutOfRange
+#define kObjectoNULL_   ctx->api2->kObjectoNULL_
 #define knh_Array_add_   ctx->api2->Array_add_
 #define knh_Array_remove_   ctx->api2->Array_remove_
 #define knh_Array_swap   ctx->api2->Array_swap
@@ -257,7 +258,6 @@ static const knh_api2_t* getapi2(void) {
 #define knh_DataMap_setInt   ctx->api2->DataMap_setInt
 #define knh_DataMap_setString   ctx->api2->DataMap_setString
 #define knh_Func_invoke   ctx->api2->Func_invoke
-#define kObjectoNULL_   ctx->api2->Object_toNULL_
 #define knh_OutputStream_flush   ctx->api2->OutputStream_flush
 #define knh_OutputStream_p   ctx->api2->OutputStream_p
 #define knh_OutputStream_putc   ctx->api2->OutputStream_putc
@@ -437,13 +437,13 @@ void knh_Array_clear(CTX ctx, kArray *a, size_t n);
 kArray* new_Array0(CTX ctx, size_t capacity);
 void knh_Array_initAPI(CTX ctx, kArray *a);
 void knh_Iterator_close(CTX ctx, kIterator *it);
-void *bm_malloc(CTX ctx, size_t n);
-void bm_free(CTX ctx, void *ptr, size_t n);
-void *bm_realloc(CTX ctx, void *ptr, size_t os, size_t ns);
-void knh_share_initArena(CTX ctx, kshare_t *share);
-void knh_share_freeArena(CTX ctx, kshare_t *share);
-void knh_initFirstObjectArena(CTX ctx);
-void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSize);
+//void *bm_malloc(CTX ctx, size_t n);
+//void bm_free(CTX ctx, void *ptr, size_t n);
+//void *bm_realloc(CTX ctx, void *ptr, size_t os, size_t ns);
+//void knh_share_initArena(CTX ctx, kshare_t *share);
+//void knh_share_freeArena(CTX ctx, kshare_t *share);
+//void knh_initFirstObjectArena(CTX ctx);
+//void knh_ObjectArena_finalfree(CTX ctx, objpageTBL_t *oat, size_t oatSize);
 kbool_t knh_isObject(CTX ctx, kObject *o);
 kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct);
 kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct);
@@ -577,8 +577,8 @@ void knh_PtrMap_rmS(CTX ctx, kPtrMap *pm, kString *s);
 kInt* knh_PtrMap_getI(CTX ctx, kPtrMap *pm, kunbox_t k);
 void knh_PtrMap_addI(CTX ctx, kPtrMap *pm, kInt *v);
 void knh_PtrMap_rmI(CTX ctx, kPtrMap *pm, kInt *v);
-kMethod* knh_PtrMap_getM(CTX ctx, kPtrMap *pm, knh_hashcode_t hcode);
-void knh_PtrMap_addM(CTX ctx, kPtrMap *pm, knh_hashcode_t hcode, kMethod *v);
+kMethod* knh_PtrMap_getM(CTX ctx, kPtrMap *pm, khashcode_t hcode);
+void knh_PtrMap_addM(CTX ctx, kPtrMap *pm, khashcode_t hcode, kMethod *v);
 void knh_PtrMap_rmM(CTX ctx, kPtrMap *pm, kMethod *mtd);
 int knh_bytes_strcasecmp2(kbytes_t t1, kbytes_t t2);
 kDictMap* new_DictMap0_(CTX ctx, size_t capacity, int isCaseMap, const char *DBGNAME);
@@ -603,22 +603,24 @@ void knh_vfree(CTX ctx, void *block, size_t size);
 void *TRACE_malloc(CTX ctx, size_t size K_TRACEARGV);
 void TRACE_free(CTX ctx, void *p, size_t size K_TRACEARGV);
 void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACEARGV);
+kbool_t knh_isObject(CTX ctx, kObject *o);
+void kmemshare_init(CTX ctx);
+void kmemshare_free(CTX ctx);
+void kmemlocal_init(CTX ctx);
+void kmemlocal_free(CTX ctx);
 void *knh_xmalloc(CTX ctx, size_t size);
-void xmem_freeall(CTX ctx);
 void *knh_fastmalloc(CTX ctx, size_t size);
 void knh_fastfree(CTX ctx, void *block, size_t size);
 void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize);
-void knh_share_initArena(CTX ctx, kshare_t *share);
-void knh_share_freeArena(CTX ctx, kshare_t *share);
-kbool_t knh_isObject(CTX ctx, kObject *o);
 void knh_initFirstObjectArena(CTX ctx);
 kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct);
 kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct);
 void TR_NEW(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct);
 kObject** knh_ensurerefs(CTX ctx, kObject** tail, size_t size);
+void knh_sizerefs(CTX ctx, kObject** tail);
+void knh_setrefs(CTX ctx,  kObject** list, size_t size);
 void knh_Object_RCfree(CTX ctx, Object *o);
 void knh_Object_RCsweep(CTX ctx, Object *o);
-void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSize);
 void knh_System_gc(CTX ctx, int needsCStackTrace);
 void knh_srand(kuint_t seed);
 kuint_t knh_rand(void);

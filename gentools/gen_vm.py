@@ -208,21 +208,21 @@ CTYPE = {
 	'int':     'kint_t',
 	'float':   'kfloat_t',
 	'cid':     'const knh_ClassTBL_t*',
-	'hcache':  'knh_hcache_t',
+	'hcache':  'kcachedata_t',
 	'mtd':     'kMethod*',
 	'tmr':     'kTypeMap*',
 	'addr':    'knh_KLRInst_t*',
 	'u':       'kuintptr_t',
 	'i':       'kintptr_t',
-	'rn':      'kregn_t',
-	'ro':      'krego_t',
+	'rn':      'kregN_t',
+	'ro':      'kregO_t',
 	'r':       'kreg_t',
 }
 
 def getctype(t, v):
 	if CTYPE.has_key(t): return CTYPE[t]
 	if t == 'f': return 'klr_F%s' % (v)
-	return 'knh_%s_t*' % t
+	return 'k%s*' % t
 
 def getVMT(t):
 	tt = ', VMT_%s' % (t.upper())
@@ -487,7 +487,7 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 		case VMT_CID:
 			knh_write_cname(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
 		case VMT_HCACHE: {
-			knh_hcache_t *hc = (knh_hcache_t*)&(c->p[i]);
+			kcachedata_t *hc = (kcachedata_t*)&(c->p[i]);
 			knh_write_cname(ctx, w, hc->cid); 
 			knh_putc(ctx, w, '/');
 			knh_write_mn(ctx, w, hc->mn); 

@@ -144,7 +144,7 @@ static KMETHOD Object_getClass(CTX ctx, ksfp_t *sfp _RIX)
 
 static KMETHOD Object_hashCode(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_hashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cdef->hashCode(ctx, sfp[0].p);
+	khashcode_t h = ClassTBL(O_bcid(sfp[0].o))->cdef->hashCode(ctx, sfp[0].p);
 	RETURNi_(h);
 }
 

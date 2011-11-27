@@ -140,7 +140,7 @@ static inline kbytes_t knh_bytes_last(kbytes_t t, kintptr_t loc)
 	return t2;
 }
 
-static inline knh_hashcode_t knh_hash(knh_hashcode_t h, const char *p, size_t len)
+static inline khashcode_t knh_hash(khashcode_t h, const char *p, size_t len)
 {
 	// TODO: Looking for good hash http://burtleburtle.net/bob/hash/doobs.html
 	size_t i;

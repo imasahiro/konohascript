@@ -43,8 +43,8 @@
 extern "C" {
 #endif
 
-/* ------------------------------------------------------------------------ */
-/* [Initailize Object] */
+/* ------------------------ */
+/* [Initialize Object] */
 
 static kInputStream *new_InputStreamStdIn(CTX ctx, kString *enc)
 {
@@ -85,8 +85,8 @@ static kcontext_t* new_hcontext(CTX ctx0)
 	ctx->flag = 0;
 	ctx->ctxid = ctxid_counter;
 	ctxid_counter++;
-	ctx->freeObjectList = NULL;
-	ctx->freeMemoryList = NULL;
+//	ctx->freeObjectList = NULL;
+//	ctx->freeMemoryList = NULL;
 	ctx->parent = ctx;
 	ctx->api2 = getapi2();
 	{
@@ -103,7 +103,6 @@ static kcontext_t* new_hcontext(CTX ctx0)
 	}
 	ctx->seq = 0;
 	ctx->ctxobjNC = NULL;
-
 	if(ctx0 == NULL) {
 		const char *ptrace = knh_getenv(K_DEOS_TRACE);
 		if(ptrace == NULL) {
@@ -261,13 +260,12 @@ static kcontext_t* new_RootContext(void)
 	kshare_t *share = (kshare_t*)malloc(sizeof(kshare_t) + sizeof(kstatinfo_t) + sizeof(knh_ServiceSPI_t));
 	ctx->share = share;
 	knh_bzero(share, sizeof(kshare_t) + sizeof(kstatinfo_t) + sizeof(knh_ServiceSPI_t));
-	share->memlock = knh_mutex_malloc(ctx);
 	share->syslock = knh_mutex_malloc(ctx);
 	ctx->stat = (kstatinfo_t*)((share+1));
 	ctx->spi = (const knh_ServiceSPI_t*)(ctx->stat + 1);
 	initServiceSPI((knh_ServiceSPI_t*)ctx->spi);
 
-	knh_share_initArena(ctx, share);
+//	kmemshare_init(ctx);
 	share->ClassTBL = (const knh_ClassTBL_t**)KNH_MALLOC((CTX)ctx, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	knh_bzero(share->ClassTBL, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	share->sizeClassTBL = 0;
@@ -278,7 +276,8 @@ static kcontext_t* new_RootContext(void)
 	share->sizeEventTBL = 0;
 	share->capacityEventTBL  = K_EVENTTBL_INIT;
 	knh_loadScriptSystemStructData(ctx, kapi);
-	knh_initFirstObjectArena(ctx);
+	kmemshare_init(ctx);
+//	knh_initFirstObjectArena(ctx);
 
 	KNH_INITv(share->funcDictSet, new_DictSet0(ctx, 0, 0, "funcDictSet"));
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));
@@ -378,8 +377,8 @@ kcontext_t *new_ThreadContext(CTX ctx)
 	newCtx->spi = ctx->spi;
 	newCtx->script = ctx->script;
 	newCtx->parent = WCTX(ctx);
-	newCtx->freeObjectList = NULL;
-	newCtx->freeObjectTail = NULL;
+//	newCtx->freeObjectList = NULL;
+//	newCtx->freeObjectTail = NULL;
 	KNH_INITv(newCtx->gma, new_(GammaBuilder));
 	knh_GammaBuilder_init(newCtx);
 	CommonContext_init(ctx, newCtx);
@@ -481,7 +480,7 @@ void Context_initMultiThread(CTX ctx)
 
 static kObject **share_reftrace(CTX ctx, kshare_t *share FTRARG)
 {
-	size_t i, size;
+	size_t i;
 	KNH_ADDREF(ctx,   share->constNull);
 	KNH_ADDREF(ctx,   share->constTrue);
 	KNH_ADDREF(ctx,   share->constFalse);
@@ -556,7 +555,6 @@ static void share_free(CTX ctx, kshare_t *share)
 	share->EventTBL = NULL;
 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
 	share->tString = NULL;
-	xmem_freeall(ctx);
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		knh_ClassTBL_t *ct = varClassTBL(i);
 		if(ct->constPoolMapNULL) {
@@ -564,8 +562,7 @@ static void share_free(CTX ctx, kshare_t *share)
 			ct->constPoolMapNULL = NULL;
 		}
 	}
-	knh_ObjectArena_finalfree(ctx, share->ObjectArenaTBL, share->sizeObjectArenaTBL);
-
+	kmemshare_free(ctx);
 	/* freeing cdef */
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		knh_ClassTBL_t *ct = varClassTBL(i);
@@ -586,11 +583,11 @@ static void share_free(CTX ctx, kshare_t *share)
 	}
 	KNH_FREE(ctx, (void*)share->ClassTBL, sizeof(knh_ClassTBL_t*)*(share->capacityClassTBL));
 	share->ClassTBL = NULL;
-	knh_share_freeArena(ctx, share);
+
 	if(ctx->stat->usedMemorySize != 0) {
 		GC_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
-	knh_mutex_free(ctx, share->memlock);
+	kmemlocal_free(ctx);
 	knh_mutex_free(ctx, share->syslock);
 	knh_bzero(share, sizeof(kshare_t) + sizeof(kstatinfo_t) + sizeof(knh_ServiceSPI_t));
 	free(share);
@@ -627,24 +624,6 @@ static kObject **knh_context_reftrace(CTX ctx, kcontext_t *o FTRARG)
 	return tail_;
 }
 
-static void Context_freeGCBuf(CTX ctx, kcontext_t* ctxo)
-{
-	if(ctxo->queue_capacity > 0) {
-		/* XXX(@imasahiro) */
-		/* to remove memory leaks, queue_capacity must increment */
-		/* see src/main/memory.c ostack_init() */
-		KNH_FREE(ctx, ctxo->queue,  (ctxo->queue_capacity + 1) * sizeof(kObject*));
-		ctxo->queue = NULL;
-		ctxo->queue_capacity = 0;
-	}
-	if(ctxo->ref_capacity > 0) {
-		KNH_FREE(ctx, ctxo->ref_buf, ctxo->ref_capacity * sizeof(kObject*));
-		ctxo->ref_buf = NULL;
-		ctxo->refs = NULL;
-		ctxo->ref_capacity = 0;
-	}
-}
-
 void knh_Context_free(CTX ctx, kcontext_t* ctxo)
 {
 	CommonContext_free(ctx, ctxo);
@@ -657,13 +636,12 @@ void knh_Context_free(CTX ctx, kcontext_t* ctxo)
 				kMethodoAbstract(ctx, a->methods[j]);
 			}
 		}
-		Context_freeGCBuf(ctx, ctxo);
 		share_free(ctx, (kshare_t*)ctxo->share);
 		knh_bzero((void*)ctxo, sizeof(kcontext_t));
 		free((void*)ctxo);
 	}
 	else {
-		Context_freeGCBuf(ctx, ctxo);
+		kmemlocal_free(ctx);
 		knh_bzero((void*)ctxo, sizeof(kcontext_t));
 		knh_free(ctx, (void*)ctxo, sizeof(kcontext_t));
 	}

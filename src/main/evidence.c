@@ -338,8 +338,6 @@ static void opt_v(int mode, const char *optstr)
 		isVerboseVM     = 1;
 		dump_sysinfo(NULL, NULL, 1/*isALL*/);
 		KNH_ASSERT(sizeof(kintptr_t) == sizeof(void*));
-		KNH_ASSERT(sizeof(kTerm) <= sizeof(kObjectUnused));
-		KNH_ASSERT(sizeof(kStmtExpr) <= sizeof(kObjectUnused));
 		KNH_ASSERT(sizeof(kint_t) <= sizeof(kfloat_t));
 #ifdef K_USING_RBP_
 		KNH_ASSERT(sizeof(krbp_t) * 2 == sizeof(ksfp_t));

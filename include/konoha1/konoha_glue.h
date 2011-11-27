@@ -109,13 +109,13 @@ typedef struct {
 #define DATA_TYPEMAP     8
 #define DATA_PARAM     9
 
-typedef kintptr_t knh_data_t;
+typedef kintptr_t kloaddata_t;
 
 /* ------------------------------------------------------------------------ */
 
 typedef struct knh_LoaderAPI_t {
 	/* global */
-	void (*loadData)(CTX, const knh_data_t *, kParam **);
+	void (*loadData)(CTX, const kloaddata_t *, kParam **);
 	void (*loadFuncData)(CTX, const knh_FuncData_t *);
 	/* constant */
 	void (*loadIntData)(CTX, kNameSpace *ns, const knh_IntData_t *);

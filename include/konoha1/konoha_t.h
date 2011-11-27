@@ -414,16 +414,6 @@ typedef struct kObjectHeader {
 	void *meta;   // reserved for traits
 } kObjectHeader ;
 
-typedef struct kObjectUnused {
-	kObjectHeader h;
-	void *ref;
-	void *ref2_unused;
-	void *ref3_unused;
-	struct kObjectUnused *ref4_tail;  // this is used for tailing ObjectArena
-} kObjectUnused ;
-
-#define K_FASTMALLOC_SIZE     sizeof(kObjectUnused)
-
 #ifndef K_USING_BMGC
 #define SP(o)               (o)
 #define DP(o)               ((o)->b)
@@ -434,17 +424,6 @@ typedef struct kObjectUnused {
 #define KNH_EX_REF
 #endif
 #define _(s)          s
-
-#define knh_bodycpy(o, s) \
-	o->ref = s->ref;\
-	o->ref2_unused = s->ref2_unused;\
-	o->ref3_unused = s->ref3_unused;\
-	o->ref4_tail   = s->ref4_tail;\
-
-#define knh_bodyextcpy(o, s) \
-	o->ref2_unused = s->ref2_unused;\
-	o->ref3_unused = s->ref3_unused;\
-	o->ref4_tail   = s->ref4_tail;\
 
 /* types of basic objects (not type-checked) */
 
@@ -528,8 +507,6 @@ typedef void *(*knh_Fthread)(void *);
 #define OLD_LOCK(ctx, lockid, o)
 #define OLD_UNLOCK(ctx, lockid, o)
 
-#define KNH_MEMLOCK(ctx)   knh_mutex_lock(ctx->share->memlock)
-#define KNH_MEMUNLOCK(ctx) knh_mutex_unlock(ctx->share->memlock)
 #define KNH_SYSLOCK(ctx)   knh_mutex_lock(ctx->share->syslock)
 #define KNH_SYSUNLOCK(ctx) knh_mutex_unlock(ctx->share->syslock)
 #define KNH_CTXLOCK(ctx)   knh_mutex_lock(ctx->ctxlock)
@@ -633,6 +610,8 @@ typedef void (*knh_Ftraverse)(CTX, Object *);
 #define FTRDATA   , tail_
 
 #define KNH_ENSUREREF(ctx, SIZE)  tail_ = knh_ensurerefs(ctx, tail_, SIZE)
+#define KNH_SIZEREF(ctx)  knh_sizerefs(ctx, tail_)
+#define KNH_SETREF(ctx, LIST, SIZE)  knh_setrefs(ctx, LIST, SIZE)
 
 #define KNH_ADDREF(ctx, p)  {\
 		DBG_ASSERT(p != NULL);\
@@ -645,35 +624,10 @@ typedef void (*knh_Ftraverse)(CTX, Object *);
 		tail_++;\
 	}\
 
-#define KNH_SIZEREF(ctx)  {\
-		((kcontext_t*)ctx)->ref_size = (tail_ - ctx->ref_buf);\
-	}\
-
-#define KNH_SETREF(ctx, LIST, SIZE)  {\
-		((kcontext_t*)ctx)->refs = LIST;\
-		((kcontext_t*)ctx)->ref_size = SIZE;\
-	}\
-
-#define KNH_ADDREF2(ctx, p)  {\
-		ctx->refs[ctx->ref_size] = (Object*)p;\
-		((kcontext_t*)ctx)->ref_size++;\
-		tail_++;\
-	}\
-
-#define KNH_ADDNNREF2(ctx, p)  if(p != NULL) {\
-		ctx->refs[ctx->ref_size] = (Object*)p;\
-		((kcontext_t*)ctx)->ref_size++;\
-		tail_++;\
-	}\
-
-#define KNH_SIZEREF2(ctx)  {\
-		KNH_ASSERT(ctx->ref_size == (tail_ - ctx->refs));\
-	}\
-
 typedef void (*knh_Freftrace)(CTX, Object * FTRARG);
 
-typedef kuintptr_t                knh_hashcode_t;  /* knh_hashcode_t */
-#define knh_hcode_join(s1,s2)	   ((knh_hashcode_t)s1 << (sizeof(kshort_t)*8)) + s2;
+typedef kuintptr_t                khashcode_t;  /* khashcode_t */
+#define knh_hcode_join(s1,s2)	   ((khashcode_t)s1 << (sizeof(kshort_t)*8)) + s2;
 
 typedef struct kObject* (*knh_Fdefnull)(CTX ctx, kclass_t cid);
 
@@ -736,7 +690,7 @@ typedef struct kclassdef_t {
 	void (*p)(CTX, struct kOutputStream*, struct kRawPtr*, int);
 
 	struct kString* (*getkey)(CTX, ksfp_t*);
-	knh_hashcode_t       (*hashCode)(CTX, struct kRawPtr*);
+	khashcode_t       (*hashCode)(CTX, struct kRawPtr*);
 //	kint_t   (*toint)(CTX ctx, ksfp_t*);
 //	kfloat_t (*tofloat)(CTX ctx, ksfp_t*);
 	void *RESERVED0;
@@ -869,30 +823,6 @@ typedef struct {
 #define KNH_SYSTEM          (ctx->sys)
 #define knh_Object_sweep    knh_Object_RCsweep
 
-/* ------------------------------------------------------------------------ */
-/* Arena */
-
-typedef void knh_gcinfo_t;
-
-#define K_OPAGE(o)    ((kobjpage_t*)((((kuintptr_t)(o)) / K_PAGESIZE) * K_PAGESIZE))
-#define K_SHIFTPTR(p, size)   ((char*)p + size)
-#define K_MEMSIZE(p, p2)      (((char*)p) - ((char*)p2))
-
-#define K_PAGEOBJECTSIZE ((K_PAGESIZE / sizeof(kObjectUnused)) - 1)
-
-#define K_ARENATBL_INITSIZE     32
-#define K_NBITMAP 2
-
-#ifdef K_USING_RCGC
-#define K_ARENASIZE             (sizeof(kObjectUnused) * K_PAGESIZE)
-#else
-#define K_ARENASIZE             ((sizeof(kObjectUnused) * K_PAGESIZE) * 16) /*4MB*/
-#endif
-
-typedef struct knh_ObjectArenaTBL_t knh_ObjectArenaTBL_t;
-typedef struct knh_memslot_t knh_memslot_t;
-typedef struct knh_MemoryArenaTBL_t knh_MemoryArenaTBL_t;
-
 typedef struct kshare_t {
 	/* system table */
 	const knh_ClassTBL_t    **ClassTBL;
@@ -904,30 +834,6 @@ typedef struct kshare_t {
 	size_t                    capacityEventTBL;
 
 
-	knh_ObjectArenaTBL_t     *ObjectArenaTBL;
-	size_t                    sizeObjectArenaTBL;
-	size_t                    capacityObjectArenaTBL;
-	struct kObject           *freeObjectList;
-	struct kObject           *freeObjectTail;
-
-	// reserved
-	knh_ObjectArenaTBL_t     *YoungArenaTBL;
-	size_t                    sizeYoungArenaTBL;
-	size_t                    capacityYoungArenaTBL;
-	struct kObject           *freeYoungList;
-	struct kObject           *freeYoungTail;
-
-	knh_MemoryArenaTBL_t     *MemoryArenaTBL;
-	size_t                    sizeMemoryArenaTBL;
-	size_t                    capacityMemoryArenaTBL;
-	struct knh_memslot_t     *freeMemoryList;
-	struct knh_memslot_t     *freeMemoryTail;
-
-	char                     *xmem_root;    // xmalloc
-	char                     *xmem_top;
-	char                     *xmem_freelist;
-
-	kmutex_t              *memlock;
 	kmutex_t              *syslock;
 
 	/* system shared const */
@@ -1006,21 +912,21 @@ typedef struct kshare_t {
 
 typedef struct {
 	kclass_t cid; kmethodn_t mn;
-} knh_hcache_t;
+} kcachedata_t;
 
 typedef struct knh_mtdcache_t {
 	kclass_t cid; kmethodn_t mn;
 	struct kMethod *mtd;
 } knh_mtdcache_t ;
 
-#define hashcode_mtd(cid, mn, HMAX) (((((knh_hashcode_t)cid) << (sizeof(kclass_t) * 8)) + mn) % HMAX)
+#define hashcode_mtd(cid, mn, HMAX) (((((khashcode_t)cid) << (sizeof(kclass_t) * 8)) + mn) % HMAX)
 
 typedef struct knh_tmrcache_t {
 	kclass_t scid; kclass_t tcid;
 	struct kTypeMap *tmr;
 } knh_tmrcache_t ;
 
-#define hashcode_tmr(scid, tcid, HMAX) (((((knh_hashcode_t)scid) << (sizeof(kclass_t) * 8)) + tcid) % HMAX)
+#define hashcode_tmr(scid, tcid, HMAX) (((((khashcode_t)scid) << (sizeof(kclass_t) * 8)) + tcid) % HMAX)
 
 #ifdef K_USING_ICONV
 #include<iconv.h>
@@ -1078,9 +984,11 @@ typedef struct kcontext_t {
 		const kshare_t         *share;
 		kshare_t *wshare;   // writable
 	};
+	struct kmemshare_t             *memshare;
+	struct kmemlocal_t             *memlocal;
 	kstatinfo_t                    *stat;
 	const knh_ServiceSPI_t         *spi;
-	const struct knh_api2_t        *api2;
+	const struct kpackageapi_t        *api2;
 	struct kScript*         script;  // sharable or not?
 
 	/* stack */
@@ -1099,22 +1007,6 @@ typedef struct kcontext_t {
 	/* cache */
 	knh_mtdcache_t              *mtdcache;
 	knh_tmrcache_t              *tmrcache;
-
-	/* memory (gc) */
-	struct kObjectUnused        *freeObjectList;
-	struct kObjectUnused        *freeObjectTail;
-	size_t                       freeObjectListSize;
-	knh_memslot_t               *freeMemoryList;
-	knh_memslot_t               *freeMemoryTail;
-
-	struct kObject        **refs;
-	size_t                       ref_size;
-	struct kObject        **ref_buf;        // allocated body
-	size_t                       ref_capacity;
-
-	struct kObject        **queue;
-	size_t                       queue_capacity;
-	size_t                       queue_log2;
 
 	struct kString*         enc;
 	struct kInputStream*    in;

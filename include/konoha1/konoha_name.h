@@ -3,9 +3,9 @@
 /* ------------------------------------------------------------------------ */
 /* MACROS */
 #ifndef K_REVISION
-#define K_REVISION                      858
+#define K_REVISION                      862
 #endif
-#define K_BUILDID                       1194
+#define K_BUILDID                       1197
 
 /* ------------------------------------------------------------------------ */
 /* STRUCT */
@@ -164,12 +164,12 @@
 
 /* ------------------------------------------------------------------------ */
 /* Param */
-#define CLASS_Param        ((kclass_t)17)
-#define IS_Param(o)        (O_cid(o) == CLASS_Param)
-#define IS_bParam(o)       (O_bcid(o) == CLASS_Param)
-#define TYPE_Param         CLASS_Param
-#define CFLAG_Param        ((kflag_t)FLAG_Class_Immutable|FLAG_Class_Private)
-#define FLAG_Param         KNH_MAGICFLAG(CFLAG_Param)
+#define CLASS_Param             ((kclass_t)17)
+#define IS_Param(o)             (O_cid(o) == CLASS_Param)
+#define IS_bParam(o)            (O_bcid(o) == CLASS_Param)
+#define TYPE_Param              CLASS_Param
+#define CFLAG_Param             ((kflag_t)FLAG_Class_Immutable|FLAG_Class_Private)
+#define FLAG_Param              KNH_MAGICFLAG(CFLAG_Param)
 
 /* ------------------------------------------------------------------------ */
 /* Method */

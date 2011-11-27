@@ -71,9 +71,9 @@ extern "C" {
 
 static void DEFAULT_init(CTX ctx, kRawPtr *o)
 {
-	DBG_ASSERT((sizeof(kObjectUnused) - sizeof(kObjectHeader)) == sizeof(kintptr_t) * 4);
-	kintptr_t *p = (kintptr_t*)&(o->rawptr);
-	p[0] = KINT0; p[1] = KINT0; p[2] = KINT0; p[3] = KINT0;
+//	DBG_ASSERT((sizeof(kObjectUnused) - sizeof(kObjectHeader)) == sizeof(kintptr_t) * 4);
+//	kintptr_t *p = (kintptr_t*)&(o->rawptr);
+//	p[0] = KINT0; p[1] = KINT0; p[2] = KINT0; p[3] = KINT0;
 }
 
 static void DEFAULT_initcopy(CTX ctx, kRawPtr *dst, kRawPtr *src)
@@ -149,9 +149,9 @@ static kString* DEFAULT_getkey(CTX ctx, ksfp_t *sfp)
 	return CWB_newString(ctx, cwb, 0);
 }
 
-static knh_hashcode_t DEFAULT_hashCode(CTX ctx, kRawPtr *o)
+static khashcode_t DEFAULT_hashCode(CTX ctx, kRawPtr *o)
 {
-	return ((knh_hashcode_t)o) / sizeof(kObjectUnused);
+	return ((khashcode_t)o) / (sizeof(void*) * 8);
 }
 
 static void DEFAULT_wdata(CTX ctx, kRawPtr *o, void *pkr, const knh_PackSPI_t *packspi)
@@ -650,9 +650,9 @@ static kfloat_t Float_tofloat(CTX ctx, ksfp_t *sfp)
 	return sfp[0].fvalue;
 }
 
-static knh_hashcode_t NDATA_hashCode(CTX ctx, kRawPtr *o)
+static khashcode_t NDATA_hashCode(CTX ctx, kRawPtr *o)
 {
-	return (knh_hashcode_t)((kInt*)o)->n.data;
+	return (khashcode_t)((kInt*)o)->n.data;
 }
 
 static int Int_compareTo(kRawPtr *o, kRawPtr *o2)
@@ -805,10 +805,10 @@ static void Date_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 	knh_write_ascii(ctx, w, buf);
 }
 
-static knh_hashcode_t Date_hashCode(CTX ctx, kRawPtr *o)
+static khashcode_t Date_hashCode(CTX ctx, kRawPtr *o)
 {
 	kDate *dt = (kDate*)o;
-	knh_hashcode_t n1 = ((((knh_hashcode_t)dt->dt.day * 24) + dt->dt.hour) * 60) * dt->dt.min;
+	khashcode_t n1 = ((((khashcode_t)dt->dt.day * 24) + dt->dt.hour) * 60) * dt->dt.min;
 	n1 = (n1 + dt->dt.gmtoff) * 60 + dt->dt.sec;
 	n1 = n1 + ((dt->dt.year) * 365) + dt->dt.month;
 	return n1;
@@ -885,7 +885,7 @@ static kString* String_getkey(CTX ctx, ksfp_t *sfp)
 	return sfp[0].s;
 }
 
-static knh_hashcode_t String_hashCode(CTX ctx, kRawPtr *o)
+static khashcode_t String_hashCode(CTX ctx, kRawPtr *o)
 {
 	return ((kString*)o)->hashCode;
 }
@@ -1006,7 +1006,7 @@ static void Bytes_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 	}
 }
 
-static knh_hashcode_t Bytes_hashCode(CTX ctx, kRawPtr *o)
+static khashcode_t Bytes_hashCode(CTX ctx, kRawPtr *o)
 {
 	kBytes *ba = (kBytes*)o;
 	return knh_hash(0, ba->bu.text, ba->bu.len);
@@ -1058,10 +1058,10 @@ static void Pointer_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 	}
 }
 
-static knh_hashcode_t Pointer_hashCode(CTX ctx, kRawPtr *o)
+static khashcode_t Pointer_hashCode(CTX ctx, kRawPtr *o)
 {
 	kPointer *p = (kPointer*)o;
-	return (knh_hashcode_t)(p->ptr) / sizeof(void*);
+	return (khashcode_t)(p->ptr) / sizeof(void*);
 }
 
 static const kclassdef_t PointerDef = {
@@ -1591,10 +1591,10 @@ static kString *Class_getkey(CTX ctx,ksfp_t *sfp)
 	return ClassTBL(c->cid)->lname;
 }
 
-static knh_hashcode_t Class_hashCode(CTX ctx, kRawPtr *o)
+static khashcode_t Class_hashCode(CTX ctx, kRawPtr *o)
 {
 	kClass *c = (kClass*)o;
-	return (knh_hashcode_t)c->cid;
+	return (khashcode_t)c->cid;
 }
 
 static void Class_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
@@ -3076,7 +3076,7 @@ typedef struct {
 typedef struct {
 	const char *name;
 	ksymbol_t fn;
-} knh_FieldNameData0_t ;
+} kloadsymbol_t ;
 
 
 #include"operator.c"
@@ -3142,7 +3142,7 @@ static void knh_setDefaultValues(CTX ctx)
 	}
 }
 
-static void knh_loadScriptFieldNameData0(CTX ctx, knh_FieldNameData0_t *data)
+static void knh_loadScriptFieldNameData0(CTX ctx, kloadsymbol_t *data)
 {
 	while(data->name != NULL) {
 		kString *name = new_T(data->name);
@@ -3184,8 +3184,8 @@ static const knh_StringData_t StringConstData0[] = {
 #define FN_P FN_p
 #define FN_R FN_r
 
-#define _D(s)  (knh_data_t)s
-static const knh_data_t CParamData0[] = {
+#define _D(s)  (kloaddata_t)s
+static const kloaddata_t CParamData0[] = {
 	DATA_CPARAM, CLASS_Iterator,  _D("konoha.Iterator<dynamic>"), _D("dynamic" PTYPE_Iterator), 1, 0, TYPE_dyn, FN_V,
 	DATA_CPARAM, CLASS_Range,     _D("konoha.Range<dynamic>"), _D("Range<dynamic>"), 1, 0, TYPE_dyn, FN_V,
 	DATA_CPARAM, CLASS_Array,     _D("konoha.Array<dynamic>"), _D("dynamic" PTYPE_Array), 1, 0, TYPE_dyn, FN_V,

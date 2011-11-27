@@ -46,7 +46,7 @@ extern "C" {
 #define TYPE_var                  CLASS_Tvar
 
 /* ------------------------------------------------------------------------ */
-//## class Object Object kObject;
+//## class Object Object knh_ObjectField_t;
 //## flag Object Ref           0 (%s)->h.magicflag has set * *;
 //## flag Object NullObject    1 (%s)->h.magicflag is set  * *;
 //## flag Object XData         2 (%s)->h.magicflag is set  * *;
@@ -60,6 +60,7 @@ extern "C" {
 #define K_FIELDSIZE 64
 #endif
 
+#define K_FASTMALLOC_SIZE  (sizeof(void*) * 8)
 #define	K_SMALLOBJECT_FIELDSIZE 3
 
 typedef struct kObject kObject;
@@ -67,11 +68,11 @@ typedef struct kObject kObject;
 struct kObject {
 	kObjectHeader h;
 	union {
-		Object  **fields;
-		kint_t *ifields;
-		kfloat_t *ffields;
+		Object   **fields;
+		kint_t    *ifields;
+		kfloat_t  *ffields;
 	};
-	Object  *smallobject;  // small object
+	Object        *smallobject;  // small object
 };
 #endif
 
@@ -186,7 +187,7 @@ typedef struct kString kString;
 struct kString {
 	kObjectHeader h;
 	kbytes_t str;
-	knh_hashcode_t hashCode;
+	khashcode_t hashCode;
 };
 
 #define new_T(t)            new_String2(ctx, CLASS_String, t, knh_strlen(t), SPOL_TEXT|SPOL_ASCII|SPOL_POOLALWAYS)
@@ -1443,8 +1444,8 @@ typedef kbool_t (*knh_Ftyping)(CTX, kMethod *, kStmtExpr *);
 typedef kuintptr_t          kopcode_t;
 typedef kintptr_t           ksfpidx_t;
 typedef kintptr_t           kreg_t;
-typedef kintptr_t           krego_t;
-typedef kintptr_t           kregn_t;
+typedef kintptr_t           kregO_t;
+typedef kintptr_t           kregN_t;
 typedef void*               kdummyptr_t;
 
 struct  kopl_t;

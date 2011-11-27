@@ -41,7 +41,7 @@ extern "C" {
 #define K_HASH_INITSIZE 83
 
 typedef struct knh_hentry_t {
-	knh_hashcode_t hcode;
+	khashcode_t hcode;
 	struct knh_hentry_t *next;
 	union {
 		Object       *key;
@@ -74,11 +74,11 @@ static void hmap_setfreelist(knh_hmap_t *hmap, size_t s, size_t e)
 	hmap->unused = hmap->arena + s;
 	size_t i;
 	for(i = s; i < e - 1; i++) {
-		hmap->arena[i].hcode = ((knh_hashcode_t)-1);
+		hmap->arena[i].hcode = ((khashcode_t)-1);
 		hmap->arena[i].nvalue = 0;
 		hmap->arena[i].next = hmap->arena + i + 1;
 	}
-	hmap->arena[e-1].hcode = ((knh_hashcode_t)-1);
+	hmap->arena[e-1].hcode = ((khashcode_t)-1);
 	hmap->arena[e-1].nvalue = 0;
 	DBG_ASSERT(hmap->arena[e-1].next == NULL);
 }
@@ -90,7 +90,7 @@ static void hmap_rehash(CTX ctx, knh_hmap_t *hmap)
 	knh_bzero(newhentry, newhmax * sizeof(knh_hentry_t*));
 	for(i = 0; i < hmap->arenasize / 2; i++) {
 		knh_hentry_t *e = hmap->arena + i;
-		knh_hashcode_t ni = e->hcode % newhmax;
+		khashcode_t ni = e->hcode % newhmax;
 		e->next = newhentry[ni];
 		newhentry[ni] = e;
 	}
@@ -111,7 +111,7 @@ static void hmap_shiftptr(knh_hmap_t *hmap, kintptr_t shift)
 	}
 }
 
-static knh_hentry_t *new_hentry(CTX ctx, knh_hmap_t *hmap, knh_hashcode_t hcode)
+static knh_hentry_t *new_hentry(CTX ctx, knh_hmap_t *hmap, khashcode_t hcode)
 {
 	knh_hentry_t *e;
 	if(hmap->unused == NULL) {
@@ -138,7 +138,7 @@ static void hmap_unuse(knh_hmap_t *hmap, knh_hentry_t *e)
 {
 	e->next = hmap->unused;
 	hmap->unused = e;
-	e->hcode = ((knh_hashcode_t)-1);
+	e->hcode = ((khashcode_t)-1);
 	e->nvalue  = 0;
 	hmap->size--;
 }
@@ -217,7 +217,7 @@ static void hmap_free(CTX ctx, kmapptr_t *m)
 	KNH_FREE(ctx, hmap, sizeof(knh_hmap_t));
 }
 
-static knh_hentry_t *hmap_getentry(knh_hmap_t* hmap, knh_hashcode_t hcode)
+static knh_hentry_t *hmap_getentry(knh_hmap_t* hmap, khashcode_t hcode)
 {
 	knh_hentry_t **hlist = hmap->hentry;
 	size_t idx = hcode % hmap->hmax;
@@ -269,7 +269,7 @@ static kbool_t hmap_getOO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kObject *key = ksfp[0].o;
-	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	khashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
@@ -285,7 +285,7 @@ static kbool_t hmap_getON(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kObject *key = ksfp[0].o;
-	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	khashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
@@ -304,7 +304,7 @@ static kbool_t hmap_getSO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kbytes_t k = S_tobytes(ksfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	khashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
@@ -321,7 +321,7 @@ static kbool_t hmap_getSN(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kbytes_t k = S_tobytes(ksfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	khashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
@@ -336,7 +336,7 @@ static kbool_t hmap_getSN(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 static kbool_t hmap_getNO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	khashcode_t hcode = (khashcode_t)ksfp[0].ndata;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode) {
@@ -351,7 +351,7 @@ static kbool_t hmap_getNO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 static kbool_t hmap_getNN(CTX ctx, kmapptr_t* m, ksfp_t *ksfp, ksfp_t *rsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	khashcode_t hcode = (khashcode_t)ksfp[0].ndata;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode) {
@@ -367,7 +367,7 @@ static void hmap_setOO(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kObject *key = kvsfp[0].o;
-	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, kvsfp[0].p);
+	khashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, kvsfp[0].p);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
@@ -386,7 +386,7 @@ static void hmap_setON(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kObject *key = kvsfp[0].o;
-	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, kvsfp[0].p);
+	khashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, kvsfp[0].p);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
@@ -406,7 +406,7 @@ static void hmap_setSO(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 	DBG_ASSERT(IS_bString(kvsfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kbytes_t k = S_tobytes(kvsfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	khashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
@@ -426,7 +426,7 @@ static void hmap_setSN(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 	DBG_ASSERT(IS_bString(kvsfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kbytes_t k = S_tobytes(kvsfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	khashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
@@ -444,7 +444,7 @@ static void hmap_setSN(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 static void hmap_setNO(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_hashcode_t hcode = (knh_hashcode_t)kvsfp[0].ndata;
+	khashcode_t hcode = (khashcode_t)kvsfp[0].ndata;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode) {
@@ -462,7 +462,7 @@ static void hmap_setNO(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 static void hmap_setNN(CTX ctx, kmapptr_t* m, ksfp_t *kvsfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_hashcode_t hcode = (knh_hashcode_t)kvsfp[0].ndata;
+	khashcode_t hcode = (khashcode_t)kvsfp[0].ndata;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode) {
@@ -481,7 +481,7 @@ static void hmap_removeOO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kObject *key = ksfp[0].o;
-	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	khashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
@@ -499,7 +499,7 @@ static void hmap_removeON(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kObject *key = ksfp[0].o;
-	knh_hashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
+	khashcode_t hcode = O_cTBL(key)->cdef->hashCode(ctx, ksfp[0].p);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_Object_compareTo(key, e->key) == 0) {
@@ -519,7 +519,7 @@ static void hmap_removeSO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kbytes_t k = S_tobytes(ksfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	khashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
@@ -538,7 +538,7 @@ static void hmap_removeSN(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 	DBG_ASSERT(IS_bString(ksfp[0].s));
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
 	kbytes_t k = S_tobytes(ksfp[0].s);
-	knh_hashcode_t hcode = knh_hash(0, k.text, k.len);
+	khashcode_t hcode = knh_hash(0, k.text, k.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode && knh_String_equals(e->skey, k)) {
@@ -554,7 +554,7 @@ static void hmap_removeSN(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 static void hmap_removeNO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	khashcode_t hcode = (khashcode_t)ksfp[0].ndata;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode) {
@@ -570,7 +570,7 @@ static void hmap_removeNO(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 static void hmap_removeNN(CTX ctx, kmapptr_t* m, ksfp_t *ksfp)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)m;
-	knh_hashcode_t hcode = (knh_hashcode_t)ksfp[0].ndata;
+	khashcode_t hcode = (khashcode_t)ksfp[0].ndata;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	while(e != NULL) {
 		if(e->hcode == hcode) {
@@ -594,7 +594,7 @@ static kbool_t hmap_nextOO(CTX ctx, kmapptr_t *m, knitr_t *mitr, ksfp_t *rsfp)
 	size_t i;
 	for(i = mitr->index; i < hmap->arenasize; i++) {
 		knh_hentry_t *e = hmap->arena + i;
-		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		if(e->hcode == ((khashcode_t)-1) && e->nvalue == 0) continue;
 		KNH_SETv(ctx, rsfp[0].o, e->key);
 		KNH_SETv(ctx, rsfp[1].o, e->value);
 		mitr->index = i + 1;
@@ -610,7 +610,7 @@ static kbool_t hmap_nextON(CTX ctx, kmapptr_t *m, knitr_t *mitr, ksfp_t *rsfp)
 	size_t i;
 	for(i = mitr->index; i < hmap->arenasize; i++) {
 		knh_hentry_t *e = hmap->arena + i;
-		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		if(e->hcode == ((khashcode_t)-1) && e->nvalue == 0) continue;
 		KNH_SETv(ctx, rsfp[0].o, e->key);
 		rsfp[1].ndata = e->nvalue;
 		mitr->index = i + 1;
@@ -626,7 +626,7 @@ static kbool_t hmap_nextNO(CTX ctx, kmapptr_t *m, knitr_t *mitr, ksfp_t *rsfp)
 	size_t i;
 	for(i = mitr->index; i < hmap->arenasize; i++) {
 		knh_hentry_t *e = hmap->arena + i;
-		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		if(e->hcode == ((khashcode_t)-1) && e->nvalue == 0) continue;
 		rsfp[0].ndata = e->nkey;
 		KNH_SETv(ctx, rsfp[1].o, e->value);
 		mitr->index = i + 1;
@@ -642,7 +642,7 @@ static kbool_t hmap_nextNN(CTX ctx, kmapptr_t *m, knitr_t *mitr, ksfp_t *rsfp)
 	size_t i;
 	for(i = mitr->index; i < hmap->arenasize; i++) {
 		knh_hentry_t *e = hmap->arena + i;
-		if(e->hcode == ((knh_hashcode_t)-1) && e->nvalue == 0) continue;
+		if(e->hcode == ((khashcode_t)-1) && e->nvalue == 0) continue;
 		rsfp[0].ndata = e->nkey;
 		rsfp[1].ndata = e->nvalue;
 		mitr->index = i + 1;
@@ -718,7 +718,7 @@ kPtrMap* new_PtrMap(CTX ctx, size_t max)
 void* knh_PtrMap_get(CTX ctx, kPtrMap *pm, void *keyptr)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_hashcode_t hcode = (knh_hashcode_t)keyptr;
+	khashcode_t hcode = (khashcode_t)keyptr;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	if(e != NULL) {
 		hmap_top(hmap, e);
@@ -730,7 +730,7 @@ void* knh_PtrMap_get(CTX ctx, kPtrMap *pm, void *keyptr)
 void knh_PtrMap_add(CTX ctx, kPtrMap *pm, void *keyptr, void *valueptr)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_hashcode_t hcode = (knh_hashcode_t)keyptr;
+	khashcode_t hcode = (khashcode_t)keyptr;
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
 	e->pvalue = valueptr;
 	hmap_add(hmap, e);
@@ -739,7 +739,7 @@ void knh_PtrMap_add(CTX ctx, kPtrMap *pm, void *keyptr, void *valueptr)
 void knh_PtrMap_rm(CTX ctx, kPtrMap *pm, void *keyptr)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_hashcode_t hcode = (knh_hashcode_t)keyptr;
+	khashcode_t hcode = (khashcode_t)keyptr;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	DBG_ASSERT(e != NULL);
 	hmap_remove(hmap, e);
@@ -765,7 +765,7 @@ void knh_PtrMap_stat(CTX ctx, kPtrMap *pm, const char *name)
 kString* knh_PtrMap_getS(CTX ctx, kPtrMap *pm, const char *k, size_t len)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_hashcode_t hcode = knh_hash(0, k, len);
+	khashcode_t hcode = knh_hash(0, k, len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	hmap->stat_total++;
 	while(e != NULL) {
@@ -784,7 +784,7 @@ void knh_PtrMap_addS(CTX ctx, kPtrMap *pm, kString *v)
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	const char *k = S_totext(v);
 	size_t len = S_size(v);
-	knh_hashcode_t hcode = knh_hash(0, k, len);
+	khashcode_t hcode = knh_hash(0, k, len);
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
 	DBG_ASSERT(IS_bString(v));
 	e->pkey = (void*)k;
@@ -796,7 +796,7 @@ void knh_PtrMap_rmS(CTX ctx, kPtrMap *pm, kString *s)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	kbytes_t t = S_tobytes(s);
-	knh_hashcode_t hcode = knh_hash(0, t.text, t.len);
+	khashcode_t hcode = knh_hash(0, t.text, t.len);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	DBG_ASSERT(IS_bString(s));
 	while(e != NULL) {
@@ -814,7 +814,7 @@ void knh_PtrMap_rmS(CTX ctx, kPtrMap *pm, kString *s)
 kInt* knh_PtrMap_getI(CTX ctx, kPtrMap *pm, kunbox_t k)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_hashcode_t hcode = (knh_hashcode_t)k;
+	khashcode_t hcode = (khashcode_t)k;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	hmap->stat_total++;
 	while(e != NULL) {
@@ -831,7 +831,7 @@ void knh_PtrMap_addI(CTX ctx, kPtrMap *pm, kInt *v)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	kunbox_t k = v->n.data;
-	knh_hashcode_t hcode = (knh_hashcode_t)k;
+	khashcode_t hcode = (khashcode_t)k;
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
 	e->nkey = k;
 	e->pvalue = (void*)v;
@@ -841,7 +841,7 @@ void knh_PtrMap_addI(CTX ctx, kPtrMap *pm, kInt *v)
 void knh_PtrMap_rmI(CTX ctx, kPtrMap *pm, kInt *v)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_hentry_t *e = hmap_getentry(hmap, (knh_hashcode_t)v->n.data);
+	knh_hentry_t *e = hmap_getentry(hmap, (khashcode_t)v->n.data);
 	while(e != NULL) {
 		if(e->pvalue == (void*)v) {
 			hmap_remove(hmap, e);
@@ -850,11 +850,11 @@ void knh_PtrMap_rmI(CTX ctx, kPtrMap *pm, kInt *v)
 		}
 		e = e->next;
 	}
-	DBG_P("not found removed %d %p", (knh_hashcode_t)v->n.data, v);
+	DBG_P("not found removed %d %p", (khashcode_t)v->n.data, v);
 	//KNH_ASSERT(ctx == NULL);
 }
 
-kMethod* knh_PtrMap_getM(CTX ctx, kPtrMap *pm, knh_hashcode_t hcode)
+kMethod* knh_PtrMap_getM(CTX ctx, kPtrMap *pm, khashcode_t hcode)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
@@ -869,7 +869,7 @@ kMethod* knh_PtrMap_getM(CTX ctx, kPtrMap *pm, knh_hashcode_t hcode)
 	return NULL;
 }
 
-void knh_PtrMap_addM(CTX ctx, kPtrMap *pm, knh_hashcode_t hcode, kMethod *v)
+void knh_PtrMap_addM(CTX ctx, kPtrMap *pm, khashcode_t hcode, kMethod *v)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
 	knh_hentry_t *e = new_hentry(ctx, hmap, hcode);
@@ -881,7 +881,7 @@ void knh_PtrMap_addM(CTX ctx, kPtrMap *pm, knh_hashcode_t hcode, kMethod *v)
 void knh_PtrMap_rmM(CTX ctx, kPtrMap *pm, kMethod *mtd)
 {
 	knh_hmap_t *hmap = (knh_hmap_t*)pm->mapptr;
-	knh_hashcode_t hcode = hashcode_mtd(mtd->cid, mtd->mn, K_MTDCACHE_SIZE);
+	khashcode_t hcode = hashcode_mtd(mtd->cid, mtd->mn, K_MTDCACHE_SIZE);
 	knh_hentry_t *e = hmap_getentry(hmap, hcode);
 	DBG_ASSERT(IS_bMethod(mtd));
 	while(e != NULL) {

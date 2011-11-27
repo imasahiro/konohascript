@@ -1455,8 +1455,8 @@ static void bitmapMarkingGC(CTX ctx, GCInfo *info)
 
 void knh_share_initArena(CTX ctx, kshare_t *share)
 {
-    share->MemoryArenaTBL = (knh_MemoryArenaTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(knh_MemoryArenaTBL_t));
-    knh_bzero(share->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(knh_MemoryArenaTBL_t));
+    share->MemoryArenaTBL = (mempageTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
+    knh_bzero(share->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
     share->sizeMemoryArenaTBL = 0;
     share->capacityMemoryArenaTBL = K_ARENATBL_INITSIZE;
 }
@@ -1465,10 +1465,10 @@ void knh_share_freeArena(CTX ctx, kshare_t *share)
 {
     size_t i;
     for(i = 0; i < share->sizeMemoryArenaTBL; i++) {
-        knh_MemoryArenaTBL_t *at = share->MemoryArenaTBL + i;
+        mempageTBL_t *at = share->MemoryArenaTBL + i;
         KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
     }
-    KNH_FREE(ctx, share->MemoryArenaTBL, share->capacityMemoryArenaTBL * sizeof(knh_MemoryArenaTBL_t));
+    KNH_FREE(ctx, share->MemoryArenaTBL, share->capacityMemoryArenaTBL * sizeof(mempageTBL_t));
     share->MemoryArenaTBL = NULL;
 }
 
@@ -1479,7 +1479,7 @@ void knh_initFirstObjectArena(CTX ctx)
     ((kcontext_t*)ctx)->freeObjectList = (kObject *) BMGC_init(ctx);
 }
 
-void knh_ObjectArena_finalfree(CTX ctx, knh_ObjectArenaTBL_t *oat, size_t oatSize)
+void knh_ObjectArena_finalfree(CTX ctx, objpageTBL_t *oat, size_t oatSize)
 {
     BMGC_exit(ctx, GCDATA(ctx));
     ((kcontext_t*)ctx)->freeObjectList = NULL;
