@@ -39,7 +39,7 @@ extern "C" {
 
 KMETHOD Connection_new(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Connection_t *o = (knh_Connection_t*)sfp[0].o;
+	kConnection *o = (kConnection*)sfp[0].o;
 	knh_Connection_open(ctx, o, sfp[1].s);
 	RETURN_(sfp[0].o);
 }
@@ -51,11 +51,11 @@ KMETHOD Connection_new(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD Connection_query(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
+	kConnection *c = (kConnection*)sfp[0].o;
 	kString *query = (kString*)sfp[1].o;
-	knh_ResultSet_t *rs = (knh_ResultSet_t*)new_O(ResultSet, knh_getcid(ctx, STEXT("ResultSet")));
+	kResultSet *rs = (kResultSet*)new_O(ResultSet, knh_getcid(ctx, STEXT("ResultSet")));
 	KNH_RCSETv(ctx, sfp[2].o, rs);
-	knh_qcur_t *qcur = (c)->dspi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
+	kqcur_t *qcur = (c)->dspi->qexec(ctx, (c)->conn, S_tobytes(query), rs);
 	if(qcur != NULL) {
 		DP(rs)->qcur = qcur;
 		DP(rs)->qcurfree = (c)->dspi->qcurfree;
@@ -74,7 +74,7 @@ KMETHOD Connection_query(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD Connection_exec(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
+	kConnection *c = (kConnection*)sfp[0].o;
 	kString *query = sfp[1].s;
 	(c)->dspi->qexec(ctx, (c)->conn, S_tobytes(query), NULL);
 	RETURNvoid_();
@@ -85,7 +85,7 @@ KMETHOD Connection_exec(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD Connection_close(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Connection_close(ctx, (knh_Connection_t*)sfp[0].o);
+	knh_Connection_close(ctx, (kConnection*)sfp[0].o);
 	RETURNvoid_();
 }
 
@@ -95,7 +95,7 @@ KMETHOD Connection_close(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD Connection_getInsertId(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Connection_t *c = (knh_Connection_t*)sfp[0].o;
+	kConnection *c = (kConnection*)sfp[0].o;
 	RETURNi_((kuint_t)mysql_insert_id((MYSQL*)c->conn));
 }
 #endif
@@ -105,7 +105,7 @@ KMETHOD Connection_getInsertId(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD ResultSet_getSize(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+	kResultSet *o = (kResultSet*)sfp[0].o;
 	RETURNi_(DP(o)->column_size);
 }
 
@@ -114,7 +114,7 @@ KMETHOD ResultSet_getSize(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD ResultSet_next(CTX ctx, ksfp_t *sfp _RIX)
 {
-	RETURNb_(knh_ResultSet_next(ctx, (knh_ResultSet_t*)sfp[0].o));
+	RETURNb_(knh_ResultSet_next(ctx, (kResultSet*)sfp[0].o));
 }
 
 /* ------------------------------------------------------------------------ */
@@ -122,7 +122,7 @@ KMETHOD ResultSet_next(CTX ctx, ksfp_t *sfp _RIX)
 
 KMETHOD ResultSet_getName(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+	kResultSet *o = (kResultSet*)sfp[0].o;
 	size_t n = Int_to(size_t, sfp[1]);
 	kString *v = TS_EMPTY;
 	if(n < DP(o)->column_size) {
@@ -138,7 +138,7 @@ KMETHOD ResultSet_getName(CTX ctx, ksfp_t *sfp _RIX)
 
 static int knh_ResultSet_indexof_(CTX ctx, ksfp_t *sfp)
 {
-	knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+	kResultSet *o = (kResultSet*)sfp[0].o;
 	if(IS_bInt(sfp[1].o)) {
 		size_t n = Int_to(size_t, sfp[1]);
 		if(!(n < DP(o)->column_size)) {
@@ -168,7 +168,7 @@ KMETHOD ResultSet_getInt(CTX ctx, ksfp_t *sfp _RIX)
 	int n = knh_ResultSet_indexof_(ctx, sfp);
 	kint_t res = 0;
 	if(n >= 0) {
-		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+		kResultSet *o = (kResultSet*)sfp[0].o;
 		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 		switch(DP(o)->column[n].ctype) {
 		case knh_ResultSet_CTYPE__integer :
@@ -192,7 +192,7 @@ KMETHOD ResultSet_getFloat(CTX ctx, ksfp_t *sfp _RIX)
 	int n = knh_ResultSet_indexof_(ctx, sfp);
 	kfloat_t res = KFLOAT_ZERO;
 	if(n >= 0) {
-		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+		kResultSet *o = (kResultSet*)sfp[0].o;
 		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 		switch(DP(o)->column[n].ctype) {
 		case knh_ResultSet_CTYPE__integer :
@@ -216,7 +216,7 @@ KMETHOD ResultSet_getString(CTX ctx, ksfp_t *sfp _RIX)
 	int n = knh_ResultSet_indexof_(ctx, sfp);
 	Object *v = KNH_NULL;
 	if(n >= 0) {
-		v = UPCAST(knh_ResultSet_getString(ctx, (knh_ResultSet_t*)sfp[0].o, n));
+		v = UPCAST(knh_ResultSet_getString(ctx, (kResultSet*)sfp[0].o, n));
 	}
 	RETURN_(v);
 }
@@ -230,7 +230,7 @@ KMETHOD ResultSet_get(CTX ctx, ksfp_t *sfp _RIX)
 	int n = knh_ResultSet_indexof_(ctx, sfp);
 	Object *v = KNH_NULL;
 	if(n >= 0) {
-		knh_ResultSet_t *o = (knh_ResultSet_t*)sfp[0].o;
+		kResultSet *o = (kResultSet*)sfp[0].o;
 		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 		switch(DP(o)->column[n].ctype) {
 		case knh_ResultSet_CTYPE__integer :
@@ -262,7 +262,7 @@ KMETHOD ResultSet_get(CTX ctx, ksfp_t *sfp _RIX)
 ///* ------------------------------------------------------------------------ */
 ////## method void ResultSet.%dump(OutputStream w, String m);
 //
-//static void knh_ResultSet__dump(CTX ctx, knh_ResultSet_t *o, kOutputStream *w, kString *m)
+//static void knh_ResultSet__dump(CTX ctx, kResultSet *o, kOutputStream *w, kString *m)
 //{
 //	knh_putc(ctx, w, '{');
 //	size_t n;
@@ -300,7 +300,7 @@ KMETHOD ResultSet_get(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD ResultSet_close(CTX ctx, ksfp_t *sfp _RIX)
 {
 	
-	knh_ResultSet_close(ctx, (knh_ResultSet_t*)sfp[0].o);
+	knh_ResultSet_close(ctx, (kResultSet*)sfp[0].o);
 	RETURNvoid_();
 }
 #ifdef __cplusplus

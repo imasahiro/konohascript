@@ -90,8 +90,8 @@ kconn_t *MYSQL_qopen(CTX ctx, kbytes_t url)
 }
 /* ------------------------------------------------------------------------ */
 
-//static int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
-int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
+//static int MYSQL_qnext(CTX ctx, kqcur_t *qcur, struct kResultSet *rs)
+int MYSQL_qnext(CTX ctx, kqcur_t *qcur, struct kResultSet *rs)
 {
 	MYSQL_ROW row;
 	if ((row = mysql_fetch_row((MYSQL_RES*)qcur)) != NULL) {
@@ -139,8 +139,8 @@ int MYSQL_qnext(CTX ctx, knh_qcur_t *qcur, struct knh_ResultSet_t *rs)
 }
 /* ------------------------------------------------------------------------ */
 
-//static knh_qcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
-knh_qcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs)
+//static kqcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, kResultSet *rs)
+kqcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, kResultSet *rs)
 {
 	MYSQL_RES *res = NULL;
 	MYSQL *db = (MYSQL*)hdr;
@@ -186,7 +186,7 @@ knh_qcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, knh_ResultSet_t *rs
 			}
 		}
 	}
-	return (knh_qcur_t *) res;
+	return (kqcur_t *) res;
 }
 /* ------------------------------------------------------------------------ */
 
@@ -198,8 +198,8 @@ void MYSQL_qclose(CTX ctx, kconn_t *hdr)
 
 /* ------------------------------------------------------------------------ */
 
-//static void MYSQL_qfree(knh_qcur_t *qcur)
-void MYSQL_qfree(knh_qcur_t *qcur)
+//static void MYSQL_qfree(kqcur_t *qcur)
+void MYSQL_qfree(kqcur_t *qcur)
 {
 	if (qcur != NULL) {
 		MYSQL_RES *res = (MYSQL_RES*)qcur;
