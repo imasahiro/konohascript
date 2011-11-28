@@ -330,6 +330,7 @@ class K_MOV extends K_Inst {
     K_MOVop op;
     K_MOV(K_Value kvalue, K_MOVop op, int idx) {
         this.kvalue = kvalue;
+        this.type = kvalue.type;
         this.op = op;
         this.idx = idx;
     }
