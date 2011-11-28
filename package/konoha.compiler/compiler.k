@@ -315,9 +315,6 @@ class K_Inst {
         } else {
             res += "obj" + kvalue.idx;
         }
-        else {
-
-        }
         return res;
     }
 }
