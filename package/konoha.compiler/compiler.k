@@ -146,41 +146,42 @@ Type Compiler.convertType(Class type) {
     return objectTy;
 }
 
-String getTypeName(Class type) {
-    if (type == Int) {
-        return "Int";
-    }
-    if (type == Float) {
-        return "Float";
-    }
-    if (type == Boolean) {
-        return "Boolean";
-    }
-    if (type == String) {
-        return "String";
-    }
-    if (type == Array) {
-        return "Array";
-    }
-    if (type == Script) {
-        return "Script";
-    }
-    if (type == System) {
-        return "System";
-    }
-    if (type == OutputStream) {
-        return "OutputStream";
-    }
-    if (type == InputStream) {
-        return "InputStream";
-    }
-    if (type == Class) {
-        return "Class";
-    }
-    if (type == dynamic) {
-        return "dynamic";
-    }
-    return "Object";
+Class getTypeName(Class type) {
+    return type;
+    //if (type == Int) {
+    //    return "Int";
+    //}
+    //if (type == Float) {
+    //    return "Float";
+    //}
+    //if (type == Boolean) {
+    //    return "Boolean";
+    //}
+    //if (type == String) {
+    //    return "String";
+    //}
+    //if (type == Array) {
+    //    return "Array";
+    //}
+    //if (type == Script) {
+    //    return "Script";
+    //}
+    //if (type == System) {
+    //    return "System";
+    //}
+    //if (type == OutputStream) {
+    //    return "OutputStream";
+    //}
+    //if (type == InputStream) {
+    //    return "InputStream";
+    //}
+    //if (type == Class) {
+    //    return "Class";
+    //}
+    //if (type == dynamic) {
+    //    return "dynamic";
+    //}
+    //return "Object";
 }
 
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
@@ -335,7 +336,9 @@ class K_MOV extends K_Inst {
         this.idx = idx;
     }
     @Override void dump() {
-        OUT << "\t" + getName() + " = mov " + getTypeName(type) + " " + op.inst0.getName() + " @nonssa" << EOL;
+        if (getName() != op.inst0.getName()) {
+            OUT << "\t" + getName() + " = mov " + getTypeName(type) + " " + op.inst0.getName() + " @nonssa" << EOL;
+        }
     }
 }
 K_Value K_Function.getKValue(int idx, Class type);
@@ -870,7 +873,7 @@ class K_SELECT extends K_Inst {
         addUse(op, idx);
     }
     @Override void dump() {
-        OUT << "\t" + getName() + " = select "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+        OUT << "\t" + getName() + " = select "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() + " " + op.inst2.getName() << EOL;
     }
 }
 class K_LSFTop extends K_Opcode {
@@ -1586,7 +1589,7 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             Array<K_Inst> args = [];
             K_Value kvalue = kfunc.getKValue(thisidx - 4, rtype);
 
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.getName, mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
             kfunc.curBB.insts.add(inst);
             break;
         case Token.TT_PROPN:
@@ -1659,7 +1662,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
                 print "sysval", sysid;
                 print sysid, mtd, mtdptr;
             }
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.getName, mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(thisidx + K_RTNIDX, inst);
             break;
@@ -1692,11 +1695,11 @@ void Compiler.emit(Method mtd) {
         kfunc.curBB.insts.add(inst);
     }
     if (DUMP) {
-        print const_table;
         kfunc.dump();
     }
     kfunc.codegen(this);
     if (DEBUG) {
+        print const_table;
         func.dump();
     }
     mtd.setFunction(ee.getPointerToFunction(m, func));
@@ -2112,7 +2115,7 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
         }
         K_Value kvalue = null;
         kvalue = kfunc.getKValue(thisidx + rix, rtype);
-        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.getName, mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
+        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
         kfunc.curBB.insts.add(inst);
         if (rtype != null) {
             kfunc.storeKInst(thisidx + rix, inst);
