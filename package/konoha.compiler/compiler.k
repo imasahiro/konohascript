@@ -312,7 +312,7 @@ class K_Inst {
             res += "ins" + kvalue.idx;
         } else if (kvalue.type == Script) {
             res += "script" + kvalue.idx;
-        } else if (kvalue.type == Object) {
+        } else {
             res += "obj" + kvalue.idx;
         }
         else {
@@ -1010,16 +1010,13 @@ class K_CALL extends K_Inst {
     @Override void dump() {
         String res = "\t";
         if (kvalue != null) {
-            if (op.flagStatic == 1) {
-                res += getName() + " = call " + getTypeName(kvalue.type) + " " + op.fname + " ( ";
-            } else if (|args| > 0) {
-                res += getName() + " = call " + getTypeName(kvalue.type) + " " + args[0].getName() + "." + op.fname + " ( ";
-            }
+            res += ((getName() == "") ? "_" : getName()) + " = call " + getTypeName(kvalue.type) + " " + op.fname + " ( ";
         }
-        for (int i = 1 - op.flagStatic; i < |args|; i++) {
+        for (int i = 0; i < |args|; i++) {
             res += args[i].getName() + " ";
         }
         res = res[0 to |res|-2] + " )";
+        res += ((op.flagStatic == 0) ? " @nonstatic" : " @static");
         OUT << res << EOL;
     }
 }
