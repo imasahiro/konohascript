@@ -265,7 +265,6 @@ static kcontext_t* new_RootContext(void)
 	ctx->spi = (const knh_ServiceSPI_t*)(ctx->stat + 1);
 	initServiceSPI((knh_ServiceSPI_t*)ctx->spi);
 
-//	kmemshare_init(ctx);
 	share->ClassTBL = (const knh_ClassTBL_t**)KNH_MALLOC((CTX)ctx, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	knh_bzero(share->ClassTBL, sizeof(knh_ClassTBL_t*)*(K_CLASSTABLE_INIT));
 	share->sizeClassTBL = 0;
@@ -277,7 +276,6 @@ static kcontext_t* new_RootContext(void)
 	share->capacityEventTBL  = K_EVENTTBL_INIT;
 	knh_loadScriptSystemStructData(ctx, kapi);
 	kmemshare_init(ctx);
-//	knh_initFirstObjectArena(ctx);
 
 	KNH_INITv(share->funcDictSet, new_DictSet0(ctx, 0, 0, "funcDictSet"));
 	KNH_INITv(share->constPtrMap, new_PtrMap(ctx, 0));

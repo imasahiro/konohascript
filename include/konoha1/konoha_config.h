@@ -50,6 +50,7 @@
 
 #define K_USING_FASTMALLOC      1
 #define K_USING_GENGC           1
+#define K_USING_BMGC            1
 
 #define K_USING_SIGNAL          1
 #define K_USING_SAFEPOINT       1

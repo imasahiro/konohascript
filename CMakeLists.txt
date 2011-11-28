@@ -58,6 +58,7 @@ set(KONOHA_SRC
 	src/lang/vmcodelibs.c
 	src/lang/message.c
 	src/main/array.c
+	src/main/bmgc.c
 	src/main/bytes.c
 	src/main/class.c
 	src/main/closure.c
@@ -65,7 +66,6 @@ set(KONOHA_SRC
 	src/main/evidence.c
 	src/main/exports.c
 	src/main/map.c
-	src/main/memory.c
 	src/main/number.c
 	src/main/os.c
 	src/main/link.c
@@ -345,11 +345,6 @@ option(USE_GWT "Using gwt package" OFF)
 option(USE_QT "Using qt package" OFF)
 
 option(USE_QT4 "Using qt4 package" OFF)
-
-option(USE_BMGC "Use BMGC" OFF)
-if(USE_BMGC)
-	add_definitions(-DK_USING_BMGC=1)
-endif(USE_BMGC)
 
 if(MINGW)
 	find_library(HAVE_LIBCURLDLL NAMES curldll)
