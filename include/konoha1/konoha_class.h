@@ -868,8 +868,8 @@ struct kSemantics {
 typedef struct kPath kPath;
 typedef void   kconn_t;
 //typedef kuintptr_t int;
-#define IO_NULL   ((int)(NULL))
-#define IO_BUF    ((int)1)
+#define IO_NULL   ((kuintptr_t)0)
+#define IO_BUF    ((kuintptr_t)1)
 #define K_STREAM_BUFSIZ  K_PAGESIZE
 #define K_OUTBUF_MAXSIZ      (512L * 1024 * 1024)  // 512Mb
 
