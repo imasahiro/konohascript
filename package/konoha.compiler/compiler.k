@@ -146,42 +146,43 @@ Type Compiler.convertType(Class type) {
     return objectTy;
 }
 
-Class getTypeName(Class type) {
+dynamic getTypeName(Class type) {
+    if (type == Int) {
+        return "Int";
+    }
+    if (type == Float) {
+        return "Float";
+    }
+    if (type == Boolean) {
+        return "Boolean";
+    }
+    if (type == String) {
+        return "String";
+    }
+    if (type == Array) {
+        return "Array";
+    }
+    if (type == Script) {
+        return "Script";
+    }
+    if (type == System) {
+        return "System";
+    }
+    if (type == OutputStream) {
+        return "OutputStream";
+    }
+    if (type == InputStream) {
+        return "InputStream";
+    }
+    if (type == Class) {
+        return "Class";
+    }
+    if (type == dynamic) {
+        return "dynamic";
+    } else if (type == Object) {
+        return "Object";
+    }
     return type;
-    //if (type == Int) {
-    //    return "Int";
-    //}
-    //if (type == Float) {
-    //    return "Float";
-    //}
-    //if (type == Boolean) {
-    //    return "Boolean";
-    //}
-    //if (type == String) {
-    //    return "String";
-    //}
-    //if (type == Array) {
-    //    return "Array";
-    //}
-    //if (type == Script) {
-    //    return "Script";
-    //}
-    //if (type == System) {
-    //    return "System";
-    //}
-    //if (type == OutputStream) {
-    //    return "OutputStream";
-    //}
-    //if (type == InputStream) {
-    //    return "InputStream";
-    //}
-    //if (type == Class) {
-    //    return "Class";
-    //}
-    //if (type == dynamic) {
-    //    return "dynamic";
-    //}
-    //return "Object";
 }
 
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
@@ -487,13 +488,13 @@ class K_Function {
     }
     void dump() {
         if (isStatic == 1) {
-        OUT << "def " + getTypeName(retTy)  + " " + mtdName + " ( ";
+        OUT << "def " + getTypeName(retTy)  + " " + mtdName[mtdName.indexOf(".")+1 to |mtdName|-1] + " ( ";
         } else if (|funcargs| > 0) {
-            OUT << "def " + getTypeName(retTy) + " " + mtdName + " " + funcargs[0].getName()  + " ( ";
+            OUT << "def " + getTypeName(retTy) + " " + mtdName[mtdName.indexOf(".")+1 to |mtdName|-1] + " " + funcargs[0].getName()  + " ( ";
         }
         String str = "";
         for (int i = 1 - isStatic; i < |funcargs|; i++) {
-            str += funcargs[i].getName() + " ";
+            str += getTypeName(funcargs[i].type) + " " + funcargs[i].getName() + " ";
         }
         str = (|str| > 0) ? str[0 to |str|-2] + " ) {" : " ) {";
         OUT << str << EOL;
@@ -1580,10 +1581,10 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             int thisidx = espidx + K_CALLDELTA;
             int espshift = espidx + 0 + K_CALLDELTA + 1;
             int mtdptr = mtd.getPtr();
+            String fname = mtd.toString();
             Array<K_Inst> args = [];
             K_Value kvalue = kfunc.getKValue(thisidx - 4, rtype);
-
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(fname[fname.indexOf(".")+1 to |fname|-1], mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
             kfunc.curBB.insts.add(inst);
             break;
         case Token.TT_PROPN:
