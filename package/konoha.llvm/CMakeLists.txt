@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
 set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -Weffc++ -O2 -g")
-set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -Weffc++ -O0 -g3")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
+set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
 set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_BUILD_TYPE Debug)
 
@@ -23,7 +23,7 @@ execute_process(
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 
-if("${LLVM_VERSION}" MATCHES "3.0")
+if("${LLVM_VERSION}" MATCHES "3.1svn")
 execute_process(
 		COMMAND ${LLVM_CONFIG} --cppflags
 		OUTPUT_VARIABLE LLVM_CFLAGS
