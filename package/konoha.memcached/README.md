@@ -6,4 +6,4 @@ konoha memcached library
 Requirement
 ----------
 
- * libmemcached 0.5
+ * libmemcached 0.5 or later

@@ -47,7 +47,7 @@ extern "C" {
 typedef struct {
 	kObjectHeader h;
 	memcached_st *st;
-} knh_Memcache_t ;
+} kMemcache;
 
 
 /* ------------------------------------------------------------------------ */
@@ -60,7 +60,9 @@ static void Memcache_init(CTX ctx, kRawPtr *po)
 
 static void Memcache_free(CTX ctx, kRawPtr *po)
 {
-	if (po->rawptr != NULL) {
+	memcached_st *st = (memcached_st *)po->rawptr;
+	if (st != NULL) {
+		memcached_free(st);
 		po->rawptr = NULL;
 	}
 }
@@ -89,7 +91,7 @@ DEFAPI(void) constMemcache(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 //@Native @Public Memcache Memcache_new (String host, int port)
 KMETHOD Memcache_new(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char* host = String_to(const char*, sfp[1]);
 	kint_t port = Int_to(kint_t, sfp[2]);
 	Memcache_init(ctx, (kRawPtr*)mcd);
@@ -146,20 +148,21 @@ L_RETURN:
 //@Native @Public int Memcache.increment(String key, int offset);
 KMETHOD Memcache_increment(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
-	unsigned int offset;
+	size_t key_length = S_size(sfp[1].s);
 	int i = Int_to(int, sfp[2]);
-	if(i >= 0) offset = (unsigned int)i;
-	else offset = (unsigned int)(-1)*i;
+	if (i < 0) {
+		KNH_NTRACE2(ctx, "Memcache_increment", K_NOTICE, KNH_LDATA(LOG_msg("offset must be a positive number")));
+	}
+	unsigned int offset = (unsigned int)i;
 	uint64_t value;
 	memcached_return_t rc = 
 		memcached_increment(mcd->st, key, key_length, offset, &value);
 	if(rc == MEMCACHED_SUCCESS) {
 		// key is
 		KNH_NTRACE2(ctx, "memcached_increment", K_OK, KNH_LDATA0);
-		RETURNi_((int)value);
+		RETURNi_(value);
 	} else {
 		// its might be error
 		KNH_NTRACE2(ctx, "memcached_increment", K_FAILED, KNH_LDATA(
@@ -173,20 +176,21 @@ KMETHOD Memcache_increment(CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public int Memcache.decrement(String key, int offset);
 KMETHOD Memcache_decrement(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
-	unsigned int offset;
+	size_t key_length = S_size(sfp[1].s);
 	int i = Int_to(int, sfp[2]);
-	if(i >= 0) offset = (unsigned int)i;
-	else offset = (unsigned int)(-1)*i;
+	if (i < 0) {
+		KNH_NTRACE2(ctx, "Memcache_decrement", K_NOTICE, KNH_LDATA(LOG_msg("offset must be a positive number")));
+	}
+	unsigned int offset = (unsigned int)i;
 	uint64_t value;
 	memcached_return_t rc = 
 		memcached_decrement(mcd->st, key, key_length, offset, &value);
 	if(rc == MEMCACHED_SUCCESS) {
 		// key is
 		KNH_NTRACE2(ctx, "memcached_increment", K_OK, KNH_LDATA0);
-		RETURNi_((int)value);
+		RETURNi_(value);
 	} else {
 		// its might be error
 		KNH_NTRACE2(ctx, "memcached_increment", K_FAILED, KNH_LDATA(
@@ -204,9 +208,9 @@ KMETHOD Memcache_decrement(CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public Boolean Memcache.delete(String key, int expiration_sec);
 KMETHOD Memcache_delete(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
+	size_t key_length = S_size(sfp[1].s);
 	time_t expiration_sec = Int_to(time_t, sfp[2]);
 	memcached_return_t rc = 
 		memcached_delete(mcd->st, key, key_length, expiration_sec);
@@ -223,14 +227,14 @@ KMETHOD Memcache_delete(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
 
-//@Native @Public Boolean Memcache.delete_by_key(String group_key, String key, int expiration_sec);
+//@Native @Public Boolean Memcache.deleteByKey(String group_key, String key, int expiration_sec);
 KMETHOD Memcache_deleteByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
-	size_t group_key_length = ((sfp[1].s)->str.len);
+	size_t group_key_length = S_size(sfp[1].s);
 	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
+	size_t key_length = S_size(sfp[2].s);
 	time_t expiration_sec = Int_to(time_t, sfp[3]);
 	memcached_return_t rc = 
 		memcached_delete_by_key(mcd->st, group_key, group_key_length,
@@ -255,9 +259,9 @@ KMETHOD Memcache_deleteByKey(CTX ctx, ksfp_t *sfp _RIX)
 //# if LIBMEMCACHED_VERSION_HEX == 0x00053000
 //KMETHOD Memcache_exist(CTX ctx, ksfp_t *sfp _RIX)
 //{
-//	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+//	kMemcache *mcd = (kMemcache *)sfp[0].o;
 //	const char *key = String_to(const char*, sfp[1]);
-//	size_t key_length = ((sfp[1].s)->str.len);
+//	size_t key_length = S_size(sfp[1].s);
 //	memcached_return_t rc = 
 //		memcached_exist(mcd->st, key, key_length);
 //	if (rc == MEMCACHED_SUCCESS || rc == MEMCACHED_NOTFOUND) {
@@ -274,15 +278,15 @@ KMETHOD Memcache_deleteByKey(CTX ctx, ksfp_t *sfp _RIX)
 //}
 //#endif /* LIBMEMCACHED_VERSION_HEX == 0x00053000 */
 
-//@Native @Public Boolean Memcache.exist_by_key(String key);
+//@Native @Public Boolean Memcache.existByKey(String key);
 //# if LIBMEMCACHED_VERSION_HEX == 0x00053000
 //KMETHOD Memcache_existByKey(CTX ctx, ksfp_t *sfp _RIX)
 //{
-//	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+//	kMemcache *mcd = (kMemcache *)sfp[0].o;
 //	const char *group_key = String_to(const char*, sfp[1]);
-//	size_t group_key_length = ((sfp[1].s)->str.len);
+//	size_t group_key_length = S_size(sfp[1].s);
 //	const char *key = String_to(const char*, sfp[2]);
-//	size_t key_length = ((sfp[2].s)->str.len);
+//	size_t key_length = S_size(sfp[2].s);
 //	memcached_return_t rc = 
 //		memcached_exist_by_key(mcd->st, group_key, group_key_length,
 //							   key, key_length);
@@ -303,10 +307,10 @@ KMETHOD Memcache_deleteByKey(CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public Boolean Memcache.flushBuffers(void);
 KMETHOD Memcache_flushBuffers (CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	memcached_return_t rc = memcached_flush_buffers(mcd->st);
 	if (rc == MEMCACHED_SUCCESS) {
-		KNH_NTRACE2(ctx, "memcached_flush_buffers", K_FAILED, KNH_LDATA0);
+		KNH_NTRACE2(ctx, "memcached_flush_buffers", K_OK, KNH_LDATA0);
 	} else {
 		KNH_NTRACE2(ctx, "memcached_flush_buffers", K_FAILED, KNH_LDATA(
 					LOG_i("return_t", rc), 
@@ -322,11 +326,11 @@ KMETHOD Memcache_flushBuffers (CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public Boolean Memcache.flush(int expiration_sec);
 KMETHOD Memcache_flush(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	time_t expiration_sec = Int_to(time_t, sfp[1]);
 	memcached_return_t rc = memcached_flush(mcd->st, expiration_sec);
 	if (rc == MEMCACHED_SUCCESS) {
-		KNH_NTRACE2(ctx, "memcached_flush", K_FAILED, KNH_LDATA0);
+		KNH_NTRACE2(ctx, "memcached_flush", K_OK, KNH_LDATA0);
 	} else {
 		KNH_NTRACE2(ctx, "memcached_flush", K_FAILED, KNH_LDATA(
 					LOG_i("return_t", rc), 
@@ -341,16 +345,18 @@ KMETHOD Memcache_flush(CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public String Memcache.get (String key);
 KMETHOD Memcache_get(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = (sfp[1].s)->str.len;
+	size_t key_length = S_size(sfp[1].s);
 	size_t value_length;
 	uint32_t flags;
 	memcached_return_t rc;
 	char *value = memcached_get(mcd->st, key, key_length, &value_length, &flags, &rc);
 	if(rc == MEMCACHED_SUCCESS) {
 		KNH_NTRACE2(ctx, "memcached_get", K_OK, KNH_LDATA0);
-		RETURN_(new_String(ctx, value));   //Ignore flags.
+		kString *ret = new_String(ctx, value);   //Ignore flags.
+		free(value);
+		RETURN_(ret);
 	} else {
 		KNH_NTRACE2(ctx, "memcached_get", K_FAILED, KNH_LDATA(
 					LOG_i("return_t", rc), 
@@ -363,7 +369,7 @@ KMETHOD Memcache_get(CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public String[] Memcache.mGet (String[] keys);
 KMETHOD Memcache_mGet(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	kArray *a = sfp[1].a;
 	int number_of_keys = knh_Array_size(a);
 	const char *keys[number_of_keys];
@@ -403,36 +409,38 @@ KMETHOD Memcache_mGet(CTX ctx, ksfp_t *sfp _RIX)
 	}
 }
 
-//@Native @Public String Memcache.getByKey (String key);
+//@Native @Public String Memcache.getByKey (String group_key, String key);
 KMETHOD Memcache_getByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
-	size_t group_key_length = (sfp[1].s)->str.len;
+	size_t group_key_length = S_size(sfp[1].s);
 	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
+	size_t key_length = S_size(sfp[2].s);
 	size_t value_length;
 	uint32_t flags;
 	memcached_return_t rc;
 	char *value = memcached_get_by_key(mcd->st, group_key, group_key_length, key, key_length, &value_length, &flags, &rc);
 	if(rc == MEMCACHED_SUCCESS) {
 		KNH_NTRACE2(ctx, "memcached_get_by_key", K_OK, KNH_LDATA0);
-		RETURN_(new_String(ctx, value));   //Ignore flags.
+		kString* ret = new_String(ctx, value);   //Ignore flags.
+		free(value);
+		RETURN_(ret);
 	} else {
 		KNH_NTRACE2(ctx, "memcached_get_by_key", K_FAILED, KNH_LDATA(
 					LOG_i("return_t", rc), 
 					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
 					));
-		RETURN_(KNH_NULL);
+		RETURN_(KNH_TNULL(String));
 	}
 }
 
 //@Native @Public String[] Memcache.mGetByKey (String group_key, String[] keys);
 KMETHOD Memcache_mGetByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
-	size_t group_key_length = sfp[1].s->str.len;
+	size_t group_key_length = S_size(sfp[1].s);
 	kArray *a = sfp[2].a;
 	int number_of_keys = knh_Array_size(a);
 	const char *keys[number_of_keys];
@@ -448,7 +456,7 @@ KMETHOD Memcache_mGetByKey(CTX ctx, ksfp_t *sfp _RIX)
 	if (rc != MEMCACHED_SUCCESS) {
 		goto L_ERR;
 	}
-	KNH_NTRACE2(ctx, "memcached_mgetByKey", K_OK, KNH_LDATA0);
+	KNH_NTRACE2(ctx, "memcached_mget_by_key", K_OK, KNH_LDATA0);
 	kArray *ret = new_Array(ctx, CLASS_String, number_of_keys);
 	memcached_result_st *result = &mcd->st->result;
 	while(1) {
@@ -463,7 +471,7 @@ KMETHOD Memcache_mGetByKey(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(ret);
 L_ERR:;
 	{
-		KNH_NTRACE2(ctx, "memcached_mgetByKey", K_FAILED, KNH_LDATA(
+		KNH_NTRACE2(ctx, "memcached_mget_by_key", K_FAILED, KNH_LDATA(
 					LOG_i("return_t", rc), 
 					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
 					));
@@ -479,11 +487,11 @@ L_ERR:;
 //@Native @Public void Memcache.set (String key, String value, int expiration_sec, int falgs);
 KMETHOD Memcache_set (CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
+	size_t key_length = S_size(sfp[1].s);
 	const char *value = String_to(const char *, sfp[2]);
-	size_t value_length = ((sfp[2].s)->str.len);
+	size_t value_length = S_size(sfp[2].s);
 	long expiration_sec = Int_to(time_t, sfp[3]);
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
@@ -503,11 +511,11 @@ KMETHOD Memcache_set (CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public void Memcache.add (String key, String value, int expiration_sec, int flags);
 KMETHOD Memcache_add (CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
+	size_t key_length = S_size(sfp[1].s);
 	const char *value = String_to(const char *, sfp[2]);
-	size_t value_length = ((sfp[2].s)->str.len);
+	size_t value_length = S_size(sfp[2].s);
 	time_t expiration_sec = Int_to(time_t, sfp[3]);
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
@@ -527,11 +535,11 @@ KMETHOD Memcache_add (CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public void Memcache.replace (String key, String value, int expiration_sec, int flags);
 KMETHOD Memcache_replace(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
+	size_t key_length = S_size(sfp[1].s);
 	const char *value = String_to(const char *, sfp[2]);
-	size_t value_length = ((sfp[2].s)->str.len);
+	size_t value_length = S_size(sfp[2].s);
 	time_t expiration_sec = Int_to(time_t, sfp[3]);
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
@@ -548,16 +556,16 @@ KMETHOD Memcache_replace(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//@Native @Public void Memcache.set_by_key (String group_key, String key, String value, int expiration_sec, int flags);
+//@Native @Public void Memcache.setByKey (String group_key, String key, String value, int expiration_sec, int flags);
 KMETHOD Memcache_setByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char*, sfp[1]);
-	size_t group_key_length = ((sfp[1].s)->str.len);
+	size_t group_key_length = S_size(sfp[1].s);
 	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
+	size_t key_length = S_size(sfp[2].s);
 	const char *value = String_to(const char *, sfp[3]);
-	size_t value_length = ((sfp[3].s)->str.len);
+	size_t value_length = S_size(sfp[3].s);
 	time_t expiration_sec = Int_to(time_t, sfp[4]);
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
@@ -575,16 +583,16 @@ KMETHOD Memcache_setByKey(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//@Native @Public void Memcache.add_by_key (String group_key, String key, String value, int expiration_sec, int flags);
+//@Native @Public void Memcache.addByKey (String group_key, String key, String value, int expiration_sec, int flags);
 KMETHOD Memcache_addByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
-	size_t group_key_length = ((sfp[1].s)->str.len);
+	size_t group_key_length = S_size(sfp[1].s);
 	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
+	size_t key_length = S_size(sfp[2].s);
 	const char *value = String_to(const char *, sfp[3]);
-	size_t value_length = ((sfp[3].s)->str.len);
+	size_t value_length = S_size(sfp[3].s);
 	time_t expiration_sec = Int_to(time_t, sfp[4]);
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
@@ -602,16 +610,16 @@ KMETHOD Memcache_addByKey(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//@Native @Public void Memcache.replace_by_key (String group_key, String key, String value, int expiration_sec, int flags);
+//@Native @Public void Memcache.replaceByKey (String group_key, String key, String value, int expiration_sec, int flags);
 KMETHOD Memcache_replaceByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
-	size_t group_key_length = ((sfp[1].s)->str.len);
+	size_t group_key_length = S_size(sfp[1].s);
 	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
+	size_t key_length = S_size(sfp[2].s);
 	const char *value = String_to(const char *, sfp[3]);
-	size_t value_length = ((sfp[3].s)->str.len);
+	size_t value_length = S_size(sfp[3].s);
 	time_t expiration_sec = Int_to(time_t, sfp[4]);
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
@@ -635,11 +643,11 @@ KMETHOD Memcache_replaceByKey(CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public Boolean Memcache.prepend(String key, String vlaue, int expiration_sec, int flags);
 KMETHOD Memcache_prepend(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
+	size_t key_length = S_size(sfp[1].s);
 	const char *value = String_to(const char *, sfp[2]);
-	size_t value_length = ((sfp[2].s)->str.len);
+	size_t value_length = S_size(sfp[2].s);
 	time_t expiration_sec = Int_to(time_t, sfp[3]);
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
@@ -660,11 +668,11 @@ KMETHOD Memcache_prepend(CTX ctx, ksfp_t *sfp _RIX)
 //@Native @Public Boolean Memcache.append(String key, String vlaue, int expiration_sec, int flags);
 KMETHOD Memcache_append(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *key = String_to(const char*, sfp[1]);
-	size_t key_length = ((sfp[1].s)->str.len);
+	size_t key_length = S_size(sfp[1].s);
 	const char *value = String_to(const char *, sfp[2]);
-	size_t value_length = ((sfp[2].s)->str.len);
+	size_t value_length = S_size(sfp[2].s);
 	time_t expiration_sec = Int_to(time_t, sfp[3]);
 	uint32_t flags = Int_to(uint32_t, sfp[4]);
 	memcached_return_t rc = 
@@ -681,16 +689,16 @@ KMETHOD Memcache_append(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNb_(rc == MEMCACHED_SUCCESS);
 }
 
-//@Native @Public Boolean Memcache.prepend_by_key(String group_key, String key, String vlaue, int expiration_sec, int flags);
+//@Native @Public Boolean Memcache.prependByKey(String group_key, String key, String vlaue, int expiration_sec, int flags);
 KMETHOD Memcache_prependByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
-	size_t group_key_length = ((sfp[1].s)->str.len);
+	size_t group_key_length = S_size(sfp[1].s);
 	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
+	size_t key_length = S_size(sfp[2].s);
 	const char *value = String_to(const char *, sfp[3]);
-	size_t value_length = ((sfp[3].s)->str.len);
+	size_t value_length = S_size(sfp[3].s);
 	time_t expiration_sec = Int_to(time_t, sfp[4]);
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
@@ -708,16 +716,16 @@ KMETHOD Memcache_prependByKey(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//@Native @Public Boolean Memcache.append_by_key(String group_key, String key, String vlaue, int expiration_sec, int flags);
+//@Native @Public Boolean Memcache.appendByKey(String group_key, String key, String vlaue, int expiration_sec, int flags);
 KMETHOD Memcache_appendByKey(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_Memcache_t *mcd = (knh_Memcache_t *)sfp[0].o;
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
 	const char *group_key = String_to(const char *, sfp[1]);
-	size_t group_key_length = ((sfp[1].s)->str.len);
+	size_t group_key_length = S_size(sfp[1].s);
 	const char *key = String_to(const char*, sfp[2]);
-	size_t key_length = ((sfp[2].s)->str.len);
+	size_t key_length = S_size(sfp[2].s);
 	const char *value = String_to(const char *, sfp[3]);
-	size_t value_length = ((sfp[3].s)->str.len);
+	size_t value_length = S_size(sfp[3].s);
 	time_t expiration_sec = Int_to(time_t, sfp[4]);
 	uint32_t flags = Int_to(uint32_t, sfp[5]);
 	memcached_return_t rc = 
@@ -739,6 +747,51 @@ KMETHOD Memcache_appendByKey(CTX ctx, ksfp_t *sfp _RIX)
 // [Working with data on the server in an atomic fashion]
 
 /* ======================================================================== */
+
+/* ======================================================================== */
+// [Manipulate the server information stored in memcached_st]
+
+//@Native @Public void Memcache.serverAdd(String host, int port);
+KMETHOD Memcache_serverAdd(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
+	const char* host = String_to(const char*, sfp[1]);
+	kint_t port = Int_to(kint_t, sfp[2]);
+	memcached_return_t rc;
+	rc = memcached_server_add(mcd->st, host, port);
+	if (rc != MEMCACHED_SUCCESS) {
+		KNH_NTRACE2(ctx, "memcached_server_add", K_FAILED, KNH_LDATA(
+					LOG_s("host", host),
+					LOG_i("port", port),  LOG_i("return_t", rc),
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
+	}
+	RETURNvoid_();
+}
+
+//@Native @Public String void Memcache.serverByKey(String key);
+KMETHOD Memcache_serverByKey(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kMemcache *mcd = (kMemcache *)sfp[0].o;
+	const char *key = String_to(const char *, sfp[1]);
+	size_t key_length = S_size(sfp[1].s);
+	memcached_return_t rc;
+	memcached_server_instance_st server;
+	server = memcached_server_by_key(mcd->st, key, key_length, &rc);
+	if (rc != MEMCACHED_SUCCESS) {
+		KNH_NTRACE2(ctx, "memcached_server_by_key", K_FAILED, KNH_LDATA(
+					LOG_s("key", key),
+					LOG_i("return_t", rc),
+					LOG_s("memcached_err", memcached_strerror(mcd->st, rc))
+					));
+	}
+	kTuple *t = new_ReturnObject(ctx, sfp);
+	KNH_SETv(ctx, t->fields[0], new_String(ctx, server->hostname));
+	t->ifields[1] = (kint_t)server->port;
+	memcached_server_free((memcached_server_st *)server);
+	RETURN_(t);
+}
+
 // [private functions]
 
 typedef struct {
