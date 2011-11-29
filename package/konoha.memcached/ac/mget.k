@@ -11,7 +11,7 @@ assure "Memcache.mGet" {
 	assert values[1] == "huga";
 }
 
-m.serverAdd("192.168.59.13", 11211);
+m.serverAdd("localhost", 11212);
 
 assure "Memcache.mGetByKey" {
 	m.setByKey("1", "mget1", "hoge", 0, 0);

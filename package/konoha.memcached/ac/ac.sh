@@ -5,7 +5,6 @@ PKGDIR="."
 echo ... start memcached ...
 memcached -d
 memcached -d -p 11212
-sleep 2
 
 echo ... start $PKGDIR/ac/${0##*/} ...
 
