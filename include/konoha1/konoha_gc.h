@@ -35,6 +35,37 @@ extern "C" {
 #endif
 
 /* ------------------------------------------------------------------------ */
+/* common interface for gc.c */
+
+void *knh_malloc(CTX ctx, size_t size);
+void knh_free(CTX ctx, void *block, size_t size);
+void *knh_valloc(CTX ctx, size_t size);
+void knh_vfree(CTX ctx, void *block, size_t size);
+void *TRACE_malloc(CTX ctx, size_t size K_TRACEARGV);
+void TRACE_free(CTX ctx, void *p, size_t size K_TRACEARGV);
+void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACEARGV);
+kbool_t knh_isObject(CTX ctx, kObject *o);
+void kmemshare_init(CTX ctx);
+void kmemshare_free(CTX ctx);
+void kmemlocal_init(CTX ctx);
+void kmemlocal_free(CTX ctx);
+void *knh_xmalloc(CTX ctx, size_t size);
+void *knh_fastmalloc(CTX ctx, size_t size);
+void knh_fastfree(CTX ctx, void *block, size_t size);
+void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize);
+//void knh_initFirstObjectArena(CTX ctx);
+kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct);
+kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct);
+void TR_NEW(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct);
+kObject** knh_ensurerefs(CTX ctx, kObject** tail, size_t size);
+void knh_sizerefs(CTX ctx, kObject** tail);
+void knh_setrefs(CTX ctx,  kObject** list, size_t size);
+//void knh_Object_RCfree(CTX ctx, Object *o);
+//void knh_Object_RCsweep(CTX ctx, Object *o);
+void knh_System_gc(CTX ctx, int needsCStackTrace);
+
+/* ------------------------------------------------------------------------ */
+/* common interface for gc.c */
 
 #define K_RCGC_INIT           0
 

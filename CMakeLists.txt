@@ -58,7 +58,7 @@ set(KONOHA_SRC
 	src/lang/vmcodelibs.c
 	src/lang/message.c
 	src/main/array.c
-	src/main/bmgc.c
+	src/gc/gc.c
 	src/main/bytes.c
 	src/main/class.c
 	src/main/closure.c
