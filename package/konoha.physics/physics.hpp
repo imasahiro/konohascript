@@ -202,13 +202,16 @@ public:
 	b2Body *mouse_joint_body;
 	b2MouseJoint *mouse_joint;
 	GLDebugDraw *debugDraw;
+	QList<b2Body *> *bodys;
 
 	QWorld(KQGraphicsScene *scene);
 	void setGravity(float x, float y);
 	void timerEvent(QTimerEvent *event);
 	void add(knh_class_t cid, QGraphicsItem *i);
 	void remove(KQGraphicsItem *i);
+	void removeAll(void);
 	void start(void);
+	~QWorld(void);
 public slots:
 	void dragBeginSlot(QGraphicsSceneMouseEvent *event);
 	void dragMoveSlot(QGraphicsSceneMouseEvent *event);

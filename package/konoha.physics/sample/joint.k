@@ -1,5 +1,6 @@
 using konoha.qt4.*;
 using konoha.physics.*;
+using konoha.posix.*;
 include "sample/util.k";
 
 QWorld world;
@@ -53,6 +54,7 @@ void addPrismaticJoint(QGraphicsScene scene, QWorld world)
 	scene.addItem(r2);
 	world.add(r1);
 	world.add(r2);
+	System.sleep(1);
 //===== must call world.add(QGraphicsItem) previously ====
 	QPrismaticJoint j = new QPrismaticJoint(r1, r2);
 	scene.addItem(j);

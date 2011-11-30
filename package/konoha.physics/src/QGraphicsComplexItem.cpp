@@ -117,6 +117,8 @@ void QGraphicsComplexItem::addToWorld(QWorld *w)
 	//bodyDef.position.Set(0/PTM_RATIO, 0/PTM_RATIO);
 	b2Body *body = world->CreateBody(&bodyDef);
 	dummy->body = body;
+	w->bodys->append(body);
+
 	int length = polygons->size();
 	b2FixtureDef shapeDef;
 	shapeDef.density = dummy->density;

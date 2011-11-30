@@ -208,6 +208,13 @@ KMETHOD QWorld_remove(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+KMETHOD QWorld_removeAll(CTX ctx, knh_sfp_t *sfp _RIX)
+{
+	QWorld *world = RawPtr_to(QWorld *, sfp[0]);
+	if (world) world->removeAll();
+	RETURNvoid_();
+}
+
 KMETHOD QWorld_start(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	QWorld *world = RawPtr_to(QWorld *, sfp[0]);

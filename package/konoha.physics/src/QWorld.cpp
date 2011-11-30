@@ -137,16 +137,15 @@ QWorld::QWorld(KQGraphicsScene *scene_)
 	iteration = 10;
 	timestep = 1.0f / 30.0f;
 	timer_id = 0;
-
+	bodys = new QList<b2Body *>();
 	b2BodyDef bodyDef;
 	mouse_joint_body = world->CreateBody(&bodyDef);
+	bodys->append(mouse_joint_body);
 	mouse_joint = NULL;
 	scene = scene_;
 
 	contact = new QContact();
 	world->SetContactListener(contact);
-//	connect(this, SIGNAL(emitUpdatePointSignal(QList<GamVectorIdx> *)),
-//			wobble, SLOT(updatePoint(QList<GamVectorIdx> *)));
 	//========================== for debug =============================//
 	debugDraw = new GLDebugDraw(PTM_RATIO);
 	world->SetDebugDraw(debugDraw);
@@ -162,11 +161,93 @@ QWorld::QWorld(KQGraphicsScene *scene_)
 	//=================================================================//
 }
 
+/*
+#include <pthread.h>
+
+typedef struct thread_t {
+	int id;
+	int thread_num;
+	QWorld *w;
+} thread_t;
+
+static void thread_func(void *arg)
+{
+	//asm("int3");
+	thread_t info = *(thread_t *)arg;
+	int thread_num = info.thread_num;
+	QWorld *w = info.w;
+	QList<b2Body *> *bodys = w->bodys;
+	int body_size = bodys->size();
+	int id = info.id;
+	for (int i = id; i < body_size; i += thread_num) {
+		b2Body *b = bodys->at(i);
+		KQData *data = (KQData *)b->GetUserData();
+		if (data) {
+			b2Vec2 posA = b->GetPosition();
+			QGraphicsItem *i = data->i;
+			i->setPos(posA.x * PTM_RATIO, posA.y * PTM_RATIO);
+			if (data->cid == CLASS_QGraphicsComplexItem) {
+				i->setRotation(b->GetAngle() * 360.0 / (2 * M_PI));
+			} else {
+				i->setRotation(-1 * b->GetAngle() * 360.0 / (2 * M_PI));
+			}
+			b2JointEdge *jointList = b->GetJointList();
+			if (jointList) {
+				KQData *d = (KQData *)jointList->joint->GetUserData();
+				b2Body *b2 = jointList->other;
+				if (d) {
+					if (jointList->joint->GetType() == e_pulleyJoint) {
+						b2PulleyJoint *pulley = (b2PulleyJoint *)jointList->joint;
+						b2Vec2 anchorA = pulley->GetAnchorA();
+						b2Vec2 anchorB = pulley->GetAnchorB();
+						b2Vec2 groundAnchorA = pulley->GetGroundAnchorA();
+						b2Vec2 groundAnchorB = pulley->GetGroundAnchorB();
+						QGraphicsPathItem *p = dynamic_cast<QGraphicsPathItem *>(d->i);
+						QPainterPath path;
+						path.moveTo(anchorA.x * PTM_RATIO, anchorA.y * PTM_RATIO);
+						path.lineTo(groundAnchorA.x * PTM_RATIO, groundAnchorA.y * PTM_RATIO);
+						path.lineTo(groundAnchorB.x * PTM_RATIO, groundAnchorB.y * PTM_RATIO);
+						path.lineTo(anchorB.x * PTM_RATIO, anchorB.y * PTM_RATIO);
+						p->setPath(path);
+					} else {
+						QGraphicsLineItem *line = dynamic_cast<QGraphicsLineItem *>(d->i);
+						b2Vec2 posB = b2->GetPosition();
+						line->setLine(posA.x * PTM_RATIO, posA.y * PTM_RATIO,
+									  posB.x * PTM_RATIO, posB.y * PTM_RATIO);
+					}
+				}
+			}
+		}
+	}
+}
+*/
+
 void QWorld::timerEvent(QTimerEvent *event)
 {
 	if (event->timerId() == timer_id) {
 		world->Step(timestep, 8, 1);
-		//QList<GamVectorIdx> *vec_list = new QList<GamVectorIdx>();
+		/*
+		//int body_size = world->GetBodyCount();
+		int thread_num = 2;
+		pthread_t th[thread_num];
+		thread_t **arg = (thread_t **)malloc(sizeof(thread_t) * thread_num);
+		//thread_t arg[thread_num];
+		for (int i = 0; i < thread_num; i++) {
+			arg[i] = (thread_t *)malloc(sizeof(thread_t));
+			arg[i]->id = i;
+			arg[i]->w = this;
+			arg[i]->thread_num = thread_num;
+			//arg[i].id = i;
+			//arg[i].w = this;
+			//arg[i].thread_num = thread_num;
+			pthread_create(&th[i], NULL, (void*(*)(void *))thread_func, (void *)arg[i]);
+		}
+		fprintf(stderr, "hi\n");
+		for (int i = 0; i < thread_num; i++) {
+			pthread_join(th[i], (void **)NULL);
+		}
+		fprintf(stderr, "hoge\n");
+		*/
 		for (b2Body* b = world->GetBodyList(); b; b = b->GetNext()) {
 			KQData *data = (KQData *)b->GetUserData();
 			if (data) {
@@ -178,10 +259,6 @@ void QWorld::timerEvent(QTimerEvent *event)
 				} else {
 					i->setRotation(-1 * b->GetAngle() * 360.0 / (2 * M_PI));
 				}
-//				if (data->tag() == GamWobbleItemTag) {
-//					wobbleEffect(data->idx, b, vec_list);
-//					continue;
-//				}
 				b2JointEdge *jointList = b->GetJointList();
 				if (jointList) {
 					KQData *d = (KQData *)jointList->joint->GetUserData();
@@ -210,16 +287,6 @@ void QWorld::timerEvent(QTimerEvent *event)
 				}
 			}
 		}
-		//fprintf(stderr, "list-size = [%d]\n", vec_list->length());
-		//fprintf(stderr, "================== emit ====================\n");
-//		if (vec_list->length() > 0) {
-//			emit emitUpdatePointSignal(vec_list);
-//		}
-//		if (wobble) {
-//			//wobble->draw();
-//		}
-		//fprintf(stderr, "================== end ====================\n");
-//		delete vec_list;
 	}
 	scene->update();
 }
@@ -290,6 +357,7 @@ static void QGraphicsRectItem_addToWorld(KQGraphicsRectItem *r, QWorld *w)
 	bodyDef.angle = -(r->rotation() * (2 * M_PI)) / 360.0;
 	b2Body *body = world->CreateBody(&bodyDef);
 	r->dummy->body = body;
+	w->bodys->append(body);
 
 	b2FixtureDef shapeDef;
 	b2PolygonShape shape;
@@ -343,6 +411,7 @@ static void QGraphicsEllipseItem_addToWorld(KQGraphicsEllipseItem *e, QWorld *w)
 	bodyDef.angle = -(e->rotation() * (2 * M_PI)) / 360.0;
 	b2Body *body = world->CreateBody(&bodyDef);
 	e->dummy->body = body;
+	w->bodys->append(body);
 
 	b2FixtureDef shapeDef;
 	b2CircleShape shape;
@@ -382,6 +451,7 @@ void QGraphicsSimpleTextItem_addToWorld(KQGraphicsSimpleTextItem *t, QWorld *w)
 	bodyDef.angle = -(t->rotation() * (2 * M_PI)) / 360.0;
 	b2Body *body = world->CreateBody(&bodyDef);
 	t->dummy->body = body;
+	w->bodys->append(body);
 
 	b2FixtureDef shapeDef;
 	b2PolygonShape shape;
@@ -419,6 +489,7 @@ void QGraphicsPixmapItem_addToWorld(KQGraphicsPixmapItem *p, QWorld *w)
 	bodyDef.angle = -(p->rotation() * (2 * M_PI)) / 360.0;
 	b2Body *body = world->CreateBody(&bodyDef);
 	p->dummy->body = body;
+	w->bodys->append(body);
 
 	b2FixtureDef shapeDef;
 	b2PolygonShape shape;
@@ -491,11 +562,30 @@ void QWorld::remove(KQGraphicsItem *i)
 	}
 }
 
+void QWorld::removeAll()
+{
+	int size = bodys->size();
+	for (int i = 0; i < size; i++) {
+		b2Body *body = bodys->at(i);
+		world->DestroyBody(body);
+	}
+	bodys->clear();
+	killTimer(timer_id);
+}
+
 void QWorld::start(void)
 {
 	if (!timer_id) {
 		timer_id = startTimer(1000 / 60.0f);
 	}
+}
+
+QWorld::~QWorld(void)
+{
+	//delete world;
+	//delete contact;
+	//delete debugDraw;
+	//delete bodys;
 }
 
 static void QWorld_free(CTX ctx, knh_RawPtr_t *p)
