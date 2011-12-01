@@ -372,7 +372,7 @@ class K_PHI extends K_Inst {
     @Override String dump() {
         String res = "";
         if (|bbs| == 1) {
-            res += "\t" + getName () + " = " + insts[0].getName();
+            res += "\t" + getName () + " = mov " + getTypeName(type) + " " + insts[0].getName();
         } else {
             res += "\t" + getName () + " = phi [";
             for (int i = 0; i < |bbs|; i++) {
