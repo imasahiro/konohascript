@@ -147,41 +147,41 @@ Type Compiler.convertType(Class type) {
 }
 
 dynamic getTypeName(Class type) {
-    if (type == Int) {
-        return "Int";
-    }
-    if (type == Float) {
-        return "Float";
-    }
-    if (type == Boolean) {
-        return "Boolean";
-    }
-    if (type == String) {
-        return "String";
-    }
-    if (type == Array) {
-        return "Array";
-    }
-    if (type == Script) {
-        return "Script";
-    }
-    if (type == System) {
-        return "System";
-    }
-    if (type == OutputStream) {
-        return "OutputStream";
-    }
-    if (type == InputStream) {
-        return "InputStream";
-    }
-    if (type == Class) {
-        return "Class";
-    }
-    if (type == dynamic) {
-        return "dynamic";
-    } else if (type == Object) {
-        return "Object";
-    }
+    //if (type == Int) {
+    //    return "Int";
+    //}
+    //if (type == Float) {
+    //    return "Float";
+    //}
+    //if (type == Boolean) {
+    //    return "Boolean";
+    //}
+    //if (type == String) {
+    //    return "String";
+    //}
+    //if (type == Array) {
+    //    return "Array";
+    //}
+    //if (type == Script) {
+    //    return "Script";
+    //}
+    //if (type == System) {
+    //    return "System";
+    //}
+    //if (type == OutputStream) {
+    //    return "OutputStream";
+    //}
+    //if (type == InputStream) {
+    //    return "InputStream";
+    //}
+    //if (type == Class) {
+    //    return "Class";
+    //}
+    //if (type == dynamic) {
+    //    return "dynamic";
+    //} else if (type == Object) {
+    //    return "Object";
+    //}
     return type;
 }
 
