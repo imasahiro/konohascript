@@ -331,6 +331,7 @@ class K_MOV extends K_Inst {
     K_MOV(K_Value kvalue, K_MOVop op, int idx) {
         this.kvalue = kvalue;
         this.type = kvalue.type;
+        this.defidx = kvalue.defCount-1;
         this.op = op;
         this.idx = idx;
     }
@@ -352,14 +353,13 @@ class K_PHI extends K_Inst {
         insts = [];
     }
     void addIncoming(K_Function kfunc, int idx, K_Inst inst, int bbidx, Array<K_MOV> movs) {
-        K_Value kvalue = kfunc.getKValue(idx, inst.type);
-        K_MOV mov = new K_MOV(kvalue, new K_MOVop(inst), idx);
-        movs.add(mov);
         if (this.kvalue == null) {
             this.kvalue = inst.kvalue;
             this.type = inst.type;
+            addDef(kvalue, idx);
         }
-        addDef(kvalue, idx);
+        K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst), idx);
+        movs.add(mov);
         if (inst != null && inst.kvalue != null) {
             if (true || inst.kvalue.usePoint.indexOf(idx) == -1) {
                 inst.kvalue.useCount = inst.kvalue.useCount + 1;
@@ -1839,7 +1839,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
             if (regTableThen[i] != regTableElse[i] && regTableThen[i] != null && regTableElse[i] != null && is_Tunbox(regTableThen[i].type)) {
                 K_PHI phi = new K_PHI(i);
                 phi.addIncoming(kfunc, i, regTableThen[i], bbThen.bbidx, bbThen.movs);
-                phi.addIncoming(kfunc, i, regtableElse[i], bbElse.bbidx, bbThen.movs);
+                phi.addIncoming(kfunc, i, regtableElse[i], bbElse.bbidx, bbElse.movs);
                 bb.phis[(String)i] = phi;
                 regTableMerge.add(phi);
             } else if (regTableThen[i] != null){
