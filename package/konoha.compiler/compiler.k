@@ -1984,8 +1984,8 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
         print bbBreak.bbidx;
     }
     kfunc.addBB(bbCond, bbssize);
-    kfunc.addBB(bbContinue, bbssize + 1);
-    kfunc.addBB(bbBody, bbssize + 2);
+    kfunc.addBB(bbBody, bbssize + 1);
+    kfunc.addBB(bbContinue, bbssize + 2);
     kfunc.addBB(bbBreak, bbssize + 3);
     int espidx = stmt1.getESPIDX();
 
