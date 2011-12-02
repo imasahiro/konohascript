@@ -321,8 +321,10 @@ class K_Inst {
     }
 }
 class K_MOVop extends K_Opcode{
-    K_MOVop(K_Inst inst0) {
+    int defcount;
+    K_MOVop(K_Inst inst0, int defcount) {
         this.inst0 = inst0;
+        this.defcount = defcount;
     }
 }
 class K_MOV extends K_Inst {
@@ -331,18 +333,15 @@ class K_MOV extends K_Inst {
     K_MOV(K_Value kvalue, K_MOVop op, int idx) {
         this.kvalue = kvalue;
         this.type = kvalue.type;
-        this.defidx = kvalue.defCount-1;
+        this.defidx = op.defcount;
         this.op = op;
         this.idx = idx;
     }
     @Override String dump() {
-        if (getName() != op.inst0.getName()) {
-            return "\t" + getName() + " = mov " + getTypeName(type) + " " + op.inst0.getName() + " @nonssa";
-        }
-        return null;
+        return "\t" + getName() + " = mov " + getTypeName(type) + " " + op.inst0.getName() + " @nonssa";
     }
 }
-K_Value K_Function.getKValue(int idx, Class type);
+K_Value K_Function.getKValue(int idx, dynamic type);
 class K_PHI extends K_Inst {
     int idx;
     Array<Int> bbs;
@@ -358,7 +357,7 @@ class K_PHI extends K_Inst {
             this.type = inst.type;
             addDef(kvalue, idx);
         }
-        K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst), idx);
+        K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst, this.defidx), idx);
         movs.add(mov);
         if (inst != null && inst.kvalue != null) {
             if (true || inst.kvalue.usePoint.indexOf(idx) == -1) {
@@ -554,7 +553,7 @@ class K_Function {
         }
     }
 
-    K_Value getKValue(int idx, Class type) {
+    K_Value getKValue(int idx, dynamic type) {
         K_Value res = value_table[(String)idx];
         if (res == null || (res.type != type)) {
             value_table[(String)idx] = new K_Value(idx, type);
