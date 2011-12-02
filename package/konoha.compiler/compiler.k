@@ -1977,8 +1977,8 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     int bbssize = kfunc.bbs.size;
 
     K_BasicBlock bbCond     = new K_BasicBlock(bbssize);
-    K_BasicBlock bbContinue = new K_BasicBlock(bbssize + 1);
-    K_BasicBlock bbBody     = new K_BasicBlock(bbssize + 2);
+    K_BasicBlock bbBody     = new K_BasicBlock(bbssize + 1);
+    K_BasicBlock bbContinue = new K_BasicBlock(bbssize + 2);
     K_BasicBlock bbBreak    = new K_BasicBlock(bbssize + 3);
     if (DEBUG) {
         print bbBreak.bbidx;
