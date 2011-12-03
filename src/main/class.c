@@ -1048,24 +1048,24 @@ knh_Method_t* new_Method(CTX ctx, knh_flag_t flag, knh_class_t cid, knh_methodn_
 /* ------------------------------------------------------------------------ */
 /* [VirtualField] */
 
-static KMETHOD Fmethod_getter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Fmethod_getter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	RETURN_((sfp[0].ox)->fields[delta]);
 }
-static KMETHOD Fmethod_ngetter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Fmethod_ngetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *data = (knh_ndata_t*)(&(sfp[0].ox->fields[delta]));
 	RETURNd_(data[0]);
 }
-static KMETHOD Fmethod_setter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Fmethod_setter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	KNH_SETv(ctx, (sfp[0].ox)->fields[delta], sfp[1].o);
 	RETURN_(sfp[1].o);
 }
-static KMETHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp _RIX)
 {
 	int delta = DP(sfp[K_MTDIDX].mtdNC)->delta;
 	knh_ndata_t *ndata = (knh_ndata_t*)(&((sfp[0].ox)->fields[delta]));

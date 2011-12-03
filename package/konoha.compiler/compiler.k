@@ -2128,7 +2128,6 @@ void Compiler.asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
     }
 }
 void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int argc, int rix) {
-    //if (Method_isFinal(mtd) || isStatic) {
     /*SCALL*/
     {
         int thisidx = espidx + K_CALLDELTA;
@@ -2152,7 +2151,6 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
             kfunc.storeKInst(thisidx + rix, inst);
         }
     }
-    //}
 }
 void Compiler.asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, boolean stmt_isDYNCALL) {
     if (DEBUG) {
@@ -2209,6 +2207,26 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
         print mtd.getReturnType();
         print mtd.getReturnType();
     }
+    int deltaidx = mtd.indexOfGetterField();
+    if (deltaidx != -1) {
+        asm(stmt.getS(1), stmt.getS(1).toToken(), espidx + 1);
+        Class retClass = mtd.getReturnType();
+        SFX bx = new SFX(espidx+1, deltaidx);
+        asm_smovx(espidx, retClass, bx);
+        return;
+    }
+    deltaidx = mtd.indexOfSetterField();
+    if (deltaidx != -1) {
+        asm(stmt.getS(1), stmt.getS(1).toToken(), espidx+1);
+        asm(stmt.getS(2), stmt.getS(2).toToken(), espidx+2);
+        Class retClass = mtd.getReturnType();
+        K_Inst inst0 = kfunc.getKInst(espidx+1);
+        K_Inst inst1 = kfunc.getKInst(espidx+2);
+        K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, deltaidx), 0);
+        kfunc.curBB.insts.add(inst);
+        return;
+    }
+
     Class retClass = mtd.getReturnType();
     if (mtd.getMethodClass() == Array) {
         Class p1 = c.getP1();
