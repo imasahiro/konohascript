@@ -123,37 +123,37 @@ QImage *convertFromIplImageToQImage(const IplImage * iplImage)
 	return qImage;
 }
 
-KMETHOD QWebCamera_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QWebCamera_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int n = Int_to(int, sfp[1]);
 	CvCapture *capture = cvCaptureFromCAM(n);
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, capture, NULL);
+	kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, capture, NULL);
 	RETURN_(rptr);
 }
 
-KMETHOD QWebCamera_queryFrame(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QWebCamera_queryFrame(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CvCapture *capture = RawPtr_to(CvCapture *, sfp[0]);
 	IplImage *frame = cvQueryFrame(capture);//not allocated
 	QImage *image = convertFromIplImageToQImage(frame);
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, image, NULL);
+	kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, image, NULL);
 	RETURN_(rptr);
 }
 
-KMETHOD QVideo_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QVideo_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const char *filename = String_to(const char *, sfp[1]);
 	CvCapture *capture = cvCaptureFromAVI(filename);
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, capture, NULL);
+	kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, capture, NULL);
 	RETURN_(rptr);
 }
 
-KMETHOD QVideo_queryFrame(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QVideo_queryFrame(CTX ctx, ksfp_t *sfp _RIX)
 {
 	CvCapture *capture = RawPtr_to(CvCapture *, sfp[0]);
 	IplImage *frame = cvQueryFrame(capture);//not allocated
 	QImage *image = convertFromIplImageToQImage(frame);
-	knh_RawPtr_t *rptr = new_ReturnCppObject(ctx, sfp, image, NULL);
+	kRawPtr *rptr = new_ReturnCppObject(ctx, sfp, image, NULL);
 	RETURN_(rptr);
 }
 
@@ -208,7 +208,7 @@ IplImage *QImage_toIplImage(const QImage &image)
 }
 
 //QImage QImage.binarization(QColor threshold_color);
-KMETHOD QImage_binarization(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QImage_binarization(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QImage *image = RawPtr_to(QImage *, sfp[0]);
 	if (image) {
@@ -237,7 +237,7 @@ KMETHOD QImage_binarization(CTX ctx, knh_sfp_t *sfp _RIX)
 		}
 		//IplImage *iplimage = QImage_toIplImage(*image);
 		//ret = convertFromIplImageToQImage(iplimage);
-		knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, ret, NULL);
+		kRawPtr *p = new_ReturnCppObject(ctx, sfp, ret, NULL);
 		RETURN_(p);
 	} else {
 		RETURN_(KNH_NULL);
@@ -245,7 +245,7 @@ KMETHOD QImage_binarization(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //QImage QImage.permeabilization(QColor c);
-KMETHOD QImage_permeabilization(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QImage_permeabilization(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QImage *image = RawPtr_to(QImage *, sfp[0]);
 	if (image) {
@@ -267,7 +267,7 @@ KMETHOD QImage_permeabilization(CTX ctx, knh_sfp_t *sfp _RIX)
 				}
 			}
 		}
-		knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, ret, NULL);
+		kRawPtr *p = new_ReturnCppObject(ctx, sfp, ret, NULL);
 		RETURN_(p);
 	} else {
 		RETURN_(KNH_NULL);
@@ -275,21 +275,21 @@ KMETHOD QImage_permeabilization(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //QPointF[][] QImage.getEdgePoints();
-KMETHOD QImage_getEdgePoints(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QImage_getEdgePoints(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QImage *image = RawPtr_to(QImage *, sfp[0]);
 	IplImage *iplimage = QImage_toIplImage(*image);
 	QList<QList<QPointF> *> *list = createEdgePoint(iplimage);
 	int size = list->size();
-	knh_Array_t *a = new_Array0(ctx, size);
-	knh_class_t cid = knh_getcid(ctx, STEXT("QPointF"));
+	kArray *a = new_Array0(ctx, size);
+	kclass_t cid = knh_getcid(ctx, STEXT("QPointF"));
 	for (int i = 0; i < size; i++) {
 		QList<QPointF> *pts = list->at(i);
 		int pts_size = pts->size();
-		knh_Array_t *elem = new_Array0(ctx, pts_size);
+		kArray *elem = new_Array0(ctx, pts_size);
 		for (int j = 0; j < pts_size; j++) {
 			QPointF pt = pts->at(j);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), new QPointF(pt));
+			kRawPtr *p = new_RawPtr(ctx, ClassTBL(cid), new QPointF(pt));
 			knh_Array_add(ctx, elem, p);
 		}
 		knh_Array_add(ctx, a, elem);
@@ -298,7 +298,7 @@ KMETHOD QImage_getEdgePoints(CTX ctx, knh_sfp_t *sfp _RIX)
 }
 
 //QPointF[][] QImage.getEdgePointsUsingAlpha();
-KMETHOD QImage_getEdgePointsUsingAlpha(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QImage_getEdgePointsUsingAlpha(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QImage *image = RawPtr_to(QImage *, sfp[0]);
 	QImage ret(*image);
@@ -322,15 +322,15 @@ KMETHOD QImage_getEdgePointsUsingAlpha(CTX ctx, knh_sfp_t *sfp _RIX)
 	IplImage *iplimage = QImage_toIplImage(ret);
 	QList<QList<QPointF> *> *list = createEdgePoint(iplimage);
 	int size = list->size();
-	knh_Array_t *a = new_Array0(ctx, size);
-	knh_class_t cid = knh_getcid(ctx, STEXT("QPointF"));
+	kArray *a = new_Array0(ctx, size);
+	kclass_t cid = knh_getcid(ctx, STEXT("QPointF"));
 	for (int i = 0; i < size; i++) {
 		QList<QPointF> *pts = list->at(i);
 		int pts_size = pts->size();
-		knh_Array_t *elem = new_Array0(ctx, pts_size);
+		kArray *elem = new_Array0(ctx, pts_size);
 		for (int j = 0; j < pts_size; j++) {
 			QPointF pt = pts->at(j);
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), new QPointF(pt));
+			kRawPtr *p = new_RawPtr(ctx, ClassTBL(cid), new QPointF(pt));
 			knh_Array_add(ctx, elem, p);
 		}
 		knh_Array_add(ctx, a, elem);

@@ -15,26 +15,26 @@
 #define G_MAGIC_NUM 39543
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T *v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T *v)
 {
 	return new_RawPtr(lctx, ct, v);
 }
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T *v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T *v)
 {
 	return new_RawPtr(lctx, ct, (void *)v);
 }
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T &v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, T &v)
 {
 	T *v_ = new T(v);
 	return new_RawPtr(lctx, ct, v_);
 }
 
 template<class T>
-inline knh_RawPtr_t *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T &v)
+inline kRawPtr *new_QRawPtr_(CTX lctx, const knh_ClassTBL_t *ct, const T &v)
 {
 	T *v_ = new T(v);
 	return new_RawPtr(lctx, ct, v_);

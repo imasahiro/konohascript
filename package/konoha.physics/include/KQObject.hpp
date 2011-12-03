@@ -3,18 +3,18 @@
 class DummyQObject : public QObject {
 	//Q_OBJECT;
 public:
-	knh_RawPtr_t *self;
-	std::map<std::string, knh_Func_t *> *event_map;
-	std::map<std::string, knh_Func_t *> *slot_map;
-	knh_Func_t *child_event_func;
-	knh_Func_t *custom_event_func;
-	knh_Func_t *timer_event_func;
-	knh_Func_t *destroyed_func;
+	kRawPtr *self;
+	std::map<std::string, kFunc *> *event_map;
+	std::map<std::string, kFunc *> *slot_map;
+	kFunc *child_event_func;
+	kFunc *custom_event_func;
+	kFunc *timer_event_func;
+	kFunc *destroyed_func;
 	//DummyQObject();
-	//void setSelf(knh_RawPtr_t *ptr);
+	//void setSelf(kRawPtr *ptr);
 	//bool eventDispatcher(QEvent *event);
-	//bool addEvent(knh_Func_t *callback_func, std::string str);
-	//bool signalConnect(knh_Func_t *callback_func, std::string str);
+	//bool addEvent(kFunc *callback_func, std::string str);
+	//bool signalConnect(kFunc *callback_func, std::string str);
 	//void connection(QObject *o);
 	//bool childEventDummy(QChildEvent* event);
 	//bool customEventDummy(QEvent* event);
@@ -26,10 +26,10 @@ public:
 class KQObject : public QObject {
 //	Q_OBJECT;
 public:
-	knh_RawPtr_t *self;
+	kRawPtr *self;
 	DummyQObject *dummy;
 	KQObject(QObject* parent);
-	//void setSelf(knh_RawPtr_t *ptr);
+	//void setSelf(kRawPtr *ptr);
 	//bool event(QEvent *event);
 };
 

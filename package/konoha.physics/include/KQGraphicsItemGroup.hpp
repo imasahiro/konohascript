@@ -3,18 +3,18 @@
 class DummyQGraphicsItemGroup : public DummyQGraphicsItem {
 //	Q_OBJECT;
 public:
-	knh_RawPtr_t *self;
-	QList<knh_RawPtr_t *> *added_list;
-	std::map<std::string, knh_Func_t *> *event_map;
-	std::map<std::string, knh_Func_t *> *slot_map;
-	knh_Func_t *paint_func;
+	kRawPtr *self;
+	QList<kRawPtr *> *added_list;
+	std::map<std::string, kFunc *> *event_map;
+	std::map<std::string, kFunc *> *slot_map;
+	kFunc *paint_func;
 	DummyQGraphicsItemGroup();
 	virtual ~DummyQGraphicsItemGroup();
-	void setSelf(knh_RawPtr_t *ptr);
+	void setSelf(kRawPtr *ptr);
 	bool eventDispatcher(QEvent *event);
-	bool addEvent(knh_Func_t *callback_func, std::string str);
-	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	bool addEvent(kFunc *callback_func, std::string str);
+	bool signalConnect(kFunc *callback_func, std::string str);
+	kObject** reftrace(CTX ctx, kRawPtr *p FTRARG);
 	void connection(QObject *o);
 };
 
@@ -22,11 +22,11 @@ class KQGraphicsItemGroup : public QGraphicsItemGroup {
 //	Q_OBJECT;
 public:
 	int magic_num;
-	knh_RawPtr_t *self;
+	kRawPtr *self;
 	DummyQGraphicsItemGroup *dummy;
 	KQGraphicsItemGroup(QGraphicsItem* parent);
 	~KQGraphicsItemGroup();
-	void setSelf(knh_RawPtr_t *ptr);
+	void setSelf(kRawPtr *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };

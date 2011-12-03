@@ -28,9 +28,9 @@ QContact::QContact(void)
 	end_contact_event_func = NULL;
 }
 
-knh_RawPtr_t *QContact::getRawPtrFromCID(knh_class_t cid)
+kRawPtr *QContact::getRawPtrFromCID(kclass_t cid)
 {
-	knh_RawPtr_t *ret = NULL;
+	kRawPtr *ret = NULL;
 	if (cid == CLASS_QGraphicsRectItem) {
 		ret = rect_body;
 	} else if (cid == CLASS_QGraphicsEllipseItem) {
@@ -59,9 +59,9 @@ void QContact::BeginContact(b2Contact *contact)
 	KQData *data2 = static_cast<KQData *>(bbody->GetUserData());
 	if (data1 != NULL && data2 != NULL && begin_contact_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
-		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *body1 = getRawPtrFromCID(data1->cid);
-		knh_RawPtr_t *body2 = getRawPtrFromCID(data2->cid);
+		ksfp_t *lsfp = lctx->esp;
+		kRawPtr *body1 = getRawPtrFromCID(data1->cid);
+		kRawPtr *body2 = getRawPtrFromCID(data2->cid);
 		if (body1 != NULL && body2 != NULL) {
 			body1->rawptr = data1->i;
 			body2->rawptr = data2->i;
@@ -83,9 +83,9 @@ void QContact::EndContact(b2Contact *contact)
 	KQData *data2 = static_cast<KQData *>(bbody->GetUserData());
 	if (data1 != NULL && data2 != NULL && end_contact_event_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
-		knh_sfp_t *lsfp = lctx->esp;
-		knh_RawPtr_t *body1 = getRawPtrFromCID(data1->cid);
-		knh_RawPtr_t *body2 = getRawPtrFromCID(data2->cid);
+		ksfp_t *lsfp = lctx->esp;
+		kRawPtr *body1 = getRawPtrFromCID(data1->cid);
+		kRawPtr *body2 = getRawPtrFromCID(data2->cid);
 		if (body1 != NULL && body2 != NULL) {
 			body1->rawptr = data1->i;
 			body2->rawptr = data2->i;
@@ -506,7 +506,7 @@ void QGraphicsPixmapItem_addToWorld(KQGraphicsPixmapItem *p, QWorld *w)
 	body->SetUserData(data);
 }
 
-void QWorld::add(knh_class_t cid, QGraphicsItem *i)
+void QWorld::add(kclass_t cid, QGraphicsItem *i)
 {
 	if (cid == CLASS_QGraphicsRectItem) {
 		QGraphicsRectItem_addToWorld((KQGraphicsRectItem *)i, this);
@@ -588,7 +588,7 @@ QWorld::~QWorld(void)
 	//delete bodys;
 }
 
-static void QWorld_free(CTX ctx, knh_RawPtr_t *p)
+static void QWorld_free(CTX ctx, kRawPtr *p)
 {
 	(void)ctx;
 	if (p->rawptr != NULL) {
@@ -598,7 +598,7 @@ static void QWorld_free(CTX ctx, knh_RawPtr_t *p)
 	}
 }
 
-static void QWorld_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+static void QWorld_reftrace(CTX ctx, kRawPtr *p FTRARG)
 {
 	if (p->rawptr != NULL) {
 		QWorld *w = static_cast<QWorld *>(p->rawptr);
@@ -612,7 +612,7 @@ static void QWorld_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
 	}
 }
 
-DEFAPI(void) defQWorld(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defQWorld(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	(void)ctx; (void) cid;
 	cdef->name = "QWorld";

@@ -23,7 +23,7 @@ signals:
 class DummyQGraphicsItem {
 	//Q_OBJECT;
 public:
-	knh_RawPtr_t *self;
+	kRawPtr *self;
 //========== for physics package ==========//
 	float density;
 	float restitution;
@@ -34,54 +34,54 @@ public:
 	void *body;
 	PKGConnector *pkgconnector;
 //========================================//
-	std::map<std::string, knh_Func_t *> *event_map;
-	std::map<std::string, knh_Func_t *> *slot_map;
-	knh_Func_t *context_menu_event_func;
-	knh_Func_t *drag_enter_event_func;
-	knh_Func_t *drag_leave_event_func;
-	knh_Func_t *drag_move_event_func;
-	knh_Func_t *drop_event_func;
-	knh_Func_t *focus_in_event_func;
-	knh_Func_t *focus_out_event_func;
-	knh_Func_t *hover_enter_event_func;
-	knh_Func_t *hover_leave_event_func;
-	knh_Func_t *hover_move_event_func;
-	knh_Func_t *input_method_event_func;
-	knh_Func_t *key_press_event_func;
-	knh_Func_t *key_release_event_func;
-	knh_Func_t *mouse_double_click_event_func;
-	knh_Func_t *mouse_move_event_func;
-	knh_Func_t *mouse_press_event_func;
-	knh_Func_t *mouse_release_event_func;
-	knh_Func_t *scene_event_func;
-	knh_Func_t *wheel_event_func;
-	knh_Func_t *paint_func;
-	knh_RawPtr_t *contextMenuEventPtr;
-	knh_RawPtr_t *dragEnterEventPtr;
-	knh_RawPtr_t *dragLeaveEventPtr;
-	knh_RawPtr_t *dragMoveEventPtr;
-	knh_RawPtr_t *dropEventPtr;
-	knh_RawPtr_t *focusInEventPtr;
-	knh_RawPtr_t *focusOutEventPtr;
-	knh_RawPtr_t *hoverEnterEventPtr;
-	knh_RawPtr_t *hoverLeaveEventPtr;
-	knh_RawPtr_t *hoverMoveEventPtr;
-	knh_RawPtr_t *inputMethodEventPtr;
-	knh_RawPtr_t *keyPressEventPtr;
-	knh_RawPtr_t *keyReleaseEventPtr;
-	knh_RawPtr_t *mouseDoubleClickEventPtr;
-	knh_RawPtr_t *mouseMoveEventPtr;
-	knh_RawPtr_t *mousePressEventPtr;
-	knh_RawPtr_t *mouseReleaseEventPtr;
-	knh_RawPtr_t *sceneEventPtr;
-	knh_RawPtr_t *wheelEventPtr;
+	std::map<std::string, kFunc *> *event_map;
+	std::map<std::string, kFunc *> *slot_map;
+	kFunc *context_menu_event_func;
+	kFunc *drag_enter_event_func;
+	kFunc *drag_leave_event_func;
+	kFunc *drag_move_event_func;
+	kFunc *drop_event_func;
+	kFunc *focus_in_event_func;
+	kFunc *focus_out_event_func;
+	kFunc *hover_enter_event_func;
+	kFunc *hover_leave_event_func;
+	kFunc *hover_move_event_func;
+	kFunc *input_method_event_func;
+	kFunc *key_press_event_func;
+	kFunc *key_release_event_func;
+	kFunc *mouse_double_click_event_func;
+	kFunc *mouse_move_event_func;
+	kFunc *mouse_press_event_func;
+	kFunc *mouse_release_event_func;
+	kFunc *scene_event_func;
+	kFunc *wheel_event_func;
+	kFunc *paint_func;
+	kRawPtr *contextMenuEventPtr;
+	kRawPtr *dragEnterEventPtr;
+	kRawPtr *dragLeaveEventPtr;
+	kRawPtr *dragMoveEventPtr;
+	kRawPtr *dropEventPtr;
+	kRawPtr *focusInEventPtr;
+	kRawPtr *focusOutEventPtr;
+	kRawPtr *hoverEnterEventPtr;
+	kRawPtr *hoverLeaveEventPtr;
+	kRawPtr *hoverMoveEventPtr;
+	kRawPtr *inputMethodEventPtr;
+	kRawPtr *keyPressEventPtr;
+	kRawPtr *keyReleaseEventPtr;
+	kRawPtr *mouseDoubleClickEventPtr;
+	kRawPtr *mouseMoveEventPtr;
+	kRawPtr *mousePressEventPtr;
+	kRawPtr *mouseReleaseEventPtr;
+	kRawPtr *sceneEventPtr;
+	kRawPtr *wheelEventPtr;
 	DummyQGraphicsItem();
 	virtual ~DummyQGraphicsItem();
-	void setSelf(knh_RawPtr_t *ptr);
+	void setSelf(kRawPtr *ptr);
 	bool eventDispatcher(QEvent *event);
-	bool addEvent(knh_Func_t *callback_func, std::string str);
-	bool signalConnect(knh_Func_t *callback_func, std::string str);
-	knh_Object_t** reftrace(CTX ctx, knh_RawPtr_t *p FTRARG);
+	bool addEvent(kFunc *callback_func, std::string str);
+	bool signalConnect(kFunc *callback_func, std::string str);
+	kObject** reftrace(CTX ctx, kRawPtr *p FTRARG);
 	void connection(QObject *o);
 	bool contextMenuEventDummy(QGraphicsSceneContextMenuEvent* event);
 	bool dragEnterEventDummy(QGraphicsSceneDragDropEvent* event);
@@ -108,11 +108,11 @@ class KQGraphicsItem : public QGraphicsItem {
 	//Q_OBJECT;
 public:
 	int magic_num;
-	knh_RawPtr_t *self;
+	kRawPtr *self;
 	DummyQGraphicsItem *dummy;
 	KQGraphicsItem(QGraphicsItem* parent);
 	~KQGraphicsItem();
-	void setSelf(knh_RawPtr_t *ptr);
+	void setSelf(kRawPtr *ptr);
 	bool sceneEvent(QEvent *event);
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
@@ -133,7 +133,7 @@ public:
 
 class KQData {
 public:
-	knh_class_t cid;
+	kclass_t cid;
 	QGraphicsItem *i;
 };
 
@@ -165,17 +165,17 @@ public:
 
 class QContact : public b2ContactListener {
 public:
-	knh_RawPtr_t *rect_body;
-	knh_RawPtr_t *ellipse_body;
-	knh_RawPtr_t *simple_text_body;
-	knh_RawPtr_t *text_body;
-	knh_RawPtr_t *pixmap_body;
-	knh_RawPtr_t *complex_body;
-	knh_Func_t *begin_contact_event_func;
-	knh_Func_t *end_contact_event_func;
+	kRawPtr *rect_body;
+	kRawPtr *ellipse_body;
+	kRawPtr *simple_text_body;
+	kRawPtr *text_body;
+	kRawPtr *pixmap_body;
+	kRawPtr *complex_body;
+	kFunc *begin_contact_event_func;
+	kFunc *end_contact_event_func;
 
 	QContact(void);
-	knh_RawPtr_t *getRawPtrFromCID(knh_class_t cid);
+	kRawPtr *getRawPtrFromCID(kclass_t cid);
 	void BeginContact(b2Contact *contact);
 	void EndContact(b2Contact *contact);
 	void PreSolve(b2Contact *contact, const b2Manifold *oldManifold);
@@ -207,7 +207,7 @@ public:
 	QWorld(KQGraphicsScene *scene);
 	void setGravity(float x, float y);
 	void timerEvent(QTimerEvent *event);
-	void add(knh_class_t cid, QGraphicsItem *i);
+	void add(kclass_t cid, QGraphicsItem *i);
 	void remove(KQGraphicsItem *i);
 	void removeAll(void);
 	void start(void);

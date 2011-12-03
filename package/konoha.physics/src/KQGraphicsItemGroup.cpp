@@ -7,13 +7,13 @@ void KQGraphicsItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsIte
 {
 	if (dummy->paint_func != NULL) {
 		CTX lctx = knh_getCurrentContext();
-		knh_sfp_t *lsfp = lctx->esp;
+		ksfp_t *lsfp = lctx->esp;
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+1].o, UPCAST(self));
-		knh_RawPtr_t *p1 = new_QRawPtr(lctx, QPainter, painter);
+		kRawPtr *p1 = new_QRawPtr(lctx, QPainter, painter);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+2].o, UPCAST(p1));
-		knh_RawPtr_t *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
+		kRawPtr *p2 = new_QRawPtr(lctx, QStyleOptionGraphicsItem, option);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+3].o, UPCAST(p2));
-		knh_RawPtr_t *p3 = new_QRawPtr(lctx, QWidget, widget);
+		kRawPtr *p3 = new_QRawPtr(lctx, QWidget, widget);
 		KNH_SETv(lctx, lsfp[K_CALLDELTA+4].o, UPCAST(p3));
 		knh_Func_invoke(lctx, dummy->paint_func, lsfp, 4);
 	} else {
@@ -27,9 +27,9 @@ DummyQGraphicsItemGroup::DummyQGraphicsItemGroup()
 	(void)lctx;
 	self = NULL;
 	paint_func = NULL;
-	event_map = new map<string, knh_Func_t *>();
-	slot_map = new map<string, knh_Func_t *>();
-	event_map->insert(map<string, knh_Func_t *>::value_type("paint", NULL));
+	event_map = new map<string, kFunc *>();
+	slot_map = new map<string, kFunc *>();
+	event_map->insert(map<string, kFunc *>::value_type("paint", NULL));
 }
 
 DummyQGraphicsItemGroup::~DummyQGraphicsItemGroup()
@@ -40,7 +40,7 @@ DummyQGraphicsItemGroup::~DummyQGraphicsItemGroup()
 	slot_map = NULL;
 }
 
-void DummyQGraphicsItemGroup::setSelf(knh_RawPtr_t *ptr)
+void DummyQGraphicsItemGroup::setSelf(kRawPtr *ptr)
 {
 	DummyQGraphicsItemGroup::self = ptr;
 	DummyQGraphicsItem::setSelf(ptr);
@@ -57,9 +57,9 @@ bool DummyQGraphicsItemGroup::eventDispatcher(QEvent *event)
 	return ret;
 }
 
-bool DummyQGraphicsItemGroup::addEvent(knh_Func_t *callback_func, string str)
+bool DummyQGraphicsItemGroup::addEvent(kFunc *callback_func, string str)
 {
-	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsItemGroup::event_map->bigin();
+	std::map<string, kFunc*>::iterator itr;// = DummyQGraphicsItemGroup::event_map->bigin();
 	if ((itr = DummyQGraphicsItemGroup::event_map->find(str)) == DummyQGraphicsItemGroup::event_map->end()) {
 		bool ret = false;
 		ret = DummyQGraphicsItem::addEvent(callback_func, str);
@@ -71,9 +71,9 @@ bool DummyQGraphicsItemGroup::addEvent(knh_Func_t *callback_func, string str)
 	}
 }
 
-bool DummyQGraphicsItemGroup::signalConnect(knh_Func_t *callback_func, string str)
+bool DummyQGraphicsItemGroup::signalConnect(kFunc *callback_func, string str)
 {
-	std::map<string, knh_Func_t*>::iterator itr;// = DummyQGraphicsItemGroup::slot_map->bigin();
+	std::map<string, kFunc*>::iterator itr;// = DummyQGraphicsItemGroup::slot_map->bigin();
 	if ((itr = DummyQGraphicsItemGroup::slot_map->find(str)) == DummyQGraphicsItemGroup::slot_map->end()) {
 		bool ret = false;
 		ret = DummyQGraphicsItem::signalConnect(callback_func, str);
@@ -84,7 +84,7 @@ bool DummyQGraphicsItemGroup::signalConnect(knh_Func_t *callback_func, string st
 	}
 }
 
-knh_Object_t** DummyQGraphicsItemGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+kObject** DummyQGraphicsItemGroup::reftrace(CTX ctx, kRawPtr *p FTRARG)
 {
 	(void)ctx; (void)p; (void)tail_;
 //	fprintf(stderr, "DummyQGraphicsItemGroup::reftrace p->rawptr=[%p]\n", p->rawptr);
@@ -92,7 +92,7 @@ knh_Object_t** DummyQGraphicsItemGroup::reftrace(CTX ctx, knh_RawPtr_t *p FTRARG
 	KNH_ENSUREREF(ctx, length);
 
 	for (int i = 0; i < length; i++) {
-		knh_RawPtr_t *item = added_list->at(i);
+		kRawPtr *item = added_list->at(i);
 		KNH_ADDNNREF(ctx, item);
 	}
 
@@ -116,7 +116,7 @@ KQGraphicsItemGroup::KQGraphicsItemGroup(QGraphicsItem* parent) : QGraphicsItemG
 	magic_num = G_MAGIC_NUM;
 	self = NULL;
 	dummy = new DummyQGraphicsItemGroup();
-	dummy->added_list = new QList<knh_RawPtr_t *>();
+	dummy->added_list = new QList<kRawPtr *>();
 }
 
 KQGraphicsItemGroup::~KQGraphicsItemGroup()
@@ -125,7 +125,7 @@ KQGraphicsItemGroup::~KQGraphicsItemGroup()
 	dummy = NULL;
 }
 
-void KQGraphicsItemGroup::setSelf(knh_RawPtr_t *ptr)
+void KQGraphicsItemGroup::setSelf(kRawPtr *ptr)
 {
 	self = ptr;
 	dummy->setSelf(ptr);

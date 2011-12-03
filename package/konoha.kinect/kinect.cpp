@@ -489,15 +489,15 @@ QKinect::~QKinect(void)
 	context->Shutdown();
 }
 
-KMETHOD QKinect_new(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QKinect_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	const char *xmlpath = String_to(const char *, sfp[1]);
 	QKinect *kinect = new QKinect(xmlpath);
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, kinect, NULL);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, kinect, NULL);
 	RETURN_(p);
 }
 
-KMETHOD QKinect_setBackgroundImage(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QKinect_setBackgroundImage(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QKinect *kinect = RawPtr_to(QKinect *, sfp[0]);
 	const char *imagepath = String_to(const char *, sfp[1]);
@@ -505,64 +505,64 @@ KMETHOD QKinect_setBackgroundImage(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-KMETHOD QKinect_addEvent(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QKinect_addEvent(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNvoid_();
 }
 
-KMETHOD QKinect_queryFrame(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QKinect_queryFrame(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QKinect *kinect = RawPtr_to(QKinect *, sfp[0]);
 	if (kinect) {
 		QImage *image = kinect->queryFrame();
-		knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, image, NULL);
+		kRawPtr *p = new_ReturnCppObject(ctx, sfp, image, NULL);
 		RETURN_(p);
 	} else {
 		RETURN_(KNH_NULL);
 	}
 }
 
-KMETHOD QKinect_queryBlendFrame(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QKinect_queryBlendFrame(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QKinect *kinect = RawPtr_to(QKinect *, sfp[0]);
 	if (kinect) {
 		QImage *image = kinect->queryBlendFrame();
-		knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, image, NULL);
+		kRawPtr *p = new_ReturnCppObject(ctx, sfp, image, NULL);
 		RETURN_(p);
 	} else {
 		RETURN_(KNH_NULL);
 	}
 }
 
-KMETHOD QKinect_getPeople(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QKinect_getPeople(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QKinect *kinect = RawPtr_to(QKinect *, sfp[0]);
 	QPeople *ret = NULL;
 	if (kinect) {
 		ret = kinect->getPeople();
 	}
-	knh_RawPtr_t *p = new_ReturnCppObject(ctx, sfp, ret, NULL);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, ret, NULL);
 	RETURN_(p);
 }
 
-KMETHOD QKinect_update(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QKinect_update(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QKinect *kinect = RawPtr_to(QKinect *, sfp[0]);
 	if (kinect) kinect->update();
 	RETURNvoid_();
 }
 
-KMETHOD QPeople_getPersons(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QPeople_getPersons(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QPeople *people = RawPtr_to(QPeople *, sfp[0]);
-	knh_Array_t *a;
+	kArray *a;
 	if (people) {
 		QList<QPerson *> *persons = people->getPersons();
 		int size = persons->size();
 		a = new_Array0(ctx, size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QPerson"));
+		kclass_t cid = knh_getcid(ctx, STEXT("QPerson"));
 		for (int n = 0; n < size; n++) {
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), persons->at(n));
+			kRawPtr *p = new_RawPtr(ctx, ClassTBL(cid), persons->at(n));
 			knh_Array_add(ctx, a, UPCAST(p));
 		}
 	} else {
@@ -571,17 +571,17 @@ KMETHOD QPeople_getPersons(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(a);
 }
 
-KMETHOD QPerson_getEdgePoints(CTX ctx, knh_sfp_t *sfp _RIX)
+KMETHOD QPerson_getEdgePoints(CTX ctx, ksfp_t *sfp _RIX)
 {
 	QPerson *person = RawPtr_to(QPerson *, sfp[0]);
-	knh_Array_t *a;
+	kArray *a;
 	if (person) {
 		QList<QPointF> *pts = person->getEdgePoints();
 		int size = pts->size();
 		a = new_Array0(ctx, size);
-		knh_class_t cid = knh_getcid(ctx, STEXT("QPointF"));
+		kclass_t cid = knh_getcid(ctx, STEXT("QPointF"));
 		for (int n = 0; n < size; n++) {
-			knh_RawPtr_t *p = new_RawPtr(ctx, ClassTBL(cid), new QPointF(pts->at(n)));
+			kRawPtr *p = new_RawPtr(ctx, ClassTBL(cid), new QPointF(pts->at(n)));
 			knh_Array_add(ctx, a, UPCAST(p));
 		}
 	} else {
@@ -590,7 +590,7 @@ KMETHOD QPerson_getEdgePoints(CTX ctx, knh_sfp_t *sfp _RIX)
 	RETURN_(a);
 }
 
-static void QPeople_free(CTX ctx, knh_RawPtr_t *p)
+static void QPeople_free(CTX ctx, kRawPtr *p)
 {
 	(void)ctx;
 	if (p->rawptr != NULL) {
@@ -600,13 +600,13 @@ static void QPeople_free(CTX ctx, knh_RawPtr_t *p)
 	}
 }
 
-//static void QPeople_reftrace(CTX ctx, knh_RawPtr_t *p FTRARG)
+//static void QPeople_reftrace(CTX ctx, kRawPtr *p FTRARG)
 //{
 //	if (p->rawptr != NULL) {
 //	}
 //}
 
-DEFAPI(void) defQPeople(CTX ctx, knh_class_t cid, knh_ClassDef_t *cdef)
+DEFAPI(void) defQPeople(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	(void)ctx; (void) cid;
 	cdef->name = "QPeople";
