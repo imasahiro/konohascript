@@ -522,6 +522,7 @@ kString* io2_readLine(CTX ctx, kio_t *io2, kStringDecoder *dec)
 			}
 			if(ch > 127) hasUTF8 = 1;
 		}
+		knh_Bytes_write2(ctx, cwb->ba, (const char*)io2->buffer + start, io2->tail - start);
 		io2->top = i;
 	}
 	if(io2->top < io2->tail) {
