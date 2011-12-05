@@ -705,7 +705,7 @@ static void Bytes_addESC(CTX ctx, kBytes *ba, kInputStream *in, kline_t *ul)
 	if(ch == 'n') ch = '\n';
 	else if(ch == 't') ch = '\t';
 	else if(ch == 'r') ch = '\r';
-	if(ch == '\n') ul[0] += 1;
+	//if(ch == '\n') ul[0] += 1;
 	knh_Bytes_putc(ctx, ba, ch);
 }
 

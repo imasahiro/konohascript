@@ -12,6 +12,11 @@ assure "String:x+y" {
 	assert konoha + 1 == "konoha1";
 }
 
+assure "String:x+y with line feed" {
+	print "1" + "\n" + "2";
+	assert "1" + "\n" + "2" == "1\n2";
+}
+
 assure "String:x[n]" {
 	String name = "naruto";
 	int n = |name|;
