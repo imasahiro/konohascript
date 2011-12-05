@@ -8,6 +8,7 @@ class QPrismaticJoint extends QGraphicsLineItem;
 class QPulleyJoint extends QGraphicsPathItem;
 class QGearJoint extends QGraphicsLineItem;
 class QGraphicsComplexItem extends QGraphicsItemGroup;
+class QMassData;
 
 @Public @Native void QGraphicsItem.setDensity(float density);
 @Public @Native float QGraphicsItem.getDensity(void);
@@ -23,6 +24,12 @@ class QGraphicsComplexItem extends QGraphicsItemGroup;
 @Public @Native void QGraphicsItem.applyForce(QPointF force, QPointF pos);
 @Public @Native void QGraphicsItem.applyTorque(float torque);
 @Public @Native void QGraphicsItem.setXForm(QPointF pos, float angle);
+@Public @Native void QGraphicsItem.setMassData(QMassData massdata);
+@Public @Native QMassData QGraphicsItem.getMassData(void);
+float QMassData.setMass(float mass);
+float QMassData.getMass(void);
+void QMassData.setCenterPos(QPointF pos);
+QPointF QMassData.getCenterPos(void);
 
 QGraphicsComplexItem QGraphicsComplexItem.new(Array<QPointF> pts);
 void QGraphicsComplexItem.setBrush(QBrush b);

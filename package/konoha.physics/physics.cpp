@@ -175,6 +175,74 @@ KMETHOD QGraphicsItem_isStatic(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNb_(ret);
 }
 
+KMETHOD QGraphicsItem_setMassData(CTX ctx, ksfp_t *sfp _RIX)
+{
+	KQGraphicsItem *i = RawPtr_to(KQGraphicsItem *, sfp[0]);
+	if (i) {
+		b2MassData *mass = RawPtr_to(b2MassData *, sfp[1]);
+		b2Body *body = static_cast<b2Body *>(i->dummy->body);
+		body->SetMassData(mass);
+	}
+	RETURNvoid_();
+}
+
+KMETHOD QGraphicsItem_getMassData(CTX ctx, ksfp_t *sfp _RIX)
+{
+	KQGraphicsItem *i = RawPtr_to(KQGraphicsItem *, sfp[0]);
+	if (i) {
+		b2Body *body = static_cast<b2Body *>(i->dummy->body);
+		b2MassData *data = new b2MassData();
+		body->GetMassData(data);
+		kRawPtr *p = new_ReturnCppObject(ctx, sfp, data, NULL);
+		RETURN_(p);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+KMETHOD QMassData_setMass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	b2MassData *data = RawPtr_to(b2MassData *, sfp[0]);
+	if (data) {
+		float mass = Float_to(float, sfp[1]);
+		data->mass = mass;
+	}
+	RETURNvoid_();
+}
+
+KMETHOD QMassData_getMass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	b2MassData *data = RawPtr_to(b2MassData *, sfp[0]);
+	float ret = 0.0f;
+	if (data) {
+		ret = data->mass;
+	}
+	RETURNf_(ret);
+}
+
+KMETHOD QMassData_setCenterPos(CTX ctx, ksfp_t *sfp _RIX)
+{
+	b2MassData *data = RawPtr_to(b2MassData *, sfp[0]);
+	if (data) {
+		QPointF *pos = RawPtr_to(QPointF *, sfp[1]);
+		b2Vec2 p(pos->x() / PTM_RATIO, pos->y() / PTM_RATIO);
+		data->center = p;
+	}
+	RETURNvoid_();
+}
+
+KMETHOD QMassData_getCenterPos(CTX ctx, ksfp_t *sfp _RIX)
+{
+	b2MassData *data = RawPtr_to(b2MassData *, sfp[0]);
+	if (data) {
+		b2Vec2 pos = data->center;
+		QPointF *pos_ = new QPointF(pos.x * PTM_RATIO, pos.y * PTM_RATIO);
+		kRawPtr *p = new_ReturnCppObject(ctx, sfp, pos_, NULL);
+		RETURN_(p);
+	}
+	RETURN_(KNH_NULL);
+}
+
 KMETHOD QWorld_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	KQGraphicsScene *scene = RawPtr_to(KQGraphicsScene *, sfp[1]);

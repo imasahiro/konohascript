@@ -13,6 +13,13 @@ QGraphicsRectItem new_StaticRect(int x, int y, int width, int height)
 	return rect;
 }
 
+QRectF new_QRectF(int x, int y, int width, int height)
+{
+	QRectF r = new QRectF();
+	r.setRect(x, y, width, height);
+	return r;
+}
+
 QGraphicsRectItem new_DynamicRect(int x, int y, int width, int height)
 {
 	QGraphicsRectItem rect = new ();
@@ -62,7 +69,7 @@ QPen new_QPen(String name, int width)
 	QPen pen = new QPen();
 	QBrush brush = new_QBrush(new_QColor(name));
 	pen.setBrush(brush);
-	pen.setWidth(2);
+	pen.setWidth(width);
 	return pen;
 }
 

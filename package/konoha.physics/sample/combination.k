@@ -11,15 +11,15 @@ scene.setSceneRect(r);
 QWorld world = new QWorld(scene);
 
 QImage image = new QImage();
-image.load("sample/konohascript.png");
+image.load("sample/AngryRedBird.png");
+//image.load("sample/konohascript.png");
 QSize size = new QSize();
-size.setWidth(300);
+size.setWidth(200);
 size.setHeight(200);
 image = image.scaled(size);
-//image.load("sample/qt.jpg");
 //QColor c = new QColor();
 //c.setNamedColor("white");
-//image = image.permeabilization(c);
+image = image.permeabilization(c);
 QPointF[][] pts_list = image.edgePointsUsingAlpha;
 
 QPixmap pixmap = new QPixmap();

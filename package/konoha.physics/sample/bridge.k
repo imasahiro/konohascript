@@ -25,6 +25,7 @@ int i = 0;
 for (int i = 1; i < 20; i++) {
 	QGraphicsRectItem next = new_DynamicRect(10 + i * 20, 200, 20, 10);
 	next.setBrush(new_QBrush(new_QColor("#00eeee")));
+	next.setDraggable(true);
 	scene.addItem(next);
 	world.add(next);
 	QRevoluteJoint j = new QRevoluteJoint(prev, next);
