@@ -224,11 +224,11 @@ typedef double                  knh_float_t;
 #define K_FLOAT_MIN             (-(DBL_MAX))
 #define K_FLOAT_STEP            DBL_MIN
 #define K_FLOAT_EPSILON         DBL_EPSILON
-#define K_FLOAT_FMT             "%.6f"
-#define K_FLOAT_FMT1            "%.1f"
-#define K_FLOAT_FMT2            "%.2f"
-#define K_FLOAT_FMT3            "%.3f"
-#define K_FLOAT_FMT4            "%.4f"
+#define K_FLOAT_FMT             "%.20f"
+#define K_FLOAT_FMT1            "%.20f"
+#define K_FLOAT_FMT2            "%.20f"
+#define K_FLOAT_FMT3            "%.20f"
+#define K_FLOAT_FMT4            "%.20f"
 #define K_FLOAT_FMTE            "%e"
 #endif
 

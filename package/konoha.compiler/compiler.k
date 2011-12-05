@@ -1431,7 +1431,7 @@ void Compiler.init(Method mtd) {
     kfunc = new K_Function(mtd);
     safePointMtd = createSafePointMtd();
     if (mtd.getName() == ""/*global variable definition*/) {
-        K_Value kvalue = kfunc.getKValue(0, Object);
+        K_Value kvalue = kfunc.getKValue(0, Script);
         K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
