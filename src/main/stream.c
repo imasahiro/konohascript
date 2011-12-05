@@ -199,13 +199,15 @@ static kbool_t io2_readFILE(CTX ctx, kio_t *io2)
 
 static size_t io2_writeFILE(CTX ctx, kio_t *io2, const char *buf, size_t bufsiz)
 {
+	size_t size;
+
 	fflush(io2->fp);
-	ssize_t size = fwrite(buf, 1, bufsiz, io2->fp);
+	size = fwrite(buf, 1, bufsiz, io2->fp);
 	if(size == 0) {
 		if(ferror(io2->fp)) {
 			KNH_NTRACE2(ctx, "fwrite", K_PERROR, KNH_LDATA(LOG_i("fp", io2->fp), LOG_s("path", io2->DBG_NAME)));
+			io2->_close(ctx, io2);
 		}
-		io2->_close(ctx, io2);
 		return 0;
 	}
 	fflush(io2->fp);
