@@ -303,7 +303,7 @@ class K_Inst {
         } else if (kvalue.type == Boolean) {
             res += "bval" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Array) {
-            res += "ary " + kvalue.idx + "_" + defidx;
+            res += "ary" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == String) {
             res += "str" + kvalue.idx;
         } else if (kvalue.type == dynamic) {
@@ -357,8 +357,10 @@ class K_PHI extends K_Inst {
             this.type = inst.type;
             addDef(kvalue, idx);
         }
-        K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst, this.defidx), idx);
-        movs.add(mov);
+        if (is_Tunbox(this.type)) {
+            K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst, this.defidx), idx);
+            movs.add(mov);
+        }
         if (inst != null && inst.kvalue != null) {
             if (true || inst.kvalue.usePoint.indexOf(idx) == -1) {
                 inst.kvalue.useCount = inst.kvalue.useCount + 1;
@@ -370,6 +372,9 @@ class K_PHI extends K_Inst {
     }
     @Override String dump() {
         String res = "";
+        if (getName() == insts[0].getName()) {
+            return null;
+        }
         if (|bbs| == 1) {
             res += "\t" + getName () + " = mov " + getTypeName(type) + " " + insts[0].getName();
         } else {
@@ -2519,13 +2524,15 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
     {
         int table_idx = kfunc.addConstTable(true);
         int objptr = 0;
-        tInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(tInst);
     }
     {
         int table_idx = kfunc.addConstTable(false);
         int objptr = 0;
-        fInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(fInst);
     }
     int bbssize = kfunc.bbs.size;
@@ -2577,13 +2584,15 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
     {
         int table_idx = kfunc.addConstTable(true);
         int objptr = 0;
-        tInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(tInst);
     }
     {
         int table_idx = kfunc.addConstTable(false);
         int objptr = 0;
-        fInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(fInst);
     }
     int bbssize = kfunc.bbs.size;
