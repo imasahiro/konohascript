@@ -1225,15 +1225,51 @@ class K_CONST extends K_Inst {
         addUse(op, idx);
         dynName = "const " + getTypeName(type) + " " + "%s"(op.const_table[op.table_idx]);
     }
+
+    String quote(dynamic value) {
+        if(value.class == String) {
+            String s = value;
+            return  "\"" + escape(s) + "\"";
+        } else if(value.class == Array<dynamic>) {
+            Array a = value;
+            String res = "[";
+            for(int i=0; i<|a|; i++) {
+                if(i != 0) res += ", ";
+                res += quote(a[i]);
+            }
+            res += "] [";
+            for(int i=0; i<|a|; i++) {
+                if(i != 0) res += " ";
+                res += a[i].class;
+            }
+            res += "]";
+            return res;
+        } else if(value.class == Map<String, dynamic>) {
+            Map m = value;
+            String[] keys = m.keys();
+            String res = "{";
+            for(int i=0; i<|keys|; i++) {
+                if(i != 0) res += ", ";
+                dynamic o = m[keys[i]];
+                res += quote(keys[i]) + ": " + quote(o);
+            }
+            res += "} [";
+            for(int i=0; i<|keys|; i++) {
+                if(i != 0) res += " ";
+                res += m[keys[i]].class;
+            }
+            res += "]";
+            return res;
+        } else {
+            return "" + value;
+        }
+    }
+
     @Override String dump() {
         String res;
         if (kvalue != null) {
-            res += "\t" + getName() + " = const " + getTypeName(type) + " " ;
-            if (type == String) {
-                res += "\"" + escape(op.const_table[op.table_idx]) + "\"";
-            } else {
-                res += op.const_table[op.table_idx];
-            }
+            res += "\t" + getName() + " = const " + getTypeName(type) + " ";
+            res += quote(op.const_table[op.table_idx]);
             return (String)res;
         }
         return null;
