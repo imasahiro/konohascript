@@ -303,7 +303,7 @@ class K_Inst {
         } else if (kvalue.type == Boolean) {
             res += "bval" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Array) {
-            res += "ary" + kvalue.idx + "_" + defidx;
+            res += "ary" + kvalue.idx;;
         } else if (kvalue.type == String) {
             res += "str" + kvalue.idx;
         } else if (kvalue.type == dynamic) {
@@ -1097,6 +1097,8 @@ class K_TR extends K_Inst {
     }
     String K_TR.getTRMethod() {
         switch (op.ftr) {
+            case Stmt.BBOX:
+                return "box";
             case Stmt.BOX:
                 return "box";
             case Stmt.NULL:
@@ -1232,7 +1234,11 @@ class K_CONST extends K_Inst {
             if (type == String) {
                 res += "\"" + escape(op.const_table[op.table_idx]) + "\"";
             } else {
-                res += op.const_table[op.table_idx];
+                if (op.const_table[op.table_idx] == null && is_Tunbox(type)) {
+                    res += "0";
+                } else {
+                    res += op.const_table[op.table_idx];
+                }
             }
             return (String)res;
         }
