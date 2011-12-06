@@ -1,6 +1,6 @@
 using konoha.qt4.*;
-using konoha.physics.*;
-using konoha.qopencv.*;
+using konoha.qt4.physics.*;
+using konoha.qt4.opencv.*;
 include "sample/util.k";
 
 QApplication app = new ();

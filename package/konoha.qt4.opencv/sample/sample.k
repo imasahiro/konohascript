@@ -1,5 +1,5 @@
 using konoha.qt4.*;
-using konoha.qopencv.*;
+using konoha.qt4.opencv.*;
 
 
 QApplication app = new ();
@@ -21,7 +21,7 @@ QImage image = new QImage();
 //size.setWidth(300);
 //size.setHeight(200);
 //image = image.scaled(size);
-image.load("sample/qt.jpg");
+image.load("sample/angry_bird.jpeg");
 
 QColor c = new QColor();
 c.setNamedColor("white");

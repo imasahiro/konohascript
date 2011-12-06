@@ -1,5 +1,5 @@
 using konoha.qt4.*;
-using konoha.physics.*;
+using konoha.qt4.physics.*;
 include "sample/util.k";
 
 class Canvas {
