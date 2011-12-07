@@ -1218,15 +1218,15 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 			if(IS_Tunbox(p1)) {
 				if(IS_Tint(p1)) {
 					knh_write_ifmt(ctx, w, K_INT_FMT, a->ilist[0]);
-					//if(IS_FMTline(level)) {
-					//	knh_write_delimdots(ctx, w);
-					//}
-					//else {
+					if(IS_FMTline(level)) {
+						knh_write_delimdots(ctx, w);
+					}
+					else {
 						for(c = 1; c < size; c++) {
 							knh_write_delim(ctx, w);
 							knh_write_ifmt(ctx, w, K_INT_FMT, a->ilist[c]);
 						}
-					//}
+					}
 				}
 				else if(p1 == TYPE_Boolean) {
 					knh_write_bool(ctx, w, (int)a->ilist[0]);
@@ -1242,28 +1242,28 @@ static void Array_p(CTX ctx, knh_OutputStream_t *w, knh_RawPtr_t *o, int level)
 				}
 				else { /* IS_Tfloat(p1) */
 					knh_write_ffmt(ctx, w, K_FLOAT_FMT, a->flist[0]);
-					//if(IS_FMTline(level)) {
-					//	knh_write_delimdots(ctx, w);
-					//}
-					//else {
+					if(IS_FMTline(level)) {
+						knh_write_delimdots(ctx, w);
+					}
+					else {
 						for(c = 1; c < knh_Array_size(a); c++) {
 							knh_write_delim(ctx, w);
 							knh_write_ffmt(ctx, w, K_FLOAT_FMT, a->flist[c]);
 						}
-					//}
+					}
 				}
 			}
 			else {
 				knh_write_InObject(ctx, w, a->list[0], level);
-				//if(IS_FMTline(level)) {
-				//	knh_write_delimdots(ctx, w);
-				//}
-				//else {
+				if(IS_FMTline(level)) {
+					knh_write_delimdots(ctx, w);
+				}
+				else {
 					for(c = 1; c < size; c++) {
 						knh_write_delim(ctx, w);
 						knh_write_InObject(ctx, w, a->list[c], level);
 					}
-				//}
+				}
 			}
 		}
 	}
