@@ -30,7 +30,7 @@
 //
 // **************************************************************************
 
-//include "lib:gluelink";
+include "lib:gluelink";
 
 /** 
 class Charset extends String;
@@ -53,6 +53,10 @@ class Charset extends String;
 
 @Public @Native Class Class.opLINK(String path, NameSpace _);
 @Public @Native @Static Class[] Class.query(String path);
+@Public @Native int Class.getClassTablePtr();
+@Public @Native Object Class.getNullValue();
+@Public @Native @Const Class[] Object.getFieldClasses();
+@Public @Native Class Class.getP1();
 
 @Public @Native Method Method.opLINK(String path, NameSpace _);
 @Public @Native Method[] Class.getMethods(NameSpace _);
@@ -61,7 +65,30 @@ class Charset extends String;
 @Public @Native @Const Class[]  Method.getParamTypes();
 @Public @Native @Const String[] Method.getParamNames();
 @Public @Native @Const String Method.getSourceCode();
+@Public @Native String Method.toString();
+@Public @Native String Method.getName();
+@Public @Native boolean Method.isStatic();
+@Public @Native int Method.indexOfGetterField();
+@Public @Native int Method.indexOfSetterField();
 
+@Public @Native Class TypeMap.getSource();
+@Public @Native Class TypeMap.getTarget();
+@Public @Native int Stmt.getStmtSize();
+@Public @Native int Stmt.getESPIDX();
+@Public @Native void Stmt.setESPIDX(int espidx);
+@Public @Native Stmt Stmt.next();
+@Public @Native Token Stmt.getT(int n);
+@Public @Native Stmt Stmt.getS(int n);
+@Public @Native int Stmt.getStmtType();
+@Public @Native Object Token.getD();
+@Public @Native Token Stmt.toToken();
+@Public @Native Stmt Stmt.getStmtPost();
+@Public @Native int Token.getTT();
+@Public @Native Class Token.getT();
+@Public @Native int Token.getTokenIndex();
+@Public @Native Class Token.getTokenClass();
+@Public @Native int Object.getPtr();
+@Public @Native Class Method.getMethodClass();
 
 /* *****************
 @Native class Symbol;

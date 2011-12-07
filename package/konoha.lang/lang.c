@@ -25,15 +25,205 @@
  *
  ****************************************************************************/
 
-//#include <konoha1.h>
-//#include <konoha1/konohalang.h>
-//#include <konoha1/konoha_code_.h>
-//#include "./data_.h"
-//
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
-//
+#define K_INTERNAL 1
+#include <konoha1.h>
+#include <konoha1/konohalang.h>
+#include <konoha1/inlinelibs.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#define tkNN(stmt, n)        (stmt)->tokens[(n)]
+#define stmtNN(stmt, n)      (stmt)->stmts[(n)]
+#define STT_(stmt)   SP(stmt)->stt
+#define TT_(tk)   SP(tk)->tt
+
+#include "./data_.h"
+
+//## Class Class.getClassTablePtr();
+KMETHOD Class_getClassTablePtr(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	RETURNi_((kint_t)c->cTBL);
+}
+//## Object Class.getNullValue();
+KMETHOD Class_getNullValue(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	RETURN_(KNH_NULVAL(c->cid));
+}
+//## Class Class.getP1();
+KMETHOD Class_getP1(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	RETURN_(new_Type(ctx, c->cTBL->p1));
+}
+#undef Method_isStatic
+#define Method_isStatic_(o) (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
+//## boolean Method.isStatic();
+KMETHOD Method_isStatic(CTX ctx, ksfp_t *sfp _RIX) {
+	kMethod *mtd = sfp[0].mtd;
+	int b = Method_isStatic_(mtd);
+	RETURNb_(b);
+}
+
+//## int Method.indexOfGetterField();
+KMETHOD Method_indexOfGetterField(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kMethod *o = sfp[0].mtd;
+	RETURNi_(knh_Method_indexOfGetterField(o));
+}
+
+//## int Method.indexOfSetterField();
+KMETHOD Method_indexOfSetterField(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kMethod *o = sfp[0].mtd;
+	RETURNi_(knh_Method_indexOfSetterField(o));
+}
+
+//## Class TypeMap.getSource();
+KMETHOD TypeMap_getSource(CTX ctx, ksfp_t *sfp _RIX) {
+	kTypeMap *tmr = sfp[0].tmr;
+	RETURN_(new_Type(ctx, tmr->scid));
+}
+
+//## Class TypeMap.getTarget();
+KMETHOD TypeMap_getTarget(CTX ctx, ksfp_t *sfp _RIX) {
+	kTypeMap *tmr = sfp[0].tmr;
+	RETURN_(new_Type(ctx, tmr->tcid));
+}
+
+//## int Stmt.getStmtSize();
+KMETHOD Stmt_getStmtSize(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	RETURNi_(DP(stmt)->size);
+}
+
+//## int Stmt.getESPIDX();
+KMETHOD Stmt_getESPIDX(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	RETURNi_(DP(stmt)->espidx);
+}
+//## void Stmt.setESPIDX(int espidx);
+KMETHOD Stmt_setESPIDX(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	kint_t espidx = Int_to(kint_t, sfp[1]);
+	DP(stmt)->espidx = espidx;
+	RETURNvoid_();
+}
+//## Token Stmt.getT(int n);
+KMETHOD Stmt_getT(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	kint_t i = Int_to(kint_t, sfp[1]);
+	RETURN_(tkNN(stmt, i));
+}
+
+//## Stmt Stmt.next();
+KMETHOD Stmt_next(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	kStmtExpr *res = DP(stmt)->nextNULL;
+	if (res) {
+		RETURN_(res);
+	} else {
+		RETURN_(KNH_NULL);
+	}
+}
+
+//## Token Stmt.getS(int n);
+KMETHOD Stmt_getS(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	kint_t i = Int_to(kint_t, sfp[1]);
+	RETURN_(stmtNN(stmt, i));
+}
+
+//## int Stmt.getStmtType();
+KMETHOD Stmt_getStmtType(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	RETURNi_(STT_(stmt));
+}
+//## Stmt Stmt.getStmtPost();
+KMETHOD Stmt_getStmtPost(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	RETURN_(DP(stmt)->stmtPOST);
+}
+
+//## int Token.getTT();
+KMETHOD Token_getTT(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURNi_(TT_(tk));
+}
+//## Object Token.getD();
+KMETHOD Token_getD(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURN_(tk->data);
+}
+//## Class Token.getClass();
+KMETHOD Token_getTokenClass(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	kclass_t cid = tk->cid;
+	RETURN_(new_Type(ctx, cid));
+}
+//## Token Stmt.toToken();
+KMETHOD Stmt_toToken(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	kTerm *ret;
+	if (IS_Term(tk))
+		ret = tk;
+	else 
+		ret = KNH_TNULL(Term);
+	RETURN_(ret);
+}
+
+//## int Token.getT();
+KMETHOD Token_getT(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	kClass *res = new_Type(ctx, SP(tk)->type);
+	RETURN_(res);
+}
+
+static int Token_index_(CTX ctx, kTerm *tk) 
+{
+	return (int)(tk)->index;
+}
+
+//## int Token.getTokenIndex();
+KMETHOD Token_getTokenIndex(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURNi_(Token_index_(ctx, tk));
+}
+
+// String Method.toString()
+KMETHOD Method_toString(CTX ctx, ksfp_t *sfp _RIX)
+{
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	knh_write_cid(ctx, cwb->w, (sfp[0].mtd)->cid);
+	knh_putc(ctx, cwb->w, '.');
+	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
+	RETURN_(CWB_newString(ctx, cwb, SPOL_POOLNEVER|SPOL_ASCII));
+}
+// Class Method.getMethodClass()
+KMETHOD Method_getMethodClass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kMethod *mtd = sfp[0].mtd;
+	RETURN_(new_Type(ctx, mtd->cid));
+}
+//## Array<Class> Class.getFieldClasses()
+KMETHOD Object_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
+{
+	int i = 0;
+	kObject *o = sfp[0].o;
+	const knh_ClassTBL_t *cTBL = o->h.cTBL;
+	kArray *res = new_Array(ctx, CLASS_Class, 0);
+	if (cTBL != NULL) {
+		for (; i < cTBL->fsize; i++) {
+			knh_Array_add(ctx, res, new_Type(ctx, cTBL->fields[i].type));
+		}
+	}
+	RETURN_(res);
+}
+//## int Object.getPtr() {
+KMETHOD Object_getPtr(CTX ctx, ksfp_t *sfp _RIX)
+{
+	RETURNi_((kint_t)sfp[0].o);
+}
+
 ///* ------------------------------------------------------------------------ */
 ///* [Macros] */
 //
@@ -863,12 +1053,25 @@
 //	{NULL, KINT0}
 //};
 //
-//DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
-//{
-//	kapi->setPackageProperty(ctx, "name", "lang");
-//	kapi->setPackageProperty(ctx, "version", "0.0");
-//	RETURN_PKGINFO("konoha.lang");
-//}
+
+typedef struct knh_funcname_t {
+	char *name;
+	void *func;
+} knh_funcname_t;
+extern knh_IntData_t _FuncData[];
+
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
+{
+	kapi->setPackageProperty(ctx, "name", "lang");
+	kapi->setPackageProperty(ctx, "version", "0.0");
+	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), StmtInt);
+	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Token")), TokenInt);
+	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), (knh_IntData_t*)_FuncData);
+	RETURN_PKGINFO("konoha.lang");
+}
+
+//
+//
 //
 //DEFAPI(void) constInstruction(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 //{
@@ -877,9 +1080,9 @@
 //
 //#endif
 //
-//#ifdef __cplusplus
-//}
-//#endif
+#ifdef __cplusplus
+}
+#endif
 //
 /////* ------------------------------------------------------------------------ */
 /////* [Others] */

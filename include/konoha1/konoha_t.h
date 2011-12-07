@@ -851,7 +851,7 @@ typedef struct kshare_t {
 
 	struct kopl_t      *PRECOMPILED_LAUNCH;
 	struct kopl_t      *PRECOMPILED_FUNCCALL;
-	struct kopl_t      *PRECOMPILED_VEXEC;  // TODO nakata
+	struct kopl_t      *PRECOMPILED_VEXEC;
 //	struct kopl_t      *PC_ABSTRACT;
 
 	/* system */
