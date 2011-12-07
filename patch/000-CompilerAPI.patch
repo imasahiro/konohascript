@@ -1,0 +1,103 @@
+Index: src/lang/script.c
+===================================================================
+--- src/lang/script.c	(revision 881)
++++ src/lang/script.c	(working copy)
+@@ -365,6 +365,9 @@ void knh_Script_setNSName(CTX ctx, kScri
+ 	KNH_SETv(ctx, ((knh_ClassTBL_t*)O_cTBL(scr))->lname, CWB_newString(ctx, cwb, SPOL_ASCII));
+ }
+ 
++typedef void (*knh_Fpkgcomplete)(CTX);
++
++/* ------------------------------------------------------------------------ */
+ kstatus_t knh_loadPackage(CTX ctx, kbytes_t pkgname)
+ {
+ 	kstatus_t status = K_CONTINUE;
+@@ -389,6 +392,12 @@ kstatus_t knh_loadPackage(CTX ctx, kbyte
+ 				scr = ctx->gma->scr;
+ 				KNH_SETv(ctx, ctx->gma->scr, newscr);
+ 				status = knh_InputStream_load(ctx, in, uline);
++				if (newscr->ns->gluehdr) {
++					void *p = newscr->ns->gluehdr;
++					knh_Fpkgcomplete pkgcomplete = (knh_Fpkgcomplete) knh_dlsym(ctx, p, "complete", NULL, 1/*isTest*/);
++					if (pkgcomplete)
++						pkgcomplete(ctx);
++				}
+ 				KNH_SETv(ctx, ctx->gma->scr, scr);
+ 			}
+ 		}
+Index: src/lang/asm.c
+===================================================================
+--- src/lang/asm.c	(revision 882)
++++ src/lang/asm.c	(working copy)
+@@ -2906,7 +2906,12 @@ void knh_Method_asm(CTX ctx, kMethod *mt
+ 	void knh_LLVMMethod_asm(CTX ctx, kMethod *mtd, kStmtExpr *stmtP);
+ 	knh_LLVMMethod_asm(ctx, mtd, stmtB);
+ #else
+-	Method_compile(ctx, mtd, stmtB);
++	/* CompilerAPI */
++	if (IS_NOTNULL(ctx->share->konoha_compiler)) {
++		ctx->share->compilerAPI(ctx, mtd, stmtB);
++	} else {
++		Method_compile(ctx, mtd, stmtB);
++	}
+ #endif /* K_USING_LLVM */
+ }
+ 
+Index: src/main/context.c
+===================================================================
+--- src/main/context.c	(revision 881)
++++ src/main/context.c	(working copy)
+@@ -352,6 +352,11 @@ static kcontext_t* new_RootContext(void)
+ 	share->ctx0 = ctx;
+ 	knh_GammaBuilder_init(ctx);  // initalize gamma->gf, reported by uh
+ 	knh_initBuiltInPackage(ctx, knh_getLoaderAPI());
++
++	/* CompilerAPI */
++	KNH_INITv(share->konoha_compiler, KNH_NULL);
++	share->compilerAPI = NULL;
++
+ 	share->contextCounter = 1;
+ 	share->threadCounter = 1;
+ 	share->stopCounter = 0;
+@@ -543,12 +548,17 @@ static kObject **share_reftrace(CTX ctx,
+ 		}
+ 		KNH_ADDNNREF(ctx, ct->constPoolMapNULL);
+ 	}
++
++	/* CompilerAPI */
++	KNH_ADDREF(ctx, share->konoha_compiler);
+ 	return tail_;
+ }
+ 
+ static void share_free(CTX ctx, kshare_t *share)
+ {
+ 	size_t i;
++	/* CompilerAPI */
++	share->compilerAPI = NULL;
+ 	KNH_FREE(ctx, (void*)share->EventTBL, SIZEOF_TEXPT(ctx->share->capacityEventTBL));
+ 	share->EventTBL = NULL;
+ 	KNH_FREE(ctx, share->tString, SIZEOF_TSTRING);
+Index: include/konoha1/konoha_t.h
+===================================================================
+--- include/konoha1/konoha_t.h	(revision 882)
++++ include/konoha1/konoha_t.h	(working copy)
+@@ -823,6 +823,8 @@ typedef struct {
+ #define KNH_SYSTEM          (ctx->sys)
+ #define knh_Object_sweep    knh_Object_RCsweep
+ 
++typedef void (*fMethod_compile)(CTX, struct kMethod *, struct kStmt *);
++
+ typedef struct kshare_t {
+ 	/* system table */
+ 	const knh_ClassTBL_t    **ClassTBL;
+@@ -894,6 +896,10 @@ typedef struct kshare_t {
+ 	knh_cond_t				 *stop_cond;
+ 	knh_cond_t				 *start_cond;
+ 	knh_cond_t				 *close_cond;
++
++	/* CompilerAPI */
++	struct kObject *konoha_compiler;
++	fMethod_compile compilerAPI;
+ } kshare_t ;
+ 
+ #define KNH_ASSERT_CTX0(ctx)   KNH_ASSERT((ctx)->ctxid == 0)
