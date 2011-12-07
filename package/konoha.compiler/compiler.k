@@ -146,38 +146,43 @@ Type Compiler.convertType(Class type) {
     return objectTy;
 }
 
-String getTypeName(Class type) {
-    if (type == Int) {
-        return "Int";
-    }
-    if (type == Float) {
-        return "Float";
-    }
-    if (type == Boolean) {
-        return "Boolean";
-    }
-    if (type == String) {
-        return "String";
-    }
-    if (type == Array) {
-        return "Array";
-    }
-    if (type == System) {
-        return "System";
-    }
-    if (type == OutputStream) {
-        return "OutputStream";
-    }
-    if (type == InputStream) {
-        return "InputStream";
-    }
-    if (type == Class) {
-        return "Class";
-    }
-    if (type == dynamic) {
-        return "dynamic";
-    }
-    return "Object";
+dynamic getTypeName(Class type) {
+    //if (type == Int) {
+    //    return "Int";
+    //}
+    //if (type == Float) {
+    //    return "Float";
+    //}
+    //if (type == Boolean) {
+    //    return "Boolean";
+    //}
+    //if (type == String) {
+    //    return "String";
+    //}
+    //if (type == Array) {
+    //    return "Array";
+    //}
+    //if (type == Script) {
+    //    return "Script";
+    //}
+    //if (type == System) {
+    //    return "System";
+    //}
+    //if (type == OutputStream) {
+    //    return "OutputStream";
+    //}
+    //if (type == InputStream) {
+    //    return "InputStream";
+    //}
+    //if (type == Class) {
+    //    return "Class";
+    //}
+    //if (type == dynamic) {
+    //    return "dynamic";
+    //} else if (type == Object) {
+    //    return "Object";
+    //}
+    return type;
 }
 
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
@@ -230,7 +235,8 @@ class K_Inst {
 
     @Virtual void codegen(Compiler asm) {
     }
-    @Virtual void dump () {
+    @Virtual String dump () {
+        return null;
     }
     Value getLLVMValue (Compiler asm) {
         if (value == null) {
@@ -290,15 +296,14 @@ class K_Inst {
         /* const value (not named) */
         if (kvalue == null) {
             return dynName;
-        }
-        if (kvalue.type == Int) {
+        } else if (kvalue.type == Int) {
             res += "ival" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Float) {
             res += "fval" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Boolean) {
             res += "bval" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Array) {
-            res += "ary " + kvalue.idx + "_" + defidx;
+            res += "ary" + kvalue.idx;;
         } else if (kvalue.type == String) {
             res += "str" + kvalue.idx;
         } else if (kvalue.type == dynamic) {
@@ -316,8 +321,10 @@ class K_Inst {
     }
 }
 class K_MOVop extends K_Opcode{
-    K_MOVop(K_Inst inst0) {
+    int defcount;
+    K_MOVop(K_Inst inst0, int defcount) {
         this.inst0 = inst0;
+        this.defcount = defcount;
     }
 }
 class K_MOV extends K_Inst {
@@ -325,14 +332,16 @@ class K_MOV extends K_Inst {
     K_MOVop op;
     K_MOV(K_Value kvalue, K_MOVop op, int idx) {
         this.kvalue = kvalue;
+        this.type = kvalue.type;
+        this.defidx = op.defcount;
         this.op = op;
         this.idx = idx;
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = mov " + op.inst0.getName() + " @nonssa" << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = mov " + getTypeName(type) + " " + op.inst0.getName() + " @nonssa";
     }
 }
-K_Value K_Function.getKValue(int idx, Class type);
+K_Value K_Function.getKValue(int idx, dynamic type);
 class K_PHI extends K_Inst {
     int idx;
     Array<Int> bbs;
@@ -343,14 +352,15 @@ class K_PHI extends K_Inst {
         insts = [];
     }
     void addIncoming(K_Function kfunc, int idx, K_Inst inst, int bbidx, Array<K_MOV> movs) {
-        K_Value kvalue = kfunc.getKValue(idx, inst.type);
-        K_MOV mov = new K_MOV(kvalue, new K_MOVop(inst), idx);
-        movs.add(mov);
         if (this.kvalue == null) {
             this.kvalue = inst.kvalue;
             this.type = inst.type;
+            addDef(kvalue, idx);
         }
-        addDef(kvalue, idx);
+        if (is_Tunbox(this.type)) {
+            K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst, this.defidx), idx);
+            movs.add(mov);
+        }
         if (inst != null && inst.kvalue != null) {
             if (true || inst.kvalue.usePoint.indexOf(idx) == -1) {
                 inst.kvalue.useCount = inst.kvalue.useCount + 1;
@@ -360,18 +370,21 @@ class K_PHI extends K_Inst {
         bbs.add(bbidx);
         insts.add(inst);
     }
-    @Override void dump() {
+    @Override String dump() {
+        String res = "";
+        if (getName() == insts[0].getName()) {
+            return null;
+        }
         if (|bbs| == 1) {
-            OUT << "\t" + getName () + " = " + insts[0].getName() << EOL;
+            res += "\t" + getName () + " = mov " + getTypeName(type) + " " + insts[0].getName();
         } else {
-            OUT << "\t" + getName () + " = phi [";
-            String res = "";
+            res += "\t" + getName () + " = phi [";
             for (int i = 0; i < |bbs|; i++) {
                 res += "[" + insts[i].getName() + ", bb" + bbs[i] + "], ";
             }
-            res = res[0 to |res|-3];
-            OUT << res + "]" << EOL;
+            res = res[0 to |res|-3] + "]";
         }
+        return res;
     }
 }
 
@@ -479,38 +492,50 @@ class K_Function {
             print const_table[i];
         }
     }
-    void dump() {
+    String dump() {
+        String res = "";
         if (isStatic == 1) {
-        OUT << "def " + getTypeName(retTy)  + " " + mtdName + " ( ";
+        res += "def " + getTypeName(retTy)  + " " + mtdName[mtdName.indexOf(".")+1 to |mtdName|-1] + " ( ";
         } else if (|funcargs| > 0) {
-            OUT << "def " + getTypeName(retTy) + " " + funcargs[0].getName() + "." + mtdName + " ( ";
+            res += "def " + getTypeName(retTy) + " " + mtdName[mtdName.indexOf(".")+1 to |mtdName|-1] + " " + funcargs[0].getName()  + " ( ";
         }
         String str = "";
         for (int i = 1 - isStatic; i < |funcargs|; i++) {
-            str += funcargs[i].getName() + " ";
+            str += getTypeName(funcargs[i].type) + " " + funcargs[i].getName() + " ";
         }
         str = (|str| > 0) ? str[0 to |str|-2] + " ) {" : " ) {";
-        OUT << str << EOL;
+        res += str;
         for (int i = 0; i < |bbs|; i++) {
+            String bbStr = "\n";
             if (bbs[i] == null) continue;
-            OUT << "BasicBlock" + i;// + ":\tpred = ";
+            bbStr += "BasicBlock" + i;// + ":\tpred = ";
             //for (int j = 0; j < |pred[i]|; j++) {
             //    OUT<< "bb" + pred[i][j] + " ";
             //}
-            OUT << EOL;
+            bbStr += EOL;
             foreach(String s in bbs[i].phis.keys()) {
-                bbs[i].phis[s].dump();
+                String tmp = bbs[i].phis[s].dump();
+                if (tmp != null) {
+                    bbStr += tmp + "\n";
+                }
             }
             for (int j = 0; j < |bbs[i].insts|-1; j++) {
-                bbs[i].insts[j].dump();
+                String tmp = bbs[i].insts[j].dump();
+                if (tmp != null) {
+                    bbStr += tmp + "\n";
+                }
             }
             for (int j = 0; j < |bbs[i].movs|; j++) {
-                bbs[i].movs[j].dump();
+                String tmp = bbs[i].movs[j].dump();
+                if (tmp != null) {
+                    bbStr += tmp + "\n";
+                }
             }
-            bbs[i].insts[|bbs[i].insts|-1].dump(); //jmp
-            OUT << EOL;
+            bbStr += bbs[i].insts[|bbs[i].insts|-1].dump() + "\n"; //jmp
+            res += bbStr;
         }
-        OUT << "}" << EOL;
+        res += "}" + "\n";
+        return res;
     }
     void check_or_expand(int size) {
         size = size + 1;
@@ -533,7 +558,7 @@ class K_Function {
         }
     }
 
-    K_Value getKValue(int idx, Class type) {
+    K_Value getKValue(int idx, dynamic type) {
         K_Value res = value_table[(String)idx];
         if (res == null || (res.type != type)) {
             value_table[(String)idx] = new K_Value(idx, type);
@@ -571,8 +596,8 @@ class K_ADD extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = add "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = add "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_SUBop extends K_Opcode {
@@ -590,8 +615,8 @@ class K_SUB extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = sub "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = sub "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_MULop extends K_Opcode {
@@ -610,8 +635,8 @@ class K_MUL extends K_Inst {
         addUse(op, idx);
 
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = mul "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = mul "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_DIVop extends K_Opcode {
@@ -629,8 +654,8 @@ class K_DIV extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = div "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = div "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_MODop extends K_Opcode {
@@ -648,8 +673,8 @@ class K_MOD extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = mod "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = mod "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_EQop extends K_Opcode {
@@ -668,8 +693,8 @@ class K_EQ extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = eq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = eq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_NEQop extends K_Opcode {
@@ -688,8 +713,8 @@ class K_NEQ extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = neq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+       return "\t" + getName() + " = neq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_LTop extends K_Opcode {
@@ -708,8 +733,8 @@ class K_LT extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = lt "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = lt "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_GTop extends K_Opcode {
@@ -728,8 +753,8 @@ class K_GT extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = gt "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = gt "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_LTEop extends K_Opcode {
@@ -748,8 +773,8 @@ class K_LTE extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = lte "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = lte "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_GTEop extends K_Opcode {
@@ -768,8 +793,8 @@ class K_GTE extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = gte "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = gte "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_ANDop extends K_Opcode {
@@ -787,8 +812,8 @@ class K_AND extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = and "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = and "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_ORop extends K_Opcode {
@@ -806,8 +831,8 @@ class K_OR extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = or "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = or "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_NOTop extends K_Opcode {
@@ -824,8 +849,8 @@ class K_NOT extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = not "+ getTypeName(type) + " " + op.inst0.getName()<< EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = not "+ getTypeName(type) + " " + op.inst0.getName();
     }
 }
 class K_XORop extends K_Opcode {
@@ -843,8 +868,8 @@ class K_XOR extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = xor "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = xor "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_SELECTop extends K_Opcode {
@@ -863,8 +888,8 @@ class K_SELECT extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = select "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = select "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() + " " + op.inst2.getName();
     }
 }
 class K_LSFTop extends K_Opcode {
@@ -882,8 +907,8 @@ class K_LSFT extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = lsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = lsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_RSFTop extends K_Opcode {
@@ -901,8 +926,8 @@ class K_RSFT extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = rsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = rsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_CASTop extends K_Opcode{
@@ -933,14 +958,16 @@ class K_CAST extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = cast "+ getTypeName(type) + " " +  op.inst0.getName()<< EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = cast "+ getTypeName(type) + " " +  op.inst0.getName();
     }
 }
 class K_JMPop extends K_Opcode {
     int jmpidx;
-    K_JMPop (int jmpidx) {
+    String attribute;
+    K_JMPop (int jmpidx, String attribute) {
         this.jmpidx = jmpidx;
+        this.attribute = attribute;
     }
 }
 class K_JMP extends K_Inst {
@@ -948,17 +975,23 @@ class K_JMP extends K_Inst {
     K_JMP(K_JMPop op) {
         this.op = op;
     }
-    @Override void dump() {
-        OUT << "\t_ = jmp bb" + op.jmpidx << EOL;
+    @Override String dump() {
+        String res = "\t_ = jmp bb" + op.jmpidx;
+        if (op.attribute != null) {
+            res += " @" + op.attribute;
+        }
+        return res;
     }
 }
 class K_CONDop extends K_Opcode {
     int bbThen;
     int bbElse;
-    K_CONDop (K_Inst inst0, int bbThen, int bbElse) {
+    String attribute;
+    K_CONDop (K_Inst inst0, int bbThen, int bbElse, String attribute) {
         this.inst0 = inst0;
         this.bbThen = bbThen;
         this.bbElse = bbElse;
+        this.attribute = attribute;
     }
 }
 class K_COND extends K_Inst {
@@ -966,8 +999,12 @@ class K_COND extends K_Inst {
     K_COND(K_CONDop op) {
         this.op = op;
     }
-    @Override void dump() {
-        OUT << "\t_ = cond Boolean " + op.inst0.getName() + " bb" + op.bbThen + " bb" + op.bbElse << EOL;
+    @Override String dump() {
+        String res = "\t_ = cond Boolean " + op.inst0.getName() + " bb" + op.bbThen + " bb" + op.bbElse;
+        if (op.attribute != null) {
+            res += " @" + op.attribute;
+        }
+        return res;
     }
 }
 class K_CALLop extends K_Opcode {
@@ -998,20 +1035,17 @@ class K_CALL extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
+    @Override String dump() {
         String res = "\t";
         if (kvalue != null) {
-            if (op.flagStatic == 1) {
-                res += getName() + " = call " + getTypeName(kvalue.type) + " " + op.fname + " ( ";
-            } else if (|args| > 0) {
-                res += getName() + " = call " + getTypeName(kvalue.type) + " " + args[0].getName() + "." + op.fname + " ( ";
-            }
+            res += ((getName() == "") ? "_" : getName()) + " = call " + getTypeName(kvalue.type) + " " + op.fname[op.fname.indexOf(".")+1 to |op.fname|-1] + " ( ";
         }
-        for (int i = 1 - op.flagStatic; i < |args|; i++) {
+        for (int i = 0; i < |args|; i++) {
             res += args[i].getName() + " ";
         }
         res = res[0 to |res|-2] + " )";
-        OUT << res << EOL;
+        res += ((op.flagStatic == 0) ? " @nonstatic" : " @static");
+        return res;
     }
 }
 class K_PRINTop extends K_Opcode {
@@ -1032,7 +1066,8 @@ class K_PRINT extends K_Inst {
         this.op = op;
         addUse(op, idx);
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 
@@ -1057,11 +1092,13 @@ class K_TR extends K_Inst {
         this.op = op;
         addDef(kvalue, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = " + getTRMethod() + " " + getTypeName(type) + " " + op.inst0.getName()<< EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = " + getTRMethod() + " " + getTypeName(type) + " " + op.inst0.getName();
     }
     String K_TR.getTRMethod() {
         switch (op.ftr) {
+            case Stmt.BBOX:
+                return "box";
             case Stmt.BOX:
                 return "box";
             case Stmt.NULL:
@@ -1105,8 +1142,8 @@ class K_NEW extends K_Inst {
         this.op = op;
         addDef(kvalue, idx);
     }
-    @Override void dump() {
-        OUT << "\t"+ getName() + " = new " + getTypeName(type) + " " << EOL;
+    @Override String dump() {
+        return "\t"+ getName() + " = new " + getTypeName(type) + " ";
     }
 }
 class K_GETIDXop extends K_Opcode {
@@ -1124,8 +1161,8 @@ class K_GETIDX extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = getidx " + getTypeName(type) + " " +  op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = getidx " + getTypeName(type) + " " +  op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_SETIDXop extends K_Opcode {
@@ -1144,8 +1181,8 @@ class K_SETIDX extends K_Inst {
         addDef(kvalue, idx);
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + "_ = setidx " + getTypeName(type) + " " + op.inst0.getName() + " " + op.inst2.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t" + "_ = setidx " + getTypeName(type) + " " + op.inst0.getName() + " " + op.inst2.getName() + " " + op.inst1.getName();
     }
 }
 class K_CHKIDXop extends K_Opcode {
@@ -1160,8 +1197,8 @@ class K_CHKIDX extends K_Inst {
         this.op = op;
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t_ = chkidx " + op.inst0.getName() + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t_ = chkidx " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 String escape(String str) {
@@ -1190,17 +1227,59 @@ class K_CONST extends K_Inst {
         addUse(op, idx);
         dynName = "const " + getTypeName(type) + " " + "%s"(op.const_table[op.table_idx]);
     }
-    @Override void dump() {
-        if (kvalue != null) {
-            OUT << "\t" + getName() + " = const " + getTypeName(type) + " " ;
-            dynamic res;
-            if (type == String) {
-                res = "\"" + escape(op.const_table[op.table_idx]) + "\"";
-            } else {
-                res = op.const_table[op.table_idx];
+
+    String quote(dynamic value) {
+        if(value.class == String) {
+            String s = value;
+            return  "\"" + escape(s) + "\"";
+        } else if (value.class == Float) {
+            Float f = value;
+            return "%.20f"f;
+        }else if(value.class == Array<dynamic>) {
+            Array a = value;
+            String res = "[";
+            for(int i=0; i<|a|; i++) {
+                if(i != 0) res += ", ";
+                res += quote(a[i]);
             }
-            OUT << res << EOL;
+            res += "] [";
+            for(int i=0; i<|a|; i++) {
+                if(i != 0) res += " ";
+                res += a[i].class;
+            }
+            res += "]";
+            return res;
+        } else if(value.class == Map<String, dynamic>) {
+            Map m = value;
+            String[] keys = m.keys();
+            String res = "{";
+            for(int i=0; i<|keys|; i++) {
+                if(i != 0) res += ", ";
+                dynamic o = m[keys[i]];
+                res += quote(keys[i]) + ": " + quote(o);
+            }
+            res += "} [";
+            for(int i=0; i<|keys|; i++) {
+                if(i != 0) res += " ";
+                res += m[keys[i]].class;
+            }
+            res += "]";
+            return res;
+        } else if (value == null && is_Tunbox(value.class)) {
+            return "0";
+        } else {
+            return "" + value;
         }
+    }
+
+    @Override String dump() {
+        String res;
+        if (kvalue != null) {
+            res += "\t" + getName() + " = const " + getTypeName(type) + " ";
+            res += quote(op.const_table[op.table_idx]);
+            return (String)res;
+        }
+        return null;
     }
 }
 class K_MOVxop extends K_Opcode {
@@ -1219,8 +1298,8 @@ class K_MOVx extends K_Inst {
         this.op = op;
         addDef(kvalue, idx);
     }
-    @Override void dump() {
-        OUT << "\t" + getName() + " = getfield " + getTypeName(type) + " " + op.inst0.getName() + " " + op.bn << EOL;
+    @Override String dump() {
+        return "\t" + getName() + " = getfield " + getTypeName(type) + " " + op.inst0.getName() + " " + op.bn;
     }
 }
 class K_xMOVop extends K_Opcode {
@@ -1238,8 +1317,8 @@ class K_xMOV extends K_Inst {
         this.op = op;
         addUse(op, idx);
     }
-    @Override void dump() {
-        OUT << "\t_ = setfield " + getTypeName(type) + " " + op.inst0.getName() + " " + op.an + " " + op.inst1.getName() << EOL;
+    @Override String dump() {
+        return "\t_ = setfield " + getTypeName(type) + " " + op.inst0.getName() + " " + op.an + " " + op.inst1.getName();
     }
 }
 class K_NEXTop extends K_Opcode {
@@ -1266,42 +1345,48 @@ class K_NEXT extends K_Inst {
         this.op = op;
         addDef(kvalue, idx);
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 
 class K_TRY extends K_Inst {
     K_TRY() {
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 
 class K_CATCH extends K_Inst {
     K_CATCH() {
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 
 class K_THROW extends K_Inst {
     K_THROW() {
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 
 class K_CHKSTACK extends K_Inst {
     K_CHKSTACK() {
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 
 class K_ASSERT extends K_Inst {
     K_ASSERT() {
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 class K_LDMTDop extends K_Opcode {
@@ -1317,7 +1402,8 @@ class K_LDMTD extends K_Inst {
     K_LDMTD(K_LDMTDop op) {
         this.op = op;
     }
-    @Override void dump() {
+    @Override String dump() {
+        return null;
     }
 }
 class K_ARGUMENTop extends K_Opcode {
@@ -1345,10 +1431,10 @@ class K_RET extends K_Inst {
     K_RET(K_RETop op) {
         this.op = op;
     }
-    @Override void dump() {
+    @Override String dump() {
         String name = "";
         if (op.inst0 != null) name = op.inst0.getName();
-        OUT << "\t_ = return " + name << EOL;
+        return "\t_ = return " + name;
     }
 }
 
@@ -1388,15 +1474,16 @@ void Compiler.init(Method mtd) {
     kfunc = new K_Function(mtd);
     safePointMtd = createSafePointMtd();
     if (mtd.getName() == ""/*global variable definition*/) {
-        K_Value kvalue = kfunc.getKValue(0, Object);
+        K_Value kvalue = kfunc.getKValue(0, Script);
         K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
         return;
-    } else if (mtd.isStatic() && gamma_hasFIELD()) {
+    }
+    if (mtd.isStatic() && gamma_hasFIELD()) {
         K_Value kval = kfunc.getKValue(0, Script);
         K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
-        kfunc.funcargs.add(inst);
+        kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(0, inst);
     }
 
@@ -1406,7 +1493,7 @@ void Compiler.init(Method mtd) {
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
     }
-    for (int i = 0; i < |paramsclass|; i++) {
+    for (int i =  0; i < |paramsclass|; i++) {
         Class j = paramsclass[i];
         K_Value kvalue = kfunc.getKValue(i+1, j);
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
@@ -1576,10 +1663,10 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             int thisidx = espidx + K_CALLDELTA;
             int espshift = espidx + 0 + K_CALLDELTA + 1;
             int mtdptr = mtd.getPtr();
+            String fname = mtd.toString();
             Array<K_Inst> args = [];
             K_Value kvalue = kfunc.getKValue(thisidx - 4, rtype);
-
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.getName, mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(fname[fname.indexOf(".")+1 to |fname|-1], mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
             kfunc.curBB.insts.add(inst);
             break;
         case Token.TT_PROPN:
@@ -1652,7 +1739,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
                 print "sysval", sysid;
                 print sysid, mtd, mtdptr;
             }
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.getName, mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(thisidx + K_RTNIDX, inst);
             break;
@@ -1685,11 +1772,12 @@ void Compiler.emit(Method mtd) {
         kfunc.curBB.insts.add(inst);
     }
     if (DUMP) {
-        print const_table;
-        kfunc.dump();
+        String ir = kfunc.dump();
+        OUT << ir << EOL;
     }
     kfunc.codegen(this);
     if (DEBUG) {
+        print const_table;
         func.dump();
     }
     mtd.setFunction(ee.getPointerToFunction(m, func));
@@ -1767,7 +1855,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     kfunc.addBB(bbElse, bbssize+1);
     kfunc.addBB(bb, bbssize+2);
 
-    K_Inst condjmp = new K_COND(new K_CONDop(inst, bbThen.bbidx, bbElse.bbidx));
+    K_Inst condjmp = new K_COND(new K_CONDop(inst, bbThen.bbidx, bbElse.bbidx, "if"));
     kfunc.curBB.insts.add(condjmp);
 
     kfunc.curBB = bbThen;
@@ -1776,7 +1864,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     regTableThen = kfunc.register_table;
     bbThen = kfunc.curBB;
     if (!bbThen.hasReturn && !bbThen.hasBrBreakBlock && !bbThen.hasBrContinueBlock) {
-        K_Inst jmp = new K_JMP(new K_JMPop(bb.bbidx));
+        K_Inst jmp = new K_JMP(new K_JMPop(bb.bbidx, "merge"));
         kfunc.curBB.insts.add(jmp);
     }
 
@@ -1786,7 +1874,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     regTableElse = kfunc.register_table;
     bbElse = kfunc.curBB;
     if (!bbElse.hasReturn && !bbElse.hasBrContinueBlock && !bbElse.hasBrContinueBlock) {
-        K_Inst jmp = new K_JMP(new K_JMPop(bb.bbidx));
+        K_Inst jmp = new K_JMP(new K_JMPop(bb.bbidx, "merge"));
         kfunc.curBB.insts.add(jmp);
     }
 
@@ -1798,7 +1886,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
             if (regTableThen[i] != regTableElse[i] && regTableThen[i] != null && regTableElse[i] != null && is_Tunbox(regTableThen[i].type)) {
                 K_PHI phi = new K_PHI(i);
                 phi.addIncoming(kfunc, i, regTableThen[i], bbThen.bbidx, bbThen.movs);
-                phi.addIncoming(kfunc, i, regtableElse[i], bbElse.bbidx, bbThen.movs);
+                phi.addIncoming(kfunc, i, regtableElse[i], bbElse.bbidx, bbElse.movs);
                 bb.phis[(String)i] = phi;
                 regTableMerge.add(phi);
             } else if (regTableThen[i] != null){
@@ -1839,7 +1927,7 @@ void Compiler.asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     kfunc.addBB(bbBody, bbssize + 1);
     kfunc.addBB(bbBreak, bbssize + 2);
 
-    K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx));
+    K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx, "while"));
     kfunc.curBB.insts.add(jmpCond);
     addSafePoint(espidx);
     Array<K_Inst> regTableEntry = kfunc.register_table;
@@ -1889,7 +1977,7 @@ void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     kfunc.addBB(bbBreak, bbssize + 2);
     int espidx = stmt.getESPIDX();
 
-    K_Inst jmpBody = new K_JMP(new K_JMPop(bbBody.bbidx));
+    K_Inst jmpBody = new K_JMP(new K_JMPop(bbBody.bbidx, "do_while"));
     kfunc.curBB.insts.add(jmpBody);
     Array<K_Inst> regTableEntry = kfunc.register_table;
     // body part
@@ -1903,7 +1991,7 @@ void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     kfunc.breakpoint.pop();
     kfunc.continuepoint.pop();
 
-    K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx));
+    K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx, "cond"));
     kfunc.curBB.insts.add(jmpCond);
     // cond part
     Array<K_Inst> regTableCont = createPhiArray(bbCond, kfunc.register_table, kfunc.curBB, kfunc.continueList, espidx);
@@ -1936,21 +2024,21 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     int bbssize = kfunc.bbs.size;
 
     K_BasicBlock bbCond     = new K_BasicBlock(bbssize);
-    K_BasicBlock bbContinue = new K_BasicBlock(bbssize + 1);
-    K_BasicBlock bbBody     = new K_BasicBlock(bbssize + 2);
+    K_BasicBlock bbBody     = new K_BasicBlock(bbssize + 1);
+    K_BasicBlock bbContinue = new K_BasicBlock(bbssize + 2);
     K_BasicBlock bbBreak    = new K_BasicBlock(bbssize + 3);
     if (DEBUG) {
         print bbBreak.bbidx;
     }
     kfunc.addBB(bbCond, bbssize);
-    kfunc.addBB(bbContinue, bbssize + 1);
-    kfunc.addBB(bbBody, bbssize + 2);
+    kfunc.addBB(bbBody, bbssize + 1);
+    kfunc.addBB(bbContinue, bbssize + 2);
     kfunc.addBB(bbBreak, bbssize + 3);
     int espidx = stmt1.getESPIDX();
 
     // init part
     asmBlock(stmt1);
-    K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx));
+    K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx, "for"));
     kfunc.curBB.insts.add(jmpCond);
     Array<K_Inst> regTableEntry = kfunc.register_table;
     Array<K_PHI> regTablePhi = regTableToPHI(stmt1.getESPIDX(), bbCond);
@@ -1972,7 +2060,7 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     kfunc.continuepoint.pop();
 
     if (!kfunc.curBB.hasBrContinueBlock && !kfunc.curBB.hasBrBreakBlock) {
-        K_Inst jmpC = new K_JMP(new K_JMPop(bbContinue.bbidx));
+        K_Inst jmpC = new K_JMP(new K_JMPop(bbContinue.bbidx, "forcont"));
         kfunc.curBB.insts.add(jmpC);
     }
     if (kfunc.curBB.hasReturn) {
@@ -1986,7 +2074,8 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     kfunc.curBB = bbContinue;
     asmBlock(stmt3);
     addSafePoint(espidx);
-    kfunc.curBB.insts.add(jmpCond);
+    K_Inst jmpNext = new K_JMP(new K_JMPop(bbCond.bbidx, null));
+    kfunc.curBB.insts.add(jmpNext);
     createPhiArrayBackEdge(regTablePhi, kfunc.register_table, kfunc.curBB, espidx);
     //createPhiArrayBackEdge(regTablePhi, kfunc.register_table, bbContinue, espidx);
     // break part
@@ -2004,13 +2093,13 @@ void Compiler.asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtItr, Stmt stmtBody, St
 }
 void Compiler.asmBREAK(Stmt stmt, Stmt stmtLabel) {
     kfunc.breakList.add((kfunc.curBB, cloneRegTable()));
-    K_Inst jmp = new K_JMP(new K_JMPop(kfunc.breakpoint[|kfunc.breakpoint|-1].bbidx));
+    K_Inst jmp = new K_JMP(new K_JMPop(kfunc.breakpoint[|kfunc.breakpoint|-1].bbidx, "break"));
     kfunc.curBB.insts.add(jmp);
     kfunc.curBB.hasBrBreakBlock = true;
 }
 void Compiler.asmCONTINUE(Stmt stmt, Stmt stmtLabel) {
     kfunc.continueList.add((kfunc.curBB, cloneRegTable()));
-    K_Inst jmp = new K_JMP(new K_JMPop(kfunc.continuepoint[|kfunc.continuepoint|-1].bbidx));
+    K_Inst jmp = new K_JMP(new K_JMPop(kfunc.continuepoint[|kfunc.continuepoint|-1].bbidx, "cont"));
     kfunc.curBB.insts.add(jmp);
     kfunc.curBB.hasBrContinueBlock = true;
 }
@@ -2087,7 +2176,6 @@ void Compiler.asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
     }
 }
 void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int argc, int rix) {
-    //if (Method_isFinal(mtd) || isStatic) {
     /*SCALL*/
     {
         int thisidx = espidx + K_CALLDELTA;
@@ -2105,13 +2193,12 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
         }
         K_Value kvalue = null;
         kvalue = kfunc.getKValue(thisidx + rix, rtype);
-        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.getName, mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
+        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
         kfunc.curBB.insts.add(inst);
         if (rtype != null) {
             kfunc.storeKInst(thisidx + rix, inst);
         }
     }
-    //}
 }
 void Compiler.asmFUNCCALL(Stmt stmt, int espidx, Method mtd, Class c, boolean stmt_isDYNCALL) {
     if (DEBUG) {
@@ -2168,6 +2255,26 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
         print mtd.getReturnType();
         print mtd.getReturnType();
     }
+    int deltaidx = mtd.indexOfGetterField();
+    if (deltaidx != -1) {
+        asm(stmt.getS(1), stmt.getS(1).toToken(), espidx + 1);
+        Class retClass = mtd.getReturnType();
+        SFX bx = new SFX(espidx+1, deltaidx);
+        asm_smovx(espidx, retClass, bx);
+        return;
+    }
+    deltaidx = mtd.indexOfSetterField();
+    if (deltaidx != -1) {
+        asm(stmt.getS(1), stmt.getS(1).toToken(), espidx+1);
+        asm(stmt.getS(2), stmt.getS(2).toToken(), espidx+2);
+        Class retClass = mtd.getReturnType();
+        K_Inst inst0 = kfunc.getKInst(espidx+1);
+        K_Inst inst1 = kfunc.getKInst(espidx+2);
+        K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, deltaidx), 0);
+        kfunc.curBB.insts.add(inst);
+        return;
+    }
+
     Class retClass = mtd.getReturnType();
     if (mtd.getMethodClass() == Array) {
         Class p1 = c.getP1();
@@ -2460,13 +2567,15 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
     {
         int table_idx = kfunc.addConstTable(true);
         int objptr = 0;
-        tInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(tInst);
     }
     {
         int table_idx = kfunc.addConstTable(false);
         int objptr = 0;
-        fInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(fInst);
     }
     int bbssize = kfunc.bbs.size;
@@ -2488,7 +2597,7 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
         kfunc.curBB = bbNext;
     }
     tupleList = tupleList[0 to |tupleList|-2];
-    K_Inst jmp = new K_JMP(new K_JMPop(bbMerge.bbidx));
+    K_Inst jmp = new K_JMP(new K_JMPop(bbMerge.bbidx, "merge"));
     kfunc.curBB.insts.add(jmp);
     kfunc.curBB = bbMerge;
 
@@ -2518,13 +2627,15 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
     {
         int table_idx = kfunc.addConstTable(true);
         int objptr = 0;
-        tInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(tInst);
     }
     {
         int table_idx = kfunc.addConstTable(false);
         int objptr = 0;
-        fInst = new K_CONST(null, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+        fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
         kfunc.curBB.insts.add(fInst);
     }
     int bbssize = kfunc.bbs.size;
@@ -2546,7 +2657,7 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
         kfunc.curBB = bbNext;
     }
     tupleList = tupleList[0 to |tupleList|-2];
-    K_Inst jmp = new K_JMP(new K_JMPop(bbMerge.bbidx));
+    K_Inst jmp = new K_JMP(new K_JMPop(bbMerge.bbidx, "merge"));
     kfunc.curBB.insts.add(jmp);
     kfunc.curBB = bbMerge;
 
