@@ -297,10 +297,6 @@ void knh_PRINTb(CTX ctx, knh_sfp_t *sfp, knh_flag_t flag, knh_uline_t uline, knh
 void Gamma_shiftLocalScope(CTX ctx);
 void knh_Method_asm(CTX ctx, knh_Method_t *mtd, knh_Stmt_t *stmtB, knh_Ftyping typing);
 KMETHOD knh_Fmethod_asm(CTX ctx, knh_sfp_t *sfp _RIX);
-KMETHOD Fmethod_getter(CTX ctx, knh_sfp_t *sfp _RIX);
-KMETHOD Fmethod_ngetter(CTX ctx, knh_sfp_t *sfp _RIX);
-KMETHOD Fmethod_setter(CTX ctx, knh_sfp_t *sfp _RIX);
-KMETHOD Fmethod_nsetter(CTX ctx, knh_sfp_t *sfp _RIX);
 void knh_loadScriptSystemKonohaCode(CTX ctx);
 void knh_write_vmfunc(CTX ctx, knh_OutputStream_t *w, void *f);
 knh_Fmethod knh_gluefunc(CTX ctx, knh_Method_t *mtd, knh_NameSpace_t *ns, knh_DictMap_t *mdata);

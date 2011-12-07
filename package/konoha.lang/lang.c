@@ -68,22 +68,14 @@ KMETHOD Method_isStatic(CTX ctx, knh_sfp_t *sfp _RIX) {
 KMETHOD Method_indexOfGetterField(CTX ctx, knh_sfp_t *sfp _RIX)
 {
     knh_Method_t *o = sfp[0].mtd;
-    knh_Fmethod f = SP(o)->fcall_1;
-    if (f == Fmethod_getter || f == Fmethod_ngetter) {
-        RETURNi_((knh_index_t)DP(o)->delta);
-    }
-    RETURNi_(-1);
+    RETURNi_(knh_Method_indexOfGetterField(o));
 }
 
 //## int Method.indexOfSetterField();
 KMETHOD Method_indexOfSetterField(CTX ctx, knh_sfp_t *sfp _RIX)
 {
     knh_Method_t *o = sfp[0].mtd;
-    knh_Fmethod f = SP(o)->fcall_1;
-    if (f == Fmethod_setter || f == Fmethod_nsetter) {
-        RETURNi_((knh_index_t)DP(o)->delta);
-    }
-    RETURNi_(-1);
+    RETURNi_(knh_Method_indexOfSetterField(o));
 }
 
 //## Class TypeMap.getSource();
