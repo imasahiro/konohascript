@@ -1232,7 +1232,10 @@ class K_CONST extends K_Inst {
         if(value.class == String) {
             String s = value;
             return  "\"" + escape(s) + "\"";
-        } else if(value.class == Array<dynamic>) {
+        } else if (value.class == Float) {
+            Float f = value;
+            return "%.20f"f;
+        }else if(value.class == Array<dynamic>) {
             Array a = value;
             String res = "[";
             for(int i=0; i<|a|; i++) {
