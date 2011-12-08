@@ -1587,7 +1587,7 @@ Array<K_Inst> Compiler.createPhiArray(K_BasicBlock bb, Array<K_Inst> regTableCon
 }
 void Compiler.shiftesp(int shift) {
     if (shift > 0) {
-        Value vesp = builder.createStructGEP(ctx, 7);
+        Value vesp = builder.createStructGEP(ctx, 9);
         Value vsfp = builder.createConstGEP1_32(sfp, shift);
         builder.createStore(vsfp, vesp);
     }
@@ -2770,6 +2770,7 @@ void Compiler.constructKonohaTypes() {
     Type typeMapPtrTy  = Type.getInt8PtrTy();
 
     Type[] fields = [];
+    Type[] exfields = [];
     fields.add(int32Ty);
     fields.add(int32Ty);
     Type hcacheTy = StructType.create(fields, "knh_hcache_t", false);
@@ -2894,6 +2895,7 @@ void Compiler.constructKonohaTypes() {
 
     fields = [];
     fields.add(int64Ty);
+    fields.add(int8PtrTy);
     fields.add(int8PtrTy);
     fields.add(int8PtrTy);
     fields.add(int8PtrTy);
@@ -3039,7 +3041,19 @@ void Compiler.constructKonohaTypes() {
 
     fields = [];
     fields.add(hObjectTy);
-    fields.add(int8PtrTy);
+    exfields = [];
+    exfields.add(int32Ty);
+    exfields.add(int32Ty);
+    exfields.add(int8PtrTy);
+    exfields.add(int8PtrTy);
+    exfields.add(int8PtrTy);
+    exfields.add(int8PtrTy);
+    exfields.add(int8PtrTy);
+    exfields.add(int32Ty);
+    exfields.add(int32Ty);
+    exfields.add(int64Ty);
+    Type methodExTy = StructType.create(exfields, "MethodEx", false);
+    fields.add(methodExTy);
     fields.add(Type.getInt32Ty);
     fields.add(Type.getInt32Ty);
     fields.add(fmethodPtrTy);
