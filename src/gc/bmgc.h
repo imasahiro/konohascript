@@ -856,6 +856,7 @@ static void ObjectArenaTBL_checkSize(objpageTBL_t *oat, size_t arenasize, size_t
 //	}
 //}
 
+static void knh_initFirstObjectArena(CTX ctx);
 void kmemshare_init(CTX ctx)
 {
 	WCTX(ctx)->memshare = (kmemshare_t*)KNH_MALLOC(ctx, sizeof(kmemshare_t));
@@ -2394,26 +2395,26 @@ static void bitmapMarkingGC(CTX ctx, GCInfo *info)
 /* ------------------------------------------------------------------------ */
 /* [Object] */
 
-void knh_share_initArena(CTX ctx, kmemshare_t *share)
-{
-    share->MemoryArenaTBL = (mempageTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
-    knh_bzero(share->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
-    share->sizeMemoryArenaTBL = 0;
-    share->capacityMemoryArenaTBL = K_ARENATBL_INITSIZE;
-}
+//void knh_share_initArena(CTX ctx, kmemshare_t *share)
+//{
+//    share->MemoryArenaTBL = (mempageTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
+//    knh_bzero(share->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
+//    share->sizeMemoryArenaTBL = 0;
+//    share->capacityMemoryArenaTBL = K_ARENATBL_INITSIZE;
+//}
+//
+//void knh_share_freeArena(CTX ctx, kmemshare_t *share)
+//{
+//    size_t i;
+//    for(i = 0; i < share->sizeMemoryArenaTBL; i++) {
+//        mempageTBL_t *at = share->MemoryArenaTBL + i;
+//        KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
+//    }
+//    KNH_FREE(ctx, share->MemoryArenaTBL, share->capacityMemoryArenaTBL * sizeof(mempageTBL_t));
+//    share->MemoryArenaTBL = NULL;
+//}
 
-void knh_share_freeArena(CTX ctx, kmemshare_t *share)
-{
-    size_t i;
-    for(i = 0; i < share->sizeMemoryArenaTBL; i++) {
-        mempageTBL_t *at = share->MemoryArenaTBL + i;
-        KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
-    }
-    KNH_FREE(ctx, share->MemoryArenaTBL, share->capacityMemoryArenaTBL * sizeof(mempageTBL_t));
-    share->MemoryArenaTBL = NULL;
-}
-
-void knh_initFirstObjectArena(CTX ctx)
+static void knh_initFirstObjectArena(CTX ctx)
 {
     ctx->stat->gcObjectCount -= K_GC_MARGIN;
     ctx->stat->latestGcTime = knh_getTimeMilliSecond();
