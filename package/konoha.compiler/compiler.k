@@ -1038,13 +1038,21 @@ class K_CALL extends K_Inst {
     @Override String dump() {
         String res = "\t";
         if (kvalue != null) {
-            res += ((getName() == "") ? "_" : getName()) + " = call " + getTypeName(kvalue.type) + " " + op.fname[op.fname.indexOf(".")+1 to |op.fname|-1] + " ( ";
+            res += ((kvalue.type == null) ? "_" : getName()) + " = call " + getTypeName(kvalue.type) + " " + op.fname[op.fname.indexOf(".")+1 to |op.fname|-1] + " ( ";
         }
         for (int i = 0; i < |args|; i++) {
             res += args[i].getName() + " ";
         }
         res = res[0 to |res|-2] + " )";
-        res += ((op.flagStatic == 0) ? " @nonstatic" : " @static");
+        if (op.flagStatic == 0) {
+            if (!is_Tunbox(args[0].kvalue.type)) {
+                res += " @nonstatic";
+            } else {
+                res += " @static";
+            }
+        } else {
+            res += " @static";
+        }
         return res;
     }
 }
