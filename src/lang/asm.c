@@ -1100,9 +1100,9 @@ static void ASM_XMOVx(CTX ctx, ksfx_t ax, ktype_t btype, ksfx_t bx)
 	}
 }
 
-static void ASM_XMOV(CTX ctx, int alocal, size_t an, kTerm *tkb, int espidx)
+static void ASM_XMOV(CTX ctx, ksfpidx_t alocal, size_t an, kTerm *tkb, int espidx)
 {
-	ksfx_t ax = {OC_(alocal), an};
+	ksfx_t ax = {alocal, an};
 	ktype_t btype = SP(tkb)->type;
 	int used_espidx = -1;
 	switch(TT_(tkb)) {
@@ -1603,7 +1603,7 @@ static void CALL_asm(CTX ctx, kStmtExpr *stmt, int espidx)
 		if(deltaidx != -1) {
 			int b = Tn_put(ctx, stmt, 1, espidx + 1);
 			kTerm *tkV = Tn_putTK(ctx, stmt, 2, espidx + 2);
-			ASM_XMOV(ctx, b, deltaidx, tkV, espidx+3);
+			ASM_XMOV(ctx, OC_(b), deltaidx, tkV, espidx+3);
 //			if(reqt != TYPE_void) {
 //				ASM_SMOV(ctx, espidx, tkV);
 //			}

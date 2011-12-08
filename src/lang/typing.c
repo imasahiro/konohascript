@@ -2752,7 +2752,8 @@ static kTerm* func_typingNULL(CTX ctx, kStmtExpr *stmt, kclass_t reqt)
 	mtd_cid = DP(ctx->gma)->this_cid;
 	mtd = knh_NameSpace_getMethodNULL(ctx, K_GMANS, mtd_cid, mn);
 	if(mtd != NULL) {
-		GammaBuilder_foundFIELD(ctx->gma, 1);
+		/* Removed by @imasahiro to improve method performance. */
+		//GammaBuilder_foundFIELD(ctx->gma, 1);
 		kTermoTYPED(ctx, tkNN(stmt, 1), TT_FVAR, mtd_cid, 0);
 		goto L_CALLPARAMs;
 	}
