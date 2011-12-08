@@ -23,7 +23,7 @@ execute_process(
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 
-if("${LLVM_VERSION}" MATCHES "3.0")
+if("${LLVM_VERSION}" MATCHES "3.1svn")
 execute_process(
 		COMMAND ${LLVM_CONFIG} --cppflags
 		OUTPUT_VARIABLE LLVM_CFLAGS
