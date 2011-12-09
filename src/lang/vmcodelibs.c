@@ -51,173 +51,174 @@ typedef struct {
 	kflag_t   flag;
 	kushort_t size;
 	kushort_t types[6];
+	kushort_t fields[6];
 } knh_OPDATA_t;
 
 static const knh_OPDATA_t OPDATA[] = {
-	{"HALT", 0, 0, { VMT_VOID}}, 
-	{"THCODE", 0, 2, { VMT_F, VMT_U, VMT_VOID}}, 
-	{"ENTER", 0, 0, { VMT_VOID}}, 
-	{"VEXEC", 0, 0, { VMT_VOID}}, 
-	{"YIELD", 0, 1, { VMT_SFPIDX, VMT_VOID}}, 
-	{"FUNCCALL", 0, 0, { VMT_VOID}}, 
-	{"TRY", 0, 2, { VMT_ADDR, VMT_RO, VMT_VOID}}, 
-	{"TRYEND", 0, 1, { VMT_RO, VMT_VOID}}, 
-	{"THROW", 0, 1, { VMT_SFPIDX, VMT_VOID}}, 
-	{"ASSERT", 0, 2, { VMT_SFPIDX, VMT_U, VMT_VOID}}, 
-	{"CATCH", _CONST, 3+VMTSIZE_int, { VMT_ADDR, VMT_RO, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"CHKIN", 0, 2, { VMT_RO, VMT_F, VMT_VOID}}, 
-	{"CHKOUT", 0, 2, { VMT_RO, VMT_F, VMT_VOID}}, 
-	{"ERROR", _CONST, 2, { VMT_SFPIDX, VMT_STRING, VMT_VOID}}, 
-	{"P", _CONST, 4, { VMT_F, VMT_U, VMT_STRING, VMT_SFPIDX2, VMT_VOID}}, 
-	{"PROBE", 0, 4, { VMT_SFPIDX2, VMT_F, VMT_U, VMT_U, VMT_VOID}}, 
-	{"EXIT", 0, 0, { VMT_VOID}}, 
-	{"NSET", _DEF|_JIT, 2+VMTSIZE_int, { VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"NMOV", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"NNMOV", _DEF, 4, { VMT_RN, VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"NSET2", _DEF|_JIT, 3+VMTSIZE_int+VMTSIZE_int, { VMT_RN, VMT_INT VMTX_INT, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"NSET3", _DEF|_JIT, 4, { VMT_RN, VMT_U, VMT_U, VMT_U, VMT_VOID}}, 
-	{"NSET4", _DEF|_JIT, 5, { VMT_RN, VMT_U, VMT_U, VMT_U, VMT_U, VMT_VOID}}, 
-	{"NMOVx", _DEF, 2+1, { VMT_RN, VMT_SFX, VMT_VOID, VMT_VOID}}, 
-	{"XNSET", 0, 2+1+VMTSIZE_int, { VMT_SFX, VMT_VOID, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"XNMOV", 0, 2+1, { VMT_SFX, VMT_VOID, VMT_RN, VMT_VOID}}, 
-	{"XNMOVx", 0, 2+1+1, { VMT_SFX, VMT_VOID, VMT_SFX, VMT_VOID, VMT_VOID}}, 
-	{"iINC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}}, 
-	{"iDEC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}}, 
-	{"bNUL", _DEF|_JIT, 2, { VMT_RN, VMT_RO, VMT_VOID}}, 
-	{"bNN", _DEF|_JIT, 2, { VMT_RN, VMT_RO, VMT_VOID}}, 
-	{"bNOT", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iNEG", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fNEG", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iTR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_F, VMT_VOID}}, 
-	{"fTR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_F, VMT_VOID}}, 
-	{"iADD", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iSUB", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iMUL", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iDIV", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iMOD", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iNEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iLT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iLTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iGT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iGTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iAND", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iOR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iXOR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iLSFT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iRSFT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iADDC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iSUBC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iMULC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iDIVC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iMODC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iNEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iLTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iLTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iGTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iGTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iANDC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iORC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iXORC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iLSFTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iRSFTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"fADD", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fSUB", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fMUL", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fDIV", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fNEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fLT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fLTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fGT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fGTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fADDC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fSUBC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fMULC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fDIVC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fNEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fLTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fLTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fGTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fGTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"RCINC", _JIT, 1, { VMT_RO, VMT_VOID}}, 
-	{"RCDEC", _JIT, 1, { VMT_RO, VMT_VOID}}, 
-	{"OSET", _DEF|_JIT|_CONST, 2, { VMT_RO, VMT_OBJECT, VMT_VOID}}, 
-	{"OMOV", _DEF|_JIT, 2, { VMT_RO, VMT_RO, VMT_VOID}}, 
-	{"OOMOV", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_RO, VMT_RO, VMT_VOID}}, 
-	{"ONMOV", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"OSET2", _JIT|_CONST, 3, { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_VOID}}, 
-	{"OSET3", _JIT|_CONST, 4, { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_VOID}}, 
-	{"OSET4", _JIT|_CONST, 5, { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_VOID}}, 
-	{"RCINCx", 0, 1+1, { VMT_SFX, VMT_VOID, VMT_VOID}}, 
-	{"RCDECx", 0, 1+1, { VMT_SFX, VMT_VOID, VMT_VOID}}, 
-	{"OMOVx", _DEF|_JIT, 2+1, { VMT_RO, VMT_SFX, VMT_VOID, VMT_VOID}}, 
-	{"XMOV", _JIT, 2+1, { VMT_SFX, VMT_VOID, VMT_RO, VMT_VOID}}, 
-	{"XOSET", _JIT|_CONST, 2+1, { VMT_SFX, VMT_VOID, VMT_OBJECT, VMT_VOID}}, 
-	{"XMOVx", 0, 2+1+1, { VMT_SFX, VMT_VOID, VMT_SFX, VMT_VOID, VMT_VOID}}, 
-	{"CHKSTACK", 0, 1, { VMT_SFPIDX, VMT_VOID}}, 
-	{"LDMTD", 0, 4, { VMT_SFPIDX, VMT_F, VMT_HCACHE, VMT_MTD, VMT_VOID}}, 
-	{"CALL", _DEF|_JIT, 3, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_VOID}}, 
-	{"SCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}}, 
-	{"VCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}}, 
-	{"VCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}}, 
-	{"FASTCALL0", _DEF|_JIT, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_F, VMT_VOID}}, 
-	{"RET", _JIT, 0, { VMT_VOID}}, 
-	{"TR", _DEF|_JIT, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_CID, VMT_F, VMT_VOID}}, 
-	{"SCAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
-	{"TCAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
-	{"ACAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}}, 
-	{"iCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"SAFEPOINT", _JIT, 1, { VMT_SFPIDX, VMT_VOID}}, 
-	{"JMP", _JIT, 1, { VMT_ADDR, VMT_VOID}}, 
-	{"JMP", _JIT, 1, { VMT_ADDR, VMT_VOID}}, 
-	{"JMPF", 0, 2, { VMT_ADDR, VMT_RN, VMT_VOID}}, 
-	{"NEXT", _DEF, 5, { VMT_ADDR, VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_VOID}}, 
-	{"BGETIDX", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_RN, VMT_VOID}}, 
-	{"BSETIDX", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"BGETIDXC", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_U, VMT_VOID}}, 
-	{"BSETIDXC", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_U, VMT_RN, VMT_VOID}}, 
-	{"NGETIDX", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_RN, VMT_VOID}}, 
-	{"NSETIDX", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"NGETIDXC", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_U, VMT_VOID}}, 
-	{"NSETIDXC", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_U, VMT_RN, VMT_VOID}}, 
-	{"OGETIDX", _DEF|_JIT, 3, { VMT_RO, VMT_RO, VMT_RN, VMT_VOID}}, 
-	{"OSETIDX", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_RN, VMT_RO, VMT_VOID}}, 
-	{"OGETIDXC", _DEF|_JIT, 3, { VMT_RO, VMT_RO, VMT_U, VMT_VOID}}, 
-	{"OSETIDXC", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_U, VMT_RO, VMT_VOID}}, 
-	{"bJNUL", _DEF|_JIT, 2, { VMT_ADDR, VMT_RO, VMT_VOID}}, 
-	{"bJNN", _DEF|_JIT, 2, { VMT_ADDR, VMT_RO, VMT_VOID}}, 
-	{"bJNOT", _DEF|_JIT, 2, { VMT_ADDR, VMT_RN, VMT_VOID}}, 
-	{"iJEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iJNEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iJLT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iJLTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iJGT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iJGTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"iJEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iJNEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iJLTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iJLTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iJGTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"iJGTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}}, 
-	{"fJEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fJNEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fJLT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fJLTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fJGT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fJGTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}}, 
-	{"fJEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fJNEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fJLTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fJLTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fJGTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"fJGTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}}, 
-	{"CHKIDX", _JIT, 2, { VMT_RO, VMT_RN, VMT_VOID}}, 
-	{"CHKIDXC", _JIT, 2, { VMT_RO, VMT_U, VMT_VOID}}, 
-	{"NOP", 0, 0, { VMT_VOID}}, 
+	{"HALT", 0, 0, { VMT_VOID}, {0}},
+	{"THCODE", 0, 2, { VMT_F, VMT_U, VMT_VOID}, {offsetof(klr_THCODE_t, th), offsetof(klr_THCODE_t, uri), 0}},
+	{"ENTER", 0, 0, { VMT_VOID}, {0}},
+	{"VEXEC", 0, 0, { VMT_VOID}, {0}},
+	{"YIELD", 0, 1, { VMT_SFPIDX, VMT_VOID}, {offsetof(klr_YIELD_t, n), 0}},
+	{"FUNCCALL", 0, 0, { VMT_VOID}, {0}},
+	{"TRY", 0, 2, { VMT_ADDR, VMT_RO, VMT_VOID}, {offsetof(klr_TRY_t, jumppc), offsetof(klr_TRY_t, hn), 0}},
+	{"TRYEND", 0, 1, { VMT_RO, VMT_VOID}, {offsetof(klr_TRYEND_t, hn), 0}},
+	{"THROW", 0, 1, { VMT_SFPIDX, VMT_VOID}, {offsetof(klr_THROW_t, start), 0}},
+	{"ASSERT", 0, 2, { VMT_SFPIDX, VMT_U, VMT_VOID}, {offsetof(klr_ASSERT_t, start), offsetof(klr_ASSERT_t, uline), 0}},
+	{"CATCH", _CONST, 3+VMTSIZE_int, { VMT_ADDR, VMT_RO, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_CATCH_t, jumppc), offsetof(klr_CATCH_t, en), offsetof(klr_CATCH_t, eid), 0}},
+	{"CHKIN", 0, 2, { VMT_RO, VMT_F, VMT_VOID}, {offsetof(klr_CHKIN_t, on), offsetof(klr_CHKIN_t, checkin), 0}},
+	{"CHKOUT", 0, 2, { VMT_RO, VMT_F, VMT_VOID}, {offsetof(klr_CHKOUT_t, on), offsetof(klr_CHKOUT_t, checkout), 0}},
+	{"ERROR", _CONST, 2, { VMT_SFPIDX, VMT_STRING, VMT_VOID}, {offsetof(klr_ERROR_t, start), offsetof(klr_ERROR_t, msg), 0}},
+	{"P", _CONST, 4, { VMT_F, VMT_U, VMT_STRING, VMT_SFPIDX2, VMT_VOID}, {offsetof(klr_P_t, print), offsetof(klr_P_t, flag), offsetof(klr_P_t, msg), offsetof(klr_P_t, n), 0}},
+	{"PROBE", 0, 4, { VMT_SFPIDX2, VMT_F, VMT_U, VMT_U, VMT_VOID}, {offsetof(klr_PROBE_t, sfpidx), offsetof(klr_PROBE_t, probe), offsetof(klr_PROBE_t, n), offsetof(klr_PROBE_t, n2), 0}},
+	{"EXIT", 0, 0, { VMT_VOID}, {0}},
+	{"NSET", _DEF|_JIT, 2+VMTSIZE_int, { VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_NSET_t, a), offsetof(klr_NSET_t, n), 0}},
+	{"NMOV", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_NMOV_t, a), offsetof(klr_NMOV_t, b), 0}},
+	{"NNMOV", _DEF, 4, { VMT_RN, VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_NNMOV_t, a), offsetof(klr_NNMOV_t, b), offsetof(klr_NNMOV_t, c), offsetof(klr_NNMOV_t, d), 0}},
+	{"NSET2", _DEF|_JIT, 3+VMTSIZE_int+VMTSIZE_int, { VMT_RN, VMT_INT VMTX_INT, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_NSET2_t, a), offsetof(klr_NSET2_t, n), offsetof(klr_NSET2_t, n2), 0}},
+	{"NSET3", _DEF|_JIT, 4, { VMT_RN, VMT_U, VMT_U, VMT_U, VMT_VOID}, {offsetof(klr_NSET3_t, a), offsetof(klr_NSET3_t, n), offsetof(klr_NSET3_t, n2), offsetof(klr_NSET3_t, n3), 0}},
+	{"NSET4", _DEF|_JIT, 5, { VMT_RN, VMT_U, VMT_U, VMT_U, VMT_U, VMT_VOID}, {offsetof(klr_NSET4_t, a), offsetof(klr_NSET4_t, n), offsetof(klr_NSET4_t, n2), offsetof(klr_NSET4_t, n3), offsetof(klr_NSET4_t, n4), 0}},
+	{"NMOVx", _DEF, 2+1, { VMT_RN, VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_NMOVx_t, a), offsetof(klr_NMOVx_t, b), offsetof(klr_NMOVx_t, b.n), 0}},
+	{"XNSET", 0, 2+1+VMTSIZE_int, { VMT_SFX, VMT_VOID, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_XNSET_t, a), offsetof(klr_XNSET_t, a.n), offsetof(klr_XNSET_t, b), 0}},
+	{"XNMOV", 0, 2+1, { VMT_SFX, VMT_VOID, VMT_RN, VMT_VOID}, {offsetof(klr_XNMOV_t, a), offsetof(klr_XNMOV_t, a.n), offsetof(klr_XNMOV_t, b), 0}},
+	{"XNMOVx", 0, 2+1+1, { VMT_SFX, VMT_VOID, VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_XNMOVx_t, a), offsetof(klr_XNMOVx_t, a.n), offsetof(klr_XNMOVx_t, b), offsetof(klr_XNMOVx_t, b.n), 0}},
+	{"iINC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}, {offsetof(klr_iINC_t, a), 0}},
+	{"iDEC", _DEF|_JIT, 1, { VMT_RN, VMT_VOID}, {offsetof(klr_iDEC_t, a), 0}},
+	{"bNUL", _DEF|_JIT, 2, { VMT_RN, VMT_RO, VMT_VOID}, {offsetof(klr_bNUL_t, c), offsetof(klr_bNUL_t, a), 0}},
+	{"bNN", _DEF|_JIT, 2, { VMT_RN, VMT_RO, VMT_VOID}, {offsetof(klr_bNN_t, c), offsetof(klr_bNN_t, a), 0}},
+	{"bNOT", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_bNOT_t, c), offsetof(klr_bNOT_t, a), 0}},
+	{"iNEG", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iNEG_t, c), offsetof(klr_iNEG_t, a), 0}},
+	{"fNEG", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fNEG_t, c), offsetof(klr_fNEG_t, a), 0}},
+	{"iTR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_F, VMT_VOID}, {offsetof(klr_iTR_t, c), offsetof(klr_iTR_t, a), offsetof(klr_iTR_t, inttr), 0}},
+	{"fTR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_F, VMT_VOID}, {offsetof(klr_fTR_t, c), offsetof(klr_fTR_t, a), offsetof(klr_fTR_t, floattr), 0}},
+	{"iADD", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iADD_t, c), offsetof(klr_iADD_t, a), offsetof(klr_iADD_t, b), 0}},
+	{"iSUB", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iSUB_t, c), offsetof(klr_iSUB_t, a), offsetof(klr_iSUB_t, b), 0}},
+	{"iMUL", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iMUL_t, c), offsetof(klr_iMUL_t, a), offsetof(klr_iMUL_t, b), 0}},
+	{"iDIV", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iDIV_t, c), offsetof(klr_iDIV_t, a), offsetof(klr_iDIV_t, b), 0}},
+	{"iMOD", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iMOD_t, c), offsetof(klr_iMOD_t, a), offsetof(klr_iMOD_t, b), 0}},
+	{"iEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iEQ_t, c), offsetof(klr_iEQ_t, a), offsetof(klr_iEQ_t, b), 0}},
+	{"iNEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iNEQ_t, c), offsetof(klr_iNEQ_t, a), offsetof(klr_iNEQ_t, b), 0}},
+	{"iLT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iLT_t, c), offsetof(klr_iLT_t, a), offsetof(klr_iLT_t, b), 0}},
+	{"iLTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iLTE_t, c), offsetof(klr_iLTE_t, a), offsetof(klr_iLTE_t, b), 0}},
+	{"iGT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iGT_t, c), offsetof(klr_iGT_t, a), offsetof(klr_iGT_t, b), 0}},
+	{"iGTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iGTE_t, c), offsetof(klr_iGTE_t, a), offsetof(klr_iGTE_t, b), 0}},
+	{"iAND", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iAND_t, c), offsetof(klr_iAND_t, a), offsetof(klr_iAND_t, b), 0}},
+	{"iOR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iOR_t, c), offsetof(klr_iOR_t, a), offsetof(klr_iOR_t, b), 0}},
+	{"iXOR", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iXOR_t, c), offsetof(klr_iXOR_t, a), offsetof(klr_iXOR_t, b), 0}},
+	{"iLSFT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iLSFT_t, c), offsetof(klr_iLSFT_t, a), offsetof(klr_iLSFT_t, b), 0}},
+	{"iRSFT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iRSFT_t, c), offsetof(klr_iRSFT_t, a), offsetof(klr_iRSFT_t, n), 0}},
+	{"iADDC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iADDC_t, c), offsetof(klr_iADDC_t, a), offsetof(klr_iADDC_t, n), 0}},
+	{"iSUBC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iSUBC_t, c), offsetof(klr_iSUBC_t, a), offsetof(klr_iSUBC_t, n), 0}},
+	{"iMULC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iMULC_t, c), offsetof(klr_iMULC_t, a), offsetof(klr_iMULC_t, n), 0}},
+	{"iDIVC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iDIVC_t, c), offsetof(klr_iDIVC_t, a), offsetof(klr_iDIVC_t, n), 0}},
+	{"iMODC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iMODC_t, c), offsetof(klr_iMODC_t, a), offsetof(klr_iMODC_t, n), 0}},
+	{"iEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iEQC_t, c), offsetof(klr_iEQC_t, a), offsetof(klr_iEQC_t, n), 0}},
+	{"iNEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iNEQC_t, c), offsetof(klr_iNEQC_t, a), offsetof(klr_iNEQC_t, n), 0}},
+	{"iLTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iLTC_t, c), offsetof(klr_iLTC_t, a), offsetof(klr_iLTC_t, n), 0}},
+	{"iLTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iLTEC_t, c), offsetof(klr_iLTEC_t, a), offsetof(klr_iLTEC_t, n), 0}},
+	{"iGTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iGTC_t, c), offsetof(klr_iGTC_t, a), offsetof(klr_iGTC_t, n), 0}},
+	{"iGTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iGTEC_t, c), offsetof(klr_iGTEC_t, a), offsetof(klr_iGTEC_t, n), 0}},
+	{"iANDC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iANDC_t, c), offsetof(klr_iANDC_t, a), offsetof(klr_iANDC_t, n), 0}},
+	{"iORC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iORC_t, c), offsetof(klr_iORC_t, a), offsetof(klr_iORC_t, n), 0}},
+	{"iXORC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iXORC_t, c), offsetof(klr_iXORC_t, a), offsetof(klr_iXORC_t, n), 0}},
+	{"iLSFTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iLSFTC_t, c), offsetof(klr_iLSFTC_t, a), offsetof(klr_iLSFTC_t, n), 0}},
+	{"iRSFTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_RN, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iRSFTC_t, c), offsetof(klr_iRSFTC_t, a), offsetof(klr_iRSFTC_t, n), 0}},
+	{"fADD", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fADD_t, c), offsetof(klr_fADD_t, a), offsetof(klr_fADD_t, b), 0}},
+	{"fSUB", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fSUB_t, c), offsetof(klr_fSUB_t, a), offsetof(klr_fSUB_t, b), 0}},
+	{"fMUL", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fMUL_t, c), offsetof(klr_fMUL_t, a), offsetof(klr_fMUL_t, b), 0}},
+	{"fDIV", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fDIV_t, c), offsetof(klr_fDIV_t, a), offsetof(klr_fDIV_t, b), 0}},
+	{"fEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fEQ_t, c), offsetof(klr_fEQ_t, a), offsetof(klr_fEQ_t, b), 0}},
+	{"fNEQ", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fNEQ_t, c), offsetof(klr_fNEQ_t, a), offsetof(klr_fNEQ_t, b), 0}},
+	{"fLT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fLT_t, c), offsetof(klr_fLT_t, a), offsetof(klr_fLT_t, b), 0}},
+	{"fLTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fLTE_t, c), offsetof(klr_fLTE_t, a), offsetof(klr_fLTE_t, b), 0}},
+	{"fGT", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fGT_t, c), offsetof(klr_fGT_t, a), offsetof(klr_fGT_t, b), 0}},
+	{"fGTE", _DEF|_JIT, 3, { VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fGTE_t, c), offsetof(klr_fGTE_t, a), offsetof(klr_fGTE_t, b), 0}},
+	{"fADDC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fADDC_t, c), offsetof(klr_fADDC_t, a), offsetof(klr_fADDC_t, n), 0}},
+	{"fSUBC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fSUBC_t, c), offsetof(klr_fSUBC_t, a), offsetof(klr_fSUBC_t, n), 0}},
+	{"fMULC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fMULC_t, c), offsetof(klr_fMULC_t, a), offsetof(klr_fMULC_t, n), 0}},
+	{"fDIVC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fDIVC_t, c), offsetof(klr_fDIVC_t, a), offsetof(klr_fDIVC_t, n), 0}},
+	{"fEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fEQC_t, c), offsetof(klr_fEQC_t, a), offsetof(klr_fEQC_t, n), 0}},
+	{"fNEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fNEQC_t, c), offsetof(klr_fNEQC_t, a), offsetof(klr_fNEQC_t, n), 0}},
+	{"fLTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fLTC_t, c), offsetof(klr_fLTC_t, a), offsetof(klr_fLTC_t, n), 0}},
+	{"fLTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fLTEC_t, c), offsetof(klr_fLTEC_t, a), offsetof(klr_fLTEC_t, n), 0}},
+	{"fGTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fGTC_t, c), offsetof(klr_fGTC_t, a), offsetof(klr_fGTC_t, n), 0}},
+	{"fGTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_RN, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fGTEC_t, c), offsetof(klr_fGTEC_t, a), offsetof(klr_fGTEC_t, n), 0}},
+	{"RCINC", _JIT, 1, { VMT_RO, VMT_VOID}, {offsetof(klr_RCINC_t, a), 0}},
+	{"RCDEC", _JIT, 1, { VMT_RO, VMT_VOID}, {offsetof(klr_RCDEC_t, a), 0}},
+	{"OSET", _DEF|_JIT|_CONST, 2, { VMT_RO, VMT_OBJECT, VMT_VOID}, {offsetof(klr_OSET_t, a), offsetof(klr_OSET_t, o), 0}},
+	{"OMOV", _DEF|_JIT, 2, { VMT_RO, VMT_RO, VMT_VOID}, {offsetof(klr_OMOV_t, a), offsetof(klr_OMOV_t, b), 0}},
+	{"OOMOV", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_RO, VMT_RO, VMT_VOID}, {offsetof(klr_OOMOV_t, a), offsetof(klr_OOMOV_t, b), offsetof(klr_OOMOV_t, c), offsetof(klr_OOMOV_t, d), 0}},
+	{"ONMOV", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_ONMOV_t, a), offsetof(klr_ONMOV_t, b), offsetof(klr_ONMOV_t, c), offsetof(klr_ONMOV_t, d), 0}},
+	{"OSET2", _JIT|_CONST, 3, { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_VOID}, {offsetof(klr_OSET2_t, a), offsetof(klr_OSET2_t, v), offsetof(klr_OSET2_t, v2), 0}},
+	{"OSET3", _JIT|_CONST, 4, { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_VOID}, {offsetof(klr_OSET3_t, a), offsetof(klr_OSET3_t, v), offsetof(klr_OSET3_t, v2), offsetof(klr_OSET3_t, v3), 0}},
+	{"OSET4", _JIT|_CONST, 5, { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_VOID}, {offsetof(klr_OSET4_t, a), offsetof(klr_OSET4_t, v), offsetof(klr_OSET4_t, v2), offsetof(klr_OSET4_t, v3), offsetof(klr_OSET4_t, v4), 0}},
+	{"RCINCx", 0, 1+1, { VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_RCINCx_t, a), offsetof(klr_RCINCx_t, a.n), 0}},
+	{"RCDECx", 0, 1+1, { VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_RCDECx_t, a), offsetof(klr_RCDECx_t, a.n), 0}},
+	{"OMOVx", _DEF|_JIT, 2+1, { VMT_RO, VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_OMOVx_t, a), offsetof(klr_OMOVx_t, b), offsetof(klr_OMOVx_t, b.n), 0}},
+	{"XMOV", _JIT, 2+1, { VMT_SFX, VMT_VOID, VMT_RO, VMT_VOID}, {offsetof(klr_XMOV_t, a), offsetof(klr_XMOV_t, a.n), offsetof(klr_XMOV_t, b), 0}},
+	{"XOSET", _JIT|_CONST, 2+1, { VMT_SFX, VMT_VOID, VMT_OBJECT, VMT_VOID}, {offsetof(klr_XOSET_t, a), offsetof(klr_XOSET_t, a.n), offsetof(klr_XOSET_t, b), 0}},
+	{"XMOVx", 0, 2+1+1, { VMT_SFX, VMT_VOID, VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_XMOVx_t, a), offsetof(klr_XMOVx_t, a.n), offsetof(klr_XMOVx_t, b), offsetof(klr_XMOVx_t, b.n), 0}},
+	{"CHKSTACK", 0, 1, { VMT_SFPIDX, VMT_VOID}, {offsetof(klr_CHKSTACK_t, n), 0}},
+	{"LDMTD", 0, 4, { VMT_SFPIDX, VMT_F, VMT_HCACHE, VMT_MTD, VMT_VOID}, {offsetof(klr_LDMTD_t, thisidx), offsetof(klr_LDMTD_t, loadmtd), offsetof(klr_LDMTD_t, cache), offsetof(klr_LDMTD_t, mtdNC), 0}},
+	{"CALL", _DEF|_JIT, 3, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_VOID}, {offsetof(klr_CALL_t, a), offsetof(klr_CALL_t, thisidx), offsetof(klr_CALL_t, espshift), 0}},
+	{"SCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}, {offsetof(klr_SCALL_t, a), offsetof(klr_SCALL_t, thisidx), offsetof(klr_SCALL_t, espshift), offsetof(klr_SCALL_t, mtdNC), 0}},
+	{"VCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}, {offsetof(klr_VCALL_t, a), offsetof(klr_VCALL_t, thisidx), offsetof(klr_VCALL_t, espshift), offsetof(klr_VCALL_t, mtdNC), 0}},
+	{"VCALL", _DEF|_JIT, 4, { VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_MTD, VMT_VOID}, {offsetof(klr_VCALL__t, a), offsetof(klr_VCALL__t, thisidx), offsetof(klr_VCALL__t, espshift), offsetof(klr_VCALL__t, mtdNC), 0}},
+	{"FASTCALL0", _DEF|_JIT, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_F, VMT_VOID}, {offsetof(klr_FASTCALL0_t, a), offsetof(klr_FASTCALL0_t, thisidx), offsetof(klr_FASTCALL0_t, rix), offsetof(klr_FASTCALL0_t, espshift), offsetof(klr_FASTCALL0_t, fcall), 0}},
+	{"RET", _JIT, 0, { VMT_VOID}, {0}},
+	{"TR", _DEF|_JIT, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_CID, VMT_F, VMT_VOID}, {offsetof(klr_TR_t, a), offsetof(klr_TR_t, b), offsetof(klr_TR_t, rix), offsetof(klr_TR_t, cid), offsetof(klr_TR_t, tr), 0}},
+	{"SCAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}, {offsetof(klr_SCAST_t, a), offsetof(klr_SCAST_t, b), offsetof(klr_SCAST_t, rix), offsetof(klr_SCAST_t, espshift), offsetof(klr_SCAST_t, cast), 0}},
+	{"TCAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}, {offsetof(klr_TCAST_t, a), offsetof(klr_TCAST_t, b), offsetof(klr_TCAST_t, rix), offsetof(klr_TCAST_t, espshift), offsetof(klr_TCAST_t, cast), 0}},
+	{"ACAST", _DEF, 5, { VMT_R, VMT_SFPIDX, VMT_I, VMT_SFPIDX, VMT_TMR, VMT_VOID}, {offsetof(klr_ACAST_t, a), offsetof(klr_ACAST_t, b), offsetof(klr_ACAST_t, rix), offsetof(klr_ACAST_t, espshift), offsetof(klr_ACAST_t, cast), 0}},
+	{"iCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iCAST_t, a), offsetof(klr_iCAST_t, b), 0}},
+	{"fCAST", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fCAST_t, a), offsetof(klr_fCAST_t, b), 0}},
+	{"SAFEPOINT", _JIT, 1, { VMT_SFPIDX, VMT_VOID}, {offsetof(klr_SAFEPOINT_t, espshift), 0}},
+	{"JMP", _JIT, 1, { VMT_ADDR, VMT_VOID}, {offsetof(klr_JMP_t, jumppc), 0}},
+	{"JMP", _JIT, 1, { VMT_ADDR, VMT_VOID}, {offsetof(klr_JMP__t, jumppc), 0}},
+	{"JMPF", 0, 2, { VMT_ADDR, VMT_RN, VMT_VOID}, {offsetof(klr_JMPF_t, jumppc), offsetof(klr_JMPF_t, a), 0}},
+	{"NEXT", _DEF, 5, { VMT_ADDR, VMT_R, VMT_SFPIDX, VMT_SFPIDX, VMT_SFPIDX, VMT_VOID}, {offsetof(klr_NEXT_t, jumppc), offsetof(klr_NEXT_t, a), offsetof(klr_NEXT_t, b), offsetof(klr_NEXT_t, rix), offsetof(klr_NEXT_t, espshift), 0}},
+	{"BGETIDX", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_RN, VMT_VOID}, {offsetof(klr_BGETIDX_t, c), offsetof(klr_BGETIDX_t, a), offsetof(klr_BGETIDX_t, n), 0}},
+	{"BSETIDX", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_BSETIDX_t, c), offsetof(klr_BSETIDX_t, a), offsetof(klr_BSETIDX_t, n), offsetof(klr_BSETIDX_t, v), 0}},
+	{"BGETIDXC", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_U, VMT_VOID}, {offsetof(klr_BGETIDXC_t, c), offsetof(klr_BGETIDXC_t, a), offsetof(klr_BGETIDXC_t, n), 0}},
+	{"BSETIDXC", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_U, VMT_RN, VMT_VOID}, {offsetof(klr_BSETIDXC_t, c), offsetof(klr_BSETIDXC_t, a), offsetof(klr_BSETIDXC_t, n), offsetof(klr_BSETIDXC_t, v), 0}},
+	{"NGETIDX", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_RN, VMT_VOID}, {offsetof(klr_NGETIDX_t, c), offsetof(klr_NGETIDX_t, a), offsetof(klr_NGETIDX_t, n), 0}},
+	{"NSETIDX", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_NSETIDX_t, c), offsetof(klr_NSETIDX_t, a), offsetof(klr_NSETIDX_t, n), offsetof(klr_NSETIDX_t, v), 0}},
+	{"NGETIDXC", _DEF|_JIT, 3, { VMT_RN, VMT_RO, VMT_U, VMT_VOID}, {offsetof(klr_NGETIDXC_t, c), offsetof(klr_NGETIDXC_t, a), offsetof(klr_NGETIDXC_t, n), 0}},
+	{"NSETIDXC", _DEF|_JIT, 4, { VMT_RN, VMT_RO, VMT_U, VMT_RN, VMT_VOID}, {offsetof(klr_NSETIDXC_t, c), offsetof(klr_NSETIDXC_t, a), offsetof(klr_NSETIDXC_t, n), offsetof(klr_NSETIDXC_t, v), 0}},
+	{"OGETIDX", _DEF|_JIT, 3, { VMT_RO, VMT_RO, VMT_RN, VMT_VOID}, {offsetof(klr_OGETIDX_t, c), offsetof(klr_OGETIDX_t, a), offsetof(klr_OGETIDX_t, n), 0}},
+	{"OSETIDX", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_RN, VMT_RO, VMT_VOID}, {offsetof(klr_OSETIDX_t, c), offsetof(klr_OSETIDX_t, a), offsetof(klr_OSETIDX_t, n), offsetof(klr_OSETIDX_t, v), 0}},
+	{"OGETIDXC", _DEF|_JIT, 3, { VMT_RO, VMT_RO, VMT_U, VMT_VOID}, {offsetof(klr_OGETIDXC_t, c), offsetof(klr_OGETIDXC_t, a), offsetof(klr_OGETIDXC_t, n), 0}},
+	{"OSETIDXC", _DEF|_JIT, 4, { VMT_RO, VMT_RO, VMT_U, VMT_RO, VMT_VOID}, {offsetof(klr_OSETIDXC_t, c), offsetof(klr_OSETIDXC_t, a), offsetof(klr_OSETIDXC_t, n), offsetof(klr_OSETIDXC_t, v), 0}},
+	{"bJNUL", _DEF|_JIT, 2, { VMT_ADDR, VMT_RO, VMT_VOID}, {offsetof(klr_bJNUL_t, jumppc), offsetof(klr_bJNUL_t, a), 0}},
+	{"bJNN", _DEF|_JIT, 2, { VMT_ADDR, VMT_RO, VMT_VOID}, {offsetof(klr_bJNN_t, jumppc), offsetof(klr_bJNN_t, a), 0}},
+	{"bJNOT", _DEF|_JIT, 2, { VMT_ADDR, VMT_RN, VMT_VOID}, {offsetof(klr_bJNOT_t, jumppc), offsetof(klr_bJNOT_t, a), 0}},
+	{"iJEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iJEQ_t, jumppc), offsetof(klr_iJEQ_t, a), offsetof(klr_iJEQ_t, b), 0}},
+	{"iJNEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iJNEQ_t, jumppc), offsetof(klr_iJNEQ_t, a), offsetof(klr_iJNEQ_t, b), 0}},
+	{"iJLT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iJLT_t, jumppc), offsetof(klr_iJLT_t, a), offsetof(klr_iJLT_t, b), 0}},
+	{"iJLTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iJLTE_t, jumppc), offsetof(klr_iJLTE_t, a), offsetof(klr_iJLTE_t, b), 0}},
+	{"iJGT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iJGT_t, jumppc), offsetof(klr_iJGT_t, a), offsetof(klr_iJGT_t, b), 0}},
+	{"iJGTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_iJGTE_t, jumppc), offsetof(klr_iJGTE_t, a), offsetof(klr_iJGTE_t, b), 0}},
+	{"iJEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iJEQC_t, jumppc), offsetof(klr_iJEQC_t, a), offsetof(klr_iJEQC_t, n), 0}},
+	{"iJNEQC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iJNEQC_t, jumppc), offsetof(klr_iJNEQC_t, a), offsetof(klr_iJNEQC_t, n), 0}},
+	{"iJLTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iJLTC_t, jumppc), offsetof(klr_iJLTC_t, a), offsetof(klr_iJLTC_t, n), 0}},
+	{"iJLTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iJLTEC_t, jumppc), offsetof(klr_iJLTEC_t, a), offsetof(klr_iJLTEC_t, n), 0}},
+	{"iJGTC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iJGTC_t, jumppc), offsetof(klr_iJGTC_t, a), offsetof(klr_iJGTC_t, n), 0}},
+	{"iJGTEC", _DEF|_JIT, 3+VMTSIZE_int, { VMT_ADDR, VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_iJGTEC_t, jumppc), offsetof(klr_iJGTEC_t, a), offsetof(klr_iJGTEC_t, n), 0}},
+	{"fJEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fJEQ_t, jumppc), offsetof(klr_fJEQ_t, a), offsetof(klr_fJEQ_t, b), 0}},
+	{"fJNEQ", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fJNEQ_t, jumppc), offsetof(klr_fJNEQ_t, a), offsetof(klr_fJNEQ_t, b), 0}},
+	{"fJLT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fJLT_t, jumppc), offsetof(klr_fJLT_t, a), offsetof(klr_fJLT_t, b), 0}},
+	{"fJLTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fJLTE_t, jumppc), offsetof(klr_fJLTE_t, a), offsetof(klr_fJLTE_t, b), 0}},
+	{"fJGT", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fJGT_t, jumppc), offsetof(klr_fJGT_t, a), offsetof(klr_fJGT_t, b), 0}},
+	{"fJGTE", _DEF|_JIT, 3, { VMT_ADDR, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_fJGTE_t, jumppc), offsetof(klr_fJGTE_t, a), offsetof(klr_fJGTE_t, b), 0}},
+	{"fJEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fJEQC_t, jumppc), offsetof(klr_fJEQC_t, a), offsetof(klr_fJEQC_t, n), 0}},
+	{"fJNEQC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fJNEQC_t, jumppc), offsetof(klr_fJNEQC_t, a), offsetof(klr_fJNEQC_t, n), 0}},
+	{"fJLTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fJLTC_t, jumppc), offsetof(klr_fJLTC_t, a), offsetof(klr_fJLTC_t, n), 0}},
+	{"fJLTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fJLTEC_t, jumppc), offsetof(klr_fJLTEC_t, a), offsetof(klr_fJLTEC_t, n), 0}},
+	{"fJGTC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fJGTC_t, jumppc), offsetof(klr_fJGTC_t, a), offsetof(klr_fJGTC_t, n), 0}},
+	{"fJGTEC", _DEF|_JIT, 3+VMTSIZE_float, { VMT_ADDR, VMT_RN, VMT_FLOAT VMTX_FLOAT, VMT_VOID}, {offsetof(klr_fJGTEC_t, jumppc), offsetof(klr_fJGTEC_t, a), offsetof(klr_fJGTEC_t, n), 0}},
+	{"CHKIDX", _JIT, 2, { VMT_RO, VMT_RN, VMT_VOID}, {offsetof(klr_CHKIDX_t, a), offsetof(klr_CHKIDX_t, n), 0}},
+	{"CHKIDXC", _JIT, 2, { VMT_RO, VMT_U, VMT_VOID}, {offsetof(klr_CHKIDXC_t, a), offsetof(klr_CHKIDXC_t, n), 0}},
+	{"NOP", 0, 0, { VMT_VOID}, {0}},
 };
 
 void knh_opcode_check(void)
@@ -438,8 +439,20 @@ kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 }
 /* ------------------------------------------------------------------------ */
 
-#define RBP_ASSERT0(N)   	if((N % 2) != 0) {		DBG_P("r=%d", N); 		DBG_ASSERT((N % 2) == 0);	}
-#define RBP_ASSERT1(N)   	if((N % 2) == 0) {		DBG_P("r=%d", N); 		DBG_ASSERT((N % 2) != 0);	}
+#define RBP_ASSERT0(N) do {\
+	if((N % 2) != 0) {\
+		DBG_P("r=%d", N); \
+		DBG_ASSERT((N % 2) == 0);\
+	}\
+} while (0)
+
+#define RBP_ASSERT1(N) do {\
+	if((N % 2) == 0) {\
+		DBG_P("r=%d", N);\
+		DBG_ASSERT((N % 2) != 0);\
+	}\
+} while (0)
+#define FIELD(T, C, n) (*(T*)&C->c[OPDATA[C->opcode].fields[n] - offsetof(kopl_t, data)])
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 {
 	size_t i, size = OPDATA[c->opcode].size;
@@ -456,53 +469,53 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 		case VMT_VOID: break;
 		case VMT_ADDR: 
 			if(pc_start == NULL) {
-				knh_printf(ctx, w, "%p", c->p[i]); break;
+				knh_printf(ctx, w, "%p", FIELD(void*, c, i)); break;
 			}
 			else {
-				knh_printf(ctx, w, "L%d", (kopl_t*)c->p[i] - pc_start); break;
+				knh_printf(ctx, w, "L%d", FIELD(kopl_t*, c, i) - pc_start); break;
 			}
 		case VMT_SFPIDX2:
-			knh_printf(ctx, w, "sfp[%d]", c->data[i]); 
+			knh_printf(ctx, w, "sfp[%d]", FIELD(ksfpidx_t, c, i));
 			break;
 		case VMT_RN: 
-			RBP_ASSERT1(c->data[i]);
-			if(((kintptr_t)c->data[i]) < 0) {
-				knh_printf(ctx, w, "r(%d)", c->data[i]); 
+			RBP_ASSERT1(FIELD(kreg_t, c, i));
+			if(((kintptr_t)FIELD(kreg_t, c, i)) < 0) {
+				knh_printf(ctx, w, "r(%d)", FIELD(kreg_t, c, i));
 			}
 			else {
-				knh_printf(ctx, w, "r%d", c->data[i]); 
+				knh_printf(ctx, w, "r%d", FIELD(kreg_t, c, i));
 			}
 			break;
 		case VMT_SFX:
-			RBP_ASSERT0(c->data[i]);
-			knh_printf(ctx, w, "r%d(+%d)", c->data[i], c->data[i+1]); 
+			RBP_ASSERT0(FIELD(kreg_t, c, i));
+			knh_printf(ctx, w, "r%d(+%d)", FIELD(kreg_t, c, i), FIELD(kreg_t, c, i+1));
 			break;
 		case VMT_SFPIDX: 
 		case VMT_RO:
-			RBP_ASSERT0(c->data[i]);
+			RBP_ASSERT0(FIELD(kreg_t, c, i));
 		case VMT_R: 
-			if(((kintptr_t)c->data[i]) < 0) {
-				knh_printf(ctx, w, "r(%d)", c->data[i]); 
+			if(((kintptr_t)FIELD(kreg_t, c, i)) < 0) {
+				knh_printf(ctx, w, "r(%d)", (kintptr_t)FIELD(kreg_t, c, i));
 			}
 			else {
-				knh_printf(ctx, w, "r%d", c->data[i]); 
+				knh_printf(ctx, w, "r%d", FIELD(kreg_t, c, i));
 			}
 			break;
 		case VMT_U: case VMT_I:
-			knh_write_dfmt(ctx, w, K_INTPTR_FMT, c->data[i]); break;
+			knh_write_dfmt(ctx, w, K_INTPTR_FMT, FIELD(kint_t, c, i)); break;
 		case VMT_F:
-			knh_write_vmfunc(ctx, w, c->p[i]); break;
+			knh_write_vmfunc(ctx, w, FIELD(void*, c, i)); break;
 		case VMT_CID:
-			knh_write_cname(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
+			knh_write_cname(ctx, w, (FIELD(knh_ClassTBL_t*, c, i)->cid)); break;
 		case VMT_HCACHE: {
-			kcachedata_t *hc = (kcachedata_t*)&(c->p[i]);
+			kcachedata_t *hc = (kcachedata_t*)&(FIELD(kcachedata_t, c, i));
 			knh_write_cname(ctx, w, hc->cid); 
 			knh_putc(ctx, w, '/');
 			knh_write_mn(ctx, w, hc->mn); 
 		}
 		break;
-		case VMT_MTD: if(c->p[i] != NULL) {
-			kMethod *mtd = (kMethod*)c->p[i];
+		case VMT_MTD: if(FIELD(void*, c, i) != NULL) {
+			kMethod *mtd = FIELD(kMethod*, c, i);
 			knh_write_cname(ctx, w, (mtd)->cid); knh_putc(ctx, w, '.');
 			knh_write_mn(ctx, w, (mtd)->mn); 
 		}
@@ -513,15 +526,15 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 		case VMT_TMR:
 		case VMT_OBJECT:
 		case VMT_STRING: {
-			knh_write_Object(ctx, w, UPCAST(c->p[i]), FMT_line);
+			knh_write_Object(ctx, w, FIELD(kObject*, c, i), FMT_line);
 			break;
 		}
 		case VMT_INT: {
-			kint_t n = ((kint_t*)(&(c->p[i])))[0];
+			kint_t n = FIELD(kint_t, c, i);
 			knh_write_ifmt(ctx, w, KINT_FMT, n); break;
 		}
 		case VMT_FLOAT:
-			knh_write_ffmt(ctx, w, KFLOAT_FMT, *((kfloat_t*)&(c->p[i]))); break;
+			knh_write_ffmt(ctx, w, KFLOAT_FMT, FIELD(kfloat_t, c, i)); break;
 		}
 	}
 	knh_write_EOL(ctx, w);
@@ -533,10 +546,10 @@ void knh_opcode_shift(kopl_t *c, int shift)
 	const kushort_t *vmt = OPDATA[c->opcode].types;
 	for(i = 0; i < size; i++) {
 		switch(vmt[i]) {
-			case VMT_SFPIDX: case VMT_R: case VMT_RN: case VMT_RO: case VMT_SFX: 
-				c->data[i] = c->data[i] + (shift * 2); break;
+			case VMT_SFPIDX: case VMT_R: case VMT_RN: case VMT_RO: case VMT_SFX:
+				FIELD(kreg_t, c, i) = FIELD(kreg_t, c, i) + (shift * 2); break;
 			case VMT_SFPIDX2:
-				c->data[i] = c->data[i] + (shift); break;
+				FIELD(kreg_t, c, i) = FIELD(kreg_t, c, i) + (shift); break;
 		}
 	}
 }

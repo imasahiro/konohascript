@@ -1500,6 +1500,7 @@ struct kopl_t {
 		kintptr_t data[5];
 		void *p[5];
 		kchar_t *u[5];
+		kchar_t c[5*sizeof(kdummyptr_t)];
 	};
 };
 #endif
