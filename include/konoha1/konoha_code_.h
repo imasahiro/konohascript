@@ -108,7 +108,6 @@ typedef struct klr_PROBE_t {
 	ksfpidx_t sfpidx;
 	klr_Fprobe probe;
 	kuintptr_t n;
-	kuintptr_t n2;
 } klr_PROBE_t;
 
 #define OPCODE_EXIT ((kopcode_t)16)

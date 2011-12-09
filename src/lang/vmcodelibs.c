@@ -70,7 +70,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"CHKOUT", 0, 2, { VMT_RO, VMT_F, VMT_VOID}, {offsetof(klr_CHKOUT_t, on), offsetof(klr_CHKOUT_t, checkout), 0}},
 	{"ERROR", _CONST, 2, { VMT_SFPIDX, VMT_STRING, VMT_VOID}, {offsetof(klr_ERROR_t, start), offsetof(klr_ERROR_t, msg), 0}},
 	{"P", _CONST, 4, { VMT_F, VMT_S, VMT_SFPIDX2, VMT_STRING, VMT_VOID}, {offsetof(klr_P_t, print), offsetof(klr_P_t, flag), offsetof(klr_P_t, n), offsetof(klr_P_t, msg), 0}},
-	{"PROBE", 0, 4, { VMT_SFPIDX2, VMT_F, VMT_U, VMT_U, VMT_VOID}, {offsetof(klr_PROBE_t, sfpidx), offsetof(klr_PROBE_t, probe), offsetof(klr_PROBE_t, n), offsetof(klr_PROBE_t, n2), 0}},
+	{"PROBE", 0, 3, { VMT_SFPIDX2, VMT_F, VMT_U, VMT_VOID}, {offsetof(klr_PROBE_t, sfpidx), offsetof(klr_PROBE_t, probe), offsetof(klr_PROBE_t, n), 0}},
 	{"EXIT", 0, 0, { VMT_VOID}, {0}},
 	{"NSET", _DEF|_JIT, 2+VMTSIZE_int, { VMT_RN, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_NSET_t, a), offsetof(klr_NSET_t, n), 0}},
 	{"NMOV", _DEF|_JIT, 2, { VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_NMOV_t, a), offsetof(klr_NMOV_t, b), 0}},
@@ -743,7 +743,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
 	} 
 	CASE(PROBE) {
 		klr_PROBE_t *op = (klr_PROBE_t*)pc; (void)op;
-		KLR_PROBE(ctx, op->sfpidx, op->probe, op->n, op->n2);
+		KLR_PROBE(ctx, op->sfpidx, op->probe, op->n);
 		pc++;
 		GOTO_NEXT();
 	} 

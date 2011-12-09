@@ -410,11 +410,13 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 #endif
 				}
 				else {
+#ifdef OPCODE_NSET3
 					klr_NSET3_t *opNSET = (klr_NSET3_t*)opP;
 					opNSET->head.opcode = OPCODE_NSET3;
 					opNSET->n2 = op2->n;
 					opNSET->n3 = op3->n;
 					_REMOVE2(op2, op3);
+#endif
 				}
 			}
 			L_NSET2:;
@@ -442,11 +444,13 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 #endif
 				}
 				else {
+#ifdef OPCODE_OSET3
 					klr_OSET3_t *opOSET = (klr_OSET3_t*)opP;
 					opOSET->head.opcode = OPCODE_OSET3;
 					opOSET->v2 = op2->o;
 					opOSET->v3 = op3->o;
 					_REMOVE2(op2, op3);
+#endif
 				}
 			}
 			L_OSET2:;
@@ -1478,7 +1482,7 @@ static void CALL_asm(CTX ctx, kStmtExpr *stmt, int espidx)
 		}
 		ASM(LDMTD, SFP_(espidx+K_CALLDELTA), _DYNMTD, {TYPE_void, tkMTD->mn}, NULL);
 		ASM(CALL, SFP_(espidx), SFP_(espidx+K_CALLDELTA), ESP_(espidx, DP(stmt)->size - 2));
-		ASM(PROBE, SFP2_(espidx), _PBOX, 0, 0);
+		ASM(PROBE, SFP2_(espidx), _PBOX, 0);
 		ASM_SAFEPOINT(ctx, espidx+1);
 		return;
 	}
@@ -2973,7 +2977,7 @@ void knh_loadScriptSystemKonohaCode(CTX ctx)
 	BasicBlock_add(ctx, ib, TRYEND, OC_(-(K_CALLDELTA+1)));
 	BasicBlock_add(ctx, ib, EXIT);
 	ib->nextNC = ic;
-	BasicBlock_add(ctx, ic, PROBE, 0, _STACKTRACE, 0, 0);
+	BasicBlock_add(ctx, ic, PROBE, 0, _STACKTRACE, 0);
 	BasicBlock_add(ctx, ic, EXIT);
 	BasicBlock_add(ctx, ic, FUNCCALL);               // FUNCCALL
 	BasicBlock_add(ctx, ic, VEXEC);                  // VEXEC
