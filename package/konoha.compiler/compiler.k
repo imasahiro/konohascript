@@ -303,19 +303,19 @@ class K_Inst {
         } else if (kvalue.type == Boolean) {
             res += "bval" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Array) {
-            res += "ary" + kvalue.idx;;
+            res += "ary" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == String) {
-            res += "str" + kvalue.idx;
+            res += "str" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == dynamic) {
-            res += "dyn" + kvalue.idx;
+            res += "dyn" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == OutputStream) {
-            res += "ous" + kvalue.idx;
+            res += "ous" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == InputStream) {
-            res += "ins" + kvalue.idx;
+            res += "ins" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Script) {
-            res += "script" + kvalue.idx;
+            res += "script" + kvalue.idx + "_" + defidx;
         } else {
-            res += "obj" + kvalue.idx;
+            res += "obj" + kvalue.idx + "_" + defidx;
         }
         return res;
     }
