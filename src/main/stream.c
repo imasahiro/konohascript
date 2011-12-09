@@ -417,7 +417,7 @@ void io2_free(CTX ctx, kio_t *io2)
 {
 	if(io2->isRunning == 1) {
 		// TODO(@imasahiro) need flush
-		//io2_flush(ctx, io2);
+		io2_flush(ctx, io2);
 		io2->_close(ctx, io2);
 	}
 	if(io2->bufsiz > 0) {
@@ -435,6 +435,7 @@ void io2_free(CTX ctx, kio_t *io2)
 void io2_close(CTX ctx, kio_t *io2)
 {
 	if(io2->isRunning == 1) {
+		io2_flush(ctx, io2);
 		io2->_close(ctx, io2);
 		io2->top  = 0;
 		io2->tail = 0;
