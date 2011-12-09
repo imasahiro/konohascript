@@ -416,7 +416,7 @@ kbool_t knh_opcode_usedef(kopcode_t opcode, int i)
 	return 0;
 }
 /* ------------------------------------------------------------------------ */
-#define FIELD(T, C, n) (*(T*)&C->c[OPDATA[c->head.opcode].fields[n] - offsetof(kopl_t, data)])
+#define FIELD(T, C, n) (*(T*)&C->c[OPDATA[c->head.opcode].fields[n] - sizeof(struct KCODE_HEAD)])
 
 kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 {
