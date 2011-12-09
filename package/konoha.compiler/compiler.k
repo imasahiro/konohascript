@@ -291,7 +291,7 @@ class K_Inst {
             }
         }
     }
-    String getName() {
+    dynamic getName() {
         String res = "";
         /* const value (not named) */
         if (kvalue == null) {
@@ -315,7 +315,10 @@ class K_Inst {
         } else if (kvalue.type == Script) {
             res += "script" + kvalue.idx + "_" + defidx;
         } else {
-            res += "obj" + kvalue.idx + "_" + defidx;
+            res += kvalue.type;
+            res = res.split(".")[1];
+            res += kvalue.idx + "_" + defidx;
+            res = res.convert(to:lower);
         }
         return res;
     }
@@ -560,7 +563,7 @@ class K_Function {
 
     K_Value getKValue(int idx, dynamic type) {
         K_Value res = value_table[(String)idx];
-        if (res == null || (res.type != type)) {
+        if (res == null || res.type != type) {
             value_table[(String)idx] = new K_Value(idx, type);
         }
         return value_table[(String)idx];
@@ -1657,7 +1660,8 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
         case Token.TT_FIELD:
             SFX bx = getsfx(tkb);
             K_Inst vb = kfunc.getKInst(bx.i);
-            K_Inst tmp = new K_MOVx(null, new K_MOVxop(vb, bx.n), 0);
+            K_Value kvalue = kfunc.getKValue(espidx + 1, btype);
+            K_Inst tmp = new K_MOVx(kvalue, new K_MOVxop(vb, bx.n), 0);
             kfunc.curBB.insts.add(tmp);
             K_Inst va = kfunc.getKInst(ax.i);
             K_Inst inst = new K_xMOV(new K_xMOVop(va, tmp, ax.n), 0);
