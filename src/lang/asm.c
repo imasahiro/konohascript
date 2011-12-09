@@ -54,30 +54,30 @@ kBasicBlock* new_BasicBlockLABEL(CTX ctx)
 }
 
 #if defined(K_USING_THCODE_)
-#define TADDR   NULL, 0/*counter*/
+#define TADDR   NULL/*, 0counter*/
 #else
-#define TADDR   0/*counter*/
+#define TADDR   /*0counter*/
 #endif/*K_USING_THCODE_*/
 
 #define ASMLINE  0
 
 #define ASM(T, ...) { \
-		klr_##T##_t op_ = {TADDR, OPCODE_##T, ASMLINE, ## __VA_ARGS__}; \
+		klr_##T##_t op_ = {{TADDR, OPCODE_##T, ASMLINE}, ## __VA_ARGS__}; \
 		GammaBuilder_asm(ctx, (kopl_t*)(&op_), sizeof(klr_##T##_t)); \
 	}\
 
 #define ASMop(T, OP, ...) { \
-		klr_##T##_t op_ = {TADDR, OP, ASMLINE, ## __VA_ARGS__}; \
+		klr_##T##_t op_ = {{TADDR, OP, ASMLINE}, ## __VA_ARGS__}; \
 		GammaBuilder_asm(ctx, (kopl_t*)(&op_), sizeof(klr_##T##_t)); \
 	}\
 
 #define ASMbranch(T, lb, ...) { \
-		klr_##T##_t op_ = {TADDR, OPCODE_##T, ASMLINE, NULL, ## __VA_ARGS__}; \
+		klr_##T##_t op_ = {{TADDR, OPCODE_##T, ASMLINE}, NULL, ## __VA_ARGS__}; \
 		ASM_BRANCH_(ctx, lb, (kopl_t*)(&op_), sizeof(klr_##T##_t)); \
 	}\
 
 #define BasicBlock_add(ctx, bb, T, ...) { \
-		klr_##T##_t op_ = {TADDR, OPCODE_##T, ASMLINE, ## __VA_ARGS__};\
+		klr_##T##_t op_ = {{TADDR, OPCODE_##T, ASMLINE}, ## __VA_ARGS__};\
 		knh_BasicBlock_add_(ctx, bb, 0, (kopl_t*)(&op_), sizeof(klr_##T##_t));\
 	}\
 
@@ -123,7 +123,7 @@ void knh_BasicBlock_add_(CTX ctx, kBasicBlock *bb, kushort_t line, kopl_t *op, s
 		knh_opline_reftrace(ctx, op, ctx->refs);
 		knh_RefTraverse(ctx, RCinc);
 #endif
-		pc->line = line;
+		pc->head.line = line;
 		DP(bb)->size += 1;
 	}
 }
@@ -134,11 +134,11 @@ static void _BOX(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct);
 static void GammaBuilder_asm(CTX ctx, kopl_t *op, size_t opsize)
 {
 	kBasicBlock *bb = DP(ctx->gma)->bbNC;
-	DBG_ASSERT(op->opcode != OPCODE_JMPF);
+	DBG_ASSERT(op->head.opcode != OPCODE_JMPF);
 	if(DP(bb)->size > 0) {
 		kopl_t *opP = DP(bb)->opbuf + (DP(bb)->size - 1);
-		if(op->opcode == opP->opcode && op->opcode <= OPCODE_TR) {
-			size_t i, opsize = knh_opcode_size(op->opcode);
+		if(op->head.opcode == opP->head.opcode && op->head.opcode <= OPCODE_TR) {
+			size_t i, opsize = knh_opcode_size(op->head.opcode);
 			for(i = 0; i < opsize; i++) {
 				if(op->data[i] != opP->data[i]) goto L_REMOVE;
 			}
@@ -146,7 +146,7 @@ static void GammaBuilder_asm(CTX ctx, kopl_t *op, size_t opsize)
 			return;
 		}
 		L_REMOVE:;
-		if(opP->opcode == OPCODE_OSET && op->opcode == OPCODE_TR) {
+		if(opP->head.opcode == OPCODE_OSET && op->head.opcode == OPCODE_TR) {
 			klr_OSET_t *opOSET = (klr_OSET_t*)opP;
 			klr_TR_t *opTR = (klr_TR_t*)op;
 			if(opOSET->a == opTR->a && (opTR->tr == _BOX || opTR->tr == _bBOX)) {
@@ -161,11 +161,11 @@ static void GammaBuilder_asm(CTX ctx, kopl_t *op, size_t opsize)
 static int GammaBuilder_asmJMPF(CTX ctx, klr_JMPF_t *op)
 {
 	kBasicBlock *bb = DP(ctx->gma)->bbNC;
-	DBG_ASSERT(op->opcode == OPCODE_JMPF);
+	DBG_ASSERT(op->head.opcode == OPCODE_JMPF);
 	int swap = 0;
 	while(DP(bb)->size > 0) {
 		kopl_t *opP = DP(bb)->opbuf + (DP(bb)->size - 1);
-		if(opP->opcode == OPCODE_bNOT) {
+		if(opP->head.opcode == OPCODE_bNOT) {
 			klr_bNOT_t *opN = (klr_bNOT_t*)opP;
 //			DBG_P("REWRITE JMPF index %d => %d", op->a, opN->a);
 			op->a = opN->a;
@@ -173,40 +173,40 @@ static int GammaBuilder_asmJMPF(CTX ctx, klr_JMPF_t *op)
 			DP(bb)->size -= 1;
 			continue;
 		}
-		if(OPCODE_iEQ <= opP->opcode && opP->opcode <= OPCODE_iGTE && HAS_OPCODE(iJEQ)) {
+		if(OPCODE_iEQ <= opP->head.opcode && opP->head.opcode <= OPCODE_iGTE && HAS_OPCODE(iJEQ)) {
 			klr_iJEQ_t *opN = (klr_iJEQ_t*)opP;
 			ksfpidx_t a = ((klr_iEQ_t*)opP)->a;
 			ksfpidx_t b = ((klr_iEQ_t*)opP)->b;
 			opN->jumppc = (op)->jumppc;
 			opN->a = a; opN->b = b;
-			opP->opcode = OPCODE_iJEQ + ((opP)->opcode - OPCODE_iEQ);
+			opP->head.opcode = OPCODE_iJEQ + ((opP)->head.opcode - OPCODE_iEQ);
 			return swap;
 		}
-		if(OPCODE_iEQC <= opP->opcode && opP->opcode <= OPCODE_iGTEC && HAS_OPCODE(iJEQC)) {
+		if(OPCODE_iEQC <= opP->head.opcode && opP->head.opcode <= OPCODE_iGTEC && HAS_OPCODE(iJEQC)) {
 			klr_iJEQC_t *opN = (klr_iJEQC_t*)opP;
 			ksfpidx_t a = ((klr_iEQC_t*)opP)->a;
 			kint_t n = ((klr_iEQC_t*)opP)->n;
 			opN->jumppc = (op)->jumppc;
 			opN->a = a; opN->n = n;
-			opP->opcode = OPCODE_iJEQC + ((opP)->opcode - OPCODE_iEQC);
+			opP->head.opcode = OPCODE_iJEQC + ((opP)->head.opcode - OPCODE_iEQC);
 			return swap;
 		}
-		if(OPCODE_fEQ <= opP->opcode && opP->opcode <= OPCODE_fGTE && HAS_OPCODE(fJEQ)) {
+		if(OPCODE_fEQ <= opP->head.opcode && opP->head.opcode <= OPCODE_fGTE && HAS_OPCODE(fJEQ)) {
 			klr_fJEQ_t *opN = (klr_fJEQ_t*)opP;
 			ksfpidx_t a = ((klr_fEQ_t*)opP)->a;
 			ksfpidx_t b = ((klr_fEQ_t*)opP)->b;
 			opN->jumppc = (op)->jumppc;
 			opN->a = a; opN->b = b;
-			opP->opcode = OPCODE_fJEQ + ((opP)->opcode - OPCODE_fEQ);
+			opP->head.opcode = OPCODE_fJEQ + ((opP)->head.opcode - OPCODE_fEQ);
 			return swap;
 		}
-		if(OPCODE_fEQC <= opP->opcode && opP->opcode <= OPCODE_fGTEC && HAS_OPCODE(fJEQC)) {
+		if(OPCODE_fEQC <= opP->head.opcode && opP->head.opcode <= OPCODE_fGTEC && HAS_OPCODE(fJEQC)) {
 			klr_fJEQC_t *opN = (klr_fJEQC_t*)opP;
 			ksfpidx_t a = ((klr_fEQC_t*)opP)->a;
 			kfloat_t n = ((klr_fEQC_t*)opP)->n;
 			opN->jumppc = (op)->jumppc;
 			opN->a = a; opN->n = n;
-			opP->opcode = OPCODE_fJEQC + ((opP)->opcode - OPCODE_fEQC);
+			opP->head.opcode = OPCODE_fJEQC + ((opP)->head.opcode - OPCODE_fEQC);
 			return swap;
 		}
 		break;
@@ -221,7 +221,7 @@ static int GammaBuilder_asmJMPF(CTX ctx, klr_JMPF_t *op)
 static inline kopcode_t BasicBlock_opcode(kBasicBlock *bb)
 {
 	if(DP(bb)->size == 0) return OPCODE_NOP;
-	return DP(bb)->opbuf->opcode;
+	return DP(bb)->opbuf->head.opcode;
 }
 
 //#define BB(bb)   OPCODE__(BasicBlock_opcode(bb))
@@ -240,7 +240,7 @@ static inline kopcode_t BasicBlock_opcode(kBasicBlock *bb)
 //	}
 //	for(i = 0; i < DP(bb)->size; i++) {
 //		kopl_t *op = DP(bb)->opbuf + i;
-////		DBG_P("%s\t opcode=%s", indent, OPCODE__(op->opcode));
+////		DBG_P("%s\t opcode=%s", indent, OPCODE__(op->head.opcode));
 //		(void)op;
 //	}
 //}
@@ -369,21 +369,21 @@ static void BasicBlock_strip1(CTX ctx, kBasicBlock *bb)
 
 static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 {
-#define _REMOVE(opX)   opX->opcode = OPCODE_NOP; bbsize--; continue;
-#define _REMOVE2(opX, opX2)   opX->opcode = OPCODE_NOP; opX2->opcode = OPCODE_NOP; bbsize -= 2; continue;
-#define _REMOVE3(opX, opX2, opX3)   opX->opcode = OPCODE_NOP; opX2->opcode = OPCODE_NOP; opX3->opcode = OPCODE_NOP; bbsize -= 3; continue;
+#define _REMOVE(opX)   opX->head.opcode = OPCODE_NOP; bbsize--; continue;
+#define _REMOVE2(opX, opX2)   opX->head.opcode = OPCODE_NOP; opX2->head.opcode = OPCODE_NOP; bbsize -= 2; continue;
+#define _REMOVE3(opX, opX2, opX3)   opX->head.opcode = OPCODE_NOP; opX2->head.opcode = OPCODE_NOP; opX3->head.opcode = OPCODE_NOP; bbsize -= 3; continue;
 
 	size_t i, bbsize = DP(bb)->size;
 	for(i = 0; i < DP(bb)->size; i++) {
 		kopl_t *op = DP(bb)->opbuf + i;
-		if(op->opcode == OPCODE_NOP) {
+		if(op->head.opcode == OPCODE_NOP) {
 			bbsize--;
 		}
 	}
 	for(i = 1; i < DP(bb)->size; i++) {
 		kopl_t *opP = DP(bb)->opbuf + (i - 1);
 		kopl_t *op = DP(bb)->opbuf + i;
-		if((op->opcode == OPCODE_fCAST || op->opcode == OPCODE_iCAST) && opP->opcode == OPCODE_NMOV) {
+		if((op->head.opcode == OPCODE_fCAST || op->head.opcode == OPCODE_iCAST) && opP->head.opcode == OPCODE_NMOV) {
 			klr_fCAST_t *opCAST = (klr_fCAST_t*)op;
 			klr_NMOV_t *opNMOV = (klr_NMOV_t*)opP;
 			if(opNMOV->a == opCAST->b && opCAST->a == opCAST->b) {
@@ -391,25 +391,27 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 				_REMOVE(opP);
 			}
 		}
-		if(opP->opcode == OPCODE_NSET && op->opcode == OPCODE_NSET) {
+		if(opP->head.opcode == OPCODE_NSET && op->head.opcode == OPCODE_NSET) {
 			klr_NSET_t *op1 = (klr_NSET_t*)opP;
 			klr_NSET_t *op2 = (klr_NSET_t*)op;
 			if(op1->a + K_NEXTIDX != op2->a) continue;
 			if(sizeof(kuintptr_t) == sizeof(kuint_t)) {
 				klr_NSET_t *op3 = (klr_NSET_t*)(DP(bb)->opbuf + i + 1);
 				klr_NSET_t *op4 = (klr_NSET_t*)(DP(bb)->opbuf + i + 2);
-				if(op3->opcode != OPCODE_NSET || op2->a + K_NEXTIDX != op3->a) goto L_NSET2;
-				if(op4->opcode == OPCODE_NSET && op3->a + K_NEXTIDX == op4->a) {
+				if(op3->head.opcode != OPCODE_NSET || op2->a + K_NEXTIDX != op3->a) goto L_NSET2;
+				if(op4->head.opcode == OPCODE_NSET && op3->a + K_NEXTIDX == op4->a) {
+#ifdef OPCODE_NSET4
 					klr_NSET4_t *opNSET = (klr_NSET4_t*)opP;
-					opNSET->opcode = OPCODE_NSET4;
+					opNSET->head.opcode = OPCODE_NSET4;
 					opNSET->n2 = op2->n;
 					opNSET->n3 = op3->n;
 					opNSET->n4 = op4->n;
 					_REMOVE3(op2, op3, op4);
+#endif
 				}
 				else {
 					klr_NSET3_t *opNSET = (klr_NSET3_t*)opP;
-					opNSET->opcode = OPCODE_NSET3;
+					opNSET->head.opcode = OPCODE_NSET3;
 					opNSET->n2 = op2->n;
 					opNSET->n3 = op3->n;
 					_REMOVE2(op2, op3);
@@ -417,29 +419,31 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 			}
 			L_NSET2:;
 			klr_NSET2_t *opNSET = (klr_NSET2_t*)opP;
-			opNSET->opcode = OPCODE_NSET2;
+			opNSET->head.opcode = OPCODE_NSET2;
 			opNSET->n2 = op2->n;
 			_REMOVE(op2);
 		}
-		if(opP->opcode == OPCODE_OSET && op->opcode == OPCODE_OSET) {
+		if(opP->head.opcode == OPCODE_OSET && op->head.opcode == OPCODE_OSET) {
 			klr_OSET_t *op1 = (klr_OSET_t*)opP;
 			klr_OSET_t *op2 = (klr_OSET_t*)op;
 			if(op1->a + K_NEXTIDX != op2->a) continue;
 			{
 				klr_OSET_t *op3 = (klr_OSET_t*)(DP(bb)->opbuf + i + 1);
 				klr_OSET_t *op4 = (klr_OSET_t*)(DP(bb)->opbuf + i + 2);
-				if(op3->opcode != OPCODE_OSET || op2->a + K_NEXTIDX != op3->a) goto L_OSET2;
-				if(op4->opcode == OPCODE_OSET && op3->a + K_NEXTIDX == op4->a) {
+				if(op3->head.opcode != OPCODE_OSET || op2->a + K_NEXTIDX != op3->a) goto L_OSET2;
+				if(op4->head.opcode == OPCODE_OSET && op3->a + K_NEXTIDX == op4->a) {
+#ifdef OPCODE_OSET4
 					klr_OSET4_t *opOSET = (klr_OSET4_t*)opP;
 					opOSET->opcode = OPCODE_OSET4;
 					opOSET->v2 = op2->o;
 					opOSET->v3 = op3->o;
 					opOSET->v4 = op4->o;
 					_REMOVE3(op2, op3, op4);
+#endif
 				}
 				else {
 					klr_OSET3_t *opOSET = (klr_OSET3_t*)opP;
-					opOSET->opcode = OPCODE_OSET3;
+					opOSET->head.opcode = OPCODE_OSET3;
 					opOSET->v2 = op2->o;
 					opOSET->v3 = op3->o;
 					_REMOVE2(op2, op3);
@@ -447,44 +451,44 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 			}
 			L_OSET2:;
 			klr_OSET2_t *opOSET = (klr_OSET2_t*)opP;
-			opOSET->opcode = OPCODE_OSET2;
+			opOSET->head.opcode = OPCODE_OSET2;
 			opOSET->v2 = op2->o;
 			_REMOVE(op2);
 		}
-		if(op->opcode == OPCODE_NMOV) {
+		if(op->head.opcode == OPCODE_NMOV) {
 #ifdef OPCODE_NNMOV
-			if(opP->opcode == OPCODE_NMOV && HAS_OPCODE(NNMOV)) {
+			if(opP->head.opcode == OPCODE_NMOV && HAS_OPCODE(NNMOV)) {
 				klr_NNMOV_t *opMOV = (klr_NNMOV_t*)opP;
 				opMOV->c = ((klr_NMOV_t*)op)->a;
 				opMOV->d = ((klr_NMOV_t*)op)->b;
-				opP->opcode = OPCODE_NNMOV;
+				opP->head.opcode = OPCODE_NNMOV;
 				_REMOVE(op);
 			}
-			if(opP->opcode == OPCODE_OMOV && HAS_OPCODE(ONMOV)) {
+			if(opP->head.opcode == OPCODE_OMOV && HAS_OPCODE(ONMOV)) {
 				klr_ONMOV_t *opMOV = (klr_ONMOV_t *)opP;
 				opMOV->c = ((klr_NMOV_t*)op)->a;
 				opMOV->d = ((klr_NMOV_t*)op)->b;
-				opP->opcode = OPCODE_ONMOV;
+				opP->head.opcode = OPCODE_ONMOV;
 				_REMOVE(op);
 			}
 #endif
 		}
-		if(op->opcode == OPCODE_OMOV) {
+		if(op->head.opcode == OPCODE_OMOV) {
 #ifdef OPCODE_OOMOV
-			if(opP->opcode == OPCODE_OMOV && HAS_OPCODE(OOMOV)) {
+			if(opP->head.opcode == OPCODE_OMOV && HAS_OPCODE(OOMOV)) {
 				klr_OOMOV_t *opMOV = (klr_OOMOV_t*)opP;
 				opMOV->c = ((klr_OMOV_t*)op)->a;
 				opMOV->d = ((klr_OMOV_t*)op)->b;
-				opP->opcode = OPCODE_OOMOV;
+				opP->head.opcode = OPCODE_OOMOV;
 				_REMOVE(op);
 			}
-			if(opP->opcode == OPCODE_OMOV && HAS_OPCODE(ONMOV)) {
+			if(opP->head.opcode == OPCODE_OMOV && HAS_OPCODE(ONMOV)) {
 				klr_ONMOV_t *opMOV = (klr_ONMOV_t *)opP;
 				opMOV->c = opMOV->a;
 				opMOV->d = opMOV->b;
 				opMOV->a = ((klr_OMOV_t*)op)->a;
 				opMOV->b = ((klr_OMOV_t*)op)->b;
-				opP->opcode = OPCODE_ONMOV;
+				opP->head.opcode = OPCODE_ONMOV;
 				_REMOVE(op);
 			}
 #endif
@@ -494,7 +498,7 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 		kopl_t *opD = DP(bb)->opbuf;
 		for(i = 0; i < DP(bb)->size; i++) {
 			kopl_t *opS = DP(bb)->opbuf + i;
-			if(opS->opcode == OPCODE_NOP) continue;
+			if(opS->head.opcode == OPCODE_NOP) continue;
 			if(opD != opS) {
 				*opD = *opS;
 			}
@@ -552,7 +556,7 @@ static kopl_t* BasicBlock_copy(CTX ctx, kopl_t *dst, kBasicBlock *bb, kBasicBloc
 	if(prev[0] != NULL && prev[0]->nextNC == NULL && prev[0]->jumpNC == bb) {
 		dst -= 1;
 		//DBG_P("BB%d: REMOVE unnecessary JMP/(?%s)", BB_(bb), OPCODE__(dst->opcode));
-		DBG_ASSERT(dst->opcode == OPCODE_JMP || dst->opcode == OPCODE_JMP_);
+		DBG_ASSERT(dst->head.opcode == OPCODE_JMP || dst->head.opcode == OPCODE_JMP_);
 		prev[0]->jumpNC = NULL;
 		prev[0]->nextNC = bb;
 	}
@@ -562,31 +566,31 @@ static kopl_t* BasicBlock_copy(CTX ctx, kopl_t *dst, kBasicBlock *bb, kBasicBloc
 		knh_memcpy(dst, DP(bb)->opbuf, sizeof(kopl_t) * DP(bb)->size);
 		if(bb->jumpNC != NULL) {
 			DP(bb)->opjmp = (dst + (DP(bb)->size - 1));
-			DBG_ASSERT(knh_opcode_hasjump(DP(bb)->opjmp->opcode));
+			DBG_ASSERT(knh_opcode_hasjump(DP(bb)->opjmp->head.opcode));
 		}
 		for(i = 0; i < DP(bb)->size; i++) {
 			kopl_t *op = dst + i;
-			if(op->opcode == OPCODE_VCALL) {
+			if(op->head.opcode == OPCODE_VCALL) {
 				if(BasicBlock_isStackChecked(bb)) {
-					op->opcode = OPCODE_VCALL_;
+					op->head.opcode = OPCODE_VCALL_;
 				}
 				else {
 					BasicBlock_setStackChecked(bb, 1);
 				}
 			}
-			if(op->opcode == OPCODE_iADDC) {
+			if(op->head.opcode == OPCODE_iADDC) {
 				klr_iADDC_t *opN = (klr_iADDC_t*)op;
 				if(opN->a == opN->c && opN->n == 1) {
-					op->opcode = OPCODE_iINC;
+					op->head.opcode = OPCODE_iINC;
 				}
 			}
-			if(op->opcode == OPCODE_iSUBC) {
+			if(op->head.opcode == OPCODE_iSUBC) {
 				klr_iSUBC_t *opN = (klr_iSUBC_t*)op;
 				if(opN->a == opN->c && opN->n == 1) {
-					op->opcode = OPCODE_iDEC;
+					op->head.opcode = OPCODE_iDEC;
 				}
 			}
-//			DBG_P("BB%d: [%ld] %s", BB_(bb), i, OPCODE__(op->opcode));
+//			DBG_P("BB%d: [%ld] %s", BB_(bb), i, OPCODE__(op->head.opcode));
 		}
 		dst = dst + DP(bb)->size;
 		BasicBlock_freebuf(ctx, bb);
@@ -712,7 +716,7 @@ static kBasicBlock* ASM_JMPF(CTX ctx, int flocal, kBasicBlock *lbJUMP)
 {
 	kBasicBlock *bb = DP(ctx->gma)->bbNC;
 	kBasicBlock *lbNEXT = new_BasicBlockLABEL(ctx);
-	klr_JMPF_t op = {TADDR, OPCODE_JMPF, ASMLINE, NULL, NC_(flocal)};
+	klr_JMPF_t op = {{TADDR, OPCODE_JMPF, ASMLINE}, NULL, NC_(flocal)};
 	if(GammaBuilder_asmJMPF(ctx, &op)) {
 		bb->jumpNC = lbNEXT;
 		bb->nextNC = lbJUMP;
@@ -895,7 +899,7 @@ static void _PBOX(CTX ctx, ksfp_t *sfp, struct klr_PROBE_t *op)
 {
 	size_t rtnidx = op->sfpidx;
 	klr_LDMTD_t *opP = (klr_LDMTD_t*)(((kopl_t*)op) - 2);
-	DBG_ASSERT(opP->opcode == OPCODE_LDMTD);
+	DBG_ASSERT(opP->head.opcode == OPCODE_LDMTD);
 	ktype_t rtype = knh_Param_rtype(DP(opP->mtdNC)->mp);
 	rtype = ktype_tocid(ctx, rtype, O_cid(sfp[rtnidx+K_CALLDELTA].o));
 	if(IS_Tunbox(rtype)) {
@@ -1234,7 +1238,7 @@ static void ASM_SAFEPOINT(CTX ctx, int espidx)
 	size_t i;
 	for(i = 0; i < DP(bb)->size; i++) {
 		kopl_t *op = DP(bb)->opbuf + i;
-		if(op->opcode == OPCODE_SAFEPOINT) return;
+		if(op->head.opcode == OPCODE_SAFEPOINT) return;
 	}
 	ASM(SAFEPOINT, SFP_(espidx));
 #endif
@@ -1315,7 +1319,7 @@ static void ASM_INLINE(CTX ctx, int sfpshift, kopl_t *code, size_t isize)
 		bb[i] = new_BasicBlockLABEL(ctx);
 		bb[i]->nextNC = NULL;
 		bb[i]->jumpNC = NULL;
-		if(code[i].opcode == OPCODE_RET) {
+		if(code[i].head.opcode == OPCODE_RET) {
 			last = i; break;
 		}
 	}
@@ -1325,15 +1329,15 @@ static void ASM_INLINE(CTX ctx, int sfpshift, kopl_t *code, size_t isize)
 		kopl_t opbuf, *op;
 		opbuf = code[i]; op = &opbuf;
 		knh_opcode_shift(op, sfpshift);
-		if(op->opcode == OPCODE_JMP_) {
-			op->opcode = OPCODE_JMP;
+		if(op->head.opcode == OPCODE_JMP_) {
+			op->head.opcode = OPCODE_JMP;
 		}
-		if(op->opcode != OPCODE_JMP) {
-			knh_BasicBlock_add_(ctx, bb[i], op->line, op, 0);
+		if(op->head.opcode != OPCODE_JMP) {
+			knh_BasicBlock_add_(ctx, bb[i], op->head.line, op, 0);
 			bb[i]->nextNC = bb[i+1];
 			DP(bb[i+1])->incoming += 1;
 		}
-		if(knh_opcode_hasjump(op->opcode)) {
+		if(knh_opcode_hasjump(op->head.opcode)) {
 			int jmpidx = code - (kopl_t*)(op->p[0]);
 			if (jmpidx < 0) jmpidx = -jmpidx;
 			DBG_ASSERT(jmpidx < (int)isize);
@@ -1396,7 +1400,7 @@ static void ASM_CHKIDX(CTX ctx, int aidx, int nidx)
 	kBasicBlock *bb = DP(ctx->gma)->bbNC;
 	for(i = (long)DP(bb)->size - 1; i >= 0; i--) {
 		klr_CHKIDX_t *op = (klr_CHKIDX_t*)(DP(bb)->opbuf + i);
-		kopcode_t opcode = op->opcode;
+		kopcode_t opcode = op->head.opcode;
 		if(opcode == OPCODE_CHKIDXC && op->a == aidx && op->n == nidx) {
 			return;
 		}
@@ -1413,7 +1417,7 @@ static void ASM_CHKIDXC(CTX ctx, int aidx, int n)
 	long i;
 	for(i = (long)DP(bb)->size - 1; i >= 0; i--) {
 		klr_CHKIDXC_t *op = (klr_CHKIDXC_t*)(DP(bb)->opbuf + i);
-		kopcode_t opcode = op->opcode;
+		kopcode_t opcode = op->head.opcode;
 		if(opcode == OPCODE_CHKIDXC && op->a == aidx) {
 			if(op->n < (kuint_t) n) op->n = n;
 			return;
@@ -2162,7 +2166,7 @@ static void ASM_PMOV(CTX ctx, int isUNBOX, int a, int b)
 		if(isUNBOX) {
 			int r0 = NC_(a), r1 = NC_(b);
 			if(r1 == defidx) {
-				kopcode_t opcode = opP->opcode;
+				kopcode_t opcode = opP->head.opcode;
 				DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
 				if((OPCODE_bNOT <= opcode && opcode <= OPCODE_fGTEC)
 				  || (OPCODE_iCAST <= opcode && opcode <= OPCODE_fCAST)
@@ -2177,7 +2181,7 @@ static void ASM_PMOV(CTX ctx, int isUNBOX, int a, int b)
 		else {
 			int r0 = OC_(a), r1 = OC_(b);
 			if(r1 == defidx) {
-				kopcode_t opcode = opP->opcode;
+				kopcode_t opcode = opP->head.opcode;
 				DBG_P("r0=%d, r1=%d, def=%d", r0, r1, defidx);
 				if(opcode == OPCODE_TR) {
 					opTR->a = r0;
@@ -2564,7 +2568,7 @@ static void _PRINTh(CTX ctx, ksfp_t *sfp, kOutputStream *w, struct klr_P_t *op)
 	knh_write_ascii(ctx, w, TERM_BNOTE(ctx, LOG_NOTICE));
 	if(FLAG_is(flag, KFLAG_PF_BOL)) {
 		if(FLAG_is(flag, KFLAG_PF_LINE)) {
-			kline_t uline = op->line;
+			kline_t uline = op->head.line;
 			kMethod *mtd = sfp[-1].mtdNC;
 			DBG_ASSERT(IS_Method(mtd));
 			ULINE_setURI(uline, DP(mtd)->uri);
@@ -2649,7 +2653,7 @@ static void _PRINTb(CTX ctx, ksfp_t *sfp, struct klr_P_t *op)
 
 void knh_PRINT(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kObject *o)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {{TADDR, OPCODE_P, ASMLINE}, NULL, flag, 0, msg};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_Object(ctx, w, o, FMT_data);
@@ -2658,7 +2662,7 @@ void knh_PRINT(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, 
 
 void knh_PRINTi(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kint_t n)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {{TADDR, OPCODE_P, ASMLINE}, NULL, flag, 0, msg};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_ifmt(ctx, w, KINT_FMT, n);
@@ -2667,7 +2671,7 @@ void knh_PRINTi(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg,
 
 void knh_PRINTf(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kfloat_t f)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {{TADDR, OPCODE_P, ASMLINE}, NULL, flag, 0, msg};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_ffmt(ctx, w, KFLOAT_FMT, f);
@@ -2676,7 +2680,7 @@ void knh_PRINTf(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg,
 
 void knh_PRINTb(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kbool_t b)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {{TADDR, OPCODE_P, ASMLINE}, NULL, flag, 0, msg};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_bool(ctx, w, b);
@@ -2711,22 +2715,22 @@ static void PRINT_asm(CTX ctx, kStmtExpr *stmt)
 				goto L_REDO;
 			}
 			DBG_ASSERT(stmt->uline == ctx->gma->uline);
-			ASM(P, _PRINTm, flag | mask, (tkn)->text, 0);
+			ASM(P, _PRINTm, flag | mask, 0, (tkn)->text);
 			flag = KFLAG_PF_NCOMMA;
 		}
 		else {
 			kclass_t cid = Tn_cid(stmt, i);
 			if(IS_Tint(cid)) {
-				ASM(P, _PRINTi, flag | mask, msg, espidx+i);
+				ASM(P, _PRINTi, flag | mask, espidx+i, msg);
 			}
 			else if(IS_Tfloat(cid)) {
-				ASM(P, _PRINTf, flag | mask, msg, espidx+i);
+				ASM(P, _PRINTf, flag | mask, espidx+i, msg);
 			}
 			else if(cid == CLASS_Boolean) {
-				ASM(P, _PRINTb, flag | mask, msg, espidx+i);
+				ASM(P, _PRINTb, flag | mask, espidx+i, msg);
 			}
 			else {
-				ASM(P, _PRINT, flag | mask, msg, espidx+i);
+				ASM(P, _PRINT, flag | mask, espidx+i, msg);
 			}
 			flag=0;
 		}
@@ -2800,9 +2804,9 @@ static void _THCODE(CTX ctx, kopl_t *pc, void **codeaddr)
 {
 #ifdef K_USING_THCODE_
 	while(1) {
-		DBG_ASSERT_OPCODE(pc->opcode);
-		pc->codeaddr = codeaddr[pc->opcode];
-		if(pc->opcode == OPCODE_RET) break;
+		DBG_ASSERT_OPCODE(pc->head.opcode);
+		pc->head.codeaddr = codeaddr[pc->head.opcode];
+		if(pc->head.opcode == OPCODE_RET) break;
 		pc++;
 	}
 #endif
@@ -2932,8 +2936,8 @@ KMETHOD knh_Fmethod_asm(CTX ctx, ksfp_t *sfp _RIX)
 static kopl_t* opline_findOPCODE(CTX ctx, kopl_t *op, kopcode_t opcode)
 {
 	while(1) {
-		if(op->opcode == opcode) return op;
-		if(op->opcode == OPCODE_RET) break;
+		if(op->head.opcode == opcode) return op;
+		if(op->head.opcode == OPCODE_RET) break;
 		op++;
 	}
 	KNH_ASSERT(ctx == NULL); // DON'T NOT HAPPEN

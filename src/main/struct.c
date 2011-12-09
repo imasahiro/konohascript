@@ -3014,7 +3014,7 @@ static void KonohaCode_reftrace(CTX ctx, kRawPtr *o FTRARG)
 	kopl_t *pc = b->code;
 	KNH_ADDREF(ctx, b->source);
 	KNH_ENSUREREF(ctx, b->codesize / sizeof(kopl_t));
-	while(pc->opcode != OPCODE_RET) {
+	while(pc->head.opcode != OPCODE_RET) {
 		tail_ = knh_opline_reftrace(ctx, pc FTRDATA);
 		pc++;
 	}
@@ -3033,7 +3033,7 @@ static void KonohaCode_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 	kopl_t *pc = kcode->code + 1;
 	while(1) {
 		knh_opcode_dump(ctx, pc, w, kcode->code + 1);
-		if(pc->opcode == OPCODE_RET) break;
+		if(pc->head.opcode == OPCODE_RET) break;
 		pc++;
 	}
 }

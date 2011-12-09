@@ -1441,12 +1441,12 @@ typedef kbool_t (*knh_Ftyping)(CTX, kMethod *, kStmtExpr *);
 
 ///* ------------------------------------------------------------------------ */
 
-typedef kuintptr_t          kopcode_t;
-typedef kintptr_t           ksfpidx_t;
-typedef kintptr_t           kreg_t;
-typedef kintptr_t           kregO_t;
-typedef kintptr_t           kregN_t;
-typedef void*               kdummyptr_t;
+typedef kushort_t       kopcode_t;
+typedef kshort_t        ksfpidx_t;
+typedef kshort_t        kreg_t;
+typedef kshort_t        kregO_t;
+typedef kshort_t        kregN_t;
+typedef void*           kdummyptr_t;
 
 struct  kopl_t;
 typedef struct kopl_t kopl_t;
@@ -1466,12 +1466,9 @@ typedef void (*klr_Fprint)(CTX, ksfp_t*, struct klr_P_t*);
 struct klr_PROBE_t;
 typedef void (*klr_Fprobe)(CTX, ksfp_t* , struct klr_PROBE_t *pc);
 
+#define FIELDS_SIZE 4
 typedef struct {
-	kdummyptr_t _d1;
-	kdummyptr_t _d2;
-	kdummyptr_t _d3;
-	kdummyptr_t _d4;
-	kdummyptr_t _d5;
+	kdummyptr_t _d[FIELDS_SIZE];
 } knh_opdummy_t;
 
 typedef struct {
@@ -1480,27 +1477,26 @@ typedef struct {
 } ksfx_t;
 
 #if defined(K_USING_THCODE_)
-#define KCODE_HEAD \
-	void *codeaddr; \
-	size_t count; \
-	kushort_t opcode; \
-	kushort_t line
-
+struct KCODE_HEAD {
+	void *codeaddr;
+	kushort_t opcode;
+	kushort_t line;
+};
 #else
-#define KCODE_HEAD \
-	size_t count; \
-	kopcode_t opcode; \
-	kuintptr_t line \
-
+struct KCODE_HEAD {
+	size_t count;
+	kopcode_t opcode;
+	kuintptr_t line;
+};
 #endif/*K_USING_THCODE_*/
 
 struct kopl_t {
-	KCODE_HEAD;
+	struct KCODE_HEAD head;
 	union {
-		kintptr_t data[5];
-		void *p[5];
-		kchar_t *u[5];
-		kchar_t c[5*sizeof(kdummyptr_t)];
+		kintptr_t data[FIELDS_SIZE];
+		void *p[FIELDS_SIZE];
+		kchar_t *u[FIELDS_SIZE];
+		kchar_t c[FIELDS_SIZE*sizeof(kdummyptr_t)];
 	};
 };
 #endif

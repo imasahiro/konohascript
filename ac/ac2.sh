@@ -10,4 +10,5 @@ done
 
 egrep -i "\] FAILED" $logfile
 echo "see furthermore information in $logfile"
+egrep -i "\] FAILED" $logfile | wc -l
 

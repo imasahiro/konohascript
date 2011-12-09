@@ -1042,8 +1042,8 @@ static kline_t sfp_uline(CTX ctx, ksfp_t *sfp)
 	DBG_ASSERT(isCalledMethod(ctx, sfp + K_MTDIDX));
 	if(pc == NULL) return 0;
 	{
-		int line = (pc-1)->line;
-		while(pc->opcode != OPCODE_THCODE) pc--;
+		int line = (pc-1)->head.line;
+		while(pc->head.opcode != OPCODE_THCODE) pc--;
 		kuri_t uri = ((klr_THCODE_t*)pc)->uri;
 		return new_ULINE(uri, line);
 	}

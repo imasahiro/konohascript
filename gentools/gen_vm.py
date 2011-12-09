@@ -21,7 +21,7 @@ CATCH      _CONST            addr:addr en:ro eid:int
 CHKIN      0                 on:ro checkin:f
 CHKOUT     0                 on:ro checkout:f
 ERROR      _CONST            start:sfpidx msg:String
-P          _CONST            print:f flag:u  msg:String n:sfpidx2
+P          _CONST            print:f flag:s n:sfpidx2 msg:String
 PROBE      0                 sfpidx:sfpidx2 probe:f n:u n2:u
 EXIT       0
 
@@ -30,7 +30,7 @@ NMOV       _DEF|_JIT         a:rn b:rn
 @NNMOV     _DEF              a:rn b:rn c:rn d:rn
 @NSET2     _DEF|_JIT         a:rn n:int n2:int
 @NSET3     _DEF|_JIT         a:rn n:u n2:u n3:u
-@NSET4     _DEF|_JIT         a:rn n:u n2:u n3:u n4:u
+#@NSET4     _DEF|_JIT         a:rn n:u n2:u n3:u n4:u
 
 NMOVx      _DEF              a:rn  b:sfx
 XNSET      0                 a:sfx b:int
@@ -113,7 +113,7 @@ RCDEC      _JIT              a:ro
 @ONMOV     _DEF|_JIT         a:ro b:ro c:rn d:rn
 @OSET2     _JIT|_CONST       a:ro v:Object v2:Object
 @OSET3     _JIT|_CONST       a:ro v:Object v2:Object v3:Object
-@OSET4     _JIT|_CONST       a:ro v:Object v2:Object v3:Object v4:Object
+#@OSET4     _JIT|_CONST       a:ro v:Object v2:Object v3:Object v4:Object
 
 RCINCx     0                 a:sfx
 RCDECx     0                 a:sfx
@@ -130,14 +130,14 @@ CALL       _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx
 SCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
 VCALL      _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
 VCALL_     _DEF|_JIT         a:r thisidx:sfpidx espshift:sfpidx mtdNC:mtd
-FASTCALL0  _DEF|_JIT         a:r thisidx:sfpidx rix:i espshift:sfpidx fcall:f
+FASTCALL0  _DEF|_JIT         a:r thisidx:sfpidx rix:s espshift:sfpidx fcall:f
 RET        _JIT
 
-TR         _DEF|_JIT         a:r  b:sfpidx rix:i cid:cid tr:f
+TR         _DEF|_JIT         a:r  b:sfpidx rix:s cid:cid tr:f
 
-SCAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
-TCAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
-ACAST      _DEF              a:r b:sfpidx rix:i espshift:sfpidx cast:tmr
+SCAST      _DEF              a:r b:sfpidx rix:s espshift:sfpidx cast:tmr
+TCAST      _DEF              a:r b:sfpidx rix:s espshift:sfpidx cast:tmr
+ACAST      _DEF              a:r b:sfpidx rix:s espshift:sfpidx cast:tmr
 iCAST      _DEF|_JIT         a:rn b:rn
 fCAST      _DEF|_JIT         a:rn b:rn
 
@@ -214,6 +214,7 @@ CTYPE = {
 	'addr':    'knh_KLRInst_t*',
 	'u':       'kuintptr_t',
 	'i':       'kintptr_t',
+	's':       'kshort_t',
 	'rn':      'kregN_t',
 	'ro':      'kregO_t',
 	'r':       'kreg_t',
@@ -296,7 +297,7 @@ def write_KCODE_h(f, kc):
 #define %s ((kopcode_t)%d)''' % (kc.OPCODE, kc.opcode))
 	f.write('''
 typedef struct %s {
-	KCODE_HEAD;''' % kc.ctype)
+	struct KCODE_HEAD head;''' % kc.ctype)
 	for a in kc.tokens[2:]:
 		n, t = a.split(':')
 		if t == "addr" : 
@@ -337,6 +338,7 @@ def write_define_h(f):
 #define VMT_STRING   16
 #define VMT_INT      17
 #define VMT_FLOAT    18
+#define VMT_S        19
 
 ''' % (n))
 
@@ -414,15 +416,16 @@ kbool_t knh_opcode_usedef(kopcode_t opcode, int i)
 	return 0;
 }
 /* ------------------------------------------------------------------------ */
+#define FIELD(T, C, n) (*(T*)&C->c[OPDATA[c->head.opcode].fields[n] - offsetof(kopl_t, data)])
 
 kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 {
-	if(FLAG_is(OPDATA[c->opcode].flag, _CONST)) {
-		size_t i, size = OPDATA[c->opcode].size;
+	if(FLAG_is(OPDATA[c->head.opcode].flag, _CONST)) {
+		size_t i, size = OPDATA[c->head.opcode].size;
 		for(i = 0; i < size; i++) {
-			kushort_t vtype = OPDATA[c->opcode].types[i];
+			kushort_t vtype = OPDATA[c->head.opcode].types[i];
 			if(vtype == VMT_OBJECT || vtype == VMT_STRING) {
-				KNH_ADDREF(ctx, c->p[i]);
+				KNH_ADDREF(ctx, FIELD(kObject*, c, i));
 			}
 		}
 	}
@@ -443,16 +446,15 @@ kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 		DBG_ASSERT((N % 2) != 0);\\
 	}\\
 } while (0)
-#define FIELD(T, C, n) (*(T*)&C->c[OPDATA[C->opcode].fields[n] - offsetof(kopl_t, data)])
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 {
-	size_t i, size = OPDATA[c->opcode].size;
-	const kushort_t *vmt = OPDATA[c->opcode].types;
+	size_t i, size = OPDATA[c->head.opcode].size;
+	const kushort_t *vmt = OPDATA[c->head.opcode].types;
 	if(pc_start == NULL) {
-		knh_printf(ctx, w, "[%p:%d] %s(%d)", c, c->line, OPCODE__(c->opcode), (kintptr_t)c->opcode);
+		knh_printf(ctx, w, "[%p:%d] %s(%d)", c, c->head.line, OPCODE__(c->head.opcode), (kintptr_t)c->head.opcode);
 	}
 	else {
-		knh_printf(ctx, w, "L%d(%d): %s(%d)", c - pc_start, c->line, OPCODE__(c->opcode), (kintptr_t)c->opcode);
+		knh_printf(ctx, w, "L%d(%d): %s(%d)", c - pc_start, c->head.line, OPCODE__(c->head.opcode), (kintptr_t)c->head.opcode);
 	}
 	for(i = 0; i < size; i++) {
 		knh_putc(ctx, w, ' '); 
@@ -492,6 +494,8 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 				knh_printf(ctx, w, "r%d", FIELD(kreg_t, c, i));
 			}
 			break;
+		case VMT_S:
+			knh_write_dfmt(ctx, w, K_INTPTR_FMT, (kint_t)FIELD(kshort_t, c, i)); break;
 		case VMT_U: case VMT_I:
 			knh_write_dfmt(ctx, w, K_INTPTR_FMT, FIELD(kint_t, c, i)); break;
 		case VMT_F:
@@ -533,8 +537,8 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 
 void knh_opcode_shift(kopl_t *c, int shift)
 {
-	size_t i, size = OPDATA[c->opcode].size;
-	const kushort_t *vmt = OPDATA[c->opcode].types;
+	size_t i, size = OPDATA[c->head.opcode].size;
+	const kushort_t *vmt = OPDATA[c->head.opcode].types;
 	for(i = 0; i < size; i++) {
 		switch(vmt[i]) {
 			case VMT_SFPIDX: case VMT_R: case VMT_RN: case VMT_RO: case VMT_SFX:
@@ -556,13 +560,13 @@ def write_kcdump(f, kc):
 static void %s_dump(CTX ctx, kopl_t *c, kOutputStream *w)
 {
 	%s *op = (%s*)c; 
-	knh_write_opcode(ctx, w, op->opcode);''' % (kc.name, kc.ctype, kc.ctype))
+	knh_write_opcode(ctx, w, op->head.opcode);''' % (kc.name, kc.ctype, kc.ctype))
 	c = 1
 	for a in kc.tokens[2:]:
 		f.write('''
 	''')
 		f.write(getfmt(a) % ('(op->a%d)' % c))
-		c += 1	
+		c += 1
 	f.write('''
 }
 ''')
@@ -626,7 +630,7 @@ def write_exec(f):
 
 #ifdef K_USING_THCODE_
 #define CASE(x)  L_##x : 
-#define NEXT_OP   (pc->codeaddr)
+#define NEXT_OP   (pc->head.codeaddr)
 #define JUMP      *(NEXT_OP)
 #ifdef K_USING_VMASMDISPATCH
 #define GOTO_NEXT()     \\
@@ -637,7 +641,7 @@ def write_exec(f):
 #define GOTO_NEXT()     goto *(NEXT_OP)
 #endif
 #define TC(c) 
-#define DISPATCH_START(pc) goto *OPJUMP[pc->opcode]
+#define DISPATCH_START(pc) goto *OPJUMP[pc->head.opcode]
 #define DISPATCH_END(pc)
 #define GOTO_PC(pc)        GOTO_NEXT()
 #else/*K_USING_THCODE_*/
@@ -647,8 +651,8 @@ def write_exec(f):
 #define GOTO_NEXT() goto NEXT_OP
 #define JUMP        L_HEAD
 #define TC(c)
-#define DISPATCH_START(pc) L_HEAD:;switch(pc->opcode) {
-#define DISPATCH_END(pc)   } KNH_DIE("unknown opcode=%d", (int)pc->opcode); 
+#define DISPATCH_START(pc) L_HEAD:;switch(pc->head.opcode) {
+#define DISPATCH_END(pc)   } KNH_DIE("unknown opcode=%d", (int)pc->head.opcode); 
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 
