@@ -100,7 +100,6 @@ static kuint64_t memlog_start = 0;
 
 #define STAT_dObject(ctx, ct) ((knh_ClassTBL_t*)ct)->count -= 1
 
-
 #else
 #define STAT_mem(ctx, SIZE)
 #define STAT_dmem(ctx, SIZE)
@@ -127,6 +126,7 @@ static kuint64_t memlog_start = 0;
 #define SUBHEAP_KLASS_SIZE_MAX KlassBlockSize(SUBHEAP_KLASS_MAX)
 #define BITMAP_FULL ((uintptr_t)(-1))
 #define ALIGN(x,n)  (((x)+((n)-1))&(~((n)-1)))
+#define CEIL(F)     (F-(int)(F) > 0 ? (int)(F+1) : (int)(F))
 #define PTR_SIZE (sizeof(void*))
 #define BITS (PTR_SIZE * 8)
 #define FFS(n) __builtin_ffsl(n)
@@ -312,27 +312,42 @@ static bmgc_stat global_gc_stat = {};
 DEF_BM(  1);DEF_BM(  2);DEF_BM(  4);
 DEF_BM(  8);DEF_BM( 16);DEF_BM( 32);
 DEF_BM( 64);DEF_BM(128);DEF_BM(256);
-#define _BM_(size, name)  struct bm##size name
-#define DEF_BITMAP_L2_S1(l0, l1, l2, s) _BM_(l0, m0);_BM_(s, S);_BM_(l1, m1);_BM_(l2, m2);
-#define DEF_BITMAP_L1_S1(l0, l1, l2, s) _BM_(l0, m0);_BM_(s, S);_BM_(l1, m1);
-#define DEF_BITMAP_L0_S1(l0, l1, l2, s) _BM_(l0, m0);_BM_(s, S);
-#define DEF_BITMAP_L0_S0(l0, l1, l2, s) _BM_(l0, m0);
+#define BITMAP_L0_SIZE(N) (CEIL(((float)SEGMENT_SIZE)/KlassBlockSize(N)/BITS))
+#define BITMAP_L1_SIZE(N) (CEIL(((float)SEGMENT_SIZE)/KlassBlockSize(N)/BITS/BITS))
+#define BITMAP_L2_SIZE(N) (CEIL(((float)SEGMENT_SIZE)/KlassBlockSize(N)/BITS/BITS/BITS))
 
 static const size_t SegmentBitMapCount[] = {
-	0,0,0,0,0,0,
-	32, 16, 8, 4, 2, 1, 1
+	0,0,0,0,
+	BITMAP_L0_SIZE(5 ),
+	BITMAP_L0_SIZE(6 ),
+	BITMAP_L0_SIZE(7 ),
+	BITMAP_L0_SIZE(8 ),
+	BITMAP_L0_SIZE(9 ),
+	BITMAP_L0_SIZE(10),
+	BITMAP_L0_SIZE(11),
+	BITMAP_L0_SIZE(12)
 };
 
-//struct BM3  { DEF_BITMAP_L2_S1(256, 4, 1, 1/*sentinel*/); };
-//struct BM4  { DEF_BITMAP_L2_S1(128, 2, 1, 1/*sentinel*/); };
-//struct BM5  { DEF_BITMAP_L1_S1( 64, 1, 0, 1/*sentinel*/); };
-struct BM6  { DEF_BITMAP_L1_S1( 32, 1, 0, 1/*sentinel*/); };
-struct BM7  { DEF_BITMAP_L1_S1( 16, 1, 0, 1/*sentinel*/); };
-struct BM8  { DEF_BITMAP_L1_S1(  8, 1, 0, 1/*sentinel*/); };
-struct BM9  { DEF_BITMAP_L1_S1(  4, 1, 0, 1/*sentinel*/); };
-struct BM10 { DEF_BITMAP_L1_S1(  2, 1, 0, 1/*sentinel*/); };
-struct BM11 { DEF_BITMAP_L0_S1(  1, 0, 0, 1/*sentinel*/); };
-struct BM12 { DEF_BITMAP_L0_S0(  1, 0, 0, 0/*sentinel*/); };
+#if SIZEOF_VOIDP*8 == 64
+struct BM5  { struct bm64 m0; struct bm1 S;struct bm1 m1;};
+struct BM6  { struct bm32 m0; struct bm1 S;struct bm1 m1;};
+struct BM7  { struct bm16 m0; struct bm1 S;struct bm1 m1;};
+struct BM8  { struct bm8  m0; struct bm1 S;struct bm1 m1;};
+struct BM9  { struct bm4  m0; struct bm1 S;struct bm1 m1;};
+struct BM10 { struct bm2  m0; struct bm1 S;struct bm1 m1;};
+struct BM11 { struct bm1  m0; struct bm1 S;};
+struct BM12 { struct bm1  m0;};
+#else
+struct BM5  { struct bm128 m0, struct bm1 S;struct bm4 m1, struct bm1 m2;};
+struct BM6  { struct bm64  m0, struct bm1 S;struct bm2 m1, struct bm1 m2;};
+struct BM7  { struct bm32  m0, struct bm1 S;struct bm1 m1;};
+struct BM8  { struct bm16  m0, struct bm1 S;struct bm1 m1;};
+struct BM9  { struct bm8   m0, struct bm1 S;struct bm1 m1;};
+struct BM10 { struct bm4   m0, struct bm1 S;struct bm1 m1;};
+struct BM11 { struct bm2   m0, struct bm1 S;struct bm1 m1;};
+struct BM12 { struct bm1   m0;};
+#endif
+
 
 #define _BLOCK_(size)  struct blk##size{uint8_t m[size];} \
 	b##size [SEGMENT_SIZE/(sizeof(struct blk##size))]
@@ -352,9 +367,10 @@ static const size_t SegmentBlockCount[] = {
 	SEGMENT_BLOCK_COUNT(11), SEGMENT_BLOCK_COUNT(12),
 };
 
+#if SIZEOF_VOIDP*8 == 64
 //#define BM_SENTINEL_L2_3  (BITMAP_FULL << (2))
 //#define BM_SENTINEL_L2_4  (BITMAP_FULL << (1))
-//#define BM_SENTINEL_L2_5  (BITMAP_FULL)
+#define BM_SENTINEL_L2_5  (BITMAP_FULL)
 #define BM_SENTINEL_L2_6  (BITMAP_FULL)
 #define BM_SENTINEL_L2_7  (BITMAP_FULL)
 #define BM_SENTINEL_L2_8  (BITMAP_FULL)
@@ -365,7 +381,7 @@ static const size_t SegmentBlockCount[] = {
 
 //#define BM_SENTINEL_L1_3  (BITMAP_FULL << (63))
 //#define BM_SENTINEL_L1_4  (BITMAP_FULL << (63))
-//#define BM_SENTINEL_L1_5  (BITMAP_FULL << (63))
+#define BM_SENTINEL_L1_5  (BITMAP_FULL << (63))
 #define BM_SENTINEL_L1_6  (BITMAP_FULL << (32))
 #define BM_SENTINEL_L1_7  (BITMAP_FULL << (16))
 #define BM_SENTINEL_L1_8  (BITMAP_FULL << (8))
@@ -376,7 +392,7 @@ static const size_t SegmentBlockCount[] = {
 
 //#define BM_SENTINEL_L0_3  (BITMAP_FULL)
 //#define BM_SENTINEL_L0_4  (BITMAP_FULL)
-//#define BM_SENTINEL_L0_5  (BITMAP_FULL)
+#define BM_SENTINEL_L0_5  (BITMAP_FULL)
 #define BM_SENTINEL_L0_6  (BITMAP_FULL)
 #define BM_SENTINEL_L0_7  (BITMAP_FULL)
 #define BM_SENTINEL_L0_8  (BITMAP_FULL)
@@ -384,6 +400,42 @@ static const size_t SegmentBlockCount[] = {
 #define BM_SENTINEL_L0_10 (BITMAP_FULL)
 #define BM_SENTINEL_L0_11 (BITMAP_FULL)
 #define BM_SENTINEL_L0_12 (BITMAP_FULL << (32))
+
+#else
+
+//#define BM_SENTINEL_L2_3  (BITMAP_FULL << (2))
+//#define BM_SENTINEL_L2_4  (BITMAP_FULL << (1))
+#define BM_SENTINEL_L2_5  (BITMAP_FULL << (1))
+#define BM_SENTINEL_L2_6  (BITMAP_FULL << (1))
+#define BM_SENTINEL_L2_7  (BITMAP_FULL)
+#define BM_SENTINEL_L2_8  (BITMAP_FULL)
+#define BM_SENTINEL_L2_9  (BITMAP_FULL)
+#define BM_SENTINEL_L2_10 (BITMAP_FULL)
+#define BM_SENTINEL_L2_11 (BITMAP_FULL)
+#define BM_SENTINEL_L2_12 (BITMAP_FULL)
+
+//#define BM_SENTINEL_L1_3  (BITMAP_FULL << (63))
+//#define BM_SENTINEL_L1_4  (BITMAP_FULL << (63))
+#define BM_SENTINEL_L1_5  (BITMAP_FULL << (31))
+#define BM_SENTINEL_L1_6  (BITMAP_FULL << (16))
+#define BM_SENTINEL_L1_7  (BITMAP_FULL << (8))
+#define BM_SENTINEL_L1_8  (BITMAP_FULL << (4))
+#define BM_SENTINEL_L1_9  (BITMAP_FULL << (2))
+#define BM_SENTINEL_L1_10 (BITMAP_FULL << (1))
+#define BM_SENTINEL_L1_11 (BITMAP_FULL)
+#define BM_SENTINEL_L1_12 (BITMAP_FULL)
+
+//#define BM_SENTINEL_L0_3  (BITMAP_FULL)
+//#define BM_SENTINEL_L0_4  (BITMAP_FULL)
+#define BM_SENTINEL_L0_5  (BITMAP_FULL)
+#define BM_SENTINEL_L0_6  (BITMAP_FULL)
+#define BM_SENTINEL_L0_7  (BITMAP_FULL)
+#define BM_SENTINEL_L0_8  (BITMAP_FULL)
+#define BM_SENTINEL_L0_9  (BITMAP_FULL)
+#define BM_SENTINEL_L0_10 (BITMAP_FULL)
+#define BM_SENTINEL_L0_11 (BITMAP_FULL)
+#define BM_SENTINEL_L0_12 (BITMAP_FULL)
+#endif
 
 static bitmap_t bitmap_empty = BITMAP_FULL;
 static bitmap_t *bitmap_dummy = &bitmap_empty;
@@ -433,41 +485,46 @@ static inline void BITMAP_SET_LIMIT##N (bitmap_t *const bitmap)\
 	bm->m2.bm[L2-1] = BM_SENTINEL_L2_##N;\
 }
 
+#define DEF_BM_OP0_(N, S) \
+	DEF_BM_OP0(N, BITMAP_L0_SIZE(N)+S, BITMAP_L1_SIZE(N), BITMAP_L2_SIZE(N))
+#define DEF_BM_OP1_(N, S) \
+	DEF_BM_OP1(N, BITMAP_L0_SIZE(N)+S, BITMAP_L1_SIZE(N), BITMAP_L2_SIZE(N))
+#define DEF_BM_OP2_(N, S) \
+	DEF_BM_OP2(N, BITMAP_L0_SIZE(N)+S, BITMAP_L1_SIZE(N), BITMAP_L2_SIZE(N))
 //DEF_BM_OP2( 3, 256+1/*sentinel*/, 4, 1);
 //DEF_BM_OP2( 4, 128+1/*sentinel*/, 2, 1);
-//DEF_BM_OP1( 5,  64+1/*sentinel*/, 1, 0);
-DEF_BM_OP1( 6,  32+1/*sentinel*/, 1, 0);
-DEF_BM_OP1( 7,  16+1/*sentinel*/, 1, 0);
-DEF_BM_OP1( 8,   8+1/*sentinel*/, 1, 0);
-DEF_BM_OP1( 9,   4+1/*sentinel*/, 1, 0);
-DEF_BM_OP1(10,   2+1/*sentinel*/, 1, 0);
-DEF_BM_OP0(11,   1+1/*sentinel*/, 0, 0);
-DEF_BM_OP0(12,   1, 0, 0);
+DEF_BM_OP1_( 5, 1/*sentinel*/);
+DEF_BM_OP1_( 6, 1/*sentinel*/);
+DEF_BM_OP1_( 7, 1/*sentinel*/);
+DEF_BM_OP1_( 8, 1/*sentinel*/);
+DEF_BM_OP1_( 9, 1/*sentinel*/);
+DEF_BM_OP1_(10, 1/*sentinel*/);
+DEF_BM_OP0_(11, 1/*sentinel*/);
+DEF_BM_OP0_(12, 0);
+
 
 #define COND(C, T, F) ((C) ? T : F)
-#define _MASK_(N, L0, L1, L2) {COND(L0 > 0, 1, 0), COND(L1 > 0, 1, 0), COND(L2 > 0, 1, 0)}
-#define _MASK_NULL _MASK_(0, 0, 0, 0)
+#define _MASK_(N) {\
+	COND(BITMAP_L0_SIZE(N) > 0, 1, 0),\
+	COND(BITMAP_L1_SIZE(N) > 0, 1, 0),\
+	COND(BITMAP_L2_SIZE(N) > 0, 1, 0)}
+#define _MASK_NULL {}
 static const size_t BITMAP_DEFAULT_MASK[][SEGMENT_LEVEL] = {
 	_MASK_NULL,
 	_MASK_NULL,
 	_MASK_NULL,
-	_MASK_( 3, 256, 4, 1),
-	_MASK_( 4, 128, 2, 1),
-	_MASK_( 5,  64, 1, 0),
-	_MASK_( 6,  32, 1, 0),
-	_MASK_( 7,  16, 1, 0),
-	_MASK_( 8,   8, 1, 0),
-	_MASK_( 9,   4, 1, 0),
-	_MASK_(10,   2, 1, 0),
-	_MASK_(11,   1, 0, 0),
-	_MASK_(12,   1, 0, 0),
+	_MASK_( 3), _MASK_( 4),
+	_MASK_( 5), _MASK_( 6),
+	_MASK_( 7), _MASK_( 8),
+	_MASK_( 9), _MASK_(10),
+	_MASK_(11), _MASK_(12),
 };
 
 typedef void (*fBITPTRS_SET_BASE)(bitmap_t *base[SEGMENT_LEVEL], bitmap_t *bm);
 static void BITPTRS_SET_BASE_(bitmap_t *base[SEGMENT_LEVEL], bitmap_t *bm) {}
 static const fBITPTRS_SET_BASE BITPTRS_SET_BASE[] = {
 	BITPTRS_SET_BASE_, BITPTRS_SET_BASE_, BITPTRS_SET_BASE_,  BITPTRS_SET_BASE_,
-	BITPTRS_SET_BASE_, BITPTRS_SET_BASE_, BITPTRS_SET_BASE6,  BITPTRS_SET_BASE7,
+	BITPTRS_SET_BASE_, BITPTRS_SET_BASE5, BITPTRS_SET_BASE6,  BITPTRS_SET_BASE7,
 	BITPTRS_SET_BASE8, BITPTRS_SET_BASE9, BITPTRS_SET_BASE10, BITPTRS_SET_BASE11,
 	BITPTRS_SET_BASE12
 };
@@ -476,7 +533,7 @@ typedef void (*fBITMAP_SET_LIMIT)(bitmap_t *const bm);
 static void BITMAP_SET_LIMIT_(bitmap_t *const bm) { (void)bm; }
 static const fBITMAP_SET_LIMIT BITMAP_SET_LIMIT__[] = {
 	BITMAP_SET_LIMIT_, BITMAP_SET_LIMIT_, BITMAP_SET_LIMIT_,  BITMAP_SET_LIMIT_,
-	BITMAP_SET_LIMIT_, BITMAP_SET_LIMIT_, BITMAP_SET_LIMIT6,  BITMAP_SET_LIMIT7,
+	BITMAP_SET_LIMIT_, BITMAP_SET_LIMIT5, BITMAP_SET_LIMIT6,  BITMAP_SET_LIMIT7,
 	BITMAP_SET_LIMIT8, BITMAP_SET_LIMIT9, BITMAP_SET_LIMIT10, BITMAP_SET_LIMIT11,
 	BITMAP_SET_LIMIT12
 };
@@ -498,8 +555,8 @@ static inline void BITPTRS_INIT(BitPtr bitptrs[SEGMENT_LEVEL], Segment *seg, siz
 }
 
 static const size_t BM_SIZE[] = {
-	0, 0, 0, 0, 0, 0,
-	sizeof(struct BM6),
+	0, 0, 0, 0, 0,
+	sizeof(struct BM5),  sizeof(struct BM6),
 	sizeof(struct BM7),  sizeof(struct BM8),
 	sizeof(struct BM9),  sizeof(struct BM10),
 	sizeof(struct BM11), sizeof(struct BM12),
@@ -1948,7 +2005,7 @@ static void dumpBM(uintptr_t bm)
 	int i;
 	uintptr_t mask;
 	fprintf(stderr, "                 ");
-	for (i = 63; i >= 0; i--) {
+	for (i = BITS-1; i >= 0; i--) {
 		if (i %10 == 0) {
 			fprintf(stderr, "%d", i / 10);
 		} else {
@@ -1957,11 +2014,11 @@ static void dumpBM(uintptr_t bm)
 	}
 	fprintf(stderr, "\n");
 	fprintf(stderr, "%16lx ", bm);
-	for (i = 63; i >= 0; i--) {
+	for (i = BITS-1; i >= 0; i--) {
 		fprintf(stderr, "%d", i % 10);
 	}
 	fprintf(stderr, "\n                 ");
-	for (mask = ONE << 63; mask; mask >>= 1) {
+	for (mask = ONE << (BITS-1); mask; mask >>= 1) {
 		fprintf(stderr, "%d", (bm & mask)?1:0);
 	}
 	fprintf(stderr, "\n");
@@ -2310,8 +2367,8 @@ static inline void bmgc_Object_free(CTX ctx, kObject *o)
 		STAT_dObject(ctx, ct);
 #ifdef GCSTAT
 		Segment *seg;
-		uintptr_t klass;
-		OBJECT_TO_SEG_AND_KLASS(o, seg, klass);
+		uintptr_t klass, index;
+		OBJECT_LOAD_BLOCK_INFO(o, seg, index, klass);
 		global_gc_stat.collected[seg->heap_klass] += 1;
 #endif
 	}
