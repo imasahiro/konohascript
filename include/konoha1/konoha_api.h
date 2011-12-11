@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+
+
 #ifdef K_INTERNAL
 KNHAPI2(kbool_t) knh_eval(CTX ctx, const char *script, kline_t uline, kOutputStream *w);
 KNHAPI2(kArray*) new_Array(CTX ctx, kclass_t p1, size_t capacity);
@@ -423,6 +425,7 @@ void SCRIPT_asm(CTX ctx, kStmtExpr *stmt);
 void knh_opcode_check(void);
 const char *OPCODE__(kopcode_t opcode);
 size_t knh_opcode_size(kopcode_t opcode);
+size_t knh_opline_size(kopcode_t opcode);
 kbool_t knh_opcode_hasjump(kopcode_t opcode);
 kbool_t knh_opcode_usedef(kopcode_t opcode, int i);
 kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG);
@@ -435,17 +438,6 @@ void knh_Array_clear(CTX ctx, kArray *a, size_t n);
 kArray* new_Array0(CTX ctx, size_t capacity);
 void knh_Array_initAPI(CTX ctx, kArray *a);
 void knh_Iterator_close(CTX ctx, kIterator *it);
-//void *bm_malloc(CTX ctx, size_t n);
-//void bm_free(CTX ctx, void *ptr, size_t n);
-//void *bm_realloc(CTX ctx, void *ptr, size_t os, size_t ns);
-//void knh_share_initArena(CTX ctx, kshare_t *share);
-//void knh_share_freeArena(CTX ctx, kshare_t *share);
-//void knh_initFirstObjectArena(CTX ctx);
-//void knh_ObjectArena_finalfree(CTX ctx, objpageTBL_t *oat, size_t oatSize);
-kbool_t knh_isObject(CTX ctx, kObject *o);
-kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct);
-kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct);
-void TR_NEW(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct);
 size_t k_goodsize(size_t ss);
 size_t k_goodsize2(size_t ss, size_t wsize);
 const kdim_t *new_dim(CTX ctx, size_t capacity, size_t wsize);

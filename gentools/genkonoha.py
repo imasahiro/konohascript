@@ -730,13 +730,14 @@ def readdir(dir, data):
             readfile(fpath, data)
 
 def svnrev():
-    f = os.popen("svn info")
-    t = f.read()
-    print t
-    f.close()
-    # t = t.split('\n')[4].split(":")[1].strip();
-    n = re.search('Revision: (\d+)', t).groups()[0];
-    return int(n) + 1
+    return 886
+    #f = os.popen("svn info")
+    #t = f.read()
+    #print t
+    #f.close()
+    ## t = t.split('\n')[4].split(":")[1].strip();
+    #n = re.search('Revision: (\d+)', t).groups()[0];
+    #return int(n) + 1
 
 def write_name_h(f, data):
     write_chapter(f, 'MACROS')

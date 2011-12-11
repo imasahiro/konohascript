@@ -130,7 +130,6 @@ void knh_BasicBlock_add_(CTX ctx, kBasicBlock *bb, kushort_t line, kopl_t *op, s
 
 static void _bBOX(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct);
 static void _BOX(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct);
-
 static void GammaBuilder_asm(CTX ctx, kopl_t *op, size_t opsize)
 {
 	kBasicBlock *bb = DP(ctx->gma)->bbNC;
@@ -138,9 +137,9 @@ static void GammaBuilder_asm(CTX ctx, kopl_t *op, size_t opsize)
 	if(DP(bb)->size > 0) {
 		kopl_t *opP = DP(bb)->opbuf + (DP(bb)->size - 1);
 		if(op->head.opcode == opP->head.opcode && op->head.opcode <= OPCODE_TR) {
-			size_t i, opsize = knh_opcode_size(op->head.opcode);
-			for(i = 0; i < opsize; i++) {
-				if(op->data[i] != opP->data[i]) goto L_REMOVE;
+			size_t fsize  = knh_opline_size(op->head.opcode) - sizeof(struct KCODE_HEAD);
+			if (memcmp(op->c, opP->c, fsize)  != 0) {
+				goto L_REMOVE;
 			}
 			KNH_P("PEEPHOLE: removed same one");
 			return;

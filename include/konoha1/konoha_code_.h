@@ -913,7 +913,7 @@ typedef struct klr_NEXT_t {
 	kopl_t  *jumppc;
 	kreg_t a;
 	ksfpidx_t b;
-	ksfpidx_t rix;
+	kshort_t rix;
 	ksfpidx_t espshift;
 } klr_NEXT_t;
 

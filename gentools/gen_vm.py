@@ -145,7 +145,7 @@ SAFEPOINT  _JIT              espshift:sfpidx
 JMP        _JIT              addr:addr
 JMP_       _JIT              addr:addr
 JMPF       0                 addr:addr a:rn
-NEXT       _DEF              addr:addr a:r b:sfpidx rix:sfpidx espshift:sfpidx
+NEXT       _DEF              addr:addr a:r b:sfpidx rix:s espshift:sfpidx
 
 BGETIDX    _DEF|_JIT         c:rn a:ro n:rn 
 BSETIDX    _DEF|_JIT         c:rn a:ro n:rn  v:rn
@@ -348,6 +348,9 @@ def write_common_c(f):
 	write_chapter(f, '[common]')
 	f.write('''
 #define K_USING_VMINLINE
+#ifndef offsetof
+#define offsetof(T, M) ((size_t) &(((T*)0)->M))
+#endif
 #include "vminline.c"
 ''')
 
@@ -361,6 +364,7 @@ typedef struct {
 	const char *name;
 	kflag_t   flag;
 	kushort_t size;
+	kushort_t struct_size;
 	kushort_t types[6];
 	kushort_t fields[6];
 } knh_OPDATA_t;
@@ -370,7 +374,8 @@ static const knh_OPDATA_t OPDATA[] = {''')
 		n = kc.name
 		if n.endswith("_"): n = n[:-1]
 		f.write('''
-	{"%s", %s, %s, %s, %s},''' % (n, kc.flag, kc.size, kc.struct, kc.fields))
+	{"%s", %s, %s, %s, %s, %s},''' % (n, kc.flag, kc.size, 
+		'sizeof(klr_' + kc.name + '_t)', kc.struct, kc.fields))
 	f.write('''
 };
 
@@ -398,6 +403,12 @@ const char *OPCODE__(kopcode_t opcode)
 size_t knh_opcode_size(kopcode_t opcode)
 {
 	return OPDATA[opcode].size;
+}
+
+/* ------------------------------------------------------------------------ */
+size_t knh_opline_size(kopcode_t opcode)
+{
+	return OPDATA[opcode].struct_size;
 }
 
 /* ------------------------------------------------------------------------ */
