@@ -733,6 +733,7 @@ kObject **knh_reftraceRoot(CTX ctx FTRARG)
 		kContext *ctx0 = (kContext *)knh_Array_n(ctx->share->contextListNULL, i);
 		tail_ = knh_context_reftrace(ctx, (kcontext_t *)ctx0->ctx FTRDATA);
 	}
+	KNH_SIZEREF(ctx);
 	return tail_;
 }
 

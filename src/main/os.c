@@ -184,6 +184,12 @@ static void setkonohainfo(knh_sysinfo_t *sysinfo)
 //#endif
 #if defined(K_USING_RCGC)
 	APPEND_OPTION(p, "rcgc");
+#elif defined(K_USING_BMGC)
+#if defined(K_USING_GENGC)
+	APPEND_OPTION(p, "gen-bmgc");
+#else
+	APPEND_OPTION(p, "bmgc");
+#endif
 #else
 	APPEND_OPTION(p, "msgc");
 #endif

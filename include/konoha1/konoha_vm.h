@@ -141,6 +141,18 @@ extern "C" {
 		}\
 	}\
 
+#ifdef K_USING_GENGC
+#define klr_xmov(ctx, parent, v1, v2) {\
+	Object *v1_ = (Object*)v1;\
+	Object *v2_ = (Object*)v2;\
+	knh_Object_RCinc(v2_);\
+	knh_Object_RCdec(v1_);\
+	if(Object_isRC0(v1_)) {\
+		knh_Object_RCfree(ctx, v1_);\
+	}\
+	knh_writeBarrier(parent, v2_);\
+	v1 = v2_;\
+}\
 
 #define klr_mov(ctx, v1, v2) {\
 	Object *v1_ = (Object*)v1;\
@@ -152,6 +164,21 @@ extern "C" {
 	}\
 	v1 = v2_;\
 }\
+
+#else
+
+#define klr_mov(ctx, v1, v2) {\
+	Object *v1_ = (Object*)v1;\
+	Object *v2_ = (Object*)v2;\
+	knh_Object_RCinc(v2_);\
+	knh_Object_RCdec(v1_);\
+	if(Object_isRC0(v1_)) {\
+		knh_Object_RCfree(ctx, v1_);\
+	}\
+	v1 = v2_;\
+}\
+
+#endif
 
 #define KLR_OSET(ctx, a, v) {\
 	klr_mov(ctx, Ro_(a), v);\
@@ -191,9 +218,16 @@ extern "C" {
 	klr_mov(ctx, Ro_(a), v_);\
 }\
 
+#ifdef K_USING_GENGC
+#define KLR_XMOV(ctx, a, b)     klr_xmov(ctx, Rx_(a.i), RXo_(a), Ro_(b))
+#define KLR_XMOVx(ctx, a, b)    klr_xmov(ctx, Rx_(a.i), RXo_(a), RXo_(b))
+#define KLR_XOSET(ctx, a, b)    klr_xmov(ctx, Rx_(a.i), RXo_(a), b)
+#else
 #define KLR_XMOV(ctx, a, b)     klr_mov(ctx, RXo_(a), Ro_(b))
 #define KLR_XMOVx(ctx, a, b)    klr_mov(ctx, RXo_(a), RXo_(b))
 #define KLR_XOSET(ctx, a, b)    klr_mov(ctx, RXo_(a), b)
+#endif
+
 
 /* ------------------------------------------------------------------------ */
 /* [CALL] */

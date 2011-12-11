@@ -2058,7 +2058,9 @@ static KMETHOD Map_newMAP(CTX ctx, ksfp_t *sfp _RIX)
 	KNH_ASSERT(m->spi != NULL); // if NULL, it is unsupported
 	m->mapptr  = m->spi->init(ctx, 0, NULL, NULL);
 	for(i = 0; i < ac; i+=2) {
-		m->spi->set(ctx, m->mapptr, v + i);
+		ksfp_t *kvsfp = v + i;
+		m->spi->set(ctx, m->mapptr, kvsfp);
+		knh_writeBarrier(m, kvsfp[1].o);
 	}
 	RETURN_(m);
 }
@@ -2461,6 +2463,7 @@ static KMETHOD Map_set(CTX ctx, ksfp_t *sfp _RIX)
 {
 	kMap *m = sfp[0].m;
 	m->spi->set(ctx, m->mapptr, sfp + 1);
+	knh_writeBarrier(m, (sfp+1+1)->o);
 	RETURNvoid_();
 }
 
@@ -3523,7 +3526,7 @@ static KMETHOD System_listProperties(CTX ctx, ksfp_t *sfp _RIX)
 
 static KMETHOD System_gc(CTX ctx, ksfp_t *sfp _RIX)
 {
-	knh_System_gc(ctx, 0/*needsStackTrace*/);
+	knh_System_gc(ctx, 0/*needsStackTrace*/ GC_TENURE);
 }
 
 /* ------------------------------------------------------------------------ */
