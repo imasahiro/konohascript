@@ -291,7 +291,7 @@ class K_Inst {
             }
         }
     }
-    String getName() {
+    dynamic getName() {
         String res = "";
         /* const value (not named) */
         if (kvalue == null) {
@@ -303,19 +303,22 @@ class K_Inst {
         } else if (kvalue.type == Boolean) {
             res += "bval" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Array) {
-            res += "ary" + kvalue.idx;;
+            res += "ary" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == String) {
-            res += "str" + kvalue.idx;
+            res += "str" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == dynamic) {
-            res += "dyn" + kvalue.idx;
+            res += "dyn" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == OutputStream) {
-            res += "ous" + kvalue.idx;
+            res += "ous" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == InputStream) {
-            res += "ins" + kvalue.idx;
+            res += "ins" + kvalue.idx + "_" + defidx;
         } else if (kvalue.type == Script) {
-            res += "script" + kvalue.idx;
+            res += "script" + kvalue.idx + "_" + defidx;
         } else {
-            res += "obj" + kvalue.idx;
+            res += kvalue.type;
+            res = res.split(".")[1];
+            res += kvalue.idx + "_" + defidx;
+            res = res.convert(to:lower);
         }
         return res;
     }
@@ -560,7 +563,7 @@ class K_Function {
 
     K_Value getKValue(int idx, dynamic type) {
         K_Value res = value_table[(String)idx];
-        if (res == null || (res.type != type)) {
+        if (res == null || res.type != type) {
             value_table[(String)idx] = new K_Value(idx, type);
         }
         return value_table[(String)idx];
@@ -1038,13 +1041,21 @@ class K_CALL extends K_Inst {
     @Override String dump() {
         String res = "\t";
         if (kvalue != null) {
-            res += ((getName() == "") ? "_" : getName()) + " = call " + getTypeName(kvalue.type) + " " + op.fname[op.fname.indexOf(".")+1 to |op.fname|-1] + " ( ";
+            res += ((kvalue.type == null) ? "_" : getName()) + " = call " + getTypeName(kvalue.type) + " " + op.fname[op.fname.indexOf(".")+1 to |op.fname|-1] + " ( ";
         }
         for (int i = 0; i < |args|; i++) {
             res += args[i].getName() + " ";
         }
         res = res[0 to |res|-2] + " )";
-        res += ((op.flagStatic == 0) ? " @nonstatic" : " @static");
+        if (op.flagStatic == 0) {
+            if (!is_Tunbox(args[0].kvalue.type)) {
+                res += " @nonstatic";
+            } else {
+                res += " @static";
+            }
+        } else {
+            res += " @static";
+        }
         return res;
     }
 }
@@ -1649,7 +1660,8 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
         case Token.TT_FIELD:
             SFX bx = getsfx(tkb);
             K_Inst vb = kfunc.getKInst(bx.i);
-            K_Inst tmp = new K_MOVx(null, new K_MOVxop(vb, bx.n), 0);
+            K_Value kvalue = kfunc.getKValue(espidx + 1, btype);
+            K_Inst tmp = new K_MOVx(kvalue, new K_MOVxop(vb, bx.n), 0);
             kfunc.curBB.insts.add(tmp);
             K_Inst va = kfunc.getKInst(ax.i);
             K_Inst inst = new K_xMOV(new K_xMOVop(va, tmp, ax.n), 0);
