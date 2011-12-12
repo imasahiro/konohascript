@@ -484,7 +484,7 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 		case VMT_RN: 
 			RBP_ASSERT1(FIELD(kreg_t, c, i));
 			if(((kintptr_t)FIELD(kreg_t, c, i)) < 0) {
-				knh_printf(ctx, w, "r(%d)", FIELD(kreg_t, c, i));
+				knh_printf(ctx, w, "r(%d)", (kintptr_t)FIELD(kreg_t, c, i));
 			}
 			else {
 				knh_printf(ctx, w, "r%d", FIELD(kreg_t, c, i));
