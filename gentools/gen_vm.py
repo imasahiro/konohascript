@@ -321,7 +321,7 @@ def write_define_h(f):
 #define VMT_I        9
 #define VMT_F        10
 #define VMT_CID      11
-#define VMT_HCACHE    12
+#define VMT_HCACHE   12
 #define VMT_MTD      13
 #define VMT_TMR      14
 #define VMT_OBJECT   15
@@ -420,17 +420,19 @@ kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 }
 /* ------------------------------------------------------------------------ */
 
-#define RBP_ASSERT0(N)   \
-	if((N % 2) != 0) {\
-		DBG_P("r=%d", N); \
-		DBG_ASSERT((N % 2) == 0);\
-	}\
+#define RBP_ASSERT0(N) do {\\
+	if((N % 2) != 0) {\\
+		DBG_P("r=%d", N); \\
+		DBG_ASSERT((N % 2) == 0);\\
+	}\\
+} while (0)
 
-#define RBP_ASSERT1(N)   \
-	if((N % 2) == 0) {\
-		DBG_P("r=%d", N); \
-		DBG_ASSERT((N % 2) != 0);\
-	}\
+#define RBP_ASSERT1(N) do {\\
+	if((N % 2) == 0) {\\
+		DBG_P("r=%d", N);\\
+		DBG_ASSERT((N % 2) != 0);\\
+	}\\
+} while (0)
 
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 {

@@ -438,8 +438,20 @@ kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 }
 /* ------------------------------------------------------------------------ */
 
-#define RBP_ASSERT0(N)   	if((N % 2) != 0) {		DBG_P("r=%d", N); 		DBG_ASSERT((N % 2) == 0);	}
-#define RBP_ASSERT1(N)   	if((N % 2) == 0) {		DBG_P("r=%d", N); 		DBG_ASSERT((N % 2) != 0);	}
+#define RBP_ASSERT0(N) do {\
+	if((N % 2) != 0) {\
+		DBG_P("r=%d", N); \
+		DBG_ASSERT((N % 2) == 0);\
+	}\
+} while (0)
+
+#define RBP_ASSERT1(N) do {\
+	if((N % 2) == 0) {\
+		DBG_P("r=%d", N);\
+		DBG_ASSERT((N % 2) != 0);\
+	}\
+} while (0)
+
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 {
 	size_t i, size = OPDATA[c->opcode].size;

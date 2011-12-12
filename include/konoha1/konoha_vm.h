@@ -37,7 +37,7 @@ extern "C" {
 /* ------------------------------------------------------------------------ */
 /* KCODE */
 
-#define rshift(rbp, x_) (&rbp[x_])
+#define rshift(rbp, x_) (rbp+x_)
 #define R_NEXTIDX (K_NEXTIDX)
 #define Rn_(x)    (rshift(rbp,x)->ndata)
 #define Ri_(x)    (rshift(rbp,x)->ivalue)
@@ -50,7 +50,7 @@ extern "C" {
 #define Rx_(x)    (rshift(rbp,x)->ox)
 
 #define RXo_(x)    (Rx_(x.i)->fields[x.n])
-#define RXd_(x)   (*((kunbox_t*) &RXo_(x)))
+#define RXd_(x)   (*((kunbox_t*) Rx_(x.i)->fields+x.n))
 #define SFP(rbp)  ((ksfp_t*)(rbp))
 #define SFPIDX(n) ((n)/2)
 #define RBP(sfp)  ((krbp_t*)(sfp))
