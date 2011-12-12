@@ -27,5 +27,11 @@
 
 /* ************************************************************************ */
 
+#include "commons.h"
+
+#ifndef K_USING_GENGC
 #include "bmgc.h"
+#else
+#include "gbmgc.h"
+#endif
 

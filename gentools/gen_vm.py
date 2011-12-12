@@ -207,7 +207,7 @@ CTYPE = {
 	'sfx' :    'ksfx_t',
 	'int':     'kint_t',
 	'float':   'kfloat_t',
-	'cid':     'const kclassT_t*',
+	'cid':     'const knh_ClassTBL_t*',
 	'hcache':  'kcachedata_t',
 	'mtd':     'kMethod*',
 	'tmr':     'kTypeMap*',
@@ -321,7 +321,7 @@ def write_define_h(f):
 #define VMT_I        9
 #define VMT_F        10
 #define VMT_CID      11
-#define VMT_HCACHE    12
+#define VMT_HCACHE   12
 #define VMT_MTD      13
 #define VMT_TMR      14
 #define VMT_OBJECT   15
@@ -420,17 +420,19 @@ kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 }
 /* ------------------------------------------------------------------------ */
 
-#define RBP_ASSERT0(N)   \
-	if((N % 2) != 0) {\
-		DBG_P("r=%d", N); \
-		DBG_ASSERT((N % 2) == 0);\
-	}\
+#define RBP_ASSERT0(N) do {\\
+	if((N % 2) != 0) {\\
+		DBG_P("r=%d", N); \\
+		DBG_ASSERT((N % 2) == 0);\\
+	}\\
+} while (0)
 
-#define RBP_ASSERT1(N)   \
-	if((N % 2) == 0) {\
-		DBG_P("r=%d", N); \
-		DBG_ASSERT((N % 2) != 0);\
-	}\
+#define RBP_ASSERT1(N) do {\\
+	if((N % 2) == 0) {\\
+		DBG_P("r=%d", N);\\
+		DBG_ASSERT((N % 2) != 0);\\
+	}\\
+} while (0)
 
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 {
@@ -485,7 +487,7 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 		case VMT_F:
 			knh_write_vmfunc(ctx, w, c->p[i]); break;
 		case VMT_CID:
-			knh_write_cname(ctx, w, ((kclassT_t*)c->data[i])->cid); break;
+			knh_write_cname(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
 		case VMT_HCACHE: {
 			kcachedata_t *hc = (kcachedata_t*)&(c->p[i]);
 			knh_write_cname(ctx, w, hc->cid); 

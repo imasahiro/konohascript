@@ -35,6 +35,51 @@ extern "C" {
 #endif
 
 /* ------------------------------------------------------------------------ */
+/* config for generational gc */
+
+#ifdef K_USING_GENGC
+
+typedef struct Segment Segment;
+typedef struct BlockHeader BlockHeader;
+
+#define GC_TENURE       , 1
+#define GC_YOUNG        , 0
+#define GC_Tenure       1
+#define GC_Young        0
+#define GC_ARG          , int isTenure
+#define GC_DATA         , isTenure
+
+#define setYoung(o)   (o->h.refc = GC_Young)
+#define setTenure(o)  (o->h.refc = GC_Tenure)
+#define set_age(o, n) (o->h.refc = n)
+
+//#define isYoung(o)  isYoung_(o)
+//#define isTenure(o) isTenure_(o)
+#define isYoung(o)  (o->h.refc == GC_Young)
+#define isTenure(o) (o->h.refc == GC_Tenure)
+#define setRemSet(o) setRemSet_(o)
+#define invoke_gc(ctx) invoke_gc_(ctx)
+
+#else
+
+#define GC_TENURE
+#define GC_YOUNG
+#define GC_Tenure       0
+#define GC_Young        0
+#define GC_ARG
+#define GC_DATA
+
+#define setYoung(o)
+#define setTenure(o)
+#define set_age(o, n)
+
+#define isYoung(o)
+#define isTenure(o)
+#define setRemSet(o)
+#define invoke_gc(ctx) knh_System_gc(ctx, 1); // GC enables Cstack trace
+#endif
+
+/* ------------------------------------------------------------------------ */
 /* common interface for gc.c */
 
 void *knh_malloc(CTX ctx, size_t size);
@@ -61,10 +106,12 @@ void knh_sizerefs(CTX ctx, kObject** tail);
 void knh_setrefs(CTX ctx,  kObject** list, size_t size);
 void knh_Object_RCfree(CTX ctx, Object *o);
 //void knh_Object_RCsweep(CTX ctx, Object *o);
-void knh_System_gc(CTX ctx, int needsCStackTrace);
+void knh_System_gc(CTX ctx, int needsCStackTrace GC_ARG);
+void setRemSet_(kObject *o);
+void dump_memstat();
+void invoke_gc_(CTX ctx);
 
 /* ------------------------------------------------------------------------ */
-/* common interface for gc.c */
 
 #define K_RCGC_INIT           0
 
@@ -161,6 +208,38 @@ void knh_System_gc(CTX ctx, int needsCStackTrace);
 		OBJECT_SET(v, h_);\
 	}\
 
+#ifdef K_USING_GENGC
+/* [write barrier] */
+#define knh_writeBarrier(parent, o) {\
+		if (unlikely(isTenure(parent))) {\
+			setRemSet((kObject *)(o));\
+		}\
+	}\
+
+#define KNH_INITv_withWB(parent, v, o) {\
+		kObject *h_ = (kObject*)o; \
+		DBG_ASSERT_ISOBJECT(h_); \
+		knh_Object_RCinc(h_); \
+		OBJECT_SET(v, h_);\
+		knh_writeBarrier(parent, h_);\
+	}\
+
+#define KNH_SETv_withWB(ctx, parent, v, o) {\
+		kObject *h_ = (kObject*)(o); \
+		DBG_ASSERT_ISOBJECT(v);  \
+		DBG_ASSERT_ISOBJECT(h_); \
+		knh_Object_RCinc(h_); \
+		knh_Object_DRCsweep(ctx, (kObject*)v); \
+		OBJECT_SET(v, h_);\
+		knh_writeBarrier(parent, h_);\
+	}\
+
+#else 
+#define knh_writeBarrier(parent, o)
+#define KNH_INITv_withWB(parent, v, o) KNH_INITv(v, o)
+#define KNH_SETv_withWB(ctx, parent, v, o) KNH_SETv(ctx, v, o)
+
+#endif
 #define KNH_RCSETv(ctx,v,o) {\
 		kObject *h_ = (kObject*)o; \
 		DBG_ASSERT_ISOBJECT(v);  \

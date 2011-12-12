@@ -416,8 +416,6 @@ kio_t *io2_null(void)
 void io2_free(CTX ctx, kio_t *io2)
 {
 	if(io2->isRunning == 1) {
-		// TODO(@imasahiro) need flush
-		io2_flush(ctx, io2);
 		io2->_close(ctx, io2);
 	}
 	if(io2->bufsiz > 0) {

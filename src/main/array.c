@@ -157,7 +157,7 @@ static void Farray_getN(CTX ctx, kArray *a, size_t n2, ksfp_t *vsfp)
 
 static void Farray_setO(CTX ctx, kArray *a, size_t n2, ksfp_t *vsfp)
 {
-	KNH_SETv(ctx, a->list[n2], vsfp[0].o);
+	KNH_SETv_withWB(ctx, a, a->list[n2], vsfp[0].o);
 }
 
 static void Farray_setN(CTX ctx, kArray *a, size_t n2, ksfp_t *vsfp)
@@ -171,7 +171,7 @@ static void Farray_addO(CTX ctx, kArray *a, ksfp_t *v)
 	if(!(a->size + 1 < capacity)) {
 		knh_Array_grow(ctx, a, k_grow(a->size), a->size + 1);
 	}
-	KNH_INITv(a->list[a->size], v[0].o);
+	KNH_INITv_withWB(a, a->list[a->size], v[0].o);
 	a->size += 1;
 }
 
@@ -193,7 +193,7 @@ static void Farray_multiaddO(CTX ctx, kArray *a, ksfp_t *v)
 		knh_Array_grow(ctx, a, k_grow(a->size), a->size + n);
 	}
 	for(i = 0; i < n; i++) {
-		KNH_INITv(a->list[a->size+i], v[i].o);
+		KNH_INITv_withWB(a, a->list[a->size+i], v[i].o);
 	}
 	a->size += n;
 }
@@ -283,7 +283,7 @@ KNHAPI2(kIterator*) new_IteratorG(CTX ctx, kclass_t cid, kObject *source, knh_Fi
 	DBG_ASSERT(C_bcid(cid) == CLASS_Iterator);
 	kIterator *it = new_O(Iterator, cid);
 	if(IS_NULL(source)) fnext = Fitrnext_end;
-	KNH_SETv(ctx, DP(it)->source, source);
+	KNH_SETv_withWB(ctx, it, DP(it)->source, source);
 	it->fnext_1 = fnext;
 	return it;
 }

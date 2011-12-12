@@ -1286,7 +1286,7 @@ typedef struct klr_NOP_t {
 #define VMT_I        9
 #define VMT_F        10
 #define VMT_CID      11
-#define VMT_HCACHE    12
+#define VMT_HCACHE   12
 #define VMT_MTD      13
 #define VMT_TMR      14
 #define VMT_OBJECT   15
