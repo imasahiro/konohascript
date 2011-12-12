@@ -58,7 +58,7 @@ typedef struct {
 	kushort_t fields[6];
 } knh_OPDATA_t;
 
-const knh_OPDATA_t OPDATA[] = {
+static const knh_OPDATA_t OPDATA[] = {
 	{"HALT", 0, 0, sizeof(klr_HALT_t), { VMT_VOID}, {0}},
 	{"THCODE", 0, 2, sizeof(klr_THCODE_t), { VMT_F, VMT_U, VMT_VOID}, {offsetof(klr_THCODE_t, th), offsetof(klr_THCODE_t, uri), 0}},
 	{"ENTER", 0, 0, sizeof(klr_ENTER_t), { VMT_VOID}, {0}},
@@ -459,6 +459,7 @@ kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 		DBG_ASSERT((N % 2) != 0);\
 	}\
 } while (0)
+
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 {
 	size_t i, size = OPDATA[c->head.opcode].size;
@@ -514,7 +515,7 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 		case VMT_F:
 			knh_write_vmfunc(ctx, w, FIELD(void*, c, i)); break;
 		case VMT_CID:
-			knh_write_cname(ctx, w, (FIELD(knh_ClassTBL_t*, c, i)->cid)); break;
+			knh_write_cname(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
 		case VMT_HCACHE: {
 			kcachedata_t *hc = (kcachedata_t*)&(FIELD(kcachedata_t, c, i));
 			knh_write_cname(ctx, w, hc->cid); 
@@ -569,6 +570,7 @@ void knh_opcode_shift(kopl_t *c, int shift)
 
 #include"../../include/konoha1/konoha_vm.h"
 
+typedef unsigned char vmc_t;
 #ifdef K_USING_VMCOUNT_
 #define VMCOUNT(op)    ((op)->count)++;
 #else
@@ -592,7 +594,7 @@ void knh_opcode_shift(kopl_t *c, int shift)
 #define GOTO_NEXT()     goto *(NEXT_OP)
 #endif
 #define TC(c) 
-#define DISPATCH_START(pc) goto *OPJUMP[pc->head.opcode]
+#define DISPATCH_START(pc) goto *OPJUMP[((kopl_t*)pc)->head.opcode]
 #define DISPATCH_END(pc)
 #define GOTO_PC(pc)        GOTO_NEXT()
 #else/*K_USING_THCODE_*/
@@ -602,12 +604,11 @@ void knh_opcode_shift(kopl_t *c, int shift)
 #define GOTO_NEXT() goto NEXT_OP
 #define JUMP        L_HEAD
 #define TC(c)
-#define DISPATCH_START(pc) L_HEAD:;switch(pc->head.opcode) {
+#define DISPATCH_START(pc) L_HEAD:;switch(((kopl_t*)pc)->head.opcode) {
 #define DISPATCH_END(pc)   } KNH_DIE("unknown opcode=%d", (int)pc->head.opcode); 
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 
-typedef unsigned char vmc_t;
 kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 {
 	vmc_t *pc = (vmc_t *) pc_;
@@ -661,7 +662,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	kuint64_t _utime = knh_getTime();
 	static kuint64_t _UTIME[OPCODE_NOP+1] = {0};
 	static size_t _UC[OPCODE_NOP+1] = {0};)
-	DISPATCH_START(((kopl_t*)pc));
+	DISPATCH_START(pc);
 
 	CASE(HALT) {
 		klr_HALT_t *op = (klr_HALT_t*)pc; (void)op;
@@ -701,7 +702,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	} 
 	CASE(TRY) {
 		klr_TRY_t *op = (klr_TRY_t*)pc; (void)op;
-		KLR_TRY(ctx, pc = (vmc_t*) op->jumppc, JUMP, op->hn);
+		KLR_TRY(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->hn);
 		pc += sizeof(klr_TRY_t);
 		GOTO_NEXT();
 	} 
@@ -725,7 +726,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	} 
 	CASE(CATCH) {
 		klr_CATCH_t *op = (klr_CATCH_t*)pc; (void)op;
-		KLR_CATCH(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->en, op->eid);
+		KLR_CATCH(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->en, op->eid);
 		pc += sizeof(klr_CATCH_t);
 		GOTO_NEXT();
 	} 
@@ -1361,25 +1362,25 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	} 
 	CASE(JMP) {
 		klr_JMP_t *op = (klr_JMP_t*)pc; (void)op;
-		KLR_JMP(ctx, pc = (vmc_t *) op->jumppc, JUMP);
+		KLR_JMP(ctx, pc = (vmc_t*)op->jumppc, JUMP);
 		pc += sizeof(klr_JMP_t);
 		GOTO_NEXT();
 	} 
 	CASE(JMP_) {
 		klr_JMP__t *op = (klr_JMP__t*)pc; (void)op;
-		KLR_JMP_(ctx, pc = (vmc_t *) op->jumppc, JUMP);
+		KLR_JMP_(ctx, pc = (vmc_t*)op->jumppc, JUMP);
 		pc += sizeof(klr_JMP__t);
 		GOTO_NEXT();
 	} 
 	CASE(JMPF) {
 		klr_JMPF_t *op = (klr_JMPF_t*)pc; (void)op;
-		KLR_JMPF(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		KLR_JMPF(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a);
 		pc += sizeof(klr_JMPF_t);
 		GOTO_NEXT();
 	} 
 	CASE(NEXT) {
 		klr_NEXT_t *op = (klr_NEXT_t*)pc; (void)op;
-		KLR_NEXT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b, op->rix, op->espshift);
+		KLR_NEXT(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b, op->rix, op->espshift);
 		pc += sizeof(klr_NEXT_t);
 		GOTO_NEXT();
 	} 
@@ -1457,163 +1458,163 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	} 
 	CASE(bJNUL) {
 		klr_bJNUL_t *op = (klr_bJNUL_t*)pc; (void)op;
-		KLR_bJNUL(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		KLR_bJNUL(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a);
 		pc += sizeof(klr_bJNUL_t);
 		GOTO_NEXT();
 	} 
 	CASE(bJNN) {
 		klr_bJNN_t *op = (klr_bJNN_t*)pc; (void)op;
-		KLR_bJNN(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		KLR_bJNN(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a);
 		pc += sizeof(klr_bJNN_t);
 		GOTO_NEXT();
 	} 
 	CASE(bJNOT) {
 		klr_bJNOT_t *op = (klr_bJNOT_t*)pc; (void)op;
-		KLR_bJNOT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		KLR_bJNOT(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a);
 		pc += sizeof(klr_bJNOT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJEQ) {
 		klr_iJEQ_t *op = (klr_iJEQ_t*)pc; (void)op;
-		KLR_iJEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_iJEQ(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_iJEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJNEQ) {
 		klr_iJNEQ_t *op = (klr_iJNEQ_t*)pc; (void)op;
-		KLR_iJNEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_iJNEQ(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_iJNEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLT) {
 		klr_iJLT_t *op = (klr_iJLT_t*)pc; (void)op;
-		KLR_iJLT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_iJLT(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_iJLT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLTE) {
 		klr_iJLTE_t *op = (klr_iJLTE_t*)pc; (void)op;
-		KLR_iJLTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_iJLTE(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_iJLTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGT) {
 		klr_iJGT_t *op = (klr_iJGT_t*)pc; (void)op;
-		KLR_iJGT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_iJGT(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_iJGT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGTE) {
 		klr_iJGTE_t *op = (klr_iJGTE_t*)pc; (void)op;
-		KLR_iJGTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_iJGTE(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_iJGTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJEQC) {
 		klr_iJEQC_t *op = (klr_iJEQC_t*)pc; (void)op;
-		KLR_iJEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_iJEQC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_iJEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJNEQC) {
 		klr_iJNEQC_t *op = (klr_iJNEQC_t*)pc; (void)op;
-		KLR_iJNEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_iJNEQC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_iJNEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLTC) {
 		klr_iJLTC_t *op = (klr_iJLTC_t*)pc; (void)op;
-		KLR_iJLTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_iJLTC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_iJLTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLTEC) {
 		klr_iJLTEC_t *op = (klr_iJLTEC_t*)pc; (void)op;
-		KLR_iJLTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_iJLTEC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_iJLTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGTC) {
 		klr_iJGTC_t *op = (klr_iJGTC_t*)pc; (void)op;
-		KLR_iJGTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_iJGTC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_iJGTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGTEC) {
 		klr_iJGTEC_t *op = (klr_iJGTEC_t*)pc; (void)op;
-		KLR_iJGTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_iJGTEC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_iJGTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJEQ) {
 		klr_fJEQ_t *op = (klr_fJEQ_t*)pc; (void)op;
-		KLR_fJEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_fJEQ(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_fJEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJNEQ) {
 		klr_fJNEQ_t *op = (klr_fJNEQ_t*)pc; (void)op;
-		KLR_fJNEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_fJNEQ(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_fJNEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLT) {
 		klr_fJLT_t *op = (klr_fJLT_t*)pc; (void)op;
-		KLR_fJLT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_fJLT(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_fJLT_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLTE) {
 		klr_fJLTE_t *op = (klr_fJLTE_t*)pc; (void)op;
-		KLR_fJLTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_fJLTE(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_fJLTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGT) {
 		klr_fJGT_t *op = (klr_fJGT_t*)pc; (void)op;
-		KLR_fJGT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_fJGT(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_fJGT_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGTE) {
 		klr_fJGTE_t *op = (klr_fJGTE_t*)pc; (void)op;
-		KLR_fJGTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		KLR_fJGTE(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->b);
 		pc += sizeof(klr_fJGTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJEQC) {
 		klr_fJEQC_t *op = (klr_fJEQC_t*)pc; (void)op;
-		KLR_fJEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_fJEQC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_fJEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJNEQC) {
 		klr_fJNEQC_t *op = (klr_fJNEQC_t*)pc; (void)op;
-		KLR_fJNEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_fJNEQC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_fJNEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLTC) {
 		klr_fJLTC_t *op = (klr_fJLTC_t*)pc; (void)op;
-		KLR_fJLTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_fJLTC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_fJLTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLTEC) {
 		klr_fJLTEC_t *op = (klr_fJLTEC_t*)pc; (void)op;
-		KLR_fJLTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_fJLTEC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_fJLTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGTC) {
 		klr_fJGTC_t *op = (klr_fJGTC_t*)pc; (void)op;
-		KLR_fJGTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_fJGTC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_fJGTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGTEC) {
 		klr_fJGTEC_t *op = (klr_fJGTEC_t*)pc; (void)op;
-		KLR_fJGTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		KLR_fJGTEC(ctx, pc = (vmc_t*)op->jumppc, JUMP, op->a, op->n);
 		pc += sizeof(klr_fJGTEC_t);
 		GOTO_NEXT();
 	} 
@@ -1637,7 +1638,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	} 
 	DISPATCH_END(pc);
 	L_RETURN:;
-	return (kopl_t *) pc;
+	return (kopl_t*) pc;
 }
 
 

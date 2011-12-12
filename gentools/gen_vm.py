@@ -457,6 +457,7 @@ kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG)
 		DBG_ASSERT((N % 2) != 0);\\
 	}\\
 } while (0)
+
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 {
 	size_t i, size = OPDATA[c->head.opcode].size;
@@ -512,7 +513,7 @@ void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start)
 		case VMT_F:
 			knh_write_vmfunc(ctx, w, FIELD(void*, c, i)); break;
 		case VMT_CID:
-			knh_write_cname(ctx, w, (FIELD(knh_ClassTBL_t*, c, i)->cid)); break;
+			knh_write_cname(ctx, w, ((knh_ClassTBL_t*)c->data[i])->cid); break;
 		case VMT_HCACHE: {
 			kcachedata_t *hc = (kcachedata_t*)&(FIELD(kcachedata_t, c, i));
 			knh_write_cname(ctx, w, hc->cid); 
@@ -617,7 +618,7 @@ def getmacro(kc, label):
 	for a in kc.tokens[2:]:
 		v, t = a.split(':')
 		if t == 'addr':
-			m += ', pc = op->jumppc, %s' % (label)
+			m += ', pc = (vmc_t*)op->jumppc, %s' % (label)
 		else:
 			m += ', op->%s' % (v)
 	m += ')'
@@ -629,6 +630,7 @@ def write_exec(f):
 
 #include"../../include/konoha1/konoha_vm.h"
 
+typedef unsigned char vmc_t;
 #ifdef K_USING_VMCOUNT_
 #define VMCOUNT(op)    ((op)->count)++;
 #else
@@ -652,7 +654,7 @@ def write_exec(f):
 #define GOTO_NEXT()     goto *(NEXT_OP)
 #endif
 #define TC(c) 
-#define DISPATCH_START(pc) goto *OPJUMP[pc->head.opcode]
+#define DISPATCH_START(pc) goto *OPJUMP[((kopl_t*)pc)->head.opcode]
 #define DISPATCH_END(pc)
 #define GOTO_PC(pc)        GOTO_NEXT()
 #else/*K_USING_THCODE_*/
@@ -662,12 +664,11 @@ def write_exec(f):
 #define GOTO_NEXT() goto NEXT_OP
 #define JUMP        L_HEAD
 #define TC(c)
-#define DISPATCH_START(pc) L_HEAD:;switch(pc->head.opcode) {
+#define DISPATCH_START(pc) L_HEAD:;switch(((kopl_t*)pc)->head.opcode) {
 #define DISPATCH_END(pc)   } KNH_DIE("unknown opcode=%d", (int)pc->head.opcode); 
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 
-typedef unsigned char vmc_t;
 kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 {
 	vmc_t *pc = (vmc_t *) pc_;
@@ -686,7 +687,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	kuint64_t _utime = knh_getTime();
 	static kuint64_t _UTIME[OPCODE_NOP+1] = {0};
 	static size_t _UC[OPCODE_NOP+1] = {0};)
-	DISPATCH_START((kopl_t*)pc);
+	DISPATCH_START(pc);
 ''')
 	for kc in KCODE_LIST:
 # DBG_P("%%p %%s", pc-1, OPCODE__((pc-1)->opcode));
@@ -700,7 +701,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 	f.write('''
 	DISPATCH_END(pc);
 	L_RETURN:;
-	return pc;
+	return (kopl_t*) pc;
 }
 
 ''')

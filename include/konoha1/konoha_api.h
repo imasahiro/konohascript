@@ -431,7 +431,7 @@ kbool_t knh_opcode_usedef(kopcode_t opcode, int i);
 kObject** knh_opline_reftrace(CTX ctx, kopl_t *c FTRARG);
 void knh_opcode_dump(CTX ctx, kopl_t *c, kOutputStream *w, kopl_t *pc_start);
 void knh_opcode_shift(kopl_t *c, int shift);
-kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc);
+kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_);
 kArray* new_ArrayG(CTX ctx, kclass_t cid, size_t capacity);
 void knh_Array_grow(CTX ctx, kArray *a, size_t newsize, size_t reqsize);
 void knh_Array_clear(CTX ctx, kArray *a, size_t n);
