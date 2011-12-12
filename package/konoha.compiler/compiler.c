@@ -220,11 +220,14 @@ static void kook_LETEXPR_asm(CTX ctx, kStmtExpr *stmt, int espidx)
 
 static void kook_FUNCCALL_asm(CTX ctx, kStmtExpr *stmt, int espidx)
 {
-    kMethod *mtd = tkNN(stmt, 0)->mtd;
+    kMethod *mtd = (tkNN(stmt, 0))->mtd;
     kclass_t cid = Tn_cid(stmt, 1);
+    kClass *funcclass = new_Type(ctx, cid);
+    ktype_t rtype = funcclass->cTBL->p1;
+    kClass *rc = new_Type(ctx, rtype);
     kbool_t flag = Stmt_isDYNCALL(stmt);
     kClass *c = new_Type(ctx, cid);
-    CALL(ctx, COMPILER_API.FUNCCALL, 5, stmt, NN(espidx), mtd, c, NN(flag));
+    CALL(ctx, COMPILER_API.FUNCCALL, 6, stmt, NN(espidx), mtd, c, rc, NN(flag));
 }
 
 static void kook_CALL_asm(CTX ctx, kStmtExpr *stmt, int espidx)
@@ -349,6 +352,10 @@ static void kook_EXPR_asm(CTX ctx, kStmtExpr *stmt, int espidx)
         default:
         DBG_ABORT("unknown stt=%d", STT_(stmt));
     }
+}
+KMETHOD Compiler_getMnName(CTX ctx, ksfp_t *sfp _RIX) {
+    kint_t mn = Int_to(kint_t, sfp[1]);
+    RETURN_(new_String(ctx, MN__(mn)));
 }
 KMETHOD Compiler_asmCALL2(CTX ctx, ksfp_t *sfp _RIX) {
     kStmtExpr *stmt = CAST(kStmtExpr*, sfp[1].o);

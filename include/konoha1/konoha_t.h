@@ -823,6 +823,8 @@ typedef struct {
 #define KNH_SYSTEM          (ctx->sys)
 #define knh_Object_sweep    knh_Object_RCsweep
 
+typedef void (*fMethod_compile)(CTX, struct kMethod *, struct kStmt *);
+
 typedef struct kshare_t {
 	/* system table */
 	const knh_ClassTBL_t    **ClassTBL;
@@ -894,6 +896,10 @@ typedef struct kshare_t {
 	knh_cond_t				 *stop_cond;
 	knh_cond_t				 *start_cond;
 	knh_cond_t				 *close_cond;
+
+	/* CompilerAPI */
+	struct kObject *konoha_compiler;
+	fMethod_compile compilerAPI;
 } kshare_t ;
 
 #define KNH_ASSERT_CTX0(ctx)   KNH_ASSERT((ctx)->ctxid == 0)

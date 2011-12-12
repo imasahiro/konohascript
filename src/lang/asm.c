@@ -2906,7 +2906,12 @@ void knh_Method_asm(CTX ctx, kMethod *mtd, kStmtExpr *stmtB, knh_Ftyping typing)
 	void knh_LLVMMethod_asm(CTX ctx, kMethod *mtd, kStmtExpr *stmtP);
 	knh_LLVMMethod_asm(ctx, mtd, stmtB);
 #else
-	Method_compile(ctx, mtd, stmtB);
+	/* CompilerAPI */
+	if (IS_NOTNULL(ctx->share->konoha_compiler)) {
+		ctx->share->compilerAPI(ctx, mtd, stmtB);
+	} else {
+		Method_compile(ctx, mtd, stmtB);
+	}
 #endif /* K_USING_LLVM */
 }
 
