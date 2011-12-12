@@ -29,9 +29,11 @@
 
 #include "commons.h"
 
-#ifndef K_USING_GENGC
-#include "bmgc.h"
-#else
+#ifdef K_USING_RCGC
+#include "rcgc.h"
+#elif defined(K_USING_GENGC)
 #include "gbmgc.h"
+#else
+#include "bmgc.h"
 #endif
 

@@ -165,7 +165,7 @@ extern "C" {
 	typedef void BlkPtr;
 	typedef uintptr_t bitmap_t;
 	typedef struct SubHeap SubHeap;
-//	typedef struct Segment Segment;
+	typedef struct Segment Segment;
 	typedef struct HeapManager HeapManager;
 	typedef union  AllocationBlock AllocationBlock;
 	typedef HeapManager const GCInfo;
@@ -225,10 +225,10 @@ struct Segment {
 #endif
 };
 
-struct BlockHeader {
+typedef struct BlockHeader {
 	Segment *seg;
 	int klass;
-};
+} BlockHeader;
 
 typedef struct gc_stat {
 	size_t total_object;

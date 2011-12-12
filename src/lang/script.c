@@ -755,17 +755,6 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr)
-{
-#ifdef K_USING_RCGC
-	int i;
-	for(i = ctx->ref_size - 1; i >= 0; i--) {
-		kObject *ref = ctx->refs[i];
-		ftr(ctx, ref);
-	}
-#endif
-}
-
 static void ClassTBL_inherit(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassTBL_t *supct) {
 	ct->supTBL = ClassTBL(ct->supcid);
 	ct->keyidx = supct->keyidx;
