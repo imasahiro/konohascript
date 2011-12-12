@@ -338,13 +338,13 @@ struct BM10 { struct bm2  m0; struct bm1 S;struct bm1 m1;};
 struct BM11 { struct bm1  m0; struct bm1 S;};
 struct BM12 { struct bm1  m0;};
 #else
-struct BM5  { struct bm128 m0, struct bm1 S;struct bm4 m1, struct bm1 m2;};
-struct BM6  { struct bm64  m0, struct bm1 S;struct bm2 m1, struct bm1 m2;};
-struct BM7  { struct bm32  m0, struct bm1 S;struct bm1 m1;};
-struct BM8  { struct bm16  m0, struct bm1 S;struct bm1 m1;};
-struct BM9  { struct bm8   m0, struct bm1 S;struct bm1 m1;};
-struct BM10 { struct bm4   m0, struct bm1 S;struct bm1 m1;};
-struct BM11 { struct bm2   m0, struct bm1 S;struct bm1 m1;};
+struct BM5  { struct bm128 m0; struct bm1 S;struct bm4 m1; struct bm1 m2;};
+struct BM6  { struct bm64  m0; struct bm1 S;struct bm2 m1; struct bm1 m2;};
+struct BM7  { struct bm32  m0; struct bm1 S;struct bm1 m1;};
+struct BM8  { struct bm16  m0; struct bm1 S;struct bm1 m1;};
+struct BM9  { struct bm8   m0; struct bm1 S;struct bm1 m1;};
+struct BM10 { struct bm4   m0; struct bm1 S;struct bm1 m1;};
+struct BM11 { struct bm2   m0; struct bm1 S;struct bm1 m1;};
 struct BM12 { struct bm1   m0;};
 #endif
 
