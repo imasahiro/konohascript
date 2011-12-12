@@ -27,85 +27,12 @@
 
 /* ************************************************************************ */
 
-#include"commons.h"
 #include <stdbool.h>
-
-#ifdef K_USING_POSIX_
-#include <sys/mman.h>
-#define knh_mlock(p, size)   mlock(p, size)
-#define knh_unmlock(p)       unmlock(p)
-#endif
-
-#ifndef knh_mlock
-#define knh_mlock(p, size)
-#define knh_unmlock(p)
-#endif
-
-//#ifdef K_USING_DEBUG
-//#define K_USING_CTRACE 1
-//#endif
-
-#ifdef K_USING_CTRACE
-#define _GNU_SOURCE
-#define __USE_GNU
-#include <dlfcn.h>
-#include <execinfo.h>
-#endif
 
 /* ************************************************************************ */
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#define KB_   (1024)
-#define MB_   (KB_*1024)
-#define GB_   (MB_*1024)
-
-#define K_USING_MEMSTAT  1
-//#define K_USING_MEMLOG   1
-
-#ifdef K_USING_MEMLOG
-static kuint64_t memlog_start = 0;
-
-#define MEMLOG_INIT()  memlog_start = knh_getTimeMilliSecond()
-
-#define MEMLOG(action, fmt, ...) do { \
-	knh_logprintf(action, 0, "T%llu, " fmt , (knh_getTimeMilliSecond()-memlog_start),  ## __VA_ARGS__);\
-} while (0)
-
-#else
-#define MEMLOG_INIT()
-#define MEMLOG(action, fmt, ...)
-#endif
-
-/* ------------------------------------------------------------------------ */
-
-#define KNH_ATOMIC_ADD(a, b) __sync_add_and_fetch(&(a), b)
-#define KNH_ATOMIC_SUB(a, b) __sync_sub_and_fetch(&(a), b)
-
-#ifdef K_USING_MEMSTAT
-#define STAT_mem(ctx, SIZE) do { \
-	kstatinfo_t *stat = ctx->stat;\
-	KNH_ATOMIC_ADD(stat->usedMemorySize, (SIZE));\
-	if(stat->usedMemorySize > stat->maxMemoryUsage) stat->maxMemoryUsage = stat->usedMemorySize;\
-} while (0)
-
-#define STAT_dmem(ctx, SIZE)   KNH_ATOMIC_SUB((ctx->stat)->usedMemorySize, (SIZE))
-
-#define STAT_Object(ctx, ct) do { \
-	((knh_ClassTBL_t*)ct)->count += 1; \
-	((knh_ClassTBL_t*)ct)->total += 1; \
-} while (0)
-
-#define STAT_dObject(ctx, ct) ((knh_ClassTBL_t*)ct)->count -= 1
-
-#else
-#define STAT_mem(ctx, SIZE)
-#define STAT_dmem(ctx, SIZE)
-#define STAT_Object(ctx, ct)
-#define STAT_dObject(ctx, ct)
-
 #endif
 
 #if defined(GCDEBUG) && !defined(GCSTAT)
@@ -219,7 +146,7 @@ static inline void ARRAY_##T##_dispose(ARRAY(T) *a) {\
 		for(i=0, x = ARRAY_n(a, i); i < ARRAY_size(a); x = ARRAY_n(a,(++i)))
 
 /* struct gc */
-#define GCDATA(ctx) ((HeapManager*)((ctx)->memlocal->freeObjectList))
+#define GCDATA(ctx) (((ctx)->memlocal->gcHeapMng))
 
 struct SubHeap;
 struct Segment;
@@ -232,7 +159,6 @@ typedef struct SubHeap SubHeap;
 typedef struct Segment Segment;
 typedef struct HeapManager HeapManager;
 typedef union  AllocationBlock AllocationBlock;
-typedef HeapManager const GCInfo;
 
 typedef struct BitPtr {
 	uintptr_t idx;
@@ -578,7 +504,6 @@ static const size_t BM_SIZE[] = {
 #endif
 /* ------------------------------------------------------------------------ */
 
-#define K_OPAGE(o)    ((objpage_t*)((((kuintptr_t)(o)) / K_PAGESIZE) * K_PAGESIZE))
 #define K_SHIFTPTR(p, size)   ((char*)p + size)
 #define K_MEMSIZE(p, p2)      (((char*)p) - ((char*)p2))
 
@@ -606,28 +531,6 @@ typedef struct kObjectUnused {
 	struct kObjectUnused *ref4_tail;
 } kObjectUnused ;
 
-typedef struct objpageH_t {
-	kObjectHeader h;
-	kuintptr_t *bitmap;
-	kuintptr_t *tenure;
-	kcontext_t *ctx;
-	void *unused;
-} objpageH_t;
-
-typedef struct objpage_t {
-	objpageH_t h;
-	kObjectUnused  slots[K_PAGEOBJECTSIZE];
-} objpage_t;
-
-typedef struct objpageTBL_t {
-	objpage_t      *head;
-	objpage_t      *bottom;
-	size_t          arenasize;
-	kuintptr_t     *bitmap;
-	kuintptr_t      bitmapsize;
-	kuintptr_t     *tenure;
-} objpageTBL_t ;
-
 typedef struct mempage_t {
 	union {
 		struct mempage_t *ref;
@@ -641,9 +544,6 @@ typedef struct mempageTBL_t {
 } mempageTBL_t ;
 
 typedef struct kmemshare_t {
-	objpageTBL_t     *ObjectArenaTBL;
-	size_t            sizeObjectArenaTBL;
-	size_t            capacityObjectArenaTBL;
 	mempageTBL_t     *MemoryArenaTBL;
 	size_t            sizeMemoryArenaTBL;
 	size_t            capacityMemoryArenaTBL;
@@ -656,9 +556,8 @@ typedef struct kmemshare_t {
 } kmemshare_t ;
 
 typedef struct kmemlocal_t {
-	struct kObjectUnused        *freeObjectList;
-	struct kObjectUnused        *freeObjectTail;
-	size_t                       freeObjectListSize;
+	HeapManager                 *gcHeapMng;
+	size_t                       freeObjectListSize;/*TODO*/
 	mempage_t                   *freeMemoryList;
 	mempage_t                   *freeMemoryTail;
 
@@ -679,18 +578,16 @@ static kObject *bm_malloc_internal(CTX, HeapManager *mng, size_t n);
 void *bm_malloc(CTX ctx, size_t n);
 void *bm_realloc(CTX ctx, void *ptr, size_t os, size_t ns);
 void bm_free(CTX ctx, void *ptr, size_t n);
-static void BMGC_dump(GCInfo *info);
-static void bitmapMarkingGC(CTX ctx, GCInfo *gcinfo);
-#if GCDEBUG
-static void dumpBM(uintptr_t bm) CC_UNUSED;
-#endif
+static void BMGC_dump(HeapManager *mng);
+static void bitmapMarkingGC(CTX ctx, HeapManager *mng);
 static void HeapManager_init(CTX ctx, HeapManager *mng, size_t heap_size);
 static void HeapManager_delete(CTX ctx, HeapManager *mng);
 static void HeapManager_final_free(CTX ctx, HeapManager *mng);
 static inline void bmgc_Object_free(CTX ctx, kObject *o);
-static void xmem_freeall(CTX ctx);
 static bool findNextFreeBlock(AllocationPointer *p);
+static HeapManager *BMGC_init(CTX ctx);
 static void BMGC_exit(CTX ctx, HeapManager *mng);
+
 /* ------------------------------------------------------------------------ */
 /* bmgc */
 
@@ -840,11 +737,6 @@ void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACE
 
 static void initArena(CTX ctx, kmemshare_t *memshare)
 {
-	memshare->ObjectArenaTBL = (objpageTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(objpageTBL_t));
-	knh_bzero(memshare->ObjectArenaTBL, K_ARENATBL_INITSIZE * sizeof(objpageTBL_t));
-	memshare->sizeObjectArenaTBL = 0;
-	memshare->capacityObjectArenaTBL = K_ARENATBL_INITSIZE;
-
 	memshare->MemoryArenaTBL = (mempageTBL_t*)KNH_MALLOC(ctx, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
 	knh_bzero(memshare->MemoryArenaTBL, K_ARENATBL_INITSIZE * sizeof(mempageTBL_t));
 	memshare->sizeMemoryArenaTBL = 0;
@@ -854,15 +746,7 @@ static void initArena(CTX ctx, kmemshare_t *memshare)
 static void freeArena(CTX ctx, kmemshare_t *memshare)
 {
 	size_t i;
-	DBG_ASSERT(memshare->ObjectArenaTBL != NULL);
-	for(i = 0; i < memshare->sizeObjectArenaTBL; i++) {
-		objpageTBL_t *oat = memshare->ObjectArenaTBL + i;
-		DBG_ASSERT(K_MEMSIZE(oat->bottom, oat->head) == oat->arenasize);
-		KNH_FREE(ctx, oat->bitmap, oat->bitmapsize * K_NBITMAP);
-		KNH_VFREE(ctx, oat->head, oat->arenasize);
-	}
-	KNH_FREE(ctx, memshare->ObjectArenaTBL, memshare->capacityObjectArenaTBL * sizeof(objpageTBL_t));
-	memshare->ObjectArenaTBL = NULL;
+
 	for(i = 0; i < memshare->sizeMemoryArenaTBL; i++) {
 		mempageTBL_t *at = memshare->MemoryArenaTBL + i;
 		KNH_FREE(ctx, at->head, K_MEMSIZE(at->bottom, at->head));
@@ -871,46 +755,33 @@ static void freeArena(CTX ctx, kmemshare_t *memshare)
 	memshare->MemoryArenaTBL = NULL;
 }
 
-#ifdef K_USING_DEBUG
-static void ObjectArenaTBL_checkSize(objpageTBL_t *oat, size_t arenasize, size_t object_count)
-{
-	size_t cnt2=0;
-	kObjectUnused *p = oat->head->slots;
-	while(p->ref != NULL) {
-		objpage_t *opage = K_OPAGE(p);
-		DBG_ASSERT(oat->bitmap <= opage->h.bitmap && opage->h.bitmap < oat->bitmap + ((arenasize/sizeof(kObjectUnused))/sizeof(kuintptr_t)));
-		cnt2++;
-		p = (kObjectUnused*) p->ref;
-	}
-	DBG_ASSERT(cnt2 + 1 == object_count * K_PAGEOBJECTSIZE);
-}
-#endif
-
-static void knh_initFirstObjectArena(CTX ctx);
 void kmemshare_init(CTX ctx)
 {
-	WCTX(ctx)->memshare = (kmemshare_t*)KNH_MALLOC(ctx, sizeof(kmemshare_t));
+	WCTX(ctx)->memshare = (kmemshare_t*) do_malloc(sizeof(kmemshare_t));
 	knh_bzero(ctx->memshare, sizeof(kmemshare_t));
 	ctx->memshare->memlock = knh_mutex_malloc(ctx);
 	initArena(ctx, ctx->memshare);
 	kmemlocal_init(ctx);
-	knh_initFirstObjectArena(ctx);
+	ctx->stat->gcObjectCount -= K_GC_MARGIN;
+	ctx->stat->latestGcTime = knh_getTimeMilliSecond();
+	((kcontext_t*)ctx)->memlocal->gcHeapMng = BMGC_init(ctx);
 }
 
+static void xmem_freeall(CTX ctx);
 void kmemshare_free(CTX ctx)
 {
 	xmem_freeall(ctx);
 	BMGC_exit(ctx, GCDATA(ctx));
-	((kcontext_t*)ctx)->memlocal->freeObjectList = NULL;
+	((kcontext_t*)ctx)->memlocal->gcHeapMng = NULL;
 	freeArena(ctx, ctx->memshare);
 	knh_mutex_free(ctx, ctx->memshare->memlock);
-	KNH_FREE(ctx, ctx->memshare, sizeof(kmemshare_t));
+	do_free(ctx->memshare, sizeof(kmemshare_t));
 	WCTX(ctx)->memshare = NULL;
 }
 
 void kmemlocal_init(CTX ctx)
 {
-	WCTX(ctx)->memlocal = KNH_MALLOC(ctx, sizeof(kmemlocal_t));
+	WCTX(ctx)->memlocal = do_malloc(sizeof(kmemlocal_t));
 	knh_bzero(ctx->memlocal, sizeof(kmemlocal_t));
 }
 
@@ -928,7 +799,7 @@ void kmemlocal_free(CTX ctx)
 			ctx->memlocal->refs = NULL;
 			ctx->memlocal->ref_capacity = 0;
 		}
-		KNH_FREE(ctx, ctx->memlocal, sizeof(kmemlocal_t));
+		do_free(ctx->memlocal, sizeof(kmemlocal_t));
 		WCTX(ctx)->memlocal = NULL;
 	}
 }
@@ -961,12 +832,10 @@ static char* new_xmemarena(CTX ctx, size_t size)
 	return (char*)ptr;
 }
 
-#define XMEM_BSIZE   sizeof(void*)
-
 void *knh_xmalloc(CTX ctx, size_t size)
 {
 	size_t freesize = ctx->memshare->xmem_freelist - ctx->memshare->xmem_top;
-	size_t asize = (size % XMEM_BSIZE == 0) ? size : ((size / XMEM_BSIZE) + 1) * XMEM_BSIZE;
+	size_t asize = (size % SIZEOF_VOIDP == 0) ? size : ((size / SIZEOF_VOIDP) + 1) * SIZEOF_VOIDP;
 	if(!(freesize > asize + sizeof(xmemlist_t))) {
 		char *p = new_xmemarena(ctx, asize);
 		if(ctx->memshare->xmem_root == NULL) {
@@ -1101,52 +970,6 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 /* ------------------------------------------------------------------------ */
 /* [cstack trace] */
 
-#ifdef K_USING_CTRACE
-#define K_TRACE_LENGTH 128
-static const char* addr_to_name(void* p)
-{
-	Dl_info info;
-	if (dladdr(p, &info) != 0) {
-		return info.dli_sname;
-	}
-	return NULL;
-}
-
-static void dumpObject(CTX ctx, kuintptr_t* p)
-{
-	kObject* o = (kObject*)(*p);
-	if (knh_isObject(ctx, (void*) o) && O_cTBL(o) != NULL) {
-		if (O_cid(o) < K_CLASS_INITSIZE) {
-			knh_putc(ctx, KNH_STDERR, '\t');
-			knh_write_Object(ctx, KNH_STDERR, o, FMT_s);
-		}
-		else {
-			knh_printf(ctx, KNH_STDERR, "\t%p %p %s\n", p, o, S_totext(O_cTBL(o)->sname));
-		}
-	}
-}
-
-static void knh_dump_cstack(CTX ctx)
-{
-	void *trace[K_TRACE_LENGTH];
-	int i = 1;
-	backtrace(trace, K_TRACE_LENGTH);
-	void* bottom = ctx->cstack_bottom;
-	void* stack = __builtin_frame_address(0);
-	knh_printf(ctx, KNH_STDERR, "========== backtrace start ==========\n");
-	for (; stack < bottom; stack++) {
-		kuintptr_t** ptr = (kuintptr_t**) stack;
-		dumpObject(ctx, (kuintptr_t*) ptr);
-		if (trace[i] == *ptr) {
-			knh_printf(ctx, KNH_STDERR, "TRACE: %p %s\n", trace[i], addr_to_name(trace[i]));
-			i++;
-		}
-	}
-	knh_printf(ctx, KNH_STDERR, "========== backtrace end ==========\n");
-	knh_flush(ctx, KNH_STDERR);
-}
-#endif /* K_USING_CTRACE */
-
 #ifdef __GNUC__
 #define C_STACK_TOP(ctx) ((void**) __builtin_frame_address(0))
 #else
@@ -1172,17 +995,6 @@ static void cstack_mark(CTX ctx FTRARG)
 /* ------------------------------------------------------------------------ */
 /* [hObject] */
 
-#if 0
-#define GC_SAFEPOINT(ctx) do {\
-	ctx->stat->gcObjectCount -=1;\
-	if(ctx->stat->gcObjectCount == 0) {\
-		SAFEPOINT_SETGC(ctx);\
-	}\
-} while(0)
-#else
-#define GC_SAFEPOINT(ctx)
-#endif
-
 #define OBJECT_INIT(o, ct) do {\
 	o->h.magicflag = ct->magicflag;\
 	o->h.cTBL = ct;\
@@ -1194,7 +1006,6 @@ kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 	DBG_ASSERT(ct->struct_size > 0);
 	kObject *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
 	OBJECT_INIT(o, ct);
-	GC_SAFEPOINT(ctx);
 	STAT_Object(ctx, ct);
 	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
 	return o;
@@ -1206,7 +1017,6 @@ kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	kObject *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
 	OBJECT_INIT(o, ct);
 	ct->cdef->init(ctx, RAWPTR(o));
-	GC_SAFEPOINT(ctx);
 	STAT_Object(ctx, ct);
 	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
 	return o;
@@ -1218,26 +1028,10 @@ void TR_NEW(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
 	kObject *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
 	OBJECT_INIT(o, ct);
 	ct->cdef->init(ctx, RAWPTR(o));
-	GC_SAFEPOINT(ctx);
 	STAT_Object(ctx, ct);
 	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
 	KNH_SETv(ctx, sfp[c].o, o);
 }
-
-#ifdef GCSTAT
-static void stat_report_memory_usage(CTX ctx)
-{
-	/* stat instance object */
-	size_t i, sizeClassTBL = ctx->share->sizeClassTBL;
-	for (i = 0; i < sizeClassTBL; ++i) {
-		const knh_ClassTBL_t *ct = ClassTBL(i);
-		if (ct->count) {
-			//fprintf(stderr, "%s\n");
-			//((knh_ClassTBL_t*)ct)->count;
-		}
-	}
-}
-#endif
 
 /* ------------------------------------------------------------------------ */
 /* [ostack] */
@@ -1428,7 +1222,7 @@ static inline void do_free(void *ptr, size_t size)
 }
 
 
-static GCInfo *BMGC_init(CTX ctx)
+static HeapManager *BMGC_init(CTX ctx)
 {
 	HeapManager *mng = (HeapManager*) do_malloc(sizeof(*mng));
 #ifdef GCSTAT
@@ -1444,7 +1238,7 @@ static GCInfo *BMGC_init(CTX ctx)
 	}
 #endif
 	HeapManager_init(ctx, mng, default_size);
-	return (GCInfo *) mng;
+	return mng;
 }
 
 static void BMGC_exit(CTX ctx, HeapManager *mng)
@@ -1689,6 +1483,13 @@ static void *tryAlloc(HeapManager *mng, SubHeap *h)
 	temp = p->blkptr;
 	prefetch_(temp, 0, 0);
 	inc(p, h);
+#define GC_SAFEPOINT(ctx) do {\
+	ctx->stat->gcObjectCount -=1;\
+	if(ctx->stat->gcObjectCount == 0) {\
+		SAFEPOINT_SETGC(ctx);\
+	}\
+} while(0)
+
 	return temp;
 }
 
@@ -2057,10 +1858,9 @@ static void Heap_dump(const SubHeap *h, enum heap_dump_mode mode)
 #endif /* GCDEBUG */
 
 #ifdef GCDEBUG
-static void BMGC_dump(GCInfo *info)
+static void BMGC_dump(HeapManager *mng)
 {
 	size_t i;
-	HeapManager *mng = (HeapManager *) info;
 	gc_info("********************************");
 	gc_info("* Heap Information");
 	gc_info("********************************");
@@ -2084,7 +1884,7 @@ static bool DBG_CHECK_BITMAP(Segment *seg, bitmap_t *bm)
 	return (b0 <= bm && bm <= l0);
 }
 #else
-static void BMGC_dump(GCInfo *info) {}
+static void BMGC_dump(HeapManager *info) {}
 #define DBG_CHECK_BITMAP(seg, bm) true
 #endif
 
@@ -2285,9 +2085,8 @@ static void bmgc_gc_sweep(CTX ctx, HeapManager *mng)
 	}
 }
 
-static void bitmapMarkingGC(CTX ctx, GCInfo *info)
+static void bitmapMarkingGC(CTX ctx, HeapManager *mng)
 {
-	HeapManager *mng = (HeapManager *) info;
 	bmgc_gc_init(ctx, mng);
 	bmgc_gc_mark(ctx, mng, 1);
 
@@ -2315,13 +2114,6 @@ static void bitmapMarkingGC(CTX ctx, GCInfo *info)
 
 /* ------------------------------------------------------------------------ */
 /* [Object] */
-
-static void knh_initFirstObjectArena(CTX ctx)
-{
-	ctx->stat->gcObjectCount -= K_GC_MARGIN;
-	ctx->stat->latestGcTime = knh_getTimeMilliSecond();
-	((kcontext_t*)ctx)->memlocal->freeObjectList = (kObjectUnused *) BMGC_init(ctx);
-}
 
 kbool_t knh_isObject(CTX ctx, kObject *o)
 {
@@ -2392,12 +2184,12 @@ void knh_System_gc(CTX ctx, int needsCStackTrace)
 	size_t avail = ctx->memlocal->freeObjectListSize;
 	kuint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, sweep_time= 0, intval;
 	if(stop_the_world(ctx)) {
-		bmgc_gc_init(ctx, (HeapManager *)GCDATA(ctx));
-		bmgc_gc_mark(ctx, (HeapManager *)GCDATA(ctx), needsCStackTrace);
+		bmgc_gc_init(ctx, GCDATA(ctx));
+		bmgc_gc_mark(ctx, GCDATA(ctx), needsCStackTrace);
 		mark_time = knh_getTimeMilliSecond();
 		start_the_world(ctx);
 	}
-	bmgc_gc_sweep(ctx, (HeapManager *)GCDATA(ctx));
+	bmgc_gc_sweep(ctx, GCDATA(ctx));
 	sweep_time = knh_getTimeMilliSecond();
 	intval = start_time - ctxstat->latestGcTime;
 	GC_LOG("GC(%dMb): marked=%lu, collected=%lu, avail=%lu=>%lu, interval=%dms, marking_time=%dms, sweeping_time=%dms",
