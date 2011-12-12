@@ -635,7 +635,71 @@ static void BasicBlock_setjump(kBasicBlock *bb)
 		bb = bb->nextNC;
 	}
 }
+struct vminfo {
+	kopl_t *op;
+	size_t  size;
+	size_t  offset;
+	size_t  jmpidx;
+};
+typedef unsigned char vmc_t;
+typedef struct {
+	const char *name;
+	kflag_t   flag;
+	kushort_t size;
+	kushort_t struct_size;
+	kushort_t types[6];
+	kushort_t fields[6];
+} knh_OPDATA_t;
 
+extern const knh_OPDATA_t OPDATA[];
+static void KonohaCode_shrink(CTX ctx, kKonohaCode *kcode)
+{
+	size_t i, codesize = 0, codelen;
+	/* count vmcode size */
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	for (i = 0; i < SP(kcode)->codesize/sizeof(kopl_t); ++i) {
+		kopl_t *op  = kcode->code + i;
+		size_t size = knh_opline_size(op->head.opcode);
+		struct vminfo info = {op, size, 0, 0};
+		knh_Bytes_write(ctx, cwb->ba, new_bytes2((char*)&info, sizeof(struct vminfo)));
+		codesize += size;
+		if (op->head.opcode == OPCODE_RET) break;
+	}
+	kbytes_t vmcode_data  = CWB_tobytes(cwb);
+	struct vminfo *vminfo = (struct vminfo *) vmcode_data.text;
+	kopl_t *vmcode = (kopl_t *) KNH_MALLOC(ctx, codesize);
+	vmc_t *pc = (vmc_t *) vmcode;
+	codelen = i+1;
+	for (i = 0; i < codelen; ++i) {
+		kopl_t *op  = kcode->code + i;
+		vminfo[i].offset = pc - (vmc_t *) vmcode;
+		pc += knh_opline_size(op->head.opcode);
+	}
+
+	/* set jump addr */
+	for (i = 0; i < codelen; ++i) {
+		kopl_t *op  = kcode->code + i;
+		if(knh_opcode_hasjump(op->head.opcode)) {
+			int jmpidx = (kopl_t*)(op->p[0]) - kcode->code;
+			op->p[0] = (vmc_t*) vmcode + vminfo[jmpidx].offset;
+		}
+		pc += knh_opline_size(op->head.opcode);
+	}
+
+	/* write vmcode to "pc" */
+	pc = (vmc_t *) vmcode;
+	for (i = 0; i < codelen; ++i) {
+		kopl_t *op  = kcode->code + i;
+		size_t size = knh_opline_size(op->head.opcode);
+		knh_memcpy(pc, op, size);
+		pc += size;
+	}
+	KNH_FREE(ctx, kcode->code, kcode->codesize);
+	kcode->code     = vmcode;
+	kcode->codesize = codesize;
+	kcode->h.meta = (void*)(long)codelen;
+	CWB_close(cwb);
+}
 static kKonohaCode* BasicBlock_link(CTX ctx, kBasicBlock *bb, kBasicBlock *bbRET)
 {
 	kKonohaCode *kcode = new_(KonohaCode);
@@ -651,6 +715,7 @@ static kKonohaCode* BasicBlock_link(CTX ctx, kBasicBlock *bb, kBasicBlock *bbRET
 		BasicBlock_copy(ctx, op, bbRET, prev);
 		BasicBlock_setjump(bb);
 	}
+	KonohaCode_shrink(ctx, kcode);
 	return kcode;
 }
 
@@ -901,7 +966,7 @@ static void _DYNMTD(CTX ctx, ksfp_t *sfp, struct klr_LDMTD_t *op)
 static void _PBOX(CTX ctx, ksfp_t *sfp, struct klr_PROBE_t *op)
 {
 	size_t rtnidx = op->sfpidx;
-	klr_LDMTD_t *opP = (klr_LDMTD_t*)(((kopl_t*)op) - 2);
+	klr_LDMTD_t *opP = (klr_LDMTD_t*)(((vmc_t*)op) - sizeof(klr_CALL_t) - sizeof(klr_LDMTD_t));
 	DBG_ASSERT(opP->head.opcode == OPCODE_LDMTD);
 	ktype_t rtype = knh_Param_rtype(DP(opP->mtdNC)->mp);
 	rtype = ktype_tocid(ctx, rtype, O_cid(sfp[rtnidx+K_CALLDELTA].o));
@@ -1318,36 +1383,61 @@ static void ASM_INLINE(CTX ctx, int sfpshift, kopl_t *code, size_t isize)
 {
 	size_t i, last = isize;
 	kBasicBlock* bb[K_INLINECODE];
+	vmc_t *pc = (vmc_t *) code;
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+
 	for(i = 0; i < isize; i++) {
+		kopl_t *op = (kopl_t *) pc;
 		bb[i] = new_BasicBlockLABEL(ctx);
 		bb[i]->nextNC = NULL;
 		bb[i]->jumpNC = NULL;
-		if(code[i].head.opcode == OPCODE_RET) {
-			last = i; break;
+		struct vminfo info = {op, knh_opline_size(op->head.opcode), (size_t)pc, 0};
+		knh_Bytes_write(ctx, cwb->ba, new_bytes2((char*)&info, sizeof(struct vminfo)));
+		if(op->head.opcode == OPCODE_RET) {
+			last = i;
+			break;
 		}
+		pc += knh_opline_size(op->head.opcode);
 	}
+
+	kbytes_t vmcode_data  = CWB_tobytes(cwb);
+	struct vminfo *vminfo = (struct vminfo *) vmcode_data.text;
+
 	KNH_ASSERT(last != isize);
 	ASM_LABEL(ctx, bb[0]);
+	pc = (vmc_t *) code;
 	for(i = 0; i < last; i++) {
+		kopl_t *op_ = (kopl_t *) pc;
 		kopl_t opbuf, *op;
-		opbuf = code[i]; op = &opbuf;
+		opbuf = op_[0];
+		op = &opbuf;
 		knh_opcode_shift(op, sfpshift);
 		if(op->head.opcode == OPCODE_JMP_) {
 			op->head.opcode = OPCODE_JMP;
 		}
 		if(op->head.opcode != OPCODE_JMP) {
-			knh_BasicBlock_add_(ctx, bb[i], op->head.line, op, 0);
+			knh_BasicBlock_add_(ctx, bb[i], op->head.line, op, knh_opline_size(op->head.opcode));
 			bb[i]->nextNC = bb[i+1];
 			DP(bb[i+1])->incoming += 1;
 		}
 		if(knh_opcode_hasjump(op->head.opcode)) {
-			int jmpidx = code - (kopl_t*)(op->p[0]);
-			if (jmpidx < 0) jmpidx = -jmpidx;
+			//int jmpidx = code - (kopl_t*)(op->p[0]);
+			int jmpidx = 0, j;
+			for (j = 0; j <= last; ++j) {
+				if (vminfo[j].offset == (size_t)op->p[0]) {
+					jmpidx = j;
+					break;
+				}
+			}
+			if (jmpidx < 0) {
+				jmpidx = -jmpidx;
+			}
 			DBG_ASSERT(jmpidx < (int)isize);
 			bb[i]->jumpNC = bb[jmpidx];
 			DP(bb[jmpidx])->incoming += 1;
 			op->p[0] = NULL;
 		}
+		pc += knh_opline_size(op->head.opcode);
 	}
 	DP(ctx->gma)->bbNC = bb[last];
 	DBG_ASSERT(DP(bb[last])->incoming > 0);
@@ -1370,11 +1460,12 @@ static void ASM_CALL(CTX ctx, int espidx, ktype_t rtype, kMethod *mtd, int isSta
 		if(Method_isKonohaCode(mtd) || DP(ctx->gma)->mtd == mtd) {
 			if(GammaBuilder_isInlineFunction(ctx->gma) && DP(ctx->gma)->mtd != mtd) {
 				kKonohaCode *kcode = DP(mtd)->kcode;
-				size_t isize = kcode->codesize / sizeof(kopl_t);
+				size_t isize = (size_t) kcode->h.meta;
 				if(isize < K_INLINECODE) {
 					NoticeInliningMethod(ctx, mtd);
 					if(isize-1 > 0) {
-						ASM_INLINE(ctx, espidx + K_CALLDELTA, kcode->code + 1, isize - 1);
+						vmc_t *pc = (vmc_t*)kcode->code + knh_opline_size(kcode->code->head.opcode);
+						ASM_INLINE(ctx, espidx + K_CALLDELTA, (kopl_t*)pc, isize - 1);
 					}
 					return;
 				}
@@ -2802,15 +2893,16 @@ static void BLOCK_asm(CTX ctx, kStmtExpr *stmtH)
 }
 
 /* ------------------------------------------------------------------------ */
-
 static void _THCODE(CTX ctx, kopl_t *pc, void **codeaddr)
 {
+	vmc_t *vmc = (vmc_t *) pc;
 #ifdef K_USING_THCODE_
 	while(1) {
-		DBG_ASSERT_OPCODE(pc->head.opcode);
-		pc->head.codeaddr = codeaddr[pc->head.opcode];
-		if(pc->head.opcode == OPCODE_RET) break;
-		pc++;
+		kopl_t *op = (kopl_t *) vmc;
+		DBG_ASSERT_OPCODE(op->head.opcode);
+		op->head.codeaddr = codeaddr[op->head.opcode];
+		if(op->head.opcode == OPCODE_RET) break;
+		vmc += knh_opline_size(op->head.opcode);
 	}
 #endif
 }
@@ -2938,10 +3030,12 @@ KMETHOD knh_Fmethod_asm(CTX ctx, ksfp_t *sfp _RIX)
 
 static kopl_t* opline_findOPCODE(CTX ctx, kopl_t *op, kopcode_t opcode)
 {
+	vmc_t *vmc = (vmc_t *) op;
 	while(1) {
+		op = (kopl_t *) vmc;
 		if(op->head.opcode == opcode) return op;
 		if(op->head.opcode == OPCODE_RET) break;
-		op++;
+		vmc += knh_opline_size(op->head.opcode);
 	}
 	KNH_ASSERT(ctx == NULL); // DON'T NOT HAPPEN
 	return NULL;

@@ -58,7 +58,7 @@ typedef struct {
 	kushort_t fields[6];
 } knh_OPDATA_t;
 
-static const knh_OPDATA_t OPDATA[] = {
+const knh_OPDATA_t OPDATA[] = {
 	{"HALT", 0, 0, sizeof(klr_HALT_t), { VMT_VOID}, {0}},
 	{"THCODE", 0, 2, sizeof(klr_THCODE_t), { VMT_F, VMT_U, VMT_VOID}, {offsetof(klr_THCODE_t, th), offsetof(klr_THCODE_t, uri), 0}},
 	{"ENTER", 0, 0, sizeof(klr_ENTER_t), { VMT_VOID}, {0}},
@@ -581,7 +581,7 @@ void knh_opcode_shift(kopl_t *c, int shift)
 
 #ifdef K_USING_THCODE_
 #define CASE(x)  L_##x : 
-#define NEXT_OP   (pc->head.codeaddr)
+#define NEXT_OP   (((kopl_t*)pc)->head.codeaddr)
 #define JUMP      *(NEXT_OP)
 #ifdef K_USING_VMASMDISPATCH
 #define GOTO_NEXT()     \
@@ -607,8 +607,10 @@ void knh_opcode_shift(kopl_t *c, int shift)
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 
-kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
+typedef unsigned char vmc_t;
+kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 {
+	vmc_t *pc = (vmc_t *) pc_;
 #ifdef K_USING_THCODE_
 	static void *OPJUMP[] = {
 		&&L_HALT, &&L_THCODE, &&L_ENTER, &&L_VEXEC, 
@@ -659,983 +661,983 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
 	kuint64_t _utime = knh_getTime();
 	static kuint64_t _UTIME[OPCODE_NOP+1] = {0};
 	static size_t _UC[OPCODE_NOP+1] = {0};)
-	DISPATCH_START(pc);
+	DISPATCH_START(((kopl_t*)pc));
 
 	CASE(HALT) {
 		klr_HALT_t *op = (klr_HALT_t*)pc; (void)op;
 		KLR_HALT(ctx);
-		pc++;
+		pc += sizeof(klr_HALT_t);
 		GOTO_NEXT();
 	} 
 	CASE(THCODE) {
 		klr_THCODE_t *op = (klr_THCODE_t*)pc; (void)op;
 		KLR_THCODE(ctx, op->th, op->uri);
-		pc++;
+		pc += sizeof(klr_THCODE_t);
 		GOTO_NEXT();
 	} 
 	CASE(ENTER) {
 		klr_ENTER_t *op = (klr_ENTER_t*)pc; (void)op;
 		KLR_ENTER(ctx);
-		pc++;
+		pc += sizeof(klr_ENTER_t);
 		GOTO_NEXT();
 	} 
 	CASE(VEXEC) {
 		klr_VEXEC_t *op = (klr_VEXEC_t*)pc; (void)op;
 		KLR_VEXEC(ctx);
-		pc++;
+		pc += sizeof(klr_VEXEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(YIELD) {
 		klr_YIELD_t *op = (klr_YIELD_t*)pc; (void)op;
 		KLR_YIELD(ctx, op->n);
-		pc++;
+		pc += sizeof(klr_YIELD_t);
 		GOTO_NEXT();
 	} 
 	CASE(FUNCCALL) {
 		klr_FUNCCALL_t *op = (klr_FUNCCALL_t*)pc; (void)op;
 		KLR_FUNCCALL(ctx);
-		pc++;
+		pc += sizeof(klr_FUNCCALL_t);
 		GOTO_NEXT();
 	} 
 	CASE(TRY) {
 		klr_TRY_t *op = (klr_TRY_t*)pc; (void)op;
-		KLR_TRY(ctx, pc = op->jumppc, JUMP, op->hn);
-		pc++;
+		KLR_TRY(ctx, pc = (vmc_t*) op->jumppc, JUMP, op->hn);
+		pc += sizeof(klr_TRY_t);
 		GOTO_NEXT();
 	} 
 	CASE(TRYEND) {
 		klr_TRYEND_t *op = (klr_TRYEND_t*)pc; (void)op;
 		KLR_TRYEND(ctx, op->hn);
-		pc++;
+		pc += sizeof(klr_TRYEND_t);
 		GOTO_NEXT();
 	} 
 	CASE(THROW) {
 		klr_THROW_t *op = (klr_THROW_t*)pc; (void)op;
 		KLR_THROW(ctx, op->start);
-		pc++;
+		pc += sizeof(klr_THROW_t);
 		GOTO_NEXT();
 	} 
 	CASE(ASSERT) {
 		klr_ASSERT_t *op = (klr_ASSERT_t*)pc; (void)op;
 		KLR_ASSERT(ctx, op->start, op->uline);
-		pc++;
+		pc += sizeof(klr_ASSERT_t);
 		GOTO_NEXT();
 	} 
 	CASE(CATCH) {
 		klr_CATCH_t *op = (klr_CATCH_t*)pc; (void)op;
-		KLR_CATCH(ctx, pc = op->jumppc, JUMP, op->en, op->eid);
-		pc++;
+		KLR_CATCH(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->en, op->eid);
+		pc += sizeof(klr_CATCH_t);
 		GOTO_NEXT();
 	} 
 	CASE(CHKIN) {
 		klr_CHKIN_t *op = (klr_CHKIN_t*)pc; (void)op;
 		KLR_CHKIN(ctx, op->on, op->checkin);
-		pc++;
+		pc += sizeof(klr_CHKIN_t);
 		GOTO_NEXT();
 	} 
 	CASE(CHKOUT) {
 		klr_CHKOUT_t *op = (klr_CHKOUT_t*)pc; (void)op;
 		KLR_CHKOUT(ctx, op->on, op->checkout);
-		pc++;
+		pc += sizeof(klr_CHKOUT_t);
 		GOTO_NEXT();
 	} 
 	CASE(ERROR) {
 		klr_ERROR_t *op = (klr_ERROR_t*)pc; (void)op;
 		KLR_ERROR(ctx, op->start, op->msg);
-		pc++;
+		pc += sizeof(klr_ERROR_t);
 		GOTO_NEXT();
 	} 
 	CASE(P) {
 		klr_P_t *op = (klr_P_t*)pc; (void)op;
 		KLR_P(ctx, op->print, op->flag, op->n, op->msg);
-		pc++;
+		pc += sizeof(klr_P_t);
 		GOTO_NEXT();
 	} 
 	CASE(PROBE) {
 		klr_PROBE_t *op = (klr_PROBE_t*)pc; (void)op;
 		KLR_PROBE(ctx, op->sfpidx, op->probe, op->n);
-		pc++;
+		pc += sizeof(klr_PROBE_t);
 		GOTO_NEXT();
 	} 
 	CASE(EXIT) {
 		klr_EXIT_t *op = (klr_EXIT_t*)pc; (void)op;
 		KLR_EXIT(ctx);
-		pc++;
+		pc += sizeof(klr_EXIT_t);
 		GOTO_NEXT();
 	} 
 	CASE(NSET) {
 		klr_NSET_t *op = (klr_NSET_t*)pc; (void)op;
 		KLR_NSET(ctx, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_NSET_t);
 		GOTO_NEXT();
 	} 
 	CASE(NMOV) {
 		klr_NMOV_t *op = (klr_NMOV_t*)pc; (void)op;
 		KLR_NMOV(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_NMOV_t);
 		GOTO_NEXT();
 	} 
 	CASE(NNMOV) {
 		klr_NNMOV_t *op = (klr_NNMOV_t*)pc; (void)op;
 		KLR_NNMOV(ctx, op->a, op->b, op->c, op->d);
-		pc++;
+		pc += sizeof(klr_NNMOV_t);
 		GOTO_NEXT();
 	} 
 	CASE(NSET2) {
 		klr_NSET2_t *op = (klr_NSET2_t*)pc; (void)op;
 		KLR_NSET2(ctx, op->a, op->n, op->n2);
-		pc++;
+		pc += sizeof(klr_NSET2_t);
 		GOTO_NEXT();
 	} 
 	CASE(NSET3) {
 		klr_NSET3_t *op = (klr_NSET3_t*)pc; (void)op;
 		KLR_NSET3(ctx, op->a, op->n, op->n2, op->n3);
-		pc++;
+		pc += sizeof(klr_NSET3_t);
 		GOTO_NEXT();
 	} 
 	CASE(NMOVx) {
 		klr_NMOVx_t *op = (klr_NMOVx_t*)pc; (void)op;
 		KLR_NMOVx(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_NMOVx_t);
 		GOTO_NEXT();
 	} 
 	CASE(XNSET) {
 		klr_XNSET_t *op = (klr_XNSET_t*)pc; (void)op;
 		KLR_XNSET(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_XNSET_t);
 		GOTO_NEXT();
 	} 
 	CASE(XNMOV) {
 		klr_XNMOV_t *op = (klr_XNMOV_t*)pc; (void)op;
 		KLR_XNMOV(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_XNMOV_t);
 		GOTO_NEXT();
 	} 
 	CASE(XNMOVx) {
 		klr_XNMOVx_t *op = (klr_XNMOVx_t*)pc; (void)op;
 		KLR_XNMOVx(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_XNMOVx_t);
 		GOTO_NEXT();
 	} 
 	CASE(iINC) {
 		klr_iINC_t *op = (klr_iINC_t*)pc; (void)op;
 		KLR_iINC(ctx, op->a);
-		pc++;
+		pc += sizeof(klr_iINC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iDEC) {
 		klr_iDEC_t *op = (klr_iDEC_t*)pc; (void)op;
 		KLR_iDEC(ctx, op->a);
-		pc++;
+		pc += sizeof(klr_iDEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(bNUL) {
 		klr_bNUL_t *op = (klr_bNUL_t*)pc; (void)op;
 		KLR_bNUL(ctx, op->c, op->a);
-		pc++;
+		pc += sizeof(klr_bNUL_t);
 		GOTO_NEXT();
 	} 
 	CASE(bNN) {
 		klr_bNN_t *op = (klr_bNN_t*)pc; (void)op;
 		KLR_bNN(ctx, op->c, op->a);
-		pc++;
+		pc += sizeof(klr_bNN_t);
 		GOTO_NEXT();
 	} 
 	CASE(bNOT) {
 		klr_bNOT_t *op = (klr_bNOT_t*)pc; (void)op;
 		KLR_bNOT(ctx, op->c, op->a);
-		pc++;
+		pc += sizeof(klr_bNOT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iNEG) {
 		klr_iNEG_t *op = (klr_iNEG_t*)pc; (void)op;
 		KLR_iNEG(ctx, op->c, op->a);
-		pc++;
+		pc += sizeof(klr_iNEG_t);
 		GOTO_NEXT();
 	} 
 	CASE(fNEG) {
 		klr_fNEG_t *op = (klr_fNEG_t*)pc; (void)op;
 		KLR_fNEG(ctx, op->c, op->a);
-		pc++;
+		pc += sizeof(klr_fNEG_t);
 		GOTO_NEXT();
 	} 
 	CASE(iTR) {
 		klr_iTR_t *op = (klr_iTR_t*)pc; (void)op;
 		KLR_iTR(ctx, op->c, op->a, op->inttr);
-		pc++;
+		pc += sizeof(klr_iTR_t);
 		GOTO_NEXT();
 	} 
 	CASE(fTR) {
 		klr_fTR_t *op = (klr_fTR_t*)pc; (void)op;
 		KLR_fTR(ctx, op->c, op->a, op->floattr);
-		pc++;
+		pc += sizeof(klr_fTR_t);
 		GOTO_NEXT();
 	} 
 	CASE(iADD) {
 		klr_iADD_t *op = (klr_iADD_t*)pc; (void)op;
 		KLR_iADD(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iADD_t);
 		GOTO_NEXT();
 	} 
 	CASE(iSUB) {
 		klr_iSUB_t *op = (klr_iSUB_t*)pc; (void)op;
 		KLR_iSUB(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iSUB_t);
 		GOTO_NEXT();
 	} 
 	CASE(iMUL) {
 		klr_iMUL_t *op = (klr_iMUL_t*)pc; (void)op;
 		KLR_iMUL(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iMUL_t);
 		GOTO_NEXT();
 	} 
 	CASE(iDIV) {
 		klr_iDIV_t *op = (klr_iDIV_t*)pc; (void)op;
 		KLR_iDIV(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iDIV_t);
 		GOTO_NEXT();
 	} 
 	CASE(iMOD) {
 		klr_iMOD_t *op = (klr_iMOD_t*)pc; (void)op;
 		KLR_iMOD(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iMOD_t);
 		GOTO_NEXT();
 	} 
 	CASE(iEQ) {
 		klr_iEQ_t *op = (klr_iEQ_t*)pc; (void)op;
 		KLR_iEQ(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(iNEQ) {
 		klr_iNEQ_t *op = (klr_iNEQ_t*)pc; (void)op;
 		KLR_iNEQ(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iNEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(iLT) {
 		klr_iLT_t *op = (klr_iLT_t*)pc; (void)op;
 		KLR_iLT(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iLT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iLTE) {
 		klr_iLTE_t *op = (klr_iLTE_t*)pc; (void)op;
 		KLR_iLTE(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iLTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(iGT) {
 		klr_iGT_t *op = (klr_iGT_t*)pc; (void)op;
 		KLR_iGT(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iGT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iGTE) {
 		klr_iGTE_t *op = (klr_iGTE_t*)pc; (void)op;
 		KLR_iGTE(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iGTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(iAND) {
 		klr_iAND_t *op = (klr_iAND_t*)pc; (void)op;
 		KLR_iAND(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iAND_t);
 		GOTO_NEXT();
 	} 
 	CASE(iOR) {
 		klr_iOR_t *op = (klr_iOR_t*)pc; (void)op;
 		KLR_iOR(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iOR_t);
 		GOTO_NEXT();
 	} 
 	CASE(iXOR) {
 		klr_iXOR_t *op = (klr_iXOR_t*)pc; (void)op;
 		KLR_iXOR(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iXOR_t);
 		GOTO_NEXT();
 	} 
 	CASE(iLSFT) {
 		klr_iLSFT_t *op = (klr_iLSFT_t*)pc; (void)op;
 		KLR_iLSFT(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iLSFT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iRSFT) {
 		klr_iRSFT_t *op = (klr_iRSFT_t*)pc; (void)op;
 		KLR_iRSFT(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iRSFT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iADDC) {
 		klr_iADDC_t *op = (klr_iADDC_t*)pc; (void)op;
 		KLR_iADDC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iADDC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iSUBC) {
 		klr_iSUBC_t *op = (klr_iSUBC_t*)pc; (void)op;
 		KLR_iSUBC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iSUBC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iMULC) {
 		klr_iMULC_t *op = (klr_iMULC_t*)pc; (void)op;
 		KLR_iMULC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iMULC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iDIVC) {
 		klr_iDIVC_t *op = (klr_iDIVC_t*)pc; (void)op;
 		KLR_iDIVC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iDIVC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iMODC) {
 		klr_iMODC_t *op = (klr_iMODC_t*)pc; (void)op;
 		KLR_iMODC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iMODC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iEQC) {
 		klr_iEQC_t *op = (klr_iEQC_t*)pc; (void)op;
 		KLR_iEQC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iNEQC) {
 		klr_iNEQC_t *op = (klr_iNEQC_t*)pc; (void)op;
 		KLR_iNEQC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iNEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iLTC) {
 		klr_iLTC_t *op = (klr_iLTC_t*)pc; (void)op;
 		KLR_iLTC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iLTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iLTEC) {
 		klr_iLTEC_t *op = (klr_iLTEC_t*)pc; (void)op;
 		KLR_iLTEC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iLTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iGTC) {
 		klr_iGTC_t *op = (klr_iGTC_t*)pc; (void)op;
 		KLR_iGTC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iGTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iGTEC) {
 		klr_iGTEC_t *op = (klr_iGTEC_t*)pc; (void)op;
 		KLR_iGTEC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iGTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iANDC) {
 		klr_iANDC_t *op = (klr_iANDC_t*)pc; (void)op;
 		KLR_iANDC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iANDC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iORC) {
 		klr_iORC_t *op = (klr_iORC_t*)pc; (void)op;
 		KLR_iORC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iORC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iXORC) {
 		klr_iXORC_t *op = (klr_iXORC_t*)pc; (void)op;
 		KLR_iXORC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iXORC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iLSFTC) {
 		klr_iLSFTC_t *op = (klr_iLSFTC_t*)pc; (void)op;
 		KLR_iLSFTC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iLSFTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iRSFTC) {
 		klr_iRSFTC_t *op = (klr_iRSFTC_t*)pc; (void)op;
 		KLR_iRSFTC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_iRSFTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fADD) {
 		klr_fADD_t *op = (klr_fADD_t*)pc; (void)op;
 		KLR_fADD(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fADD_t);
 		GOTO_NEXT();
 	} 
 	CASE(fSUB) {
 		klr_fSUB_t *op = (klr_fSUB_t*)pc; (void)op;
 		KLR_fSUB(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fSUB_t);
 		GOTO_NEXT();
 	} 
 	CASE(fMUL) {
 		klr_fMUL_t *op = (klr_fMUL_t*)pc; (void)op;
 		KLR_fMUL(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fMUL_t);
 		GOTO_NEXT();
 	} 
 	CASE(fDIV) {
 		klr_fDIV_t *op = (klr_fDIV_t*)pc; (void)op;
 		KLR_fDIV(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fDIV_t);
 		GOTO_NEXT();
 	} 
 	CASE(fEQ) {
 		klr_fEQ_t *op = (klr_fEQ_t*)pc; (void)op;
 		KLR_fEQ(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(fNEQ) {
 		klr_fNEQ_t *op = (klr_fNEQ_t*)pc; (void)op;
 		KLR_fNEQ(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fNEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(fLT) {
 		klr_fLT_t *op = (klr_fLT_t*)pc; (void)op;
 		KLR_fLT(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fLT_t);
 		GOTO_NEXT();
 	} 
 	CASE(fLTE) {
 		klr_fLTE_t *op = (klr_fLTE_t*)pc; (void)op;
 		KLR_fLTE(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fLTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(fGT) {
 		klr_fGT_t *op = (klr_fGT_t*)pc; (void)op;
 		KLR_fGT(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fGT_t);
 		GOTO_NEXT();
 	} 
 	CASE(fGTE) {
 		klr_fGTE_t *op = (klr_fGTE_t*)pc; (void)op;
 		KLR_fGTE(ctx, op->c, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fGTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(fADDC) {
 		klr_fADDC_t *op = (klr_fADDC_t*)pc; (void)op;
 		KLR_fADDC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fADDC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fSUBC) {
 		klr_fSUBC_t *op = (klr_fSUBC_t*)pc; (void)op;
 		KLR_fSUBC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fSUBC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fMULC) {
 		klr_fMULC_t *op = (klr_fMULC_t*)pc; (void)op;
 		KLR_fMULC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fMULC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fDIVC) {
 		klr_fDIVC_t *op = (klr_fDIVC_t*)pc; (void)op;
 		KLR_fDIVC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fDIVC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fEQC) {
 		klr_fEQC_t *op = (klr_fEQC_t*)pc; (void)op;
 		KLR_fEQC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fNEQC) {
 		klr_fNEQC_t *op = (klr_fNEQC_t*)pc; (void)op;
 		KLR_fNEQC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fNEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fLTC) {
 		klr_fLTC_t *op = (klr_fLTC_t*)pc; (void)op;
 		KLR_fLTC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fLTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fLTEC) {
 		klr_fLTEC_t *op = (klr_fLTEC_t*)pc; (void)op;
 		KLR_fLTEC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fLTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fGTC) {
 		klr_fGTC_t *op = (klr_fGTC_t*)pc; (void)op;
 		KLR_fGTC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fGTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fGTEC) {
 		klr_fGTEC_t *op = (klr_fGTEC_t*)pc; (void)op;
 		KLR_fGTEC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_fGTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(RCINC) {
 		klr_RCINC_t *op = (klr_RCINC_t*)pc; (void)op;
 		KLR_RCINC(ctx, op->a);
-		pc++;
+		pc += sizeof(klr_RCINC_t);
 		GOTO_NEXT();
 	} 
 	CASE(RCDEC) {
 		klr_RCDEC_t *op = (klr_RCDEC_t*)pc; (void)op;
 		KLR_RCDEC(ctx, op->a);
-		pc++;
+		pc += sizeof(klr_RCDEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(OSET) {
 		klr_OSET_t *op = (klr_OSET_t*)pc; (void)op;
 		KLR_OSET(ctx, op->a, op->o);
-		pc++;
+		pc += sizeof(klr_OSET_t);
 		GOTO_NEXT();
 	} 
 	CASE(OMOV) {
 		klr_OMOV_t *op = (klr_OMOV_t*)pc; (void)op;
 		KLR_OMOV(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_OMOV_t);
 		GOTO_NEXT();
 	} 
 	CASE(OOMOV) {
 		klr_OOMOV_t *op = (klr_OOMOV_t*)pc; (void)op;
 		KLR_OOMOV(ctx, op->a, op->b, op->c, op->d);
-		pc++;
+		pc += sizeof(klr_OOMOV_t);
 		GOTO_NEXT();
 	} 
 	CASE(ONMOV) {
 		klr_ONMOV_t *op = (klr_ONMOV_t*)pc; (void)op;
 		KLR_ONMOV(ctx, op->a, op->b, op->c, op->d);
-		pc++;
+		pc += sizeof(klr_ONMOV_t);
 		GOTO_NEXT();
 	} 
 	CASE(OSET2) {
 		klr_OSET2_t *op = (klr_OSET2_t*)pc; (void)op;
 		KLR_OSET2(ctx, op->a, op->v, op->v2);
-		pc++;
+		pc += sizeof(klr_OSET2_t);
 		GOTO_NEXT();
 	} 
 	CASE(OSET3) {
 		klr_OSET3_t *op = (klr_OSET3_t*)pc; (void)op;
 		KLR_OSET3(ctx, op->a, op->v, op->v2, op->v3);
-		pc++;
+		pc += sizeof(klr_OSET3_t);
 		GOTO_NEXT();
 	} 
 	CASE(RCINCx) {
 		klr_RCINCx_t *op = (klr_RCINCx_t*)pc; (void)op;
 		KLR_RCINCx(ctx, op->a);
-		pc++;
+		pc += sizeof(klr_RCINCx_t);
 		GOTO_NEXT();
 	} 
 	CASE(RCDECx) {
 		klr_RCDECx_t *op = (klr_RCDECx_t*)pc; (void)op;
 		KLR_RCDECx(ctx, op->a);
-		pc++;
+		pc += sizeof(klr_RCDECx_t);
 		GOTO_NEXT();
 	} 
 	CASE(OMOVx) {
 		klr_OMOVx_t *op = (klr_OMOVx_t*)pc; (void)op;
 		KLR_OMOVx(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_OMOVx_t);
 		GOTO_NEXT();
 	} 
 	CASE(XMOV) {
 		klr_XMOV_t *op = (klr_XMOV_t*)pc; (void)op;
 		KLR_XMOV(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_XMOV_t);
 		GOTO_NEXT();
 	} 
 	CASE(XOSET) {
 		klr_XOSET_t *op = (klr_XOSET_t*)pc; (void)op;
 		KLR_XOSET(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_XOSET_t);
 		GOTO_NEXT();
 	} 
 	CASE(XMOVx) {
 		klr_XMOVx_t *op = (klr_XMOVx_t*)pc; (void)op;
 		KLR_XMOVx(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_XMOVx_t);
 		GOTO_NEXT();
 	} 
 	CASE(CHKSTACK) {
 		klr_CHKSTACK_t *op = (klr_CHKSTACK_t*)pc; (void)op;
 		KLR_CHKSTACK(ctx, op->n);
-		pc++;
+		pc += sizeof(klr_CHKSTACK_t);
 		GOTO_NEXT();
 	} 
 	CASE(LDMTD) {
 		klr_LDMTD_t *op = (klr_LDMTD_t*)pc; (void)op;
 		KLR_LDMTD(ctx, op->thisidx, op->loadmtd, op->cache, op->mtdNC);
-		pc++;
+		pc += sizeof(klr_LDMTD_t);
 		GOTO_NEXT();
 	} 
 	CASE(CALL) {
 		klr_CALL_t *op = (klr_CALL_t*)pc; (void)op;
 		KLR_CALL(ctx, op->a, op->thisidx, op->espshift);
-		pc++;
+		pc += sizeof(klr_CALL_t);
 		GOTO_NEXT();
 	} 
 	CASE(SCALL) {
 		klr_SCALL_t *op = (klr_SCALL_t*)pc; (void)op;
 		KLR_SCALL(ctx, op->a, op->thisidx, op->espshift, op->mtdNC);
-		pc++;
+		pc += sizeof(klr_SCALL_t);
 		GOTO_NEXT();
 	} 
 	CASE(VCALL) {
 		klr_VCALL_t *op = (klr_VCALL_t*)pc; (void)op;
 		KLR_VCALL(ctx, op->a, op->thisidx, op->espshift, op->mtdNC);
-		pc++;
+		pc += sizeof(klr_VCALL_t);
 		GOTO_NEXT();
 	} 
 	CASE(VCALL_) {
 		klr_VCALL__t *op = (klr_VCALL__t*)pc; (void)op;
 		KLR_VCALL_(ctx, op->a, op->thisidx, op->espshift, op->mtdNC);
-		pc++;
+		pc += sizeof(klr_VCALL__t);
 		GOTO_NEXT();
 	} 
 	CASE(FASTCALL0) {
 		klr_FASTCALL0_t *op = (klr_FASTCALL0_t*)pc; (void)op;
 		KLR_FASTCALL0(ctx, op->a, op->thisidx, op->rix, op->espshift, op->fcall);
-		pc++;
+		pc += sizeof(klr_FASTCALL0_t);
 		GOTO_NEXT();
 	} 
 	CASE(RET) {
 		klr_RET_t *op = (klr_RET_t*)pc; (void)op;
 		KLR_RET(ctx);
-		pc++;
+		pc += sizeof(klr_RET_t);
 		GOTO_NEXT();
 	} 
 	CASE(TR) {
 		klr_TR_t *op = (klr_TR_t*)pc; (void)op;
 		KLR_TR(ctx, op->a, op->b, op->rix, op->cid, op->tr);
-		pc++;
+		pc += sizeof(klr_TR_t);
 		GOTO_NEXT();
 	} 
 	CASE(SCAST) {
 		klr_SCAST_t *op = (klr_SCAST_t*)pc; (void)op;
 		KLR_SCAST(ctx, op->a, op->b, op->rix, op->espshift, op->cast);
-		pc++;
+		pc += sizeof(klr_SCAST_t);
 		GOTO_NEXT();
 	} 
 	CASE(TCAST) {
 		klr_TCAST_t *op = (klr_TCAST_t*)pc; (void)op;
 		KLR_TCAST(ctx, op->a, op->b, op->rix, op->espshift, op->cast);
-		pc++;
+		pc += sizeof(klr_TCAST_t);
 		GOTO_NEXT();
 	} 
 	CASE(ACAST) {
 		klr_ACAST_t *op = (klr_ACAST_t*)pc; (void)op;
 		KLR_ACAST(ctx, op->a, op->b, op->rix, op->espshift, op->cast);
-		pc++;
+		pc += sizeof(klr_ACAST_t);
 		GOTO_NEXT();
 	} 
 	CASE(iCAST) {
 		klr_iCAST_t *op = (klr_iCAST_t*)pc; (void)op;
 		KLR_iCAST(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_iCAST_t);
 		GOTO_NEXT();
 	} 
 	CASE(fCAST) {
 		klr_fCAST_t *op = (klr_fCAST_t*)pc; (void)op;
 		KLR_fCAST(ctx, op->a, op->b);
-		pc++;
+		pc += sizeof(klr_fCAST_t);
 		GOTO_NEXT();
 	} 
 	CASE(SAFEPOINT) {
 		klr_SAFEPOINT_t *op = (klr_SAFEPOINT_t*)pc; (void)op;
 		KLR_SAFEPOINT(ctx, op->espshift);
-		pc++;
+		pc += sizeof(klr_SAFEPOINT_t);
 		GOTO_NEXT();
 	} 
 	CASE(JMP) {
 		klr_JMP_t *op = (klr_JMP_t*)pc; (void)op;
-		KLR_JMP(ctx, pc = op->jumppc, JUMP);
-		pc++;
+		KLR_JMP(ctx, pc = (vmc_t *) op->jumppc, JUMP);
+		pc += sizeof(klr_JMP_t);
 		GOTO_NEXT();
 	} 
 	CASE(JMP_) {
 		klr_JMP__t *op = (klr_JMP__t*)pc; (void)op;
-		KLR_JMP_(ctx, pc = op->jumppc, JUMP);
-		pc++;
+		KLR_JMP_(ctx, pc = (vmc_t *) op->jumppc, JUMP);
+		pc += sizeof(klr_JMP__t);
 		GOTO_NEXT();
 	} 
 	CASE(JMPF) {
 		klr_JMPF_t *op = (klr_JMPF_t*)pc; (void)op;
-		KLR_JMPF(ctx, pc = op->jumppc, JUMP, op->a);
-		pc++;
+		KLR_JMPF(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		pc += sizeof(klr_JMPF_t);
 		GOTO_NEXT();
 	} 
 	CASE(NEXT) {
 		klr_NEXT_t *op = (klr_NEXT_t*)pc; (void)op;
-		KLR_NEXT(ctx, pc = op->jumppc, JUMP, op->a, op->b, op->rix, op->espshift);
-		pc++;
+		KLR_NEXT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b, op->rix, op->espshift);
+		pc += sizeof(klr_NEXT_t);
 		GOTO_NEXT();
 	} 
 	CASE(BGETIDX) {
 		klr_BGETIDX_t *op = (klr_BGETIDX_t*)pc; (void)op;
 		KLR_BGETIDX(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_BGETIDX_t);
 		GOTO_NEXT();
 	} 
 	CASE(BSETIDX) {
 		klr_BSETIDX_t *op = (klr_BSETIDX_t*)pc; (void)op;
 		KLR_BSETIDX(ctx, op->c, op->a, op->n, op->v);
-		pc++;
+		pc += sizeof(klr_BSETIDX_t);
 		GOTO_NEXT();
 	} 
 	CASE(BGETIDXC) {
 		klr_BGETIDXC_t *op = (klr_BGETIDXC_t*)pc; (void)op;
 		KLR_BGETIDXC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_BGETIDXC_t);
 		GOTO_NEXT();
 	} 
 	CASE(BSETIDXC) {
 		klr_BSETIDXC_t *op = (klr_BSETIDXC_t*)pc; (void)op;
 		KLR_BSETIDXC(ctx, op->c, op->a, op->n, op->v);
-		pc++;
+		pc += sizeof(klr_BSETIDXC_t);
 		GOTO_NEXT();
 	} 
 	CASE(NGETIDX) {
 		klr_NGETIDX_t *op = (klr_NGETIDX_t*)pc; (void)op;
 		KLR_NGETIDX(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_NGETIDX_t);
 		GOTO_NEXT();
 	} 
 	CASE(NSETIDX) {
 		klr_NSETIDX_t *op = (klr_NSETIDX_t*)pc; (void)op;
 		KLR_NSETIDX(ctx, op->c, op->a, op->n, op->v);
-		pc++;
+		pc += sizeof(klr_NSETIDX_t);
 		GOTO_NEXT();
 	} 
 	CASE(NGETIDXC) {
 		klr_NGETIDXC_t *op = (klr_NGETIDXC_t*)pc; (void)op;
 		KLR_NGETIDXC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_NGETIDXC_t);
 		GOTO_NEXT();
 	} 
 	CASE(NSETIDXC) {
 		klr_NSETIDXC_t *op = (klr_NSETIDXC_t*)pc; (void)op;
 		KLR_NSETIDXC(ctx, op->c, op->a, op->n, op->v);
-		pc++;
+		pc += sizeof(klr_NSETIDXC_t);
 		GOTO_NEXT();
 	} 
 	CASE(OGETIDX) {
 		klr_OGETIDX_t *op = (klr_OGETIDX_t*)pc; (void)op;
 		KLR_OGETIDX(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_OGETIDX_t);
 		GOTO_NEXT();
 	} 
 	CASE(OSETIDX) {
 		klr_OSETIDX_t *op = (klr_OSETIDX_t*)pc; (void)op;
 		KLR_OSETIDX(ctx, op->c, op->a, op->n, op->v);
-		pc++;
+		pc += sizeof(klr_OSETIDX_t);
 		GOTO_NEXT();
 	} 
 	CASE(OGETIDXC) {
 		klr_OGETIDXC_t *op = (klr_OGETIDXC_t*)pc; (void)op;
 		KLR_OGETIDXC(ctx, op->c, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_OGETIDXC_t);
 		GOTO_NEXT();
 	} 
 	CASE(OSETIDXC) {
 		klr_OSETIDXC_t *op = (klr_OSETIDXC_t*)pc; (void)op;
 		KLR_OSETIDXC(ctx, op->c, op->a, op->n, op->v);
-		pc++;
+		pc += sizeof(klr_OSETIDXC_t);
 		GOTO_NEXT();
 	} 
 	CASE(bJNUL) {
 		klr_bJNUL_t *op = (klr_bJNUL_t*)pc; (void)op;
-		KLR_bJNUL(ctx, pc = op->jumppc, JUMP, op->a);
-		pc++;
+		KLR_bJNUL(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		pc += sizeof(klr_bJNUL_t);
 		GOTO_NEXT();
 	} 
 	CASE(bJNN) {
 		klr_bJNN_t *op = (klr_bJNN_t*)pc; (void)op;
-		KLR_bJNN(ctx, pc = op->jumppc, JUMP, op->a);
-		pc++;
+		KLR_bJNN(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		pc += sizeof(klr_bJNN_t);
 		GOTO_NEXT();
 	} 
 	CASE(bJNOT) {
 		klr_bJNOT_t *op = (klr_bJNOT_t*)pc; (void)op;
-		KLR_bJNOT(ctx, pc = op->jumppc, JUMP, op->a);
-		pc++;
+		KLR_bJNOT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a);
+		pc += sizeof(klr_bJNOT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJEQ) {
 		klr_iJEQ_t *op = (klr_iJEQ_t*)pc; (void)op;
-		KLR_iJEQ(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_iJEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_iJEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJNEQ) {
 		klr_iJNEQ_t *op = (klr_iJNEQ_t*)pc; (void)op;
-		KLR_iJNEQ(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_iJNEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_iJNEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLT) {
 		klr_iJLT_t *op = (klr_iJLT_t*)pc; (void)op;
-		KLR_iJLT(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_iJLT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_iJLT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLTE) {
 		klr_iJLTE_t *op = (klr_iJLTE_t*)pc; (void)op;
-		KLR_iJLTE(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_iJLTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_iJLTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGT) {
 		klr_iJGT_t *op = (klr_iJGT_t*)pc; (void)op;
-		KLR_iJGT(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_iJGT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_iJGT_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGTE) {
 		klr_iJGTE_t *op = (klr_iJGTE_t*)pc; (void)op;
-		KLR_iJGTE(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_iJGTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_iJGTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJEQC) {
 		klr_iJEQC_t *op = (klr_iJEQC_t*)pc; (void)op;
-		KLR_iJEQC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_iJEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_iJEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJNEQC) {
 		klr_iJNEQC_t *op = (klr_iJNEQC_t*)pc; (void)op;
-		KLR_iJNEQC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_iJNEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_iJNEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLTC) {
 		klr_iJLTC_t *op = (klr_iJLTC_t*)pc; (void)op;
-		KLR_iJLTC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_iJLTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_iJLTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJLTEC) {
 		klr_iJLTEC_t *op = (klr_iJLTEC_t*)pc; (void)op;
-		KLR_iJLTEC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_iJLTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_iJLTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGTC) {
 		klr_iJGTC_t *op = (klr_iJGTC_t*)pc; (void)op;
-		KLR_iJGTC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_iJGTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_iJGTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(iJGTEC) {
 		klr_iJGTEC_t *op = (klr_iJGTEC_t*)pc; (void)op;
-		KLR_iJGTEC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_iJGTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_iJGTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJEQ) {
 		klr_fJEQ_t *op = (klr_fJEQ_t*)pc; (void)op;
-		KLR_fJEQ(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_fJEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_fJEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJNEQ) {
 		klr_fJNEQ_t *op = (klr_fJNEQ_t*)pc; (void)op;
-		KLR_fJNEQ(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_fJNEQ(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_fJNEQ_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLT) {
 		klr_fJLT_t *op = (klr_fJLT_t*)pc; (void)op;
-		KLR_fJLT(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_fJLT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_fJLT_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLTE) {
 		klr_fJLTE_t *op = (klr_fJLTE_t*)pc; (void)op;
-		KLR_fJLTE(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_fJLTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_fJLTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGT) {
 		klr_fJGT_t *op = (klr_fJGT_t*)pc; (void)op;
-		KLR_fJGT(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_fJGT(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_fJGT_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGTE) {
 		klr_fJGTE_t *op = (klr_fJGTE_t*)pc; (void)op;
-		KLR_fJGTE(ctx, pc = op->jumppc, JUMP, op->a, op->b);
-		pc++;
+		KLR_fJGTE(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->b);
+		pc += sizeof(klr_fJGTE_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJEQC) {
 		klr_fJEQC_t *op = (klr_fJEQC_t*)pc; (void)op;
-		KLR_fJEQC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_fJEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_fJEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJNEQC) {
 		klr_fJNEQC_t *op = (klr_fJNEQC_t*)pc; (void)op;
-		KLR_fJNEQC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_fJNEQC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_fJNEQC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLTC) {
 		klr_fJLTC_t *op = (klr_fJLTC_t*)pc; (void)op;
-		KLR_fJLTC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_fJLTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_fJLTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJLTEC) {
 		klr_fJLTEC_t *op = (klr_fJLTEC_t*)pc; (void)op;
-		KLR_fJLTEC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_fJLTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_fJLTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGTC) {
 		klr_fJGTC_t *op = (klr_fJGTC_t*)pc; (void)op;
-		KLR_fJGTC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_fJGTC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_fJGTC_t);
 		GOTO_NEXT();
 	} 
 	CASE(fJGTEC) {
 		klr_fJGTEC_t *op = (klr_fJGTEC_t*)pc; (void)op;
-		KLR_fJGTEC(ctx, pc = op->jumppc, JUMP, op->a, op->n);
-		pc++;
+		KLR_fJGTEC(ctx, pc = (vmc_t *) op->jumppc, JUMP, op->a, op->n);
+		pc += sizeof(klr_fJGTEC_t);
 		GOTO_NEXT();
 	} 
 	CASE(CHKIDX) {
 		klr_CHKIDX_t *op = (klr_CHKIDX_t*)pc; (void)op;
 		KLR_CHKIDX(ctx, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_CHKIDX_t);
 		GOTO_NEXT();
 	} 
 	CASE(CHKIDXC) {
 		klr_CHKIDXC_t *op = (klr_CHKIDXC_t*)pc; (void)op;
 		KLR_CHKIDXC(ctx, op->a, op->n);
-		pc++;
+		pc += sizeof(klr_CHKIDXC_t);
 		GOTO_NEXT();
 	} 
 	CASE(NOP) {
 		klr_NOP_t *op = (klr_NOP_t*)pc; (void)op;
 		KLR_NOP(ctx);
-		pc++;
+		pc += sizeof(klr_NOP_t);
 		GOTO_NEXT();
 	} 
 	DISPATCH_END(pc);
 	L_RETURN:;
-	return pc;
+	return (kopl_t *) pc;
 }
 
 

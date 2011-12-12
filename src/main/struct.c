@@ -3008,15 +3008,18 @@ static void KonohaCode_init(CTX ctx, kRawPtr *o)
 	KNH_INITv(b->source, TS_EMPTY);
 }
 
+typedef unsigned char vmc_t;
 static void KonohaCode_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
 	kKonohaCode *b = (kKonohaCode*)o;
-	kopl_t *pc = b->code;
+	kopl_t *op = b->code;
+	vmc_t *pc  = (vmc_t *) op;
 	KNH_ADDREF(ctx, b->source);
-	KNH_ENSUREREF(ctx, b->codesize / sizeof(kopl_t));
-	while(pc->head.opcode != OPCODE_RET) {
-		tail_ = knh_opline_reftrace(ctx, pc FTRDATA);
-		pc++;
+	KNH_ENSUREREF(ctx, (size_t) o->h.meta);
+	while(op->head.opcode != OPCODE_RET) {
+		op = (kopl_t *) pc;
+		tail_ = knh_opline_reftrace(ctx, op FTRDATA);
+		pc += knh_opline_size(op->head.opcode);
 	}
 	KNH_SIZEREF(ctx);
 }
@@ -3030,11 +3033,12 @@ static void KonohaCode_free(CTX ctx, kRawPtr *o)
 static void KonohaCode_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
 	kKonohaCode *kcode = (kKonohaCode*)o;
-	kopl_t *pc = kcode->code + 1;
+	vmc_t *pc = (vmc_t*)kcode->code + knh_opline_size(kcode->code->head.opcode);
 	while(1) {
-		knh_opcode_dump(ctx, pc, w, kcode->code + 1);
-		if(pc->head.opcode == OPCODE_RET) break;
-		pc++;
+		kopl_t *op = (kopl_t *) pc;
+		knh_opcode_dump(ctx, op, w, NULL);
+		if(op->head.opcode == OPCODE_RET) break;
+		pc += knh_opline_size(op->head.opcode);
 	}
 }
 

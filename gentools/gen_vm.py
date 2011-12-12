@@ -641,7 +641,7 @@ def write_exec(f):
 
 #ifdef K_USING_THCODE_
 #define CASE(x)  L_##x : 
-#define NEXT_OP   (pc->head.codeaddr)
+#define NEXT_OP   (((kopl_t*)pc)->head.codeaddr)
 #define JUMP      *(NEXT_OP)
 #ifdef K_USING_VMASMDISPATCH
 #define GOTO_NEXT()     \\
@@ -667,8 +667,10 @@ def write_exec(f):
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 
-kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
+typedef unsigned char vmc_t;
+kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 {
+	vmc_t *pc = (vmc_t *) pc_;
 #ifdef K_USING_THCODE_
 	static void *OPJUMP[] = {''')
 	c = 0
@@ -684,7 +686,7 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
 	kuint64_t _utime = knh_getTime();
 	static kuint64_t _UTIME[OPCODE_NOP+1] = {0};
 	static size_t _UC[OPCODE_NOP+1] = {0};)
-	DISPATCH_START(pc);
+	DISPATCH_START((kopl_t*)pc);
 ''')
 	for kc in KCODE_LIST:
 # DBG_P("%%p %%s", pc-1, OPCODE__((pc-1)->opcode));
@@ -692,9 +694,9 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
 	%s(%s) {
 		%s *op = (%s*)pc; (void)op;
 		%s;
-		pc++;
+		pc += sizeof(klr_%s_t);
 		GOTO_NEXT();
-	} ''' % (kc.ifdef, kc.name, kc.ctype, kc.ctype, getmacro(kc, 'JUMP')))
+	} ''' % (kc.ifdef, kc.name, kc.ctype, kc.ctype, getmacro(kc, 'JUMP'), kc.name))
 	f.write('''
 	DISPATCH_END(pc);
 	L_RETURN:;

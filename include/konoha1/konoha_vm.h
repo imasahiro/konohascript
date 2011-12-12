@@ -55,8 +55,8 @@ extern "C" {
 #define SFPIDX(n) ((n)/2)
 #define RBP(sfp)  ((krbp_t*)(sfp))
 
-#define PC_NEXT(pc)   pc+1
-#define PC_PREV(pc)   pc-1
+#define PC_NEXT(pc)   ((kopl_t *)(op+1))
+#define PC_PREV(pc)   ((kopl_t*)(op-1))
 
 #define USE_PROF(C)
 
@@ -234,7 +234,7 @@ extern "C" {
 		rbp[K_SHIFTIDX2].shift = thisidx;\
 		rbp[K_PCIDX2].pc = PC_NEXT(pc);\
 		rbp[K_MTDIDX2].mtdNC = mtd_;\
-		pc = (mtd_)->pc_start;\
+		pc = (vmc_t*) (mtd_)->pc_start;\
 		GOTO_PC(pc); \
 	} \
 
@@ -246,7 +246,7 @@ extern "C" {
 		rbp[K_SHIFTIDX2].shift = thisidx;\
 		rbp[K_PCIDX2].pc = PC_NEXT(pc);\
 		rbp[K_MTDIDX2].mtdNC = mtd_;\
-		pc = (mtd_)->pc_start;\
+		pc = (vmc_t*) (mtd_)->pc_start;\
 		GOTO_PC(pc); \
 	} \
 
@@ -257,7 +257,7 @@ extern "C" {
 		kopl_t *vpc = rbp[K_PCIDX2].pc;\
 		rbp[K_MTDIDX2].mtdNC = NULL;\
 		rbp = rshift(rbp, -vshift); \
-		pc = vpc; \
+		pc = (vmc_t*) vpc; \
 		GOTO_PC(pc);\
 	}\
 
@@ -277,7 +277,7 @@ extern "C" {
 		rbp = rshift(rbp, thisidx);\
 		rbp[K_SHIFTIDX2].shift = thisidx;\
 		rbp[K_PCIDX2].pc = PC_NEXT(pc);\
-		pc = (mtd_)->pc_start;\
+		pc = (vmc_t*) (mtd_)->pc_start;\
 		GOTO_PC(pc); \
 	} \
 
@@ -290,7 +290,7 @@ extern "C" {
 		rbp[K_SHIFTIDX2].shift = thisidx;\
 		rbp[K_PCIDX2].pc = PC_NEXT(pc);\
 		rbp[K_MTDIDX2].mtdNC = mtd_;\
-		pc = (mtd_)->pc_start;\
+		pc = (vmc_t*) (mtd_)->pc_start;\
 		GOTO_PC(pc); \
 	} \
 **/
@@ -308,7 +308,7 @@ extern "C" {
 
 #define KLR_VEXEC(ctx) {\
 		kopl_t *vpc = PC_NEXT(pc);\
-		pc = (rbp[K_MTDIDX2].mtdNC)->pc_start;\
+		pc = (vmc_t*) (rbp[K_MTDIDX2].mtdNC)->pc_start;\
 		rbp[K_SHIFTIDX2].shift = 0;\
 		rbp[K_PCIDX2].pc = vpc;\
 		GOTO_PC(pc); \
@@ -316,7 +316,7 @@ extern "C" {
 
 #define KLR_ENTER(ctx) {\
 		kopl_t *vpc = PC_NEXT(pc);\
-		pc = (rbp[K_MTDIDX2].mtdNC)->pc_start;\
+		pc = (vmc_t*) (rbp[K_MTDIDX2].mtdNC)->pc_start;\
 		rbp[K_SHIFTIDX2].shift = 0;\
 		rbp[K_PCIDX2].pc = vpc;\
 		GOTO_PC(pc); \
@@ -324,13 +324,13 @@ extern "C" {
 
 
 #define KLR_EXIT(ctx) {\
-		pc = NULL; \
+		pc = (vmc_t*) NULL; \
 		goto L_RETURN;\
 	}\
 
 #define KLR_THCODE(ctx, th, uri) { \
-		th(ctx, pc, OPJUMP); \
-		pc = PC_NEXT(pc);\
+		th(ctx, (kopl_t*)pc, OPJUMP); \
+		pc = (vmc_t*)PC_NEXT(pc);\
 		goto L_RETURN; \
 	}\
 
@@ -448,7 +448,7 @@ extern "C" {
 	} else { \
 		_hdr = ctx->ehdrNC;\
 		knh_ExceptionHandlerEX_t* _hdrEX = DP(_hdr);\
-		pc = _hdrEX->pc; \
+		pc = (vmc_t*) _hdrEX->pc; \
 		rbp = RBP(ctx->stack + _hdrEX->sfpidx);\
 		klr_setesp(ctx, (ctx->stack + _hdr->espidx));\
 		op = _hdrEX->op;\
@@ -484,7 +484,7 @@ extern "C" {
 		((kcontext_t*)ctx)->ehdrNC = _hdr; \
 	} else { \
 		knh_ExceptionHandlerEX_t* _hdrEX = DP(_hdr);\
-		pc = _hdrEX->pc; \
+		pc = (vmc_t*) _hdrEX->pc; \
 		rbp = RBP(ctx->stack + _hdrEX->sfpidx);\
 		klr_setesp(ctx, (ctx->stack + _hdr->espidx));\
 		op = _hdrEX->op;\
