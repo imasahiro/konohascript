@@ -1,13 +1,7 @@
-if(USE_QT4)
 cmake_minimum_required(VERSION 2.6)
+set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
-set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
-set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
-set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_BUILD_TYPE DEBUG)
-
-# it must be configured
+if(USE_QT4)
 
 project(qt4)
 set(QT_USE_QTWEBKIT TRUE)
@@ -27,10 +21,7 @@ set(PACKAGE_EXTRA_LIBRARY
 	${QT_QTOPENGL_LIBRARY}
 	)
 
-set(PACKAGE_HEADERS
-	qt4.hpp
-
-    )
+set(PACKAGE_HEADERS qt4.hpp)
 qt4_wrap_cpp(PACKAGE_HEADERS_MOC ${PACKAGE_HEADERS})
 
 include(${QT_USE_FILE})

@@ -34,6 +34,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	#set(CMAKE_BUILD_TYPE "Debug" )
 	set(CMAKE_BUILD_TYPE "Release" )
 endif()
+set(KONOHA_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
 SET(CMAKE_C_FLAGS         "-Wall")
 SET(CMAKE_C_FLAGS_RELEASE "-O2 -g")
@@ -346,6 +347,11 @@ option(USE_GWT "Using gwt package" OFF)
 option(USE_QT "Using qt package" OFF)
 
 option(USE_QT4 "Using qt4 package" OFF)
+
+option(USE_GENGC "Using GENGC" OFF)
+if(USE_GENGC)
+	add_definitions(-DK_USING_GENGC=1)
+endif(USE_GENGC)
 
 if(MINGW)
 	find_library(HAVE_LIBCURLDLL NAMES curldll)

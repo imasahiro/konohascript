@@ -1,16 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
-# -DCMAKE_BUILD_TYPE=Debug
-# -DCMAKE_INSTALL_PREFIX=$HOME
-# -DCMAKE_VERBOSE_MAKEFILE=1
-
-set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
-set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_BUILD_TYPE Release)
-#set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
 if(MINGW)
 	message(STATUS "Konoha MinGW is not supprot konoha.posix package")
-else()
+else(MINGW)
 
 project(posix)
 set(PACKAGE_SOURCE_CODE posix.c)
@@ -36,3 +29,4 @@ install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
 endif(MINGW)
+

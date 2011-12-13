@@ -1,13 +1,7 @@
-if(USE_KINECT)
 cmake_minimum_required(VERSION 2.6)
+set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
-set(CMAKE_C_FLAGS_RELEASE "-Wall -O2 -g")
-set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O2 -g")
-set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_BUILD_TYPE DEBUG)
-
-# it must be configured
+if(USE_KINECT)
 
 project(kinect)
 find_package(Qt4 REQUIRED)
@@ -71,8 +65,7 @@ add_definitions(${QT_DEFINITIONS})
 
 add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE} ${PACKAGE_HEADERS_MOC})
 set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
-target_link_libraries(${PACKAGE_NAME} konoha)
-target_link_libraries(${PACKAGE_NAME} ${PACKAGE_EXTRA_LIBRARY}
+target_link_libraries(${PACKAGE_NAME} konoha ${PACKAGE_EXTRA_LIBRARY}
 opencv_calib3d opencv_core opencv_features2d opencv_flann opencv_gpu
 opencv_highgui opencv_imgproc opencv_legacy opencv_ml
 opencv_objdetect opencv_ts opencv_video OpenNI ${NITE_LIBRARIES})
@@ -81,3 +74,4 @@ install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
 endif(USE_KINECT)
+

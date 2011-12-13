@@ -1,13 +1,7 @@
-if(USE_OPENCV)
 cmake_minimum_required(VERSION 2.6)
+set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
-set(CMAKE_C_FLAGS_RELEASE "-Wall -O0 -g3")
-set(CMAKE_C_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_RELEASE "-Wall -O0 -g3")
-set(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
-set(CMAKE_BUILD_TYPE DEBUG)
-
-# it must be configured
+if(USE_OPENCV)
 
 project(opencv)
 find_package(Qt4 REQUIRED)
@@ -59,3 +53,4 @@ install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
 endif(USE_OPENCV)
+

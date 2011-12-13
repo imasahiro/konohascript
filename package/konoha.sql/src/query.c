@@ -397,14 +397,13 @@ static void Connection_init(CTX ctx, kRawPtr *po)
 {
 	kConnection *o = (kConnection *)po;
 	KNH_INITv(o->urn, KNH_NULL);
-	//knh_Connection_open(ctx, o, "");
 }
 
-static void Connection_free(CTX ctx, kRawPtr *po)
+static void Connection_reftrace(CTX ctx, kRawPtr *po FTRARG)
 {
-	kConnection *c = (kConnection *)po;
-	KNH_FREE(ctx, c->urn->str.ubuf, KNH_SIZE(S_size(c->urn) + 1));
-	//KNH_FREE(ctx, c, sizeof(kObject));
+	kConnection *o = (kConnection *)po;
+	KNH_ADDREF(ctx, o->urn);
+	KNH_SIZEREF(ctx);
 }
 
 void mysql_qcurfree(kqcur_t* qcur)
@@ -438,15 +437,16 @@ static void ResultSet_free(CTX ctx, kRawPtr *po)
 	if (DP(rs) != NULL && DP(rs)->column_size > 0) {
 		KNH_FREE(ctx, DP(rs)->column, sizeof(kDBschema) * DP(rs)->column_size);
 	}
+#ifndef K_USING_BMGC
 	KNH_FREE(ctx, DP(rs), sizeof(kResultSetEX));
-	//KNH_FREE(ctx, rs, sizeof(kObject));
+#endif
 }
 
 DEFAPI(void) defConnection(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 {
 	cdef->name = "Connection";
 	cdef->init = Connection_init;
-	cdef->free = Connection_free;
+	cdef->reftrace = Connection_reftrace;
 }
 
 DEFAPI(void) defResultSet(CTX ctx, kclass_t cid, kclassdef_t *cdef)
@@ -454,6 +454,7 @@ DEFAPI(void) defResultSet(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 	cdef->name = "ResultSet";
 	cdef->init = ResultSet_init;
 	cdef->free = ResultSet_free;
+	cdef->c_struct_size = sizeof(kResultSet);
 }
 #ifdef __cplusplus
 }
