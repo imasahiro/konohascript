@@ -30,7 +30,7 @@ NMOV       _DEF|_JIT         a:rn b:rn
 @NNMOV     _DEF              a:rn b:rn c:rn d:rn
 @NSET2     _DEF|_JIT         a:rn n:int n2:int
 @NSET3     _DEF|_JIT         a:rn n:u n2:u n3:u
-#@NSET4     _DEF|_JIT         a:rn n:u n2:u n3:u n4:u
+@NSET4     _DEF|_JIT         a:rn n:u n2:u n3:u n4:u
 
 NMOVx      _DEF              a:rn  b:sfx
 XNSET      0                 a:sfx b:int
@@ -113,7 +113,7 @@ RCDEC      _JIT              a:ro
 @ONMOV     _DEF|_JIT         a:ro b:ro c:rn d:rn
 @OSET2     _JIT|_CONST       a:ro v:Object v2:Object
 @OSET3     _JIT|_CONST       a:ro v:Object v2:Object v3:Object
-#@OSET4     _JIT|_CONST       a:ro v:Object v2:Object v3:Object v4:Object
+@OSET4     _JIT|_CONST       a:ro v:Object v2:Object v3:Object v4:Object
 
 RCINCx     0                 a:sfx
 RCDECx     0                 a:sfx

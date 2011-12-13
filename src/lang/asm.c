@@ -435,7 +435,7 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 				if(op4->head.opcode == OPCODE_OSET && op3->a + K_NEXTIDX == op4->a) {
 #ifdef OPCODE_OSET4
 					klr_OSET4_t *opOSET = (klr_OSET4_t*)opP;
-					opOSET->opcode = OPCODE_OSET4;
+					opOSET->head.opcode = OPCODE_OSET4;
 					opOSET->v2 = op2->o;
 					opOSET->v3 = op3->o;
 					opOSET->v4 = op4->o;

@@ -81,6 +81,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"NNMOV", _DEF, 4, sizeof(klr_NNMOV_t), { VMT_RN, VMT_RN, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_NNMOV_t, a), offsetof(klr_NNMOV_t, b), offsetof(klr_NNMOV_t, c), offsetof(klr_NNMOV_t, d), 0}},
 	{"NSET2", _DEF|_JIT, 3+VMTSIZE_int+VMTSIZE_int, sizeof(klr_NSET2_t), { VMT_RN, VMT_INT VMTX_INT, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_NSET2_t, a), offsetof(klr_NSET2_t, n), offsetof(klr_NSET2_t, n2), 0}},
 	{"NSET3", _DEF|_JIT, 4, sizeof(klr_NSET3_t), { VMT_RN, VMT_U, VMT_U, VMT_U, VMT_VOID}, {offsetof(klr_NSET3_t, a), offsetof(klr_NSET3_t, n), offsetof(klr_NSET3_t, n2), offsetof(klr_NSET3_t, n3), 0}},
+	{"NSET4", _DEF|_JIT, 5, sizeof(klr_NSET4_t), { VMT_RN, VMT_U, VMT_U, VMT_U, VMT_U, VMT_VOID}, {offsetof(klr_NSET4_t, a), offsetof(klr_NSET4_t, n), offsetof(klr_NSET4_t, n2), offsetof(klr_NSET4_t, n3), offsetof(klr_NSET4_t, n4), 0}},
 	{"NMOVx", _DEF, 2+1, sizeof(klr_NMOVx_t), { VMT_RN, VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_NMOVx_t, a), offsetof(klr_NMOVx_t, b), offsetof(klr_NMOVx_t, b.n), 0}},
 	{"XNSET", 0, 2+1+VMTSIZE_int, sizeof(klr_XNSET_t), { VMT_SFX, VMT_VOID, VMT_INT VMTX_INT, VMT_VOID}, {offsetof(klr_XNSET_t, a), offsetof(klr_XNSET_t, a.n), offsetof(klr_XNSET_t, b), 0}},
 	{"XNMOV", 0, 2+1, sizeof(klr_XNMOV_t), { VMT_SFX, VMT_VOID, VMT_RN, VMT_VOID}, {offsetof(klr_XNMOV_t, a), offsetof(klr_XNMOV_t, a.n), offsetof(klr_XNMOV_t, b), 0}},
@@ -154,6 +155,7 @@ static const knh_OPDATA_t OPDATA[] = {
 	{"ONMOV", _DEF|_JIT, 4, sizeof(klr_ONMOV_t), { VMT_RO, VMT_RO, VMT_RN, VMT_RN, VMT_VOID}, {offsetof(klr_ONMOV_t, a), offsetof(klr_ONMOV_t, b), offsetof(klr_ONMOV_t, c), offsetof(klr_ONMOV_t, d), 0}},
 	{"OSET2", _JIT|_CONST, 3, sizeof(klr_OSET2_t), { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_VOID}, {offsetof(klr_OSET2_t, a), offsetof(klr_OSET2_t, v), offsetof(klr_OSET2_t, v2), 0}},
 	{"OSET3", _JIT|_CONST, 4, sizeof(klr_OSET3_t), { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_VOID}, {offsetof(klr_OSET3_t, a), offsetof(klr_OSET3_t, v), offsetof(klr_OSET3_t, v2), offsetof(klr_OSET3_t, v3), 0}},
+	{"OSET4", _JIT|_CONST, 5, sizeof(klr_OSET4_t), { VMT_RO, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_OBJECT, VMT_VOID}, {offsetof(klr_OSET4_t, a), offsetof(klr_OSET4_t, v), offsetof(klr_OSET4_t, v2), offsetof(klr_OSET4_t, v3), offsetof(klr_OSET4_t, v4), 0}},
 	{"RCINCx", 0, 1+1, sizeof(klr_RCINCx_t), { VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_RCINCx_t, a), offsetof(klr_RCINCx_t, a.n), 0}},
 	{"RCDECx", 0, 1+1, sizeof(klr_RCDECx_t), { VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_RCDECx_t, a), offsetof(klr_RCDECx_t, a.n), 0}},
 	{"OMOVx", _DEF|_JIT, 2+1, sizeof(klr_OMOVx_t), { VMT_RO, VMT_SFX, VMT_VOID, VMT_VOID}, {offsetof(klr_OMOVx_t, a), offsetof(klr_OMOVx_t, b), offsetof(klr_OMOVx_t, b.n), 0}},
@@ -247,6 +249,7 @@ void knh_opcode_check(void)
 	KNH_ASSERT(sizeof(klr_NNMOV_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_NSET2_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_NSET3_t) <= sizeof(kopl_t));
+	KNH_ASSERT(sizeof(klr_NSET4_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_NMOVx_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_XNSET_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_XNMOV_t) <= sizeof(kopl_t));
@@ -320,6 +323,7 @@ void knh_opcode_check(void)
 	KNH_ASSERT(sizeof(klr_ONMOV_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_OSET2_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_OSET3_t) <= sizeof(kopl_t));
+	KNH_ASSERT(sizeof(klr_OSET4_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_RCINCx_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_RCDECx_t) <= sizeof(kopl_t));
 	KNH_ASSERT(sizeof(klr_OMOVx_t) <= sizeof(kopl_t));
@@ -619,42 +623,42 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 		&&L_THROW, &&L_ASSERT, &&L_CATCH, &&L_CHKIN, 
 		&&L_CHKOUT, &&L_ERROR, &&L_P, &&L_PROBE, 
 		&&L_EXIT, &&L_NSET, &&L_NMOV, &&L_NNMOV, 
-		&&L_NSET2, &&L_NSET3, &&L_NMOVx, &&L_XNSET, 
-		&&L_XNMOV, &&L_XNMOVx, &&L_iINC, &&L_iDEC, 
-		&&L_bNUL, &&L_bNN, &&L_bNOT, &&L_iNEG, 
-		&&L_fNEG, &&L_iTR, &&L_fTR, &&L_iADD, 
-		&&L_iSUB, &&L_iMUL, &&L_iDIV, &&L_iMOD, 
-		&&L_iEQ, &&L_iNEQ, &&L_iLT, &&L_iLTE, 
-		&&L_iGT, &&L_iGTE, &&L_iAND, &&L_iOR, 
-		&&L_iXOR, &&L_iLSFT, &&L_iRSFT, &&L_iADDC, 
-		&&L_iSUBC, &&L_iMULC, &&L_iDIVC, &&L_iMODC, 
-		&&L_iEQC, &&L_iNEQC, &&L_iLTC, &&L_iLTEC, 
-		&&L_iGTC, &&L_iGTEC, &&L_iANDC, &&L_iORC, 
-		&&L_iXORC, &&L_iLSFTC, &&L_iRSFTC, &&L_fADD, 
-		&&L_fSUB, &&L_fMUL, &&L_fDIV, &&L_fEQ, 
-		&&L_fNEQ, &&L_fLT, &&L_fLTE, &&L_fGT, 
-		&&L_fGTE, &&L_fADDC, &&L_fSUBC, &&L_fMULC, 
-		&&L_fDIVC, &&L_fEQC, &&L_fNEQC, &&L_fLTC, 
-		&&L_fLTEC, &&L_fGTC, &&L_fGTEC, &&L_RCINC, 
-		&&L_RCDEC, &&L_OSET, &&L_OMOV, &&L_OOMOV, 
-		&&L_ONMOV, &&L_OSET2, &&L_OSET3, &&L_RCINCx, 
-		&&L_RCDECx, &&L_OMOVx, &&L_XMOV, &&L_XOSET, 
-		&&L_XMOVx, &&L_CHKSTACK, &&L_LDMTD, &&L_CALL, 
-		&&L_SCALL, &&L_VCALL, &&L_VCALL_, &&L_FASTCALL0, 
-		&&L_RET, &&L_TR, &&L_SCAST, &&L_TCAST, 
-		&&L_ACAST, &&L_iCAST, &&L_fCAST, &&L_SAFEPOINT, 
-		&&L_JMP, &&L_JMP_, &&L_JMPF, &&L_NEXT, 
-		&&L_BGETIDX, &&L_BSETIDX, &&L_BGETIDXC, &&L_BSETIDXC, 
-		&&L_NGETIDX, &&L_NSETIDX, &&L_NGETIDXC, &&L_NSETIDXC, 
-		&&L_OGETIDX, &&L_OSETIDX, &&L_OGETIDXC, &&L_OSETIDXC, 
-		&&L_bJNUL, &&L_bJNN, &&L_bJNOT, &&L_iJEQ, 
-		&&L_iJNEQ, &&L_iJLT, &&L_iJLTE, &&L_iJGT, 
-		&&L_iJGTE, &&L_iJEQC, &&L_iJNEQC, &&L_iJLTC, 
-		&&L_iJLTEC, &&L_iJGTC, &&L_iJGTEC, &&L_fJEQ, 
-		&&L_fJNEQ, &&L_fJLT, &&L_fJLTE, &&L_fJGT, 
-		&&L_fJGTE, &&L_fJEQC, &&L_fJNEQC, &&L_fJLTC, 
-		&&L_fJLTEC, &&L_fJGTC, &&L_fJGTEC, &&L_CHKIDX, 
-		&&L_CHKIDXC, &&L_NOP, 
+		&&L_NSET2, &&L_NSET3, &&L_NSET4, &&L_NMOVx, 
+		&&L_XNSET, &&L_XNMOV, &&L_XNMOVx, &&L_iINC, 
+		&&L_iDEC, &&L_bNUL, &&L_bNN, &&L_bNOT, 
+		&&L_iNEG, &&L_fNEG, &&L_iTR, &&L_fTR, 
+		&&L_iADD, &&L_iSUB, &&L_iMUL, &&L_iDIV, 
+		&&L_iMOD, &&L_iEQ, &&L_iNEQ, &&L_iLT, 
+		&&L_iLTE, &&L_iGT, &&L_iGTE, &&L_iAND, 
+		&&L_iOR, &&L_iXOR, &&L_iLSFT, &&L_iRSFT, 
+		&&L_iADDC, &&L_iSUBC, &&L_iMULC, &&L_iDIVC, 
+		&&L_iMODC, &&L_iEQC, &&L_iNEQC, &&L_iLTC, 
+		&&L_iLTEC, &&L_iGTC, &&L_iGTEC, &&L_iANDC, 
+		&&L_iORC, &&L_iXORC, &&L_iLSFTC, &&L_iRSFTC, 
+		&&L_fADD, &&L_fSUB, &&L_fMUL, &&L_fDIV, 
+		&&L_fEQ, &&L_fNEQ, &&L_fLT, &&L_fLTE, 
+		&&L_fGT, &&L_fGTE, &&L_fADDC, &&L_fSUBC, 
+		&&L_fMULC, &&L_fDIVC, &&L_fEQC, &&L_fNEQC, 
+		&&L_fLTC, &&L_fLTEC, &&L_fGTC, &&L_fGTEC, 
+		&&L_RCINC, &&L_RCDEC, &&L_OSET, &&L_OMOV, 
+		&&L_OOMOV, &&L_ONMOV, &&L_OSET2, &&L_OSET3, 
+		&&L_OSET4, &&L_RCINCx, &&L_RCDECx, &&L_OMOVx, 
+		&&L_XMOV, &&L_XOSET, &&L_XMOVx, &&L_CHKSTACK, 
+		&&L_LDMTD, &&L_CALL, &&L_SCALL, &&L_VCALL, 
+		&&L_VCALL_, &&L_FASTCALL0, &&L_RET, &&L_TR, 
+		&&L_SCAST, &&L_TCAST, &&L_ACAST, &&L_iCAST, 
+		&&L_fCAST, &&L_SAFEPOINT, &&L_JMP, &&L_JMP_, 
+		&&L_JMPF, &&L_NEXT, &&L_BGETIDX, &&L_BSETIDX, 
+		&&L_BGETIDXC, &&L_BSETIDXC, &&L_NGETIDX, &&L_NSETIDX, 
+		&&L_NGETIDXC, &&L_NSETIDXC, &&L_OGETIDX, &&L_OSETIDX, 
+		&&L_OGETIDXC, &&L_OSETIDXC, &&L_bJNUL, &&L_bJNN, 
+		&&L_bJNOT, &&L_iJEQ, &&L_iJNEQ, &&L_iJLT, 
+		&&L_iJLTE, &&L_iJGT, &&L_iJGTE, &&L_iJEQC, 
+		&&L_iJNEQC, &&L_iJLTC, &&L_iJLTEC, &&L_iJGTC, 
+		&&L_iJGTEC, &&L_fJEQ, &&L_fJNEQ, &&L_fJLT, 
+		&&L_fJLTE, &&L_fJGT, &&L_fJGTE, &&L_fJEQC, 
+		&&L_fJNEQC, &&L_fJLTC, &&L_fJLTEC, &&L_fJGTC, 
+		&&L_fJGTEC, &&L_CHKIDX, &&L_CHKIDXC, &&L_NOP, 
 	};
 #endif
 	krbp_t *rbp = (krbp_t*)sfp0;
@@ -794,6 +798,12 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 		klr_NSET3_t *op = (klr_NSET3_t*)pc; (void)op;
 		KLR_NSET3(ctx, op->a, op->n, op->n2, op->n3);
 		pc += sizeof(klr_NSET3_t);
+		GOTO_NEXT();
+	} 
+	CASE(NSET4) {
+		klr_NSET4_t *op = (klr_NSET4_t*)pc; (void)op;
+		KLR_NSET4(ctx, op->a, op->n, op->n2, op->n3, op->n4);
+		pc += sizeof(klr_NSET4_t);
 		GOTO_NEXT();
 	} 
 	CASE(NMOVx) {
@@ -1232,6 +1242,12 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc_)
 		klr_OSET3_t *op = (klr_OSET3_t*)pc; (void)op;
 		KLR_OSET3(ctx, op->a, op->v, op->v2, op->v3);
 		pc += sizeof(klr_OSET3_t);
+		GOTO_NEXT();
+	} 
+	CASE(OSET4) {
+		klr_OSET4_t *op = (klr_OSET4_t*)pc; (void)op;
+		KLR_OSET4(ctx, op->a, op->v, op->v2, op->v3, op->v4);
+		pc += sizeof(klr_OSET4_t);
 		GOTO_NEXT();
 	} 
 	CASE(RCINCx) {

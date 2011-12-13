@@ -1441,11 +1441,11 @@ typedef kbool_t (*knh_Ftyping)(CTX, kMethod *, kStmtExpr *);
 
 ///* ------------------------------------------------------------------------ */
 
-typedef kushort_t       kopcode_t;
-typedef kshort_t        ksfpidx_t;
-typedef kshort_t        kreg_t;
-typedef kshort_t        kregO_t;
-typedef kshort_t        kregN_t;
+typedef kuintptr_t       kopcode_t;
+typedef kintptr_t       ksfpidx_t;
+typedef kintptr_t       kreg_t;
+typedef kintptr_t       kregO_t;
+typedef kintptr_t       kregN_t;
 typedef void*           kdummyptr_t;
 
 struct  kopl_t;
@@ -1466,7 +1466,7 @@ typedef void (*klr_Fprint)(CTX, ksfp_t*, struct klr_P_t*);
 struct klr_PROBE_t;
 typedef void (*klr_Fprobe)(CTX, ksfp_t* , struct klr_PROBE_t *pc);
 
-#define FIELDS_SIZE 4
+#define FIELDS_SIZE 5
 typedef struct {
 	kdummyptr_t _d[FIELDS_SIZE];
 } knh_opdummy_t;
