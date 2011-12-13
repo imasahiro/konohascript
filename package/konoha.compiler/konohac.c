@@ -45,6 +45,7 @@ int main(int argc, const char *argv[])
     konoha_ginit(1, argv);
     konoha_t konoha = konoha_open();
     CTX ctx = konoha;
+    KONOHA_BEGIN(ctx);
     kString *s = new_T(argv[1]);
     kPath *path = new_Path(ctx, s);
     knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
@@ -57,11 +58,12 @@ int main(int argc, const char *argv[])
     knh_load(ctx, path);
 
     /* CompilerAPI->dump() */
-    kMethod *mtd = load_method(ctx, O_cid(ctx->share->konoha_compiler), STEXT("emitCode"));
+    kMethod *mtd = load_method(ctx, O_cid(ctx->share->konoha_compiler), STEXT("dump"));
     BEGIN_LOCAL(ctx, lsfp, K_CALLDELTA+1);
     KNH_SETv(ctx, lsfp[K_CALLDELTA].o, ctx->share->konoha_compiler);
     KNH_SCALL(ctx, lsfp, 0, mtd, 0);
     END_LOCAL(ctx, lsfp);
+    KONOHA_END(ctx);
     konoha_close(konoha);
     return 0;
 }
