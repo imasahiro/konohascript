@@ -32,6 +32,7 @@ include "lib:gluelink";
 
 DEBUG = false;
 USE_NONSSA = false;
+//USE_NONSSA = true;
 //DEBUG = true;
 //DUMP = false;
 DUMP = true;
@@ -1858,7 +1859,7 @@ void Compiler.addConstTable(dynamic val) {
     const_table.add(val);
 }
 void Compiler.dump(Boolean dump) {
-    print const_table;
+    //print const_table;
     func.dump();
 }
 void Compiler.emit(Method mtd) {
