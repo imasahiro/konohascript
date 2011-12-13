@@ -1229,7 +1229,7 @@ static KMETHOD Bytes_convert(CTX ctx, ksfp_t *sfp _RIX)
 	c->dpi->conv(ctx, c->conv, t.text, t.len, cwb->ba);
 	kBytes *ba = new_Bytes(ctx, NULL, CWB_size(cwb));
 	knh_Bytes_write(ctx, ba, CWB_tobytes(cwb));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	RETURN_(ba);
 }
 
@@ -1244,7 +1244,7 @@ static KMETHOD String_encode(CTX ctx, ksfp_t *sfp _RIX)
 	c->dpi->enc(ctx, c->conv, S_totext(sfp[0].s), S_size(sfp[0].s), cwb->ba);
 	kBytes *ba = new_Bytes(ctx, NULL, CWB_size(cwb));
 	knh_Bytes_write(ctx, ba, CWB_tobytes(cwb));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	RETURN_(ba);
 }
 
@@ -2617,7 +2617,7 @@ static KMETHOD String_opSUB(CTX ctx, ksfp_t *sfp _RIX)
 		knh_Bytes_putc(ctx, cwb->ba, base.utext[i]);
 	}
 	if(base.len == CWB_size(cwb)) {
-		CWB_close(cwb);
+		CWB_close(ctx, cwb);
 		RETURN_(sfp[0].o);
 	}
 	else {
@@ -3399,7 +3399,7 @@ static KMETHOD View_addView(CTX ctx, ksfp_t *sfp _RIX)
 		knh_Bytes_write(ctx, cwb->ba, STEXT("view:"));
 		knh_Bytes_write(ctx, cwb->ba, S_tobytes(sfp[1].s));
 		tf = knh_NameSpace_addLinkObject(ctx, sfp[2].ns, CWB_newString(ctx, cwb, SPOL_POOLALWAYS), UPCAST(view), 0);
-		CWB_close(cwb);
+		CWB_close(ctx, cwb);
 	}
 	RETURNb_(tf);
 }

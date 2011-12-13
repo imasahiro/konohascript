@@ -26,29 +26,15 @@
 
 #include <msgpack.h>
 
-#define K_INTERNAL
 #define USE_STRUCT_InputStream
 #define USE_STRUCT_OutputStream
 
 #include <konoha1.h>
+#include <konoha1/inlinelibs.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-static inline CWB_t *CWB_open(CTX ctx, CWB_t *cwb)
-{
-	cwb->ba = ctx->bufa;
-	cwb->w  = ctx->bufw;
-	cwb->pos = BA_size(cwb->ba);
-	return cwb;
-}
-
-static inline void CWB_close(CTX ctx, CWB_t *cwb)
-{
-	knh_Bytes_clear(cwb->ba, cwb->pos);
-}
-
 
 static void *msgpack_init(CTX ctx, kpackAPI_t *pk)
 {
@@ -220,14 +206,6 @@ static const knh_PackSPI_t pack = {
 static const knh_PackSPI_t *knh_getMsgPackSPI()
 {
 	return &pack;
-}
-
-static inline kbytes_t CWB_tobytes(CWB_t *cwb)
-{
-	kbytes_t t;
-	t.text = (cwb->ba)->bu.text + cwb->pos;
-	t.len =  (cwb->ba)->bu.len - cwb->pos;
-	return t;
 }
 
 //## method void OutputStream.writeMsgPack(Object data);

@@ -57,7 +57,7 @@ kString* knh_getPropertyNULL(CTX ctx, kbytes_t key)
 		CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 		CWB_nzenvkey(ctx, cwb, knh_bytes_last(key, 4));
 		char *v = knh_getenv(CWB_totext(ctx, cwb));
-		CWB_close(cwb);
+		CWB_close(ctx, cwb);
 		if(v == NULL) return NULL;
 		return new_String2(ctx, CLASS_String, v, knh_strlen(v), SPOL_ASCII|SPOL_POOLALWAYS);
 	}

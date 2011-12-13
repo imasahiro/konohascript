@@ -162,7 +162,7 @@ static inline CWB_t *CWB_open0(CTX ctx, CWB_t *cwb)
 	return cwb;
 }
 
-static inline void CWB_close0(CWB_t *cwb)
+static inline void CWB_close0(CTX ctx, CWB_t *cwb)
 {
 	size_t pos = cwb->pos - 1;
 	DBG_ASSERT(cwb->pos > 0);
@@ -179,7 +179,7 @@ static inline kString *CWB_newString0(CTX ctx, CWB_t *cwb)
 	if(cwb->pos < (cwb->ba)->bu.len) {
 		s = new_String2(ctx, CLASS_String, (cwb->ba)->bu.text + cwb->pos, (cwb->ba)->bu.len - cwb->pos, 0);
 	}
-	CWB_close0(cwb);
+	CWB_close0(ctx, cwb);
 	return s;
 }
 
@@ -191,7 +191,7 @@ static inline CWB_t *CWB_open(CTX ctx, CWB_t *cwb)
 	return cwb;
 }
 
-static inline void CWB_close(CWB_t *cwb)
+static inline void CWB_close(CTX ctx, CWB_t *cwb)
 {
 	knh_Bytes_clear(cwb->ba, cwb->pos);
 }

@@ -1395,11 +1395,11 @@ static kTerm *FMTCALL_typing(CTX ctx, kStmtExpr *stmt)
 	}
 	DBG_ASSERT(stmtHEAD != NULL);
 	KNH_SETv(ctx, stmtNN(stmt, 0), stmtHEAD);
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return Stmt_typed(ctx, stmt, TYPE_String);
 
 	L_ERROR:
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return new_TermCONST(ctx, TS_EMPTY);
 }
 
@@ -4393,7 +4393,7 @@ static knh_Fmethod loadTypeMapFunc(CTX ctx, kclass_t scid, kclass_t tcid)
 	}
 	DBG_P("funcname='%s'", CWB_totext(ctx, cwb));
 	knh_Fmethod f = (knh_Fmethod)knh_loadGlueFunc(ctx, CWB_totext(ctx, cwb), 1/*isVerbose*/);
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return f;
 }
 
@@ -4630,7 +4630,7 @@ static kTerm* CLASS_typing(CTX ctx, kStmtExpr *stmt)
 				DBG_ASSERT(DP(stmt)->size == 4);
 				knh_Stmt_add(ctx, stmt, stmtNEW);
 			}
-			CWB_close(cwb);
+			CWB_close(ctx, cwb);
 		}
 	}
 	if(DP(stmt)->size == 5) {

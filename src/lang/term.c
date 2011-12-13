@@ -1237,7 +1237,7 @@ static void InputStream_parseTerm(CTX ctx, kInputStream *in, kline_t *ul, kTerm 
 					}
 					else if(c < block_indent) {
 						Term_addBLOCKERR(ctx, tkB, in, ul, 0);
-						CWB_close(cwb);
+						CWB_close(ctx, cwb);
 						return;
 					}
 				}
@@ -1387,7 +1387,7 @@ static void InputStream_parseTerm(CTX ctx, kInputStream *in, kline_t *ul, kTerm 
 		} /* switch */
 	}/*while*/
 	Term_addBuf(ctx, tkB, cwb, TT_UNTYPED, EOF);
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 }
 #endif
 
