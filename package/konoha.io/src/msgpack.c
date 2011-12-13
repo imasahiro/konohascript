@@ -26,6 +26,7 @@
 
 #include <msgpack.h>
 
+#define K_INTERNAL 1
 #define USE_STRUCT_InputStream
 #define USE_STRUCT_OutputStream
 
