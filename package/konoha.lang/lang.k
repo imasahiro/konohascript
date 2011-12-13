@@ -87,6 +87,7 @@ class Charset extends String;
 @Public @Native Class Token.getT();
 @Public @Native int Token.getTokenIndex();
 @Public @Native Class Token.getTokenClass();
+@Public @Native int Token.getMn();
 @Public @Native int Object.getPtr();
 @Public @Native Class Method.getMethodClass();
 

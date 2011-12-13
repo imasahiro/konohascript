@@ -160,6 +160,13 @@ KMETHOD Token_getTokenClass(CTX ctx, ksfp_t *sfp _RIX) {
 	kclass_t cid = tk->cid;
 	RETURN_(new_Type(ctx, cid));
 }
+//## int Token.getMn();
+KMETHOD Token_getMn(CTX ctx, ksfp_t *sfp _RIX) {
+    kTerm *tk = (kTerm*)sfp[0].o;
+    kmethodn_t mn = tk->mn;
+    RETURNi_(mn);
+}
+
 //## Token Stmt.toToken();
 KMETHOD Stmt_toToken(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
@@ -1064,6 +1071,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->setPackageProperty(ctx, "name", "lang");
 	kapi->setPackageProperty(ctx, "version", "0.0");
+	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Method")), MethodInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), StmtInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Token")), TokenInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), (knh_IntData_t*)_FuncData);
