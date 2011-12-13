@@ -1861,8 +1861,7 @@ void Compiler.asm(Stmt stmt, Token tk, int espidx) {
 void Compiler.addConstTable(dynamic val) {
     const_table.add(val);
 }
-
-void Compiler.emit(Method mtd) {
+void Compiler.emitCode() {
     for (int i = 0; i < kfunc.const_table.size; i++) {
         this.addConstTable(kfunc.const_table[i]);
     }
@@ -1881,6 +1880,9 @@ void Compiler.emit(Method mtd) {
         print const_table;
         func.dump();
     }
+}
+void Compiler.emit(Method mtd) {
+    this.emitCode();
     if (!kfunc.isUndeveloped()) {
         mtd.setFunction(ee.getPointerToFunction(m, func));
     }
