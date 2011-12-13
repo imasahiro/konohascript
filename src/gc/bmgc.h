@@ -1246,7 +1246,6 @@ static void BMGC_exit(CTX ctx, HeapManager *mng)
 	HeapManager_final_free(ctx, mng);
 	HeapManager_delete(ctx, mng);
 	do_free(mng, sizeof(*mng));
-	DBG_CHECK_MALLOCED_SIZE();
 #ifdef GCSTAT
 	fclose(global_gc_stat.fp);
 #endif
