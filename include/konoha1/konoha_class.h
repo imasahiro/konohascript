@@ -1498,7 +1498,7 @@ struct kopl_t {
 		kchar_t *u[FIELDS_SIZE];
 		kchar_t c[FIELDS_SIZE*sizeof(kdummyptr_t)];
 	};
-};
+}  __attribute__ ((__aligned__(32)));
 #endif
 
 #define DBG_ASSERT_OPCODE(c) \

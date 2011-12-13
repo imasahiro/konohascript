@@ -307,7 +307,7 @@ typedef struct %s {
 			f.write('''
 	%s %s;''' % (getctype(t, n), n))
 	f.write('''
-} %s;
+}  __attribute__ ((__aligned__(32))) %s;
 ''' % kc.ctype)
 
 def write_define_h(f):
