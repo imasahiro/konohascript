@@ -698,7 +698,7 @@ static void KonohaCode_shrink(CTX ctx, kKonohaCode *kcode)
 	kcode->code     = vmcode;
 	kcode->codesize = codesize;
 	kcode->h.meta = (void*)(long)codelen;
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 }
 static kKonohaCode* BasicBlock_link(CTX ctx, kBasicBlock *bb, kBasicBlock *bbRET)
 {
