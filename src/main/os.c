@@ -561,7 +561,7 @@ void knh_System_initPath(CTX ctx)
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*sep*/, STEXT(LIBK_VERSION));
 		SETPROP("user.package.path", CWB_newString(ctx, cwb, 0));
 	}
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 }
 
 /* ------------------------------------------------------------------------ */

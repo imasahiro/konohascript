@@ -607,27 +607,27 @@ static void knh_shell(CTX ctx)
 		knh_showWelcome(ctx, cwb->w);
 		knh_showSecurityAlert(ctx, cwb->w);
 		shell_status = shell_init(ctx, CWB_totext(ctx, cwb), NULL);
-		CWB_close(cwb);
+		CWB_close(ctx, cwb);
 	}
 	while(1) {
 		{
 			CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 			kstatus_t status = readstmt(ctx, cwb);
 			if(status == K_BREAK) {
-				CWB_close(cwb);
+				CWB_close(ctx, cwb);
 				break;
 			}
 			if(CWB_size(cwb) == 0) {
-				CWB_close(cwb);
+				CWB_close(ctx, cwb);
 				continue;
 			}
 			status = shell_command(ctx, CWB_totext(ctx, cwb));
 			if(status == K_BREAK) {
-				CWB_close(cwb);
+				CWB_close(ctx, cwb);
 				break;
 			}
 			if(status == K_REDO) {
-				CWB_close(cwb);
+				CWB_close(ctx, cwb);
 				continue;
 			}
 #ifdef K_USING_SUGAR
@@ -648,7 +648,7 @@ static void knh_shell(CTX ctx)
 			if(CWB_size(cwb) !=0) {
 				shell_display(ctx, shell_status, CWB_totext(ctx, cwb));
 			}
-			CWB_close(cwb);
+			CWB_close(ctx, cwb);
 			WCTX(ctx)->isEvaled = 0;
 		}
 	}

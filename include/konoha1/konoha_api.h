@@ -390,7 +390,6 @@ kbool_t knh_NameSpace_include(CTX ctx, kNameSpace *ns, kPath *pth);
 void knh_Script_setNSName(CTX ctx, kScript* scr, kString *nsname);
 kstatus_t knh_loadPackage(CTX ctx, kbytes_t pkgname);
 Object *knh_NameSpace_getConstNULL(CTX ctx, kNameSpace *ns, kbytes_t name);
-void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr);
 kbool_t knh_beval2(CTX ctx, const char *script, kline_t uline);
 kbool_t knh_beval(CTX ctx, kInputStream *in, kline_t uline);
 kstatus_t knh_InputStream_load(CTX ctx, kInputStream *in, kline_t uline);

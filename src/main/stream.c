@@ -110,7 +110,7 @@ KNHAPI2(kPath*) new_Path(CTX ctx, kString *path)
 	else {
 		pth->ospath = new_cwbtext(ctx, cwb, &(pth->asize));
 	}
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return pth;
 }
 
@@ -132,7 +132,7 @@ kPath *new_ScriptPath(CTX ctx, kString *urn, kNameSpace *ns)
 	kbytes_t bpath = knh_bytes_next(S_tobytes(urn), ':');
 	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
 	pth->ospath = new_cwbtext(ctx, cwb, &(pth->asize));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return pth;
 }
 
@@ -622,7 +622,7 @@ static void FILE_ospath(CTX ctx, kPath *path, kNameSpace *ns)
 	else {
 		path->ospath = new_cwbtext(ctx, cwb, &(path->asize));
 	}
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 }
 static kio_t* FILE_openNULL(CTX ctx, kPath *path, const char *mode, kDictMap *conf)
 {
@@ -642,7 +642,7 @@ static void SCRIPT_ospath(CTX ctx, kPath *path, kNameSpace *ns)
 	kbytes_t bpath = knh_bytes_next(S_tobytes(path->urn), ':');
 	knh_buff_addScriptPath(ctx, cwb->ba, cwb->pos, ns, bpath);
 	path->ospath = new_cwbtext(ctx, cwb, &(path->asize));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 }
 
 static const knh_PathDPI_t STREAM_SCRIPT = {
