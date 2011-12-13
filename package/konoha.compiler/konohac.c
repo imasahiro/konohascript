@@ -52,7 +52,7 @@ int main(int argc, const char *argv[])
     knh_Script_setNSName(ctx, ctx->script,
             new_String2(ctx, CLASS_String, t.text, t.len, SPOL_TEXT|SPOL_POOLALWAYS));
     kbytes_t pkgname = STEXT("konoha.compiler");
-    kstatus_t res = knh_loadPackage(ctx, pkgname);
+    knh_loadPackage(ctx, pkgname);
 
     knh_load(ctx, path);
 

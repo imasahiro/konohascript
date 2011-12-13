@@ -1882,7 +1882,7 @@ void Compiler.emitCode() {
     }
 }
 void Compiler.emit(Method mtd) {
-    this.emitCode();
+    //this.emitCode();
     if (!kfunc.isUndeveloped()) {
         mtd.setFunction(ee.getPointerToFunction(m, func));
     }

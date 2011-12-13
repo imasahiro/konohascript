@@ -30,6 +30,10 @@ install(TARGETS ${PACKAGE_NAME}
 		DESTINATION ${KONOHA_PACKAGE_DIR}
 		)
 
+add_executable(konohac "konohac.c")
+target_link_libraries(konohac konoha)
+install(TARGETS konohac RUNTIME DESTINATION bin)
+
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
 endif(USE_COMPILER_PKG)
