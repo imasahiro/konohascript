@@ -25,20 +25,20 @@ set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 set(MPI_TYPE_OMPI "on")
 set(MPI_TYPE_MPICH "on")
 
-if (MPI_TYPE)
-   if ("${MPI_TYPE}" STREQUAL "mpich")
+if(MPI_TYPE)
+   if("${MPI_TYPE}" STREQUAL "mpich")
      # -- disable ompi
      set(MPI_TYPE_OMPI)
    elseif("${MPI_TYPE}" STREQUAL "ompi")
      # -- disable mpich
      set(MPI_TYPE_MPICH)
    endif()
-endif()
+endif(MPI_TYPE)
 
-if (NOT MPI_ROOT_DIR)
+if(NOT MPI_ROOT_DIR)
    # -- use default dirs
    set(MPI_ROOT_DIR /usr/local)
-endif()
+endif(NOT MPI_ROOT_DIR)
 
 set(MPI_INCDIR ${MPI_ROOT_DIR}/include)
 set(MPI_LIBDIR ${MPI_ROOT_DIR}/lib)
@@ -46,7 +46,18 @@ set(MPI_LIBDIR ${MPI_ROOT_DIR}/lib)
 find_library(HAVE_LIBMPICH mpich ${MPI_LIBDIR})
 find_library(HAVE_LIBMPI mpi ${MPI_LIBDIR})
 
-if (MPI_TYPE_MPICH AND HAVE_LIBMPICH)
+if(MPI_TYPE_OMPI AND HAVE_LIBMPI)
+   # -- OpenMPI
+   set(MessageLibs ${MessageLibs} ompi PARENT_SCOPE)
+
+   set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${KONOHA_INCLUDE_DIRS} ${MPI_INCDIR})
+   include_directories(${INCLUDE_DIRS})
+
+   # --- LIBMPI (already checked by HAVE_LIBMPI)
+   set(MPI_LIBS ${HAVE_LIBMPI})
+
+# endif MPI_TYPE_OMPI AND HAVE_LIBMPI
+elseif(MPI_TYPE_MPICH AND HAVE_LIBMPICH)
    # -- MPICH
    set(MessageLibs ${MessageLibs} mpich PARENT_SCOPE)
 
@@ -77,20 +88,9 @@ if (MPI_TYPE_MPICH AND HAVE_LIBMPICH)
    endif(LIB_PMPICH)
 
 # endif MPI_TYPE_MPICH AND HAVE_LIBMPICH
-elseif (MPI_TYPE_OMPI AND HAVE_LIBMPI)
-   # -- OpenMPI
-   set(MessageLibs ${MessageLibs} ompi PARENT_SCOPE)
+endif(MPI_TYPE_OMPI AND HAVE_LIBMPI)
 
-   set(INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${KONOHA_INCLUDE_DIRS} ${MPI_INCDIR})
-   include_directories(${INCLUDE_DIRS})
-
-   # --- LIBMPI (already checked by HAVE_LIBMPI)
-   set(MPI_LIBS ${HAVE_LIBMPI})
-
-# endif MPI_TYPE_OMPI AND HAVE_LIBMPI
-endif(MPI_TYPE_MPICH AND HAVE_LIBMPICH)
-
-if (MPI_LIBS)
+if(MPI_LIBS)
    # -- install mpikonoha binary
    add_executable(mpikonoha src/mpikonoha.c)
    target_link_libraries(mpikonoha konoha ${MPI_LIBS})
@@ -105,4 +105,3 @@ if (MPI_LIBS)
    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
 endif(MPI_LIBS)
-
