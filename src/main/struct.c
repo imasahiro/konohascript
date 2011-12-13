@@ -1851,7 +1851,10 @@ static void Func_free(CTX ctx, kRawPtr *o)
 
 static void Func_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 {
-
+    kMethod *mtd = ((kFunc*)o)->mtd;
+    knh_write_cname(ctx, w, (mtd)->cid);
+    knh_putc(ctx, w, '.');
+    knh_write_mn(ctx, w, (mtd)->mn);
 }
 
 static const kclassdef_t FuncDef = {

@@ -42,11 +42,6 @@
 
 #define CLASSNAME_Json "konoha.json.Json"
 
-#if !defined(new_bytes)
-#define new_bytes(s) \
-	(kbytes_t){{s}, knh_strlen(s)}
-#endif
-
 #define CLASS_Json \
 	knh_getcid(ctx, new_bytes(CLASSNAME_Json))
 
@@ -662,7 +657,7 @@ KMETHOD InputStream_readJson(CTX ctx, ksfp_t *sfp _RIX)
 	io2_readAll(ctx, in->io2, cwb->ba);
 	kbytes_t blob = CWB_tobytes(cwb);
 	ktype_t type = packspi->unpack(ctx, blob.text, blob.len, sfp+2);
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	RETURN_T(ctx, sfp, type, (sfp[1].c)->cid, sfp+2, K_RIX);
 }
 

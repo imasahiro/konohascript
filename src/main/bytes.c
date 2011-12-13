@@ -239,7 +239,7 @@ KNHAPI2(kString*) CWB_newString(CTX ctx, CWB_t *cwb, int pol)
 		kbytes_t t = CWB_tobytes(cwb);
 		s = new_String2(ctx, CLASS_String, t.text, t.len, pol);
 	}
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return s;
 }
 

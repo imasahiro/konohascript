@@ -120,8 +120,8 @@ void knh_BasicBlock_add_(CTX ctx, kBasicBlock *bb, kushort_t line, kopl_t *op, s
 		kopl_t *pc = DP(bb)->opbuf + DP(bb)->size;
 		knh_memcpy(pc, op, size == 0 ? sizeof(kopl_t) : size);
 #ifdef K_USING_RCGC
-		knh_opline_reftrace(ctx, op, ctx->refs);
-		knh_RefTraverse(ctx, RCinc);
+		knh_opline_reftrace(ctx, op FTRDATA);
+		knh_traverse_refs(ctx, RCinc);
 #endif
 		pc->head.line = line;
 		DP(bb)->size += 1;

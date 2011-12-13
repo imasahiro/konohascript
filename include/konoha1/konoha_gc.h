@@ -39,9 +39,6 @@ extern "C" {
 
 #ifdef K_USING_GENGC
 
-typedef struct Segment Segment;
-typedef struct BlockHeader BlockHeader;
-
 #define GC_TENURE       , 1
 #define GC_YOUNG        , 0
 #define GC_Tenure       1
@@ -105,10 +102,13 @@ kObject** knh_ensurerefs(CTX ctx, kObject** tail, size_t size);
 void knh_sizerefs(CTX ctx, kObject** tail);
 void knh_setrefs(CTX ctx,  kObject** list, size_t size);
 void knh_Object_RCfree(CTX ctx, Object *o);
-//void knh_Object_RCsweep(CTX ctx, Object *o);
+void knh_Object_RCsweep(CTX ctx, Object *o);
 void knh_System_gc(CTX ctx, int needsCStackTrace GC_ARG);
 void setRemSet_(kObject *o);
 void dump_memstat();
+#ifdef K_USING_RCGC
+void knh_traverse_refs(CTX ctx, knh_Ftraverse ftr);
+#endif
 void invoke_gc_(CTX ctx);
 
 /* ------------------------------------------------------------------------ */
@@ -165,16 +165,6 @@ void invoke_gc_(CTX ctx);
 #define KNH_SWAPMOV(ctx, sfp, n, n2) {\
 		sfp[n] = sfp[n2];\
 	}\
-
-//static inline int knh_System_checkGC(CTX ctx)
-//{
-//	kstatinfo_t *ctxstat = ctx->stat;
-//	size_t used = ctxstat->usedObjectSize;
-//	if(!(used < ctx->share->gcBoundary)) {
-//		return 1;
-//	}
-//	return 0;
-//}
 
 #define KNH_SAFEPOINT(ctx, sfp) \
 	if(ctx->safepoint != 0) knh_checkSafePoint(ctx, sfp, __FILE__, __LINE__);

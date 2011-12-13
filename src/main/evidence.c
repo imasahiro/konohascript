@@ -407,13 +407,13 @@ static kbool_t method_isPermissionAllowed(CTX ctx, kMethod *mtd)
 				if (strstr(s, CWB_tobytes(cwb).text) != NULL
 					|| strstr(s, "all") != NULL) {
 					// this method is allowed to be executed by this role
-					CWB_close0(cwb);
+					CWB_close0(ctx, cwb);
 					return 1;
 				}
 			}
 		}
 	}
-	CWB_close0(cwb);
+	CWB_close0(ctx, cwb);
 	return 0;
 }
 
@@ -1234,7 +1234,7 @@ void knh_assert(CTX ctx, ksfp_t *sfp, long start, kline_t uline)
 //			CTX_setThrowingException(ctx, e);
 //			knh_throw(ctx, sfp, 0);
 //		}
-//		CWB_close0(cwb);
+//		CWB_close0(ctx, cwb);
 //	}
 //}
 
@@ -1560,10 +1560,10 @@ void THROW_NoSuchMethod(CTX ctx, ksfp_t *sfp, kclass_t cid, kmethodn_t mn)
 	char msg[256], mname[256];
 	knh_printf(ctx, cwb->w, "Script!!: No Such Method: %T.%M", cid, mn);
 	knh_snprintf(msg, sizeof(msg), "%s", CWB_totext(ctx, cwb));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	knh_printf(ctx, cwb->w, "%C.%M", cid, mn);
 	knh_snprintf(mname, sizeof(mname), "%s", CWB_totext(ctx, cwb));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	KNH_NTHROW2(ctx, sfp, msg, "konoha:type", K_FAILED, KNH_LDATA(LOG_msg(msg), LOG_s("method", mname)));
 }
 void THROW_ParamTypeError(CTX ctx, ksfp_t *sfp, size_t n, kmethodn_t mn, kclass_t reqt, kclass_t cid)
@@ -1572,10 +1572,10 @@ void THROW_ParamTypeError(CTX ctx, ksfp_t *sfp, size_t n, kmethodn_t mn, kclass_
 	char msg[256], mname[256];
 	knh_printf(ctx, cwb->w, "Script!!: Type Error: %T.%M(#%d)", cid, mn, (int)n);
 	knh_snprintf(msg, sizeof(msg), "%s", CWB_totext(ctx, cwb));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	knh_printf(ctx, cwb->w, "%C.%M", cid, mn);
 	knh_snprintf(mname, sizeof(mname), "%s", CWB_totext(ctx, cwb));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	KNH_NTHROW2(ctx, sfp, msg, "konoha:type", K_FAILED, KNH_LDATA(LOG_msg(msg), LOG_s("method", mname), LOG_i("argument", n), LOG_t("requested_type", reqt), LOG_t("given_type", cid)));
 }
 

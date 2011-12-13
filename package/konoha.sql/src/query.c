@@ -91,7 +91,7 @@ const knh_DSPI_t *knh_getDSPINULL(CTX ctx, int type, kbytes_t path)
 	OLD_LOCK(ctx, LOCK_SYSTBL, NULL);
 	const knh_DSPI_t *p = (const knh_DSPI_t*)knh_DictSet_get(ctx, ctx->share->urnDictSet, CWB_tobytes(cwb));
 	OLD_UNLOCK(ctx, LOCK_SYSTBL, NULL);
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return p;
 }
 

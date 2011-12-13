@@ -769,7 +769,7 @@ void konoha_close(konoha_t konoha)
 		return;
 	}
 #ifdef K_USING_RCGC
-	knh_context_reftrace(ctx, (kcontext_t*)ctx, ctx->ref_buf);
+	knh_context_reftrace(ctx, (kcontext_t*)ctx, FTRDATA);
 #endif
 	knh_flush(ctx, KNH_STDOUT); // flush before ending
 	{

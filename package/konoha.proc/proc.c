@@ -35,6 +35,7 @@
 #define USE_STRUCT_OutputStream
 
 #include <konoha1.h>
+#include <konoha1/inlinelibs.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -122,34 +123,6 @@ static const knh_PathDPI_t STREAM_PROC = {
 	PROC_exists,     // existsSPI
 	NULL,            // ospath
 };
-
-static inline CWB_t *CWB_open(CTX ctx, CWB_t *cwb)
-{
-	cwb->ba = ctx->bufa;
-	cwb->w  = ctx->bufw;
-	cwb->pos = BA_size(cwb->ba);
-	return cwb;
-}
-
-static inline void CWB_write(CTX ctx, CWB_t *cwb, kbytes_t t)
-{
-	knh_Bytes_write(ctx, (cwb->ba), t);
-}
-
-static inline void CWB_putc(CTX ctx, CWB_t *cwb, int ch)
-{
-	knh_Bytes_putc(ctx, (cwb->ba), ch);
-}
-
-static inline size_t CWB_size(CWB_t *cwb)
-{
-	return (cwb->ba)->bu.len - cwb->pos;
-}
-
-static inline void CWB_close(CTX ctx, CWB_t *cwb)
-{
-	knh_Bytes_clear(cwb->ba, cwb->pos);
-}
 
 /* ------------------------------------------------------------------------ */
 // [process]

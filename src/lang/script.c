@@ -137,7 +137,7 @@ ktype_t kNameSpaceagcid(CTX ctx, kNameSpace *o, kclass_t cid, kbytes_t tag)
 	kclass_t bcid = ClassTBL(cid)->bcid;
 	knh_printf(ctx, cwb->w, "%C:%B", bcid, tag);
 	cid = knh_NameSpace_getcid(ctx, o, CWB_tobytes(cwb));
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return cid;
 }
 
@@ -193,7 +193,7 @@ static void *knh_open_gluelink(CTX ctx, kStmtExpr *stmt, kNameSpace *ns, kbytes_
 			knh_Stmt_done(ctx, stmt);
 		}
 	}
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return p;
 }
 
@@ -213,7 +213,7 @@ static void *knh_open_ffilink(CTX ctx, kNameSpace *ns, kbytes_t libname)
 		knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT(K_OSDLLEXT));
 		p = knh_dlopen(ctx, CWB_totext(ctx, cwb));
 	}
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return p;
 }
 
@@ -396,7 +396,7 @@ kstatus_t knh_loadPackage(CTX ctx, kbytes_t pkgname)
 			ERROR_NotFound(ctx, "package", pkgname.text);
 			status = K_BREAK;
 		}
-		CWB_close(cwb);
+		CWB_close(ctx, cwb);
 	}
 	return status;
 }
@@ -478,13 +478,13 @@ static int StmtUSINGCLASS_eval(CTX ctx, kStmtExpr *stmt, size_t n)
 			newcid = knh_getcid(ctx, CWB_tobytes(cwb));
 			if(newcid == CLASS_unknown) {
 				KNH_SETv(ctx, (tkPKG)->data, CWB_newString(ctx, cwb, SPOL_ASCII));
-				CWB_close(cwb);
+				CWB_close(ctx, cwb);
 				goto L_ERROR;
 			}
 			else {
 				NameSpace_setcid(ctx, ns, cname, newcid);
 			}
-			CWB_close(cwb);
+			CWB_close(ctx, cwb);
 		}
 		knh_Stmt_done(ctx, stmt);
 		return 1;
@@ -755,17 +755,6 @@ static void knh_loadNativeClass(CTX ctx, const char *cname, knh_ClassTBL_t *ct)
 
 /* ------------------------------------------------------------------------ */
 
-void knh_RefTraverse(CTX ctx, knh_Ftraverse ftr)
-{
-#ifdef K_USING_RCGC
-	int i;
-	for(i = ctx->ref_size - 1; i >= 0; i--) {
-		kObject *ref = ctx->refs[i];
-		ftr(ctx, ref);
-	}
-#endif
-}
-
 static void ClassTBL_inherit(CTX ctx, knh_ClassTBL_t *ct, const knh_ClassTBL_t *supct) {
 	ct->supTBL = ClassTBL(ct->supcid);
 	ct->keyidx = supct->keyidx;
@@ -823,7 +812,7 @@ static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, kStmtExpr *stmt, kTerm *tkC, kTer
 	}
 	L_RETURN:;
 	(tkC)->cid = cid;
-	CWB_close(cwb);
+	CWB_close(ctx, cwb);
 	return ct;
 }
 
@@ -1163,7 +1152,7 @@ kstatus_t knh_startScript(CTX ctx, const char *path)
 		else {
 			KNH_NOTE("script not found: %s", path);
 		}
-		CWB_close(cwb);
+		CWB_close(ctx, cwb);
 	}
 	knh_stack_clear(ctx, ctx->stack);
 	KONOHA_END(ctx);
