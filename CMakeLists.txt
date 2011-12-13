@@ -348,6 +348,11 @@ option(USE_QT "Using qt package" OFF)
 
 option(USE_QT4 "Using qt4 package" OFF)
 
+option(USE_GENGC "Using GENGC" OFF)
+if(USE_GENGC)
+	add_definitions(-DK_USING_GENGC=1)
+endif(USE_GENGC)
+
 if(MINGW)
 	find_library(HAVE_LIBCURLDLL NAMES curldll)
 	if(HAVE_LIBCURLDLL)
