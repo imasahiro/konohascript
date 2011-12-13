@@ -174,12 +174,19 @@ static void kook_THROW_asm(CTX ctx, kStmtExpr *stmt)
 static void kook_RETURN_asm(CTX ctx, kStmtExpr *stmt)
 {
 	kStmtExpr *stmt0 = NULL;
-	if (DP(stmt)->size > 0) {
+    kStmtExpr *stmtPOST = NULL;
+	if (DP(stmt)->size == 1) {
 		stmt0 = stmtNN(stmt, 0);
 	} else {
 		stmt0 = KNH_TNULL(StmtExpr);
 	}
-	CALL(ctx, COMPILER_API.RETURN, 2, stmt, stmt0);
+    if (IS_StmtExpr(DP(stmt)->stmtPOST)) {
+        DP(DP(stmt)->stmtPOST)->espidx = DP(stmt)->espidx + 1;
+        stmtPOST = DP(stmt)->stmtPOST;
+    } else {
+        stmtPOST = KNH_TNULL(StmtExpr);
+    }
+	CALL(ctx, COMPILER_API.RETURN, 3, stmt, stmt0, stmtPOST);
 }
 
 static void kook_YIELD_asm(CTX ctx, kStmtExpr *stmt)

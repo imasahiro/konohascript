@@ -30,10 +30,8 @@ using konoha.lang.*;
 using konoha.llvm.*;
 include "lib:gluelink";
 
-IRONLY = true;
-//IRONLY = false;
-//DEBUG = false;
-DEBUG = true;
+DEBUG = false;
+//DEBUG = true;
 //DUMP = false;
 DUMP = true;
 TYPE_Tvoid = 0;
@@ -134,7 +132,6 @@ class Compiler {
 };
 
 void Compiler.shiftesp(int shift);
-//void Compiler.emit(Method mtd);
 Type Compiler.convertType(Class type) {
     if (type == Int) {
         return intTy;
@@ -430,6 +427,7 @@ class K_BasicBlock {
     }
 }
 class K_Function {
+    boolean isUndeveloped;
     String name;
     K_BasicBlock[] bbs;
     Func<K_Function,Method, int=>void>[] klrasm;
@@ -468,6 +466,7 @@ class K_Function {
     String mtdName;
 
     K_Function(Method mtd) {
+        isUndeveloped = false;
         hasReturn = false;
         isStatic = mtd.isStatic() ? 1 : 0;
         mtdName = mtd.toString();
@@ -499,6 +498,12 @@ class K_Function {
         this.idom = [];
         this.samedom = [];
         this.df = [];
+    }
+    void setUndevelop() {
+        isUndeveloped = true;
+    }
+    boolean isUndeveloped() {
+        return isUndeveloped;
     }
     void codegen(Compiler asm);
     int addConstTable(dynamic val) {
@@ -1659,11 +1664,12 @@ SFX getsfx(Token tk) {
 void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
     Class btype = tkb.getT();
     int used_espidx = -1;
+    Object v = null;
     switch (tkb.getTT()) {
         case Token.TT_NULL:
             /* TODO overwriting default null value */
             Class c = tkb.getTokenClass();
-            Object v = c.getNullValue();
+            v = c.getNullValue();
             int table_idx = kfunc.addConstTable(v);
             int objptr = v.getPtr();
             K_Value kvalue = kfunc.getKValue(espidx + 1, c);
@@ -1675,8 +1681,11 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
 
             break;
         case Token.TT_CID:
+            v = tkb.getTokenClass();
         case Token.TT_CONST:
-            Object v = tkb.getD();
+            if (v == null) {
+                v = tkb.getD();
+            }
             int table_idx;
             int objptr = 0;
             if (is_Tunbox(btype)) {
@@ -1726,10 +1735,11 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             kfunc.storeKInst(espidx, inst);
             break;
         case Token.TT_PROPN:
+            kfunc.setUndevelop();
             used_espidx = espidx;
 
             Class c = String;
-            Object v = tkb.getD();
+            v = tkb.getD();
             int table_idx = kfunc.addConstTable(v);
             int objptr = v.getPtr();
             K_Value kvalue = kfunc.getKValue(espidx, c);
@@ -1759,13 +1769,14 @@ void Compiler.asm_smovx(int alocal, Class type, SFX bx) {
 }
 void Compiler.asm_smov(int alocal, Token tk) {
     Class type = tk.getT();
+    Object v = null;
     switch(tk.getTT()) {
         case Token.TT_ASIS:
             break;
         case Token.TT_NULL:
             /* TODO overwriting default null value */
             Class c = tk.getTokenClass();
-            Object v = c.getNullValue();
+            v = c.getNullValue();
             int table_idx = kfunc.addConstTable(v);
             int objptr = v.getPtr();
             K_Value kvalue = kfunc.getKValue(alocal, c);
@@ -1774,8 +1785,11 @@ void Compiler.asm_smov(int alocal, Token tk) {
             kfunc.storeKInst(alocal, inst);
             break;
         case Token.TT_CID:
+            v = tk.getTokenClass();
         case Token.TT_CONST:
-            Object v = tk.getD();
+            if (v == null) {
+                v = tk.getD();
+            }
             int table_idx = kfunc.addConstTable(v);
             int objptr = 0;
             if (!is_Tunbox(type)) {
@@ -1816,8 +1830,9 @@ void Compiler.asm_smov(int alocal, Token tk) {
             kfunc.storeKInst(thisidx + K_RTNIDX, inst);
             break;
         case Token.TT_PROPN:
+            kfunc.setUndevelop();
             Class c = String;
-            Object v = tk.getD();
+            v = tk.getD();
             int table_idx = kfunc.addConstTable(v);
             int objptr = v.getPtr();
             int espidx = alocal;
@@ -1859,16 +1874,15 @@ void Compiler.emit(Method mtd) {
         String ir = kfunc.dump();
         OUT << ir << EOL;
     }
+    if (!kfunc.isUndeveloped()) {
+        kfunc.codegen(this);
+    }
     if (DEBUG) {
         print const_table;
         func.dump();
     }
-    if (!IRONLY) {
-        kfunc.codegen(this);
+    if (!kfunc.isUndeveloped()) {
         mtd.setFunction(ee.getPointerToFunction(m, func));
-    }
-    if (DEBUG) {
-        //func.dump();
     }
 }
 void Compiler.asm_mov(Token tka, Token tkb, int espidx) {
@@ -2171,6 +2185,7 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     kfunc.curBB = bbBreak;
 }
 void Compiler.asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtInit, Stmt stmtItr, Stmt stmtBody) {
+    kfunc.setUndevelop();
     if (DEBUG) {
         print "foreach";
         print tkVar;
@@ -2259,25 +2274,25 @@ void Compiler.asmTHROW(Stmt stmt) {
     //int espidx = stmt.getESPIDX;
     //print espidx;
 }
-void Compiler.asmRETURN(Stmt stmt, Stmt stmtRetExpr) {
+void Compiler.asmRETURN(Stmt stmt, Stmt stmtRetExpr, Stmt stmtPOST) {
+    if (DEBUG) {
+        print "return expr;";
+        print stmt;
+        print stmtRetExpr;
+        print stmtPOST;
+    }
     kfunc.curBB.hasReturn = true;
     kfunc.hasReturn = true;
     if (stmtRetExpr == null) {
         K_RET inst = new K_RET(new K_RETop(null));
         kfunc.curBB.insts.add(inst);
-        if (DEBUG) {
-            print "return;";
-        }
     } else {
-        if (DEBUG) {
-            print "return expr;";
-            print stmt;
-            print stmtRetExpr;
-        }
         int espidx = stmt.getESPIDX();
-        //print stmtRetExpr.toToken();
         asm(stmtRetExpr, stmtRetExpr.toToken(), espidx);
         kfunc.storeKInst(K_RTNIDX, kfunc.getKInst(espidx));
+        if (stmtPOST != null) {
+            asmEXPR(stmtPost, espidx + 1);
+        }
         K_RET inst = new K_RET(new K_RETop(kfunc.retval));
         kfunc.curBB.insts.add(inst);
     }
@@ -2417,7 +2432,6 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
             mtdname = getMnName(mn);
             assert(mtdname != "");
         }
-        print mtdname;
         int espshift = espidx + argc + K_CALLDELTA + 1;
         K_Inst ldinst = new K_LDMTD(new K_LDMTDop(espidx + K_CALLDELTA, Stmt.DYNMTD, c, mtdname, mtd, argc));
         kfunc.curBB.insts.add(ldinst);
