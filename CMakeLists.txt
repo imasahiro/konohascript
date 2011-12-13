@@ -34,6 +34,7 @@ if(NOT CMAKE_BUILD_TYPE)
 	#set(CMAKE_BUILD_TYPE "Debug" )
 	set(CMAKE_BUILD_TYPE "Release" )
 endif()
+set(KONOHA_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
 SET(CMAKE_C_FLAGS         "-Wall")
 SET(CMAKE_C_FLAGS_RELEASE "-O2 -g")
