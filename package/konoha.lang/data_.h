@@ -4,7 +4,6 @@
 static knh_IntData_t MethodInt[] = {
     {"MN_get", MN_get},
     {"MN_set", MN_set},
-    {"FN_size", FN_size},
     {"MN_getSize", MN_getSize}
 };
 static knh_IntData_t StmtInt[] = {
