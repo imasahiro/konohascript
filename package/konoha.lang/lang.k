@@ -96,7 +96,7 @@ class Charset extends String;
 @Public @Native boolean Stmt.getMemo();
 // TT_BRACE, TT_PARENTHESIS, TT_BRANCET
 @Public boolean Token.isSAMELINE() {
-	return this.getMemo(o);
+	return this.getMemo();
 }
 //@Public void Token.setSAMELINE(boolean b) {
 //	this.setMemo(b);
@@ -104,7 +104,7 @@ class Charset extends String;
 
 // TT_NAME
 @Public boolean Token.isPNAME() {
-	return this.getMemo(o);
+	return this.getMemo();
 }
 //@Public void Token.setPNAME(boolean b) {
 //	return this.setMemo(o, b);
@@ -112,7 +112,7 @@ class Charset extends String;
 
 // TT_UNAME
 @Public boolean Token.isBYTE() {
-	return this.getMemo(o);
+	return this.getMemo();
 }
 //@Public void Token.setBYTE(boolean b) {
 //	return this.setMemo(b);
@@ -120,7 +120,7 @@ class Charset extends String;
 
 // TT_URN
 @Public boolean Token.isDYNAMIC() {
-	return this.getMemo(o);
+	return this.getMemo();
 }
 //@Public void Token.setDYNAMIC(boolean b) {
 //	this.setMemo(b);
