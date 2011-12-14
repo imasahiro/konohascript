@@ -93,6 +93,7 @@ class Compiler {
     Class[] paramsclass;
     Class   retclass;
     Map<String, Type> ktype;
+    Map<String, FunctionType> kfunctype;
     FunctionType funcTy;
     K_Function kfunc;
     Method[] system_method;
@@ -106,6 +107,7 @@ class Compiler {
     @Hidden Compiler() {
         this.m = new Module("konoha");
         this.ee = m.createExecutionEngine();
+        kfunctype = {};
         ktype = {};
         const_table = [];
         constructKonohaTypes();
@@ -3256,8 +3258,8 @@ void Compiler.constructKonohaTypes() {
     FunctionType fmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
     Type fmethodPtrTy = PointerType.get(fmethodTy);
     //m.addTypeName("fmethod", fmethodTy);
-    ktype["fmethodTy"]    = fmethodTy;
-    ktype["fmethodPtrTy"] = fmethodPtrTy;
+    kfunctype["fmethodTy"] = fmethodTy;
+    ktype["fmethodPtrTy"]  = fmethodPtrTy;
     this.funcTy = fmethodTy;
 
     argsTy = [];
@@ -3268,8 +3270,8 @@ void Compiler.constructKonohaTypes() {
     FunctionType trmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
     Type trmethodPtrTy = PointerType.get(trmethodTy);
     //m.addTypeName("trmethod", trmethodTy);
-    ktype["trmethodTy"]    = trmethodTy;
-    ktype["trmethodPtrTy"] = trmethodPtrTy;
+    kfunctype["trmethodTy"] = trmethodTy;
+    ktype["trmethodPtrTy"]  = trmethodPtrTy;
 
     argsTy = [];
     argsTy.add(ctxPtrTy);
@@ -3279,7 +3281,7 @@ void Compiler.constructKonohaTypes() {
     FunctionType safeptmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
     Type safeptmethodPtrTy = PointerType.get(safeptmethodTy);
     //m.addTypeName("safeptmethod", safeptmethodTy);
-    ktype["safeptmethodTy"]    = safeptmethodTy;
+    kfunctype["safeptmethodTy"]    = safeptmethodTy;
     ktype["safeptmethodPtrTy"] = safeptmethodPtrTy;
 
     argsTy = [];
@@ -3289,8 +3291,8 @@ void Compiler.constructKonohaTypes() {
     FunctionType fitrnextTy = FunctionType.get(Type.getInt64Ty(), argsTy, false);
     Type fitrnextPtrTy = PointerType.get(fitrnextTy);
     //m.addTypeName("fitrnext", fitrnextTy);
-    ktype["fitrnextTy"]    = fitrnextTy;
-    ktype["fitrnextPtrTy"] = fitrnextPtrTy;
+    kfunctype["fitrnextTy"] = fitrnextTy;
+    ktype["fitrnextPtrTy"]  = fitrnextPtrTy;
 
     argsTy = [];
     argsTy.add(ctxPtrTy);
@@ -3300,8 +3302,8 @@ void Compiler.constructKonohaTypes() {
     FunctionType typemapmtdTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
     Type typemapmtdPtrTy = PointerType.get(typemapmtdTy);
     //m.addTypeName("typemapmtd", typemapmtdTy);
-    ktype["typemapmtdTy"]    = typemapmtdTy;
-    ktype["typemapmtdPtrTy"] = typemapmtdPtrTy;
+    kfunctype["typemapmtdTy"] = typemapmtdTy;
+    ktype["typemapmtdPtrTy"]  = typemapmtdPtrTy;
 
     argsTy = [];
     argsTy.add(ctxPtrTy);
@@ -3310,8 +3312,8 @@ void Compiler.constructKonohaTypes() {
     argsTy.add(int64Ty);
     FunctionType fTRTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
     Type fTRPtrTy = PointerType.get(fTRTy);
-    ktype["fTRTy"]    = fTRTy;
-    ktype["fTRPtrTy"] = fTRPtrTy;
+    kfunctype["fTRTy"] = fTRTy;
+    ktype["fTRPtrTy"]  = fTRPtrTy;
 
     fields = [];
     fields.add(int8PtrTy); /* codeaddr */
@@ -3428,7 +3430,7 @@ void K_BasicBlock.codegen(Compiler asm) {
         asm.builder.setInsertPoint(bbThen);
         asm.shiftesp(this.safepoint);
         Type fType = asm.ktype["safeptmethodPtrTy"];
-        FunctionType fnTy  = (FunctionType)asm.ktype["safeptmethodTy"];
+        FunctionType fnTy  = asm.kfunctype["safeptmethodTy"];
         Function fcheck_safepoint = asm.m.getOrInsertFunction("knh_checkSafePoint", fnTy);
         Value vfunc = fcheck_safepoint;
 
@@ -3801,7 +3803,7 @@ void K_Function.codegen(Compiler asm) {
     Type methodTy = asm.ktype["trmethodPtrTy"];
     Value func;
     if (op.ftr == Stmt.NEW) {
-        FunctionType fnTy = (FunctionType) asm.ktype["trmethodTy"];
+        FunctionType fnTy = asm.kfunctype["trmethodTy"];
         DynamicLibrary.loadLibraryPermanently("compiler.dylib");
         Function tr_new = asm.m.getOrInsertFunction("TR_NEW", fnTy);
         func  = (Value) tr_new;
