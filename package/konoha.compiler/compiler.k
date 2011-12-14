@@ -31,15 +31,10 @@ using konoha.llvm.*;
 include "lib:gluelink";
 
 DEBUG = false;
+USE_NONSSA = false;
 //DEBUG = true;
 //DUMP = false;
 DUMP = true;
-TYPE_Tvoid = 0;
-TYPE_Int = 5;
-TYPE_Float = 6;
-TYPE_Boolean = 3;
-TYPE_Array = 13;
-TYPE_Object = 55;
 FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
 FUNC_VIRTUAL2 = 1;
@@ -47,15 +42,29 @@ FUNC_FASTCALL = 2;
 K_MTDIDX2 = -1;
 K_RTNIDX = -4;
 K_CALLDELTA = 4;
-PHI_DEFIDX = -100;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
+KFLAG_PF_BOL       = (1<<1);
+KFLAG_PF_TIME      = (1<<2);
+KFLAG_PF_NAME      = (1<<3);
+KFLAG_PF_EOL       = (1<<4);
+KFLAG_PF_NCOMMA    = (1<<5);
+KFLAG_PF_LINE      = (1<<6);
+KFLAG_PF_BREAK     = (1<<7);
+
 NOT_SCAST = -1;
 
-boolean is_Tunbox(Class c) {
-    boolean b = (c == Int || c == Float || c == Boolean);
-    return b;
+@public boolean Class.isUnboxType() {
+    if (this == Int) {
+        return true;
+    }
+    if (this == Float) {
+        return true;
+    }
+    if (this == Boolean) {
+        return true;
+    }
+    return false;
 }
-
 
 class K_BasicBlock;
 class K_Function;
@@ -85,6 +94,7 @@ class Compiler {
     int safePointMtd;
     int isCWB;
     K_Inst cwb;
+    FunctionPassManager pm;
     @Hidden Compiler() {
         this.m = new Module("konoha");
         this.ee = m.createExecutionEngine();
@@ -128,6 +138,7 @@ class Compiler {
             null, /*SYS*/,
             null, /*SCRIPT*/
             ];
+        this.pm = null;
     }
 };
 
@@ -372,9 +383,11 @@ class K_PHI extends K_Inst {
             this.type = inst.type;
             addDef(kvalue, idx);
         }
-        if (is_Tunbox(this.type)) {
-            K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst, this.defidx), idx);
-            movs.add(mov);
+        if (this.type.isUnboxType()) {
+            if (USE_NONSSA) {
+                K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst, this.defidx), idx);
+                movs.add(mov);
+            }
         }
         if (inst != null && inst.kvalue != null) {
             if (true || inst.kvalue.usePoint.indexOf(idx) == -1) {
@@ -500,7 +513,7 @@ class K_Function {
         this.df = [];
     }
     void setUndevelop() {
-        isUndeveloped = true;
+        //isUndeveloped = true;
     }
     boolean isUndeveloped() {
         return isUndeveloped;
@@ -518,7 +531,7 @@ class K_Function {
     String dump() {
         String res = "";
         if (isStatic == 1) {
-        res += "def " + getTypeName(retTy)  + " " + mtdName[mtdName.indexOf(".")+1 to |mtdName|-1] + " ( ";
+            res += "def " + getTypeName(retTy)  + " " + mtdName[mtdName.indexOf(".")+1 to |mtdName|-1] + " ( ";
         } else if (|funcargs| > 0) {
             res += "def " + getTypeName(retTy) + " " + mtdName[mtdName.indexOf(".")+1 to |mtdName|-1] + " " + funcargs[0].getName()  + " ( ";
         }
@@ -600,7 +613,7 @@ class K_Function {
                         && str_type2.indexOf("konoha.Func") == 0
                         || str_type1.indexOf("konoha.Iterator") == 0 
                         && str_type2.indexOf("konoha.Iterator") == 0
-                        );
+                 );
             if (flag) {
                 value_table[(String)idx] = new K_Value(idx, type);
             }
@@ -756,7 +769,7 @@ class K_NEQ extends K_Inst {
         addUse(op, idx);
     }
     @Override String dump() {
-       return "\t" + getName() + " = neq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
+        return "\t" + getName() + " = neq "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
 class K_LTop extends K_Opcode {
@@ -1087,7 +1100,7 @@ class K_CALL extends K_Inst {
         }
         res = res[0 to |res|-2] + " )";
         if (op.flagStatic == 0) {
-            if (!is_Tunbox(args[0].kvalue.type)) {
+            if (!args[0].kvalue.type.isUnboxType()) {
                 res += " @nonstatic";
             } else {
                 res += " @static";
@@ -1315,7 +1328,7 @@ class K_CONST extends K_Inst {
             }
             res += "]";
             return res;
-        } else if (value == null && is_Tunbox(value.class)) {
+        } else if (value == null && value.class.isUnboxType()) {
             return "0";
         } else {
             return "" + value;
@@ -1510,7 +1523,7 @@ class SFX {
 @Native Class Compiler.gammaGetThiscid();
 void Compiler.init(Method mtd) {
     this.mtd = mtd;
-    func = Function.create(mtd.getName(), this.funcTy, m);
+    func = Function.create(mtd.toString(), this.funcTy, m);
     bblist  = [];
     bblist2 = [];
     Array<Value> vargs = func.getArguments();
@@ -1519,7 +1532,7 @@ void Compiler.init(Method mtd) {
         vargs[1].setName("sfp");
         vargs[2].setName("rix");
         print mtd;
-        print mtd.getName();
+        print mtd.toString();
         print mtd.getReturnType();
         //print mtd.getParamTypes();
         print mtd.toString();
@@ -1595,7 +1608,7 @@ Array<K_PHI> Compiler.regTableToPHI(int espidx, K_BasicBlock bb) {
 }
 void Compiler.createPhiArrayBackEdge(Array<K_PHI> phis, Array<K_Inst> regTableCont, K_BasicBlock bb, int espidx) {
     for (int i = 0; i < espidx; i++) {
-        if (phis[i] != null && is_Tunbox(regTableCont[i].type)) {
+        if (phis[i] != null && regTableCont[i].type.isUnboxType()) {
             boolean flag = true;
             if (regTableCont[i].getName() != phis[i].getName()) {
                 flag = false;
@@ -1628,7 +1641,7 @@ Array<K_Inst> Compiler.createPhiArray(K_BasicBlock bb, Array<K_Inst> regTableCon
                 flag = false;
             }
         }
-        if (flag || !is_Tunbox(regTableCont[i].type)) {
+        if (flag || !regTableCont[i].type.isUnboxType()) {
             res.add(regTableCont[i]);
         } else {
             K_PHI phi = new K_PHI(i);
@@ -1688,7 +1701,7 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             }
             int table_idx;
             int objptr = 0;
-            if (is_Tunbox(btype)) {
+            if (btype.isUnboxType()) {
                 table_idx = kfunc.addConstTable(v);
             } else {
                 objptr = v.getPtr();
@@ -1754,10 +1767,10 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             break;
     }
     if (used_espidx != -1) {
-            K_Inst inst0 = kfunc.getKInst(ax.i);
-            K_Inst inst1 = kfunc.getKInst(espidx);
-            K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, ax.n), 0);
-            kfunc.curBB.insts.add(inst);
+        K_Inst inst0 = kfunc.getKInst(ax.i);
+        K_Inst inst1 = kfunc.getKInst(espidx);
+        K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, ax.n), 0);
+        kfunc.curBB.insts.add(inst);
     }
 }
 void Compiler.asm_smovx(int alocal, Class type, SFX bx) {
@@ -1792,7 +1805,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
             }
             int table_idx = kfunc.addConstTable(v);
             int objptr = 0;
-            if (!is_Tunbox(type)) {
+            if (!type.isUnboxType()) {
                 objptr = v.getPtr();
             }
             K_Value kvalue = kfunc.getKValue(alocal, type);
@@ -1861,7 +1874,32 @@ void Compiler.asm(Stmt stmt, Token tk, int espidx) {
 void Compiler.addConstTable(dynamic val) {
     const_table.add(val);
 }
-void Compiler.emitCode() {
+void Compiler.dump(Boolean dump) {
+    //print const_table;
+    func.dump();
+}
+void Compiler.emit(Method mtd) {
+    if (pm == null) {
+        pm = new FunctionPassManager(m);
+        pm.add(ee.getTargetData());
+        pm.add(LLVM.createVerifierPass());
+        pm.add(LLVM.createTypeBasedAliasAnalysisPass());
+        pm.add(LLVM.createBasicAliasAnalysisPass());
+        //pm.add(LLVM.createFunctionInliningPass(75/*-Os*/));
+        pm.add(LLVM.createGVNPass());
+        pm.add(LLVM.createSCCPPass());
+        pm.add(LLVM.createCFGSimplificationPass());
+        pm.add(LLVM.createScalarReplAggregatesPass());
+        pm.add(LLVM.createConstantPropagationPass());
+        pm.add(LLVM.createEarlyCSEPass());
+        pm.add(LLVM.createLowerExpectIntrinsicPass());
+        pm.add(LLVM.createPromoteMemoryToRegisterPass());
+        pm.add(LLVM.createInstructionCombiningPass());
+        pm.add(LLVM.createReassociatePass());
+        pm.add(LLVM.createCFGSimplificationPass());
+        pm.add(LLVM.createDeadStoreEliminationPass());
+    }
+
     for (int i = 0; i < kfunc.const_table.size; i++) {
         this.addConstTable(kfunc.const_table[i]);
     }
@@ -1876,15 +1914,11 @@ void Compiler.emitCode() {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
-    if (DEBUG) {
-        print const_table;
-        func.dump();
-    }
-}
-void Compiler.emit(Method mtd) {
-    //this.emitCode();
+    this.dump(DEBUG);
     if (!kfunc.isUndeveloped()) {
-        mtd.setFunction(ee.getPointerToFunction(m, func));
+        pm.doInitialization();
+        pm.run(func);
+        mtd.setFunction(ee.getPointerToFunction(func));
     }
 }
 void Compiler.asm_mov(Token tka, Token tkb, int espidx) {
@@ -1985,7 +2019,8 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     Array<K_Inst> regTableMerge = [];
     if (!bbThen.hasReturn && !bbThen.hasBrBreakBlock && !bbThen.hasBrContinueBlock && !bbElse.hasReturn && !bbElse.hasBrContinueBlock && !bbElse.hasBrBreakBlock) {
         for (int i = 0; i < size; i++) {
-            if (regTableThen[i] != regTableElse[i] && regTableThen[i] != null && regTableElse[i] != null && is_Tunbox(regTableThen[i].type)) {
+            if (regTableThen[i] != regTableElse[i] && regTableThen[i] != null &&
+                    regTableElse[i] != null && regTableThen[i].type.isUnboxType()) {
                 K_PHI phi = new K_PHI(i);
                 phi.addIncoming(kfunc, i, regTableThen[i], bbThen.bbidx, bbThen.movs);
                 phi.addIncoming(kfunc, i, regtableElse[i], bbElse.bbidx, bbElse.movs);
@@ -2194,13 +2229,11 @@ void Compiler.asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtInit, Stmt stmtItr, St
         print stmtInit;
         print stmtItr;
         print stmtBody;
-        /*
-        kTerm *tkVar = tkNN(stmt, 0);
-        kStmtExpr *stmt1 = stmtNN(stmt, 1);
-        kStmtExpr *stmt2 = stmtNN(stmt, 2);
-        kStmtExpr *stmt3 = stmtNN(stmt, 3);
-        K_NEXTop(K_Inst inst0, int nextBB, int endBB, int b, int rix, int espshift) {
-        */
+        //kTerm *tkVar = tkNN(stmt, 0);
+        //kStmtExpr *stmt1 = stmtNN(stmt, 1);
+        //kStmtExpr *stmt2 = stmtNN(stmt, 2);
+        //kStmtExpr *stmt3 = stmtNN(stmt, 3);
+        //K_NEXTop(K_Inst inst0, int nextBB, int endBB, int b, int rix, int espshift)
     }
 
     int espidx = stmtItr.toToken().getTokenIndex();
@@ -2252,6 +2285,7 @@ void Compiler.asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtInit, Stmt stmtItr, St
     kfunc.curBB = bbBreak;
 
 }
+
 void Compiler.asmBREAK(Stmt stmt, Stmt stmtLabel) {
     kfunc.breakList.add((kfunc.curBB, cloneRegTable()));
     K_Inst jmp = new K_JMP(new K_JMPop(kfunc.breakpoint[|kfunc.breakpoint|-1].bbidx, "break"));
@@ -2302,8 +2336,54 @@ void Compiler.asmRETURN(Stmt stmt, Stmt stmtRetExpr, Stmt stmtPOST) {
 void Compiler.asmYIELD(Stmt stmt) {
     /* TODO */
 }
-void Compiler.asmPRINT(Stmt stmt) {
-    /* TODO */
+void Compiler.asmPRINT(Stmt stmt, int flag) {
+    print stmt, flag;
+    //int espidx = stmt.getESPIDX();
+    //for(int i = 0; i < stmt.getStmtSize(); i++) {
+    //    Token tkn = stmt.getT(i);
+    //    String data = tkn.getD();
+    //    if(tkn.getTT() != Token.TT_CONST || data.class != String {
+    //        Tn_asm(ctx, stmt, i, espidx + i);
+    //    }
+    //}
+    //for(int i = 0; i < stmt.getStmtSize(); i++) {
+    //    int mask = 0;
+    //    String msg = "";
+    //    L_REDO:;
+    //    kTerm *tkn = tkNN(stmt, i);
+    //    if(i == (long)DP(stmt)->size - 1) {
+    //        mask |= KFLAG_PF_EOL;
+    //        if(Stmt_isBreakPoint(stmt)) {
+    //            mask |= KFLAG_PF_BREAK;
+    //        }
+    //    }
+    //    if(TT_(tkn) == TT_CONST && IS_String((tkn)->data)) {
+    //        if(Term_isPNAME(tkn)) { /* name= */
+    //            msg = (tkn)->text;
+    //            mask |= KFLAG_PF_NAME; i++;
+    //            goto L_REDO;
+    //        }
+    //        DBG_ASSERT(stmt->uline == ctx->gma->uline);
+    //        ASM(P, _PRINTm, flag | mask, (tkn)->text, 0);
+    //        flag = KFLAG_PF_NCOMMA;
+    //    }
+    //    else {
+    //        kclass_t cid = Tn_cid(stmt, i);
+    //        if(IS_Tint(cid)) {
+    //            ASM(P, _PRINTi, flag | mask, msg, espidx+i);
+    //        }
+    //        else if(IS_Tfloat(cid)) {
+    //            ASM(P, _PRINTf, flag | mask, msg, espidx+i);
+    //        }
+    //        else if(cid == CLASS_Boolean) {
+    //            ASM(P, _PRINTb, flag | mask, msg, espidx+i);
+    //        }
+    //        else {
+    //            ASM(P, _PRINT, flag | mask, msg, espidx+i);
+    //        }
+    //        flag=0;
+    //    }
+    //}
 }
 void Compiler.asmASSURE(Stmt stmt, Stmt stmtInit, Stmt stmtBody) {
     print "assure";
@@ -2693,7 +2773,7 @@ void Compiler.asmNEW(Stmt stmt, int espidx, Class c, Method mtd) {
     }
     int thisidx = espidx + K_CALLDELTA;
     addSafePoint(espidx);
-    if (stmt.getStmtSize() == 2 && c != null && !is_Tunbox(c) && mtd.getName() == "new") {
+    if (stmt.getStmtSize() == 2 && c != null && !c.isUnboxType() && mtd.getName() == "new") {
         K_Value vb = kfunc.getKValue(espidx, c);
         K_Inst inst = new K_NEW(vb, new K_NEWop(espidx-thisidx, c.getClassTablePtr(), Stmt.NEW));
         kfunc.curBB.insts.add(inst);
@@ -2773,7 +2853,7 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
     K_BasicBlock bbMerge = new K_BasicBlock(kfunc.bbs.size);
     K_BasicBlock bbNext;
     kfunc.addBB(bbMerge, kfunc.bbs.size);
-    
+
     int size = stmt.getStmtSize();
     for (int i = 0; i < size; i++) {
         bbNext = new K_BasicBlock(kfunc.bbs.size);
@@ -2833,7 +2913,7 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
     K_BasicBlock bbMerge = new K_BasicBlock(kfunc.bbs.size);
     K_BasicBlock bbNext;
     kfunc.addBB(bbMerge, kfunc.bbs.size);
-    
+
     int size = stmt.getStmtSize();
     for (int i = 0; i < size; i++) {
         bbNext = new K_BasicBlock(kfunc.bbs.size);
@@ -3373,40 +3453,40 @@ void K_Function.codegen(Compiler asm) {
 @Override void K_ADD.codegen(Compiler asm) {
     Value v;
     if (type == Int) {
-            v = asm.builder.createAdd(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createAdd(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (type == Float) {
-            v = asm.builder.createFadd(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFadd(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
 @Override void K_SUB.codegen(Compiler asm) {
     Value v;
     if (type == Int) {
-            v = asm.builder.createSub(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createSub(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (type == Float) {
-            v = asm.builder.createFSub(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFSub(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
 @Override void K_MUL.codegen(Compiler asm) {
     Value v;
     if (type == Int) {
-            v = asm.builder.createMul(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createMul(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (type == Float) {
-            v = asm.builder.createFMul(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFMul(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
 @Override void K_DIV.codegen(Compiler asm) {
     Value v;
     if (type == Int) {
-            v = asm.builder.createSDiv(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createSDiv(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (type == Float) {
-            v = asm.builder.createFDiv(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFDiv(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
@@ -3417,9 +3497,9 @@ void K_Function.codegen(Compiler asm) {
 @Override void K_EQ.codegen(Compiler asm) {
     Value v;
     if (op.inst0.type == Int) {
-            v = asm.builder.createICmpEQ(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createICmpEQ(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     } else if (op.inst0.type == Float) {
-            v = asm.builder.createFCmpOEQ(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFCmpOEQ(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     } else if (op.inst1 == null) {
         v = asm.builder.createStructGEP(op.inst0.getLLVMValue(asm), 0);
         v = asm.builder.createStructGEP(v, 0);
@@ -3433,9 +3513,9 @@ void K_Function.codegen(Compiler asm) {
 @Override void K_NEQ.codegen(Compiler asm) {
     Value v;
     if (op.inst0.type == Int) {
-            v = asm.builder.createICmpNE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createICmpNE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     } else if (op.inst0.type == Float) {
-            v = asm.builder.createFCmpONE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFCmpONE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     } else if (op.inst1 == null) {
         v = asm.builder.createStructGEP(op.inst0.getLLVMValue(asm), 0);
         v = asm.builder.createStructGEP(v, 0);
@@ -3449,40 +3529,40 @@ void K_Function.codegen(Compiler asm) {
 @Override void K_LT.codegen(Compiler asm) {
     Value v;
     if (op.inst0.type == Int) {
-            v = asm.builder.createICmpSLT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createICmpSLT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (op.inst0.type == Float) {
-            v = asm.builder.createFCmpOLT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFCmpOLT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
 @Override void K_GT.codegen(Compiler asm) {
     Value v;
     if (op.inst0.type == Int) {
-            v = asm.builder.createICmpSGT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createICmpSGT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (op.inst0.type == Float) {
-            v = asm.builder.createFCmpOGT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFCmpOGT(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
 @Override void K_LTE.codegen(Compiler asm) {
     Value v;
     if (op.inst0.type == Int) {
-            v = asm.builder.createICmpSLE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createICmpSLE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (op.inst0.type == Float) {
-            v = asm.builder.createFCmpOLE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFCmpOLE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
 @Override void K_GTE.codegen(Compiler asm) {
     Value v;
     if (op.inst0.type == Int) {
-            v = asm.builder.createICmpSGE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createICmpSGE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     if (op.inst0.type == Float) {
-            v = asm.builder.createFCmpOGE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+        v = asm.builder.createFCmpOGE(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
     }
     setLLVMValue(asm, v);
 }
@@ -3645,13 +3725,13 @@ void K_Function.codegen(Compiler asm) {
 @Override void K_CONST.codegen(Compiler asm) {
     Value v;
     if (type == Int) {
-            v = ConstantInt.get(asm.intTy, (int)op.const_table[op.table_idx]);
+        v = ConstantInt.get(asm.intTy, (int)op.const_table[op.table_idx]);
     } else if (type == Float) {
-            v = ConstantFP.get(asm.floatTy, (float)op.const_table[op.table_idx]);
+        v = ConstantFP.get(asm.floatTy, (float)op.const_table[op.table_idx]);
     } else if (type == Boolean) {
         v = ConstantInt.get(asm.boolTy, (op.const_table[op.table_idx] == true) ? 1 : 0);
     } else {
-            v = asm.builder.CreateIntToPtr(ConstantInt.get(asm.intTy, op.objptr), asm.ktype["objectPtrTy"]);
+        v = asm.builder.CreateIntToPtr(ConstantInt.get(asm.intTy, op.objptr), asm.ktype["objectPtrTy"]);
     }
     setLLVMValue(asm, v);
 }

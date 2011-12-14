@@ -996,6 +996,7 @@ static void cstack_mark(CTX ctx FTRARG)
 /* [hObject] */
 
 #define OBJECT_INIT(o, ct) do {\
+	o->fields = NULL;\
 	o->h.magicflag = ct->magicflag;\
 	o->h.cTBL = ct;\
 	knh_Object_RCset(o, K_RCGC_INIT);\
@@ -1246,7 +1247,6 @@ static void BMGC_exit(CTX ctx, HeapManager *mng)
 	HeapManager_final_free(ctx, mng);
 	HeapManager_delete(ctx, mng);
 	do_free(mng, sizeof(*mng));
-	DBG_CHECK_MALLOCED_SIZE();
 #ifdef GCSTAT
 	fclose(global_gc_stat.fp);
 #endif
@@ -2063,7 +2063,7 @@ static bool rearrangeSegList(CTX ctx, SubHeap *h, size_t klass)
 	*unfilled_tail = NULL;
 	h->freelist = unfilled;
 	fetchSegment(h, klass);
-	h->isFull = (count_dead < SegmentBlockCount[klass]);
+	h->isFull = (count_dead < SegmentBlockCount[klass] && h->freelist == NULL);
 	return h->isFull;
 }
 

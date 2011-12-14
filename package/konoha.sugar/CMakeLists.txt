@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-set(CMAKE_BUILD_TYPE Release)
-#set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
 project(sugar)
 set(PACKAGE_SCRIPT_CODE sugar.k)

@@ -34,15 +34,33 @@
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/Support/DynamicLibrary.h>
 #include <llvm/Support/TargetSelect.h>
+#include <llvm/Support/raw_ostream.h>
 #include <llvm/Pass.h>
 #include <llvm/PassManager.h>
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Analysis/Passes.h>
+#include <llvm/Analysis/AliasSetTracker.h>
+#include <llvm/Analysis/DomPrinter.h>
+#include <llvm/Analysis/FindUsedTypes.h>
+#include <llvm/Analysis/IntervalPartition.h>
+#include <llvm/Analysis/Passes.h>
+#include <llvm/Analysis/PostDominators.h>
+#include <llvm/Analysis/RegionPass.h>
+#include <llvm/Analysis/RegionPrinter.h>
+#include <llvm/Analysis/ScalarEvolution.h>
+#include <llvm/Analysis/Lint.h>
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/Target/TargetData.h>
 #include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/IPO/PassManagerBuilder.h>
+#include <llvm/Transforms/Instrumentation.h>
+#include <llvm/Transforms/IPO.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
+#include <llvm/Assembly/PrintModulePass.h>
+#include <llvm/ADT/Statistic.h>
 
 #undef HAVE_SYS_TYPES_H
 #undef HAVE_SYS_STAT_H
@@ -73,6 +91,8 @@ inline void convert_array(std::vector<T> &vec, kArray *a)
 
 }
 
+using namespace llvm;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -89,7 +109,6 @@ extern "C" {
 
 #define _UNUSED_ __attribute__((unused))
 
-using namespace llvm;
 #define PKG_NULVAL(T) PKG_NULVAL_##T
 #define PKG_NULVAL_int    (0)
 #define PKG_NULVAL_float  (0.0)
@@ -875,7 +894,7 @@ KMETHOD IRBuilder_createAlloca(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## LoadInst IRBuilder.CreateLoad(Value Ptr, bool isVolatile);
+//## LoadInst IRBuilder.CreateLoad(Value Ptr, boolean isVolatile);
 KMETHOD IRBuilder_createLoad(CTX ctx, ksfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
@@ -886,7 +905,7 @@ KMETHOD IRBuilder_createLoad(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## StoreInst IRBuilder.CreateStore(Value Val, Value Ptr, bool isVolatile);
+//## StoreInst IRBuilder.CreateStore(Value Val, Value Ptr, boolean isVolatile);
 KMETHOD IRBuilder_createStore(CTX ctx, ksfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
@@ -2009,35 +2028,60 @@ KMETHOD StructType_create(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## NativeFunction ExecutionEngine.getPointerToFunction(Module m, Function func);
+//## NativeFunction ExecutionEngine.getPointerToFunction(Function func);
 KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, ksfp_t *sfp _RIX)
 {
 	ExecutionEngine *ee = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
-	Module *m = konoha::object_cast<Module *>(sfp[1].p);
-	Function *func = konoha::object_cast<Function *>(sfp[2].p);
-
-	FunctionPassManager pm(m);
-	pm.add(new TargetData(*(ee->getTargetData())));
-	pm.add(createVerifierPass());
-	pm.add(createInstructionCombiningPass());
-	pm.add(createLICMPass());
-	pm.add(createIndVarSimplifyPass());
-	pm.add(createLoopDeletionPass());
-	for(int repeat=0; repeat < 3; repeat++) {
-		pm.add(createGVNPass());
-		pm.add(createSCCPPass());
-		pm.add(createCFGSimplificationPass());
-		pm.add(createInstructionCombiningPass());
-		pm.add(createConstantPropagationPass());
-		pm.add(createAggressiveDCEPass());
-		pm.add(createCFGSimplificationPass());
-		pm.add(createDeadStoreEliminationPass());
-		pm.add(createDemoteRegisterToMemoryPass());
-	}
-	pm.doInitialization();
-	pm.run(*func);
-
+	Function *func = konoha::object_cast<Function *>(sfp[1].p);
 	void *ptr = ee->getPointerToFunction(func);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+static void FunctionPassManager_ptr_free(void *p)
+{
+	FunctionPassManager *o = static_cast<FunctionPassManager *>(p);
+	delete o;
+}
+
+//## FunctionPassManager FunctionPassManager.new(Module m)
+KMETHOD FunctionPassManager_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Module *m = konoha::object_cast<Module *>(sfp[1].p);
+	FunctionPassManager *self = new FunctionPassManager(m);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(self), FunctionPassManager_ptr_free);
+	RETURN_(p);
+}
+//## void FunctionPassManager.add(Pass p)
+KMETHOD FunctionPassManager_add(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPassManager *self = konoha::object_cast<FunctionPassManager *>(sfp[0].p);
+	Pass *pass = konoha::object_cast<Pass *>(sfp[1].p);
+	self->add(pass);
+	RETURNvoid_();
+}
+//## void FunctionPassManager.doInitialization()
+KMETHOD FunctionPassManager_doInitialization(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPassManager *self = konoha::object_cast<FunctionPassManager *>(sfp[0].p);
+	self->doInitialization();
+	RETURNvoid_();
+}
+
+//## void FunctionPassManager.run(Function func)
+KMETHOD FunctionPassManager_run(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPassManager *self = konoha::object_cast<FunctionPassManager *>(sfp[0].p);
+	Function *func = konoha::object_cast<Function *>(sfp[1].p);
+	self->run(*func);
+	RETURNvoid_();
+}
+
+//## TargetData ExecutionEngine.getTargetData();
+KMETHOD ExecutionEngine_getTargetData(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ExecutionEngine *ee = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
+	TargetData *ptr = new TargetData(*(ee->getTargetData()));
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -2118,7 +2162,6 @@ KMETHOD Type_dump(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-
 //## @Static boolean DynamicLibrary.loadLibraryPermanently(String libname);
 KMETHOD DynamicLibrary_loadLibraryPermanently(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -2141,6 +2184,848 @@ KMETHOD DynamicLibrary_searchForAddressOfSymbol(CTX ctx, ksfp_t *sfp _RIX)
 		ret = reinterpret_cast<kint_t>(symAddr);
 	}
 	RETURNi_(ret);
+}
+
+//## FunctionPass LLVM.createDomPrinterPass();
+KMETHOD LLVM_createDomPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDomPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createDomOnlyPrinterPass();
+KMETHOD LLVM_createDomOnlyPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDomOnlyPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createDomViewerPass();
+KMETHOD LLVM_createDomViewerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDomViewerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createDomOnlyViewerPass();
+KMETHOD LLVM_createDomOnlyViewerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDomOnlyViewerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createPostDomPrinterPass();
+KMETHOD LLVM_createPostDomPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createPostDomPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createPostDomOnlyPrinterPass();
+KMETHOD LLVM_createPostDomOnlyPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createPostDomOnlyPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createPostDomViewerPass();
+KMETHOD LLVM_createPostDomViewerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createPostDomViewerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createPostDomOnlyViewerPass();
+KMETHOD LLVM_createPostDomOnlyViewerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createPostDomOnlyViewerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createGlobalsModRefPass();
+KMETHOD LLVM_createGlobalsModRefPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createGlobalsModRefPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createAliasDebugger();
+KMETHOD LLVM_createAliasDebugger(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createAliasDebugger();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createAliasAnalysisCounterPass();
+KMETHOD LLVM_createAliasAnalysisCounterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createAliasAnalysisCounterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createAAEvalPass();
+KMETHOD LLVM_createAAEvalPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createAAEvalPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createLibCallAliasAnalysisPass(LibCallInfo lci);
+KMETHOD LLVM_createLibCallAliasAnalysisPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	LibCallInfo *lci = konoha::object_cast<LibCallInfo *>(sfp[0].p);
+	FunctionPass *ptr = createLibCallAliasAnalysisPass(lci);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createScalarEvolutionAliasAnalysisPass();
+KMETHOD LLVM_createScalarEvolutionAliasAnalysisPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createScalarEvolutionAliasAnalysisPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createProfileLoaderPass();
+KMETHOD LLVM_createProfileLoaderPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createProfileLoaderPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createProfileEstimatorPass();
+KMETHOD LLVM_createProfileEstimatorPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createProfileEstimatorPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createProfileVerifierPass();
+KMETHOD LLVM_createProfileVerifierPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createProfileVerifierPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createPathProfileLoaderPass();
+KMETHOD LLVM_createPathProfileLoaderPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createPathProfileLoaderPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createPathProfileVerifierPass();
+KMETHOD LLVM_createPathProfileVerifierPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createPathProfileVerifierPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createLazyValueInfoPass();
+KMETHOD LLVM_createLazyValueInfoPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createLazyValueInfoPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## LoopPass LLVM.createLoopDependenceAnalysisPass();
+KMETHOD LLVM_createLoopDependenceAnalysisPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	LoopPass *ptr = createLoopDependenceAnalysisPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createInstCountPass();
+KMETHOD LLVM_createInstCountPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createInstCountPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createDbgInfoPrinterPass();
+KMETHOD LLVM_createDbgInfoPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDbgInfoPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createRegionInfoPass();
+KMETHOD LLVM_createRegionInfoPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createRegionInfoPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createModuleDebugInfoPrinterPass();
+KMETHOD LLVM_createModuleDebugInfoPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createModuleDebugInfoPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createMemDepPrinter();
+KMETHOD LLVM_createMemDepPrinter(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createMemDepPrinter();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createPostDomTree();
+KMETHOD LLVM_createPostDomTree(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createPostDomTree();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createRegionViewerPass();
+KMETHOD LLVM_createRegionViewerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createRegionViewerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createRegionOnlyViewerPass();
+KMETHOD LLVM_createRegionOnlyViewerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createRegionOnlyViewerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createRegionPrinterPass();
+KMETHOD LLVM_createRegionPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createRegionPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createRegionOnlyPrinterPass();
+KMETHOD LLVM_createRegionOnlyPrinterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createRegionOnlyPrinterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createLintPass();
+KMETHOD LLVM_createLintPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createLintPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+////## ModulePass LLVM.createPrintModulePass(raw_ostream *OS);
+//KMETHOD LLVM_createPrintModulePass(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	raw_ostream **OS = konoha::object_cast<raw_ostream *>(sfp[0].p);
+//	ModulePass *ptr = createPrintModulePass(*OS);
+//	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+//	RETURN_(p);
+//}
+//
+////## FunctionPass LLVM.createPrintFunctionPass(String banner, OutputStream os, boolean deleteStream);
+//KMETHOD LLVM_createPrintFunctionPass(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	String *banner = konoha::object_cast<String *>(sfp[0].p);
+//	OutputStream *os = konoha::object_cast<OutputStream *>(sfp[1].p);
+//	bool deleteStream = sfp[2].bvalue;
+//	FunctionPass *ptr = createPrintFunctionPass(banner,os,deleteStream);
+//	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+//	RETURN_(p);
+//}
+
+////## ModulePass LLVM.createEdgeProfilerPass();
+//KMETHOD LLVM_createEdgeProfilerPass(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	ModulePass *ptr = createEdgeProfilerPass();
+//	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+//	RETURN_(p);
+//}
+
+////## ModulePass LLVM.createOptimalEdgeProfilerPass();
+//KMETHOD LLVM_createOptimalEdgeProfilerPass(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	ModulePass *ptr = createOptimalEdgeProfilerPass();
+//	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+//	RETURN_(p);
+//}
+
+////## ModulePass LLVM.createPathProfilerPass();
+//KMETHOD LLVM_createPathProfilerPass(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	ModulePass *ptr = createPathProfilerPass();
+//	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+//	RETURN_(p);
+//}
+
+////## ModulePass LLVM.createGCOVProfilerPass(boolean emitNotes, boolean emitData, boolean use402Format);
+//KMETHOD LLVM_createGCOVProfilerPass(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	bool emitNotes = sfp[0].bvalue;
+//	bool emitData = sfp[1].bvalue;
+//	bool use402Format = sfp[2].bvalue;
+//	ModulePass *ptr = createGCOVProfilerPass(emitNotes,emitData,use402Format);
+//	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+//	RETURN_(p);
+//}
+
+//## ModulePass LLVM.createStripSymbolsPass(bool onlyDebugInfo);
+KMETHOD LLVM_createStripSymbolsPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	bool onlyDebugInfo = sfp[0].bvalue;
+	ModulePass *ptr = createStripSymbolsPass(onlyDebugInfo);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createStripNonDebugSymbolsPass();
+KMETHOD LLVM_createStripNonDebugSymbolsPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createStripNonDebugSymbolsPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createStripDeadDebugInfoPass();
+KMETHOD LLVM_createStripDeadDebugInfoPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createStripDeadDebugInfoPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createConstantMergePass();
+KMETHOD LLVM_createConstantMergePass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createConstantMergePass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createGlobalOptimizerPass();
+KMETHOD LLVM_createGlobalOptimizerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createGlobalOptimizerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createGlobalDCEPass();
+KMETHOD LLVM_createGlobalDCEPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createGlobalDCEPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createFunctionInliningPass(int threshold);
+KMETHOD LLVM_createFunctionInliningPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	int threshold = sfp[0].ivalue;
+	Pass *ptr = createFunctionInliningPass(threshold);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createAlwaysInlinerPass();
+KMETHOD LLVM_createAlwaysInlinerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createAlwaysInlinerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createPruneEHPass();
+KMETHOD LLVM_createPruneEHPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createPruneEHPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createInternalizePass(bool allButMain);
+KMETHOD LLVM_createInternalizePass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	bool allButMain = sfp[0].bvalue;
+	ModulePass *ptr = createInternalizePass(allButMain);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createDeadArgEliminationPass();
+KMETHOD LLVM_createDeadArgEliminationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createDeadArgEliminationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createArgumentPromotionPass(int maxElements);
+KMETHOD LLVM_createArgumentPromotionPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	int maxElements = sfp[0].ivalue;
+	Pass *ptr = createArgumentPromotionPass(maxElements);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createIPConstantPropagationPass();
+KMETHOD LLVM_createIPConstantPropagationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createIPConstantPropagationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createIPSCCPPass();
+KMETHOD LLVM_createIPSCCPPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createIPSCCPPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopExtractorPass();
+KMETHOD LLVM_createLoopExtractorPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLoopExtractorPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createSingleLoopExtractorPass();
+KMETHOD LLVM_createSingleLoopExtractorPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createSingleLoopExtractorPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createBlockExtractorPass();
+KMETHOD LLVM_createBlockExtractorPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createBlockExtractorPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createStripDeadPrototypesPass();
+KMETHOD LLVM_createStripDeadPrototypesPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createStripDeadPrototypesPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createFunctionAttrsPass();
+KMETHOD LLVM_createFunctionAttrsPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createFunctionAttrsPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createMergeFunctionsPass();
+KMETHOD LLVM_createMergeFunctionsPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createMergeFunctionsPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ModulePass LLVM.createPartialInliningPass();
+KMETHOD LLVM_createPartialInliningPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ModulePass *ptr = createPartialInliningPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createConstantPropagationPass();
+KMETHOD LLVM_createConstantPropagationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createConstantPropagationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createSCCPPass();
+KMETHOD LLVM_createSCCPPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createSCCPPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createDeadInstEliminationPass();
+KMETHOD LLVM_createDeadInstEliminationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createDeadInstEliminationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createDeadCodeEliminationPass();
+KMETHOD LLVM_createDeadCodeEliminationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDeadCodeEliminationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createDeadStoreEliminationPass();
+KMETHOD LLVM_createDeadStoreEliminationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDeadStoreEliminationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createAggressiveDCEPass();
+KMETHOD LLVM_createAggressiveDCEPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createAggressiveDCEPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createScalarReplAggregatesPass(int threshold);
+KMETHOD LLVM_createScalarReplAggregatesPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	int threshold = sfp[0].ivalue;
+	FunctionPass *ptr = createScalarReplAggregatesPass(threshold);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createIndVarSimplifyPass();
+KMETHOD LLVM_createIndVarSimplifyPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createIndVarSimplifyPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createInstructionCombiningPass();
+KMETHOD LLVM_createInstructionCombiningPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createInstructionCombiningPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLICMPass();
+KMETHOD LLVM_createLICMPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLICMPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopUnswitchPass(bool optimizeForSize);
+KMETHOD LLVM_createLoopUnswitchPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	bool optimizeForSize = sfp[0].bvalue;
+	Pass *ptr = createLoopUnswitchPass(optimizeForSize);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopInstSimplifyPass();
+KMETHOD LLVM_createLoopInstSimplifyPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLoopInstSimplifyPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopUnrollPass(int threshold, int count, int allowPartial);
+KMETHOD LLVM_createLoopUnrollPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	int threshold = sfp[0].ivalue;
+	int count = sfp[1].ivalue;
+	int allowPartial = sfp[2].ivalue;
+	Pass *ptr = createLoopUnrollPass(threshold,count,allowPartial);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopRotatePass();
+KMETHOD LLVM_createLoopRotatePass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLoopRotatePass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopIdiomPass();
+KMETHOD LLVM_createLoopIdiomPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLoopIdiomPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createPromoteMemoryToRegisterPass();
+KMETHOD LLVM_createPromoteMemoryToRegisterPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createPromoteMemoryToRegisterPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createDemoteRegisterToMemoryPass();
+KMETHOD LLVM_createDemoteRegisterToMemoryPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createDemoteRegisterToMemoryPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createReassociatePass();
+KMETHOD LLVM_createReassociatePass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createReassociatePass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createJumpThreadingPass();
+KMETHOD LLVM_createJumpThreadingPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createJumpThreadingPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createCFGSimplificationPass();
+KMETHOD LLVM_createCFGSimplificationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createCFGSimplificationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createBreakCriticalEdgesPass();
+KMETHOD LLVM_createBreakCriticalEdgesPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createBreakCriticalEdgesPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopSimplifyPass();
+KMETHOD LLVM_createLoopSimplifyPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLoopSimplifyPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createTailCallEliminationPass();
+KMETHOD LLVM_createTailCallEliminationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createTailCallEliminationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createLowerSwitchPass();
+KMETHOD LLVM_createLowerSwitchPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createLowerSwitchPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createBlockPlacementPass();
+KMETHOD LLVM_createBlockPlacementPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createBlockPlacementPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLCSSAPass();
+KMETHOD LLVM_createLCSSAPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLCSSAPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createEarlyCSEPass();
+KMETHOD LLVM_createEarlyCSEPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createEarlyCSEPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createGVNPass(bool noLoads);
+KMETHOD LLVM_createGVNPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	bool noLoads = sfp[0].bvalue;
+	FunctionPass *ptr = createGVNPass(noLoads);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createMemCpyOptPass();
+KMETHOD LLVM_createMemCpyOptPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createMemCpyOptPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLoopDeletionPass();
+KMETHOD LLVM_createLoopDeletionPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLoopDeletionPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createSimplifyLibCallsPass();
+KMETHOD LLVM_createSimplifyLibCallsPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createSimplifyLibCallsPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createInstructionNamerPass();
+KMETHOD LLVM_createInstructionNamerPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createInstructionNamerPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createSinkingPass();
+KMETHOD LLVM_createSinkingPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createSinkingPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createLowerAtomicPass();
+KMETHOD LLVM_createLowerAtomicPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createLowerAtomicPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createCorrelatedValuePropagationPass();
+KMETHOD LLVM_createCorrelatedValuePropagationPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createCorrelatedValuePropagationPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createObjCARCExpandPass();
+KMETHOD LLVM_createObjCARCExpandPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createObjCARCExpandPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createObjCARCContractPass();
+KMETHOD LLVM_createObjCARCContractPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createObjCARCContractPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createObjCARCOptPass();
+KMETHOD LLVM_createObjCARCOptPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createObjCARCOptPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createInstructionSimplifierPass();
+KMETHOD LLVM_createInstructionSimplifierPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createInstructionSimplifierPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## FunctionPass LLVM.createLowerExpectIntrinsicPass();
+KMETHOD LLVM_createLowerExpectIntrinsicPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createLowerExpectIntrinsicPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## Pass LLVM.createUnifyFunctionExitNodesPass();
+KMETHOD LLVM_createUnifyFunctionExitNodesPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Pass *ptr = createUnifyFunctionExitNodesPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ImmutablePass LLVM.createTypeBasedAliasAnalysisPass();
+KMETHOD LLVM_createTypeBasedAliasAnalysisPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ImmutablePass *ptr = createTypeBasedAliasAnalysisPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ImmutablePass LLVM.createBasicAliasAnalysisPass();
+KMETHOD LLVM_createBasicAliasAnalysisPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ImmutablePass *ptr = createBasicAliasAnalysisPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
+}
+
+//## ImmutablePass LLVM.createVerifierPass();
+KMETHOD LLVM_createVerifierPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	FunctionPass *ptr = createVerifierPass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
+	RETURN_(p);
 }
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
