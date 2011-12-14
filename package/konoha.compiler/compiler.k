@@ -54,6 +54,7 @@ KFLAG_PF_BREAK     = (1<<7);
 NOT_SCAST = -1;
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
+LLVM_ENABLE_FUNCTION_DUMP = false;
 
 @public boolean Class.isUnboxType() {
     if (this == Int) {
@@ -1878,7 +1879,9 @@ void Compiler.addConstTable(dynamic val) {
 }
 void Compiler.dump(Boolean dump) {
     //print const_table;
-    func.dump();
+    if (LLVM_ENABLE_FUNCTION_DUMP) {
+        func.dump();
+    }
 }
 void Compiler.emit(Method mtd) {
     if (pm == null) {
@@ -1921,10 +1924,10 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
+    this.dump(DEBUG);
     if (!kfunc.isUndeveloped()) {
         pm.doInitialization();
         pm.run(func);
-        this.dump(DEBUG);
         mtd.setFunction(ee.getPointerToFunction(func));
     }
 }
