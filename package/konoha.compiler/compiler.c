@@ -487,9 +487,9 @@ KMETHOD Compiler_debug(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD _debug_(CTX ctx, ksfp_t *sfp, kint_t a, kint_t b)
 {
 	asm volatile("int3");
-	void *p1 = (void*) a;
-	void *p2 = (void*) b;
-	fprintf(stderr, "%p %p %ld %ld %p %p\n", ctx, sfp, a, b, p1, p2);
+	//void *p1 = (void*) a;
+	//void *p2 = (void*) b;
+	//fprintf(stderr, "%p %p %ld %ld %p %p\n", ctx, sfp, a, b, p1, p2);
 }
 static void kook_compiler_emit(CTX ctx, kMethod *mtd)
 {

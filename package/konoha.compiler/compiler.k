@@ -33,8 +33,8 @@ include "lib:gluelink";
 DEBUG = false;
 USE_NONSSA = false;
 //DEBUG = true;
-//DUMP = false;
-DUMP = true;
+DUMP = false;
+//DUMP = true;
 FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
 FUNC_VIRTUAL2 = 1;
@@ -443,8 +443,25 @@ class K_BasicBlock {
         this.safepoint = -1;
     }
 }
+class K_ARGUMENTop extends K_Opcode {
+    int argidx;
+    boolean inner;
+    K_ARGUMENTop(int argidx) {
+        this.inner = true;
+        this.argidx = argidx;
+    }
+}
+class K_ARGUMENT extends K_Inst {
+    K_ARGUMENTop op;
+    K_ARGUMENT(K_Value kvalue, K_ARGUMENTop op, int idx) {
+        this.kvalue = kvalue;
+        this.type = kvalue.type;
+        this.op = op;
+        addDef(kvalue, idx);
+    }
+}
 class K_Function {
-    boolean isUndeveloped;
+    boolean undeveloped;
     String name;
     K_BasicBlock[] bbs;
     Func<K_Function,Method, int=>void>[] klrasm;
@@ -457,49 +474,47 @@ class K_Function {
     Class retTy;
     boolean hasReturn;
     int isStatic;
-    Array<K_Inst> funcargs;
-    Array<Int> argsTy;
+    K_ARGUMENT[] funcargs;
     K_Inst retval;
     Map<String, K_Value> value_table;
 
     /*for SSA*/
-    Array<Array<Int>> linklist;
-    Array<Array<Int>> succ;
-    Array<Array<Int>> pred;
-    Array<Array<Int>> bucket;
-    Array<Array<Int>> aorig;
-    Array<Array<Int>> defsites;
-    Array<Array<Int>> phi; /*phi_value[bbidx] => Array<idx>*/
-    Array<Int> dfnum;
-    Array<Int> vertex;
-    Array<Int> semi;
-    Array<Int> parent;
-    Array<Int> ancestor;
-    Array<Int> best;
-    Array<Int> idom;
-    Array<Int> samedom;
-    Array<Int> df;
+    Int[][] linklist;
+    Int[][] succ;
+    Int[][] pred;
+    Int[][] bucket;
+    Int[][] aorig;
+    Int[][] defsites;
+    Int[][] phi; /*phi_value[bbidx] => Array<idx>*/
+    Int[]   dfnum;
+    Int[]   vertex;
+    Int[]   semi;
+    Int[]   parent;
+    Int[]   ancestor;
+    Int[]   best;
+    Int[]   idom;
+    Int[]   samedom;
+    Int[]   df;
     K_BasicBlock curBB;
     String mtdName;
 
     K_Function(Method mtd) {
-        isUndeveloped = false;
-        hasReturn = false;
+        this.undeveloped = false;
+        this.hasReturn = false;
         isStatic = mtd.isStatic() ? 1 : 0;
-        mtdName = mtd.toString();
-        bbs = [new K_BasicBlock(0)];
-        curBB = bbs[0];
-        breakpoint = [];
-        continuepoint = [];
-        breakList = [];
-        continueList = [];
-        argsTy = [];
+        this.mtdName = mtd.toString();
+        this.bbs = [new K_BasicBlock(0)];
+        this.curBB = bbs[0];
+        this.breakpoint = [];
+        this.continuepoint = [];
+        this.breakList = [];
+        this.continueList = [];
         Class[] params = mtd.getParamTypes();
-        retTy = mtd.getReturnType();
-        const_table = [];
-        register_table = [];
-        funcargs = [];
-        value_table = {};
+        this.retTy = mtd.getReturnType();
+        this.const_table = [];
+        this.register_table = [];
+        this.funcargs = [];
+        this.value_table = {};
         this.succ = [];
         this.pred = [];
         this.bucket = [];
@@ -517,10 +532,7 @@ class K_Function {
         this.df = [];
     }
     void setUndevelop() {
-        //isUndeveloped = true;
-    }
-    boolean isUndeveloped() {
-        return isUndeveloped;
+        //undeveloped = true;
     }
     void codegen(Compiler asm);
     int addConstTable(dynamic val) {
@@ -1481,23 +1493,7 @@ class K_LDMTD extends K_Inst {
         return null;
     }
 }
-class K_ARGUMENTop extends K_Opcode {
-    int argidx;
-    boolean inner;
-    K_ARGUMENTop(int argidx) {
-        this.inner = true;
-        this.argidx = argidx;
-    }
-}
-class K_ARGUMENT extends K_Inst {
-    K_ARGUMENTop op;
-    K_ARGUMENT(K_Value kvalue, K_ARGUMENTop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
-        this.op = op;
-        addDef(kvalue, idx);
-    }
-}
+
 class K_RETop extends K_Opcode {
     K_RETop(K_Inst inst0) {
         this.inst0 = inst0;
@@ -1552,7 +1548,7 @@ void Compiler.init(Method mtd) {
     safePointMtd = createSafePointMtd();
     if (mtd.getName() == ""/*global variable definition*/) {
         K_Value kvalue = kfunc.getKValue(0, Script);
-        K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
+        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
         return;
@@ -1566,7 +1562,7 @@ void Compiler.init(Method mtd) {
 
     if (!mtd.isStatic()) {
         K_Value kvalue = kfunc.getKValue(0, Object);
-        K_Inst inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
+        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
     }
@@ -1928,8 +1924,6 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
-    wrapperfunc.dump();
-    innerfunc.dump();
     this.dump(DEBUG);
     if (!kfunc.isUndeveloped()) {
         pm.doInitialization();
@@ -3440,7 +3434,7 @@ void K_Function.buildWrapperFunc(Compiler asm) {
     asm.builder.setInsertPoint(bb);
     Array<Value> wvargs = asm.wrapperfunc.getArguments();
     Value[] vargs = [wvargs[0], wvargs[1], wvargs[2]];
-    foreach(K_Inst inst in funcargs) {
+    foreach(K_ARGUMENT inst in funcargs) {
         inst.value = null;
         inst.codegen(asm);
         vargs.add(inst.getLLVMValue(asm));
@@ -3457,11 +3451,10 @@ void K_Function.buildWrapperFunc(Compiler asm) {
 }
 
 void K_Function.codegen(Compiler asm) {
-    Array<Value> wvargs = asm.wrapperfunc.getArguments();
-    print wvargs;
+    Value[] wvargs = asm.wrapperfunc.getArguments();
     Type[] innerArgsTy = [wvargs[0].getType(), wvargs[1].getType(), wvargs[2].getType()];
 
-    foreach(K_Inst inst in funcargs) {
+    foreach(K_ARGUMENT inst in funcargs) {
         innerArgsTy.add(asm.convertType(inst.type));
     }
     Type innerRetTy = null;
@@ -3506,7 +3499,7 @@ void K_Function.codegen(Compiler asm) {
             bbs[i].codegen(asm);
         }
         if (i == 0) {
-            foreach (K_Inst inst in funcargs) {
+            foreach (K_ARGUMENT inst in funcargs) {
                 inst.codegen(asm);
             }
         }
@@ -3872,7 +3865,8 @@ void K_Function.codegen(Compiler asm) {
                 v.dump();
             }
         }
-        v = vargs[op.argidx+3];
+        int difference = 2 + ((asm.mtd.isStatic() && !asm.mtd.toString().endsWith("new") && !asm.mtd.toString().endsWith("Script.")) ? 0 : 1);
+        v = vargs[op.argidx+difference];
         op.inner = false;
     }
     setLLVMValue(asm, v);
