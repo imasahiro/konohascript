@@ -238,9 +238,9 @@ include "lib:gluelink";
 @Native NativeFunction ExecutionEngine.getPointerToFunction(Function func);
 
 @Native PassManagerBuilder PassManagerBuilder.new();
-@Native void PassManagerBuilder.populateModulePassManager(PassManager manager)
+@Native void PassManagerBuilder.populateModulePassManager(PassManager manager);
 @Virual @Native void PassManager.run(Module m);
-@Native PassManager PassManager.new()
+@Native PassManager PassManager.new();
 @Native FunctionPassManager FunctionPassManager.new(Module m);
 @Native void PassManager.add(Pass p);
 @Native void FunctionPassManager.add(Pass p);

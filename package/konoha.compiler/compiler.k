@@ -1929,7 +1929,6 @@ void Compiler.emit(Method mtd) {
         }
         else if (mtd.toString().endsWith("Script.main")) {
             this.compiled_methods = {};
-
             //mpm = new PassManager();
             //mpm.add(LLVM.createFunctionInliningPass(75/*-Os*/));
             //PassManagerBuilder builder = new PassManagerBuilder();
