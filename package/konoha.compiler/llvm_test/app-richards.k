@@ -169,7 +169,7 @@ class Task extends TaskState {
         init(i, p, w, initialState, r);
     }
     @Virtual Task fn(Packet pkt, TaskRec r) {
-        print "error";
+        ERR.println("error");
         return null;
     }
     Task Task.findtcb(int id);

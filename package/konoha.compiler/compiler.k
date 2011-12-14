@@ -33,7 +33,7 @@ include "lib:gluelink";
 DEBUG = false;
 USE_NONSSA = false;
 //DEBUG = true;
-DUMP = false;
+DUMP = true;
 //DUMP = true;
 FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
@@ -55,6 +55,7 @@ NOT_SCAST = -1;
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
 LLVM_ENABLE_FUNCTION_DUMP = true;
+LLVM_ENABLE_DEBUG = false;
 
 @public boolean Class.isUnboxType() {
     if (this == Int) {
@@ -1890,6 +1891,9 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
+    if (LLVM_ENABLE_DEBUG) {
+        this.dump(DEBUG);
+    }
     if (!kfunc.isUndeveloped()) {
         pm.doInitialization();
         pm.run(wrapperfunc);
@@ -2809,20 +2813,19 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
         print stmt;
         print espidx;
     }
-    K_Inst tInst, fInst;
     int table_idx;
     int objptr = 0;
     K_Value kvalue;
     /* const true */
     table_idx = kfunc.addConstTable(true);
     kvalue = kfunc.getKValue(espidx, Boolean);
-    tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+    K_Inst tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
     kfunc.curBB.insts.add(tInst);
 
     /* const false */
     table_idx = kfunc.addConstTable(false);
-    K_Value kvalue = kfunc.getKValue(espidx, Boolean);
-    fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+    kvalue = kfunc.getKValue(espidx, Boolean);
+    K_Inst fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
     kfunc.curBB.insts.add(fInst);
 
     int bbssize = kfunc.bbs.size;
@@ -2853,6 +2856,7 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
 
     K_PHI phi = new K_PHI(espidx);
     for (int i = kfunc.bbs.size-1; i > bbssize; i--) {
+        print i, bbNext.bbidx, bbssize;
         if (i == bbNext.bbidx) {
             phi.addIncoming(kfunc, espidx, tInst, kfunc.bbs[i].bbidx, kfunc.bbs[i].movs);
         } else {
@@ -2861,6 +2865,8 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
     }
     phi.addIncoming(kfunc, espidx, fInst, kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs);
 
+    print kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs
+    print phi.dump();
     bbMerge.phis[(String)espidx] = phi;
     kfunc.storeKInst(espidx, phi);
 }
