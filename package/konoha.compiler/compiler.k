@@ -54,7 +54,7 @@ KFLAG_PF_BREAK     = (1<<7);
 NOT_SCAST = -1;
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
-LLVM_ENABLE_FUNCTION_DUMP = false;
+LLVM_ENABLE_FUNCTION_DUMP = true;
 
 @public boolean Class.isUnboxType() {
     if (this == Int) {
@@ -95,7 +95,6 @@ class Compiler {
     Method[] system_method;
     Class[] system_method_class;
     void constructKonohaTypes();
-    int safePointMtd;
     int isCWB;
     K_Inst cwb;
     FunctionPassManager pm;
@@ -160,43 +159,8 @@ Type Compiler.convertType(Class type) {
     return objectTy;
 }
 
-dynamic getTypeName(Class type) {
-    //if (type == Int) {
-    //    return "Int";
-    //}
-    //if (type == Float) {
-    //    return "Float";
-    //}
-    //if (type == Boolean) {
-    //    return "Boolean";
-    //}
-    //if (type == String) {
-    //    return "String";
-    //}
-    //if (type == Array) {
-    //    return "Array";
-    //}
-    //if (type == Script) {
-    //    return "Script";
-    //}
-    //if (type == System) {
-    //    return "System";
-    //}
-    //if (type == OutputStream) {
-    //    return "OutputStream";
-    //}
-    //if (type == InputStream) {
-    //    return "InputStream";
-    //}
-    //if (type == Class) {
-    //    return "Class";
-    //}
-    //if (type == dynamic) {
-    //    return "dynamic";
-    //} else if (type == Object) {
-    //    return "Object";
-    //}
-    return type;
+String getTypeName(Class type) {
+    return (to String) type;
 }
 
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
@@ -536,6 +500,10 @@ class K_Function {
     }
     void codegen(Compiler asm);
     int addConstTable(dynamic val) {
+        // TODO(imasahiro) remove duplicated const value
+        //if (!(val in? const_table)) {
+        //    const_table.add(val);
+        //}
         const_table.add(val);
         return |const_table|-1;
     }
@@ -1520,7 +1488,6 @@ class SFX {
     }
 }
 
-@Native void Compiler.createSafePointMtd();
 @Native boolean Compiler.gammaHasFIELD();
 @Native Class Compiler.gammaGetThiscid();
 void Compiler.init(Method mtd) {
@@ -1545,7 +1512,6 @@ void Compiler.init(Method mtd) {
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
     kfunc = new K_Function(mtd);
-    safePointMtd = createSafePointMtd();
     if (mtd.getName() == ""/*global variable definition*/) {
         K_Value kvalue = kfunc.getKValue(0, Script);
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
@@ -1924,13 +1890,13 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
-    this.dump(DEBUG);
     if (!kfunc.isUndeveloped()) {
         pm.doInitialization();
         pm.run(wrapperfunc);
         pm.run(innerfunc);
         mtd.setFunction(ee.getPointerToFunction(wrapperfunc));
     }
+    this.dump(DEBUG);
 }
 void Compiler.asm_mov(Token tka, Token tkb, int espidx) {
     if (DEBUG) {
@@ -2844,20 +2810,21 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
         print espidx;
     }
     K_Inst tInst, fInst;
-    {
-        int table_idx = kfunc.addConstTable(true);
-        int objptr = 0;
-        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
-        tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
-        kfunc.curBB.insts.add(tInst);
-    }
-    {
-        int table_idx = kfunc.addConstTable(false);
-        int objptr = 0;
-        K_Value kvalue = kfunc.getKValue(espidx, Boolean);
-        fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
-        kfunc.curBB.insts.add(fInst);
-    }
+    int table_idx;
+    int objptr = 0;
+    K_Value kvalue;
+    /* const true */
+    table_idx = kfunc.addConstTable(true);
+    kvalue = kfunc.getKValue(espidx, Boolean);
+    tInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+    kfunc.curBB.insts.add(tInst);
+
+    /* const false */
+    table_idx = kfunc.addConstTable(false);
+    K_Value kvalue = kfunc.getKValue(espidx, Boolean);
+    fInst = new K_CONST(kvalue, Boolean, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+    kfunc.curBB.insts.add(fInst);
+
     int bbssize = kfunc.bbs.size;
     int entryIdx = kfunc.curBB.bbidx;
     Array<Tuple<K_BasicBlock, Array<K_Inst>>> tupleList = [];
@@ -3414,8 +3381,14 @@ void K_BasicBlock.codegen(Compiler asm) {
         asm.builder.setInsertPoint(bbThen);
         asm.shiftesp(this.safepoint);
         Type fType = asm.ktype["safeptmethodPtrTy"];
-        Value vfunc = ConstantInt.get(asm.intTy, asm.safePointMtd);
-        vfunc = asm.builder.CreateIntToPtr(vfunc, fType);
+        FunctionType fnTy  = (FunctionType)asm.ktype["safeptmethodTy"];
+        Function fcheck_safepoint = asm.m.getOrInsertFunction("knh_checkSafePoint", fnTy);
+        Value vfunc = fcheck_safepoint;
+
+        //safePointMtd = asm.createSafePointMtd();
+        //vfunc = ConstantInt.get(asm.intTy, asm.safePointMtd);
+        //vfunc = asm.builder.CreateIntToPtr(vfunc, fType);
+
         Value vctx  = asm.ctx;
         Value vsfp  = asm.builder.createConstGEP1_32(asm.sfp, this.safepoint);
         Value vstr  = asm.builder.createGlobalString("%d\n");
@@ -3859,14 +3832,9 @@ void K_Function.codegen(Compiler asm) {
         v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), op.argidx);
     } else {
         Value[] vargs = asm.innerfunc.getArguments();
-        if (DEBUG) {
-            print vargs.size, op.argidx, op.argidx+3, op.inner;
-            for (v in vargs) {
-                v.dump();
-            }
-        }
         int difference = 2 + ((asm.mtd.isStatic() && !asm.mtd.toString().endsWith("new") && !asm.mtd.toString().endsWith("Script.")) ? 0 : 1);
         v = vargs[op.argidx+difference];
+        v.setName("arg"+(op.argidx+difference));
         op.inner = false;
     }
     setLLVMValue(asm, v);

@@ -427,10 +427,10 @@ KMETHOD Compiler_getSendMethod(CTX ctx, ksfp_t *sfp _RIX)
 		RETURN_(Gamma_getFmt(ctx, cid, MN__s));
 	}
 }
-KMETHOD Compiler_createSafePointMtd(CTX ctx, ksfp_t *sfp _RIX)
-{
-	RETURNi_((kint_t)knh_checkSafePoint);
-}
+//KMETHOD Compiler_createSafePointMtd(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	RETURNi_((kint_t)knh_checkSafePoint);
+//}
 KMETHOD Compiler_asmEXPR(CTX ctx, ksfp_t *sfp _RIX)
 {
 	//kObject *o  = sfp[0].o;

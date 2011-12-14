@@ -46,6 +46,9 @@ class Charset extends String;
 }
 **/
 
+String : (Class c) {
+  return c+"";
+}
 @Public @Native boolean Object.hasMethod(String name);
 @Public @Native dynamic Object.invokeMethod(String name, dynamic a, ...);
 
