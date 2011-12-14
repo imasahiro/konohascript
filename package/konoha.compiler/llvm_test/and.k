@@ -1,20 +1,15 @@
 using konoha.compiler.*;
-Boolean isTaskHoldingOrWaiting() {
-    Boolean packet_pending = false;
-    Boolean task_waiting   = false;
-    Boolean task_holding   = false;
 
-    return task_holding or packet_pending and task_waiting;
+boolean and_1(boolean b1, boolean b2, boolean b3, boolean b4) {
+    return b1 && b2;
+}
+boolean and_2(boolean b1, boolean b2, boolean b3, boolean b4) {
+    return b1 && b2 && b3;
+}
+boolean and_3(boolean b1, boolean b2, boolean b3, boolean b4) {
+    return b1 && (b2 && b3);
+}
+boolean and_4(boolean b1, boolean b2, boolean b3, boolean b4) {
+    return b1 && (b2 && b3) && b4;
 }
 
-//class TaskState {
-//    Boolean packet_pending;
-//    Boolean task_waiting;
-//    Boolean task_holding;
-//    Boolean isTaskHoldingOrWaiting() {
-//        return task_holding or (not packet_pending and task_waiting);
-//    }
-//    //Boolean isWaitingWithPacket() {
-//    //    return packet_pending and task_waiting and not task_holding;
-//    //}
-//}
