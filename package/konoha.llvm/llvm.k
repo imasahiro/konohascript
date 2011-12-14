@@ -46,6 +46,8 @@ include "lib:gluelink";
 @RawPtr class ExecutionEngine;
 @RawPtr class NativeFunction;
 
+@Native class GlobalValue;
+
 @RawPtr class LLVM;
 @RawPtr class Pass;
 @RawPtr class ModulePass extends Pass;
@@ -54,7 +56,9 @@ include "lib:gluelink";
 @RawPtr class LibCallInfo;
 @Rawptr class ImmutablePass extends Pass;
 @Rawptr class TargetData extends ImmutablePass;
+@Rawptr class PassManager;
 @Rawptr class FunctionPassManager;
+@Rawptr class PassManagerBuilder;
 
 @Native @Static Type Type.getVoidTy();
 @Native @Static Type Type.getLabelTy();
@@ -217,7 +221,7 @@ include "lib:gluelink";
 @Native void Value.dump();
 @Native void Type.dump();
 @Native void BasicBlock.dump();
-@Native @Static Function Function.create(String name, FunctionType fnTy, Module m);
+@Native @Static Function Function.create(String name, FunctionType fnTy, Module m, int linkage);
 //@Native iterator BasicBlock.begin();
 //@Native iterator BasicBlock.end();
 @Native int BasicBlock.size();
@@ -232,12 +236,17 @@ include "lib:gluelink";
 @Native @Static StructType StructType.get(Array<Type> args, boolean isPacked);
 @Native @Static StructType StructType.create(Array<Type> args, String name, boolean isPacked);
 @Native NativeFunction ExecutionEngine.getPointerToFunction(Function func);
+
+@Native PassManagerBuilder PassManagerBuilder.new();
+@Native void PassManagerBuilder.populateModulePassManager(PassManager manager)
+@Virual @Native void PassManager.run(Module m);
+@Native PassManager PassManager.new()
 @Native FunctionPassManager FunctionPassManager.new(Module m);
+@Native void PassManager.add(Pass p);
 @Native void FunctionPassManager.add(Pass p);
 @Native void FunctionPassManager.run(Function func);
 @Native void FunctionPassManager.doInitialization();
 @Native TargetData ExecutionEngine.getTargetData();
-
 
 @Native Argument Argument.new(Type type);
 @Native void Value.replaceAllUsesWith(Value v);
