@@ -1906,6 +1906,7 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.curBB.hasReturn && kfunc.retTy == null) {
         K_RET inst = new K_RET(new K_RETop(null));
         kfunc.curBB.insts.add(inst);
+        kfunc.curBB.hasReturn = true;
     }
     if (DUMP) {
         String ir = kfunc.dump();
