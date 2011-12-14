@@ -1,3 +1,4 @@
+using konoha.compiler.*;
 /*
  * tarai 12 6 0
  */
@@ -13,6 +14,6 @@ int tarai(int x, int y, int z) {
 }
 
 void main(String[] args) {
-    print tarai(12, 6, 0);
+    OUT.println(tarai(12, 6, 0));
 }
 

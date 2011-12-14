@@ -48,7 +48,7 @@ add_test(NAME "new.k"     COMMAND ${k} "${DIR}/new.k")
 add_test(NAME "print.k"   COMMAND ${k} "${DIR}/print.k")
 add_test(NAME "test.k"    COMMAND ${k} "${DIR}/test.k")
 add_test(NAME "while.k"   COMMAND ${k} "${DIR}/while.k")
-add_test(NAME "and.k"     COMMAND ${k} "${DIR}/add.k")
+add_test(NAME "and.k"     COMMAND ${k} "${DIR}/and.k")
 add_test(NAME "dynamic.k" COMMAND ${k} "${DIR}/dynamic.k")
 add_test(NAME "micro.k"   COMMAND ${k} "${DIR}/microbench3.k")
 

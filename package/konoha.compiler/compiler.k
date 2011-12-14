@@ -54,7 +54,7 @@ KFLAG_PF_BREAK     = (1<<7);
 NOT_SCAST = -1;
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
-LLVM_ENABLE_FUNCTION_DUMP = true;
+LLVM_ENABLE_FUNCTION_DUMP = false;
 LLVM_ENABLE_DEBUG = false;
 
 @public boolean Class.isUnboxType() {
@@ -72,6 +72,8 @@ LLVM_ENABLE_DEBUG = false;
 
 class K_BasicBlock;
 class K_Function;
+class Compiler;
+void K_Function.init(Compiler asm);
 class K_Inst;
 class Compiler {
     Module m;
@@ -98,7 +100,9 @@ class Compiler {
     void constructKonohaTypes();
     int isCWB;
     K_Inst cwb;
-    FunctionPassManager pm;
+    FunctionPassManager fpm;
+    Map<String, K_Function[]> compiled_methods;
+
     @Hidden Compiler() {
         this.m = new Module("konoha");
         this.ee = m.createExecutionEngine();
@@ -142,7 +146,8 @@ class Compiler {
             null, /*SYS*/,
             null, /*SCRIPT*/
             ];
-        this.pm = null;
+        this.fpm = null;
+        this.compiled_methods = {};
     }
 };
 
@@ -462,6 +467,7 @@ class K_Function {
     Int[]   df;
     K_BasicBlock curBB;
     String mtdName;
+    Function func;
 
     K_Function(Method mtd) {
         this.undeveloped = false;
@@ -495,6 +501,24 @@ class K_Function {
         this.idom = [];
         this.samedom = [];
         this.df = [];
+    }
+    void init(Compiler asm) {
+        Value[] wvargs = asm.wrapperfunc.getArguments();
+        Type[] innerArgsTy = [wvargs[0].getType(), wvargs[1].getType(), wvargs[2].getType()];
+
+        foreach(K_ARGUMENT inst in funcargs) {
+            innerArgsTy.add(asm.convertType(inst.type));
+        }
+        Type innerRetTy = null;
+        if (asm.retclass != null && asm.retclass != Void) {
+            innerRetTy = asm.convertType(asm.retclass);
+        } else {
+            innerRetTy = Type.getVoidTy();
+        }
+        FunctionType innerFuncTy = FunctionType.get(innerRetTy, innerArgsTy, false);
+        String funcname = asm.mtd.toString() + "_inner";
+        this.func = Function.create(funcname, innerFuncTy, asm.m, GlobalValue.InternalLinkage);
+        asm.innerfunc = func;
     }
     void setUndevelop() {
         //undeveloped = true;
@@ -1493,7 +1517,7 @@ class SFX {
 @Native Class Compiler.gammaGetThiscid();
 void Compiler.init(Method mtd) {
     this.mtd = mtd;
-    wrapperfunc = Function.create(mtd.toString(), this.funcTy, m);
+    wrapperfunc = Function.create(mtd.toString(), this.funcTy, m, GlobalValue.ExternalLinkage);
     bblist  = [];
     bblist2 = [];
     Array<Value> vargs = wrapperfunc.getArguments();
@@ -1512,12 +1536,13 @@ void Compiler.init(Method mtd) {
     rix = vargs[2];
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
-    kfunc = new K_Function(mtd);
+    this.kfunc = new K_Function(mtd);
     if (mtd.getName() == ""/*global variable definition*/) {
         K_Value kvalue = kfunc.getKValue(0, Script);
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
+        kfunc.init(this);
         return;
     }
     if (mtd.isStatic() && gamma_hasFIELD()) {
@@ -1540,6 +1565,12 @@ void Compiler.init(Method mtd) {
         kfunc.storeKInst(i+1, inst);
         kfunc.funcargs.add(inst);
     }
+    kfunc.init(this);
+    mtdName = mtd.toString();
+    if (this.compiled_methods[mtdName] == null) {
+        this.compiled_methods[mtdName] = [];
+    }
+    this.compiled_methods[mtdName].add(kfunc);
 }
 void Compiler.addSafePoint(int espidx) {
     if (kfunc.curBB.safepoint == -1) {
@@ -1851,31 +1882,30 @@ void Compiler.dump(Boolean dump) {
     }
 }
 void Compiler.emit(Method mtd) {
-    if (pm == null) {
-        pm = new FunctionPassManager(m);
-        pm.add(ee.getTargetData());
-        pm.add(LLVM.createVerifierPass());
+    if (fpm == null) {
+        fpm = new FunctionPassManager(m);
+        //fpm.add(ee.getTargetData());
+        fpm.add(LLVM.createVerifierPass());
         if (LLVM_ENABLE_OPT) {
-            pm.add(LLVM.createTypeBasedAliasAnalysisPass());
-            pm.add(LLVM.createBasicAliasAnalysisPass());
-            //pm.add(LLVM.createFunctionInliningPass(75/*-Os*/));
-            pm.add(LLVM.createGVNPass());
-            pm.add(LLVM.createSCCPPass());
+            fpm.add(ee.getTargetData());
+            fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
+            fpm.add(LLVM.createBasicAliasAnalysisPass());
+            fpm.add(LLVM.createGVNPass());
+            fpm.add(LLVM.createSCCPPass());
         }
-        pm.add(LLVM.createCFGSimplificationPass());
+        fpm.add(LLVM.createCFGSimplificationPass());
         if (LLVM_ENABLE_OPT) {
-            pm.add(LLVM.createScalarReplAggregatesPass());
-            pm.add(LLVM.createConstantPropagationPass());
-            pm.add(LLVM.createEarlyCSEPass());
-            pm.add(LLVM.createLowerExpectIntrinsicPass());
-            pm.add(LLVM.createPromoteMemoryToRegisterPass());
-            pm.add(LLVM.createInstructionCombiningPass());
-            pm.add(LLVM.createReassociatePass());
-            pm.add(LLVM.createCFGSimplificationPass());
-            pm.add(LLVM.createDeadStoreEliminationPass());
+            fpm.add(LLVM.createScalarReplAggregatesPass());
+            fpm.add(LLVM.createConstantPropagationPass());
+            fpm.add(LLVM.createEarlyCSEPass());
+            fpm.add(LLVM.createLowerExpectIntrinsicPass());
+            fpm.add(LLVM.createPromoteMemoryToRegisterPass());
+            fpm.add(LLVM.createInstructionCombiningPass());
+            fpm.add(LLVM.createReassociatePass());
+            fpm.add(LLVM.createCFGSimplificationPass());
+            fpm.add(LLVM.createDeadStoreEliminationPass());
         }
     }
-
     for (int i = 0; i < kfunc.const_table.size; i++) {
         this.addConstTable(kfunc.const_table[i]);
     }
@@ -1891,13 +1921,21 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
-    if (LLVM_ENABLE_DEBUG) {
-        this.dump(DEBUG);
-    }
     if (!kfunc.isUndeveloped()) {
-        pm.doInitialization();
-        pm.run(wrapperfunc);
-        pm.run(innerfunc);
+        fpm.doInitialization();
+        fpm.run(wrapperfunc);
+        fpm.run(innerfunc);
+        if (mtd.getName() == "") {
+        }
+        else if (mtd.toString().endsWith("Script.main")) {
+            this.compiled_methods = {};
+
+            //mpm = new PassManager();
+            //mpm.add(LLVM.createFunctionInliningPass(75/*-Os*/));
+            //PassManagerBuilder builder = new PassManagerBuilder();
+            //builder.populateModulePassManager(mpm);
+            //mpm.run(m);
+        }
         mtd.setFunction(ee.getPointerToFunction(wrapperfunc));
     }
     this.dump(DEBUG);
@@ -2343,22 +2381,22 @@ void Compiler.asmPRINT(Stmt stmt, int flag) {
                 mask |= KFLAG_PF_NAME;
                 continue;
             }
-            TODO_ASM(P, _PRINTm, flag | mask, (tkn).getText(), 0);
+            //TODO_ASM(P, _PRINTm, flag | mask, (tkn).getText(), 0);
             flag = KFLAG_PF_NCOMMA;
         }
         else {
             Class c = stmt.getT(i).getClass();
             if(c == Int) {
-                TODO_ASM(P, _PRINTi, flag | mask, msg, espidx+i);
+                //TODO_ASM(P, _PRINTi, flag | mask, msg, espidx+i);
             }
             else if(c == Float) {
-                TODO_ASM(P, _PRINTf, flag | mask, msg, espidx+i);
+                //TODO_ASM(P, _PRINTf, flag | mask, msg, espidx+i);
             }
             else if(c == Boolean) {
-                TODO_ASM(P, _PRINTb, flag | mask, msg, espidx+i);
+                //TODO_ASM(P, _PRINTb, flag | mask, msg, espidx+i);
             }
             else {
-                TODO_ASM(P, _PRINT, flag | mask, msg, espidx+i);
+                //TODO_ASM(P, _PRINT, flag | mask, msg, espidx+i);
             }
             flag = 0;
         }
@@ -2856,7 +2894,9 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
 
     K_PHI phi = new K_PHI(espidx);
     for (int i = kfunc.bbs.size-1; i > bbssize; i--) {
-        print i, bbNext.bbidx, bbssize;
+        if (DEBUG) {
+            print i, bbNext.bbidx, bbssize;
+        }
         if (i == bbNext.bbidx) {
             phi.addIncoming(kfunc, espidx, tInst, kfunc.bbs[i].bbidx, kfunc.bbs[i].movs);
         } else {
@@ -2865,8 +2905,10 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
     }
     phi.addIncoming(kfunc, espidx, fInst, kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs);
 
-    print kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs
-    print phi.dump();
+    if (DEBUG) {
+        print kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs;
+        print phi.dump();
+    }
     bbMerge.phis[(String)espidx] = phi;
     kfunc.storeKInst(espidx, phi);
 }
@@ -3430,20 +3472,6 @@ void K_Function.buildWrapperFunc(Compiler asm) {
 }
 
 void K_Function.codegen(Compiler asm) {
-    Value[] wvargs = asm.wrapperfunc.getArguments();
-    Type[] innerArgsTy = [wvargs[0].getType(), wvargs[1].getType(), wvargs[2].getType()];
-
-    foreach(K_ARGUMENT inst in funcargs) {
-        innerArgsTy.add(asm.convertType(inst.type));
-    }
-    Type innerRetTy = null;
-    if (asm.retclass != null && asm.retclass != Void) {
-        innerRetTy = asm.convertType(asm.retclass);
-    } else {
-        innerRetTy = Type.getVoidTy();
-    }
-    FunctionType innerFuncTy = FunctionType.get(innerRetTy, innerArgsTy, false);
-    asm.innerfunc = Function.create(asm.mtd.toString() + "_inner", innerFuncTy, asm.m);
     Array<Value> args = asm.innerfunc.getArguments();
     Value old_ctx = asm.ctx;
     Value old_sfp = asm.sfp;
@@ -3672,6 +3700,48 @@ void K_Function.codegen(Compiler asm) {
 @Override void K_CALL.codegen(Compiler asm) {
     Value func;
     Value[] vargs;
+    if (asm.compiled_methods[this.op.fname] != null) {
+        Value thisidx = ConstantInt.get(asm.intTy, op.thisidx);
+        Value sfp = asm.builder.createGEP1(asm.sfp, thisidx);
+        Value vrix = ConstantInt.get(asm.intTy, op.rix);
+        vargs = [asm.ctx, sfp, vrix];
+        for (int i = 0; i < args.size; i++) {
+            vargs.add(args[i].getLLVMValue(asm));
+        }
+        asm.shiftesp(op.espshift);
+        func_list = asm.compiled_methods[this.op.fname];
+        boolean check_overload = true;
+        K_Function cfunc = null;
+        foreach (K_Function f in func_list) {
+            K_ARGUMENT[] funcargs = f.funcargs;
+            if (funcargs.size == args.size) {
+                for (int i=0; i < funcargs.size; i++) {
+                    if (funcargs[i].type != args[i].type) {
+                        check_overload = false;
+                    }
+                }
+                if (check_overload) {
+                    cfunc = f;
+                    //print f.mtdName, cfunc.mtdName;
+                    break;
+                }
+            }
+        }
+        if (check_overload) {
+            func = cfunc.func;
+            //Function f = cfunc.func;
+            //print f.getArguments().size;
+            //print vargs.size;
+            //print cfunc.mtdName;
+            Value ret = asm.builder.createCall(func, vargs);
+            if (type != null/*void*/) {
+                setLLVMValue(asm, ret);
+            }
+            return;
+        } else {
+            print "**WARN** compiled_methods call failed";
+        }
+    }
     if (op.ftype != FUNC_FASTCALL) {
         func = ConstantInt.get(asm.intTy, op.mtdNC);
         func = asm.builder.createIntToPtr(func, asm.ktype["methodPtrTy"]);
