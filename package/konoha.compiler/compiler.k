@@ -52,6 +52,8 @@ KFLAG_PF_LINE      = (1<<6);
 KFLAG_PF_BREAK     = (1<<7);
 
 NOT_SCAST = -1;
+LLVM_ENABLE_SAFEPOINT = true;
+LLVM_ENABLE_OPT = true;
 
 @public boolean Class.isUnboxType() {
     if (this == Int) {
@@ -1883,21 +1885,25 @@ void Compiler.emit(Method mtd) {
         pm = new FunctionPassManager(m);
         pm.add(ee.getTargetData());
         pm.add(LLVM.createVerifierPass());
-        pm.add(LLVM.createTypeBasedAliasAnalysisPass());
-        pm.add(LLVM.createBasicAliasAnalysisPass());
-        //pm.add(LLVM.createFunctionInliningPass(75/*-Os*/));
-        pm.add(LLVM.createGVNPass());
-        pm.add(LLVM.createSCCPPass());
+        if (LLVM_ENABLE_OPT) {
+            pm.add(LLVM.createTypeBasedAliasAnalysisPass());
+            pm.add(LLVM.createBasicAliasAnalysisPass());
+            //pm.add(LLVM.createFunctionInliningPass(75/*-Os*/));
+            pm.add(LLVM.createGVNPass());
+            pm.add(LLVM.createSCCPPass());
+        }
         pm.add(LLVM.createCFGSimplificationPass());
-        pm.add(LLVM.createScalarReplAggregatesPass());
-        pm.add(LLVM.createConstantPropagationPass());
-        pm.add(LLVM.createEarlyCSEPass());
-        pm.add(LLVM.createLowerExpectIntrinsicPass());
-        pm.add(LLVM.createPromoteMemoryToRegisterPass());
-        pm.add(LLVM.createInstructionCombiningPass());
-        pm.add(LLVM.createReassociatePass());
-        pm.add(LLVM.createCFGSimplificationPass());
-        pm.add(LLVM.createDeadStoreEliminationPass());
+        if (LLVM_ENABLE_OPT) {
+            pm.add(LLVM.createScalarReplAggregatesPass());
+            pm.add(LLVM.createConstantPropagationPass());
+            pm.add(LLVM.createEarlyCSEPass());
+            pm.add(LLVM.createLowerExpectIntrinsicPass());
+            pm.add(LLVM.createPromoteMemoryToRegisterPass());
+            pm.add(LLVM.createInstructionCombiningPass());
+            pm.add(LLVM.createReassociatePass());
+            pm.add(LLVM.createCFGSimplificationPass());
+            pm.add(LLVM.createDeadStoreEliminationPass());
+        }
     }
 
     for (int i = 0; i < kfunc.const_table.size; i++) {
@@ -1915,10 +1921,10 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
-    this.dump(DEBUG);
     if (!kfunc.isUndeveloped()) {
         pm.doInitialization();
         pm.run(func);
+        this.dump(DEBUG);
         mtd.setFunction(ee.getPointerToFunction(func));
     }
 }
@@ -3395,24 +3401,26 @@ void Compiler.constructKonohaTypes() {
 }
 void K_BasicBlock.codegen(Compiler asm) {
     int idx = this.bbidx;
-    Value vsafepoint = asm.builder.createStructGEP(asm.ctx, 0);
-    vsafepoint = asm.builder.createLoad(vsafepoint);
-    BasicBlock bbThen = BasicBlock.create(asm.func);
-    Value cond = asm.builder.createICmpEQ(vsafepoint, ConstantInt.get(asm.intTy, 1));
-    asm.builder.createCondBr(cond, bbThen, asm.bblist2[idx]);
-    asm.builder.setInsertPoint(bbThen);
-    asm.shiftesp(this.safepoint);
-    Type fType = asm.ktype["safeptmethodPtrTy"];
-    Value vfunc = ConstantInt.get(asm.intTy, asm.safePointMtd);
-    vfunc = asm.builder.CreateIntToPtr(vfunc, fType);
-    Value vctx  = asm.ctx;
-    Value vsfp  = asm.builder.createConstGEP1_32(asm.sfp, this.safepoint);
-    Value vstr  = asm.builder.createGlobalString("%d\n");
-    vstr = asm.builder.createBitCast(vstr, Type.getInt8PtrTy());
-    Value vline = ConstantInt.get(asm.intTy, 0);
-    Value[] args = [vctx, vsfp, vstr, vline];
-    asm.builder.createCall(vfunc, args);
-    asm.builder.createBr(asm.bblist2[idx]);
+    if (LLVM_ENABLE_SAFEPOINT) {
+        Value vsafepoint = asm.builder.createStructGEP(asm.ctx, 0);
+        vsafepoint = asm.builder.createLoad(vsafepoint);
+        BasicBlock bbThen = BasicBlock.create(asm.func);
+        Value cond = asm.builder.createICmpEQ(vsafepoint, ConstantInt.get(asm.intTy, 1));
+        asm.builder.createCondBr(cond, bbThen, asm.bblist2[idx]);
+        asm.builder.setInsertPoint(bbThen);
+        asm.shiftesp(this.safepoint);
+        Type fType = asm.ktype["safeptmethodPtrTy"];
+        Value vfunc = ConstantInt.get(asm.intTy, asm.safePointMtd);
+        vfunc = asm.builder.CreateIntToPtr(vfunc, fType);
+        Value vctx  = asm.ctx;
+        Value vsfp  = asm.builder.createConstGEP1_32(asm.sfp, this.safepoint);
+        Value vstr  = asm.builder.createGlobalString("%d\n");
+        vstr = asm.builder.createBitCast(vstr, Type.getInt8PtrTy());
+        Value vline = ConstantInt.get(asm.intTy, 0);
+        Value[] args = [vctx, vsfp, vstr, vline];
+        asm.builder.createCall(vfunc, args);
+        asm.builder.createBr(asm.bblist2[idx]);
+    }
     asm.builder.setInsertPoint(asm.bblist2[idx]);
 }
 void K_Function.codegen(Compiler asm) {
@@ -3689,14 +3697,21 @@ void K_Function.codegen(Compiler asm) {
 }
 @Override void K_NEW.codegen(Compiler asm) {
     Type methodTy = asm.ktype["trmethodPtrTy"];
-    Value func = ConstantInt.get(asm.intTy, op.ftr);
-    func = asm.builder.CreateIntToPtr(func, methodTy);
+    Value func;
+    if (op.ftr == Stmt.NEW) {
+        FunctionType fnTy = (FunctionType) asm.ktype["trmethodTy"];
+        DynamicLibrary.loadLibraryPermanently("compiler.dylib");
+        Function tr_new = asm.m.getOrInsertFunction("TR_NEW", fnTy);
+        func  = (Value) tr_new;
+    } else {
+        func = ConstantInt.get(asm.intTy, op.ftr);
+        func = asm.builder.CreateIntToPtr(func, methodTy);
+    }
     Value vb = ConstantInt.get(asm.intTy, kvalue.idx);
     vb = asm.builder.createGEP1(asm.sfp, vb);
     Value rix = ConstantInt.get(asm.intTy, op.rix);
     Value cid = ConstantInt.get(asm.intTy, op.cTBL);
-    Value [] vargs = [asm.ctx, vb, rix, cid];
-    asm.builder.createCall(func, vargs);
+    asm.builder.createCall4(func, asm.ctx, vb, rix, cid);
     Value v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), kvalue.idx + op.rix);
     setLLVMValue(asm, v);
 }
