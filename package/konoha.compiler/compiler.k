@@ -2338,52 +2338,52 @@ void Compiler.asmYIELD(Stmt stmt) {
 }
 void Compiler.asmPRINT(Stmt stmt, int flag) {
     print stmt, flag;
-    //int espidx = stmt.getESPIDX();
-    //for(int i = 0; i < stmt.getStmtSize(); i++) {
-    //    Token tkn = stmt.getT(i);
-    //    String data = tkn.getD();
-    //    if(tkn.getTT() != Token.TT_CONST || data.class != String {
-    //        Tn_asm(ctx, stmt, i, espidx + i);
-    //    }
-    //}
-    //for(int i = 0; i < stmt.getStmtSize(); i++) {
-    //    int mask = 0;
-    //    String msg = "";
-    //    L_REDO:;
-    //    kTerm *tkn = tkNN(stmt, i);
-    //    if(i == (long)DP(stmt)->size - 1) {
-    //        mask |= KFLAG_PF_EOL;
-    //        if(Stmt_isBreakPoint(stmt)) {
-    //            mask |= KFLAG_PF_BREAK;
-    //        }
-    //    }
-    //    if(TT_(tkn) == TT_CONST && IS_String((tkn)->data)) {
-    //        if(Term_isPNAME(tkn)) { /* name= */
-    //            msg = (tkn)->text;
-    //            mask |= KFLAG_PF_NAME; i++;
-    //            goto L_REDO;
-    //        }
-    //        DBG_ASSERT(stmt->uline == ctx->gma->uline);
-    //        ASM(P, _PRINTm, flag | mask, (tkn)->text, 0);
-    //        flag = KFLAG_PF_NCOMMA;
-    //    }
-    //    else {
-    //        kclass_t cid = Tn_cid(stmt, i);
-    //        if(IS_Tint(cid)) {
-    //            ASM(P, _PRINTi, flag | mask, msg, espidx+i);
-    //        }
-    //        else if(IS_Tfloat(cid)) {
-    //            ASM(P, _PRINTf, flag | mask, msg, espidx+i);
-    //        }
-    //        else if(cid == CLASS_Boolean) {
-    //            ASM(P, _PRINTb, flag | mask, msg, espidx+i);
-    //        }
-    //        else {
-    //            ASM(P, _PRINT, flag | mask, msg, espidx+i);
-    //        }
-    //        flag=0;
-    //    }
-    //}
+    int espidx = stmt.getESPIDX();
+    for(int i = 0; i < stmt.getStmtSize(); i++) {
+        Token tkn = stmt.getT(i);
+        Object data = tkn.getD();
+        if(tkn.getTT() != Token.TT_CONST || data.class != String) {
+            asm(stmt.getS(i), stmt.getS(i).toToken(), espidx + i);
+        }
+    }
+    int mask = 0;
+    String msg = "";
+    for(int i = 0; i < stmt.getStmtSize(); i++) {
+        Token tkn = stmt.getT(i);
+        if(i == stmt.getStmtSize() - 1) {
+            mask = mask | KFLAG_PF_EOL;
+            //if(Stmt_isBreakPoint(stmt)) {
+            //    mask = mask | KFLAG_PF_BREAK;
+            //}
+        }
+        if(tkn.getTT() == Token.TT_CONST && String == (tkn).getD().class) {
+            if(tkn.isPNAME()) { /* name= */
+                msg = (tkn).getText();
+                mask |= KFLAG_PF_NAME;
+                continue;
+            }
+            TODO_ASM(P, _PRINTm, flag | mask, (tkn).getText(), 0);
+            flag = KFLAG_PF_NCOMMA;
+        }
+        else {
+            Class c = stmt.getT(i).getClass();
+            if(c == Int) {
+                TODO_ASM(P, _PRINTi, flag | mask, msg, espidx+i);
+            }
+            else if(c == Float) {
+                TODO_ASM(P, _PRINTf, flag | mask, msg, espidx+i);
+            }
+            else if(c == Boolean) {
+                TODO_ASM(P, _PRINTb, flag | mask, msg, espidx+i);
+            }
+            else {
+                TODO_ASM(P, _PRINT, flag | mask, msg, espidx+i);
+            }
+            flag = 0;
+        }
+        mask = 0;
+        msg  = "";
+    }
 }
 void Compiler.asmASSURE(Stmt stmt, Stmt stmtInit, Stmt stmtBody) {
     print "assure";
