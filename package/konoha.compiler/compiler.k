@@ -77,7 +77,8 @@ class Compiler {
     ExecutionEngine ee;
     IRBuilder builder;
     Array<dynamic> const_table;
-    Function  func;
+    Function  wrapperfunc;
+    Function  innerfunc;
     Value     ctx;
     Value     sfp;
     Value     rix;
@@ -1482,7 +1483,9 @@ class K_LDMTD extends K_Inst {
 }
 class K_ARGUMENTop extends K_Opcode {
     int argidx;
+    boolean inner;
     K_ARGUMENTop(int argidx) {
+        this.inner = true;
         this.argidx = argidx;
     }
 }
@@ -1526,10 +1529,10 @@ class SFX {
 @Native Class Compiler.gammaGetThiscid();
 void Compiler.init(Method mtd) {
     this.mtd = mtd;
-    func = Function.create(mtd.toString(), this.funcTy, m);
+    wrapperfunc = Function.create(mtd.toString(), this.funcTy, m);
     bblist  = [];
     bblist2 = [];
-    Array<Value> vargs = func.getArguments();
+    Array<Value> vargs = wrapperfunc.getArguments();
     if (DEBUG) {
         vargs[0].setName("ctx");
         vargs[1].setName("sfp");
@@ -1880,7 +1883,8 @@ void Compiler.addConstTable(dynamic val) {
 void Compiler.dump(Boolean dump) {
     //print const_table;
     if (LLVM_ENABLE_FUNCTION_DUMP) {
-        func.dump();
+        wrapperfunc.dump();
+        innerfunc.dump();
     }
 }
 void Compiler.emit(Method mtd) {
@@ -1924,11 +1928,14 @@ void Compiler.emit(Method mtd) {
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
+    wrapperfunc.dump();
+    innerfunc.dump();
     this.dump(DEBUG);
     if (!kfunc.isUndeveloped()) {
         pm.doInitialization();
-        pm.run(func);
-        mtd.setFunction(ee.getPointerToFunction(func));
+        pm.run(wrapperfunc);
+        pm.run(innerfunc);
+        mtd.setFunction(ee.getPointerToFunction(wrapperfunc));
     }
 }
 void Compiler.asm_mov(Token tka, Token tkb, int espidx) {
@@ -3407,7 +3414,7 @@ void K_BasicBlock.codegen(Compiler asm) {
     if (LLVM_ENABLE_SAFEPOINT) {
         Value vsafepoint = asm.builder.createStructGEP(asm.ctx, 0);
         vsafepoint = asm.builder.createLoad(vsafepoint);
-        BasicBlock bbThen = BasicBlock.create(asm.func);
+        BasicBlock bbThen = BasicBlock.create(asm.innerfunc);
         Value cond = asm.builder.createICmpEQ(vsafepoint, ConstantInt.get(asm.intTy, 1));
         asm.builder.createCondBr(cond, bbThen, asm.bblist2[idx]);
         asm.builder.setInsertPoint(bbThen);
@@ -3426,12 +3433,58 @@ void K_BasicBlock.codegen(Compiler asm) {
     }
     asm.builder.setInsertPoint(asm.bblist2[idx]);
 }
+
+void K_Function.buildWrapperFunc(Compiler asm) {
+    BasicBlock bb = BasicBlock.create(asm.wrapperfunc);
+    asm.builder = new IRBuilder(bb);
+    asm.builder.setInsertPoint(bb);
+    Array<Value> wvargs = asm.wrapperfunc.getArguments();
+    Value[] vargs = [wvargs[0], wvargs[1], wvargs[2]];
+    foreach(K_Inst inst in funcargs) {
+        inst.value = null;
+        inst.codegen(asm);
+        vargs.add(inst.getLLVMValue(asm));
+    }
+    Value res = asm.builder.createCall(asm.innerfunc, vargs);
+    Type innerRetTy = null;
+    if (asm.retclass != null && asm.retclass != Void) {
+        innerRetTy = asm.convertType(asm.retclass);
+        asm.builder.createStoreValueToSfp(asm.sfp, innerRetTy, K_RTNIDX, res);
+    } else {
+        innerRetTy = Type.getVoidTy();
+    }
+    asm.builder.createRetVoid();
+}
+
 void K_Function.codegen(Compiler asm) {
+    Array<Value> wvargs = asm.wrapperfunc.getArguments();
+    print wvargs;
+    Type[] innerArgsTy = [wvargs[0].getType(), wvargs[1].getType(), wvargs[2].getType()];
+
+    foreach(K_Inst inst in funcargs) {
+        innerArgsTy.add(asm.convertType(inst.type));
+    }
+    Type innerRetTy = null;
+    if (asm.retclass != null && asm.retclass != Void) {
+        innerRetTy = asm.convertType(asm.retclass);
+    } else {
+        innerRetTy = Type.getVoidTy();
+    }
+    FunctionType innerFuncTy = FunctionType.get(innerRetTy, innerArgsTy, false);
+    asm.innerfunc = Function.create(asm.mtd.toString() + "_inner", innerFuncTy, asm.m);
+    Array<Value> args = asm.innerfunc.getArguments();
+    Value old_ctx = asm.ctx;
+    Value old_sfp = asm.sfp;
+    Value old_rix = asm.rix;
+    asm.ctx = args[0];
+    asm.sfp = args[1];
+    asm.rix = args[2];
+
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] != null) {
-            asm.bblist.add(BasicBlock.create(asm.func));
+            asm.bblist.add(BasicBlock.create(asm.innerfunc));
             if (bbs[i].safepoint != -1) {
-                asm.bblist2.add(BasicBlock.create(asm.func));
+                asm.bblist2.add(BasicBlock.create(asm.innerfunc));
             } else {
                 asm.bblist2.add(null);
             }
@@ -3453,7 +3506,7 @@ void K_Function.codegen(Compiler asm) {
             bbs[i].codegen(asm);
         }
         if (i == 0) {
-            foreach(K_Inst inst in funcargs) {
+            foreach (K_Inst inst in funcargs) {
                 inst.codegen(asm);
             }
         }
@@ -3461,6 +3514,11 @@ void K_Function.codegen(Compiler asm) {
             inst.codegen(asm);
         }
     }
+    asm.ctx = old_ctx;
+    asm.sfp = old_sfp;
+    asm.rix = old_rix;
+
+    buildWrapperFunc(asm);
 }
 @Override void K_ADD.codegen(Compiler asm) {
     Value v;
@@ -3803,13 +3861,27 @@ void K_Function.codegen(Compiler asm) {
     //asm.builder.createCall(func, vargs);
 }
 @Override void K_ARGUMENT.codegen(Compiler asm) {
-    Value v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), op.argidx);
+    Value v;
+    if (!op.inner) {
+        v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), op.argidx);
+    } else {
+        Value[] vargs = asm.innerfunc.getArguments();
+        if (DEBUG) {
+            print vargs.size, op.argidx, op.argidx+3, op.inner;
+            for (v in vargs) {
+                v.dump();
+            }
+        }
+        v = vargs[op.argidx+3];
+        op.inner = false;
+    }
     setLLVMValue(asm, v);
 }
 @Override void K_RET.codegen(Compiler asm) {
     if (op.inst0 != null) {
-        asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(op.inst0.type), K_RTNIDX, op.inst0.getLLVMValue(asm));
+        asm.builder.createRet(op.inst0.getLLVMValue());
+    } else {
+        asm.builder.createRetVoid();
     }
-    asm.builder.createRetVoid();
 }
 
