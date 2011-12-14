@@ -154,6 +154,11 @@ KMETHOD Token_getD(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
 	RETURN_(tk->data);
 }
+//## String Token.getText();
+KMETHOD Token_getText(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURN_(tk->text);
+}
 //## Class Token.getClass();
 KMETHOD Token_getTokenClass(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
@@ -162,9 +167,9 @@ KMETHOD Token_getTokenClass(CTX ctx, ksfp_t *sfp _RIX) {
 }
 //## int Token.getMn();
 KMETHOD Token_getMn(CTX ctx, ksfp_t *sfp _RIX) {
-    kTerm *tk = (kTerm*)sfp[0].o;
-    kmethodn_t mn = tk->mn;
-    RETURNi_(mn);
+	kTerm *tk = (kTerm*)sfp[0].o;
+	kmethodn_t mn = tk->mn;
+	RETURNi_(mn);
 }
 
 //## Token Stmt.toToken();
@@ -205,6 +210,7 @@ KMETHOD Method_toString(CTX ctx, ksfp_t *sfp _RIX)
 	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
 	RETURN_(CWB_newString(ctx, cwb, SPOL_POOLNEVER|SPOL_ASCII));
 }
+
 // Class Method.getMethodClass()
 KMETHOD Method_getMethodClass(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -228,7 +234,25 @@ KMETHOD Object_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
 //## int Object.getPtr() {
 KMETHOD Object_getPtr(CTX ctx, ksfp_t *sfp _RIX)
 {
-	RETURNi_((kint_t)sfp[0].o);
+	RETURNi_((kint_t)(long)sfp[0].o);
+}
+
+//## int Object.getFlag(int pos);
+KMETHOD Object_getFlag(CTX ctx, ksfp_t *sfp _RIX) {
+	kObject *o = sfp[0].o;
+	RETURNi_((kflag_t)(o)->h.magicflag);
+}
+
+//## boolean Token.getMemo();
+KMETHOD Token_getMemo(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURNb_(Term_isMEMO1(tk));
+}
+
+//## boolean Stmt.getMemo();
+KMETHOD Stmt_getMemo(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	RETURNb_(Stmt_isMemo1(stmt));
 }
 
 ///* ------------------------------------------------------------------------ */

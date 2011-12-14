@@ -81,6 +81,7 @@ class Charset extends String;
 @Public @Native Stmt Stmt.getS(int n);
 @Public @Native int Stmt.getStmtType();
 @Public @Native Object Token.getD();
+@Public @Native String Token.getText();
 @Public @Native Token Stmt.toToken();
 @Public @Native Stmt Stmt.getStmtPost();
 @Public @Native int Token.getTT();
@@ -90,6 +91,122 @@ class Charset extends String;
 @Public @Native int Token.getMn();
 @Public @Native int Object.getPtr();
 @Public @Native Class Method.getMethodClass();
+@Public @Native int Object.getFlag();
+@Public @Native boolean Token.getMemo();
+@Public @Native boolean Stmt.getMemo();
+// TT_BRACE, TT_PARENTHESIS, TT_BRANCET
+@Public boolean Token.isSAMELINE() {
+	return this.getMemo();
+}
+//@Public void Token.setSAMELINE(boolean b) {
+//	this.setMemo(b);
+//}
+
+// TT_NAME
+@Public boolean Token.isPNAME() {
+	return this.getMemo();
+}
+//@Public void Token.setPNAME(boolean b) {
+//	return this.setMemo(o, b);
+//}
+
+// TT_UNAME
+@Public boolean Token.isBYTE() {
+	return this.getMemo();
+}
+//@Public void Token.setBYTE(boolean b) {
+//	return this.setMemo(b);
+//}
+
+// TT_URN
+@Public boolean Token.isDYNAMIC() {
+	return this.getMemo();
+}
+//@Public void Token.setDYNAMIC(boolean b) {
+//	this.setMemo(b);
+//}
+
+// TT_LVAR,
+@Public boolean Token.isSUPER() {
+	return this.getMemo();
+}
+//@Public void Token.setSUPER(boolean b) {
+//	this.setMemo(b)
+//}
+
+///* STT_METHOD*/
+//@Public boolean StmtMETHOD_isVARGs() {
+//	return this.getMemo();
+//}
+//@Public boolean StmtMETHOD_setVARGs(boolean b) {
+//	Stmt.setMemo1(boolean b);
+//}
+//@Public boolean StmtMETHOD_isFFI() {
+//	Stmt.getMemo2();
+//}
+//@Public boolean StmtMETHOD_setFFI(boolean b) {
+//	Stmt.setMemo2(boolean b);
+//}
+
+/* STT_TCAST*/
+@Public boolean Stmt.isTRANS() {
+	return this.getMemo();
+}
+//@Public void Stmt.setTRANS(boolean b) {
+//	Stmt.setMemo1(boolean b);
+//}
+//@Public boolean Stmt.isDOWNCAST() {
+//	Stmt.getMemo2();
+//}
+//@Public void Stmt.setDOWNCAST(boolean b) {
+//	Stmt.setMemo2(boolean b);
+//}
+
+/* STT_CALL*/
+@Public boolean Stmt.isTAILRECURSION() {
+	return this.getMemo();
+}
+//@Public void Stmt.setTAILRECURSION(boolean b) {
+//	Stmt.setMemo1(boolean b);
+//}
+//@Public boolean Stmt.isCLASSCONSTDEF() {
+//	Stmt.getMemo2();
+//}
+//@Public void Stmt.setCLASSCONSTDEF(boolean b) {
+//	Stmt.setMemo2(boolean b);
+//}
+
+/* STT_FUNCCALL*/
+@Public boolean Stmt.isDYNCALL() {
+	return this.getMemo();
+}
+//@Public void Stmt.setDYNCALL(boolean b) {
+//	Stmt.setMemo1(boolean b);
+//}
+
+/* STT_PRINT */
+@Public boolean Stmt.isBreakPoint() {
+	return this.getMemo();
+}
+//@Public void Stmt.setBreakPoint(boolean b) {
+//	Stmt.setMemo1(boolean b);
+//}
+
+/* STT_RETURN */
+@Public boolean Stmt.isImplicit() {
+	return this.getMemo();
+}
+//@Public void Stmt.setImplicit(boolean b) {
+//	Stmt.setMemo1(boolean b);
+//}
+
+/* STT_LSEND */
+@Public boolean Stmt.isLSHIFT() {
+	return this.getMemo();
+}
+//@Public void Stmt.setLSHIFT(boolean b) {
+//	Stmt.setMemo1(boolean b);
+//}
 
 /* *****************
 @Native class Symbol;
