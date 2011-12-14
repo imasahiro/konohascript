@@ -2,7 +2,7 @@
  * fibonacci 40
  */
 using konoha.compiler.*;
-N = 36;
+N = 10;
 
 int fibo(int n) {
     if (n < 3) {
@@ -35,16 +35,17 @@ String string_fibo(int n) {
 }
 
 void test1() {
-    OUT.println("fibo :", fibo(N));
+    OUT.println("fibo :int="+ fibo(N));
 }
 void test2() {
-    OUT.println("fibo :", float_fibo(N));
+    OUT.println("fibo :float="+ float_fibo(N));
 }
 void test3() {
-    OUT.println("fibo :", string_fibo(N).size);
+    OUT.println("fibo :string="+ string_fibo(N).size);
 }
 void test4() {
-    OUT.println("fibo :", dyn_fibo(N));
+    //TODO
+    //OUT.println("fibo :dyn="+ dyn_fibo(N));
 }
 void main (String[] args) {
     test1();

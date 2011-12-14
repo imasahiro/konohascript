@@ -4,7 +4,7 @@
  */
 
 using konoha.compiler.*;
-N=1000000;
+N=10;
 
 // these are the opcodes for the interpreted language
 JUMP_IF_A  = 1;
@@ -21,35 +21,35 @@ int interpret(Int[] bytecode, int a) {
     while (true) {
         int opcode = bytecode[pc];
         pc += 1;
-        switch (opcode) {
-            case JUMP_IF_A:
-                int target = bytecode[pc];
-                pc += 1;
-                if (a > 0) {
-                    pc = target;
-                }
-                break;
-            case MOV_A_R:
-                int n = bytecode[pc];
-                pc += 1;
-                regs[n] = a;
-                break;
-            case MOV_R_A:
-                int n = bytecode[pc];
-                pc += 1;
-                a = regs[n];
-                break;
-            case ADD_R_TO_A:
-                int n = bytecode[pc];
-                pc += 1;
-                a += regs[n];
-                break;
-            case DECR_A:
-                a -= 1;
-                break;
-            case RETURN_A:
-                return a;
-                break;
+        if (opcode == JUMP_IF_A) {
+            int target = bytecode[pc];
+            pc += 1;
+            if (a > 0) {
+                pc = target;
+            }
+        }
+        else if (opcode == MOV_A_R) {
+            int n = bytecode[pc];
+            pc += 1;
+            regs[n] = a;
+
+        }
+        else if (opcode == MOV_R_A) {
+            int n = bytecode[pc];
+            pc += 1;
+            a = regs[n];
+
+        }
+        else if (opcode == ADD_R_TO_A) {
+            int n = bytecode[pc];
+            pc += 1;
+            a += regs[n];
+        }
+        else if (opcode == DECR_A) {
+            a -= 1;
+        }
+        else if (opcode == RETURN_A) {
+            return a;
         }
     }
     return 0;

@@ -4,6 +4,6 @@ int fib(int n) {
     else return fib(n-1) + fib(n-2);
 }
 void main() {
-    OUT.println(fib(40));
+    OUT.println(fib(10));
     return;
 }

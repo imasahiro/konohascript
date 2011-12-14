@@ -2,7 +2,7 @@
  * code eval
  */
 using konoha.compiler.*;
-N=1000;
+N=10;
 
 class A {}
 TEMPLATE = """
@@ -11,11 +11,11 @@ boolean A.test{{n}} (boolean b1, boolean b2) {
 }
 """;
 
-boolean A.test9999(boolean b1, boolean b2);
+boolean A.test9(boolean b1, boolean b2);
 void main(String[] args) {
     for (int i=0; i < N; i++) {
         eval(TEMPLATE.replace("{{n}}", (to String)i));
     }
-    OUT.println(A.test9999(true, true) == true);
+    OUT.println(A.test9(true, true) == true);
 }
 
