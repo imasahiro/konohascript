@@ -3118,7 +3118,6 @@ KMETHOD LLVM_createVerifierPass(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //FunctionType Intrinsic::getType(int id, Type[] args);
-//Function     Intrinsic::getDeclaration(Module m, int id, args_typeType[] args);
 KMETHOD Intrinsic_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
 	Intrinsic::ID id = (Intrinsic::ID) sfp[1].ivalue;
@@ -3130,7 +3129,7 @@ KMETHOD Intrinsic_getType(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//Function     Intrinsic::getDeclaration(Module m, Intrinsic::sin, args_type);
+//Function     Intrinsic::getDeclaration(Module m, int id, Type[] args);
 KMETHOD Intrinsic_getDeclaration(CTX ctx, ksfp_t *sfp _RIX)
 {
 	Module *m = konoha::object_cast<Module *>(sfp[1].p);

@@ -56,7 +56,9 @@ NOT_SCAST = -1;
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
 LLVM_ENABLE_FUNCTION_DUMP = false;
+LLVM_ENABLE_MODULE_DUMP = false;
 LLVM_ENABLE_DEBUG = false;
+LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
 
 @public boolean Class.isUnboxType() {
     if (this == Int) {
@@ -105,6 +107,8 @@ class Compiler {
     FunctionPassManager fpm;
     Map<String, K_Function[]> compiled_methods;
 
+    Map<String, Type> user_type;
+    Map<String, Function> intrinsic_methods;
     @Hidden Compiler() {
         this.m = new Module("konoha");
         this.ee = m.createExecutionEngine();
@@ -151,6 +155,7 @@ class Compiler {
             ];
         this.fpm = null;
         this.compiled_methods = {};
+        this.user_type = {};
     }
 };
 
@@ -214,6 +219,7 @@ class K_Inst {
     int defidx;
     Class type;
     Value value;
+    Value cached_value;
 
     /*for callInst*/
     Array<K_Inst> args;
@@ -1387,6 +1393,7 @@ class K_xMOVop extends K_Opcode {
 }
 class K_xMOV extends K_Inst {
     K_xMOVop op;
+    Value field_access_cached;
     K_xMOV(K_xMOVop op, int idx) {
         this.type = op.inst0.type;
         this.op = op;
@@ -1575,6 +1582,52 @@ void Compiler.init(Method mtd) {
     }
     this.compiled_methods[mtdName].add(kfunc);
 }
+
+void Compiler.register_user_class(Class c, String cname)
+{
+    Class[] class_fields = c.getFieldClasses();
+    Type[] fields = [];
+
+    if (cname.startsWith("konoha.") || "Script" in? cname) {
+        return;
+    }
+    StructType klassTy = StructType.create(null, cname);/*create no-body StructType*/
+    Type objectPtrTy = PointerType.get(klassTy);
+    this.user_type[cname] = objectPtrTy;
+
+    foreach (Class klass in class_fields) {
+        String kname = (to String) klass;
+        if (klass == Int) {
+            fields.add(this.intTy);
+        }
+        else if (klass == Float) {
+            fields.add(this.floatTy);
+        }
+        else if (klass == Boolean) {
+            fields.add(this.boolTy);
+        }
+        else if (klass == String) {
+            fields.add(ktype["stringPtrTy"]);
+        }
+        else if (kname.startsWith("konoha.Array")) {
+            fields.add(ktype["arrayPtrTy"]);
+        }
+        else if (kname in? user_type) {
+            fields.add(user_type[kname]);
+        }
+        else {
+            fields.add(ktype["objectPtrTy"]);
+        }
+    }
+
+    print fields.size, cname;
+    Type klassFieldTy = StructType.create(fields, cname+"_field", false);
+    Type fieldPtrTy   = PointerType.get(klassFieldTy);
+    fields = [ktype["hobjectTy"], fieldPtrTy];
+    assert(klassTy.isOpaque() == true);
+    klassTy.setBody(fields, false);
+}
+
 void Compiler.addSafePoint(int espidx) {
     if (kfunc.curBB.safepoint == -1) {
         kfunc.curBB.safepoint = espidx;
@@ -1889,24 +1942,40 @@ void Compiler.emit(Method mtd) {
         fpm = new FunctionPassManager(m);
         //fpm.add(ee.getTargetData());
         fpm.add(LLVM.createVerifierPass());
-        if (LLVM_ENABLE_OPT) {
-            fpm.add(ee.getTargetData());
-            fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
-            fpm.add(LLVM.createBasicAliasAnalysisPass());
-            fpm.add(LLVM.createGVNPass());
-            fpm.add(LLVM.createSCCPPass());
-        }
+        fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
+        fpm.add(LLVM.createBasicAliasAnalysisPass());
         fpm.add(LLVM.createCFGSimplificationPass());
-        if (LLVM_ENABLE_OPT) {
-            fpm.add(LLVM.createScalarReplAggregatesPass());
-            fpm.add(LLVM.createConstantPropagationPass());
-            fpm.add(LLVM.createEarlyCSEPass());
-            fpm.add(LLVM.createLowerExpectIntrinsicPass());
-            fpm.add(LLVM.createPromoteMemoryToRegisterPass());
-            fpm.add(LLVM.createInstructionCombiningPass());
-            fpm.add(LLVM.createReassociatePass());
-            fpm.add(LLVM.createCFGSimplificationPass());
-            fpm.add(LLVM.createDeadStoreEliminationPass());
+        fpm.add(LLVM.createScalarReplAggregatesPass());
+        fpm.add(LLVM.createEarlyCSEPass());
+        fpm.add(LLVM.createLowerExpectIntrinsicPass());
+
+    }
+    if (LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
+        if (this.intrinsic_methods == null) {
+            this.intrinsic_methods = {};
+            Type[] args = [floatTy];
+            String[] intrinsic_name = [
+                "konoha.math.Math.sqrt",
+                "konoha.math.Math.exp",
+                "konoha.math.Math.log10",
+                "konoha.math.Math.log",
+                "konoha.math.Math.sin",
+                "konoha.math.Math.cos"];
+            Int[] intrinsic_id = [
+                Intrinsic.Sqrt,
+                Intrinsic.Exp,
+                Intrinsic.Log10,
+                Intrinsic.Log,
+                Intrinsic.Sin,
+                Intrinsic.Cos];
+            for (int i=0; i < intrinsic_id.size; i++) {
+                Function f = Intrinsic.getDeclaration(this.m, intrinsic_id[i], args);
+                intrinsic_methods[intrinsic_name[i]] = f;
+            }
+            Int    id2  = Intrinsic.Pow;
+            String name = "konoha.math.Math.pow";
+            Function f = Intrinsic.getDeclaration(this.m, id2, args);
+            this.intrinsic_methods[name] = f;
         }
     }
     for (int i = 0; i < kfunc.const_table.size; i++) {
@@ -1931,12 +2000,34 @@ void Compiler.emit(Method mtd) {
         if (mtd.getName() == "") {
         }
         else if (mtd.toString().endsWith("Script.main")) {
+            //print this.const_table;
             this.compiled_methods = {};
-            //mpm = new PassManager();
-            //mpm.add(LLVM.createFunctionInliningPass(75/*-Os*/));
-            //PassManagerBuilder builder = new PassManagerBuilder();
-            //builder.populateModulePassManager(mpm);
-            //mpm.run(m);
+            mpm = new PassManager();
+            mpm.add(LLVM.createFunctionAttrsPass());
+            mpm.add(LLVM.createInternalizePass(true));
+            mpm.add(LLVM.createIPSCCPPass());
+            mpm.add(LLVM.createGlobalOptimizerPass());
+            mpm.add(LLVM.createConstantMergePass());
+            mpm.add(LLVM.createInstructionCombiningPass());
+            mpm.add(LLVM.createGlobalOptimizerPass());
+            mpm.add(LLVM.createGlobalDCEPass());
+            mpm.add(LLVM.createInstructionCombiningPass());
+            mpm.add(LLVM.createJumpThreadingPass());
+            mpm.add(LLVM.createScalarReplAggregatesPass());
+            mpm.add(LLVM.createFunctionAttrsPass());
+            mpm.add(LLVM.createGlobalsModRefPass());
+            mpm.add(LLVM.createLICMPass());
+            mpm.add(LLVM.createGVNPass());
+            mpm.add(LLVM.createMemCpyOptPass());
+            mpm.add(LLVM.createDeadStoreEliminationPass());
+            mpm.add(LLVM.createInstructionCombiningPass());
+            mpm.add(LLVM.createJumpThreadingPass());
+            mpm.add(LLVM.createCFGSimplificationPass());
+            mpm.add(LLVM.createGlobalDCEPass());
+            mpm.run(m);
+            if (LLVM_ENABLE_MODULE_DUMP) {
+                this.m.dump();
+            }
         }
         mtd.setFunction(ee.getPointerToFunction(wrapperfunc));
     }
@@ -3045,6 +3136,7 @@ void Compiler.asmW1(Stmt stmt, int espidx, Method mtd, Token streamTk, Stmt expr
     print streamTk;
     print expr;
 }
+
 void Compiler.asmFMTCALL(Stmt stmt, int espidx) {
     /* TODO */
     print "fmtcall todo";
@@ -3084,6 +3176,7 @@ void Compiler.constructKonohaTypes() {
     fields.add(int8PtrTy);
     Type hObjectTy = StructType.create(fields, "hObject", false);
     //m.addTypeName("hObject", hObjectTy);
+    ktype["hobjectTy"] = hObjectTy;
 
     fields = [];
     fields.add(hObjectTy);
@@ -3743,6 +3836,20 @@ void K_Function.codegen(Compiler asm) {
             return;
         } else {
             print "**WARN** compiled_methods call failed";
+        }
+    }
+    if (LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
+        if (asm.intrinsic_methods[this.op.fname] != null) {
+            Function func = asm.intrinsic_methods[this.op.fname];
+            vargs = [];
+            for (int i = 0; i < |args|; i++) {
+                vargs.add(args[i].getLLVMValue(asm));
+            }
+            Value ret = asm.builder.createCall(func, vargs);
+            if (type != null/*void*/) {
+                setLLVMValue(asm, ret);
+            }
+            return;
         }
     }
     if (op.ftype != FUNC_FASTCALL) {

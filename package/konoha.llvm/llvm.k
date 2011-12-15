@@ -378,3 +378,5 @@ class ConstantFP;
 @Static @Native ImmutablePass LLVM.createBasicAliasAnalysisPass();
 @Static @Native FunctionPass LLVM.createVerifierPass();
 
+FunctionType Intrinsic.getType(int id, Type[] args);
+Function     Intrinsic.getDeclaration(Module m, int id, Type[] args);
