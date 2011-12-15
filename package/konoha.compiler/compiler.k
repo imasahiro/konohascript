@@ -32,6 +32,7 @@ include "lib:gluelink";
 
 DEBUG = false;
 USE_NONSSA = false;
+//USE_NONSSA = true;
 //DEBUG = true;
 DUMP = true;
 //DUMP = true;
@@ -512,7 +513,7 @@ class K_Function {
             innerArgsTy.add(asm.convertType(inst.type));
         }
         Type innerRetTy = null;
-        if (asm.retclass != null && asm.retclass != Void) {
+        if (asm.retclass != null) {
             innerRetTy = asm.convertType(asm.retclass);
         } else {
             innerRetTy = Type.getVoidTy();
@@ -2878,14 +2879,14 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
     for (int i = 0; i < size; i++) {
         bbNext = new K_BasicBlock(kfunc.bbs.size);
         kfunc.addBB(bbNext, kfunc.bbs.size);
-        asm(stmt.getS(i), stmt.getS(i).toToken(), espidx + i);
+        asm(stmt.getS(i), stmt.getS(i).toToken(), espidx);
         tupleList.add((kfunc.curBB, cloneRegTable()));
-        K_Inst cond = kfunc.getKInst(espidx + i);
+        K_Inst cond = kfunc.getKInst(espidx);
         K_Inst inst = new K_COND(new K_CONDop(cond, bbNext.bbidx, bbMerge.bbidx));
         kfunc.curBB.insts.add(inst);
         kfunc.curBB = bbNext;
     }
-    tupleList = tupleList[0 to |tupleList|-2];
+    tupleList.add((kfunc.curBB, cloneRegTable()));
     K_Inst jmp = new K_JMP(new K_JMPop(bbMerge.bbidx, "merge"));
     kfunc.curBB.insts.add(jmp);
     kfunc.curBB = bbMerge;
@@ -2894,17 +2895,16 @@ void Compiler.asmAND(Stmt stmt, int espidx) {
     kfunc.register_table = regTableCont;
 
     K_PHI phi = new K_PHI(espidx);
-    for (int i = kfunc.bbs.size-1; i > bbssize; i--) {
+    for (int i = |tupleList|-1; i >= 0; i--) {
         if (DEBUG) {
-            print i, bbNext.bbidx, bbssize;
+            print i, tupleList[|tupleList|-1][0].bbidx, bbssize;
         }
-        if (i == bbNext.bbidx) {
-            phi.addIncoming(kfunc, espidx, tInst, kfunc.bbs[i].bbidx, kfunc.bbs[i].movs);
+        if (i == |tupleList|-1) {
+            phi.addIncoming(kfunc, espidx, tInst, tupleList[i][0].bbidx, tupleList[i][0].movs);
         } else {
-            phi.addIncoming(kfunc, espidx, fInst, kfunc.bbs[i].bbidx, kfunc.bbs[i].movs);
+            phi.addIncoming(kfunc, espidx, fInst, tupleList[i][0].bbidx, tupleList[i][0].movs);
         }
     }
-    phi.addIncoming(kfunc, espidx, fInst, kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs);
 
     if (DEBUG) {
         print kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs;
@@ -2952,7 +2952,7 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
         kfunc.curBB.insts.add(inst);
         kfunc.curBB = bbNext;
     }
-    tupleList = tupleList[0 to |tupleList|-2];
+    tupleList.add((kfunc.curBB, cloneRegTable()));
     K_Inst jmp = new K_JMP(new K_JMPop(bbMerge.bbidx, "merge"));
     kfunc.curBB.insts.add(jmp);
     kfunc.curBB = bbMerge;
@@ -2961,14 +2961,13 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
     kfunc.register_table = regTableCont;
 
     K_PHI phi = new K_PHI(espidx);
-    for (int i = kfunc.bbs.size-1; i > bbssize; i--) {
-        if (i == bbNext.bbidx) {
-            phi.addIncoming(kfunc, espidx, fInst, kfunc.bbs[i].bbidx, kfunc.bbs[i].movs);
+    for (int i = |tupleList|-1; i >= 0; i--) {
+        if (i == |tupleList|-1) {
+            phi.addIncoming(kfunc, espidx, fInst, tupleList[i][0].bbidx, tupleList[i][0].movs);
         } else {
-            phi.addIncoming(kfunc, espidx, tInst, kfunc.bbs[i].bbidx, kfunc.bbs[i].movs);
+            phi.addIncoming(kfunc, espidx, tInst, tupleList[i][0].bbidx, tupleList[i][0].movs);
         }
     }
-    phi.addIncoming(kfunc, espidx, tInst, kfunc.bbs[entryIdx].bbidx, kfunc.bbs[entryIdx].movs);
 
     bbMerge.phis[(String)espidx] = phi;
     kfunc.storeKInst(espidx, phi);
@@ -3463,7 +3462,7 @@ void K_Function.buildWrapperFunc(Compiler asm) {
     }
     Value res = asm.builder.createCall(asm.innerfunc, vargs);
     Type innerRetTy = null;
-    if (asm.retclass != null && asm.retclass != Void) {
+    if (asm.retclass != null) {
         innerRetTy = asm.convertType(asm.retclass);
         asm.builder.createStoreValueToSfp(asm.sfp, innerRetTy, K_RTNIDX, res);
     } else {
@@ -3920,9 +3919,12 @@ void K_Function.codegen(Compiler asm) {
     setLLVMValue(asm, v);
 }
 @Override void K_RET.codegen(Compiler asm) {
-    if (op.inst0 != null) {
-        asm.builder.createRet(op.inst0.getLLVMValue());
-    } else {
+    if (asm.retclass != null && op.inst0 != null) {
+        asm.builder.createRet(op.inst0.getLLVMValue(asm));
+    } else  {
+        if (op.inst0 != null && asm.mtd.toString().endsWith("Script.")) {
+            asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(Object), K_RTNIDX, op.inst0.getLLVMValue(asm));
+        }
         asm.builder.createRetVoid();
     }
 }
