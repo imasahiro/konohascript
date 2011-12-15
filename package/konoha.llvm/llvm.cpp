@@ -31,6 +31,7 @@
 #include <llvm/Function.h>
 #include <llvm/BasicBlock.h>
 #include <llvm/Instructions.h>
+#include <llvm/Intrinsics.h>
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/Support/DynamicLibrary.h>
 #include <llvm/Support/TargetSelect.h>
@@ -3116,6 +3117,42 @@ KMETHOD LLVM_createVerifierPass(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//FunctionType Intrinsic::getType(int id, Type[] args);
+//Function     Intrinsic::getDeclaration(Module m, int id, args_typeType[] args);
+KMETHOD Intrinsic_getType(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Intrinsic::ID id = (Intrinsic::ID) sfp[1].ivalue;
+	kArray *args = sfp[2].a;
+	std::vector<Type*> List;
+	konoha::convert_array(List, args);
+	FunctionType *ptr = Intrinsic::getType(getGlobalContext(), id, List);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//Function     Intrinsic::getDeclaration(Module m, Intrinsic::sin, args_type);
+KMETHOD Intrinsic_getDeclaration(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Module *m = konoha::object_cast<Module *>(sfp[1].p);
+	Intrinsic::ID id = (Intrinsic::ID) sfp[2].ivalue;
+	kArray *args = sfp[3].a;
+	std::vector<Type*> List;
+	konoha::convert_array(List, args);
+	Function *ptr = Intrinsic::getDeclaration(m, id, List);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+static knh_IntData_t IntIntrinsic[] = {
+	{"Pow"  ,    (int) Intrinsic::pow},
+	{"Sqrt" ,    (int) Intrinsic::sqrt},
+	{"Exp"  ,    (int) Intrinsic::exp},
+	{"Log10",    (int) Intrinsic::log10},
+	{"Log"  ,    (int) Intrinsic::log},
+	{"Sin"  ,    (int) Intrinsic::sin},
+	{"Cos"  ,    (int) Intrinsic::cos},
+};
+
 static knh_IntData_t IntGlobalVariable[] = {
 	{"ExternalLinkage",                 GlobalValue::ExternalLinkage},
 	{"AvailableExternallyLinkage",      GlobalValue::AvailableExternallyLinkage},
@@ -3139,12 +3176,20 @@ DEFAPI(void) defGlobalValue(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 	cdef->name = "GlobalValue";
 }
 
-
 DEFAPI(void) constGlobalValue(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, IntGlobalVariable);
 }
 
+DEFAPI(void) defIntrinsic(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+{
+	cdef->name = "Intrinsic";
+}
+
+DEFAPI(void) constIntrinsic(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
+{
+	kapi->loadClassIntConst(ctx, cid, IntIntrinsic);
+}
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {

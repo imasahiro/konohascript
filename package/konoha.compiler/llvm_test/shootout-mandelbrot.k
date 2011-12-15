@@ -19,7 +19,11 @@ class Mandelbrot {
         this.size = size;
         fac = 2.0 / size;
         ous = new OutputStream("Mandelbrot.ppm");
-        shift = (size % 8 == 0) ? 0 : (8- size % 8);
+        if (size % 8 == 0) {
+            shift = 0;
+        } else {
+            shift = 8 - (size % 8);
+        }
         buf = new byte[BUFFER_SIZE];
     }
     void compute() {
@@ -48,13 +52,18 @@ class Mandelbrot {
                 zr  = zrN - ziN + cr;
                 ziN = zi * zi;
                 zrN = zr * zr;
-            } while (!(ziN + zrN > 4.0) && --i > 0);
+                if (ziN + zrN > 4.0) {
+                    break;
+                }
+                i = i - 1;
+            } while (i > 0);
 
             bits = bits << 1;
             if (i == 0) bits++;
 
             if (x % 8 == 7) {
-                bufLocal[bufLen++] = bits;
+                bufLocal[bufLen] = bits;
+                bufLen += 1;
                 if ( bufLen == BUFFER_SIZE) {
                     ous.write(bufLocal, 0, BUFFER_SIZE);
                     bufLen = 0;
@@ -64,7 +73,8 @@ class Mandelbrot {
         }
         if (shift!=0) {
             bits = bits << shift;
-            bufLocal[bufLen++] = bits;
+            bufLocal[bufLen] = bits;
+            bufLen += 1;
             if ( bufLen == BUFFER_SIZE) {
                 ous.write(bufLocal, 0, BUFFER_SIZE);
                 bufLen = 0;

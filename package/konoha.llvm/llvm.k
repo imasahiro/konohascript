@@ -47,6 +47,7 @@ include "lib:gluelink";
 @RawPtr class NativeFunction;
 
 @Native class GlobalValue;
+@Native class Intrinsic;
 
 @RawPtr class LLVM;
 @RawPtr class Pass;

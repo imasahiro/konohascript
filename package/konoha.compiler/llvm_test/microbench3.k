@@ -137,95 +137,95 @@ float mops(int score) {
 
 void run() {
     s = System.getTime();
-    testSimpleLoop();
+    OUT.println(testSimpleLoop());
     t = System.getTime() - s;
     score = t;
     OUT.println("SimpleLoop[mops,ms]: "+ mops(score)+","+ t);
     delta = t;
     //
     s = System.getTime();
-    testLocalVariable();
+    OUT.println(testLocalVariable());
     t = System.getTime() - s;
     score = t - delta;
     OUT.println("LocalVariable[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testGlobalVariable();
+    OUT.println(testGlobalVariable());
     t = System.getTime() - s;
     score = t - delta;
     OUT.println("GlobalVariable[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testStringAssignment();
+    OUT.println(testStringAssignment());
     t = System.getTime() - s;
     score = t - delta;
     OUT.println("StringAssignment[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testIntegerOperation();
+    OUT.println(testIntegerOperation());
     t = System.getTime() -s ;
     score = t - delta;
     OUT.println("IntegerOperation[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testFloatOperation();
+    OUT.println(testFloatOperation());
     t = System.getTime() -s ;
     score = t - delta;
     OUT.println("FloatOperation[mops,ms]:"+ mops(score)+","+ t);
     // 
     s = System.getTime();
-    testFunctionCall();
+    OUT.println(testFunctionCall());
     t = System.getTime() - s;
     score = t - delta;
     OUT.println("FunctionCall[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testFunctionReturn();
+    OUT.println(testFunctionReturn());
     t = System.getTime() - s;
     score = t - delta;
     OUT.println("FunctionReturn[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testMathFabs();
+    OUT.println(testMathFabs());
     t = System.getTime() - s;
     score = t - delta;
     OUT.println("NativeFunction[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testCallFunctionObject();
+    OUT.println(testCallFunctionObject());
     t = System.getTime() - s;
     score = t - delta;
     OUT.println("CallFunctionObject[mops,ms]:"+ mops(score)+","+ t);
     //
     OUT.println("Object-Oriented Programming");
     s = System.getTime();
-    testObjectCreation();
+    OUT.println(testObjectCreation());
     t = System.getTime() -s ;
     score = t - delta;
     OUT.println("ObjectCreation[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testFieldVariable();
+    OUT.println(testFieldVariable());
     t = System.getTime() -s ;
     score = t - delta;
     OUT.println("FieldVariable[mops,ms]:"+ mops(score)+","+ t);
     //
     s = System.getTime();
-    testMethodCall();
+    OUT.println(testMethodCall());
     t = System.getTime() -s ;
     score = t - delta;
     OUT.println("MethodCall[mops,ms]:"+ mops(score)+","+ t);
     //
     OUT.println("MISC (this is not microbench)");
     s = System.getTime();
-    fibo(36);
+    OUT.println(fibo(36));
     t = System.getTime() - s;
     score = t;
     OUT.println("fibonacci(36)[mops,ms]:"+ mops(score)+","+ t);
     return;
 }
 
-run();
-
-
+void main (String[] args) {
+    run();
+}
 
