@@ -290,6 +290,7 @@ typedef struct knh_sysinfo_t {
 
 #if defined(__MINGW32__)  /* mingw */
 #define		K_USING_STDC_       1
+#define		K_USING_SETJMP_     1
 #define		K_USING_WIN32_      1
 #define		K_USING_WINDOWS_      1
 #define		K_USING_MINGW_      1
