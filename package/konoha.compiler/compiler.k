@@ -3715,8 +3715,11 @@ void K_Function.codegen(Compiler asm) {
         K_Function cfunc = null;
         foreach (K_Function f in func_list) {
             K_ARGUMENT[] funcargs = f.funcargs;
+            //print f.mtdName, this.op.fname;
+            //print funcargs.size, args.size;
             if (funcargs.size == args.size) {
-                for (int i=0; i < funcargs.size; i++) {
+                for (int i=1; i < funcargs.size; i++) {
+                    //print funcargs[i].type, args[i].type;
                     if (funcargs[i].type != args[i].type) {
                         check_overload = false;
                     }
