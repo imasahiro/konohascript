@@ -228,6 +228,8 @@ include "lib:gluelink";
 @Native boolean BasicBlock.empty();
 @Native Module Module.new(String name);
 //@Native void Module.addTypeName(String name, Type type);
+@Native Type Module.getTypeByName(String name);
+
 @Native void Module.dump();
 @Native Function Module.getOrInsertFunction(String name, FunctionType fnTy);
 @Native ExecutionEngine Module.createExecutionEngine();
@@ -235,6 +237,8 @@ include "lib:gluelink";
 @Native @Static FunctionType FunctionType.get(Type retTy, Array<Type> args, boolean b);
 @Native @Static StructType StructType.get(Array<Type> args, boolean isPacked);
 @Native @Static StructType StructType.create(Array<Type> args, String name, boolean isPacked);
+@Native void StructType.setBody(Array<Type> args, boolean isPacked);
+@Native boolean StructType.isOpaque();
 @Native NativeFunction ExecutionEngine.getPointerToFunction(Function func);
 
 @Native PassManagerBuilder PassManagerBuilder.new();
@@ -253,6 +257,9 @@ include "lib:gluelink";
 @Native Value Value.setName(String name);
 @Native Type Value.getType();
 @Native Array<Value> Function.getArguments();
+
+@Native void LoadInst.setAlignment(Int align);
+@Native void StoreInst.setAlignment(Int align);
 
 @Native @Public void Method.setFunction(NativeFunction nf);
 @Native @Public void Func.setFunction(NativeFunction nf);

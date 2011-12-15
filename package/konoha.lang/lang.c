@@ -218,11 +218,11 @@ KMETHOD Method_getMethodClass(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(new_Type(ctx, mtd->cid));
 }
 //## Array<Class> Class.getFieldClasses()
-KMETHOD Object_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Class_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int i = 0;
-	kObject *o = sfp[0].o;
-	const knh_ClassTBL_t *cTBL = o->h.cTBL;
+	kClass *o = sfp[0].c;
+	const knh_ClassTBL_t *cTBL = o->cTBL;
 	kArray *res = new_Array(ctx, CLASS_Class, 0);
 	if (cTBL != NULL) {
 		for (; i < cTBL->fsize; i++) {
