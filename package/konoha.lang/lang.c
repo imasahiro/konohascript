@@ -208,7 +208,7 @@ KMETHOD Method_toString(CTX ctx, ksfp_t *sfp _RIX)
 	knh_write_cid(ctx, cwb->w, (sfp[0].mtd)->cid);
 	knh_putc(ctx, cwb->w, '.');
 	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
-	RETURN_(CWB_newString(ctx, cwb, SPOL_POOLNEVER|SPOL_ASCII));
+	RETURN_(CWB_newString(ctx, cwb, SPOL_ASCII|SPOL_POOLALWAYS));
 }
 
 // Class Method.getMethodClass()

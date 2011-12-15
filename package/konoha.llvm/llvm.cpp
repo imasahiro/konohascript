@@ -1928,13 +1928,15 @@ KMETHOD Module_getOrInsertFunction(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## @Static @Native Function Function.create(String name, FunctionType fnTy, Module m);
+//## @Static @Native Function Function.create(String name, FunctionType fnTy, Module m, Linkage linkage);
 KMETHOD Function_create(CTX ctx, ksfp_t *sfp _RIX)
 {
 	kString *name = sfp[1].s;
 	FunctionType *fnTy = konoha::object_cast<FunctionType *>(sfp[2].p);
 	Module *m = konoha::object_cast<Module *>(sfp[3].p);
-	Function *ptr = Function::Create(fnTy, GlobalValue::ExternalLinkage, S_totext(name), m);
+	kint_t v = sfp[4].ivalue;
+	GlobalValue::LinkageTypes linkage = (GlobalValue::LinkageTypes) v;
+	Function *ptr = Function::Create(fnTy, linkage, S_totext(name), m);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
@@ -2037,6 +2039,49 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
+static void PassManagerBuilder_ptr_free(void *p)
+{
+	PassManagerBuilder *o = static_cast<PassManagerBuilder *>(p);
+	delete o;
+}
+
+KMETHOD PassManagerBuilder_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManagerBuilder *self = new PassManagerBuilder();
+	self->OptLevel = 3;
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(self), PassManagerBuilder_ptr_free);
+	RETURN_(p);
+}
+KMETHOD PassManagerBuilder_populateModulePassManager(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManagerBuilder *self = konoha::object_cast<PassManagerBuilder *>(sfp[0].p);
+	PassManager *manager = konoha::object_cast<PassManager *>(sfp[1].p);
+	self->populateModulePassManager(*manager);
+	RETURNvoid_();
+}
+
+static void PassManager_ptr_free(void *p)
+{
+	PassManager *o = static_cast<PassManager *>(p);
+	delete o;
+}
+
+//## PassManager PassManager.new()
+KMETHOD PassManager_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManager *self = new PassManager();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(self), PassManager_ptr_free);
+	RETURN_(p);
+}
+
+//## void PassManager.run(Function func)
+KMETHOD PassManager_run(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
+	Module *m = konoha::object_cast<Module *>(sfp[1].p);
+	self->run(*m);
+	RETURNvoid_();
+}
 
 static void FunctionPassManager_ptr_free(void *p)
 {
@@ -2052,7 +2097,15 @@ KMETHOD FunctionPassManager_new(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(self), FunctionPassManager_ptr_free);
 	RETURN_(p);
 }
-//## void FunctionPassManager.add(Pass p)
+//## void PassManager.add(Pass p)
+KMETHOD PassManager_add(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
+	Pass *pass = konoha::object_cast<Pass *>(sfp[1].p);
+	self->add(pass);
+	RETURNvoid_();
+}
+//## void FuncitonPassManager.add(Pass p)
 KMETHOD FunctionPassManager_add(CTX ctx, ksfp_t *sfp _RIX)
 {
 	FunctionPassManager *self = konoha::object_cast<FunctionPassManager *>(sfp[0].p);
@@ -3027,6 +3080,36 @@ KMETHOD LLVM_createVerifierPass(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), obj_free);
 	RETURN_(p);
 }
+
+static knh_IntData_t IntGlobalVariable[] = {
+	{"ExternalLinkage",                 GlobalValue::ExternalLinkage},
+	{"AvailableExternallyLinkage",      GlobalValue::AvailableExternallyLinkage},
+	{"LinkOnceAnyLinkage",              GlobalValue::LinkOnceODRLinkage},
+	{"WeakAnyLinkage",                  GlobalValue::WeakAnyLinkage},
+	{"WeakODRLinkage",                  GlobalValue::WeakODRLinkage},
+	{"AppendingLinkage",                GlobalValue::AppendingLinkage},
+	{"InternalLinkage",                 GlobalValue::InternalLinkage},
+	{"PrivateLinkage",                  GlobalValue::PrivateLinkage},
+	{"LinkerPrivateLinkage",            GlobalValue::LinkerPrivateLinkage},
+	{"LinkerPrivateWeakLinkage",        GlobalValue::LinkerPrivateWeakLinkage},
+	{"LinkerPrivateWeakDefAutoLinkage", GlobalValue::LinkerPrivateWeakDefAutoLinkage},
+	{"DLLImportLinkage",                GlobalValue::DLLImportLinkage},
+	{"DLLExportLinkage",                GlobalValue::DLLExportLinkage},
+	{"ExternalWeakLinkage",             GlobalValue::ExternalWeakLinkage},
+	{"CommonLinkage",                   GlobalValue::CommonLinkage}
+};
+
+DEFAPI(void) defGlobalValue(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+{
+	cdef->name = "GlobalValue";
+}
+
+
+DEFAPI(void) constGlobalValue(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
+{
+	kapi->loadClassIntConst(ctx, cid, IntGlobalVariable);
+}
+
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
