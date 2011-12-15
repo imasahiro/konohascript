@@ -6,8 +6,8 @@
  */
 
 using konoha.compiler.*;
-using konoha.math.Math;
-
+using konoha.math.*;
+N=5000000;
 PI = 3.141592653589793;
 SOLAR_MASS = 4 * PI * PI;
 DAYS_PER_YEAR = 365.24;
@@ -144,8 +144,8 @@ class NBodySystem {
     }
 }
 
-void run() {
-    int n = 5000000;
+void main (String[] args) {
+    int n = N;
     NBodySystem bodies = new NBodySystem();
     OUT.println("energy:"+ bodies.energy());
     for (int i = 0; i < n; i++) {

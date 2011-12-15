@@ -1082,14 +1082,16 @@ class K_COND extends K_Inst {
 }
 class K_CALLop extends K_Opcode {
     String fname;
+    Method mtd;
     int mtdNC;
     int thisidx;
     int espshift;
     int ftype;
     int rix;
     int flagStatic;
-    K_CALLop (String fname, int mtdNC, int thisidx, int espshift, int ftype, int rix, int flagStatic) {
+    K_CALLop (String fname, Method mtd, int mtdNC, int thisidx, int espshift, int ftype, int rix, int flagStatic) {
         this.fname = fname;
+        this.mtd   = mtd;
         this.mtdNC = mtdNC;
         this.thisidx = thisidx;
         this.espshift = espshift;
@@ -1620,7 +1622,7 @@ void Compiler.register_user_class(Class c, String cname)
         }
     }
 
-    print fields.size, cname;
+    //print fields.size, cname;
     Type klassFieldTy = StructType.create(fields, cname+"_field", false);
     Type fieldPtrTy   = PointerType.get(klassFieldTy);
     fields = [ktype["hobjectTy"], fieldPtrTy];
@@ -1799,7 +1801,7 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             String fname = mtd.toString();
             Array<K_Inst> args = [];
             K_Value kvalue = kfunc.getKValue(thisidx - 4, rtype);
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(fname[fname.indexOf(".")+1 to |fname|-1], mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(fname[fname.indexOf(".")+1 to |fname|-1], mtd, mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(espidx, inst);
             break;
@@ -1894,7 +1896,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
                 print "sysval", sysid;
                 print sysid, mtd, mtdptr;
             }
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtd, mtdptr, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(thisidx + K_RTNIDX, inst);
             break;
@@ -2546,7 +2548,7 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
         }
         K_Value kvalue = null;
         kvalue = kfunc.getKValue(thisidx + rix, rtype);
-        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
+        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtd, mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
         kfunc.curBB.insts.add(inst);
         if (rtype != null) {
             kfunc.storeKInst(thisidx + rix, inst);
@@ -2630,7 +2632,7 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
         K_Inst ldinst = new K_LDMTD(new K_LDMTDop(espidx + K_CALLDELTA, Stmt.DYNMTD, c, mtdname, mtd, argc));
         kfunc.curBB.insts.add(ldinst);
         kvalue = kfunc.getKValue(espidx, dynamic);
-        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtdname, 0, espidx+K_CALLDELTA, espshift, FUNC_STATIC, K_RTNIDX, 0/* not static */));
+        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtdname, mtd, 0, espidx+K_CALLDELTA, espshift, FUNC_STATIC, K_RTNIDX, 0/* not static */));
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(espidx, inst);
 
@@ -3813,6 +3815,10 @@ void K_Function.codegen(Compiler asm) {
                 for (int i=1; i < funcargs.size; i++) {
                     //print funcargs[i].type, args[i].type;
                     if (funcargs[i].type != args[i].type) {
+                        if (((to String)funcargs[i].type).startsWith("konoha.Array<") &&
+                                ((to String)funcargs[i].type).startsWith("konoha.Array<")) {
+                            continue;
+                        }
                         check_overload = false;
                     }
                 }
@@ -3835,7 +3841,7 @@ void K_Function.codegen(Compiler asm) {
             }
             return;
         } else {
-            print "**WARN** compiled_methods call failed";
+            print "**WARN** compiled_methods call failed", this.op.fname;
         }
     }
     if (LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
