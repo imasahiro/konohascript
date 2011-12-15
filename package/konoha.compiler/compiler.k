@@ -3978,13 +3978,28 @@ void K_Function.codegen(Compiler asm) {
 }
 @Override void K_xMOV.codegen(Compiler asm) {
     Value v = op.inst0.getLLVMValue(asm);
-    v = asm.builder.createBitCast(v, asm.ktype["objectPtrTy"]);
-    v = asm.builder.createStructGEP(v, 1);
-    v = asm.builder.createLoad(v);
-    v = asm.builder.createBitCast(v, asm.ktype["objectPtrPtrTy"]);
-    Value vn = ConstantInt.get(asm.intTy, op.an);
-    v = asm.builder.createInBoundsGEP1(v, vn);
-    v = asm.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
+    String cname = (to String) op.inst0.type;
+    Type type = asm.user_type[cname];
+    if (type == null) {
+        asm.register_user_class(op.inst0.type, cname);
+    }
+    type = asm.user_type[cname];
+    if (type != null) {
+        v = asm.builder.createBitCast(v, type);
+        v = asm.builder.createStructGEP(v, 1);
+        v = asm.builder.createLoad(v);
+        v = asm.builder.createStructGEP(v, op.an);
+        v = asm.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
+    }
+    else {
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrTy"]);
+        v = asm.builder.createStructGEP(v, 1);
+        v = asm.builder.createLoad(v);
+        v = asm.builder.createBitCast(v, asm.ktype["objectPtrPtrTy"]);
+        Value vn = ConstantInt.get(asm.intTy, op.an);
+        v = asm.builder.createInBoundsGEP1(v, vn);
+        v = asm.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
+    }
     v = asm.builder.createStore(op.inst1.getLLVMValue(asm), v);
     setLLVMValue(asm, v);
 }
