@@ -277,7 +277,7 @@ class K_Inst {
             }
         }
     }
-    dynamic getName() {
+    String getName() {
         String res = "";
         String str_type = "";
         /* const value (not named) */
@@ -343,7 +343,7 @@ class K_MOV extends K_Inst {
         return "\t" + getName() + " = mov " + getTypeName(type) + " " + op.inst0.getName() + " @nonssa";
     }
 }
-K_Value K_Function.getKValue(int idx, dynamic type);
+K_Value K_Function.getKValue(int idx, Class type);
 class K_PHI extends K_Inst {
     int idx;
     Array<Int> bbs;
@@ -605,7 +605,7 @@ class K_Function {
         }
     }
 
-    K_Value getKValue(int idx, dynamic type) {
+    K_Value getKValue(int idx, Class type) {
         K_Value res = value_table[(String)idx];
         String str_type1 = "";
         String str_type2 = "";
