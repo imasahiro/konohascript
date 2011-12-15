@@ -1387,7 +1387,7 @@ class K_xMOVop extends K_Opcode {
 class K_xMOV extends K_Inst {
     K_xMOVop op;
     K_xMOV(K_xMOVop op, int idx) {
-        this.type = Object;
+        this.type = op.inst0.type;
         this.op = op;
         addUse(op, idx);
     }
@@ -1555,7 +1555,7 @@ void Compiler.init(Method mtd) {
     }
 
     if (!mtd.isStatic()) {
-        K_Value kvalue = kfunc.getKValue(0, Object);
+        K_Value kvalue = kfunc.getKValue(0, mtd.getMethodClass());
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
