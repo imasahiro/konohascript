@@ -1939,6 +1939,23 @@ void Compiler.dump(Boolean dump) {
         innerfunc.dump();
     }
 }
+Function Compiler.createAbs() {
+    Type arg0Ty = floatTy;
+    Type retTy  = floatTy;
+    FunctionType fnTy = FunctionType.get(retTy, [arg0Ty], false);
+    Function func = Function.create("compiler.fabs", fnTy, m,
+            GlobalValue.InternalLinkage);
+    BasicBlock bb = BasicBlock.create(func, "EntryBlock");
+    IRBuilder builder = new IRBuilder(bb);
+    Array<Value> vargs = func.getArguments();
+    Value arg0 = vargs[0];
+    arg0.setName("a");
+    Value v    = builder.createFCmpOGE(arg0, ConstantFP.get(floatTy, 0.0));
+    Value v0   = builder.createFNeg(arg0);
+    Value ret  = builder.createSelect(v, arg0, v0);
+    builder.createRet(ret);
+    return func;
+}
 void Compiler.emit(Method mtd) {
     if (fpm == null) {
         fpm = new FunctionPassManager(m);
@@ -1946,6 +1963,7 @@ void Compiler.emit(Method mtd) {
         fpm.add(LLVM.createVerifierPass());
         fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
         fpm.add(LLVM.createBasicAliasAnalysisPass());
+        fpm.add(LLVM.createSimplifyLibCallsPass());
         fpm.add(LLVM.createCFGSimplificationPass());
         fpm.add(LLVM.createScalarReplAggregatesPass());
         fpm.add(LLVM.createEarlyCSEPass());
@@ -1978,6 +1996,7 @@ void Compiler.emit(Method mtd) {
             String name = "konoha.math.Math.pow";
             Function f = Intrinsic.getDeclaration(this.m, id2, args);
             this.intrinsic_methods[name] = f;
+            this.intrinsic_methods["konoha.math.Math.fabs"] = createAbs();
         }
     }
     for (int i = 0; i < kfunc.const_table.size; i++) {
@@ -2007,6 +2026,8 @@ void Compiler.emit(Method mtd) {
             mpm = new PassManager();
             mpm.add(LLVM.createFunctionAttrsPass());
             mpm.add(LLVM.createInternalizePass(true));
+            //TODO FIXME BUG
+            //mpm.add(LLVM.createFunctionInliningPass());
             mpm.add(LLVM.createIPSCCPPass());
             mpm.add(LLVM.createGlobalOptimizerPass());
             mpm.add(LLVM.createConstantMergePass());
