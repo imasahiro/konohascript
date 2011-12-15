@@ -1959,11 +1959,16 @@ KMETHOD Module_createExecutionEngine(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::object_free<ExecutionEngine>);
 	RETURN_(p);
 }
-//## @Static BasicBlock BasicBlock.create(Function parent);
+//## @Static BasicBlock BasicBlock.create(Function parent, String name);
 KMETHOD BasicBlock_create(CTX ctx, ksfp_t *sfp _RIX)
 {
 	Function * parent = konoha::object_cast<Function *>(sfp[1].p);
-	BasicBlock *ptr = BasicBlock::Create(getGlobalContext(), "", parent);
+	kString *name = sfp[2].s;
+	const char *bbname = "";
+	if (IS_NOTNULL(name)) {
+		bbname = S_totext(name);
+	}
+	BasicBlock *ptr = BasicBlock::Create(getGlobalContext(), bbname, parent);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 	RETURN_(p);
 }
@@ -2103,6 +2108,39 @@ KMETHOD PassManager_run(CTX ctx, ksfp_t *sfp _RIX)
 	self->run(*m);
 	RETURNvoid_();
 }
+//## void PassManager.add(Pass p)
+KMETHOD PassManager_addPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
+	Pass *pass = konoha::object_cast<Pass *>(sfp[1].p);
+	self->add(pass);
+	RETURNvoid_();
+}
+//## void PassManager.add(Pass p)
+KMETHOD PassManager_addImmutablePass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
+	ImmutablePass *pass = konoha::object_cast<ImmutablePass *>(sfp[1].p);
+	self->add(pass);
+	RETURNvoid_();
+}
+//## void PassManager.addFunctionPass(Pass p)
+KMETHOD PassManager_addFunctionPass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
+	FunctionPass *pass = konoha::object_cast<FunctionPass *>(sfp[1].p);
+	self->add(pass);
+	RETURNvoid_();
+}
+//## void PassManager.addModulePass(Pass p)
+KMETHOD PassManager_addModulePass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
+	ModulePass *pass = konoha::object_cast<ModulePass *>(sfp[1].p);
+	self->add(pass);
+	RETURNvoid_();
+}
+
 
 static void FunctionPassManager_ptr_free(void *p)
 {
@@ -2117,14 +2155,6 @@ KMETHOD FunctionPassManager_new(CTX ctx, ksfp_t *sfp _RIX)
 	FunctionPassManager *self = new FunctionPassManager(m);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(self), FunctionPassManager_ptr_free);
 	RETURN_(p);
-}
-//## void PassManager.add(Pass p)
-KMETHOD PassManager_add(CTX ctx, ksfp_t *sfp _RIX)
-{
-	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
-	Pass *pass = konoha::object_cast<Pass *>(sfp[1].p);
-	self->add(pass);
-	RETURNvoid_();
 }
 //## void FuncitonPassManager.add(Pass p)
 KMETHOD FunctionPassManager_add(CTX ctx, ksfp_t *sfp _RIX)
