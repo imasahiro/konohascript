@@ -2919,7 +2919,7 @@ void Compiler.asmNEW(Stmt stmt, int espidx, Class c, Method mtd) {
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(thisidx, inst);
         callparams_asm(stmt, 2, espidx, c, mtd);
-        asmCALL_sub(espidx, mtd.getReturnType(), mtd, false, stmt.getStmtSize() - 2, K_RTNIDX);
+        asmCALL_sub(espidx, c, mtd, false, stmt.getStmtSize() - 2, K_RTNIDX);
     }
 }
 void Compiler.asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr, int fptr) {
