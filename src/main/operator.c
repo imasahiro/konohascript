@@ -226,7 +226,7 @@ static KMETHOD Object_to(CTX ctx, ksfp_t *sfp _RIX)
 /* ------------------------------------------------------------------------ */
 //## @Const @Hidden @Private method dynamic Object.typeCheck(Class auto);
 
-static KMETHOD Object_typeCheck(CTX ctx, ksfp_t *sfp _RIX)
+void Object_typeCheck(CTX ctx, ksfp_t *sfp _RIX)
 {
 	kclass_t scid = O_cid(sfp[0].o), tcid = (sfp[1].c)->cid;
 	if(scid != tcid && !class_isa(scid, tcid)) {
