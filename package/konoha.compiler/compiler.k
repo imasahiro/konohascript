@@ -31,11 +31,9 @@ using konoha.llvm.*;
 include "lib:gluelink";
 
 DEBUG = false;
-USE_NONSSA = false;
-//USE_NONSSA = true;
+//USE_NONSSA = false;
+USE_NONSSA = true;
 //DEBUG = true;
-DUMP = true;
-//DUMP = true;
 FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
 FUNC_VIRTUAL2 = 1;
@@ -55,6 +53,7 @@ KFLAG_PF_BREAK     = (1<<7);
 NOT_SCAST = -1;
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
+SHANEIR_ENABLE_FUNCTION_DUMP=true;
 LLVM_ENABLE_FUNCTION_DUMP = false;
 LLVM_ENABLE_MODULE_DUMP = false;
 LLVM_ENABLE_DEBUG = false;
@@ -80,6 +79,7 @@ void K_Function.init(Compiler asm);
 class K_Inst;
 class Compiler {
     Module m;
+    String[] ir;
     ExecutionEngine ee;
     IRBuilder builder;
     Array<dynamic> const_table;
@@ -112,6 +112,7 @@ class Compiler {
     @Hidden Compiler() {
         this.m = new Module("konoha");
         this.ee = m.createExecutionEngine();
+        ir = [];
         kfunctype = {};
         ktype = {};
         const_table = [];
@@ -1955,9 +1956,17 @@ void Compiler.addConstTable(dynamic val) {
 }
 void Compiler.dump(Boolean dump) {
     //print const_table;
+    if (SHANEIR_ENABLE_FUNCTION_DUMP) {
+        foreach (str in this.ir) {
+            OUT << str << EOL;
+        }
+    }
     if (LLVM_ENABLE_FUNCTION_DUMP) {
         wrapperfunc.dump();
         innerfunc.dump();
+    }
+    if (LLVM_ENABLE_MODULE_DUMP) {
+        this.m.dump();
     }
 }
 Function Compiler.createAbs() {
@@ -2028,10 +2037,8 @@ void Compiler.emit(Method mtd) {
         kfunc.curBB.insts.add(inst);
         kfunc.curBB.hasReturn = true;
     }
-    if (DUMP) {
-        String ir = kfunc.dump();
-        OUT << ir << EOL;
-    }
+    String result = kfunc.dump();
+    this.ir << result;
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
@@ -2049,33 +2056,29 @@ void Compiler.emit(Method mtd) {
             mpm.add(LLVM.createInternalizePass(true));
             //TODO FIXME BUG
             //mpm.add(LLVM.createFunctionInliningPass());
-            mpm.add(LLVM.createIPSCCPPass());
-            mpm.add(LLVM.createGlobalOptimizerPass());
-            mpm.add(LLVM.createConstantMergePass());
-            mpm.add(LLVM.createInstructionCombiningPass());
-            mpm.add(LLVM.createGlobalOptimizerPass());
-            mpm.add(LLVM.createGlobalDCEPass());
-            mpm.add(LLVM.createInstructionCombiningPass());
-            mpm.add(LLVM.createJumpThreadingPass());
-            mpm.add(LLVM.createScalarReplAggregatesPass());
-            mpm.add(LLVM.createFunctionAttrsPass());
-            mpm.add(LLVM.createGlobalsModRefPass());
-            mpm.add(LLVM.createLICMPass());
-            mpm.add(LLVM.createGVNPass());
-            mpm.add(LLVM.createMemCpyOptPass());
-            mpm.add(LLVM.createDeadStoreEliminationPass());
-            mpm.add(LLVM.createInstructionCombiningPass());
-            mpm.add(LLVM.createJumpThreadingPass());
-            mpm.add(LLVM.createCFGSimplificationPass());
-            mpm.add(LLVM.createGlobalDCEPass());
-            mpm.run(m);
-            if (LLVM_ENABLE_MODULE_DUMP) {
-                this.m.dump();
-            }
+            //mpm.add(LLVM.createIPSCCPPass());
+            //mpm.add(LLVM.createGlobalOptimizerPass());
+            //mpm.add(LLVM.createConstantMergePass());
+            //mpm.add(LLVM.createInstructionCombiningPass());
+            //mpm.add(LLVM.createGlobalOptimizerPass());
+            //mpm.add(LLVM.createGlobalDCEPass());
+            //mpm.add(LLVM.createInstructionCombiningPass());
+            //mpm.add(LLVM.createJumpThreadingPass());
+            //mpm.add(LLVM.createScalarReplAggregatesPass());
+            //mpm.add(LLVM.createFunctionAttrsPass());
+            //mpm.add(LLVM.createGlobalsModRefPass());
+            //mpm.add(LLVM.createLICMPass());
+            //mpm.add(LLVM.createGVNPass());
+            //mpm.add(LLVM.createMemCpyOptPass());
+            //mpm.add(LLVM.createDeadStoreEliminationPass());
+            //mpm.add(LLVM.createInstructionCombiningPass());
+            //mpm.add(LLVM.createJumpThreadingPass());
+            //mpm.add(LLVM.createCFGSimplificationPass());
+            //mpm.add(LLVM.createGlobalDCEPass());
+            //mpm.run(m);
         }
         mtd.setFunction(ee.getPointerToFunction(wrapperfunc));
     }
-    this.dump(DEBUG);
 }
 void Compiler.asm_mov(Token tka, Token tkb, int espidx) {
     if (DEBUG) {
@@ -2936,7 +2939,7 @@ void Compiler.asmNEW(Stmt stmt, int espidx, Class c, Method mtd) {
     }
     int thisidx = espidx + K_CALLDELTA;
     addSafePoint(espidx);
-    if (stmt.getStmtSize() == 2 && c == Object && !c.isUnboxType() && mtd.getName() == "new") {
+    if (stmt.getStmtSize() == 2 && mtd.getMethodClass() == Object && mtd.getName() == "new") {
         K_Value vb = kfunc.getKValue(espidx, c);
         K_Inst inst = new K_NEW(vb, new K_NEWop(espidx-thisidx, c.getClassTablePtr(), Stmt.NEW));
         kfunc.curBB.insts.add(inst);
