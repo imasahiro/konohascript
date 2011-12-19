@@ -36,6 +36,8 @@ static kMethod *load_method(CTX ctx, kclass_t cid, kbytes_t t)
     return mtd;
 }
 
+extern void knh_setCompileMode(CTX ctx, int mode);
+
 int main(int argc, const char *argv[])
 {
     if (argc <= 1) {
@@ -45,25 +47,26 @@ int main(int argc, const char *argv[])
     konoha_ginit(1, argv);
     konoha_t konoha = konoha_open();
     CTX ctx = konoha;
-    KONOHA_BEGIN(ctx);
-    kString *s = new_T(argv[1]);
-    kPath *path = new_Path(ctx, s);
-    knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
-    kbytes_t t = knh_bytes_nsname(S_tobytes(s));
-    knh_Script_setNSName(ctx, ctx->script,
-            new_String2(ctx, CLASS_String, t.text, t.len, SPOL_TEXT|SPOL_POOLALWAYS));
-    kbytes_t pkgname = STEXT("konoha.compiler");
-    knh_loadPackage(ctx, pkgname);
+    KONOHA_BEGIN(ctx); {
+        kString *s = new_T(argv[1]);
+        kPath *path = new_Path(ctx, s);
+        knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
+        kbytes_t t = knh_bytes_nsname(S_tobytes(s));
+        knh_Script_setNSName(ctx, ctx->script,
+                new_String2(ctx, CLASS_String, t.text, t.len, SPOL_TEXT|SPOL_POOLALWAYS));
+        kbytes_t pkgname = STEXT("konoha.compiler");
+        knh_loadPackage(ctx, pkgname);
 
-    knh_load(ctx, path);
+        knh_setCompileMode(ctx, 1);
+        knh_load(ctx, path);
 
-    /* CompilerAPI->dump() */
-    kMethod *mtd = load_method(ctx, O_cid(ctx->share->konoha_compiler), STEXT("dump"));
-    BEGIN_LOCAL(ctx, lsfp, K_CALLDELTA+1);
-    KNH_SETv(ctx, lsfp[K_CALLDELTA].o, ctx->share->konoha_compiler);
-    KNH_SCALL(ctx, lsfp, 0, mtd, 0);
-    END_LOCAL(ctx, lsfp);
-    KONOHA_END(ctx);
+        /* CompilerAPI->dump() */
+        kMethod *mtd = load_method(ctx, O_cid(ctx->share->konoha_compiler), STEXT("dump"));
+        BEGIN_LOCAL(ctx, lsfp, K_CALLDELTA+1); {
+            KNH_SETv(ctx, lsfp[K_CALLDELTA].o, ctx->share->konoha_compiler);
+            KNH_SCALL(ctx, lsfp, 0, mtd, 0);
+        } END_LOCAL(ctx, lsfp);
+    } KONOHA_END(ctx);
     konoha_close(konoha);
     return 0;
 }
