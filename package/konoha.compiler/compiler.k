@@ -2056,26 +2056,26 @@ void Compiler.emit(Method mtd) {
             mpm.add(LLVM.createInternalizePass(true));
             //TODO FIXME BUG
             //mpm.add(LLVM.createFunctionInliningPass());
-            //mpm.add(LLVM.createIPSCCPPass());
-            //mpm.add(LLVM.createGlobalOptimizerPass());
-            //mpm.add(LLVM.createConstantMergePass());
-            //mpm.add(LLVM.createInstructionCombiningPass());
-            //mpm.add(LLVM.createGlobalOptimizerPass());
-            //mpm.add(LLVM.createGlobalDCEPass());
-            //mpm.add(LLVM.createInstructionCombiningPass());
-            //mpm.add(LLVM.createJumpThreadingPass());
-            //mpm.add(LLVM.createScalarReplAggregatesPass());
-            //mpm.add(LLVM.createFunctionAttrsPass());
-            //mpm.add(LLVM.createGlobalsModRefPass());
-            //mpm.add(LLVM.createLICMPass());
-            //mpm.add(LLVM.createGVNPass());
-            //mpm.add(LLVM.createMemCpyOptPass());
-            //mpm.add(LLVM.createDeadStoreEliminationPass());
-            //mpm.add(LLVM.createInstructionCombiningPass());
-            //mpm.add(LLVM.createJumpThreadingPass());
-            //mpm.add(LLVM.createCFGSimplificationPass());
-            //mpm.add(LLVM.createGlobalDCEPass());
-            //mpm.run(m);
+            mpm.add(LLVM.createIPSCCPPass());
+            mpm.add(LLVM.createGlobalOptimizerPass());
+            mpm.add(LLVM.createConstantMergePass());
+            mpm.add(LLVM.createInstructionCombiningPass());
+            mpm.add(LLVM.createGlobalOptimizerPass());
+            mpm.add(LLVM.createGlobalDCEPass());
+            mpm.add(LLVM.createInstructionCombiningPass());
+            mpm.add(LLVM.createJumpThreadingPass());
+            mpm.add(LLVM.createScalarReplAggregatesPass());
+            mpm.add(LLVM.createFunctionAttrsPass());
+            mpm.add(LLVM.createGlobalsModRefPass());
+            mpm.add(LLVM.createLICMPass());
+            mpm.add(LLVM.createGVNPass());
+            mpm.add(LLVM.createMemCpyOptPass());
+            mpm.add(LLVM.createDeadStoreEliminationPass());
+            mpm.add(LLVM.createInstructionCombiningPass());
+            mpm.add(LLVM.createJumpThreadingPass());
+            mpm.add(LLVM.createCFGSimplificationPass());
+            mpm.add(LLVM.createGlobalDCEPass());
+            mpm.run(m);
         }
         mtd.setFunction(ee.getPointerToFunction(wrapperfunc));
     }
