@@ -1003,6 +1003,26 @@ class K_RSFT extends K_Inst {
         return "\t" + getName() + " = rsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
+class K_TCHECKop extends K_Opcode {
+    int espidx;
+    K_TCHECKop(K_Inst inst0, int espidx) {
+        this.inst0 = inst0;
+        this.espidx = espidx;
+    }
+}
+class K_TCHECK extends K_Inst {
+    K_TCHECKop op;
+    K_TCHECK(K_Value kvalue, K_TCHECKop op, int idx) {
+        this.kvalue = kvalue;
+        this.type = kvalue.type;
+        this.op = op;
+        addDef(kvalue, idx);
+        addUse(op, idx);
+    }
+    @Override String dump() {
+        return "\t" + getName() + " = tcheck " + getTypeName(type) + " " + op.inst0.getName();
+    }
+}
 class K_CASTop extends K_Opcode{
     Class tcid;
     Class scid;
@@ -2612,6 +2632,13 @@ boolean Compiler.callparams_asm(Stmt stmt, int s, int local, Class cid, Method m
     /*TODO chkstack*/
     for (i = s; i < stmt.getStmtSize(); i++) {
         asm(stmt.getS(i), stmt.getS(i).toToken(), local + i + (K_CALLDELTA-1));
+        //K_Inst arg = kfunc.getKInst(local + i + K_CALLDELTA-1);
+        //if (!arg.type.isUnboxType()) {
+        //    K_Value kvalue = kfunc.getKValue(local + i + K_CALLDELTA-1, arg.type);
+        //    K_Inst tcheck = new K_TCHECK(kvalue, new K_TCHECKop(arg, local + i + K_CALLDELTA-1));
+        //    kfunc.curBB.insts.add(tcheck);
+        //    kfunc.storeKInst(local + i + K_CALLDELTA-1, tcheck);
+        //}
     }
     return true;
 }
@@ -3778,6 +3805,26 @@ void K_Function.codegen(Compiler asm) {
 }
 @Override void K_RSFT.codegen(Compiler asm) {
     Value v = asm.builder.createLShr(op.inst0.getLLVMValue(asm), op.inst1.getLLVMValue(asm));
+    setLLVMValue(asm, v);
+}
+@Override void K_TCHECK.codegen(Compiler asm) {
+    FunctionType fmethodTy = asm.kfunctype["fmethodTy"];
+    Function func = asm.m.getOrInsertFunction("Object_typeCheck", fmethodTy);
+    Value thisidx = ConstantInt.get(asm.intTy, op.espidx + K_CALLDELTA);
+    Value sfp = asm.builder.createGEP1(asm.sfp, thisidx);
+    Value vrix = ConstantInt.get(asm.intTy, K_RTNIDX);
+    Value[] vargs = [asm.ctx, sfp, vrix];
+
+    asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(op.inst0.type), op.espidx + K_CALLDELTA, op.inst0.getLLVMValue(asm));
+    Value vclass = asm.builder.CreateIntToPtr(ConstantInt.get(asm.intTy, type.getPtr()), asm.ktype["objectPtrTy"]);
+    asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(Class), op.espidx + K_CALLDELTA+1, vclass);
+    Value vmtd = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(Method), K_MTDIDX2);
+    asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(Method), op.espidx + K_CALLDELTA-1, vmtd);
+
+    int espshift = op.espidx + K_CALLDELTA + 2;
+    asm.shiftesp(espshift);
+    asm.builder.createCall(func, vargs);
+    Value v = asm.builder.createLoadValueFromSfp(asm.sfp, asm.convertType(type), op.espidx);
     setLLVMValue(asm, v);
 }
 @Override void K_CAST.codegen(Compiler asm) {
