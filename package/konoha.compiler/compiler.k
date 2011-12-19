@@ -3814,8 +3814,10 @@ void K_Function.codegen(Compiler asm) {
     setLLVMValue(asm, v);
 }
 @Override void K_TCHECK.codegen(Compiler asm) {
-    FunctionType fmethodTy = asm.kfunctype["fmethodTy"];
-    Function func = asm.m.getOrInsertFunction("Object_typeCheck", fmethodTy);
+    Type fmethodPtrTy = asm.ktype["methodPtrTy"];
+
+    Value func = ConstantInt.get(asm.intTy, (method:Object.typeCheck).getPtr());
+    func = asm.builder.CreateIntToPtr(func, fmethodPtrTy);
     Value thisidx = ConstantInt.get(asm.intTy, op.espidx + K_CALLDELTA);
     Value sfp = asm.builder.createGEP1(asm.sfp, thisidx);
     Value vrix = ConstantInt.get(asm.intTy, K_RTNIDX);
