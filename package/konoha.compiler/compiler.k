@@ -174,7 +174,8 @@ Type Compiler.convertType(Class type) {
 }
 
 String getTypeName(Class type) {
-    return (to String) type;
+    String res = (to String) type;
+    return (res == "") ? "null" : res;
 }
 
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
