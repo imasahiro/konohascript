@@ -3836,10 +3836,6 @@ void K_Function.codegen(Compiler asm) {
                 for (int i=1; i < funcargs.size; i++) {
                     //print funcargs[i].type, args[i].type;
                     if (funcargs[i].type != args[i].type) {
-                        if (((to String)funcargs[i].type).startsWith("konoha.Array<") &&
-                                ((to String)funcargs[i].type).startsWith("konoha.Array<")) {
-                            continue;
-                        }
                         check_overload = false;
                     }
                 }
