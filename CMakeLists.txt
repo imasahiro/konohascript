@@ -48,8 +48,15 @@ SET(CMAKE_CXX_FLAGS_DEBUG   "-Wall -O0 -g3")
 #	SET(CMAKE_C_FLAGS "--analyze ${CMAKE_C_FLAGS}")
 #endif()
 
+set(KONOHA_CFLAGS)
+macro(add_konoha_definitions)
+	foreach(arg ${ARGN})
+		set(KONOHA_CFLAGS "${KONOHA_CFLAGS} ${arg}")
+	endforeach(arg ${ARGN})
+	add_definitions(${ARGN})
+endmacro(add_konoha_definitions)
 
-add_definitions(-DHAVE_CONFIG_H)
+add_konoha_definitions(-DHAVE_CONFIG_H)
 
 set(KONOHA_SRC
 	src/lang/typing.c
@@ -294,13 +301,13 @@ if("${HAS_DOTSVN}" MATCHES ".svn")
 	if(Subversion_FOUND)
 		Subversion_WC_INFO(${CMAKE_CURRENT_SOURCE_DIR}/include ER)
 		set(SUBVERSION_REVISION ${ER_WC_REVISION})
-		add_definitions(-DK_REVISION=${SUBVERSION_REVISION})
+		konoha_add_definitions(-DK_REVISION=${SUBVERSION_REVISION})
 	endif(Subversion_FOUND)
 endif()
 
 option(USE_LLVM "Use llvm" OFF)
 if(USE_LLVM)
-	add_definitions(-DK_USING_LLVM)
+	konoha_add_definitions(-DK_USING_LLVM)
 	find_program(LLVM_CONFIG NAMES llvm-config DOC "llvm-config")
 	execute_process(
 			COMMAND ${LLVM_CONFIG} --cppflags
@@ -349,7 +356,7 @@ option(USE_QT4 "Using qt4 package" OFF)
 
 option(USE_GENGC "Using GENGC" OFF)
 if(USE_GENGC)
-	add_definitions(-DK_USING_GENGC=1)
+	konoha_add_definitions(-DK_USING_GENGC=1)
 endif(USE_GENGC)
 
 if(MINGW)
@@ -374,10 +381,41 @@ add_executable(konoha1 ${KONOHA_BIN})
 target_link_libraries(konoha1 konoha)
 set_target_properties(konoha1 PROPERTIES OUTPUT_NAME konoha)
 
+find_program(CLANG_BIN NAMES clang DOC "clang")
+if(CLANG_BIN)
+	set(COMPILED_LIB_BC libkonoha.dylib.bc)
+	SET (COMPILED_BC)
+	string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+	set(_cflag "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${BUILD_TYPE}}")
+	set(_tmp "${_cflag} ${KONOHA_CFLAGS} -I${CMAKE_CURRENT_BINARY_DIR}")
+	string(REPLACE " " ";" LLVM_C_FLAGS ${_tmp})
+	foreach(it ${KONOHA_SRC})
+		string(REPLACE "/" ";" _source ${it})
+		list(REVERSE _source)
+		list(GET _source 0 _file)
+		set(_output ${CMAKE_CURRENT_BINARY_DIR}/${_file}.bc)
+		add_custom_command(
+				OUTPUT  ${_output}
+				DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_it}
+				COMMAND clang ${PROJECT_SOURCE_DIR}/${it}
+				${LLVM_C_FLAGS} -emit-llvm -c -o
+				${_output})
+		list(APPEND COMPILED_BC ${_output})
+	endforeach()
+	add_custom_command(
+			OUTPUT  ${COMPILED_LIB_BC}
+			DEPENDS ${COMPILED_BC}
+			COMMAND llvm-ld -link-as-library -o ${COMPILED_LIB_BC} ${COMPILED_BC})
+	add_custom_target(CREATE_BC_LIB DEPENDS ${COMPILED_LIB_BC})
+	
+	add_dependencies(konoha CREATE_BC_LIB)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${COMPILED_LIB_BC} DESTINATION konoha/lib/)
+endif(CLANG_BIN)
+
 if(USE_CTEST)
 	include(CTest)
 	message(STATUS "*** Enable CTest Option ***")
-	add_definitions(-fprofile-arcs -ftest-coverage)
+	konoha_add_definitions(-fprofile-arcs -ftest-coverage)
 	target_link_libraries(konoha -fprofile-arcs)
 endif(USE_CTEST)
 
