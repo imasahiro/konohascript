@@ -2019,7 +2019,6 @@ void Compiler.emit(Method mtd) {
     }
     String result = kfunc.dump();
     this.ir << result;
-    ERR << "hi " + |this.ir| << EOL;
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
     }
