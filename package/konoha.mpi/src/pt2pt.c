@@ -17,7 +17,7 @@ KMETHOD MPIComm_send(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## method int MPIComm.recv(MPIData rdata, int offset, int count, int src_rank, int tag);
+//## method int MPIComm.recv(MPIData rdata, int count, int src_rank, int tag);
 
 KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -31,7 +31,9 @@ KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 	if (MPI_Probe(src_rank, tag, MPIC_COMM(comm), &stat) == MPI_SUCCESS) {
 		int rcount = 0;
 		MPI_Get_count(&stat, MPID_TYPE(rdata), &rcount);
-		if (rcount >= 0 && count > rcount) {
+		if (count <= 0) {
+			count = rcount;
+		} else if (rcount >= 0 && count > rcount) {
 			KNH_NOTE("requested: %d > recieved %d", count, rcount);
 			count = rcount;
 		}

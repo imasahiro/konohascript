@@ -76,7 +76,7 @@ typedef struct {
 #define MPID_CCHK(d, c) \
 	{\
 		int psize = MPID_SIZE(d) - MPID_POFS(d);\
-		if (c > psize) c = psize;\
+		if (c > psize || c <= 0) c = psize;\
 	}
 #define MPID(v, o) kMPIData *v = ((kMPIData*)o)
 
