@@ -2907,7 +2907,7 @@ void knh_Method_asm(CTX ctx, kMethod *mtd, kStmtExpr *stmtB, knh_Ftyping typing)
 	knh_LLVMMethod_asm(ctx, mtd, stmtB);
 #else
 	/* CompilerAPI */
-	if (IS_NOTNULL(ctx->share->konoha_compiler)) {
+	if (ctx->share->compilerAPI != NULL && IS_NOTNULL(ctx->share->konoha_compiler)) {
 		ctx->share->compilerAPI(ctx, mtd, stmtB);
 	} else {
 		Method_compile(ctx, mtd, stmtB);

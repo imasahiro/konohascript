@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 void main() {
     m = new Map();
     m["hello"] = 1;

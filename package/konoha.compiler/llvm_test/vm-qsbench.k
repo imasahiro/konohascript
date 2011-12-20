@@ -1,7 +1,6 @@
 /**
  * quicksort
  */
-using konoha.compiler.*;
 N=1024 * 1024 * 2;
 /*
  * The Original Code is 

@@ -1,7 +1,6 @@
 /*
  * string ops
  */
-using konoha.compiler.*;
 N=100000;
 U=1000;
 T=100;

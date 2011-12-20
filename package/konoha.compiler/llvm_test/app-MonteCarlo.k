@@ -1,7 +1,6 @@
 /*
  * scimark2 MonteCarlo bench
  */
-using konoha.compiler.*;
 using konoha.math.*;
 
 RESOLUTION_DEFAULT = 2.0;  /*secs*/

@@ -1,7 +1,6 @@
 /*
  * for optimizer
  */
-using konoha.compiler.*;
 N=30_000_000;
 void run1 () {
     int v = 0;

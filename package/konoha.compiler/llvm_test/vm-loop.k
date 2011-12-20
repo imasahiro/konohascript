@@ -1,7 +1,6 @@
 /*
  * loop
  */
-using konoha.compiler.*;
 N=100_000_00;
 void test1() {
     int i = 0;

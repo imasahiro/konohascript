@@ -3,7 +3,6 @@
  */
 using konoha.math.*;
 using konoha.io.*;
-using konoha.compiler.*;
 
 WIDTH  = 64;
 HEIGHT = 64;

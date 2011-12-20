@@ -1,7 +1,6 @@
 /*
  * Richards Benchmark
  */
-using konoha.compiler.*;
 // based on a Java version:
 //  Based on original version written in BCPL by Dr Martin Richards
 //  in 1981 at Cambridge University Computer Laboratory, England

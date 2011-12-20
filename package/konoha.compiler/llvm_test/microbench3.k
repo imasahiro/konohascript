@@ -1,5 +1,4 @@
 // konoha microbench by kimio kuramitsu
-using konoha.compiler.*;
 using konoha.math.*;
 N=100_000_00;
 int testSimpleLoop() {

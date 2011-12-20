@@ -1,7 +1,6 @@
 /*
  * create link list
  */
-using konoha.compiler.*;
 class A {
     A next;
 }

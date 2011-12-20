@@ -4,7 +4,6 @@
  *
  */
 
-using konoha.compiler.*;
 using konoha.math.*;
 N=550;
 

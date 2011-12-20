@@ -4,7 +4,6 @@
  *
  */
 
-using konoha.compiler.*;
 BUFFER_SIZE = 8192;
 
 class Mandelbrot {

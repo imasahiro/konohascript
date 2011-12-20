@@ -1,7 +1,6 @@
 /*
  * map
  */
-using konoha.compiler.*;
 
 N=4000;
 M=5;/* word similarity 1 <= M <= 5 */

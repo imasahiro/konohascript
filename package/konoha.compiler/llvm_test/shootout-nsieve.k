@@ -5,7 +5,6 @@
  */
 
 N=10;
-using konoha.compiler.*;
 
 int nsieve(int m, boolean[] isPrime)
 {

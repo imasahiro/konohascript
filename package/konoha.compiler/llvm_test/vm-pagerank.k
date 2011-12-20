@@ -2,7 +2,6 @@
  * Calculate PageRank
  * original PHP source http://phpir.com/pagerank-in-php
  */
-using konoha.compiler.*;
 
 N=2000;
 Map<String,Int[]> links = {

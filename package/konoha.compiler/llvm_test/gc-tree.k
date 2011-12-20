@@ -2,7 +2,6 @@
  * CreateTree
  * http://www.cs.cmu.edu/~spoons/gc/benchmarks.html
  */
-using konoha.compiler.*;
 
 class Node {
     public Node left, right;

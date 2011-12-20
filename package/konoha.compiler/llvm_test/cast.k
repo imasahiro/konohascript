@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 N = 10;
 int f() {
     String s = "123";

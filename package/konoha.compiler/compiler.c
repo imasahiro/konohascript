@@ -498,7 +498,7 @@ static void kook_compiler_emit(CTX ctx, kMethod *mtd)
 
 static void kook_compiler_compiler(CTX ctx, kMethod *mtd, kStmtExpr *stmtB)
 {
-	KNH_P("hello world");
+	//KNH_P("hello world");
 	CALL(ctx, COMPILER_API.INIT, 1, mtd);
 	kook_BLOCK_asm(ctx, stmtB);
 	kook_compiler_emit(ctx, mtd);
@@ -513,8 +513,7 @@ static kMethod *load_method(CTX ctx, kclass_t cid, kbytes_t t)
 }
 
 #define LOADMTD(ctx, cid, name) load_method(ctx, cid, STEXT(name))
-
-DEFAPI(void) complete(CTX ctx)
+DEFAPI(void) reset_compiler_api(CTX ctx)
 {
 	kclass_t cid = knh_getcid(ctx, B("konoha.compiler.Compiler"));
 	struct knh_CompilerAPI_t *api = &COMPILER_API;
@@ -557,8 +556,13 @@ DEFAPI(void) complete(CTX ctx)
 	api->FMTCALL  = LOADMTD(ctx, cid, "asmFMTCALL");
 	api->EMITCODE = LOADMTD(ctx, cid, "emit");
 	api->INIT     = LOADMTD(ctx, cid, "init");
-	ctx->wshare->konoha_compiler = api->Instance;
-	ctx->wshare->compilerAPI = (void *) kook_compiler_compiler;
+	KNH_SETv(ctx, ctx->wshare->konoha_compiler, api->Instance);
 	CALL(ctx, newmtd, 0);
+}
+
+DEFAPI(void) complete(CTX ctx)
+{
+	ctx->wshare->compilerAPI = (void *) kook_compiler_compiler;
+	reset_compiler_api(ctx);
 }
 

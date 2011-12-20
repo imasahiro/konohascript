@@ -3,7 +3,6 @@
  * see http://lua-users.org/lists/lua-l/2010-02/msg00323.html
  */
 
-using konoha.compiler.*;
 N=10;
 
 // these are the opcodes for the interpreted language

@@ -34,8 +34,6 @@ using "konoha Linpack.k"
 
 */
 
-using konoha.compiler.*;
-
 class Linpack {
     float second_orig;
 

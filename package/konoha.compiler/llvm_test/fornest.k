@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 void f() {
     for (l = 0; l < 10; l++) {
         if (l % 2 == 0) {

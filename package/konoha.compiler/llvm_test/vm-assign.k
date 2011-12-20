@@ -1,7 +1,6 @@
 /*
  * field access
  */
-using konoha.compiler.*;
 N=10000;
 
 class A {

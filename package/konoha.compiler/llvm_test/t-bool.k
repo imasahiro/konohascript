@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 boolean f(boolean a, boolean b) {
     return a && b;
 }

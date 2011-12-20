@@ -1,7 +1,6 @@
 /*
  * NestedCall
  */
-using konoha.compiler.*;
 N=100_000;
 
 int f0(int a) { return a+10;}

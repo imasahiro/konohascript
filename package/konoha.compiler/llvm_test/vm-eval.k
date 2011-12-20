@@ -1,7 +1,6 @@
 /*
  * code eval
  */
-using konoha.compiler.*;
 N=10;
 
 class A {}

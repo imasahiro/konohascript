@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 int sum(Array<Int> a) {
     int res = 0;
     for (int i = 0; i < a.size; i++) {

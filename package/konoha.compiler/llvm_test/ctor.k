@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 class A {
     Int x;
     A(int n) {

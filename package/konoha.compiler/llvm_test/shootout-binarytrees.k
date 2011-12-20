@@ -3,7 +3,6 @@
    contributed by Kimio Kuramitsu
 */
 
-using konoha.compiler.*;
 MINDEPTH = 4;
 N=10;
 

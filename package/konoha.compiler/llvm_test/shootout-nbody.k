@@ -5,7 +5,6 @@
  * modified slightly by Chad Whipkey
  */
 
-using konoha.compiler.*;
 using konoha.math.*;
 N=5000000;
 PI = 3.141592653589793;
