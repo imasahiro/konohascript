@@ -1,6 +1,7 @@
 #define K_INTERNAL 1
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
+#include <konoha1/konohalang.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,33 +43,40 @@ static enum compile_mode {
     EMIT_JS,
     EMIT_NOP
 } compile_mode = EMIT_IR;
+
 static const char * codegenerator_file[] = {
     NULL,
     "konoha.compiler.llvm",
     "konoha.compiler.js",
 };
 
-static const char *parse_option(int argc, const char *argv[])
+static int compiler_run_main = 0;
+
+static const char *parse_option(int *argc, const char *argv[], const char *argv_[])
 {
     int i, argc_ = 0;
-    const char *argv_[argc];
-    if (argc <= 1) {
+    if (*argc <= 1) {
         fprintf(stderr, "usage: %s script.k\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    for (i = 0; i < argc; ++i) {
+    for (i = 0; i < *argc; ++i) {
         kbytes_t t = B(argv[i]);
         if (knh_bytes_equals(t, STEXT("--emit-llvm"))) {
             compile_mode = EMIT_LLVM;
             continue;
         }
-        else if (knh_bytes_equals(t, STEXT("--emit-js"))) {
+        if (knh_bytes_equals(t, STEXT("--emit-js"))) {
             compile_mode = EMIT_JS;
+            continue;
+        }
+        if (knh_bytes_equals(t, STEXT("--run"))) {
+            compiler_run_main = 1;
             continue;
         }
         argv_[argc_++] = argv[i];
     }
     konoha_ginit(argc_, argv_);
+    *argc = argc_;
     return argv_[1];
 }
 
@@ -76,19 +84,15 @@ extern void knh_setCompileMode(CTX ctx, int mode);
 static fMethod_compile compilerAPI = NULL;
 static void CompilerAPI_enable(CTX ctx)
 {
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
     assert(compilerAPI != NULL && ctx->share->compilerAPI == NULL);
     ctx->wshare->compilerAPI = compilerAPI;
     compilerAPI     = NULL;
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
 }
 static void CompilerAPI_disable(CTX ctx)
 {
     assert(compilerAPI == NULL && ctx->share->compilerAPI != NULL);
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
     compilerAPI     = ctx->wshare->compilerAPI;
     ctx->wshare->compilerAPI = NULL;
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
 }
 
 #if defined(K_USING_WINDOWS_)
@@ -118,33 +122,71 @@ static void load_codegenerator(CTX ctx)
     }
     CompilerAPI_enable(ctx);
 }
+/* ------------------------------------------------------------------------ */
+
+static int knh_runMain(CTX ctx, int argc, const char **argv)
+{
+    KONOHA_BEGIN(ctx);
+    kMethod *mtd = ClassTBL_getMethodNULL(ctx, O_cTBL(ctx->script), MN_main);
+    int res = 0;
+    if(mtd != NULL) {
+        int thisidx = 1 + K_CALLDELTA;
+        BEGIN_LOCAL(ctx, lsfp, 5);
+        lsfp[1].ivalue = 0;
+        lsfp[thisidx+K_PCIDX].pc = NULL;
+        klr_setmtdNC(ctx,lsfp[thisidx+K_MTDIDX], mtd);
+        KNH_SETv(ctx, lsfp[thisidx].o, ctx->script);
+        KNH_SETv(ctx, lsfp[thisidx+1].o, knh_getPropertyNULL(ctx, STEXT("script.argv")));
+        klr_setesp(ctx, lsfp + thisidx+2);
+        if(knh_VirtualMachine_launch(ctx, lsfp + thisidx)) {
+            res = (int)lsfp[1].ivalue;
+        }
+        END_LOCAL(ctx, lsfp);
+    }
+    KONOHA_END(ctx);
+    return res;
+}
+
+/* ------------------------------------------------------------------------ */
 
 int main(int argc, const char *argv[])
 {
-    const char *fname = parse_option(argc, argv);
+    int argc_ = argc;
+    const char *argv_[argc_];
+    const char *fname = parse_option(&argc_, argv, argv_);
     konoha_t konoha = konoha_open();
     CTX ctx = konoha;
-    KONOHA_BEGIN(ctx); {
-        kString *s = new_T(fname);
-        kPath *path = new_Path(ctx, s);
-        knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
-        kbytes_t t = knh_bytes_nsname(S_tobytes(s));
-        knh_Script_setNSName(ctx, ctx->script, new_S(t.text, t.len));
-        kbytes_t pkgname = STEXT("konoha.compiler");
-        knh_loadPackage(ctx, pkgname);
+    kString *s = new_T(fname);
+    knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
+    kbytes_t t = knh_bytes_nsname(S_tobytes(s));
+    knh_Script_setNSName(ctx, ctx->script, new_S(t.text, t.len));
+    kbytes_t pkgname = STEXT("konoha.compiler");
+    knh_loadPackage(ctx, pkgname);
 
-        load_codegenerator(ctx);
+    load_codegenerator(ctx);
+    if (!compiler_run_main) {
         knh_setCompileMode(ctx, 1);
-        knh_load(ctx, path);
+    }
+    knh_startScript(ctx, (const char*)fname);
 
-        /* CompilerAPI->dump() */
-        kMethod *mtd = load_method(ctx,
-                O_cid(ctx->share->konoha_compiler), STEXT("dump"));
-        BEGIN_LOCAL(ctx, lsfp, K_CALLDELTA+1); {
-            KNH_SETv(ctx, lsfp[K_CALLDELTA].o, ctx->share->konoha_compiler);
-            KNH_SCALL(ctx, lsfp, 0, mtd, 0);
-        } END_LOCAL(ctx, lsfp);
-    } KONOHA_END(ctx);
+    /* CompilerAPI->dump() */
+    kMethod *mtd = load_method(ctx,
+            O_cid(ctx->share->konoha_compiler), STEXT("dump"));
+    BEGIN_LOCAL(ctx, lsfp, K_CALLDELTA+1); {
+        KNH_SETv(ctx, lsfp[K_CALLDELTA].o, ctx->share->konoha_compiler);
+        KNH_SCALL(ctx, lsfp, 0, mtd, 0);
+    } END_LOCAL(ctx, lsfp);
+    if (compiler_run_main) {
+        kArray *a = new_Array(ctx, CLASS_String, argc_);
+        int i;
+        for(i = 1; i < argc_; i++) {
+            knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv_[i],
+                        knh_strlen(argv_[i]), SPOL_TEXT|SPOL_POOLALWAYS));
+        }
+        knh_DictMap_set(ctx, ctx->share->props, new_T("script.argv"), a);
+        knh_stack_clear(ctx, ctx->stack);
+        knh_runMain(ctx, argc_, argv_);
+    }
     konoha_close(konoha);
     return 0;
 }

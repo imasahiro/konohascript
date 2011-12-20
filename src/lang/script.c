@@ -786,7 +786,6 @@ static knh_ClassTBL_t *CLASSNAME_decl(CTX ctx, kStmtExpr *stmt, kTerm *tkC, kTer
 		cid = new_ClassId(ctx);
 		ct = varClassTBL(cid);
 		knh_setClassName(ctx, cid, CWB_newString(ctx, cwb, SPOL_ASCII), (tkC)->text);
-        fprintf(stderr, "%d %s %p\n", cid, S_totext(((varClassTBL(cid))->lname)), varClassTBL(cid));
 		ct->cflag  = knh_StmtCLASS_flag(ctx, stmt);
 		ct->magicflag  = KNH_MAGICFLAG(ct->cflag);
 		NameSpace_setcid(ctx, K_GMANS, (tkC)->text, cid);

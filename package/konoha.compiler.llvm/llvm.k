@@ -29,7 +29,6 @@
 using konoha.math.*;
 
 DEBUG = false;
-USE_NONSSA = false;
 K_MTDIDX2 = -1;
 K_RTNIDX = -4;
 K_CALLDELTA = 4;
@@ -214,7 +213,6 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     this.opt.innerfunc = func.func;
 }
 @Public void Compiler.init(Method mtd) {
-    print "hello world llvm";
     this.mtd = mtd;
     opt.wrapperfunc = Function.create(mtd.toString(), opt.funcTy, opt.m, GlobalValue.ExternalLinkage);
     Array<Value> vargs = opt.wrapperfunc.getArguments();
