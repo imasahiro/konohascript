@@ -80,6 +80,7 @@ class K_Inst;
 class Compiler {
     Module m;
     String[] ir;
+    String[] source;
     ExecutionEngine ee;
     IRBuilder builder;
     Array<dynamic> const_table;
@@ -113,6 +114,7 @@ class Compiler {
         this.m = new Module("konoha");
         this.ee = m.createExecutionEngine();
         ir = [];
+        source = [];
         kfunctype = {};
         ktype = {};
         const_table = [];
@@ -159,7 +161,6 @@ class Compiler {
         this.user_type = {};
     }
 };
-
 void Compiler.shiftesp(int shift);
 Type Compiler.convertType(Class type) {
     if (type == Int) {
