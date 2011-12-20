@@ -1,12 +1,12 @@
 #ifndef QT_COMMON_HPP
 #define QT_COMMON_HPP
+#define K_INTERNAL
+#include <konoha1.h>
+#include <konoha1/inlinelibs.h>
 #include <QtCore>
 #include <QtGui>
 #include <QtWebKit>
 #include <QtOpenGL/QtOpenGL>
-#define K_INTERNAL
-#include <konoha1.h>
-#include <konoha1/inlinelibs.h>
 #define getClassTBL(CLASS) lctx->share->ClassTBL[knh_getcid(lctx, STEXT(#CLASS))]
 #define new_RawPtrFromClass(CLASS, o) new_RawPtr(lctx, getClassTBL(CLASS), o)
 #include <map>
