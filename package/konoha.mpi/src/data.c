@@ -111,9 +111,8 @@ void* knh_MPIData_getAddr(kMPIData *data)
 	case CLASS_String:
 		return data->s->str.buf + MPID_POFS(data);
 	default:
-		return data->ba->bu.buf + MPID_POFS(data);
+		return (data->ba) ? data->ba->bu.buf + MPID_POFS(data) : NULL;
 	}
-	return NULL;
 }
 
 void knh_MPIData_expand(CTX ctx, kMPIData *data, int *count, int *inc)
@@ -162,9 +161,8 @@ int knh_MPIData_getSize(kMPIData *data)
 	case CLASS_String:
 		return S_size(data->s);
 	default:
-		return BA_size(data->ba);
+		return (data->ba) ? BA_size(data->ba) : 0;
 	}
-	return 0;
 }
 
 int knh_MPIData_incSize(kMPIData *data, int count)
