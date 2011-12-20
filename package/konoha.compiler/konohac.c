@@ -76,19 +76,15 @@ extern void knh_setCompileMode(CTX ctx, int mode);
 static fMethod_compile compilerAPI = NULL;
 static void CompilerAPI_enable(CTX ctx)
 {
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
     assert(compilerAPI != NULL && ctx->share->compilerAPI == NULL);
     ctx->wshare->compilerAPI = compilerAPI;
     compilerAPI     = NULL;
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
 }
 static void CompilerAPI_disable(CTX ctx)
 {
     assert(compilerAPI == NULL && ctx->share->compilerAPI != NULL);
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
     compilerAPI     = ctx->wshare->compilerAPI;
     ctx->wshare->compilerAPI = NULL;
-    fprintf(stderr, "%d:api=%p, shareApi=%p\n", __LINE__, compilerAPI, ctx->share->compilerAPI);
 }
 
 #if defined(K_USING_WINDOWS_)
