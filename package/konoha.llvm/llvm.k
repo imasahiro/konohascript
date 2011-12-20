@@ -247,10 +247,10 @@ include "lib:gluelink";
 @Virual @Native void PassManager.run(Module m);
 @Native PassManager PassManager.new();
 @Native FunctionPassManager FunctionPassManager.new(Module m);
-@Native void PassManager.addPass(Pass p)
-@Native void PassManager.addImmutablePass(ImmutablePass p)
-@Native void PassManager.addFunctionPass(FunctionPass p)
-@Native void PassManager.addModulePass(ModulePass p)
+@Native void PassManager.addPass(Pass p);
+@Native void PassManager.addImmutablePass(ImmutablePass p);
+@Native void PassManager.addFunctionPass(FunctionPass p);
+@Native void PassManager.addModulePass(ModulePass p);
 @Overload void PassManager.add(ImmutablePass p) { addImmutablePass(p); }
 @Overload void PassManager.add(FunctionPass p) { addFunctionPass(p); }
 @Overload void PassManager.add(ModulePass p) { addModulePass(p); }

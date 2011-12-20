@@ -1,7 +1,6 @@
 /*
  * fibonacci 40
  */
-using konoha.compiler.*;
 N = 10;
 
 int fibo(int n) {

@@ -4,7 +4,6 @@
  *
  */
 
-using konoha.compiler.*;
 LINE_LENGTH = 60;
 OUT_BUFFER_SIZE = 256*1024;
 LOOKUP_SIZE = 4*1024;

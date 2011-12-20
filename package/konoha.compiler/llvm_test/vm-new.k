@@ -1,7 +1,6 @@
 /*
  * object.new
  */
-using konoha.compiler.*;
 N=10_000_00;
 
 class A {

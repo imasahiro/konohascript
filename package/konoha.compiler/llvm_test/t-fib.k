@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 int fib(int n) {
     int res;
     if (n < 3) res = 1;

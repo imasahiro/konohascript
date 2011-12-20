@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 int f(int n) {
 	int res = 0;
 	for (int j = 0; j < 10; j++) {

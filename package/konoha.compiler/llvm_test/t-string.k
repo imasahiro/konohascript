@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 void main() {
     String s = "hello";
     String t = "bye";

@@ -4,7 +4,6 @@
  *
  */
 
-using konoha.compiler.*;
 using konoha.math.*;
 N=7;
 static int max(int a, int b) {

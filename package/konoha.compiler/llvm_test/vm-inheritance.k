@@ -1,7 +1,6 @@
 /*
  * object inheritance
  */
-using konoha.compiler.*;
 N=1_000_00;
 
 class A {

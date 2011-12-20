@@ -16,7 +16,6 @@
    this class, so pointer comparison can be used for value comparison.
    */
 
-using konoha.compiler.*;
 class Strength {
 
     int strengthValue;

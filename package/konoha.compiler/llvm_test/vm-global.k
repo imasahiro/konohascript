@@ -1,7 +1,6 @@
 /*
  * access global variable
  */
-using konoha.compiler.*;
 N=1_000_00;
 Int     a = 10;
 Float   b = 10.0;

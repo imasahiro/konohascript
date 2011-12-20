@@ -6,7 +6,6 @@
 
 N=2_500_00;
 
-using konoha.compiler.*;
 using konoha.math.*;
 
 void partial(int n) {

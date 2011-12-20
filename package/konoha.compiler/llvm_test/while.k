@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 void main(int n) {
 	while(n < 10) {
 		while (n < 5) {

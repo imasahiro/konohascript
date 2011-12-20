@@ -5,8 +5,6 @@
  * Ported to KonohaScript by Masahiro Ide
  */
 
-using konoha.compiler.*;
-
 IDENT_1 = 0;
 IDENT_2 = 1;
 IDENT_3 = 2;

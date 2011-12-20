@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 Boolean map_dynamic(Map m) {
     dynamic a = m["average"]; /*Array<Map> */
     dynamic akeys = a.keys();

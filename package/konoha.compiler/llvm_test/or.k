@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 
 boolean or_1(boolean b1, boolean b2, boolean b3, boolean b4) {
     return b1 || b2;

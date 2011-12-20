@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 int f() {
     int i = 0;
     do {

@@ -4,7 +4,6 @@
  *
  */
 
-using konoha.compiler.*;
 N = 250000;
 
 ALU = "GGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGG" + 

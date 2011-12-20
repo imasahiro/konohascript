@@ -2,7 +2,6 @@
  * scimark2 FFT bench
  */
 using konoha.math.*;
-using konoha.compiler.*;
 
 RESOLUTION_DEFAULT = 2.0;  /*secs*/
 RANDOM_SEED = 101010;

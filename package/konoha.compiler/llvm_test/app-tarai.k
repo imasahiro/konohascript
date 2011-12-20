@@ -1,4 +1,3 @@
-using konoha.compiler.*;
 /*
  * tarai 12 6 0
  */
