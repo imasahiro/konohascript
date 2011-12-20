@@ -23,7 +23,6 @@ add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE})
 set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
 target_link_libraries(${PACKAGE_NAME} konoha ${PACKAGE_EXTRA_LIBRARY})
 
-add_subdirectory("transpiler")
 add_executable(konohac "konohac.c")
 target_link_libraries(konohac konoha)
 install(TARGETS konohac RUNTIME DESTINATION bin)
