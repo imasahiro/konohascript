@@ -1,9 +1,16 @@
+TOP = "__topLevelFunc__()"
 //class CompilerOpt {
 //    String[] source;
+//    Class [] declareClass;
+//    String[] topLevelFunctionList;
 //}
 System.addClassField(CompilerOpt, String[], "source");
+System.addClassField(CompilerOpt, Class [], "declareclass");
+System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 @Public void CompilerOpt.init() {
     this.source = [];
+    this.declareClass = [];
+    this.topLevelFunctionList = [];
 }
 
 String getTypeName (Class type) {
@@ -17,7 +24,7 @@ LABEL = uscore("label");
 @Public void Compiler.addSource(String str, int count) {
     String tmp = "";
     for (int i = 0; i < count; i++) {
-        tmp += "\t";
+        tmp += "  ";
     }
     tmp += str;
     int size = this.opt.source.size;
@@ -36,9 +43,18 @@ LABEL = uscore("label");
 
 @Public void K_Function.codegen(Compiler asm) {
     String fncdef = "";
-    String thisclass = asm.mtd.toString().split(".")[0];
+    String thisclass = asm.mtd.toString().split(".")[1];
     if (isStatic == 1 || thisclass == "Script") {
-        fncdef += "function " + asm.mtd.getName() + "(";
+        if (thisclass == "Script") {
+            int size = |asm.opt.topLevelFunctionList|;
+            asm.opt.topLevelFunctionList.add("Script" + size);
+            fncdef += "function Script" + size + "(script";
+        } else {
+            fncdef += "function " + asm.mtd.getName() + "(";
+            if (asm.mtd.getName() == "main") {
+                asm.opt.topLevelFunctionList.add("main");
+            }
+        }
     } else {
         fncdef += uscore(thisclass) + ".prototype." + asm.mtd.getName() + " = function(";
     }
@@ -48,7 +64,7 @@ LABEL = uscore("label");
             fncdef += ", ";
         }
     }
-    fncdef += ") {";
+    fncdef += ") {" + EOL;
     asm.addFunc(fncdef);
     if (isStatic == 0 && |funcargs| > 0) {
         asm.addSource("var " + funcargs[0].getName() + " = this;", 1);
@@ -187,7 +203,7 @@ LABEL = uscore("label");
     if (op.mtd.getReturnType() != Void) {
         res = "var " + getName() + " = ";
     }
-    String thisclass = op.mtd.toString().split(".")[0];
+    String thisclass = op.mtd.toString().split(".")[1];
     if (flag) {
         res += args[0].getName() + ".";
     } else if (thisclass != "Script") {
@@ -278,9 +294,33 @@ LABEL = uscore("label");
     this.mtd = mtd;
     this.opt = new CompilerOpt();
     this.opt.init();
+    this.kfunc = new K_Function(mtd);
+}
+@Public String Compiler.createKickFunc() {
+    String res = "function " + TOP + " {" + EOL;
+    boolean hasScr = false;
+    foreach (fnc in this.opt.topLevelFunctionList) {
+        if (fnc.indexOf("Script") != -1) {
+            hasScr = true;
+        }
+    }
+    if (hasScr) {
+        res += "  script = new " + uscore("Script") + "();" + EOL;
+    }
+    foreach (fnc in this.opt.topLevelFunctionList) {
+        res += "  " + fnc + "(";
+        if (fnc.indexOf("Script") != -1) {
+            res += "script";
+        }
+        res += ");" + EOL;
+    }
+    res += "}" + EOL;
+    return res;
 }
 @Public void Compiler.dump(Boolean dump) {
+    OUT << this.opt.topLevelFunctionList << EOL;
     foreach (str in this.opt.source) {
-        OUT << this.opt.source << EOL;
+        OUT << str << EOL;
     }
+    OUT << createKickFunc() << EOL;
 }
