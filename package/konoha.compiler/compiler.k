@@ -31,11 +31,9 @@ using konoha.llvm.*;
 include "lib:gluelink";
 
 DEBUG = false;
-USE_NONSSA = false;
-//USE_NONSSA = true;
+//USE_NONSSA = false;
+USE_NONSSA = true;
 //DEBUG = true;
-DUMP = true;
-//DUMP = true;
 FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
 FUNC_VIRTUAL2 = 1;
@@ -1482,7 +1480,6 @@ void Compiler.initFunc(K_Function func) {
 }
 
 void Compiler.init(Method mtd) {
-    print "hello world";
     this.mtd = mtd;
     if (DEBUG) {
         print mtd;
