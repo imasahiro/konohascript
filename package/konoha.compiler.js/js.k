@@ -1,3 +1,17 @@
+String header = """
+<html>
+<head>
+<title>sample</title>
+</head>
+<script type="text/javascript" language="javascript" src="./konoha.js" > </script>
+<script type="text/javascript">
+<!--""";
+String footer = """
+// -->
+</script>
+<body onLoad=" __topLevelFunc__() ">
+</body>
+</html>""";
 TOP = "__topLevelFunc__()"
 //class CompilerOpt {
 //    String[] source;
@@ -5,7 +19,7 @@ TOP = "__topLevelFunc__()"
 //    String[] topLevelFunctionList;
 //}
 System.addClassField(CompilerOpt, String[], "source");
-System.addClassField(CompilerOpt, Class [], "declareclass");
+System.addClassField(CompilerOpt, Class[] , "declareclass");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 @Public void CompilerOpt.init() {
     this.source = [];
@@ -21,6 +35,13 @@ String uscore(String in) {
     return "__" + in + "__";
 }
 LABEL = uscore("label");
+@Public void Compiler.addClass(Class c) {
+    String cname = (to String)c;
+    Class[] declareclass = this.opt.declareclass;
+    if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.")&& declareclass.indexOf(c) == -1) {
+        declareclass.add(c);
+    }
+}
 @Public void Compiler.addSource(String str, int count) {
     String tmp = "";
     for (int i = 0; i < count; i++) {
@@ -42,6 +63,11 @@ LABEL = uscore("label");
 }
 
 @Public void K_Function.codegen(Compiler asm) {
+    asm.addClass(asm.mtd.getMethodClass());
+    asm.addClass(asm.mtd.getReturnType());
+    foreach (Class c in asm.mtd.getParamTypes()) {
+        asm.addClass(c);
+    }
     String fncdef = "";
     String thisclass = asm.mtd.toString().split(".")[1];
     if (isStatic == 1 || thisclass == "Script") {
@@ -80,7 +106,6 @@ LABEL = uscore("label");
         asm.addSource("break;", 2);
     }
     asm.addSource("}", 0);
-    asm.addSource("", 0);
 }
 @Public @Override void K_ADD.codegen(Compiler asm) {
     String res;
@@ -248,6 +273,7 @@ LABEL = uscore("label");
     //setLLVMValue(asm, v);
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
+    asm.addClass(this.type);
     String name = (to String) type;
     name = name.split(".")[1];
     asm.addSource("var " + getName() + " = new " + uscore(name) + ";", 3);
@@ -259,12 +285,15 @@ LABEL = uscore("label");
     asm.addSource(op.inst0.getName() + ".set(" + op.inst1.getName() + ", " + op.inst2.getName() + ");)", 3);
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
+    asm.addClass(this.type);
     asm.addSource("var " + getName() + " = " + quote(op.const_table[op.table_idx]) + ";", 3);
 }
 @Public @Override void K_MOVx.codegen (Compiler asm) {
+    asm.addClass(this.type);
     asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".field" + op.bn + ";", 3);
 }
 @Public @Override void K_xMOV.codegen(Compiler asm) {
+    asm.addClass(op.inst0.type);
     asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 3);
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
@@ -297,13 +326,19 @@ LABEL = uscore("label");
     this.kfunc = new K_Function(mtd);
 }
 @Public String Compiler.createKickFunc() {
-    String res = "function " + TOP + " {" + EOL;
+    String res = "";
     boolean hasScr = false;
     foreach (fnc in this.opt.topLevelFunctionList) {
         if (fnc.indexOf("Script") != -1) {
             hasScr = true;
         }
     }
+    if (hasScr) {
+        res += "function " + uscore("Script") + "() {" + EOL;
+        res += "}" + EOL;
+        res += EOL;
+    }
+    res += "function " + TOP + " {" + EOL;
     if (hasScr) {
         res += "  script = new " + uscore("Script") + "();" + EOL;
     }
@@ -317,10 +352,31 @@ LABEL = uscore("label");
     res += "}" + EOL;
     return res;
 }
+@Public String Compiler.createClassDefinition(Class c, String cname) {
+    String res = "function " + uscore(cname) + "() {" + EOL;
+    int i = 0;
+    foreach (Class fieldclass in c.getFieldClasses()) {
+        if (fieldclass.isUnboxType()) {
+            res += "  " + "this.field" + i + " = 0;";
+        } else {
+            res += "  " + "this.field" + i + " = null;";
+        }
+        res += EOL;
+        i++;
+    }
+    res += "}" + EOL;
+    return res;
+}
 @Public void Compiler.dump(Boolean dump) {
-    OUT << this.opt.topLevelFunctionList << EOL;
+    OUT << header << EOL + EOL;
+    foreach (Class c in this.opt.declareclass) {
+        String cname = (to String) c;
+        cname = cname.split(".")[1];
+        OUT << createClassDefinition(c, cname) << EOL;
+    }
     foreach (str in this.opt.source) {
         OUT << str << EOL;
     }
-    OUT << createKickFunc() << EOL;
+    OUT << createKickFunc() << EOL + EOL;
+    OUT << footer;
 }
