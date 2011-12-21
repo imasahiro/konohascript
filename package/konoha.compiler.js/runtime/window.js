@@ -17,7 +17,7 @@ function __Node__(node){
         return new __Node__(this.node.parentNode);
     }
     this.appendChild = function(newChild) {
-        return new __Node__(this.node.appendChild(newChild));
+        return new __Node__(this.node.appendChild(newChild.node));
     }
     this.insertBefore = function(newChild, refChild) {
         return new __Node__(this.node.insertBefore(newChild.node, refChild.node));
@@ -141,7 +141,7 @@ function __Element__(node) {
         return new __Attr__(this.node.getAttributeNode(name.obj));
     }
     this.setAttribute = function(name, value) {
-        this.node.setAttribute(name.obj, value);
+        this.node.setAttribute(name.obj, value.obj);
     }
     this.removeAttribute = function(name) {
         this.node.removeAttribute(name);
@@ -151,7 +151,7 @@ function __Element__(node) {
     }
     this.getElementsByTagName = function(name) {
         var obj = this.node.getElementsByTagName(name.obj);
-        return new __Array__(obj);
+        return new __NodeList__(obj);
     }
     this.setAttributeNode = function(newAttr) {
         return new __Attr__(this.node.setAttributeNode(newAttr.attr));
@@ -196,8 +196,8 @@ function __Document__(node) {
         return new __Attr__(attr);
     }
     this.getElementsByTagName = function(name) {
-        var obj = this.element.getElementsByTagName(name.obj);
-        return new __Array__(obj);
+        var obj = this.node.getElementsByTagName(name.obj);
+        return new __NodeList__(obj);
     }
     this.getElementById = function(elementId) {
         var obj = this.node.getElementById(elementId.obj);

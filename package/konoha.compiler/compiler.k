@@ -1480,7 +1480,6 @@ void Compiler.initFunc(K_Function func) {
 }
 
 void Compiler.init(Method mtd) {
-    print "hello world";
     this.mtd = mtd;
     if (DEBUG) {
         print mtd;
