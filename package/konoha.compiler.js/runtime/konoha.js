@@ -18,6 +18,7 @@ function __Class__(obj) {
     this.obj = obj;
 }
 /* OutputStream */
+__OutputStream__.prototype = new __Object__();
 function __OutputStream__(isCwb) {
     this.konohaclass = "konoha.OutputStream";
     this.cwb = "";
@@ -90,6 +91,7 @@ function __OutputStream__(isCwb) {
 }
 
 /* System */
+__System__.prototype = new __Object__();
 function __System__() {
     this.konohaclass = "konoha.System";
 }
@@ -103,6 +105,7 @@ __System__.getErr = function() {
 }
 
 /* Map */
+__Map__.prototype = new __Object__();
 function __Map__(obj) {
     this.konohaclass = "konoha.Map";
     this.obj = obj = {};
@@ -140,6 +143,7 @@ function __Map__(obj) {
 
 
 /* Array */
+__Array__.prototype = new __Object__();
 function __Array__(obj) {
     this.konohaclass = "konoha.Array";
     if (obj != null) {
