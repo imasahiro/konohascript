@@ -82,6 +82,7 @@ class Compiler {
     K_Function kfunc;
     Method[] system_method;
     Class[] system_method_class;
+    Class[] declareclass;
     int isCWB;
     K_Inst cwb;
     Map<String, K_Function[]> compiled_methods;
@@ -94,6 +95,7 @@ class Compiler {
     void init_first() {
         ir = [];
         const_table = [];
+        declareclass = [];
         Method mtd_in, mtd_out, mtd_err;
         Method[] mtds = System.getMethods();
         foreach (Method m in mtds) {
@@ -388,6 +390,7 @@ class K_Function {
     boolean undeveloped;
     String name;
     K_BasicBlock[] bbs;
+    Class[] declareclass_func;
     Func<K_Function,Method, int=>void>[] klrasm;
     Array<dynamic> const_table;
     Array<K_Inst> register_table;
@@ -424,6 +427,7 @@ class K_Function {
     Function func;
 
     K_Function(Method mtd) {
+        this.declareclass_func = [];
         this.undeveloped = false;
         this.hasReturn = false;
         isStatic = mtd.isStatic() ? 1 : 0;
@@ -456,7 +460,12 @@ class K_Function {
         this.samedom = [];
         this.df = [];
     }
-
+    void addClass(Class c) {
+        String cname = (to String)c;
+        if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.") && !cname.startsWith("js.") && declareclass_func.indexOf(c) == -1) {
+            declareclass_func.add(c);
+        }
+    }
     void setUndevelop() {
         //undeveloped = true;
     }
@@ -541,6 +550,7 @@ class K_Function {
     }
 
     K_Value getKValue(int idx, Class type) {
+        this.addClass(type);
         K_Value res = value_table[(String)idx];
         String str_type1 = "";
         String str_type2 = "";
@@ -1491,6 +1501,11 @@ void Compiler.init(Method mtd) {
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
     this.kfunc = new K_Function(mtd);
+    this.kfunc.addClass(mtd.getMethodClass());
+    this.kfunc.addClass(mtd.getReturnType());
+    foreach (Class c in mtd.getParamTypes()) {
+        this.kfunc.addClass(c);
+    }
     if (mtd.getName() == ""/*global variable definition*/) {
         K_Value kvalue = kfunc.getKValue(0, Script);
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
@@ -1822,8 +1837,21 @@ void Compiler.asm(Stmt stmt, Token tk, int espidx) {
 void Compiler.addConstTable(dynamic val) {
     const_table.add(val);
 }
+String classDef(Class c) {
+    String res = "class " + c + " extends " + c.getSuper + EOL;
+    res += "{" + EOL;
+    Class[] fieldClass = c.getFieldClasses();
+    String[] fieldStr = c.getFieldNames();
+    for(int i = 0; i < |fieldStr|; i++) {
+        res += "\t" + fieldClass[i] + " " + fieldStr[i] + EOL;
+    }
+    res += "}" + EOL;
+    return res;
+}
 void Compiler.dump(Boolean dump) {
-    //print const_table;
+    foreach (Class c in declareclass) {
+        OUT << classDef(c) << EOL;
+    }
     if (SHANEIR_ENABLE_FUNCTION_DUMP) {
         foreach (String str in this.ir) {
             OUT << str << EOL;
@@ -1832,6 +1860,11 @@ void Compiler.dump(Boolean dump) {
 }
 
 void Compiler.emit(Method mtd) {
+    foreach (Class c in this.kfunc.declareclass_func) {
+        if (this.declareclass.indexOf(c) == -1) {
+            this.declareclass.add(c);
+        }
+    }
     for (int i = 0; i < kfunc.const_table.size; i++) {
         this.addConstTable(kfunc.const_table[i]);
     }
