@@ -224,7 +224,7 @@ LABEL = uscore("label");
 }
 @Public @Override void K_SELECT.codegen(Compiler asm) {
     String res = "";
-    res += "var " + getName() + " = " + op.inst0.getName() + " ? " op.inst1.getName() + " : " + op.inst2.getName() + ";";
+    res += "var " + getName() + " = " + op.inst0.getName() + " ? " + op.inst1.getName() + " : " + op.inst2.getName() + ";";
     asm.addSource(res, 3);
 }
 @Public @Override void K_LSFT.codegen(Compiler asm) {
@@ -274,7 +274,7 @@ LABEL = uscore("label");
     } else if (thisclass != "Script") {
         res += uscore(thisclass) + ".";
     }
-    res += op.mtd.getName().replace(":", "_") + "(";
+    res += op.mtd.getName().replace("%s", "send").replace(":", "_") + "(";
     int cur = flag ? 1 : 0;
     for (; cur < |args|; cur++) {
         res += args[cur].getName();

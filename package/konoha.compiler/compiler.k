@@ -463,7 +463,7 @@ class K_Function {
     }
     void addClass(Class c) {
         String cname = (to String)c;
-        if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.") && !cname.startsWith("js.") && declareclass_func.indexOf(c) == -1) {
+        if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.") && !cname.startsWith("js.") && declareclass_func.indexOf(c) == -1  && cname != "dynamic") {
             declareclass_func.add(c);
         }
     }
