@@ -71,6 +71,7 @@ class K_Function;
 class Compiler;
 void K_Function.init(Compiler asm);
 class K_Inst;
+class K_Class;
 @Expando class CompilerOpt {};
 class Compiler {
     String[] ir;
@@ -82,7 +83,7 @@ class Compiler {
     K_Function kfunc;
     Method[] system_method;
     Class[] system_method_class;
-    Class[] declareclass;
+    K_Class[] declareclass;
     int isCWB;
     K_Inst cwb;
     Map<String, K_Function[]> compiled_methods;
@@ -590,6 +591,29 @@ class K_Function {
             bbs.add(null);
         }
         bbs[bbidx] = bb;
+    }
+}
+class K_Class {
+    int offset;
+    Class c;
+    Class[] fieldClasses;
+    String[] fieldNames;
+    K_Class (Class c) {
+        this.c = c;
+        this.fieldClasses = c.getFieldClasses();
+        this.fieldNames = c.getFieldNames();
+        this.offset = |c.getSuper().getFieldClasses()|;
+    }
+
+    String dump() {
+        String res = "class " + c + " extends " + c.getSuper() + EOL;
+        res += "{" + EOL;
+        for(int i = offset; i < |fieldNames|; i++) {
+            res += "\t" + fieldClasses[i] + " " + fieldNames[i] + EOL;
+        }
+        res += "}" + EOL;
+        return res;
+
     }
 }
 class K_ADDop extends K_Opcode {
@@ -1837,20 +1861,10 @@ void Compiler.asm(Stmt stmt, Token tk, int espidx) {
 void Compiler.addConstTable(dynamic val) {
     const_table.add(val);
 }
-String classDef(Class c) {
-    String res = "class " + c + " extends " + c.getSuper + EOL;
-    res += "{" + EOL;
-    Class[] fieldClass = c.getFieldClasses();
-    String[] fieldStr = c.getFieldNames();
-    for(int i = 0; i < |fieldStr|; i++) {
-        res += "\t" + fieldClass[i] + " " + fieldStr[i] + EOL;
-    }
-    res += "}" + EOL;
-    return res;
-}
+
 void Compiler.dump(Boolean dump) {
-    foreach (Class c in declareclass) {
-        OUT << classDef(c) << EOL;
+    foreach (K_Class c in declareclass) {
+        OUT << c.dump() << EOL;
     }
     if (SHANEIR_ENABLE_FUNCTION_DUMP) {
         foreach (String str in this.ir) {
@@ -1861,8 +1875,14 @@ void Compiler.dump(Boolean dump) {
 
 void Compiler.emit(Method mtd) {
     foreach (Class c in this.kfunc.declareclass_func) {
-        if (this.declareclass.indexOf(c) == -1) {
-            this.declareclass.add(c);
+        boolean found = false;
+        foreach (K_Class kc in this.declareclass) {
+            if (kc.c == c) {
+                found = true;
+            }
+        }
+        if (!found) {
+            this.declareclass.add(new K_Class(c));
         }
     }
     for (int i = 0; i < kfunc.const_table.size; i++) {
