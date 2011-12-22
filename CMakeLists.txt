@@ -408,8 +408,8 @@ if(CLANG_BIN)
 			COMMAND llvm-ld -link-as-library -o ${COMPILED_LIB_BC} ${COMPILED_BC})
 	add_custom_target(CREATE_BC_LIB DEPENDS ${COMPILED_LIB_BC})
 	
-	add_dependencies(konoha CREATE_BC_LIB)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${COMPILED_LIB_BC} DESTINATION konoha/lib/)
+#	add_dependencies(konoha CREATE_BC_LIB)
+#	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${COMPILED_LIB_BC} DESTINATION konoha/lib/)
 endif(CLANG_BIN)
 
 if(USE_CTEST)

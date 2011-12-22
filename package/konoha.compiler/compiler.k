@@ -314,12 +314,12 @@ class K_PHI extends K_Inst {
             this.type = inst.type;
             addDef(kvalue, idx);
         }
-        if (this.type.isUnboxType()) {
+        //if (this.type.isUnboxType()) {
             if (USE_NONSSA) {
                 K_MOV mov = new K_MOV(this.kvalue, new K_MOVop(inst, this.defidx), idx);
                 movs.add(mov);
             }
-        }
+        //}
         if (inst != null && inst.kvalue != null) {
             if (true || inst.kvalue.usePoint.indexOf(idx) == -1) {
                 inst.kvalue.useCount = inst.kvalue.useCount + 1;
@@ -1602,7 +1602,7 @@ Array<K_PHI> Compiler.regTableToPHI(int espidx, K_BasicBlock bb) {
 }
 void Compiler.createPhiArrayBackEdge(Array<K_PHI> phis, Array<K_Inst> regTableCont, K_BasicBlock bb, int espidx) {
     for (int i = 0; i < espidx; i++) {
-        if (phis[i] != null && regTableCont[i].type.isUnboxType()) {
+        if (phis[i] != null /*&& regTableCont[i].type.isUnboxType()*/) {
             boolean flag = true;
             if (regTableCont[i].getName() != phis[i].getName()) {
                 flag = false;
@@ -1635,7 +1635,7 @@ Array<K_Inst> Compiler.createPhiArray(K_BasicBlock bb, Array<K_Inst> regTableCon
                 flag = false;
             }
         }
-        if (flag || !regTableCont[i].type.isUnboxType()) {
+        if (flag /*|| !regTableCont[i].type.isUnboxType()*/) {
             res.add(regTableCont[i]);
         } else {
             K_PHI phi = new K_PHI(i);
@@ -1998,7 +1998,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     if (!bbThen.hasReturn && !bbThen.hasBrBreakBlock && !bbThen.hasBrContinueBlock && !bbElse.hasReturn && !bbElse.hasBrContinueBlock && !bbElse.hasBrBreakBlock) {
         for (int i = 0; i < size; i++) {
             if (regTableThen[i] != regTableElse[i] && regTableThen[i] != null &&
-                    regTableElse[i] != null && regTableThen[i].type.isUnboxType()) {
+                    regTableElse[i] != null /*&& regTableThen[i].type.isUnboxType()*/) {
                 K_PHI phi = new K_PHI(i);
                 phi.addIncoming(kfunc, i, regTableThen[i], bbThen.bbidx, bbThen.movs);
                 phi.addIncoming(kfunc, i, regtableElse[i], bbElse.bbidx, bbElse.movs);
@@ -2456,12 +2456,6 @@ boolean Compiler.callparams_asm(Stmt stmt, int s, int local, Class cid, Method m
     for (i = s; i < stmt.getStmtSize(); i++) {
         asm(stmt.getS(i), stmt.getS(i).toToken(), local + i + (K_CALLDELTA-1));
         K_Inst arg = kfunc.getKInst(local + i + K_CALLDELTA-1);
-        //if (!arg.type.isUnboxType()) {
-        //    K_Value kvalue = kfunc.getKValue(local + i + K_CALLDELTA-1, arg.type);
-        //    K_Inst tcheck = new K_TCHECK(kvalue, new K_TCHECKop(arg, local + i + K_CALLDELTA-1));
-        //    kfunc.curBB.insts.add(tcheck);
-        //    kfunc.storeKInst(local + i + K_CALLDELTA-1, tcheck);
-        //}
     }
     return true;
 }
