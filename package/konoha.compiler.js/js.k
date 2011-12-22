@@ -241,8 +241,11 @@ LABEL = uscore("label");
     /* do not use */
 }
 @Public @Override void K_CAST.codegen(Compiler asm) {
+    String tcid_str = (to String) op.tcid;
     if (op.scid == Float && op.tcid == Int) {
         asm.addSource("var " + getName() + " = " + uscore("Math") + ".floor(" + op.inst0.getName() + ");", 3);
+    } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
+        asm.addSource("var " + getName() + " = new " + uscore("Iterator") + "(" + op.inst0.getName() + ");", 3);
     } else {
         asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 3);
     }
@@ -344,6 +347,12 @@ LABEL = uscore("label");
     asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 3);
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
+    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".next();", 3);
+    asm.addSource("if (" + getName() + " != null) {", 3);
+    asm.addSource(LABEL + " = " + op.nextBB + ";", 4);
+    asm.addSource("} else {", 3);
+    asm.addSource(LABEL + " = " + op.endBB + ";", 4);
+    asm.addSource("}", 3);
 }
 @Public @Override void K_LDMTD.codegen(Compiler asm) {
 }
