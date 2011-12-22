@@ -55,6 +55,12 @@ KMETHOD Class_getP1(CTX ctx, ksfp_t *sfp _RIX) {
 	kClass *c = sfp[0].c;
 	RETURN_(new_Type(ctx, c->cTBL->p1));
 }
+//## Class Class.getSuper();
+KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
+    kClass *c = sfp[0].c;
+    kclass_t cid = c->cTBL->supcid;
+	RETURN_(new_Type(ctx, cid));
+}
 #undef Method_isStatic
 #define Method_isStatic_(o) (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
 //## boolean Method.isStatic();
@@ -230,6 +236,20 @@ KMETHOD Class_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
 		}
 	}
 	RETURN_(res);
+}
+//## Array<String> Class.getFieldNames()
+KMETHOD Class_getFieldNames(CTX ctx, ksfp_t *sfp _RIX)
+{
+    kClass *c = sfp[0].c;
+    const knh_ClassTBL_t *cTBL = c->cTBL;
+    int i = 0;
+    kArray *res = new_Array(ctx, CLASS_String, 0);
+    if (cTBL != NULL) {
+        for (; i < cTBL->fsize; i++) {
+            knh_Array_add(ctx, res, knh_getFieldName(ctx, cTBL->fields[i].fn));
+        }
+    }
+    RETURN_(res);
 }
 //## int Object.getPtr() {
 KMETHOD Object_getPtr(CTX ctx, ksfp_t *sfp _RIX)

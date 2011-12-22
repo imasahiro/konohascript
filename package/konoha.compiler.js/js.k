@@ -59,7 +59,7 @@ LABEL = uscore("label");
 @Public void Compiler.addClass(Class c) {
     String cname = (to String)c;
     Class[] declareclass = this.opt.declareclass;
-    if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.")&& declareclass.indexOf(c) == -1) {
+    if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.") && !cname.startsWith("js.") && declareclass.indexOf(c) == -1) {
         declareclass.add(c);
     }
 }
