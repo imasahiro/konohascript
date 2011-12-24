@@ -2065,6 +2065,28 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 	RETURN_(p);
 }
+//## @Native void ExecutionEngine.addGlobalMapping(GlobalVariable g, int addr);
+KMETHOD ExecutionEngine_addGlobalMapping(CTX ctx, ksfp_t *sfp _RIX)
+{
+	ExecutionEngine *ee = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
+	GlobalVariable *g   = konoha::object_cast<GlobalVariable *>(sfp[1].p);
+	long addr = sfp[2].ivalue;
+	ee->addGlobalMapping(g, &addr);
+	RETURNvoid_();
+}
+//## @Native GlobalVariable GlobalVariable.new(Module m, Type ty, Constant c, Linkage linkage, String name);
+KMETHOD GlobalVariable_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Module *m     = konoha::object_cast<Module *>(sfp[1].p);
+	Type *ty      = konoha::object_cast<Type *>(sfp[2].p);
+	Constant *c   = konoha::object_cast<Constant *>(sfp[3].p);
+	GlobalValue::LinkageTypes linkage = (GlobalValue::LinkageTypes) sfp[4].ivalue;
+	kString *name = sfp[5].s;
+	bool isConstant = (c) ? true : false;
+	GlobalVariable *ptr = new GlobalVariable(*m, ty, isConstant, linkage, c, S_totext(name));
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
 static void PassManagerBuilder_ptr_free(void *p)
 {
 	PassManagerBuilder *o = static_cast<PassManagerBuilder *>(p);

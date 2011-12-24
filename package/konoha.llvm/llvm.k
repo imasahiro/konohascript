@@ -32,6 +32,10 @@ include "lib:gluelink";
 @RawPtr class StructType extends Type;
 @RawPtr class Value;
 @RawPtr class Argument extends Value;
+@RawPtr class Constant extends Value;
+@RawPtr class ConstantInt extends Constant;
+@RawPtr class ConstantFP  extends Constant;
+@RawPtr class GlobalVariable extends Value;
 @RawPtr class IRBuilder;
 @RawPtr class Instruction extends Value;
 @RawPtr class ReturnInst extends Instruction;
@@ -241,6 +245,8 @@ include "lib:gluelink";
 @Native void StructType.setBody(Array<Type> args, boolean isPacked);
 @Native boolean StructType.isOpaque();
 @Native NativeFunction ExecutionEngine.getPointerToFunction(Function func);
+@Native void ExecutionEngine.addGlobalMapping(GlobalVariable g, int addr);
+@Native GlobalVariable GlobalVariable.new(Module m, Type ty, Constant c, int linkage, String name);
 
 @Native PassManagerBuilder PassManagerBuilder.new();
 @Native void PassManagerBuilder.populateModulePassManager(PassManager manager);
@@ -273,10 +279,8 @@ include "lib:gluelink";
 @Native @Public void Method.setFunction(NativeFunction nf);
 @Native @Public void Func.setFunction(NativeFunction nf);
 
-class ConstantInt;
-class ConstantFP;
-@Native Value ConstantInt.get(Type type, int v);
-@Native Value ConstantFP.get(Type type, float v);
+@Native ConstantInt ConstantInt.get(Type type, int v);
+@Native ConstantFP  ConstantFP.get(Type type, float v);
 
 @RawPtr class DynamicLibrary;
 @Native @Static boolean DynamicLibrary.loadLibraryPermanently(String libname);
