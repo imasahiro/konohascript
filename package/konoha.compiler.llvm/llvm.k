@@ -338,12 +338,8 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
         kfunc.curBB.insts.add(inst);
         kfunc.curBB.hasReturn = true;
     }
-    String result = kfunc.dump();
-    this.ir << result;
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
-    }
-    if (!kfunc.isUndeveloped()) {
         FunctionPassManager fpm = opt.fpm;
         fpm.doInitialization();
         fpm.run(opt.wrapperfunc);
@@ -357,7 +353,7 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
             mpm.add(LLVM.createFunctionAttrsPass());
             mpm.add(LLVM.createInternalizePass(true));
             //TODO FIXME BUG
-            //mpm.add(LLVM.createFunctionInliningPass());
+            mpm.add(LLVM.createFunctionInliningPass());
             mpm.add(LLVM.createIPSCCPPass());
             mpm.add(LLVM.createGlobalOptimizerPass());
             mpm.add(LLVM.createConstantMergePass());
@@ -1136,8 +1132,17 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     Type methodTy = asm.opt.ktype["trmethodPtrTy"];
-    Value func = ConstantInt.get(asm.opt.intTy, op.ftr);
-    func = asm.opt.builder.CreateIntToPtr(func, methodTy);
+    Value func;
+    FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
+    DynamicLibrary.loadLibraryPermanently("compiler.dylib");
+    if (op.ftr == Stmt.CWB) {
+        func = asm.opt.m.getOrInsertFunction("compiler_CWB", fnTy);
+    } else if (op.ftr == Stmt.TOSTR) {
+        func = asm.opt.m.getOrInsertFunction("compiler_TOSTR", fnTy);
+    } else {
+        func = ConstantInt.get(asm.opt.intTy, op.ftr);
+        func = asm.opt.builder.CreateIntToPtr(func, methodTy);
+    }
     Value vb = ConstantInt.get(asm.opt.intTy, op.espidx);
     vb = asm.opt.builder.createGEP1(asm.opt.sfp, vb);
     Value rix = ConstantInt.get(asm.opt.intTy, op.rix);
