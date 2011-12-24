@@ -55,6 +55,12 @@ KMETHOD Class_getP1(CTX ctx, ksfp_t *sfp _RIX) {
 	kClass *c = sfp[0].c;
 	RETURN_(new_Type(ctx, c->cTBL->p1));
 }
+//## Class Class.getSuper();
+KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
+    kClass *c = sfp[0].c;
+    kclass_t cid = c->cTBL->supcid;
+	RETURN_(new_Type(ctx, cid));
+}
 #undef Method_isStatic
 #define Method_isStatic_(o) (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
 //## boolean Method.isStatic();
@@ -154,12 +160,24 @@ KMETHOD Token_getD(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
 	RETURN_(tk->data);
 }
+//## String Token.getText();
+KMETHOD Token_getText(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURN_(tk->text);
+}
 //## Class Token.getClass();
 KMETHOD Token_getTokenClass(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
 	kclass_t cid = tk->cid;
 	RETURN_(new_Type(ctx, cid));
 }
+//## int Token.getMn();
+KMETHOD Token_getMn(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	kmethodn_t mn = tk->mn;
+	RETURNi_(mn);
+}
+
 //## Token Stmt.toToken();
 KMETHOD Stmt_toToken(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
@@ -196,8 +214,9 @@ KMETHOD Method_toString(CTX ctx, ksfp_t *sfp _RIX)
 	knh_write_cid(ctx, cwb->w, (sfp[0].mtd)->cid);
 	knh_putc(ctx, cwb->w, '.');
 	knh_write_mn(ctx, cwb->w, (sfp[0].mtd)->mn);
-	RETURN_(CWB_newString(ctx, cwb, SPOL_POOLNEVER|SPOL_ASCII));
+	RETURN_(CWB_newString(ctx, cwb, SPOL_ASCII|SPOL_POOLALWAYS));
 }
+
 // Class Method.getMethodClass()
 KMETHOD Method_getMethodClass(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -205,11 +224,11 @@ KMETHOD Method_getMethodClass(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(new_Type(ctx, mtd->cid));
 }
 //## Array<Class> Class.getFieldClasses()
-KMETHOD Object_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Class_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int i = 0;
-	kObject *o = sfp[0].o;
-	const knh_ClassTBL_t *cTBL = o->h.cTBL;
+	kClass *o = sfp[0].c;
+	const knh_ClassTBL_t *cTBL = o->cTBL;
 	kArray *res = new_Array(ctx, CLASS_Class, 0);
 	if (cTBL != NULL) {
 		for (; i < cTBL->fsize; i++) {
@@ -218,10 +237,42 @@ KMETHOD Object_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
 	}
 	RETURN_(res);
 }
+//## Array<String> Class.getFieldNames()
+KMETHOD Class_getFieldNames(CTX ctx, ksfp_t *sfp _RIX)
+{
+    kClass *c = sfp[0].c;
+    const knh_ClassTBL_t *cTBL = c->cTBL;
+    int i = 0;
+    kArray *res = new_Array(ctx, CLASS_String, 0);
+    if (cTBL != NULL) {
+        for (; i < cTBL->fsize; i++) {
+            knh_Array_add(ctx, res, knh_getFieldName(ctx, cTBL->fields[i].fn));
+        }
+    }
+    RETURN_(res);
+}
 //## int Object.getPtr() {
 KMETHOD Object_getPtr(CTX ctx, ksfp_t *sfp _RIX)
 {
-	RETURNi_((kint_t)sfp[0].o);
+	RETURNi_((kint_t)(long)sfp[0].o);
+}
+
+//## int Object.getFlag(int pos);
+KMETHOD Object_getFlag(CTX ctx, ksfp_t *sfp _RIX) {
+	kObject *o = sfp[0].o;
+	RETURNi_((kflag_t)(o)->h.magicflag);
+}
+
+//## boolean Token.getMemo();
+KMETHOD Token_getMemo(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURNb_(Term_isMEMO1(tk));
+}
+
+//## boolean Stmt.getMemo();
+KMETHOD Stmt_getMemo(CTX ctx, ksfp_t *sfp _RIX) {
+	kStmtExpr *stmt = (kStmtExpr*)sfp[0].o;
+	RETURNb_(Stmt_isMemo1(stmt));
 }
 
 ///* ------------------------------------------------------------------------ */
@@ -1064,6 +1115,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
 	kapi->setPackageProperty(ctx, "name", "lang");
 	kapi->setPackageProperty(ctx, "version", "0.0");
+	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Method")), MethodInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), StmtInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Token")), TokenInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), (knh_IntData_t*)_FuncData);

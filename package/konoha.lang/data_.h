@@ -1,6 +1,11 @@
 
 /* ------------------------------------------------------------------------ */
 
+static knh_IntData_t MethodInt[] = {
+    {"MN_get", MN_get},
+    {"MN_set", MN_set},
+    {"MN_getSize", MN_getSize}
+};
 static knh_IntData_t StmtInt[] = {
     {"STT_DONE", STT_DONE},
     {"STT_BLOCK", STT_BLOCK},

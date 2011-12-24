@@ -63,6 +63,11 @@ kbool_t knh_isCompileOnly(CTX ctx)
 	return isCompileOnly;
 }
 
+void knh_setCompileMode(CTX ctx, int mode)
+{
+	isCompileOnly = mode;;
+}
+
 static void opt_c(CTX ctx, int mode, const char *optstr)
 {
 	isCompileOnly = 1;

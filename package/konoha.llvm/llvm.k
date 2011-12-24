@@ -46,6 +46,9 @@ include "lib:gluelink";
 @RawPtr class ExecutionEngine;
 @RawPtr class NativeFunction;
 
+@Native class GlobalValue;
+@Native class Intrinsic;
+
 @RawPtr class LLVM;
 @RawPtr class Pass;
 @RawPtr class ModulePass extends Pass;
@@ -54,7 +57,9 @@ include "lib:gluelink";
 @RawPtr class LibCallInfo;
 @Rawptr class ImmutablePass extends Pass;
 @Rawptr class TargetData extends ImmutablePass;
+@Rawptr class PassManager;
 @Rawptr class FunctionPassManager;
+@Rawptr class PassManagerBuilder;
 
 @Native @Static Type Type.getVoidTy();
 @Native @Static Type Type.getLabelTy();
@@ -217,33 +222,53 @@ include "lib:gluelink";
 @Native void Value.dump();
 @Native void Type.dump();
 @Native void BasicBlock.dump();
-@Native @Static Function Function.create(String name, FunctionType fnTy, Module m);
+@Native @Static Function Function.create(String name, FunctionType fnTy, Module m, int linkage);
 //@Native iterator BasicBlock.begin();
 //@Native iterator BasicBlock.end();
 @Native int BasicBlock.size();
 @Native boolean BasicBlock.empty();
 @Native Module Module.new(String name);
 //@Native void Module.addTypeName(String name, Type type);
+@Native Type Module.getTypeByName(String name);
+
 @Native void Module.dump();
 @Native Function Module.getOrInsertFunction(String name, FunctionType fnTy);
 @Native ExecutionEngine Module.createExecutionEngine();
-@Native @Static BasicBlock BasicBlock.create(Function parent);
+@Native @Static BasicBlock BasicBlock.create(Function parent, String name);
 @Native @Static FunctionType FunctionType.get(Type retTy, Array<Type> args, boolean b);
 @Native @Static StructType StructType.get(Array<Type> args, boolean isPacked);
 @Native @Static StructType StructType.create(Array<Type> args, String name, boolean isPacked);
+@Native void StructType.setBody(Array<Type> args, boolean isPacked);
+@Native boolean StructType.isOpaque();
 @Native NativeFunction ExecutionEngine.getPointerToFunction(Function func);
+
+@Native PassManagerBuilder PassManagerBuilder.new();
+@Native void PassManagerBuilder.populateModulePassManager(PassManager manager);
+@Virual @Native void PassManager.run(Module m);
+@Native PassManager PassManager.new();
 @Native FunctionPassManager FunctionPassManager.new(Module m);
+@Native void PassManager.addPass(Pass p);
+@Native void PassManager.addImmutablePass(ImmutablePass p);
+@Native void PassManager.addFunctionPass(FunctionPass p);
+@Native void PassManager.addModulePass(ModulePass p);
+@Overload void PassManager.add(ImmutablePass p) { addImmutablePass(p); }
+@Overload void PassManager.add(FunctionPass p) { addFunctionPass(p); }
+@Overload void PassManager.add(ModulePass p) { addModulePass(p); }
+@Overload void PassManager.add(Pass p) { addPass(p); }
+
 @Native void FunctionPassManager.add(Pass p);
 @Native void FunctionPassManager.run(Function func);
 @Native void FunctionPassManager.doInitialization();
 @Native TargetData ExecutionEngine.getTargetData();
-
 
 @Native Argument Argument.new(Type type);
 @Native void Value.replaceAllUsesWith(Value v);
 @Native Value Value.setName(String name);
 @Native Type Value.getType();
 @Native Array<Value> Function.getArguments();
+
+@Native void LoadInst.setAlignment(Int align);
+@Native void StoreInst.setAlignment(Int align);
 
 @Native @Public void Method.setFunction(NativeFunction nf);
 @Native @Public void Func.setFunction(NativeFunction nf);
@@ -361,3 +386,5 @@ class ConstantFP;
 @Static @Native ImmutablePass LLVM.createBasicAliasAnalysisPass();
 @Static @Native FunctionPass LLVM.createVerifierPass();
 
+FunctionType Intrinsic.getType(int id, Type[] args);
+Function     Intrinsic.getDeclaration(Module m, int id, Type[] args);
