@@ -31,15 +31,21 @@ String class2str(Class c, boolean isPtr) {
     s = s.replace(".", "::");
     if ("<" in? s) {
         a = s.split(">");
+        q = a[0].split("<");;
+        a[0] = q[1];
         String typename = "";
         foreach (String l in a) {
             if (l == "") {
                 continue;
             }
-            typename = l + "*";
+            if (!isPtr) {
+                typename = "boost::shared_ptr<" + l + " >";
+            } else {
+                typename = l;
+            }
         }
-        typename += ">";
-        s = typename;
+        typename += " >";
+        s = q[0] + + "<" + typename;
     }
     if (s.startsWith("main::")) {
         s = s.replace("main::", "_main_::");
@@ -48,7 +54,7 @@ String class2str(Class c, boolean isPtr) {
     //    s = s.split(".")[|s.split(".")|-1];
     //}
     if (!c.isUnboxType() && !isPtr) {
-        s += "*";
+        s = "boost::shared_ptr<" + s + " >";
     }
     return s;
 }
@@ -58,7 +64,6 @@ String getTypeName (Class type) {
     return (res == "") ? "null" : res;
 }
 
-LABEL = ("label");
 @Public void Compiler.addClass(Class c) {
     String cname = (to String)c;
     Class[] declareclass = this.opt.declareclass;
@@ -122,7 +127,8 @@ LABEL = ("label");
             fncdef += "void " + asm.mtd.getName()+"_(";
             asm.opt.topLevelFunctionList.add("main_");
         } else {
-            fncdef += asm.mtd.getReturnType() + " " + asm.mtd.getName() + "(";
+            type = class2str(asm.mtd.getReturnType());
+            fncdef += type + " " + asm.mtd.getName() + "(";
         }
     } else {
         fncdef += (thisclass) + "." + asm.mtd.getName() + " { ";
@@ -313,7 +319,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     String tn = class2str(type) + " " + getName();
     switch (this.getTRMethod()) {
         case "box":
-            asm.addSource(tn + " = " + op.inst0.getName() + ";", 2);
+            asm.addSource(tn + " = konoha::cast<"+class2str(type, true)+">(" + op.inst0.getName() + ");", 2);
             break;
         case "bnul":
             if (type == Script) {
@@ -321,8 +327,8 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
             }
             break;
         case "cwb":
-            tn = "konoha::StringOutputStream *" + " " + getName();
-            asm.addSource(tn + " = new konoha::StringOutputStream();", 2);
+            tn = "boost::shared_ptr<konoha::StringStream>" + " " + getName();
+            asm.addSource(tn + "( new konoha::StringStream());", 2);
             break;
         case "tostr":
             asm.addSource(tn + " = " + op.inst0.getName + "->tostr();", 2);
@@ -333,7 +339,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     String t = class2str(type) + " ";
     asm.addClass(this.type);
     String name = class2str(type, true);
-    asm.addSource(t + getName() + " = new " + (name) + "();", 2);
+    asm.addSource(t + getName() + "( new " + (name) + "());", 2);
 }
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
     String t = class2str(type) + " ";
@@ -351,7 +357,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     } else if (this.type == Class) {
         asm.addSource(t + getName() + " = new " + ("String") + "(" + const_data + ");", 2);
     } else {
-        asm.addSource(t + getName() + " = new " + (class2str(this.type, true)) + "(" + const_data + ");", 2);
+        asm.addSource(t + getName() + " ( new " + (class2str(this.type, true)) + "(" + const_data + "));", 2);
     }
 }
 @Public @Override void K_MOVx.codegen (Compiler asm) {
@@ -438,15 +444,16 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
         }
     }
     if (hasScr) {
-        res += "function " + "Script" + "() {" + EOL;
+        res += "void " + "Script" + "() {" + EOL;
         res += "}" + EOL;
         res += EOL;
     }
     res += "int main (int argc, const char **argv) {" + EOL;
-    res += "  konoha::Array<konoha::String*> args;" + EOL;
-    res += "  System = new konoha::System();" + EOL;
+    res += "  boost::shared_ptr<konoha::Array<boost::shared_ptr<konoha::String> > > args(new konoha::Array<boost::shared_ptr<konoha::String> >());" + EOL;
+    res += "  System.reset(new konoha::System());" + EOL;
     res += "  for (int i=0; i < argc; i++) {" + EOL;
-    res += "      args.push_back(new konoha::String(argv[i]));" + EOL;
+    res += "      boost::shared_ptr<konoha::String> s(new konoha::String(argv[i]));" + EOL;
+    res += "      args->append(s);" + EOL;
     res += "  }" + EOL;
     if (hasScr) {
         res += "  script = new " + ("Script") + "();" + EOL;
@@ -457,7 +464,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
             res += "script";
         }
         if (fnc == "main_") {
-            res += "&args";
+            res += "args";
         }
         res += ");" + EOL;
     }
@@ -495,7 +502,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
 }
 @Public void Compiler.dump(Boolean dump) {
     OUT << "#include \"konoha.hpp\"" << EOL;
-    OUT << "konoha::System* System;" << EOL;
+    OUT << "boost::shared_ptr<konoha::System> System;" << EOL;
     foreach (Class c in this.opt.declareclass) {
         String cname = class2str(c, true);
         OUT << createClassDefinition(c, cname) << EOL;
