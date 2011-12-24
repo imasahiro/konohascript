@@ -185,7 +185,10 @@ static void printFA(CTX ctx, kOutputStream *out, kArray *base, size_t len, size_
 
 static void printOA(CTX ctx, kOutputStream *out, kArray *base, size_t len, size_t nidx)
 {
-	knh_write_Object(ctx, out, base->list[nidx], FMT_line);
+	if (nidx < len)
+		knh_write_Object(ctx, out, base->list[nidx], FMT_line);
+	else
+		knh_putc(ctx, out, '-');
 }
 
 typedef void (*print_func)(CTX ctx, kOutputStream *out, kArray *base, size_t len, size_t nidx);

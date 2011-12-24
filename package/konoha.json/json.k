@@ -46,7 +46,7 @@ include "lib:gluelink";
  * @param key  attribute name of String
  * @return     value of dynamic object (Literal/Array/Json)
  */
-@Native dynamic Json.get(String key);
+@Native var Json.get(String key, Class _);
 
 /**
  * set value object with an attribute name

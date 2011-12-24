@@ -472,7 +472,7 @@ void knh_System_initPath(CTX ctx)
 		if(home.text == NULL) {
 			kString *s;
 			CWB_clear(cwb, 0);
-			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, new_bytes2(buf, bufsiz));
+			knh_buff_addpath(ctx, cwb->ba, cwb->pos, 0, B(buf));
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '\\');
 			knh_buff_trim(ctx, cwb->ba, cwb->pos, '\\');
 			knh_buff_addospath(ctx, cwb->ba, cwb->pos, 1/*isSep*/, STEXT("konoha"));

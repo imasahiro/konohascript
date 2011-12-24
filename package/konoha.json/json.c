@@ -35,6 +35,7 @@
 
 #define USE_STRUCT_InputStream
 #define USE_STRUCT_OutputStream
+#include <stdbool.h>
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
 #include <json/json.h>
@@ -56,62 +57,69 @@ extern "C" {
 
 /* ======================================================================== */
 // [PRIVATE FUNCTIONS]
+static bool isUnbox(json_object *obj)
+{
+	json_type type = json_object_get_type(obj);
+	return (type == json_type_boolean ||
+			type == json_type_double ||
+			type == json_type_int);
+}
+
+static kunbox_t json_to_ndata(json_object *obj)
+{
+	json_type type = json_object_get_type(obj);
+	knbody_t n = {};
+	if (type == json_type_boolean) {
+		n.bvalue = json_object_get_boolean(obj);
+	}
+	else if (type == json_type_double) {
+		n.fvalue = json_object_get_double(obj);
+	}
+	else if (type == json_type_int) {
+		n.ivalue = json_object_get_int(obj);
+	}
+	return n.data;
+}
 
 /* ------------------------------------------------------------------------ */
 // translate [json_object -> kObject]
 // @return kObject* NOT NULL
 
-static kObject* json_object_json_to_knh(CTX ctx, json_object *obj)
+static void convert_json_to_object(CTX ctx, json_object *obj, const knh_ClassTBL_t *ct, ksfp_t *rsfp)
 {
-	kObject *o = KNH_NULL;
-	json_type obj_t = json_object_get_type(obj);
-	if (obj_t == json_type_boolean)
-	{
-		o = (kObject*)new_Boolean(ctx, json_object_get_boolean(obj));
+	json_type type = json_object_get_type(obj);
+	if (isUnbox(obj)) {
+		rsfp->ndata = json_to_ndata(obj);
 	}
-	else if (obj_t == json_type_double)
-	{
-		o = (kObject*)new_Float(ctx, json_object_get_double(obj));
-	}
-	else if (obj_t == json_type_int)
-	{
-		o = (kObject*)new_Int(ctx, json_object_get_int(obj));
-	}
-	else if (obj_t == json_type_string)
-	{
+	else if (type == json_type_string) {
 		const char *str = json_object_get_string(obj);
-		o = (kObject*)new_String(ctx, str);
+		rsfp->s = new_String(ctx, str);
 	}
-	else if (obj_t == json_type_array)
-	{
+	else if (type == json_type_array) {
 		int i, len = json_object_array_length(obj);
-		kArray *a = new_Array0(ctx, len);
+		kArray *a = new_Array(ctx, ct->p1, len);
+		rsfp->a = a;
 		for (i = 0; i < len; i++) {
+			ksfp_t vsfp = {};
 			json_object *aobj = json_object_array_get_idx(obj, i);
-			if (IS_Json(aobj)) {
-				knh_Array_add(ctx, a, json_object_json_to_knh(ctx, aobj)); // recursive
-			} else {
-				DBG_P("Json translate_object", "illegal value of array index(%d) ==> 0");
-				knh_Array_add(ctx, a, new_Int(ctx, 0));
+			if (!IS_Json(aobj)) {
+				KNH_P("Json translate_object", "illegal value of array index(%d) ==> 0", i);
 			}
+			convert_json_to_object(ctx, aobj, varClassTBL(ct->p1), &vsfp);
+			a->api->add(ctx, a, &vsfp);
 		}
-		o = (kObject*)a;
 	}
-	else if (obj_t == json_type_object)
-	{
-		o = (kObject*)new_Json(ctx, obj);
+	else if (type == json_type_object) {
+		rsfp->p = (kRawPtr *) new_Json(ctx, obj);
 	}
-	else if (obj_t == json_type_null)
-	{
+	else if (type == json_type_null) {
 		DBG_P("Json translate_object", "type of value is null ==> 0");
-		o = (kObject*)new_Int(ctx, 0);
+		rsfp->o = KNH_NULL;
 	}
-	else
-	{
-		DBG_P("Json translate_object", "no such type of value: json_type(%d) ==> 0", obj_t);
-		o = (kObject*)new_Int(ctx, 0);
+	else {
+		DBG_P("Json translate_object", "no such type of value: json_type(%d) ==> 0", type);
+		assert(0);
 	}
-	return o;
 }
 
 static json_object* json_object_knhary_to_json(CTX ctx, kArray *array, int idx, kclass_t cid, int isGenerics);
@@ -292,32 +300,28 @@ KMETHOD Json_stringify(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
-//## dynamic Json.get(String key);
+//## var Json.get(String key, Class _);
 
 KMETHOD Json_get(CTX ctx, ksfp_t *sfp _RIX)
 {
 	json_object *obj = RawPtr_to(json_object *, sfp[0]);
-	kObject *o = KNH_NULL;
-	if (IS_Json(obj)){
-		if (IS_String(sfp[1].o)) {
-			char *key = String_to(char *, sfp[1]);
-			json_object *val = json_object_object_get(obj, key);
-			if (IS_Json(val)) {
-				o = json_object_json_to_knh(ctx, val);
-				goto RET_SUCCESS;
-			} else {
-				DBG_P("[WARNING] Json get no such value: this[\"%s\"] ==> 0", key);
-			}
+	char *key = String_to(char *, sfp[1]);
+	kClass *c = sfp[2].c;
+	ksfp_t vsfp = {};
+	if (IS_Json(obj)) {
+		json_object *val = json_object_object_get(obj, key);
+		if (IS_Json(val)) {
+			convert_json_to_object(ctx, val, c->cTBL, &vsfp);
 		} else {
-			DBG_P("[WARNING] Json get invalid type of key ==> 0");
+			DBG_P("[WARNING] Json get no such value: this[\"%s\"] ==> 0", key);
+			RETURN_(KNH_NULVAL(knh_Class_cid(c)));
 		}
 	} else {
 		DBG_P("[ERROR] Json get this object is error ==> 0");
+		RETURN_(KNH_NULVAL(knh_Class_cid(c)));
 	}
-	o = (kObject*)new_Int(ctx, 0);
-	
-	RET_SUCCESS:;
-	RETURN_(o);
+	sfp[_rix].ndata = vsfp.ndata;
+	RETURN_(vsfp.o);
 }
 
 /* ------------------------------------------------------------------------ */
