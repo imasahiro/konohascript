@@ -533,6 +533,12 @@ void compiler_TOSTR(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
 	kString *s = CWB_newString(ctx, &cwbbuf, 0);
 	KNH_SETv(ctx, sfp[c].o, s);
 }
+/* copied from src/lang/asm.c */
+void compiler_NULVAL(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
+{
+	KNH_SETv(ctx, sfp[c].o, ct->fdefnull(ctx, ct->cid));
+}
+
 static kMethod *load_method(CTX ctx, kclass_t cid, kbytes_t t)
 {
 	kmethodn_t mn = knh_getmn(ctx, t, MN_NONAME);

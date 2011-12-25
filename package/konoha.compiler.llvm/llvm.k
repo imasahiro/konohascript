@@ -261,6 +261,30 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
         kfunc.storeKInst(i+1, inst);
         kfunc.funcargs.add(inst);
     }
+    for (int i = |paramsclass|+1; i < gamma_fvarsize(); i++) {
+        Class c = gamma_gf_type(i);
+        if (gamma_gf_fn(i) == 41 + 126 /* TODO FN_vargs */) {
+            Class p1 = c.getP1();
+            K_Value kvalue = kfunc.getKValue(i, p1);
+            inst = new K_TR(kvalue, new K_TRop(null, i, i-i, p1.getClassTablePtr(), Stmt.VARGS));
+            kfunc.curBB.insts.add(inst);
+            kfunc.storeKInst(i, inst);
+            continue;
+        }
+        if (c.isUnboxType()) {
+            int table_idx = kfunc.addConstTable(0);
+            int objptr = 0;
+            K_Value kvalue = kfunc.getKValue(i, c);
+            K_CONST inst = new K_CONST(kvalue, c, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+            kfunc.curBB.insts.add(inst);
+            kfunc.storeKInst(i, inst);
+        } else {
+            K_Value kval = kfunc.getKValue(i, c);
+            K_Inst inst = new K_TR(kval, new K_TRop(null, i, 0, c.getClassTablePtr(), Stmt.NULL), 0);
+            kfunc.curBB.insts.add(inst);
+            kfunc.storeKInst(i, inst);
+        }
+    }
     //kfunc.init(this);
     initFunc(kfunc);
     String mtdName = mtd.toString();
@@ -802,6 +826,9 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
             asm.opt.bblist2.add(null);
         }
     }
+    if (DEBUG) {
+        OUT.println(dump());
+    }
     asm.opt.builder = new IRBuilder(asm.opt.bblist[0]);
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] == null) continue;
@@ -1138,12 +1165,13 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     Value func;
     FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
     DynamicLibrary.loadLibraryPermanently("compiler.dylib");
-    //if (op.ftr == Stmt.CWB) {
-    //    func = asm.opt.m.getOrInsertFunction("compiler_CWB", fnTy);
-    //} else if (op.ftr == Stmt.TOSTR) {
-    //    func = asm.opt.m.getOrInsertFunction("compiler_TOSTR", fnTy);
-    //} else
-    {
+    if (op.ftr == Stmt.CWB) {
+        func = asm.opt.m.getOrInsertFunction("compiler_CWB", fnTy);
+    } else if (op.ftr == Stmt.TOSTR) {
+        func = asm.opt.m.getOrInsertFunction("compiler_TOSTR", fnTy);
+    } else if (op.ftr == Stmt.NULL) {
+        func = asm.opt.m.getOrInsertFunction("compiler_NULVAL", fnTy);
+    } else {
         func = ConstantInt.get(asm.opt.intTy, op.ftr);
         func = asm.opt.builder.CreateIntToPtr(func, methodTy);
     }

@@ -1585,7 +1585,7 @@ void Compiler.init(Method mtd) {
             kfunc.storeKInst(i, inst);
         } else {
             K_Value kval = kfunc.getKValue(i, c);
-            K_Inst inst = new K_TR(kval, new K_TRop(null, i, i, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
+            K_Inst inst = new K_TR(kval, new K_TRop(null, i, 0, c.getClassTablePtr(), Stmt.NULL), 0);
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(i, inst);
         }
