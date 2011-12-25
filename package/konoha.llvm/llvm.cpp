@@ -1086,7 +1086,7 @@ KMETHOD IRBuilder_createStructGEP(CTX ctx, ksfp_t *sfp _RIX)
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
 	kint_t Idx = Int_to(kint_t,sfp[2]);
-	Value *ptr = self->CreateStructGEP(Ptr, Idx);
+	Value *ptr = self->CreateStructGEP(Ptr, Idx, "gep");
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 	RETURN_(p);
 }
@@ -2027,6 +2027,10 @@ KMETHOD StructType_create(CTX ctx, ksfp_t *sfp _RIX)
 	StructType *ptr;
 	if (IS_NULL(args)) {
 		ptr = StructType::create(getGlobalContext(), S_totext(name));
+	} else if (knh_Array_size(args) == 0) {
+		std::vector<Type*> List;
+		ptr = StructType::create(getGlobalContext(), S_totext(name));
+		ptr->setBody(List, isPacked);
 	} else {
 		std::vector<Type*> List;
 		konoha::convert_array(List, args);
@@ -2071,7 +2075,7 @@ KMETHOD ExecutionEngine_addGlobalMapping(CTX ctx, ksfp_t *sfp _RIX)
 	ExecutionEngine *ee = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
 	GlobalVariable *g   = konoha::object_cast<GlobalVariable *>(sfp[1].p);
 	long addr = sfp[2].ivalue;
-	ee->addGlobalMapping(g, &addr);
+	ee->addGlobalMapping(g, (void*)addr);
 	RETURNvoid_();
 }
 //## @Native GlobalVariable GlobalVariable.new(Module m, Type ty, Constant c, Linkage linkage, String name);

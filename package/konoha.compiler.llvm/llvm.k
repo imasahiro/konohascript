@@ -353,7 +353,7 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
             mpm.add(LLVM.createFunctionAttrsPass());
             mpm.add(LLVM.createInternalizePass(true));
             //TODO FIXME BUG
-            mpm.add(LLVM.createFunctionInliningPass());
+            //mpm.add(LLVM.createFunctionInliningPass());
             mpm.add(LLVM.createIPSCCPPass());
             mpm.add(LLVM.createGlobalOptimizerPass());
             mpm.add(LLVM.createConstantMergePass());
@@ -450,7 +450,8 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     fields.add(objectPtrTy);
     Type objectFieldTy    = StructType.create(fields, "ObjectField", false);
     Type objectFieldPtrTy = PointerType.get(objectFieldTy);
-    opt.ktype["objectFieldTy"] = stringPtrTy;
+    opt.ktype["objectFieldTy"] = objectFieldTy;
+    opt.ktype["objectFieldPtrTy"] = PointerType.get(objectFieldTy);
 
     fields = [];
     fields.add(hObjectTy);
@@ -1135,11 +1136,12 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     Value func;
     FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
     DynamicLibrary.loadLibraryPermanently("compiler.dylib");
-    if (op.ftr == Stmt.CWB) {
-        func = asm.opt.m.getOrInsertFunction("compiler_CWB", fnTy);
-    } else if (op.ftr == Stmt.TOSTR) {
-        func = asm.opt.m.getOrInsertFunction("compiler_TOSTR", fnTy);
-    } else {
+    //if (op.ftr == Stmt.CWB) {
+    //    func = asm.opt.m.getOrInsertFunction("compiler_CWB", fnTy);
+    //} else if (op.ftr == Stmt.TOSTR) {
+    //    func = asm.opt.m.getOrInsertFunction("compiler_TOSTR", fnTy);
+    //} else
+    {
         func = ConstantInt.get(asm.opt.intTy, op.ftr);
         func = asm.opt.builder.CreateIntToPtr(func, methodTy);
     }
@@ -1239,10 +1241,9 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
         v = asm.opt.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
     }
     else {
-        v = asm.opt.builder.createBitCast(v, asm.opt.ktype["objectPtrTy"]);
+        v = asm.opt.builder.createBitCast(v, asm.opt.ktype["objectFieldPtrTy"]);
         v = asm.opt.builder.createStructGEP(v, 1);
         v = asm.opt.builder.createLoad(v);
-        v = asm.opt.builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
         Value vn = ConstantInt.get(asm.opt.intTy, op.an);
         v = asm.opt.builder.createInBoundsGEP1(v, vn);
         v = asm.opt.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
