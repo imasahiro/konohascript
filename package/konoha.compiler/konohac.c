@@ -41,6 +41,7 @@ static enum compile_mode {
     EMIT_IR,
     EMIT_LLVM,
     EMIT_JS,
+    EMIT_CPP,
     EMIT_NOP
 } compile_mode = EMIT_IR;
 
@@ -48,6 +49,7 @@ static const char * codegenerator_file[] = {
     NULL,
     "konoha.compiler.llvm",
     "konoha.compiler.js",
+    "konoha.compiler.cpp",
 };
 
 static int compiler_run_main = 0;
@@ -69,7 +71,11 @@ static const char *parse_option(int *argc, const char *argv[], const char *argv_
             compile_mode = EMIT_JS;
             continue;
         }
-        if (knh_bytes_equals(t, STEXT("--run"))) {
+        if (knh_bytes_equals(t, STEXT("--emit-c++"))) {
+            compile_mode = EMIT_CPP;
+            continue;
+        }
+        if (compile_mode == EMIT_LLVM && knh_bytes_equals(t, STEXT("--run"))) {
             compiler_run_main = 1;
             continue;
         }

@@ -136,10 +136,10 @@ typedef struct knh_LoaderAPI_t {
 	void (*addConverterDPI)(CTX, const char *, const knh_ConverterDPI_t*, const knh_ConverterDPI_t*);
 } knh_LoaderAPI_t;
 
-#define RETURN_PKGINFO(NAME) {\
-		static const knh_PackageDef_t pkginfo_ = {K_BUILDID, K_API2_CRC32, NAME};\
-		return &pkginfo_;\
-	}\
+#define RETURN_PKGINFO(NAME) do {\
+	static const knh_PackageDef_t pkginfo_ = {K_BUILDID, K_API2_CRC32, NAME};\
+	return &pkginfo_;\
+} while (0)
 
 typedef struct {
 	size_t buildid;
@@ -214,87 +214,87 @@ typedef void (*knh_Fconstdef)(CTX, kclass_t, const knh_LoaderAPI_t*);
 
 #ifdef K_EXPORTS
 
-#define RETURN_(vv) {\
-		ctx->spi->setsfpSPI(ctx, sfp+_rix, vv);\
-		return; \
-	}\
+#define RETURN_(vv) do {\
+	ctx->spi->setsfpSPI(ctx, sfp+_rix, vv);\
+	return; \
+} while (0)
 
 #else
 
-#define RETURN_(vv) {\
-		KNH_SETv(ctx, sfp[_rix].o, vv);\
-		KNH_SAFEPOINT(ctx, sfp);\
-		return; \
-	}\
+#define RETURN_(vv) do {\
+	KNH_SETv(ctx, sfp[_rix].o, vv);\
+	KNH_SAFEPOINT(ctx, sfp);\
+	return; \
+} while (0)
 
 #endif
 
-#define RETURNd_(d) {\
-		sfp[_rix].ndata = d; \
-		return; \
-	}\
+#define RETURNd_(d) do {\
+	sfp[_rix].ndata = d; \
+	return; \
+} while (0)
 
-#define RETURNb_(c) {\
-		sfp[_rix].bvalue = c; \
-		return; \
-	}\
+#define RETURNb_(c) do {\
+	sfp[_rix].bvalue = c; \
+	return; \
+} while(0)
 
-#define RETURNi_(c) {\
-		sfp[_rix].ivalue = c; \
-		return; \
-	}\
+#define RETURNi_(c) do {\
+	sfp[_rix].ivalue = c; \
+	return; \
+} while (0)
 
-#define RETURNf_(c) {\
-		sfp[_rix].fvalue = c; \
-		return; \
-	}\
+#define RETURNf_(c) do {\
+	sfp[_rix].fvalue = c; \
+	return; \
+} while (0)
 
-#define RETURNvoid_() {\
-		(void)_rix;\
-		return; \
-	}\
+#define RETURNvoid_() do {\
+	(void)_rix;\
+	return; \
+} while (0)
 
 
 #ifdef K_EXPORTS
 
-#define ITREND_() {\
-		ctx->spi->closeItrSPI(ctx, sfp[0].it);\
-		return 0; \
-	}\
+#define ITREND_() do {\
+	ctx->spi->closeItrSPI(ctx, sfp[0].it);\
+	return 0; \
+} while (0)
 
-#define ITRNEXT_(vv) {\
-		ctx->spi->setsfpSPI(ctx, sfp+rix_, vv);\
-		return 1; \
-	}\
+#define ITRNEXT_(vv) do {\
+	ctx->spi->setsfpSPI(ctx, sfp+rix_, vv);\
+	return 1; \
+} while (0)
 
 #else
 
-#define ITREND_() {\
-		knh_Iterator_close(ctx, sfp[0].it);\
-		return 0; \
-	}\
+#define ITREND_() do {\
+	knh_Iterator_close(ctx, sfp[0].it);\
+	return 0; \
+} while (0)
 
-#define ITRNEXT_(vv) {\
-		KNH_SETv(ctx, sfp[_rix].o, vv);\
-		return 1; \
-	}\
+#define ITRNEXT_(vv) do {\
+	KNH_SETv(ctx, sfp[_rix].o, vv);\
+	return 1; \
+} while (0)
 
 #endif
 
-#define ITRNEXTd_(d) {\
-		sfp[_rix].ndata = d;\
-		return 1; \
-	}\
+#define ITRNEXTd_(d) do {\
+	sfp[_rix].ndata = d;\
+	return 1; \
+} while (0)
 
-#define ITRNEXTi_(n) {\
-		sfp[_rix].ivalue = n;\
-		return 1; \
-	}\
+#define ITRNEXTi_(n) do {\
+	sfp[_rix].ivalue = n;\
+	return 1; \
+} while (0)
 
-#define ITRNEXTf_(n) {\
-		sfp[_rix].fvalue = n;\
-		return 1; \
-	}\
+#define ITRNEXTf_(n) do {\
+	sfp[_rix].fvalue = n;\
+	return 1; \
+} while (0)
 
 /* ------------------------------------------------------------------------ */
 

@@ -210,8 +210,8 @@ DEFAPI(void) constMPIComm(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 	MPI_Initialized(&init);
 	if (init) {
 		knh_MPI_initWorld(ctx, cid);
-		knh_MPI_initSelf(ctx, cid);
-		knh_MPI_initParent(ctx, cid);
+		//knh_MPI_initSelf(ctx, cid);
+		//knh_MPI_initParent(ctx, cid);
 	}
 }
 
@@ -237,12 +237,25 @@ DEFAPI(void) constMPIOp(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 void knh_MPI_initArrayFuncData(CTX ctx);
 void knh_MPI_initArrayPrintFunc(CTX ctx);
 
+void knh_MPI_errhandler(MPI_Comm *comm, int *err, ...)
+{
+	if (*err != MPI_SUCCESS) {
+		char errstr[MPI_MAX_ERROR_STRING] = {0};
+		int errlen = 0;
+		MPI_Error_string(*err, errstr, &errlen);
+		fprintf(stderr, "MPI error == %s\n", errstr);
+	}
+}
+
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, knh_LoaderAPI_t *kapi)
 {
 	int init = 0;
 	MPI_Initialized(&init);
 	if (init) {
-		MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+		//MPI_Errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN);
+		MPI_Errhandler errfn;
+		MPI_Comm_create_errhandler(knh_MPI_errhandler, &errfn);
+		MPI_Errhandler_set(MPI_COMM_WORLD, errfn);
 	} else {
 		KNH_NOTE("Process is not initialized as MPI Proc.: MPI functions are NOT available");
 	}

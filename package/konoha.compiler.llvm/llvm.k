@@ -338,12 +338,8 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
         kfunc.curBB.insts.add(inst);
         kfunc.curBB.hasReturn = true;
     }
-    String result = kfunc.dump();
-    this.ir << result;
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
-    }
-    if (!kfunc.isUndeveloped()) {
         FunctionPassManager fpm = opt.fpm;
         fpm.doInitialization();
         fpm.run(opt.wrapperfunc);
@@ -454,7 +450,8 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     fields.add(objectPtrTy);
     Type objectFieldTy    = StructType.create(fields, "ObjectField", false);
     Type objectFieldPtrTy = PointerType.get(objectFieldTy);
-    opt.ktype["objectFieldTy"] = stringPtrTy;
+    opt.ktype["objectFieldTy"] = objectFieldTy;
+    opt.ktype["objectFieldPtrTy"] = PointerType.get(objectFieldTy);
 
     fields = [];
     fields.add(hObjectTy);
@@ -978,10 +975,12 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     setLLVMValue(asm, v);
 }
 @Public @Override void K_TCHECK.codegen(Compiler asm) {
-    Type fmethodPtrTy = asm.opt.ktype["methodPtrTy"];
+    Type methodPtrTy = asm.opt.ktype["methodPtrTy"];
 
     Value func = ConstantInt.get(asm.opt.intTy, (method:Object.typeCheck).getPtr());
-    func = asm.opt.builder.CreateIntToPtr(func, fmethodPtrTy);
+    func = asm.opt.builder.CreateIntToPtr(func, methodPtrTy);
+    func = asm.opt.builder.createStructGEP(func, 4);
+    func = asm.opt.builder.createLoad(func);
     Value thisidx = ConstantInt.get(asm.opt.intTy, op.espidx + K_CALLDELTA);
     Value sfp = asm.opt.builder.createGEP1(asm.opt.sfp, thisidx);
     Value vrix = ConstantInt.get(asm.opt.intTy, K_RTNIDX);
@@ -1136,8 +1135,18 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     Type methodTy = asm.opt.ktype["trmethodPtrTy"];
-    Value func = ConstantInt.get(asm.opt.intTy, op.ftr);
-    func = asm.opt.builder.CreateIntToPtr(func, methodTy);
+    Value func;
+    FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
+    DynamicLibrary.loadLibraryPermanently("compiler.dylib");
+    //if (op.ftr == Stmt.CWB) {
+    //    func = asm.opt.m.getOrInsertFunction("compiler_CWB", fnTy);
+    //} else if (op.ftr == Stmt.TOSTR) {
+    //    func = asm.opt.m.getOrInsertFunction("compiler_TOSTR", fnTy);
+    //} else
+    {
+        func = ConstantInt.get(asm.opt.intTy, op.ftr);
+        func = asm.opt.builder.CreateIntToPtr(func, methodTy);
+    }
     Value vb = ConstantInt.get(asm.opt.intTy, op.espidx);
     vb = asm.opt.builder.createGEP1(asm.opt.sfp, vb);
     Value rix = ConstantInt.get(asm.opt.intTy, op.rix);
@@ -1234,10 +1243,9 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
         v = asm.opt.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
     }
     else {
-        v = asm.opt.builder.createBitCast(v, asm.opt.ktype["objectPtrTy"]);
+        v = asm.opt.builder.createBitCast(v, asm.opt.ktype["objectFieldPtrTy"]);
         v = asm.opt.builder.createStructGEP(v, 1);
         v = asm.opt.builder.createLoad(v);
-        v = asm.opt.builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
         Value vn = ConstantInt.get(asm.opt.intTy, op.an);
         v = asm.opt.builder.createInBoundsGEP1(v, vn);
         v = asm.opt.builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));

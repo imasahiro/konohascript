@@ -79,7 +79,7 @@ if (rank == 0) {
 } else if (rank == 1) {
     world.bcast((MPIData)[1.1, 2.2, 3.3, 4.4, 5.5], 5, 1);
 } else {
-    world.bcast((MPIData)fdata, 0, 5, 1);
+    world.bcast((MPIData)fdata, 5, 1);
 }
 
 fdata = new float[0];

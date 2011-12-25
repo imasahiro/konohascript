@@ -86,6 +86,7 @@ String : (Class c) {
 @Public @Native Stmt Stmt.getS(int n);
 @Public @Native int Stmt.getStmtType();
 @Public @Native Object Token.getD();
+@Public @Native Token Token.gettkIDX();
 @Public @Native String Token.getText();
 @Public @Native Token Stmt.toToken();
 @Public @Native Stmt Stmt.getStmtPost();

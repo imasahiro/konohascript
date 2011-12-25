@@ -503,7 +503,21 @@ static void kook_compiler_compiler(CTX ctx, kMethod *mtd, kStmtExpr *stmtB)
 	kook_BLOCK_asm(ctx, stmtB);
 	kook_compiler_emit(ctx, mtd);
 }
-
+/* copied from src/lang/asm.c */
+void compiler_CWB(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
+{
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	KNH_SETv(ctx, sfp[c].o, cwb->w);
+	sfp[c].ivalue = cwb->pos;
+}
+/* copied from src/lang/asm.c */
+void compiler_TOSTR(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
+{
+	DBG_ASSERT(IS_OutputStream(sfp[0].w));
+	CWB_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
+	kString *s = CWB_newString(ctx, &cwbbuf, 0);
+	KNH_SETv(ctx, sfp[c].o, s);
+}
 static kMethod *load_method(CTX ctx, kclass_t cid, kbytes_t t)
 {
 	kmethodn_t mn = knh_getmn(ctx, t, MN_NONAME);

@@ -178,8 +178,7 @@ KMETHOD GslMath_pow9(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD GslMath_sign(CTX ctx, ksfp_t *sfp _RIX)
 {
 	int i = GSL_SIGN(Float_to(double, sfp[1]));
-	if(i == 1) RETURNb_(1)
-	else RETURNb_(0);
+	RETURNb_(i == 1);
 }
 
 KMETHOD GslMath_isOdd(CTX ctx, ksfp_t *sfp _RIX)

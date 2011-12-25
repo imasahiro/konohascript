@@ -391,6 +391,12 @@ static size_t BasicBlock_peephole(CTX ctx, kBasicBlock *bb)
 				_REMOVE(opP);
 			}
 		}
+		if (op->opcode == OPCODE_NMOV || op->opcode == OPCODE_OMOV) {
+			klr_NMOV_t *opNMOV = (klr_NMOV_t *) op;
+			if(opNMOV->a == opNMOV->b) {
+				_REMOVE(op);
+			}
+		}
 		if(opP->opcode == OPCODE_NSET && op->opcode == OPCODE_NSET) {
 			klr_NSET_t *op1 = (klr_NSET_t*)opP;
 			klr_NSET_t *op2 = (klr_NSET_t*)op;

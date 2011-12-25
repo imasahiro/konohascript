@@ -8,6 +8,7 @@ if (rank != 0) disableLog();
 
 /* ------------------------------------------------------------------------ */
 
+/*
 bdata = new byte[0];
 if (rank == 0) {
     assure "CollectiveAllReduceBytes" {
@@ -35,6 +36,7 @@ if (rank == 0) {
 } else {
     world.allReduce((MPIData)(Bytes)"z", (MPIData)bdata, 0, MPIOp.MAX);
 }
+*/
 
 /* ------------------------------------------------------------------------ */
 

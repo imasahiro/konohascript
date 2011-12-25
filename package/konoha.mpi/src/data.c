@@ -110,8 +110,9 @@ void* knh_MPIData_getAddr(kMPIData *data)
 		return data->ba->bu.buf + MPID_POFS(data);
 	case CLASS_String:
 		return data->s->str.buf + MPID_POFS(data);
+	default:
+		return (data->ba) ? data->ba->bu.buf + MPID_POFS(data) : NULL;
 	}
-	return NULL;
 }
 
 void knh_MPIData_expand(CTX ctx, kMPIData *data, int *count, int *inc)
@@ -159,8 +160,9 @@ int knh_MPIData_getSize(kMPIData *data)
 		return BA_size(data->ba);
 	case CLASS_String:
 		return S_size(data->s);
+	default:
+		return (data->ba) ? BA_size(data->ba) : 0;
 	}
-	return 0;
 }
 
 int knh_MPIData_incSize(kMPIData *data, int count)
@@ -201,12 +203,34 @@ void  knh_MPIData_checkCount(kMPIData *data, int *count)
 }
 
 /* ------------------------------------------------------------------------ */
+//## method MPIData MPIData.new(byte[] data, Class class);
+
+KMETHOD MPIData_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	MPID(data, sfp[0].o);
+	data->ba = sfp[1].ba;
+	MPID_TYPE(data) = MPI_CHAR;
+	MPID_DCID(data) = knh_Class_cid(sfp[2].c);
+	MPID_POFS(data) = 0;
+	RETURN_(data);
+}
+
+/* ------------------------------------------------------------------------ */
 //## method Class MPIData.getContentClass();
 
 KMETHOD MPIData_getContentClass(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, sfp[0].o);
-	RETURN_(new_Type(ctx, O_cid(data->o)));
+	RETURN_(new_Type(ctx, (MPID_TYPE(data) == MPI_CHAR) ? MPID_DCID(data) : O_cid(data->o)));
+}
+
+/* ------------------------------------------------------------------------ */
+//## medhot int MPIData.getSize();
+
+KMETHOD MPIData_getSize(CTX ctx, ksfp_t *sfp _RIX)
+{
+	MPID(data, sfp[0].o);
+	RETURNi_(MPID_SIZE(data));
 }
 
 /* ------------------------------------------------------------------------ */
