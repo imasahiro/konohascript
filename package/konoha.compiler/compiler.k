@@ -965,26 +965,6 @@ class K_RSFT extends K_Inst {
         return "\t" + getName() + " = rsft "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName();
     }
 }
-class K_TCHECKop extends K_Opcode {
-    int espidx;
-    K_TCHECKop(K_Inst inst0, int espidx) {
-        this.inst0 = inst0;
-        this.espidx = espidx;
-    }
-}
-class K_TCHECK extends K_Inst {
-    K_TCHECKop op;
-    K_TCHECK(K_Value kvalue, K_TCHECKop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
-        this.op = op;
-        addDef(kvalue, idx);
-        addUse(op, idx);
-    }
-    @Override String dump() {
-        return "\t" + getName() + " = tcheck " + getTypeName(type) + " " + op.inst0.getName();
-    }
-}
 class K_CASTop extends K_Opcode{
     Class tcid;
     Class scid;
@@ -1345,6 +1325,31 @@ class K_CONST extends K_Inst {
             return (String)res;
         }
         return null;
+    }
+}
+class K_TCHECKop extends K_Opcode {
+    int espidx;
+    K_TCHECKop(K_Inst inst0, int espidx) {
+        this.inst0 = inst0;
+        this.espidx = espidx;
+    }
+}
+class K_TCHECK extends K_Inst {
+    K_TCHECKop op;
+    K_TCHECK(K_Value kvalue, K_TCHECKop op, int idx) {
+        this.kvalue = kvalue;
+        this.type = kvalue.type;
+        this.op = op;
+        if (op.inst0.class == K_CONST) {
+            K_CONST inst = (K_CONST) op.inst0;
+            Class c = inst.op.const_table[inst.op.table_idx];
+            this.type = c;
+        }
+        addDef(kvalue, idx);
+        addUse(op, idx);
+    }
+    @Override String dump() {
+        return "\t" + getName() + " = tcheck " + getTypeName(type) + " " + op.inst0.getName();
     }
 }
 class K_MOVxop extends K_Opcode {
@@ -2411,9 +2416,13 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
                 print "parans ", i;
             }
         }
-        K_Value kvalue = null;
-        kvalue = kfunc.getKValue(thisidx + rix, rtype);
-        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtd, mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
+        K_Value kvalue = kfunc.getKValue(thisidx + rix, rtype);
+        K_Inst inst;
+        if (mtd == method:Object.typeCheck) {
+            inst = new K_TCHECK(kvalue, new K_TCHECKop(args[1], espidx), thisidx);
+        } else {
+            inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtd, mtdptr, thisidx, espshift, FUNC_STATIC, rix, isStatic));
+        }
         kfunc.curBB.insts.add(inst);
         if (rtype != null) {
             kfunc.storeKInst(thisidx + rix, inst);

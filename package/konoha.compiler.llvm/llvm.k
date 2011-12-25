@@ -975,10 +975,12 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     setLLVMValue(asm, v);
 }
 @Public @Override void K_TCHECK.codegen(Compiler asm) {
-    Type fmethodPtrTy = asm.opt.ktype["methodPtrTy"];
+    Type methodPtrTy = asm.opt.ktype["methodPtrTy"];
 
     Value func = ConstantInt.get(asm.opt.intTy, (method:Object.typeCheck).getPtr());
-    func = asm.opt.builder.CreateIntToPtr(func, fmethodPtrTy);
+    func = asm.opt.builder.CreateIntToPtr(func, methodPtrTy);
+    func = asm.opt.builder.createStructGEP(func, 4);
+    func = asm.opt.builder.createLoad(func);
     Value thisidx = ConstantInt.get(asm.opt.intTy, op.espidx + K_CALLDELTA);
     Value sfp = asm.opt.builder.createGEP1(asm.opt.sfp, thisidx);
     Value vrix = ConstantInt.get(asm.opt.intTy, K_RTNIDX);
