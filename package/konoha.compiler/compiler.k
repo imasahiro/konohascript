@@ -1559,7 +1559,6 @@ void Compiler.init(Method mtd) {
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
     }
-    print gamma_fvarsize();
     for (int i = 0; i < |paramsclass|; i++) {
         Class j = paramsclass[i];
         K_Value kvalue = kfunc.getKValue(i+1, j);
