@@ -1570,8 +1570,8 @@ void Compiler.init(Method mtd) {
         Class c = gamma_gf_type(i);
         if (gamma_gf_fn(i) == 41 + 126 /* TODO FN_vargs */) {
             Class p1 = c.getP1();
-            K_Value vb = kfunc.getKValue(i, p1);
-            inst = new K_TR(vb, new K_TRop(inst, i, i-i, p1.getClassTablePtr(), Stmt.VARGS));
+            K_Value kvalue = kfunc.getKValue(i, p1);
+            inst = new K_TR(kvalue, new K_TRop(null, i, i-i, p1.getClassTablePtr(), Stmt.VARGS));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(i, inst);
             continue;
@@ -1584,10 +1584,10 @@ void Compiler.init(Method mtd) {
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(i, inst);
         } else {
-        K_Value kval = kfunc.getKValue(i, c);
-        K_Inst inst = new K_TR(kval, new K_TRop(null, i, i, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
-        kfunc.curBB.insts.add(inst);
-        kfunc.storeKInst(i, inst);
+            K_Value kval = kfunc.getKValue(i, c);
+            K_Inst inst = new K_TR(kval, new K_TRop(null, i, i, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
+            kfunc.curBB.insts.add(inst);
+            kfunc.storeKInst(i, inst);
         }
     }
     initFunc(kfunc);
