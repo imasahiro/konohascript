@@ -398,6 +398,21 @@ KMETHOD Compiler_gammaHasFIELD(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(GammaBuilder_hasFIELD(ctx->gma));
 }
+KMETHOD Compiler_gammaFvarsize(CTX ctx, ksfp_t *sfp _RIX)
+{
+    RETURNi_(DP(ctx->gma)->fvarsize);
+}
+KMETHOD Compiler_gammaGfFn(CTX ctx, ksfp_t *sfp _RIX)
+{
+    kint_t i = Int_to(kint_t, sfp[1]);
+    RETURNi_(DP(ctx->gma)->gf[i].fn);
+}
+KMETHOD Compiler_gammaGfType(CTX ctx, ksfp_t *sfp _RIX)
+{
+    kint_t i = Int_to(kint_t, sfp[1]);
+    ktype_t type = DP(ctx->gma)->gf[i].type;
+    RETURN_(new_Type(ctx, type));
+}
 KMETHOD Compiler_gammaGetThiscid(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(new_Type(ctx, DP(ctx->gma)->this_cid));
