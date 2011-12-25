@@ -1513,6 +1513,9 @@ class SFX {
 }
 
 @Native boolean Compiler.gammaHasFIELD();
+@Native int Compiler.gamma_fvarsize();
+@Native int Compiler.gamma_gf_fn(int i);
+@Native Class Compiler.gamma_gf_type(int i);
 @Native Class Compiler.gammaGetThiscid();
 void Compiler.initFunc(K_Function func) {
     func.func = null;
@@ -1556,12 +1559,37 @@ void Compiler.init(Method mtd) {
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
     }
-    for (int i =  0; i < |paramsclass|; i++) {
+    print gamma_fvarsize();
+    for (int i = 0; i < |paramsclass|; i++) {
         Class j = paramsclass[i];
         K_Value kvalue = kfunc.getKValue(i+1, j);
         K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
         kfunc.storeKInst(i+1, inst);
         kfunc.funcargs.add(inst);
+    }
+    for (int i = |paramsclass|+1; i < gamma_fvarsize(); i++) {
+        Class c = gamma_gf_type(i);
+        if (gamma_gf_fn(i) == 41 + 126 /* TODO FN_vargs */) {
+            Class p1 = c.getP1();
+            K_Value vb = kfunc.getKValue(i, p1);
+            inst = new K_TR(vb, new K_TRop(inst, i, i-i, p1.getClassTablePtr(), Stmt.VARGS));
+            kfunc.curBB.insts.add(inst);
+            kfunc.storeKInst(i, inst);
+            continue;
+        }
+        if (c.isUnboxType()) {
+            int table_idx = kfunc.addConstTable(0);
+            int objptr = 0;
+            K_Value kvalue = kfunc.getKValue(i, c);
+            K_CONST inst = new K_CONST(kvalue, c, new K_CONSTop(table_idx, objptr, kfunc.const_table));
+            kfunc.curBB.insts.add(inst);
+            kfunc.storeKInst(i, inst);
+        } else {
+        K_Value kval = kfunc.getKValue(i, c);
+        K_Inst inst = new K_TR(kval, new K_TRop(null, i, i, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
+        kfunc.curBB.insts.add(inst);
+        kfunc.storeKInst(i, inst);
+        }
     }
     initFunc(kfunc);
     String mtdName = mtd.toString();
