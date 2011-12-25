@@ -160,6 +160,11 @@ KMETHOD Token_getD(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
 	RETURN_(tk->data);
 }
+//## Token Token.gettkIDX();
+KMETHOD Token_getTkIDX(CTX ctx, ksfp_t *sfp _RIX) {
+	kTerm *tk = (kTerm*)sfp[0].o;
+	RETURN_(tk->tkIDX);
+}
 //## String Token.getText();
 KMETHOD Token_getText(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;

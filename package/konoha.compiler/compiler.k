@@ -1653,8 +1653,9 @@ Array<K_Inst> Compiler.createPhiArray(K_BasicBlock bb, Array<K_Inst> regTableCon
 SFX getsfx(Token tk) {
     int i = 0;
     int n = tk.getTokenIndex();
-    if (typeof(tk.getD()) == typeof(tk) && getTT(tk.getD()) == TT_FVAR) {
-        i = tk.getD().getTokenIndex();
+    Token tkIDX = tk.gettkIdx();
+    if (tk.getD().class == Term && tkIDX.getTT() == Token.TT_FVAR) {
+        i = tkIdx.getTokenIndex();
     }
     return new SFX(i, n);
 }
