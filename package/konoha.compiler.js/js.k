@@ -125,8 +125,8 @@ LABEL = uscore("label");
     asm.addSource("var " + LABEL + " = 0;", 1);
     asm.addSource("while(true) switch (" + LABEL + ") {", 1);
     for (int i = 0; i < |bbs|; i++) {
-        asm.addSource("case " + i + ":", 2);
         if (bbs[i] == null) continue;
+        asm.addSource("case " + i + ":", 2);
         foreach(String s in bbs[i].phis.keys()) {
             bbs[i].phis[s].codegen(asm);
         }
