@@ -214,85 +214,14 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     this.opt.func = func.func;
 }
 @Public void Compiler.init(Method mtd) {
-    this.mtd = mtd;
+    common_init(mtd);
     opt.wrapperfunc = Function.create(mtd.toString(), opt.funcTy, opt.m, GlobalValue.ExternalLinkage);
     Array<Value> vargs = opt.wrapperfunc.getArguments();
-    if (DEBUG) {
-        print mtd;
-        print mtd.toString();
-        print mtd.getReturnType();
-        //print mtd.getParamTypes();
-        print mtd.toString();
-    }
     opt.ctx = vargs[0];
     opt.sfp = vargs[1];
     opt.rix = vargs[2];
     opt.bblist  = [];
     opt.bblist2 = [];
-
-    paramsclass = mtd.getParamTypes();
-    retclass    = mtd.getReturnType();
-    this.kfunc = new K_Function(mtd);
-    if (mtd.getName() == ""/*global variable definition*/) {
-        K_Value kvalue = kfunc.getKValue(0, Script);
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
-        kfunc.storeKInst(0, inst);
-        kfunc.funcargs.add(inst);
-        //kfunc.init(this);
-        initFunc(kfunc);
-        return;
-    }
-    if (mtd.isStatic() && gamma_hasFIELD()) {
-        K_Value kval = kfunc.getKValue(0, Script);
-        K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
-        kfunc.curBB.insts.add(inst);
-        kfunc.storeKInst(0, inst);
-    }
-
-    if (!mtd.isStatic()) {
-        K_Value kvalue = kfunc.getKValue(0, mtd.getMethodClass());
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
-        kfunc.storeKInst(0, inst);
-        kfunc.funcargs.add(inst);
-    }
-    for (int i =  0; i < |paramsclass|; i++) {
-        Class j = paramsclass[i];
-        K_Value kvalue = kfunc.getKValue(i+1, j);
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
-        kfunc.storeKInst(i+1, inst);
-        kfunc.funcargs.add(inst);
-    }
-    for (int i = |paramsclass|+1; i < gamma_fvarsize(); i++) {
-        Class c = gamma_gf_type(i);
-        if (gamma_gf_fn(i) == 41 + 126 /* TODO FN_vargs */) {
-            Class p1 = c.getP1();
-            K_Value kvalue = kfunc.getKValue(i, p1);
-            inst = new K_TR(kvalue, new K_TRop(null, i, i-i, p1.getClassTablePtr(), Stmt.VARGS));
-            kfunc.curBB.insts.add(inst);
-            kfunc.storeKInst(i, inst);
-            continue;
-        }
-        if (c.isUnboxType()) {
-            int table_idx = kfunc.addConstTable(0);
-            int objptr = 0;
-            K_Value kvalue = kfunc.getKValue(i, c);
-            K_CONST inst = new K_CONST(kvalue, c, new K_CONSTop(table_idx, objptr, kfunc.const_table));
-            kfunc.curBB.insts.add(inst);
-            kfunc.storeKInst(i, inst);
-        } else {
-            K_Value kval = kfunc.getKValue(i, c);
-            K_Inst inst = new K_TR(kval, new K_TRop(null, i, 0, c.getClassTablePtr(), Stmt.NULL), 0);
-            kfunc.curBB.insts.add(inst);
-            kfunc.storeKInst(i, inst);
-        }
-    }
-    //kfunc.init(this);
-    initFunc(kfunc);
-    String mtdName = mtd.toString();
-    if (this.compiled_methods[mtdName] == null) {
-        this.compiled_methods[mtdName] = [];
-    }
-    this.compiled_methods[mtdName].add(kfunc);
 }
 @Public Function Compiler.createAbs() {
     Type arg0Ty = opt.floatTy;
