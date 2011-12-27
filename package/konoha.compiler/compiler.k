@@ -32,7 +32,7 @@ include "lib:gluelink";
 
 DEBUG = false;
 //USE_NONSSA = false;
-USE_NONSSA = true;
+USE_NONSSA = false;
 //DEBUG = true;
 FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
@@ -2969,6 +2969,7 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
 }
 void Compiler.asmALT(Stmt stmt, int espidx) {
     /* TODO */
+    throw new Exception();
 }
 void Compiler.asmTRI(Stmt stmt, int espidx, Stmt cond, Stmt lhs, Stmt rhs) {
     if (DEBUG) {
@@ -3014,6 +3015,7 @@ void Compiler.asmSEND(Stmt stmt, int espidx) {
         if (stmt.getS(i).getStmtType() == Stmt.STT_W1) {
             /*TODO*/
             print "send todo";
+            throw new Exception();
         } else {
             Method sendmtd = null;
             Class c = stmt.getS(i).toToken().getT();
@@ -3044,5 +3046,6 @@ void Compiler.asmW1(Stmt stmt, int espidx, Method mtd, Token streamTk, Stmt expr
 void Compiler.asmFMTCALL(Stmt stmt, int espidx) {
     /* TODO */
     print "fmtcall todo";
+    throw new Exception();
 }
 

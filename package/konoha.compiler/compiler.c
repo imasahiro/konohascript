@@ -601,3 +601,7 @@ DEFAPI(void) complete(CTX ctx)
 	reset_compiler_api(ctx);
 }
 
+void __test__(void *p1) {
+    fprintf(stderr, "%p\n", p1);
+    asm volatile("int3");
+}

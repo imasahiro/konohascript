@@ -2,7 +2,7 @@
  * io write
  */
 
-K=1024;
+K=10;
 M=K*K;
 G=M*K;
 
