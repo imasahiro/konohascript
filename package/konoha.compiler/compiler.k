@@ -32,7 +32,7 @@ include "lib:gluelink";
 
 DEBUG = false;
 //USE_NONSSA = false;
-USE_NONSSA = true;
+USE_NONSSA = false;
 //DEBUG = true;
 FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
@@ -1586,7 +1586,7 @@ void Compiler.common_init(Method mtd) {
             kfunc.storeKInst(i, inst);
         } else {
             K_Value kval = kfunc.getKValue(i, c);
-            K_Inst inst = new K_TR(kval, new K_TRop(null, i, i, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
+            K_Inst inst = new K_TR(kval, new K_TRop(null, i, 0, c.getClassTablePtr(), Stmt.NULL), 0);
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(i, inst);
         }
@@ -2975,6 +2975,7 @@ void Compiler.asmOR(Stmt stmt, int espidx) {
 }
 void Compiler.asmALT(Stmt stmt, int espidx) {
     /* TODO */
+    throw new Exception();
 }
 void Compiler.asmTRI(Stmt stmt, int espidx, Stmt cond, Stmt lhs, Stmt rhs) {
     if (DEBUG) {
@@ -3020,6 +3021,7 @@ void Compiler.asmSEND(Stmt stmt, int espidx) {
         if (stmt.getS(i).getStmtType() == Stmt.STT_W1) {
             /*TODO*/
             print "send todo";
+            throw new Exception();
         } else {
             Method sendmtd = null;
             Class c = stmt.getS(i).toToken().getT();
@@ -3050,5 +3052,6 @@ void Compiler.asmW1(Stmt stmt, int espidx, Method mtd, Token streamTk, Stmt expr
 void Compiler.asmFMTCALL(Stmt stmt, int espidx) {
     /* TODO */
     print "fmtcall todo";
+    throw new Exception();
 }
 
