@@ -407,7 +407,6 @@ LABEL = uscore("label");
     return res;
 }
 @Public void Compiler.dump(Boolean dump) {
-    print this.declareclass;
     OUT << header << EOL + EOL;
     foreach (K_Class kc in this.declareclass) {
         String cname = class2str((to String)kc.c);
