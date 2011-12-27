@@ -2,16 +2,13 @@ using konoha.math.*;
 //using konoha.compiler.*;
 //class CompilerOpt {
 //    String[] source;
-//    Class [] declareClass;
 //    String[] topLevelFunctionList;
 //}
 System.addClassField(CompilerOpt, Array<String>, "source");
-System.addClassField(CompilerOpt, Array<Class> , "declareclass");
 System.addClassField(CompilerOpt, Array<String>, "topLevelFunctionList");
 System.addClassField(CompilerOpt, Array<String>, "var_decls");
 @Public void CompilerOpt.init() {
     this.source = [];
-    this.declareClass = [];
     this.topLevelFunctionList = [];
     this.var_decls = [];
 }
@@ -64,15 +61,6 @@ String getTypeName (Class type) {
     return (res == "") ? "null" : res;
 }
 
-@Public void Compiler.addClass(Class c) {
-    String cname = (to String)c;
-    Class[] declareclass = this.opt.declareclass;
-    if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.")
-            && declareclass.indexOf(c) == -1) {
-        declareclass.add(c);
-    }
-}
-
 @Public void Compiler.addSource(String str, int count) {
     String tmp = "";
     for (int i = 0; i < count; i++) {
@@ -111,11 +99,6 @@ String getTypeName (Class type) {
 }
 
 @Public void K_Function.codegen(Compiler asm) {
-    asm.addClass(asm.mtd.getMethodClass());
-    asm.addClass(asm.mtd.getReturnType());
-    foreach (Class c in asm.mtd.getParamTypes()) {
-        asm.addClass(c);
-    }
     String fncdef = "";
     String thisclass = mtdclass2str(asm.mtd.toString());
     if (isStatic == 1 || thisclass == "Script") {
@@ -337,7 +320,6 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
     String t = class2str(type) + " ";
-    asm.addClass(this.type);
     String name = class2str(type, true);
     asm.addSource(t + getName() + "( new " + (name) + "());", 2);
 }
@@ -350,7 +332,6 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
     String t = class2str(type) + " ";
-    asm.addClass(this.type);
     String const_data = quote(op.const_table[op.table_idx])
     if (this.type == Int || this.type == Float || this.type == Boolean) {
         asm.addSource(t + getName() + " = " + const_data + ";", 2);
@@ -362,11 +343,9 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
 }
 @Public @Override void K_MOVx.codegen (Compiler asm) {
     String t = class2str(type) + " ";
-    asm.addClass(this.type);
     asm.addSource(t + getName() + " = " + op.inst0.getName() + "->field" + op.bn + ";", 2);
 }
 @Public @Override void K_xMOV.codegen(Compiler asm) {
-    asm.addClass(type);
     asm.addSource(op.inst0.getName() + "->field" + op.an + " = " + op.inst1.getName() + ";", 2);
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {}
@@ -382,58 +361,14 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
 }
 
 @Public void Compiler.emit(Method mtd) {
-    for (int i = 0; i < kfunc.const_table.size; i++) {
-        this.addConstTable(kfunc.const_table[i]);
-    }
-    if (!kfunc.curBB.hasReturn && kfunc.retTy == null) {
-        K_RET inst = new K_RET(new K_RETop(null));
-        kfunc.curBB.insts.add(inst);
-        kfunc.curBB.hasReturn = true;
-    }
+    common_emit(mtd);
     kfunc.codegen(this);
 }
 @Public void Compiler.init(Method mtd) {
-    this.mtd = mtd;
+    common_init(mtd);
     if (this.opt == null) {
         this.opt = new CompilerOpt();
     }
-    paramsclass = mtd.getParamTypes();
-    retclass    = mtd.getReturnType();
-    this.kfunc = new K_Function(mtd);
-    if (mtd.getName() == ""/*global variable definition*/) {
-        K_Value kvalue = kfunc.getKValue(0, Script);
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
-        kfunc.storeKInst(0, inst);
-        kfunc.funcargs.add(inst);
-        initFunc(kfunc);
-        return;
-    }
-    if (mtd.isStatic() && gamma_hasFIELD()) {
-        K_Value kval = kfunc.getKValue(0, Script);
-        K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
-        kfunc.curBB.insts.add(inst);
-        kfunc.storeKInst(0, inst);
-    }
-
-    if (!mtd.isStatic()) {
-        K_Value kvalue = kfunc.getKValue(0, mtd.getMethodClass());
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
-        kfunc.storeKInst(0, inst);
-        kfunc.funcargs.add(inst);
-    }
-    for (int i =  0; i < |paramsclass|; i++) {
-        Class j = paramsclass[i];
-        K_Value kvalue = kfunc.getKValue(i+1, j);
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
-        kfunc.storeKInst(i+1, inst);
-        kfunc.funcargs.add(inst);
-    }
-    initFunc(kfunc);
-    String mtdName = mtd.toString();
-    if (this.compiled_methods[mtdName] == null) {
-        this.compiled_methods[mtdName] = [];
-    }
-    this.compiled_methods[mtdName].add(kfunc);
 }
 @Public String Compiler.createKickFunc() {
     String res = "";
@@ -503,9 +438,9 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
 @Public void Compiler.dump(Boolean dump) {
     OUT << "#include \"konoha.hpp\"" << EOL;
     OUT << "boost::shared_ptr<konoha::System> System;" << EOL;
-    foreach (Class c in this.opt.declareclass) {
-        String cname = class2str(c, true);
-        OUT << createClassDefinition(c, cname) << EOL;
+    foreach (K_Class kc in this.declareclass) {
+        String cname = class2str(kc.c, true);
+        OUT << createClassDefinition(kc.c, cname) << EOL;
     }
     foreach (str in this.opt.source) {
         OUT << str << EOL;
