@@ -244,7 +244,7 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
     }
     if (mtd.isStatic() && gamma_hasFIELD()) {
         K_Value kval = kfunc.getKValue(0, Script);
-        K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
+        K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid(), Stmt.NULL), 0);
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(0, inst);
     }
@@ -267,7 +267,7 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
         if (gamma_gf_fn(i) == 41 + 126 /* TODO FN_vargs */) {
             Class p1 = c.getP1();
             K_Value kvalue = kfunc.getKValue(i, p1);
-            inst = new K_TR(kvalue, new K_TRop(null, i, i-i, p1.getClassTablePtr(), Stmt.VARGS));
+            inst = new K_TR(kvalue, new K_TRop(null, i, i-i, p1, Stmt.VARGS));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(i, inst);
             continue;
@@ -281,7 +281,7 @@ System.addClassField(CompilerOpt, BasicBlock[],              "bblist2");
             kfunc.storeKInst(i, inst);
         } else {
             K_Value kval = kfunc.getKValue(i, c);
-            K_Inst inst = new K_TR(kval, new K_TRop(null, i, 0, c.getClassTablePtr(), Stmt.NULL), 0);
+            K_Inst inst = new K_TR(kval, new K_TRop(null, i, 0, c, Stmt.NULL), 0);
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(i, inst);
         }
@@ -1231,7 +1231,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value vb = ConstantInt.get(asm.opt.intTy, op.espidx);
     vb = asm.opt.builder.createGEP1(asm.opt.sfp, vb);
     Value rix = ConstantInt.get(asm.opt.intTy, op.rix);
-    Value cid = ConstantInt.get(asm.opt.intTy, op.cTBL);
+    Value cid = ConstantInt.get(asm.opt.intTy, op.c.getClassTablePtr());
     if (op.inst0 != null) {
         asm.opt.builder.createStoreValueToSfp(asm.opt.sfp, asm.convertType(op.inst0.type), op.espidx, op.inst0.getLLVMValue(asm));
     }
@@ -1254,7 +1254,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value vb = ConstantInt.get(asm.opt.intTy, kvalue.idx);
     vb = asm.opt.builder.createGEP1(asm.opt.sfp, vb);
     Value rix = ConstantInt.get(asm.opt.intTy, op.rix);
-    Value cid = ConstantInt.get(asm.opt.intTy, op.cTBL);
+    Value cid = ConstantInt.get(asm.opt.intTy, op.c.getClassTablePtr());
     asm.opt.builder.createCall4(func, asm.opt.ctx, vb, rix, cid);
     Value v = asm.opt.builder.createLoadValueFromSfp(asm.opt.sfp, asm.convertType(type), kvalue.idx + op.rix);
     setLLVMValue(asm, v);
