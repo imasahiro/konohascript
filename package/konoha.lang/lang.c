@@ -57,8 +57,14 @@ KMETHOD Class_getP1(CTX ctx, ksfp_t *sfp _RIX) {
 }
 //## Class Class.getSuper();
 KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
-    kClass *c = sfp[0].c;
-    kclass_t cid = c->cTBL->supcid;
+	kClass *c = sfp[0].c;
+	kclass_t cid = c->cTBL->supcid;
+	RETURN_(new_Type(ctx, cid));
+}
+//## Class Class.getBaseClass();
+KMETHOD Class_getBaseClass(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kclass_t cid = c->cTBL->bcid;
 	RETURN_(new_Type(ctx, cid));
 }
 #undef Method_isStatic
@@ -245,16 +251,16 @@ KMETHOD Class_getFieldClasses(CTX ctx, ksfp_t *sfp _RIX)
 //## Array<String> Class.getFieldNames()
 KMETHOD Class_getFieldNames(CTX ctx, ksfp_t *sfp _RIX)
 {
-    kClass *c = sfp[0].c;
-    const knh_ClassTBL_t *cTBL = c->cTBL;
-    int i = 0;
-    kArray *res = new_Array(ctx, CLASS_String, 0);
-    if (cTBL != NULL) {
-        for (; i < cTBL->fsize; i++) {
-            knh_Array_add(ctx, res, knh_getFieldName(ctx, cTBL->fields[i].fn));
-        }
-    }
-    RETURN_(res);
+	kClass *c = sfp[0].c;
+	const knh_ClassTBL_t *cTBL = c->cTBL;
+	int i = 0;
+	kArray *res = new_Array(ctx, CLASS_String, 0);
+	if (cTBL != NULL) {
+		for (; i < cTBL->fsize; i++) {
+			knh_Array_add(ctx, res, knh_getFieldName(ctx, cTBL->fields[i].fn));
+		}
+	}
+	RETURN_(res);
 }
 //## int Object.getPtr() {
 KMETHOD Object_getPtr(CTX ctx, ksfp_t *sfp _RIX)
@@ -1115,15 +1121,27 @@ typedef struct knh_funcname_t {
 	void *func;
 } knh_funcname_t;
 extern knh_IntData_t _FuncData[];
+static const knh_IntData_t MethodInt[] = {
+	{"MN_get", MN_get},
+	{"MN_set", MN_set},
+	{"MN_getSize", MN_getSize},
+	{NULL, 0}
+};
 
+static const knh_IntData_t FNInt[] = {
+	{"FN_vargs", FN_vargs},
+	{NULL, 0}
+};
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 {
+
 	kapi->setPackageProperty(ctx, "name", "lang");
 	kapi->setPackageProperty(ctx, "version", "0.0");
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Method")), MethodInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), StmtInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Token")), TokenInt);
 	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), (knh_IntData_t*)_FuncData);
+	kapi->loadClassIntConst(ctx, knh_getcid(ctx, STEXT("konoha.Stmt")), FNInt);
 	RETURN_PKGINFO("konoha.lang");
 }
 

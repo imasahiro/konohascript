@@ -583,25 +583,22 @@ class K_Function {
     K_Value getKValue(int idx, Class type) {
         this.addClass(type);
         K_Value res = value_table[(String)idx];
-        String str_type1 = "";
-        String str_type2 = "";
         if (res == null) {
             value_table[(String)idx] = new K_Value(idx, type);
         } else {
-            str_type1 += res.type;
-            str_type2 += type;
-            boolean flag = res.type != type && 
-                !(
-                        str_type1.startsWith("konoha.Array")
-                        && str_type2.startsWith("konoha.Array")
-                        || str_type1.startsWith("konoha.Map")
-                        && str_type2.startsWith("konoha.Map")
-                        || str_type1.startsWith("konoha.Func")
-                        && str_type2.startsWith("konoha.Func")
-                        || str_type1.startsWith("konoha.Iterator")
-                        && str_type2.startsWith("konoha.Iterator")
-                 );
-            if (flag) {
+            Class rtype = res.type;
+            //boolean tcheck = res.type != type &&
+            //    !(
+            //            str_type1.startsWith("konoha.Array")
+            //            && str_type2.startsWith("konoha.Array")
+            //            || str_type1.startsWith("konoha.Map")
+            //            && str_type2.startsWith("konoha.Map")
+            //            || str_type1.startsWith("konoha.Func")
+            //            && str_type2.startsWith("konoha.Func")
+            //            || str_type1.startsWith("konoha.Iterator")
+            //            && str_type2.startsWith("konoha.Iterator")
+            //     );
+            if (rtype != type && !(rtype.baseClass == type.baseClass)) {
                 value_table[(String)idx] = new K_Value(idx, type);
             }
         }
@@ -643,7 +640,6 @@ class K_Class {
         }
         res += "}" + EOL;
         return res;
-
     }
 }
 
@@ -812,7 +808,12 @@ class K_SELECT extends K_Inst {
         addUse(op, idx);
     }
     @Override String dump() {
-        return "\t" + getName() + " = select "+ getTypeName(type) + " " + op.inst0.getName() + " " + op.inst1.getName() + " " + op.inst2.getName();
+        String v3 = getName();
+        String v0 = op.inst0.getName();
+        String v1 = op.inst1.getName();
+        String v2 = op.inst2.getName();
+        String t  = getTypeName(type);
+        return "\t" + v3 + " = select " + t + " " + v0 + " " + v1 + " " + v2;
     }
 }
 class K_CASTop extends K_Opcode{
@@ -1444,7 +1445,7 @@ void Compiler.init(Method mtd) {
     }
     for (int i = |paramsclass|+1; i < gamma_fvarsize(); i++) {
         Class c = gamma_gf_type(i);
-        if (gamma_gf_fn(i) == 41 + 126 /* TODO FN_vargs */) {
+        if (gamma_gf_fn(i) == Stmt.FN_vargs) {
             Class p1 = c.getP1();
             K_Value kvalue = kfunc.getKValue(i, p1);
             inst = new K_TR(kvalue, new K_TRop(null, i, i-i, p1, Stmt.VARGS));

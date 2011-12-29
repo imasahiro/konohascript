@@ -62,6 +62,7 @@ String : (Class c) {
 @Public @Native @Const String[] Class.getFieldNames();
 @Public @Native Class Class.getP1();
 @Public @Native Class Class.getSuper();
+@Public @Native Class Class.getBaseClass();
 
 @Public @Native Method Method.opLINK(String path, NameSpace _);
 @Public @Native Method[] Class.getMethods(NameSpace _);
