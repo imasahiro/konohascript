@@ -35,8 +35,6 @@ DEBUG = false;
 USE_NONSSA = false;
 //DEBUG = true;
 FUNC_STATIC = 0;
-FUNC_VIRTUAL = 1;
-FUNC_VIRTUAL2 = 1;
 FUNC_FASTCALL = 2;
 K_MTDIDX2 = -1;
 K_RTNIDX = -4;
@@ -142,7 +140,12 @@ class Compiler {
 
 String getTypeName(Class type) {
     String res = (to String) type;
-    return (res == "") ? "null" : res;
+    if (res == "") {
+        return "null";
+    }
+    else {
+        return res;
+    }
 }
 
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
@@ -903,7 +906,7 @@ class K_CALLop extends K_Opcode {
     int ftype;
     int rix;
     int flagStatic;
-    K_CALLop (String fname, Method mtd, int thisidx, int espshift, int ftype, int rix, int flagStatic) {
+    void init(String fname, Method mtd, int thisidx, int espshift, int ftype, int rix, int flagStatic) {
         this.fname = fname;
         this.mtd   = mtd;
         this.mtdNC = mtd.getPtr();
@@ -913,6 +916,28 @@ class K_CALLop extends K_Opcode {
         this.rix = rix;
         this.flagStatic = flagStatic;
     }
+    K_CALLop (String fname, Method mtd, int thisidx, int espshift, int rix) {
+        init(fname, mtd, thisidx, espshift, FUNC_STATIC, rix, 0);
+    }
+    @Virtual String dumpStaticAnnotation(K_Inst[] args) {
+        String res = "";
+        if (!args[0].kvalue.type.isUnboxType()) {
+            res = " @nonstatic";
+        } else {
+            res = " @static";
+        }
+        return res;
+    }
+
+}
+class K_StaticCallOp extends K_CALLop {
+    K_StaticCallOp(String fname, Method mtd, int thisidx, int espshift, int rix) {
+        init(fname, mtd, thisidx, espshift, FUNC_STATIC, rix, 1);
+    }
+    @Override String dumpStaticAnnotation(K_Inst[] args) {
+        return " @static";
+    }
+
 }
 class K_CALL extends K_Inst {
     K_CALLop op;
@@ -933,21 +958,15 @@ class K_CALL extends K_Inst {
             } else {
                 ret = getName();
             }
-            res += ret + " = call " + getTypeName(kvalue.type) + " " + op.fname[op.fname.indexOf(".")+1 to |op.fname|-1] + " ( ";
+            String fname = op.fname[op.fname.indexOf(".")+1 to |op.fname|-1];
+            String type  = getTypeName(kvalue.type);
+            res += ret + " = call " + type + " " + fname + " ( ";
         }
         for (int i = 0; i < |args|; i++) {
             res += args[i].getName() + " ";
         }
         res = res[0 to |res|-2] + " )";
-        if (op.flagStatic == 0) {
-            if (!args[0].kvalue.type.isUnboxType()) {
-                res += " @nonstatic";
-            } else {
-                res += " @static";
-            }
-        } else {
-            res += " @static";
-        }
+        res += op.dumpStaticAnnotation(args);
         return res;
     }
 }
@@ -998,7 +1017,7 @@ class K_TR extends K_Inst {
     @Override String dump() {
         return "\t" + getName() + " = " + getTRMethod() + " " + getTypeName(type) + " " + op.inst0.getName();
     }
-    String K_TR.getTRMethod() {
+    String getTRMethod() {
         switch (op.ftr) {
             case Stmt.BBOX:
                 return "box";
@@ -1205,16 +1224,16 @@ class K_TCHECK extends K_Inst {
         return "\t" + getName() + " = tcheck " + getTypeName(type) + " " + op.inst0.getName();
     }
 }
-class K_MOVxop extends K_Opcode {
+class K_MOVxOp extends K_Opcode {
     int bn;
-    K_MOVxop(K_Inst inst0, int bn) {
+    K_MOVxOp(K_Inst inst0, int bn) {
         this.inst0 = inst0;
         this.bn = bn;
     }
 }
 class K_MOVx extends K_Inst {
-    K_MOVxop op;
-    K_MOVx(K_Value kvalue, K_MOVxop op, int idx) {
+    K_MOVxOp op;
+    K_MOVx(K_Value kvalue, K_MOVxOp op, int idx) {
         this.kvalue = kvalue;
         if (kvalue == null) dynName = "movtmp";
         this.type = kvalue.type;
@@ -1604,7 +1623,7 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             SFX bx = getsfx(tkb);
             K_Inst vb = kfunc.getKInst(bx.i);
             K_Value kvalue = kfunc.getKValue(espidx + 1, btype);
-            K_Inst tmp = new K_MOVx(kvalue, new K_MOVxop(vb, bx.n), 0);
+            K_Inst tmp = new K_MOVx(kvalue, new K_MOVxOp(vb, bx.n), 0);
             kfunc.curBB.insts.add(tmp);
             K_Inst va = kfunc.getKInst(ax.i);
             K_Inst inst = new K_xMOV(new K_xMOVop(va, tmp, ax.n), 0);
@@ -1621,7 +1640,8 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             String fname = mtd.toString();
             Array<K_Inst> args = [];
             K_Value kvalue = kfunc.getKValue(thisidx - 4, rtype);
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(fname[fname.indexOf(".")+1 to |fname|-1], mtd, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            String fname = fname[fname.indexOf(".")+1 to |fname|-1];
+            K_Inst inst = new K_CALL(kvalue, args, new K_StaticCallOp(fname, mtd, thisidx, espshift, K_RTNIDX));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(espidx, inst);
             break;
@@ -1654,7 +1674,7 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
 void Compiler.asm_smovx(int alocal, Class type, SFX bx) {
     K_Inst inst0 = kfunc.getKInst(bx.i);
     K_Value kvalue = kfunc.getKValue(alocal, type);
-    K_Inst inst = new K_MOVx(kvalue, new K_MOVxop(inst0, bx.n));
+    K_Inst inst = new K_MOVx(kvalue, new K_MOVxOp(inst0, bx.n));
     kfunc.curBB.insts.add(inst);
     kfunc.storeKInst(alocal, inst);
 }
@@ -1715,7 +1735,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
                 print "sysval", sysid;
                 print sysid, mtd;
             }
-            K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtd, thisidx, espshift, FUNC_STATIC, K_RTNIDX, 1));
+            K_Inst inst = new K_CALL(kvalue, args, new K_StaticCallOp(mtd.toString(), mtd, thisidx, espshift, K_RTNIDX));
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(thisidx + K_RTNIDX, inst);
             break;
@@ -2299,7 +2319,14 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
         if (mtd == method:Object.typeCheck) {
             inst = new K_TCHECK(kvalue, new K_TCHECKop(args[1], espidx), thisidx);
         } else {
-            inst = new K_CALL(kvalue, args, new K_CALLop(mtd.toString(), mtd, thisidx, espshift, FUNC_STATIC, rix, isStatic));
+            K_CALLop op;
+            if (isStatic == 1) {
+
+                op = new K_StaticCallOp(mtd.toString(), mtd, thisidx, espshift, rix);
+            } else {
+                op = new K_CallOp(mtd.toString(), mtd, thisidx, espshift, rix);
+            }
+            inst = new K_CALL(kvalue, args, op);
         }
         kfunc.curBB.insts.add(inst);
         if (rtype != null) {
@@ -2385,7 +2412,7 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
         K_Inst ldinst = new K_LDMTD(new K_LDMTDop(espidx + K_CALLDELTA, Stmt.DYNMTD, c, mtdname, mtd, argc));
         kfunc.curBB.insts.add(ldinst);
         K_Value kvalue = kfunc.getKValue(espidx, dynamic);
-        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtdname, mtd, espidx+K_CALLDELTA, espshift, FUNC_STATIC, K_RTNIDX, 0/* not static */));
+        K_Inst inst = new K_CALL(kvalue, args, new K_CALLop(mtdname, mtd, espidx+K_CALLDELTA, espshift, K_RTNIDX));
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(espidx, inst);
 
