@@ -1298,7 +1298,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     }
     setLLVMValue(asm, v);
 }
-@Public @Override void K_MOVx.codegen (Compiler asm) {
+@Public @Override void K_GetField.codegen (Compiler asm) {
     IRBuilder builder = asm.opt.builder;
     Value v = op.inst0.getLLVMValue(asm);
     v = builder.createBitCast(v, asm.opt.ktype["objectPtrTy"]);
@@ -1311,7 +1311,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     v = builder.createLoad(v);
     setLLVMValue(asm, v);
 }
-@Public @Override void K_xMOV.codegen(Compiler asm) {
+@Public @Override void K_SetField.codegen(Compiler asm) {
     IRBuilder builder = asm.opt.builder;
     Value v = op.inst0.getLLVMValue(asm);
     String cname = (to String) op.inst0.type;

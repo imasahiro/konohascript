@@ -1224,16 +1224,16 @@ class K_TCHECK extends K_Inst {
         return "\t" + getName() + " = tcheck " + getTypeName(type) + " " + op.inst0.getName();
     }
 }
-class K_MOVxOp extends K_Opcode {
+class K_GetFieldOp extends K_Opcode {
     int bn;
-    K_MOVxOp(K_Inst inst0, int bn) {
+    K_GetFieldOp(K_Inst inst0, int bn) {
         this.inst0 = inst0;
         this.bn = bn;
     }
 }
-class K_MOVx extends K_Inst {
-    K_MOVxOp op;
-    K_MOVx(K_Value kvalue, K_MOVxOp op, int idx) {
+class K_GetField extends K_Inst {
+    K_GetFieldOp op;
+    K_GetField(K_Value kvalue, K_GetFieldOp op, int idx) {
         this.kvalue = kvalue;
         if (kvalue == null) dynName = "movtmp";
         this.type = kvalue.type;
@@ -1244,18 +1244,18 @@ class K_MOVx extends K_Inst {
         return "\t" + getName() + " = getfield " + getTypeName(type) + " " + op.inst0.getName() + " " + op.bn;
     }
 }
-class K_xMOVop extends K_Opcode {
+class K_SetFieldop extends K_Opcode {
     int an;
-    K_xMOVop(K_Inst inst0, K_Inst inst1, int an) {
+    K_SetFieldop(K_Inst inst0, K_Inst inst1, int an) {
         this.inst0 = inst0;
         this.inst1 = inst1;
         this.an = an;
     }
 }
-class K_xMOV extends K_Inst {
-    K_xMOVop op;
+class K_SetField extends K_Inst {
+    K_SetFieldop op;
     Value field_access_cached;
-    K_xMOV(K_xMOVop op, int idx) {
+    K_SetField(K_SetFieldop op, int idx) {
         this.type = op.inst0.type;
         this.op = op;
         addUse(op, idx);
@@ -1587,7 +1587,7 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             K_CONST tmp = new K_CONST(kvalue, c, new K_CONSTop(table_idx, objptr, kfunc.const_table));
             kfunc.curBB.insts.add(tmp);
             K_Inst inst0 = kfunc.getKInst(ax.i);
-            K_Inst inst = new K_xMOV(new K_xMOVop(inst0, tmp, ax.n), 0);
+            K_Inst inst = new K_SetField(new K_SetFieldop(inst0, tmp, ax.n), 0);
             kfunc.curBB.insts.add(inst);
 
             break;
@@ -1609,24 +1609,24 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             K_Inst tmp = new K_CONST(kvalue, btype, new K_CONSTop(table_idx, objptr, kfunc.const_table), 0);
             kfunc.curBB.insts.add(tmp);
             K_Inst inst0 = kfunc.getKInst(ax.i);
-            K_Inst inst = new K_xMOV(new K_xMOVop(inst0, tmp, ax.n), 0);
+            K_Inst inst = new K_SetField(new K_SetFieldop(inst0, tmp, ax.n), 0);
             kfunc.curBB.insts.add(inst);
             break;
         case Token.TT_FVAR:
             int b = tkb.getTokenIndex();
             K_Inst inst0 = kfunc.getKInst(ax.i);
             K_Inst inst1 = kfunc.getKInst(b);
-            K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, ax.n), 0);
+            K_Inst inst = new K_SetField(new K_SetFieldop(inst0, inst1, ax.n), 0);
             kfunc.curBB.insts.add(inst);
             break;
         case Token.TT_FIELD:
             SFX bx = getsfx(tkb);
             K_Inst vb = kfunc.getKInst(bx.i);
             K_Value kvalue = kfunc.getKValue(espidx + 1, btype);
-            K_Inst tmp = new K_MOVx(kvalue, new K_MOVxOp(vb, bx.n), 0);
+            K_Inst tmp = new K_GetField(kvalue, new K_GetFieldOp(vb, bx.n), 0);
             kfunc.curBB.insts.add(tmp);
             K_Inst va = kfunc.getKInst(ax.i);
-            K_Inst inst = new K_xMOV(new K_xMOVop(va, tmp, ax.n), 0);
+            K_Inst inst = new K_SetField(new K_SetFieldop(va, tmp, ax.n), 0);
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(ax.i, inst);
             break;
@@ -1667,14 +1667,14 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
     if (used_espidx != -1) {
         K_Inst inst0 = kfunc.getKInst(ax.i);
         K_Inst inst1 = kfunc.getKInst(espidx);
-        K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, ax.n), 0);
+        K_Inst inst = new K_SetField(new K_SetFieldop(inst0, inst1, ax.n), 0);
         kfunc.curBB.insts.add(inst);
     }
 }
 void Compiler.asm_smovx(int alocal, Class type, SFX bx) {
     K_Inst inst0 = kfunc.getKInst(bx.i);
     K_Value kvalue = kfunc.getKValue(alocal, type);
-    K_Inst inst = new K_MOVx(kvalue, new K_MOVxOp(inst0, bx.n));
+    K_Inst inst = new K_GetField(kvalue, new K_GetFieldOp(inst0, bx.n));
     kfunc.curBB.insts.add(inst);
     kfunc.storeKInst(alocal, inst);
 }
@@ -1848,7 +1848,7 @@ void Compiler.asmLET(Stmt stmt, Token tkL, Stmt tkV, Token tkVTk) {
             SFX ax = getsfx(tkL);
             K_Inst inst0 = kfunc.getKInst(ax.i);
             K_Inst inst1 = kfunc.getKInst(espidx);
-            K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, ax.n), 0);
+            K_Inst inst = new K_SetField(new K_SetFieldop(inst0, inst1, ax.n), 0);
             kfunc.curBB.insts.add(inst);
         }
     }
@@ -2295,7 +2295,7 @@ void Compiler.asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
         SFX ax = getsfx(tkL);
         K_Inst inst0 = kfunc.getKInst(ax.i);
         K_Inst inst1 = kfunc.getKInst(espidx);
-        K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, ax.n), 0);
+        K_Inst inst = new K_SetField(new K_SetFieldop(inst0, inst1, ax.n), 0);
         kfunc.curBB.insts.add(inst);
     }
 }
@@ -2433,7 +2433,7 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
         Class retClass = mtd.getReturnType();
         K_Inst inst0 = kfunc.getKInst(espidx+1);
         K_Inst inst1 = kfunc.getKInst(espidx+2);
-        K_Inst inst = new K_xMOV(new K_xMOVop(inst0, inst1, deltaidx), 0);
+        K_Inst inst = new K_SetField(new K_SetFieldop(inst0, inst1, deltaidx), 0);
         kfunc.curBB.insts.add(inst);
         return;
     }

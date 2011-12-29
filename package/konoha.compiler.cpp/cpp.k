@@ -360,12 +360,12 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
         asm.addSource(t + getName() + " ( new " + (class2str(this.type, true)) + "(" + const_data + "));", 2);
     }
 }
-@Public @Override void K_MOVx.codegen (Compiler asm) {
+@Public @Override void K_GetField.codegen (Compiler asm) {
     String t = class2str(type) + " ";
     asm.addClass(this.type);
     asm.addSource(t + getName() + " = " + op.inst0.getName() + "->field" + op.bn + ";", 2);
 }
-@Public @Override void K_xMOV.codegen(Compiler asm) {
+@Public @Override void K_SetField.codegen(Compiler asm) {
     asm.addClass(type);
     asm.addSource(op.inst0.getName() + "->field" + op.an + " = " + op.inst1.getName() + ";", 2);
 }

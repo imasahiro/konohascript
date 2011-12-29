@@ -338,11 +338,11 @@ LABEL = uscore("label");
         asm.addSource("var " + getName() + " = new " + uscore(class2str((to String)this.type)) + "(" + quote(op.const_table[op.table_idx]) + ");", 3);
     }
 }
-@Public @Override void K_MOVx.codegen (Compiler asm) {
+@Public @Override void K_GetField.codegen (Compiler asm) {
     asm.addClass(this.type);
     asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".field" + op.bn + ";", 3);
 }
-@Public @Override void K_xMOV.codegen(Compiler asm) {
+@Public @Override void K_SetField.codegen(Compiler asm) {
     asm.addClass(op.inst0.type);
     asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 3);
 }
