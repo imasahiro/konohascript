@@ -1,21 +1,21 @@
 
-function __Object__(rawptr) {
+function __Object__(obj) {
     this.konohaclass = "konoha.Object";
-    this.rawptr = rawptr;
+    this.obj = obj;
 
 }
 __Object__.prototype.getClass = function() {
     return new __Class__(this.konohaclass);
 }
 __Object__.prototype.__toString = function() {
-    return this.rawptr;
+    return this.obj;
 }
 
 
 __Class__.prototype = new __Object__();
-function __Class__(rawptr) {
+function __Class__(obj) {
     this.konohaclass = "konoha.Class";
-    this.rawptr = rawptr;
+    this.obj = obj;
 }
 /* OutputStream */
 __OutputStream__.prototype = new __Object__();
@@ -29,7 +29,7 @@ function __OutputStream__(isCwb) {
             if (arguments[i].replace) {
                 arguments[i] = arguments[i].replace("\n", "<br>\n");
             }
-            if (arguments[i].rawptr) {
+            if (arguments[i].obj) {
                 document.write(arguments[i].__toString());
             } else {
                 document.write(arguments[i]);
@@ -44,8 +44,8 @@ function __OutputStream__(isCwb) {
             if (arguments[i].replace) {
                 arguments[i] = arguments[i].replace("\n", "<br>\n");
             }
-            document.write(arguments[i].rawptr);
-            if (arguments[i].rawptr) {
+            document.write(arguments[i].obj);
+            if (arguments[i].obj) {
                 document.write(arguments[i].__toString());
             } else {
                 document.write(arguments[i]);
@@ -62,7 +62,7 @@ function __OutputStream__(isCwb) {
                 if (arguments[i].replace) {
                     arguments[i] = arguments[i].replace("\n", "<br>\n");
                 }
-                if (arguments[i].rawptr) {
+                if (arguments[i].obj) {
                     document.write(arguments[i].__toString());
                 } else {
                     document.write(arguments[i]);
@@ -75,7 +75,7 @@ function __OutputStream__(isCwb) {
                 if (arguments[i].replace) {
                     arguments[i] = arguments[i].replace("\n", "<br>\n");
                 }
-                if (arguments[i].rawptr) {
+                if (arguments[i].obj) {
                     this.cwb += arguments[i].__toString();
                 } else {
                     this.cwb += arguments[i];
@@ -106,35 +106,35 @@ __System__.getErr = function() {
 
 /* Map */
 __Map__.prototype = new __Object__();
-function __Map__(rawptr) {
+function __Map__(obj) {
     this.konohaclass = "konoha.Map";
-    this.rawptr = rawptr = {};
+    this.obj = obj = {};
     this.new = function(init) {
         return this;
     }
     this.set = function(key, value) {
-        this.rawptr[key.rawptr] = value;
+        this.obj[key.obj] = value;
     }
     this.get = function(key) {
-        var obj = this.rawptr[key.rawptr];
+        var obj = this.obj[key.obj];
         if (obj == null) {
             return 0;
         }
         return obj;
     }
     this.remove = function(key) {
-        delete this.rawptr[key.rawptr];
+        delete this.obj[key.obj];
     }
     this.keys = function() {
         var res = [];
-        for(var elem in this.rawptr) {
+        for(var elem in this.obj) {
             res.push(elem);
         }
         return res;
     }
     this.getSize = function() {
         var res = 0;
-        for(var elem in this.rawptr) {
+        for(var elem in this.obj) {
             res ++;
         }
         return res;
@@ -144,16 +144,16 @@ function __Map__(rawptr) {
 
 /* Array */
 __Array__.prototype = new __Object__();
-function __Array__(rawptr) {
+function __Array__(obj) {
     this.konohaclass = "konoha.Array";
-    if (rawptr != null) {
-        this.rawptr = rawptr;
-        this.capacity = rawptr.length;
+    if (obj != null) {
+        this.obj = obj;
+        this.capacity = obj.length;
     }
     this.new_ARRAY = function(initCapacity) {
-        this.rawptr = new Array(initCapacity);
+        this.obj = new Array(initCapacity);
         for(var i = 0; i < initCapacity; i++) {
-            this.rawptr[i] = 0;
+            this.obj[i] = 0;
         }
         this.capacity = initCapacity;
         return this;
@@ -161,22 +161,22 @@ function __Array__(rawptr) {
 
     this.new_LIST = function() {
         this.capacity = arguments.length;
-        this.rawptr = new Array(this.capacity);
+        this.obj = new Array(this.capacity);
         for (var i = 0; i < arguments.length; i++) {
-            this.rawptr[i] = arguments[i];
+            this.obj[i] = arguments[i];
         }
         return this;
     }
     this.get = function(n) {
         if (n >= 0 && n < this.capacity) {
-            return this.rawptr[n];
+            return this.obj[n];
         } else {
             throw('Script!!');
         }
     }
     this.set = function(n, v) {
         if (n >= 0 && n < this.capacity) {
-            this.rawptr[n] = v;
+            this.obj[n] = v;
         } else {
             throw('Script!!');
         }
@@ -186,11 +186,11 @@ function __Array__(rawptr) {
     }
     this.add = function(v) {
         this.capacity++;
-        this.rawptr.push(v);
+        this.obj.push(v);
     }
     this.remove = function(n) {
         if (n >= 0 && n < this.capacity) {
-            this.rawptr.spice(n, n+1);
+            this.obj.spice(n, n+1);
             this.capacity--;
         } else {
             throw('Script!!');
@@ -198,9 +198,9 @@ function __Array__(rawptr) {
     }
     this.__toString = function() {
         var res = '[';
-        for(var i = 0; i < this.rawptr.length; i++) {
-            res += this.rawptr[i].__toString();
-            if (i != this.rawptr.length-1) {
+        for(var i = 0; i < this.obj.length; i++) {
+            res += this.obj[i].__toString();
+            if (i != this.obj.length-1) {
                 res += ', ';
             }
         }
@@ -210,15 +210,15 @@ function __Array__(rawptr) {
 }
 /* Iterator */
 __Iterator__.prototype = new __Object__();
-function __Iterator__(rawptr) {
-    this.rawptr = rawptr;
+function __Iterator__(obj) {
+    this.obj = obj;
     this.cur = 0;
-    this.capacity = rawptr.getSize();
+    this.capacity = obj.getSize();
     this.next = function() {
         if (this.cur == this.capacity) {
             return null;
         } else {
-            var res = rawptr.get(this.cur);
+            var res = obj.get(this.cur);
             this.cur++;
             return res;
         }
@@ -227,24 +227,24 @@ function __Iterator__(rawptr) {
 
 /* String */
 __String__.prototype = new __Object__();
-function __String__(rawptr) {
+function __String__(obj) {
     this.konohaclass = "konoha.String";
-    this.rawptr = rawptr;
+    this.obj = obj;
     this.equals = function(str) {
-        return this.rawptr == str.rawptr;
+        return this.obj == str.obj;
     }
     this.startsWith = function(str) {
-        return this.rawptr.indexOf(str.rawptr) == 0;
+        return this.obj.indexOf(str.obj) == 0;
     }
     this.endsWith = function(str) {
-        var correctIndex = this.rawptr.length - str.rawptr.length;
-        return this.rawptr.lastIndexOf(str.rawptr) == correctIndex;
+        var correctIndex = this.obj.length - str.obj.length;
+        return this.obj.lastIndexOf(str.obj) == correctIndex;
     }
     this.concat = function() {
-        var res = this.rawptr;
+        var res = this.obj;
         for (var i = 0; i < arguments.length; i++) {
-            if (arguments[i].rawptr) {
-                res += arguments[i].rawptr;
+            if (arguments[i].obj) {
+                res += arguments[i].obj;
             } else {
                 res += arguments[i];
             }
@@ -252,13 +252,13 @@ function __String__(rawptr) {
         return new __String__(res);
     }
     this.indexOf = function(str) {
-        return this.rawptr.indexOf(str.rawptr);
+        return this.obj.indexOf(str.obj);
     }
     this.lastIndexOf = function(str) {
-        return this.rawptr.lastIndexOf(str.rawptr);
+        return this.obj.lastIndexOf(str.obj);
     }
     this.match = function (re) {
-        var list = this.rawptr.match(re.rawptr);
+        var list = this.obj.match(re.obj);
         var res = [];
         for (element in list) {
             res.push(new __String__(element));
@@ -266,7 +266,7 @@ function __String__(rawptr) {
         return new __Array__(res);
     }
     this.split = function(re) {
-        var list = this.rawptr.split(re.rawptr);
+        var list = this.obj.split(re.obj);
         var res = [];
         for (element in list) {
             res.push(new __String__(element));
@@ -274,45 +274,45 @@ function __String__(rawptr) {
         return new __Array__(res);
     }
     this.search = function(re) {
-        return this.rawptr.search(re.rawptr);
+        return this.obj.search(re.obj);
     }
     this.replace = function(source, target) {
-        return new __String__(this.rawptr.replace(source.rawptr, target.rawptr));
+        return new __String__(this.obj.replace(source.obj, target.obj));
     }
     this.getSize = function() {
-        return this.rawptr.length;
+        return this.obj.length;
     }
 }
 
 /* Regex */
 __Regex__.prototype = new __Object__();
-function __Regex__(rawptr) {
+function __Regex__(obj) {
     this.konohaclass = "konoha.Regex";
-    this.rawptr = rawptr;
+    this.obj = obj;
     this.new = function(pattern, option) {
-        this.rawptr = new RegExp(pattern.rawptr, option.rawptr);
+        this.obj = new RegExp(pattern.obj, option.obj);
         return this;
     }
 }
 /* Number */
 __Number__.prototype = new __Object__();
-function __Number__(rawptr) {
+function __Number__(obj) {
     this.konohaclass = "konoha.Number";
-    this.rawptr = rawptr;
+    this.obj = obj;
 }
 
 /* Int */
 __Int__.prototype = new __Number__();
-function __Int__(rawptr) {
+function __Int__(obj) {
     this.konohaclass = "konoha.Int";
-    this.rawptr = rawptr;
+    this.obj = obj;
 }
 
 __Int__.random = function() {
     return Math.random();
 }
 __Int__.format = function(i, format) {
-    switch (format.rawptr) {
+    switch (format.obj) {
         case "%x":
             return new __String__(i.toString(16));
         case "%02x":
@@ -322,9 +322,9 @@ __Int__.format = function(i, format) {
 }
 
 /* Float */
-function __Float__(rawptr) {
+function __Float__(obj) {
     this.konohaclass = "konoha.Int";
-    this.rawptr = rawptr;
+    this.obj = obj;
 }
 
 __Float__.random = function() {
