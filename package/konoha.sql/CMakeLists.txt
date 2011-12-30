@@ -23,9 +23,10 @@ set(MessageLibs ${MessageLibs} mysql PARENT_SCOPE)
 
 set(PACKAGE_SCRIPT_CODE sql.k)
 set(PACKAGE_SOURCE_CODE
+	src/mysql.c
+	src/sqlite.c
 	src/dbapi.c
 	src/query.c
-	src/mysql.c
 )
 
 set(PACKAGE_NAME    ${PROJECT_NAME})
