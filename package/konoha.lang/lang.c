@@ -63,7 +63,7 @@ KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
 }
 //## Class Class.getBaseClass();
 KMETHOD Class_getBaseClass(CTX ctx, ksfp_t *sfp _RIX) {
-	kClass *c = sfp[1].c;
+	kClass *c = sfp[0].c;
 	kclass_t cid = c->cTBL->bcid;
 	RETURN_(new_Type(ctx, cid));
 }

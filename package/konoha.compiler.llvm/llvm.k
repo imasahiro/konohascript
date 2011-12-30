@@ -719,9 +719,17 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.ktype["methodTy"] = methodTy;
     opt.ktype["methodPtrTy"] = methodPtrTy;
 
+    exfields = [];
+    exfields.add(objectPtrTy); /* source */
+    exfields.add(methodPtrTy); /* mtdNULL */
+    exfields.add(voidPtrTy);   /* m.nptr */
+    exfields.add(voidPtrTy);   /* m.nfree */
+    exfields.add(voidPtrTy);   /* m.index */
+    exfields.add(voidPtrTy);   /* m.max */
+    Type itrExTy = StructType.create(exfields, "ItreatorEx", false);
     fields = [];
     fields.add(hObjectTy);
-    fields.add(int8PtrTy);
+    fields.add(itrExTy);
     fields.add(fitrnextPtrTy);
     Type iteratorTy = StructType.create(fields, "Iterator", false);
     opt.ktype["IteratorPtrTy"] = PointerType.get(iteratorTy);
@@ -1072,7 +1080,6 @@ BuilderFunc=Func<Value, Value=>Value>;
     CompilerOpt opt = asm.opt;
     IRBuilder builder = opt.builder;
     Type intTy = opt.intTy;
-    print op.cast;
     if (op.cast == 0) {
         //v = builder.createBitCast(v, asm.convertType(type));
         if (type == Float) {
@@ -1386,10 +1393,10 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value vsfp = asm.opt.builder.createConstGEP1_32(asm.opt.sfp, op.b);
     Value vrix = ConstantInt.get(asm.opt.intTy, op.rix);
     asm.shiftesp(op.espshift);
-    Value v = (Value)asm.opt.builder.createCall3(fnext_1, vctx, vsfp, vrix);
+    Value v = asm.opt.builder.createCall3(fnext_1, vctx, vsfp, vrix);
     Value res = asm.opt.builder.createLoadValueFromSfp(asm.opt.sfp, asm.convertType(type), op.b + op.rix);
     setLLVMValue(asm, res);
-    Value v = asm.opt.builder.createICmpEQ(v, ConstantInt.get(asm.opt.intTy, 0));
+    v = asm.opt.builder.createICmpNE(v, ConstantInt.get(asm.opt.intTy, 0));
     asm.opt.builder.createCondBr(v, asm.opt.bblist[op.nextBB], asm.opt.bblist[op.endBB]);
 }
 
