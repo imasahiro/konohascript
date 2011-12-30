@@ -63,16 +63,31 @@ KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
 }
 //## Class Class.getBaseClass();
 KMETHOD Class_getBaseClass(CTX ctx, ksfp_t *sfp _RIX) {
-	kClass *c = sfp[0].c;
+	kClass *c = sfp[1].c;
 	kclass_t cid = c->cTBL->bcid;
 	RETURN_(new_Type(ctx, cid));
 }
+
+//## @Native Int : (Class i);
+TYPEMAP Class_Int(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kClass *c = sfp[1].c;
+	RETURNi_(c->cid);
+}
+
 #undef Method_isStatic
 #define Method_isStatic_(o) (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
 //## boolean Method.isStatic();
 KMETHOD Method_isStatic(CTX ctx, ksfp_t *sfp _RIX) {
 	kMethod *mtd = sfp[0].mtd;
-	int b = Method_isStatic_(mtd);
+	kbool_t b = Method_isStatic_(mtd);
+	RETURNb_(b);
+}
+#undef Method_isFinal
+//## boolean Method.isFinal();
+KMETHOD Method_isFinal(CTX ctx, ksfp_t *sfp _RIX) {
+	kMethod *mtd = sfp[0].mtd;
+	kbool_t b = !Method_isVirtual(mtd);
 	RETURNb_(b);
 }
 
@@ -88,6 +103,13 @@ KMETHOD Method_indexOfSetterField(CTX ctx, ksfp_t *sfp _RIX)
 {
 	kMethod *o = sfp[0].mtd;
 	RETURNi_(knh_Method_indexOfSetterField(o));
+}
+
+//## int Method.getMn();
+KMETHOD Method_getMn(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kMethod *o = sfp[0].mtd;
+	RETURNi_(o->mn);
 }
 
 //## Class TypeMap.getSource();
@@ -176,7 +198,7 @@ KMETHOD Token_getText(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
 	RETURN_(tk->text);
 }
-//## Class Token.getClass();
+//## Class Token.getTokenClass();
 KMETHOD Token_getTokenClass(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
 	kclass_t cid = tk->cid;

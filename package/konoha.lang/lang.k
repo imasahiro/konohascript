@@ -49,6 +49,8 @@ class Charset extends String;
 String : (Class c) {
   return c+"";
 }
+@Native Int : (Class i);
+
 @Public @Native boolean Object.hasMethod(String name);
 @Public @Native dynamic Object.invokeMethod(String name, dynamic a, ...);
 
@@ -74,8 +76,10 @@ String : (Class c) {
 @Public @Native String Method.toString();
 @Public @Native String Method.getName();
 @Public @Native boolean Method.isStatic();
+@Public @Native boolean Method.isFinal();
 @Public @Native int Method.indexOfGetterField();
 @Public @Native int Method.indexOfSetterField();
+@Public @Native int Method.getMn();
 
 @Public @Native Class TypeMap.getSource();
 @Public @Native Class TypeMap.getTarget();

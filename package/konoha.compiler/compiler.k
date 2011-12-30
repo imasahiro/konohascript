@@ -840,6 +840,7 @@ class K_CAST extends K_Inst {
     K_CAST(K_Value kvalue, K_CASTop op, int idx) {
         this.kvalue = kvalue;
         this.type = op.tcid;
+        assert(this.type != null);
         this.op = op;
         addDef(kvalue, idx);
         addUse(op, idx);
@@ -2322,11 +2323,11 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
             inst = new K_TCHECK(kvalue, new K_TCHECKop(args[1], espidx), thisidx);
         } else {
             K_CALLop op;
+            String mtdName = mtd.toString();
             if (isStatic == 1) {
-
-                op = new K_StaticCallOp(mtd.toString(), mtd, thisidx, espshift, rix);
+                op = new K_StaticCallOp(mtdName, mtd, thisidx, espshift, rix);
             } else {
-                op = new K_CallOp(mtd.toString(), mtd, thisidx, espshift, rix);
+                op = new K_CallOp(mtdName, mtd, thisidx, espshift, rix);
             }
             inst = new K_CALL(kvalue, args, op);
         }
@@ -2391,7 +2392,7 @@ void Compiler.asmCALL(Stmt stmt, int espidx, Token tkMTD, Method mtd, Class c) {
         print stmt.getStmtSize() - 2;
     }
     int mn = tkMTD.getMn();
-    if (mtd.getClass() != Method) {
+    if (mtd.class != Method) {
         int argc = stmt.getStmtSize() - 1;
         Array<K_Inst> args = [];
         for (int i = 1; i < stmt.getStmtSize(); i++) {
@@ -2689,39 +2690,39 @@ void Compiler.asmTCAST(Stmt stmt, int espidx, TypeMap tmr, Stmt expr, int fptr) 
         print "tcast";
         print stmt;
         print espidx;
-        print tmr;
-        print tmr.source;
-        print tmr.target;
+        print tmr, tmr.source, tmr.target, tmr.getPtr();
         print expr;
         print fptr;
-        print tmr.getPtr();
     }
-    Class source = tmr.source;
-    Class target = tmr.target;
-    if (source == Int && target == Float) {
-        asm(expr, expr.toToken(), espidx);
-        K_Value v = kfunc.getKValue(espidx, target);
-        K_Inst inst = kfunc.getKInst(espidx);
-        K_Inst cast = new K_CAST(v, new K_CASTop(inst, target, source));
-        kfunc.curBB.insts.add(cast);
-        kfunc.storeKInst(espidx, cast);
-    } else if (source == Float && target == Int) {
-        asm(expr, expr.toToken(), espidx);
-        K_Value v = kfunc.getKValue(espidx, target);
-        K_Inst inst = kfunc.getKInst(espidx);
-        K_Inst cast = new K_CAST(v, new K_CASTop(inst, target, source));
-        kfunc.curBB.insts.add(cast);
-        kfunc.storeKInst(espidx, cast);
+    asm(expr, expr.toToken(), espidx);
+    K_Inst inst = kfunc.getKInst(espidx);
+    K_Inst cast;
+    if (tmr == null) {/* downcast */
+        Token tkc = stmt.getS(0).toToken();
+        Class c = tkc.getTokenClass();
+        if (c.isUnboxType()) {
+            throw new Exception();
+        } else {
+            K_Value v = kfunc.getKValue(espidx, Object);
+            cast = new K_TR(v, new K_TRop(inst, espidx, 0, c, Stmt.CHKTYPE), 0);
+        }
     } else {
-        asm(expr, expr.toToken(), espidx);
-        K_Value v = kfunc.getKValue(espidx, target);
-        K_Inst inst = kfunc.getKInst(espidx);
-        K_Inst cast = new K_CAST(v, new K_CASTop(inst, target, source, espidx, espidx-espidx, espidx+1, tmr.getPtr(), fptr));
+        Class source = tmr.source;
+        Class target = tmr.target;
+        if (source == Int && target == Float) {
+            K_Value v = kfunc.getKValue(espidx, target);
+            cast = new K_CAST(v, new K_CASTop(inst, target, source));
+        } else if (source == Float && target == Int) {
+            K_Value v = kfunc.getKValue(espidx, target);
+            cast = new K_CAST(v, new K_CASTop(inst, target, source));
+        } else {
+            K_Value v = kfunc.getKValue(espidx, target);
+            cast = new K_CAST(v, new K_CASTop(inst, target, source, espidx, 0, espidx+1, tmr.getPtr(), fptr));
 
-        kfunc.curBB.insts.add(cast);
-        kfunc.storeKInst(espidx, cast);
+        }
     }
-
+    kfunc.curBB.insts.add(cast);
+    kfunc.storeKInst(espidx, cast);
 }
 void Compiler.asmAND(Stmt stmt, int espidx) {
     if (DEBUG) {

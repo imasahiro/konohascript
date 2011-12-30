@@ -53,6 +53,7 @@ add_test(NAME "while.k"   COMMAND ${k} ${opt} "${DIR}/while.k")
 add_test(NAME "and.k"     COMMAND ${k} ${opt} "${DIR}/and.k")
 add_test(NAME "dynamic.k" COMMAND ${k} ${opt} "${DIR}/dynamic.k")
 add_test(NAME "micro.k"   COMMAND ${k} ${opt} "${DIR}/microbench3.k")
+add_test(NAME "downcast.k" COMMAND ${k} ${opt} "${DIR}/downcast.k")
 
 add_test(NAME "fannkuch"     COMMAND ${k} ${opt} "${DIR}/shootout-fannkuch.k")
 add_test(NAME "fasta"        COMMAND ${k} ${opt} "${DIR}/shootout-fasta.k")

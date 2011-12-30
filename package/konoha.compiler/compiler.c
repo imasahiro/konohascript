@@ -539,6 +539,18 @@ void compiler_NULVAL(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct
 	KNH_SETv(ctx, sfp[c].o, ct->fdefnull(ctx, ct->cid));
 }
 
+kMethod *compiler_LOOKUPMTD(CTX ctx, kObject *o, knh_mtdcache_t *cache)
+{
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	kMethod *mtd = cache->mtd;
+	if(cache->cid != ct->cid) {
+		mtd = ClassTBL_getMethod(ctx, ct, cache->mn);
+		cache->mtd = mtd;
+		cache->cid = ct->cid;
+	}
+	return mtd;
+}
+
 static kMethod *load_method(CTX ctx, kclass_t cid, kbytes_t t)
 {
 	kmethodn_t mn = knh_getmn(ctx, t, MN_NONAME);
@@ -601,7 +613,3 @@ DEFAPI(void) complete(CTX ctx)
 	reset_compiler_api(ctx);
 }
 
-void __test__(void *p1) {
-    fprintf(stderr, "%p\n", p1);
-    asm volatile("int3");
-}
