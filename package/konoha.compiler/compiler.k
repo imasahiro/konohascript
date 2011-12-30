@@ -538,25 +538,28 @@ class K_Function {
             //    OUT<< "bb" + pred[i][j] + " ";
             //}
             bbStr += EOL;
-            foreach(String s in bbs[i].phis.keys()) {
-                String tmp = bbs[i].phis[s].dump();
+            bb = bbs[i];
+            foreach(String s in bb.phis.keys()) {
+                String tmp = bb.phis[s].dump();
                 if (tmp != null) {
                     bbStr += tmp + "\n";
                 }
             }
-            for (int j = 0; j < |bbs[i].insts|-1; j++) {
-                String tmp = bbs[i].insts[j].dump();
+            for (int j = 0; j < |bb.insts|-1; j++) {
+                String tmp = bb.insts[j].dump();
                 if (tmp != null) {
                     bbStr += tmp + "\n";
                 }
             }
-            for (int j = 0; j < |bbs[i].movs|; j++) {
-                String tmp = bbs[i].movs[j].dump();
+            for (int j = 0; j < |bb.movs|; j++) {
+                String tmp = bb.movs[j].dump();
                 if (tmp != null) {
                     bbStr += tmp + "\n";
                 }
             }
-            bbStr += bbs[i].insts[|bbs[i].insts|-1].dump() + "\n"; //jmp
+            if (bb.insts.size > 0) {
+                bbStr += bb.insts[|bb.insts|-1].dump() + "\n"; //jmp
+            }
             res += bbStr;
         }
         res += "}" + "\n";
