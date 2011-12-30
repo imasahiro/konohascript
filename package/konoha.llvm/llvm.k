@@ -38,6 +38,7 @@ include "lib:gluelink";
 @RawPtr class GlobalVariable extends Value;
 @RawPtr class IRBuilder;
 @RawPtr class Instruction extends Value;
+@RawPtr class AllocaInst extends Instruction;
 @RawPtr class ReturnInst extends Instruction;
 @RawPtr class LoadInst   extends Instruction;
 @RawPtr class StoreInst  extends Instruction;

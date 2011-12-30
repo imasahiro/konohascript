@@ -10,3 +10,6 @@ int f(int n) {
 	}
 	return res;
 }
+void main (String[] args) {
+    OUT.println(f(10));
+}

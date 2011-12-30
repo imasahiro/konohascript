@@ -160,6 +160,10 @@ int main(int argc, const char *argv[])
     int argc_ = argc;
     const char *argv_[argc_];
     const char *fname = parse_option(&argc_, argv, argv_);
+    if (fname == NULL) {
+        fprintf(stderr, "%s [--emit-llvm/--emit-js] file\n", argv[0]);
+        return 1;
+    }
     konoha_t konoha = konoha_open();
     CTX ctx = konoha;
     kString *s = new_T(fname);
