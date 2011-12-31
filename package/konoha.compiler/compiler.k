@@ -976,12 +976,14 @@ class K_CALL extends K_Inst {
 class K_PRINTop extends K_Opcode {
     int sfpidx;
     int opline;
-    int fprint;
-    K_PRINTop (K_Inst inst0, int fprint, int sfpidx, int opline) {
+    int pflag;
+    String msg;
+    K_PRINTop(K_Inst inst0, int flag, int sfpidx, int opline, String msg) {
         this.inst0 = inst0;
+        this.pflag  = flag;
         this.sfpidx = sfpidx;
         this.opline = opline;
-        this.fprint = fprint;
+        this.msg    = msg;
     }
 }
 class K_PRINT extends K_Inst {
@@ -992,7 +994,11 @@ class K_PRINT extends K_Inst {
         addUse(op, idx);
     }
     @Override String dump() {
-        return null;
+        String v0 = op.inst0.getName();
+        String data = op.pflag + " " + op.opline + " ";
+        String msg = "\"" + escape(op.msg) + "\"";
+        String res = "\t_ = print " + data + msg + " "+ v0;
+        return res;
     }
 }
 
@@ -1398,6 +1404,7 @@ class SFX {
 @Native int Compiler.gamma_gf_fn(int i);
 @Native Class Compiler.gamma_gf_type(int i);
 @Native Class Compiler.gammaGetThiscid();
+@Native void Compiler.getCurrentUline();
 void Compiler.initFunc(K_Function func) {
     func.func = null;
 }
@@ -2222,7 +2229,8 @@ void Compiler.asmYIELD(Stmt stmt) {
     /* TODO */
 }
 void Compiler.asmPRINT(Stmt stmt, int flag) {
-    print stmt, flag;
+    flag = flag | KFLAG_PF_BOL | KFLAG_PF_LINE;
+    int uline = this.getCurrentUline();
     int espidx = stmt.getESPIDX();
     for(int i = 0; i < stmt.getStmtSize(); i++) {
         Token tkn = stmt.getT(i);
@@ -2247,23 +2255,23 @@ void Compiler.asmPRINT(Stmt stmt, int flag) {
                 mask |= KFLAG_PF_NAME;
                 continue;
             }
-            //TODO_ASM(P, _PRINTm, flag | mask, (tkn).getText(), 0);
+            int table_idx = kfunc.addConstTable(tkn.getText());
+            opc = new K_CONSTop(table_idx, tkn.getText().ptr, kfunc.const_table);
+            K_Value kvalue = kfunc.getKValue(espidx + i, String);
+            K_Inst inst = new K_CONST(kvalue, String, opc);
+            kfunc.curBB.insts.add(inst);
+            opp = new K_PRINTop(inst, flag|mask, espidx+i, uline, msg);
+            inst = new K_PRINT(String, opp, 0);
+            kfunc.curBB.insts.add(inst);
             flag = KFLAG_PF_NCOMMA;
         }
         else {
             Class c = stmt.getT(i).getClass();
-            if(c == Int) {
-                //TODO_ASM(P, _PRINTi, flag | mask, msg, espidx+i);
-            }
-            else if(c == Float) {
-                //TODO_ASM(P, _PRINTf, flag | mask, msg, espidx+i);
-            }
-            else if(c == Boolean) {
-                //TODO_ASM(P, _PRINTb, flag | mask, msg, espidx+i);
-            }
-            else {
-                //TODO_ASM(P, _PRINT, flag | mask, msg, espidx+i);
-            }
+            if (!c.isUnboxType()) { c = Object; }
+            K_Inst inst = kfunc.getKInst(espidx+i);
+            opp = new K_PRINTop(inst, flag|mask, espidx+i, uline, msg);
+            inst = new K_PRINT(c, opp, 0);
+            kfunc.curBB.insts.add(inst);
             flag = 0;
         }
         mask = 0;

@@ -490,6 +490,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     fields.add(int64Ty);   /* len */
     Type stringTy = StructType.create(fields, "String", false);
     Type stringPtrTy = PointerType.get(stringTy);
+    opt.ktype["stringTy"]    = stringTy;
     opt.ktype["stringPtrTy"] = stringPtrTy;
 
 
@@ -676,6 +677,26 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.kfunctype["fTRTy"] = fTRTy;
     opt.ktype["fTRPtrTy"]  = fTRPtrTy;
 
+    FunctionType printTy;
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(sfpPtrTy);
+    argsTy.add(int64Ty);
+    argsTy.add(int64Ty);
+    argsTy.add(stringPtrTy);
+    argsTy.add(objectPtrTy);
+    printTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    opt.kfunctype["printTy"] = printTy;
+    argsTy[5] = intTy;
+    printTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    opt.kfunctype["printITy"] = printTy;
+    argsTy[5] = floatTy;
+    printTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    opt.kfunctype["printFTy"] = printTy;
+    argsTy[5] = Type.getInt1Ty();
+    printTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
+    opt.kfunctype["printBTy"] = printTy;
+
     fields = [];
     fields.add(int8PtrTy); /* codeaddr */
     fields.add(int64Ty);   /* count */
@@ -741,6 +762,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     Type mtdCacheTy = StructType.create(fields, "mtdCacheTy", false);
     opt.ktype["mtdCacheTy"]    = mtdCacheTy;
     opt.ktype["mtdCachePtrTy"] = PointerType.get(mtdCacheTy);
+
 }
 
 @Public @Override void K_PHI.codegen(Compiler asm) {
@@ -1254,14 +1276,36 @@ BuilderFunc=Func<Value, Value=>Value>;
 }
 @Public @Override void K_PRINT.codegen(Compiler asm) {
     IRBuilder builder = asm.opt.builder;
-    if (op.inst0 != null) {
-        builder.createStoreValueToSfp(asm.opt.sfp, asm.convertType(type), op.sfpidx, op.inst0.getLLVMValue(asm));
+    assert (op.inst0 != null);
+    Value v0 = op.inst0.getLLVMValue(asm);
+    Function func;
+    CompilerOpt opt = asm.opt;
+    Module m = opt.m;
+    if (type == Int) {
+        FunctionType fnTy = opt.kfunctype["printITy"];
+        func = m.getOrInsertFunction("knh_PRINTi", fnTy);
+    } else if (type == Float) {
+        FunctionType fnTy = opt.kfunctype["printFTy"];
+        func = m.getOrInsertFunction("knh_PRINTf", fnTy);
+    } else if (type == Boolean) {
+        FunctionType fnTy = opt.kfunctype["printBTy"];
+        func = m.getOrInsertFunction("knh_PRINTb", fnTy);
+    } else {
+        FunctionType fnTy = opt.kfunctype["printTy"];
+        func = m.getOrInsertFunction("knh_PRINT", fnTy);
     }
-    Type fmethodTy = asm.opt.ktype["fmethodPtrTy"];
-    Value func = ConstantInt.get(asm.opt.intTy, op.fprint);
-    func = builder.CreateIntToPtr(func, fmethodTy);
-    Value vop = ConstantInt.get(asm.opt.intTy, op.opline);
-    Value[] vargs = [asm.opt.ctx, asm.opt.sfp, vop];
+    Value vsfp = opt.builder.createConstGEP1_32(opt.sfp, op.sfpidx);
+
+    Type  mtdTy = opt.ktype["methodTy"];
+    Type  strTy = opt.ktype["stringTy"];
+    Type  intTy = opt.intTy;
+    Value mtdNC = opt.get_or_create(mtdTy, asm.mtd.getPtr(), asm.mtd.toString());
+    Value msg   = opt.get_or_create(strTy, op.msg.getPtr(), "string");
+    Value mtdNCPtr = builder.createPtrToInt(mtdNC, intTy);
+    builder.createStoreValueToSfp(vsfp, intTy, -1, mtdNCPtr);
+    Value flag  = ConstantInt.get(asm.opt.intTy, op.pflag)
+    Value uline = ConstantInt.get(asm.opt.intTy, op.opline)
+    Value[] vargs = [opt.ctx, vsfp, flag, uline, msg, v0];
     builder.createCall(func, vargs);
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
@@ -1269,7 +1313,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value func;
     FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
     DynamicLibrary.loadLibraryPermanently("compiler.dylib");
-    Module m = asm.opt.m;;
+    Module m = asm.opt.m;
     if (op.ftr == Stmt.CWB) {
         func = m.getOrInsertFunction("compiler_CWB", fnTy);
     } else if (op.ftr == Stmt.TOSTR) {
