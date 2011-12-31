@@ -1199,7 +1199,9 @@ BuilderFunc=Func<Value, Value=>Value>;
             }
             return;
         } else {
-            print "**WARN** compiled_methods call failed", this.op.fname;
+            if (DEBUG) {
+                print "**WARN** compiled_methods call failed", this.op.fname;
+            }
         }
     }
     if (LLVM_ENABLE_OPT_INTRINSIC_METHOD) {

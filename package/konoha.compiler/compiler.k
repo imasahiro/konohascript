@@ -2560,7 +2560,7 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class type, Stmt lhs, St
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(espidx, inst);
         return;
-    }else if(type == Int || type == Float) {
+    } else if(type == Int || type == Float) {
         asm(lhs, lhs.toToken(), espidx + 1);
         K_Inst inst_l = kfunc.getKInst(espidx + 1);
         K_Inst inst_r = null;
@@ -2570,7 +2570,7 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class type, Stmt lhs, St
             K_Value kval = kfunc.getKValue(espidx + 2, type);
             inst_r = new K_CONST(kval, type, new K_CONSTop(table_idx, 0, kfunc.const_table));
             kfunc.curBB.insts.add(inst_r);
-        }else if (rhs != null) {
+        } else if (rhs != null) {
             asm(rhs, rhs.toToken(), espidx + 2);
             inst_r = kfunc.getKInst(espidx + 2);
         }
