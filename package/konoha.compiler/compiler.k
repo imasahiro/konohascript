@@ -2644,10 +2644,12 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class type, Stmt lhs, St
             case "---":
                 K_Value kval = kfunc.getKValue(espidx, type);
                 int table_idx = kfunc.addConstTable(0);
-                K_Value kvalue = kfunc.getKValue(espidx + 2, Int);
+                assert(type == Int or type == Float);
+                K_Value kvalue = kfunc.getKValue(espidx + 2, type);
                 inst_r = new K_CONST(kvalue, type, new K_CONSTop(table_idx, 0, kfunc.const_table));
                 kfunc.curBB.insts.add(inst_r);
-                op.inst1 = inst_r;
+                op.inst1 = op.inst0;
+                op.inst0 = inst_r;
                 inst = new K_SUB(kval, type, op, espidx);
                 break;
             default:
