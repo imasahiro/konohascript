@@ -1631,7 +1631,6 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             K_Inst va = kfunc.getKInst(ax.i);
             K_Inst inst = new K_SetField(new K_SetFieldOp(va, tmp, ax.n), 0);
             kfunc.curBB.insts.add(inst);
-            kfunc.storeKInst(ax.i, inst);
             break;
         case Token.TT_SYSVAL:
             used_espidx = espidx;

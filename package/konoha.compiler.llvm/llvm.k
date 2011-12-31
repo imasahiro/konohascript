@@ -50,7 +50,7 @@ KFLAG_PF_BREAK     = (1<<7);
 
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
-LLVM_ENABLE_MODULE_DUMP = true;
+LLVM_ENABLE_MODULE_DUMP = false;
 LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
 
 //class CompilerOpt {
@@ -765,7 +765,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     if (LLVM_ENABLE_SAFEPOINT) {
         Value vsafepoint = asm.opt.builder.createStructGEP(asm.opt.ctx, 0);
         vsafepoint = asm.opt.builder.createLoad(vsafepoint);
-        BasicBlock bbThen = BasicBlock.create(asm.opt.func);
+        BasicBlock bbThen = BasicBlock.create(asm.opt.func, "safepoint");
         Value cond = asm.opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(asm.opt.intTy, 1));
         asm.opt.builder.createCondBr(cond, bbThen, asm.opt.bblist2[idx]);
         asm.opt.builder.setInsertPoint(bbThen);
@@ -824,7 +824,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] != null) {
-            asm.opt.bblist.add(BasicBlock.create(asm.opt.func, "bb"+i));
+            BasicBlock bb = null;
+            //FIXME bbs[i].insts.size > 0 and bblist must be non nullable.
+            if (bbs[i].insts.size > 0) {
+                bb = BasicBlock.create(asm.opt.func, "bb"+i);
+            }
+            asm.opt.bblist.add(bb);
             if (bbs[i].safepoint != -1) {
                 asm.opt.bblist2.add(BasicBlock.create(asm.opt.func, "bb"+i));
             } else {
@@ -841,6 +846,10 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     asm.opt.builder = new IRBuilder(asm.opt.bblist[0]);
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] == null) continue;
+        //FIXME bbs[i].insts.size > 0 and bblist must be non nullable.
+        if (asm.opt.bblist[i] == null) {
+            continue;
+        }
         asm.opt.builder.setInsertPoint(asm.opt.bblist[i]);
         if (bbs[i].phis != null) {
             foreach (String s in bbs[i].phis.keys()) {
@@ -1135,12 +1144,11 @@ BuilderFunc=Func<Value, Value=>Value>;
         Type int32Ty = Type.getInt32Ty();
         Value cache = builder.createAlloca(mtdCacheTy);
         Value field;
-        print cid, mn, op.mtdNC;
         field = builder.createStructGEP(cache, 0);
         tmp = builder.createStore(ConstantInt.get(int32Ty, cid), field);
         field = builder.createStructGEP(cache, 1);
         tmp = builder.createStore(ConstantInt.get(int32Ty, mn), field);
-        field = builder.createStructGEP(cache, 2, true);
+        field = builder.createStructGEP(cache, 2);
         builder.createStore(ConstantInt.get(intTy, op.mtdNC), field);
         Value arg0 = args[0].getLLVMValue(asm);
 

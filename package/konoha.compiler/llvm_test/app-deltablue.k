@@ -63,21 +63,34 @@ Strength weakest        = new Strength(6, "weakest");
 // for iteration
 Strength Strength.nextWeaker()
 {
-    switch (strengthValue) {
-        case 0: return strongPreferred;
-        case 1: return preferred;
-        case 2: return strongDefault;
-        case 3: return normal;
-        case 4: return weakDefault;
-        case 5: return weakest;
-
-        case 6: 
-        default:
-                System.err.println("Invalid call to nextStrength()!");
-                System.exit(1);
-                return null;
+    //switch (strengthValue) {
+    //    case 0: return strongPreferred;
+    //    case 1: return preferred;
+    //    case 2: return strongDefault;
+    //    case 3: return normal;
+    //    case 4: return weakDefault;
+    //    case 5: return weakest;
+    //    case 6: 
+    //    default:
+    //            System.err.println("Invalid call to nextStrength()!");
+    //            System.exit(1);
+    //            return null;
+    //}
+    Strength ret;
+    if (strengthValue == 0) { return strongPreferred; }
+    else if (strengthValue == 1) { return preferred; }
+    else if (strengthValue == 2) { return strongDefault; }
+    else if (strengthValue == 3) { return normal; }
+    else if (strengthValue == 4) { return weakDefault; }
+    else if (strengthValue == 5) { return weakest; }
+    else {
+        //(strengthValue == 6)
+        //default:
+        System.err.println("Invalid call to nextStrength()!");
+        System.exit(1);
+        ret = null;
     }
-    return null;
+    return ret;
 }
 
 class Variable;
@@ -735,7 +748,8 @@ class ScaleConstraint extends BinaryConstraint {
     {
         //super.markInputs(mark);
         markInputs_BinaryConstraint(mark);
-        scale.mark= offset.mark= mark;
+        scale.mark  = mark;
+        offset.mark = mark;
     }
 
     // Enforce this constraint. Assume that it is satisfied.
