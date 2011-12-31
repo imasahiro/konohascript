@@ -2131,6 +2131,7 @@ void Compiler.asmFOREACH(Stmt stmt, Token tkVar, Stmt stmtInit, Stmt stmtItr, St
     int espidx = stmtItr.toToken().getTokenIndex();
     int varidx = tkVar.getTokenIndex();
     int bbssize = kfunc.bbs.size;
+    kfunc.storeKInst(varidx, null);
     Class itrClass = tkVar.getT();
     K_BasicBlock bbCond  = new K_BasicBlock(bbssize);
     K_BasicBlock bbBody  = new K_BasicBlock(bbssize + 1);

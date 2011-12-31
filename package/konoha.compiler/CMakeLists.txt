@@ -57,6 +57,7 @@ add_test(NAME "downcast.k" COMMAND ${k} ${opt} "${DIR}/downcast.k")
 add_test(NAME "int_op.k"   COMMAND ${k} ${opt} "${DIR}/int_op.k")
 add_test(NAME "float_op.k" COMMAND ${k} ${opt} "${DIR}/float_op.k")
 add_test(NAME "virtual.k"  COMMAND ${k} ${opt} "${DIR}/virtual.k")
+add_test(NAME "iterator.k" COMMAND ${k} ${opt} "${DIR}/iterator.k")
 add_test(NAME "switch.k"   COMMAND ${k} ${opt} "${DIR}/switch.k")
 
 add_test(NAME "fannkuch"     COMMAND ${k} ${opt} "${DIR}/shootout-fannkuch.k")
