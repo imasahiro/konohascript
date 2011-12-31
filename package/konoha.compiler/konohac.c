@@ -157,7 +157,7 @@ static int knh_runMain(CTX ctx, int argc, const char **argv)
 
 int main(int argc, const char *argv[])
 {
-    int argc_ = argc;
+    int i, argc_ = argc;
     const char *argv_[argc_];
     const char *fname = parse_option(&argc_, argv, argv_);
     if (fname == NULL) {
@@ -168,6 +168,14 @@ int main(int argc, const char *argv[])
     CTX ctx = konoha;
     kString *s = new_T(fname);
     knh_DictMap_set(ctx, ctx->share->props, new_T("script.name"), s);
+
+    kArray *a = new_Array(ctx, CLASS_String, argc_);
+    for(i = 2; i < argc_; i++) {
+        knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv_[i],
+                    knh_strlen(argv_[i]), SPOL_TEXT|SPOL_POOLALWAYS));
+    }
+    knh_DictMap_set(ctx, ctx->share->props, new_T("script.argv"), a);
+
     kbytes_t t = knh_bytes_nsname(S_tobytes(s));
     knh_Script_setNSName(ctx, ctx->script, new_S(t.text, t.len));
     kbytes_t pkgname = STEXT("konoha.compiler");
@@ -187,13 +195,6 @@ int main(int argc, const char *argv[])
         KNH_SCALL(ctx, lsfp, 0, mtd, 0);
     } END_LOCAL(ctx, lsfp);
     if (compiler_run_main) {
-        kArray *a = new_Array(ctx, CLASS_String, argc_);
-        int i;
-        for(i = 2; i < argc_; i++) {
-            knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv_[i],
-                        knh_strlen(argv_[i]), SPOL_TEXT|SPOL_POOLALWAYS));
-        }
-        knh_DictMap_set(ctx, ctx->share->props, new_T("script.argv"), a);
         knh_stack_clear(ctx, ctx->stack);
         knh_runMain(ctx, argc_, argv_);
     }
