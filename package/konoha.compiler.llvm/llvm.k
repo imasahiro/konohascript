@@ -50,7 +50,7 @@ KFLAG_PF_BREAK     = (1<<7);
 
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
-LLVM_ENABLE_MODULE_DUMP = true;
+LLVM_ENABLE_MODULE_DUMP = false;
 LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
 
 //class CompilerOpt {
@@ -712,9 +712,17 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.ktype["methodTy"] = methodTy;
     opt.ktype["methodPtrTy"] = methodPtrTy;
 
+    exfields = [];
+    exfields.add(objectPtrTy); /* source */
+    exfields.add(methodPtrTy); /* mtdNULL */
+    exfields.add(voidPtrTy);   /* m.nptr */
+    exfields.add(voidPtrTy);   /* m.nfree */
+    exfields.add(voidPtrTy);   /* m.index */
+    exfields.add(voidPtrTy);   /* m.max */
+    Type itrExTy = StructType.create(exfields, "ItreatorEx", false);
     fields = [];
     fields.add(hObjectTy);
-    fields.add(int8PtrTy);
+    fields.add(itrExTy);
     fields.add(fitrnextPtrTy);
     Type iteratorTy = StructType.create(fields, "Iterator", false);
     opt.ktype["IteratorPtrTy"] = PointerType.get(iteratorTy);
@@ -750,7 +758,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     if (LLVM_ENABLE_SAFEPOINT) {
         Value vsafepoint = asm.opt.builder.createStructGEP(asm.opt.ctx, 0);
         vsafepoint = asm.opt.builder.createLoad(vsafepoint);
-        BasicBlock bbThen = BasicBlock.create(asm.opt.func);
+        BasicBlock bbThen = BasicBlock.create(asm.opt.func, "safepoint");
         Value cond = asm.opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(asm.opt.intTy, 1));
         asm.opt.builder.createCondBr(cond, bbThen, asm.opt.bblist2[idx]);
         asm.opt.builder.setInsertPoint(bbThen);
@@ -809,7 +817,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] != null) {
-            asm.opt.bblist.add(BasicBlock.create(asm.opt.func, "bb"+i));
+            BasicBlock bb = null;
+            //FIXME bbs[i].insts.size > 0 and bblist must be non nullable.
+            if (bbs[i].insts.size > 0) {
+                bb = BasicBlock.create(asm.opt.func, "bb"+i);
+            }
+            asm.opt.bblist.add(bb);
             if (bbs[i].safepoint != -1) {
                 asm.opt.bblist2.add(BasicBlock.create(asm.opt.func, "bb"+i));
             } else {
@@ -826,6 +839,10 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     asm.opt.builder = new IRBuilder(asm.opt.bblist[0]);
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] == null) continue;
+        //FIXME bbs[i].insts.size > 0 and bblist must be non nullable.
+        if (asm.opt.bblist[i] == null) {
+            continue;
+        }
         asm.opt.builder.setInsertPoint(asm.opt.bblist[i]);
         if (bbs[i].phis != null) {
             foreach (String s in bbs[i].phis.keys()) {
@@ -1065,7 +1082,6 @@ BuilderFunc=Func<Value, Value=>Value>;
     CompilerOpt opt = asm.opt;
     IRBuilder builder = opt.builder;
     Type intTy = opt.intTy;
-    print op.cast;
     if (op.cast == 0) {
         //v = builder.createBitCast(v, asm.convertType(type));
         if (type == Float) {
@@ -1121,12 +1137,11 @@ BuilderFunc=Func<Value, Value=>Value>;
         Type int32Ty = Type.getInt32Ty();
         Value cache = builder.createAlloca(mtdCacheTy);
         Value field;
-        print cid, mn, op.mtdNC;
         field = builder.createStructGEP(cache, 0);
         tmp = builder.createStore(ConstantInt.get(int32Ty, cid), field);
         field = builder.createStructGEP(cache, 1);
         tmp = builder.createStore(ConstantInt.get(int32Ty, mn), field);
-        field = builder.createStructGEP(cache, 2, true);
+        field = builder.createStructGEP(cache, 2);
         builder.createStore(ConstantInt.get(intTy, op.mtdNC), field);
         Value arg0 = args[0].getLLVMValue(asm);
 
@@ -1379,10 +1394,10 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value vsfp = asm.opt.builder.createConstGEP1_32(asm.opt.sfp, op.b);
     Value vrix = ConstantInt.get(asm.opt.intTy, op.rix);
     asm.shiftesp(op.espshift);
-    Value v = (Value)asm.opt.builder.createCall3(fnext_1, vctx, vsfp, vrix);
+    Value v = asm.opt.builder.createCall3(fnext_1, vctx, vsfp, vrix);
     Value res = asm.opt.builder.createLoadValueFromSfp(asm.opt.sfp, asm.convertType(type), op.b + op.rix);
     setLLVMValue(asm, res);
-    Value v = asm.opt.builder.createICmpEQ(v, ConstantInt.get(asm.opt.intTy, 0));
+    v = asm.opt.builder.createICmpNE(v, ConstantInt.get(asm.opt.intTy, 0));
     asm.opt.builder.createCondBr(v, asm.opt.bblist[op.nextBB], asm.opt.bblist[op.endBB]);
 }
 

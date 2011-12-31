@@ -540,25 +540,28 @@ class K_Function {
             //    OUT<< "bb" + pred[i][j] + " ";
             //}
             bbStr += EOL;
-            foreach(String s in bbs[i].phis.keys()) {
-                String tmp = bbs[i].phis[s].dump();
+            bb = bbs[i];
+            foreach(String s in bb.phis.keys()) {
+                String tmp = bb.phis[s].dump();
                 if (tmp != null) {
                     bbStr += tmp + "\n";
                 }
             }
-            for (int j = 0; j < |bbs[i].insts|-1; j++) {
-                String tmp = bbs[i].insts[j].dump();
+            for (int j = 0; j < |bb.insts|-1; j++) {
+                String tmp = bb.insts[j].dump();
                 if (tmp != null) {
                     bbStr += tmp + "\n";
                 }
             }
-            for (int j = 0; j < |bbs[i].movs|; j++) {
-                String tmp = bbs[i].movs[j].dump();
+            for (int j = 0; j < |bb.movs|; j++) {
+                String tmp = bb.movs[j].dump();
                 if (tmp != null) {
                     bbStr += tmp + "\n";
                 }
             }
-            bbStr += bbs[i].insts[|bbs[i].insts|-1].dump() + "\n"; //jmp
+            if (bb.insts.size > 0) {
+                bbStr += bb.insts[|bb.insts|-1].dump() + "\n"; //jmp
+            }
             res += bbStr;
         }
         res += "}" + "\n";
@@ -1632,7 +1635,6 @@ void Compiler.asm_xmov(SFX ax, Token tkb, int espidx) {
             K_Inst va = kfunc.getKInst(ax.i);
             K_Inst inst = new K_SetField(new K_SetFieldOp(va, tmp, ax.n), 0);
             kfunc.curBB.insts.add(inst);
-            kfunc.storeKInst(ax.i, inst);
             break;
         case Token.TT_SYSVAL:
             used_espidx = espidx;
@@ -2648,10 +2650,12 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class type, Stmt lhs, St
             case "---":
                 K_Value kval = kfunc.getKValue(espidx, type);
                 int table_idx = kfunc.addConstTable(0);
-                K_Value kvalue = kfunc.getKValue(espidx + 2, Int);
+                assert(type == Int or type == Float);
+                K_Value kvalue = kfunc.getKValue(espidx + 2, type);
                 inst_r = new K_CONST(kvalue, type, new K_CONSTop(table_idx, 0, kfunc.const_table));
                 kfunc.curBB.insts.add(inst_r);
-                op.inst1 = inst_r;
+                op.inst1 = op.inst0;
+                op.inst0 = inst_r;
                 inst = new K_SUB(kval, type, op, espidx);
                 break;
             default:
