@@ -2266,7 +2266,7 @@ void Compiler.asmPRINT(Stmt stmt, int flag) {
             flag = KFLAG_PF_NCOMMA;
         }
         else {
-            Class c = stmt.getT(i).getClass();
+            Class c = stmt.getT(i).getT();
             if (!c.isUnboxType()) { c = Object; }
             K_Inst inst = kfunc.getKInst(espidx+i);
             opp = new K_PRINTop(inst, flag|mask, espidx+i, uline, msg);
