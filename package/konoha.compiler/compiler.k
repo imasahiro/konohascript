@@ -1759,7 +1759,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
             K_Inst inst = new K_CONST(kvalue, c, new K_CONSTop(table_idx, objptr, kfunc.const_table));
             kfunc.curBB.insts.add(inst);
             K_Value vb = kfunc.getKValue(espidx, type);
-            inst = new K_TR(vb, new K_TRop(inst, espidx, espidx - espidx, type, Stmt.PROP), 0);
+            inst = new K_TR(vb, new K_TRop(inst, espidx, 0, type, Stmt.PROP), 0);
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(espidx, inst);
             break;
