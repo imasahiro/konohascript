@@ -50,6 +50,7 @@ KFLAG_PF_BREAK     = (1<<7);
 
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_OPT = true;
+LLVM_ENABLE_VERIFY_EACH = true;
 LLVM_ENABLE_MODULE_DUMP = false;
 LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
 
@@ -399,7 +400,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             mpm.add(LLVM.createFunctionAttrsPass());
             mpm.add(LLVM.createInternalizePass(true));
             //TODO FIXME BUG
-            //mpm.add(LLVM.createFunctionInliningPass());
+            //mpm.add(LLVM.createFunctionInliningPass(255));
             mpm.add(LLVM.createIPSCCPPass());
             mpm.add(LLVM.createGlobalOptimizerPass());
             mpm.add(LLVM.createConstantMergePass());
@@ -419,6 +420,9 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             mpm.add(LLVM.createJumpThreadingPass());
             mpm.add(LLVM.createCFGSimplificationPass());
             mpm.add(LLVM.createGlobalDCEPass());
+            if (LLVM_ENABLE_VERIFY_EACH) {
+                mpm.add(LLVM.createVerifierPass());
+            }
             mpm.run(opt.m);
             if (LLVM_ENABLE_MODULE_DUMP) {
                 opt.m.dump();
