@@ -997,7 +997,7 @@ class K_PRINT extends K_Inst {
         String v0 = op.inst0.getName();
         String data = op.pflag + " " + op.opline + " ";
         String msg = "\"" + escape(op.msg) + "\"";
-        String res = "\t_ = print " + data + msg + " "+ v0;
+        String res = "\t_ = print " + type + " " +data + msg + " "+ v0;
         return res;
     }
 }
