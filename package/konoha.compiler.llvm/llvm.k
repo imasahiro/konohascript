@@ -235,9 +235,16 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     this.opt.func = func.func;
 }
 @Public void Compiler.init(Method mtd) {
-    common_init(mtd);
+    this.mtd = mtd;
     opt.wrapperfunc = Function.create(mtd.toString(), opt.funcTy, opt.m, GlobalValue.ExternalLinkage);
     Array<Value> vargs = opt.wrapperfunc.getArguments();
+    if (DEBUG) {
+        print mtd;
+        print mtd.toString();
+        print mtd.getReturnType();
+        //print mtd.getParamTypes();
+        print mtd.toString();
+    }
     opt.ctx = vargs[0];
     opt.sfp = vargs[1];
     opt.rix = vargs[2];
