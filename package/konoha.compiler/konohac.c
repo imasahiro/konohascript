@@ -189,7 +189,7 @@ int main(int argc, const char *argv[])
     if (compiler_run_main) {
         kArray *a = new_Array(ctx, CLASS_String, argc_);
         int i;
-        for(i = 1; i < argc_; i++) {
+        for(i = argc_; i < argc_; i++) {
             knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, argv_[i],
                         knh_strlen(argv_[i]), SPOL_TEXT|SPOL_POOLALWAYS));
         }
