@@ -398,6 +398,21 @@ KMETHOD Compiler_gammaHasFIELD(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURNb_(GammaBuilder_hasFIELD(ctx->gma));
 }
+KMETHOD Compiler_gammaFvarsize(CTX ctx, ksfp_t *sfp _RIX)
+{
+    RETURNi_(DP(ctx->gma)->fvarsize);
+}
+KMETHOD Compiler_gammaGfFn(CTX ctx, ksfp_t *sfp _RIX)
+{
+    kint_t i = Int_to(kint_t, sfp[1]);
+    RETURNi_(DP(ctx->gma)->gf[i].fn);
+}
+KMETHOD Compiler_gammaGfType(CTX ctx, ksfp_t *sfp _RIX)
+{
+    kint_t i = Int_to(kint_t, sfp[1]);
+    ktype_t type = DP(ctx->gma)->gf[i].type;
+    RETURN_(new_Type(ctx, type));
+}
 KMETHOD Compiler_gammaGetThiscid(CTX ctx, ksfp_t *sfp _RIX)
 {
 	RETURN_(new_Type(ctx, DP(ctx->gma)->this_cid));
@@ -480,6 +495,12 @@ KMETHOD Compiler_asmBLOCK(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+//## @Native Compiler.getCurrentUline();
+KMETHOD Compiler_getCurrentUline(CTX ctx, ksfp_t *sfp _RIX)
+{
+	RETURNi_(ctx->gma->uline);
+}
+
 KMETHOD Compiler_debug(CTX ctx, ksfp_t *sfp _RIX)
 {
 	asm volatile("int3");
@@ -490,6 +511,11 @@ KMETHOD _debug_(CTX ctx, ksfp_t *sfp, kint_t a, kint_t b)
 	//void *p1 = (void*) a;
 	//void *p2 = (void*) b;
 	//fprintf(stderr, "%p %p %ld %ld %p %p\n", ctx, sfp, a, b, p1, p2);
+}
+void __test__(void *a, void *b)
+{
+	fprintf(stderr, "%p %p\n", a, b);
+	asm volatile("int3");
 }
 static void kook_compiler_emit(CTX ctx, kMethod *mtd)
 {
@@ -502,6 +528,38 @@ static void kook_compiler_compiler(CTX ctx, kMethod *mtd, kStmtExpr *stmtB)
 	CALL(ctx, COMPILER_API.INIT, 1, mtd);
 	kook_BLOCK_asm(ctx, stmtB);
 	kook_compiler_emit(ctx, mtd);
+}
+/* copied from src/lang/asm.c */
+void compiler_CWB(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
+{
+	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+	KNH_SETv(ctx, sfp[c].o, cwb->w);
+	sfp[c].ivalue = cwb->pos;
+}
+/* copied from src/lang/asm.c */
+void compiler_TOSTR(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
+{
+	DBG_ASSERT(IS_OutputStream(sfp[0].w));
+	CWB_t cwbbuf = {ctx->bufa, ctx->bufw, (size_t)(sfp[0].ivalue)};
+	kString *s = CWB_newString(ctx, &cwbbuf, 0);
+	KNH_SETv(ctx, sfp[c].o, s);
+}
+/* copied from src/lang/asm.c */
+void compiler_NULVAL(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
+{
+	KNH_SETv(ctx, sfp[c].o, ct->fdefnull(ctx, ct->cid));
+}
+
+kMethod *compiler_LOOKUPMTD(CTX ctx, kObject *o, knh_mtdcache_t *cache)
+{
+	const knh_ClassTBL_t *ct = O_cTBL(o);
+	kMethod *mtd = cache->mtd;
+	if(cache->cid != ct->cid) {
+		mtd = ClassTBL_getMethod(ctx, ct, cache->mn);
+		cache->mtd = mtd;
+		cache->cid = ct->cid;
+	}
+	return mtd;
 }
 
 static kMethod *load_method(CTX ctx, kclass_t cid, kbytes_t t)

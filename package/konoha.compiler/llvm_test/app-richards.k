@@ -296,21 +296,23 @@ class DeviceTask extends Task {
 
     @Override Task fn(Packet pkt, TaskRec r) {
         DeviceTaskRec d = (DeviceTaskRec)r;
+        Task ret;
         if (pkt == null) {
             pkt = d.pending;
             if (pkt == null) {
-                return this.waitTask();
+                ret = this.waitTask();
             }
             else {
                 d.pending = null;
-                return this.qpkt(pkt);
+                ret = this.qpkt(pkt);
             }
         }
         else {
             d.pending = pkt;
             if (TRACING) trace(pkt.datum);
-            return this.hold();
+            ret = this.hold();
         }
+        return ret;
     }
 }
 
@@ -361,17 +363,19 @@ class IdleTask extends Task {
     @Override Task fn(Packet pkt, TaskRec r) {
         IdleTaskRec i = (IdleTaskRec) r;
         i.count -= 1;
+        Task ret;
         if (i.count == 0) {
-            return this.hold();
+            ret = this.hold();
         }
         else if ((i.control & 1) == 0) {
             i.control = i.control / 2;
-            return this.release(I_DEVA);
+            ret = this.release(I_DEVA);
         }
         else {
             i.control = (i.control/2) ^ 0xd008;
-            return this.release(I_DEVB);
+            ret = this.release(I_DEVB);
         }
+        return ret;
     }
 }
 

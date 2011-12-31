@@ -208,6 +208,22 @@ function __Array__(obj) {
         return res;
     }
 }
+/* Iterator */
+__Iterator__.prototype = new __Object__();
+function __Iterator__(obj) {
+    this.obj = obj;
+    this.cur = 0;
+    this.capacity = obj.getSize();
+    this.next = function() {
+        if (this.cur == this.capacity) {
+            return null;
+        } else {
+            var res = obj.get(this.cur);
+            this.cur++;
+            return res;
+        }
+    }
+}
 
 /* String */
 __String__.prototype = new __Object__();

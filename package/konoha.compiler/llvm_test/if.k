@@ -10,3 +10,19 @@ int f(int j) {
     }
     return i;
 }
+int g(int x) {
+    if (x >= 10) {
+        if (x > 100) {
+            return 10;
+        } else {
+            return 20;
+        }
+    } else {
+        return 30;
+    }
+}
+void main (String[] args) {
+    OUT.println(g(1000));
+    OUT.println(g(10));
+    OUT.println(g(1));
+}

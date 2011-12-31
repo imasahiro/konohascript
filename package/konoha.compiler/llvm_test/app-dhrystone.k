@@ -203,32 +203,40 @@ class Dhry {
         if (!func_3(enum_Par_Val))
             enum_Par_Ref[0] = IDENT_4;
 
-        switch (enum_Par_Val) {
-
-            case IDENT_1:
+        //switch (enum_Par_Val) {
+        //    case IDENT_1:
+        //        enum_Par_Ref[0] = IDENT_1;
+        //        break;
+        //    case IDENT_2:
+        //        if (int_Glob > 100)
+        //            enum_Par_Ref[0] = IDENT_1;
+        //        else
+        //            enum_Par_Ref[0] = IDENT_4;
+        //        break;
+        //    case IDENT_3:
+        //        enum_Par_Ref[0] = IDENT_2;
+        //        break;
+        //    case IDENT_4:
+        //        break;
+        //    case IDENT_5:
+        //        enum_Par_Ref[0] = IDENT_3;
+        //        break;
+        //}
+        if (enum_Par_Val == IDENT_1) {
+            enum_Par_Ref[0] = IDENT_1;
+        } else if (enum_Par_Val == IDENT_2) {
+            if (int_Glob > 100) {
                 enum_Par_Ref[0] = IDENT_1;
-                break;
-
-            case IDENT_2:
-                if (int_Glob > 100)
-                    enum_Par_Ref[0] = IDENT_1;
-                else
-                    enum_Par_Ref[0] = IDENT_4;
-                break;
-
-            case IDENT_3:
-                enum_Par_Ref[0] = IDENT_2;
-                break;
-
-            case IDENT_4:
-                break;
-
-            case IDENT_5:
+            }
+            else {
+                enum_Par_Ref[0] = IDENT_4;
+            }
+        } else if (enum_Par_Val == IDENT_3) {
+            enum_Par_Ref[0] = IDENT_2;
+        } else if (enum_Par_Val == IDENT_4) {
+        } else if (enum_Par_Val == IDENT_5) {
                 enum_Par_Ref[0] = IDENT_3;
-                break;
-
         }
-
     }
 
     void proc_7(int int_Par_Val1, int int_Par_Val2, int[] int_Par_Ref) {

@@ -224,7 +224,7 @@ LABEL = uscore("label");
 }
 @Public @Override void K_SELECT.codegen(Compiler asm) {
     String res = "";
-    res += "var " + getName() + " = " + op.inst0.getName() + " ? " op.inst1.getName() + " : " + op.inst2.getName() + ";";
+    res += "var " + getName() + " = " + op.inst0.getName() + " ? " + op.inst1.getName() + " : " + op.inst2.getName() + ";";
     asm.addSource(res, 3);
 }
 @Public @Override void K_LSFT.codegen(Compiler asm) {
@@ -241,8 +241,11 @@ LABEL = uscore("label");
     /* do not use */
 }
 @Public @Override void K_CAST.codegen(Compiler asm) {
+    String tcid_str = (to String) op.tcid;
     if (op.scid == Float && op.tcid == Int) {
         asm.addSource("var " + getName() + " = " + uscore("Math") + ".floor(" + op.inst0.getName() + ");", 3);
+    } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
+        asm.addSource("var " + getName() + " = new " + uscore("Iterator") + "(" + op.inst0.getName() + ");", 3);
     } else {
         asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 3);
     }
@@ -274,7 +277,7 @@ LABEL = uscore("label");
     } else if (thisclass != "Script") {
         res += uscore(thisclass) + ".";
     }
-    res += op.mtd.getName().replace(":", "_") + "(";
+    res += op.mtd.getName().replace("%s", "send").replace(":", "_") + "(";
     int cur = flag ? 1 : 0;
     for (; cur < |args|; cur++) {
         res += args[cur].getName();
@@ -335,15 +338,21 @@ LABEL = uscore("label");
         asm.addSource("var " + getName() + " = new " + uscore(class2str((to String)this.type)) + "(" + quote(op.const_table[op.table_idx]) + ");", 3);
     }
 }
-@Public @Override void K_MOVx.codegen (Compiler asm) {
+@Public @Override void K_GetField.codegen (Compiler asm) {
     asm.addClass(this.type);
     asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".field" + op.bn + ";", 3);
 }
-@Public @Override void K_xMOV.codegen(Compiler asm) {
+@Public @Override void K_SetField.codegen(Compiler asm) {
     asm.addClass(op.inst0.type);
     asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 3);
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
+    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".next();", 3);
+    asm.addSource("if (" + getName() + " != null) {", 3);
+    asm.addSource(LABEL + " = " + op.nextBB + ";", 4);
+    asm.addSource("} else {", 3);
+    asm.addSource(LABEL + " = " + op.endBB + ";", 4);
+    asm.addSource("}", 3);
 }
 @Public @Override void K_LDMTD.codegen(Compiler asm) {
 }

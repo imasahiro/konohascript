@@ -2655,7 +2655,7 @@ static void _PRINTb(CTX ctx, ksfp_t *sfp, struct klr_P_t *op)
 
 void knh_PRINT(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kObject *o)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {TADDR, OPCODE_P, uline, NULL, flag, msg, 0};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_Object(ctx, w, o, FMT_data);
@@ -2664,7 +2664,7 @@ void knh_PRINT(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, 
 
 void knh_PRINTi(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kint_t n)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {TADDR, OPCODE_P, uline, NULL, flag, msg, 0};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_ifmt(ctx, w, KINT_FMT, n);
@@ -2673,7 +2673,7 @@ void knh_PRINTi(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg,
 
 void knh_PRINTf(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kfloat_t f)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {TADDR, OPCODE_P, uline, NULL, flag, msg, 0};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_ffmt(ctx, w, KFLOAT_FMT, f);
@@ -2682,7 +2682,7 @@ void knh_PRINTf(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg,
 
 void knh_PRINTb(CTX ctx, ksfp_t *sfp, kflag_t flag, kline_t uline, kString *msg, kbool_t b)
 {
-	struct klr_P_t op = {TADDR, OPCODE_P, ASMLINE, NULL, flag, msg, 0};
+	struct klr_P_t op = {TADDR, OPCODE_P, uline, NULL, flag, msg, 0};
 	kOutputStream *w = KNH_STDOUT;
 	_PRINTh(ctx, sfp, w, &op);
 	knh_write_bool(ctx, w, b);
