@@ -25,27 +25,16 @@
 
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
-#include <llvm/DerivedTypes.h>
-#include <llvm/Constants.h>
-#include <llvm/GlobalVariable.h>
-#include <llvm/Function.h>
-#include <llvm/BasicBlock.h>
-#include <llvm/Instructions.h>
 #include <llvm/Intrinsics.h>
-#include <llvm/Support/IRBuilder.h>
-#include <llvm/Support/DynamicLibrary.h>
-#include <llvm/Support/TargetSelect.h>
-#include <llvm/Support/raw_ostream.h>
-#include <llvm/Pass.h>
 #include <llvm/PassManager.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/IPO.h>
+#include <llvm/Transforms/IPO/PassManagerBuilder.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Analysis/Passes.h>
-#include <llvm/Analysis/AliasSetTracker.h>
 #include <llvm/Analysis/DomPrinter.h>
-#include <llvm/Analysis/FindUsedTypes.h>
-#include <llvm/Analysis/IntervalPartition.h>
-#include <llvm/Analysis/Passes.h>
-#include <llvm/Analysis/PostDominators.h>
 #include <llvm/Analysis/RegionPass.h>
 #include <llvm/Analysis/RegionPrinter.h>
 #include <llvm/Analysis/ScalarEvolution.h>
@@ -53,15 +42,18 @@
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/Support/IRBuilder.h>
+#include <llvm/Support/DynamicLibrary.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/system_error.h>
+#include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/Target/TargetData.h>
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Transforms/IPO/PassManagerBuilder.h>
-#include <llvm/Transforms/Instrumentation.h>
-#include <llvm/Transforms/IPO.h>
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
-#include <llvm/Assembly/PrintModulePass.h>
 #include <llvm/ADT/Statistic.h>
+#include <llvm/ADT/OwningPtr.h>
+
+#include <iostream>
 
 #undef HAVE_SYS_TYPES_H
 #undef HAVE_SYS_STAT_H
@@ -3195,6 +3187,26 @@ KMETHOD Intrinsic_getDeclaration(CTX ctx, ksfp_t *sfp _RIX)
 	konoha::convert_array(List, args);
 	Function *ptr = Intrinsic::getDeclaration(m, id, List);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+KMETHOD LLVM_parseBitcodeFile(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kString *Str = sfp[1].s;
+	LLVMContext &Context = getGlobalContext();
+	std::string ErrMsg;
+	OwningPtr<MemoryBuffer> BufferPtr;
+	std::string fname(S_totext(Str));
+	if (error_code ec = MemoryBuffer::getFile(fname, BufferPtr)) {
+		std::cout << "Could not open file" << ec.message() << std::endl;
+	}
+	MemoryBuffer *Buffer = BufferPtr.take();
+	//Module *m = getLazyBitcodeModule(Buffer, Context, &ErrMsg);
+	Module *m = ParseBitcodeFile(Buffer, Context, &ErrMsg);
+	if (!m) {
+		std::cout << "error" << ErrMsg << std::endl;
+	}
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(m), konoha::object_free<Module>);
 	RETURN_(p);
 }
 

@@ -391,5 +391,6 @@ include "lib:gluelink";
 @Static @Native ImmutablePass LLVM.createBasicAliasAnalysisPass();
 @Static @Native FunctionPass LLVM.createVerifierPass();
 
-FunctionType Intrinsic.getType(int id, Type[] args);
-Function     Intrinsic.getDeclaration(Module m, int id, Type[] args);
+@Static @Native FunctionType Intrinsic.getType(int id, Type[] args);
+@Static @Native Function     Intrinsic.getDeclaration(Module m, int id, Type[] args);
+@Static @Native Module LLVM.parseBitcodeFile(String bcfile);
