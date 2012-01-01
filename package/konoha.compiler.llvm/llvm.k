@@ -50,7 +50,7 @@ KFLAG_PF_BREAK     = (1<<7);
 
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_VERIFY_EACH = true;
-LLVM_ENABLE_MODULE_DUMP = false;
+LLVM_ENABLE_MODULE_DUMP = true;
 LLVM_ENABLE_OPT = true;
 LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
 LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE = false;
@@ -1171,14 +1171,29 @@ BuilderFunc=Func<Value, Value=>Value>;
         int cid = (to Int) mtd.getMethodClass();
         int mn  = mtd.mn;
         Type int32Ty = Type.getInt32Ty();
-        Value cache = builder.createAlloca(mtdCacheTy);
-        Value field;
-        field = builder.createStructGEP(cache, 0);
-        tmp = builder.createStore(ConstantInt.get(int32Ty, cid), field);
-        field = builder.createStructGEP(cache, 1);
-        tmp = builder.createStore(ConstantInt.get(int32Ty, mn), field);
-        field = builder.createStructGEP(cache, 2);
-        builder.createStore(ConstantInt.get(intTy, op.mtdNC), field);
+
+        BasicBlock bb = asm.opt.bblist[0];
+        Instruction inst = bb.getLastInst();
+        Value c0 = ConstantInt.get(int32Ty, 0);
+        Value c1 = ConstantInt.get(int32Ty, 1);
+        Value c2 = ConstantInt.get(int32Ty, 2);
+
+        AllocaInst cache = new AllocaInst(mtdCacheTy);
+        bb.insertBefore(inst, cache);
+        for (int i=0; i < 3; i++) {
+            Instruction f0   = GetElementPtrInst.create(cache, [c0, c0]);
+            Instruction tmp0 = new StoreInst(ConstantInt.get(int32Ty, cid), f0);
+            Instruction f1   = GetElementPtrInst.create(cache, [c0, c1]);
+            Instruction tmp1 = new StoreInst(ConstantInt.get(int32Ty, mn), f1);
+            Instruction f2   = GetElementPtrInst.create(cache, [c0, c2]);
+            Instruction tmp2 = new StoreInst(ConstantInt.get(intTy, op.mtdNC), f2);
+            bb.insertBefore(inst, f0);
+            bb.insertBefore(inst, tmp0);
+            bb.insertBefore(inst, f1);
+            bb.insertBefore(inst, tmp1);
+            bb.insertBefore(inst, f2);
+            bb.insertBefore(inst, tmp2);
+        }
         Value arg0 = args[0].getLLVMValue(asm);
 
         Type[] argsTy = [];

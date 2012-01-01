@@ -932,6 +932,50 @@ KMETHOD IRBuilder_createStore(CTX ctx, ksfp_t *sfp _RIX)
 //	RETURN_(p);
 //}
 
+//## @Native AllocaInst AllocaInst.new(Type ty, Value arraySize);
+KMETHOD AllocaInst_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Type *Ty = konoha::object_cast<Type *>(sfp[1].p);
+	Value *ArraySize = konoha::object_cast<Value *>(sfp[2].p);
+	AllocaInst *ptr = new AllocaInst(Ty, ArraySize);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Native StoreInst StoreInst.new(Value val, Value ptr);
+KMETHOD StoreInst_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Val = konoha::object_cast<Value *>(sfp[1].p);
+	Value *Ptr = konoha::object_cast<Value *>(sfp[2].p);
+	StoreInst *ptr = new StoreInst(Val, Ptr);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Native @Static GetElementPtrInst GetElementPtrInst.create(Value ptr, Array<Value> idxList);
+KMETHOD GetElementPtrInst_create(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
+	kArray *IdxList = sfp[2].a;
+	std::vector<Value*> List;
+	konoha::convert_array(List, IdxList);
+	GetElementPtrInst *ptr = GetElementPtrInst::Create(Ptr, List);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Native @Static GetElementPtrInst GetElementPtrInst.CreateInBounds(Value ptr, Array<Value> idxList);
+KMETHOD GetElementPtrInst_createInBounds(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
+	kArray *IdxList = sfp[2].a;
+	std::vector<Value*> List;
+	konoha::convert_array(List, IdxList);
+	GetElementPtrInst *ptr = GetElementPtrInst::CreateInBounds(Ptr, List);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
 //## Value IRBuilder.CreateGEP(Value Ptr, ArrayRef< Value > IdxList);
 KMETHOD IRBuilder_createGEP(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -1839,6 +1883,25 @@ KMETHOD BasicBlock_getTerminator(CTX ctx, ksfp_t *sfp _RIX)
 //	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 //	RETURN_(KNH_NULL);
 //}
+
+//## Instruction BasicBlock.getLastInst();
+KMETHOD BasicBlock_getLastInst(CTX ctx, ksfp_t *sfp _RIX)
+{
+	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
+	Instruction *ptr = --(self->end());
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## Instruction BasicBlock.insertBefore(Instruction before, Instruction inst);
+KMETHOD BasicBlock_insertBefore(CTX ctx, ksfp_t *sfp _RIX)
+{
+	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
+	Instruction *inst0 = konoha::object_cast<Instruction *>(sfp[1].p);
+	Instruction *inst1 = konoha::object_cast<Instruction *>(sfp[2].p);
+	self->getInstList().insert(inst0, inst1);
+	RETURNvoid_();
+}
 
 //## int BasicBlock.size();
 KMETHOD BasicBlock_size(CTX ctx, ksfp_t *sfp _RIX)
