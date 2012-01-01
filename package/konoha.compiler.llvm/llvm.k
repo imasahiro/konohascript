@@ -49,10 +49,11 @@ KFLAG_PF_BREAK     = (1<<7);
 
 
 LLVM_ENABLE_SAFEPOINT = true;
-LLVM_ENABLE_OPT = true;
 LLVM_ENABLE_VERIFY_EACH = true;
 LLVM_ENABLE_MODULE_DUMP = false;
+LLVM_ENABLE_OPT = true;
 LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
+LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE = false;
 
 //class CompilerOpt {
 //    Module m;
@@ -200,7 +201,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.ktype = {};
     opt.kfunctype = {};
     init_first();
-    this.opt.m = new Module("konoha");
+    if (LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE) {
+        String libkonoha = "/usr/local/konoha/lib/libkonoha.dylib.bc";
+        this.opt.m = LLVM.parseBitcodeFile(libkonoha);
+    } else {
+        this.opt.m = new Module("konoha");
+    }
     this.opt.ee = opt.m.createExecutionEngine();
     this.opt.fpm = null;
     constructKonohaTypes();
@@ -646,7 +652,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     argsTy.add(ctxPtrTy);
     argsTy.add(sfpPtrTy);
     argsTy.add(int8PtrTy);
-    argsTy.add(int64Ty);
+    argsTy.add(int32Ty);
     FunctionType safeptmethodTy = FunctionType.get(Type.getVoidTy(), argsTy, false);
     Type safeptmethodPtrTy = PointerType.get(safeptmethodTy);
     opt.kfunctype["safeptmethodTy"]    = safeptmethodTy;
@@ -788,33 +794,30 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 
 @Public void K_BasicBlock.codegen(Compiler asm) {
     int idx = this.bbidx;
+    CompilerOpt opt = asm.opt;
     if (LLVM_ENABLE_SAFEPOINT) {
-        Value vsafepoint = asm.opt.builder.createStructGEP(asm.opt.ctx, 0);
-        vsafepoint = asm.opt.builder.createLoad(vsafepoint);
-        BasicBlock bbThen = BasicBlock.create(asm.opt.func, "safepoint");
-        Value cond = asm.opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(asm.opt.intTy, 1));
-        asm.opt.builder.createCondBr(cond, bbThen, asm.opt.bblist2[idx]);
-        asm.opt.builder.setInsertPoint(bbThen);
+        Value vsafepoint = opt.builder.createStructGEP(opt.ctx, 0);
+        vsafepoint = opt.builder.createLoad(vsafepoint);
+        BasicBlock bbThen = BasicBlock.create(opt.func, "safepoint");
+        Value cond = opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(opt.intTy, 1));
+        opt.builder.createCondBr(cond, bbThen, opt.bblist2[idx]);
+        opt.builder.setInsertPoint(bbThen);
         asm.shiftesp(this.safepoint);
-        Type fType = asm.opt.ktype["safeptmethodPtrTy"];
-        FunctionType fnTy  = asm.opt.kfunctype["safeptmethodTy"];
-        Function fcheck_safepoint = asm.opt.m.getOrInsertFunction("knh_checkSafePoint", fnTy);
+        Type fType = opt.ktype["safeptmethodPtrTy"];
+        FunctionType fnTy  = opt.kfunctype["safeptmethodTy"];
+        Function fcheck_safepoint = opt.m.getOrInsertFunction("knh_checkSafePoint", fnTy);
         Value vfunc = fcheck_safepoint;
 
-        //safePointMtd = asm.createSafePointMtd();
-        //vfunc = ConstantInt.get(asm.opt.intTy, asm.safePointMtd);
-        //vfunc = asm.opt.builder.CreateIntToPtr(vfunc, fType);
-
-        Value vctx  = asm.opt.ctx;
-        Value vsfp  = asm.opt.builder.createConstGEP1_32(asm.opt.sfp, this.safepoint);
-        Value vstr  = asm.opt.builder.createGlobalString("%d\n");
-        vstr = asm.opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
-        Value vline = ConstantInt.get(asm.opt.intTy, 0);
+        Value vctx  = opt.ctx;
+        Value vsfp  = opt.builder.createConstGEP1_32(opt.sfp, this.safepoint);
+        Value vstr  = opt.builder.createGlobalString("%d\n");
+        vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
+        Value vline = ConstantInt.get(Type.getInt32Ty(), 0);
         Value[] args = [vctx, vsfp, vstr, vline];
-        asm.opt.builder.createCall(vfunc, args);
-        asm.opt.builder.createBr(asm.opt.bblist2[idx]);
+        opt.builder.createCall(vfunc, args);
+        opt.builder.createBr(opt.bblist2[idx]);
     }
-    asm.opt.builder.setInsertPoint(asm.opt.bblist2[idx]);
+    opt.builder.setInsertPoint(opt.bblist2[idx]);
 }
 
 @Public void K_Function.buildWrapperFunc(Compiler asm) {
@@ -1313,7 +1316,6 @@ BuilderFunc=Func<Value, Value=>Value>;
     builder.createCall(func, vargs);
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
-    Type methodTy = asm.opt.ktype["trmethodPtrTy"];
     Value func;
     FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
     DynamicLibrary.loadLibraryPermanently("compiler.dylib");
@@ -1325,6 +1327,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     } else if (op.ftr == Stmt.NULL) {
         func = m.getOrInsertFunction("compiler_NULVAL", fnTy);
     } else {
+        Type methodTy = asm.opt.ktype["trmethodPtrTy"];
         func = ConstantInt.get(asm.opt.intTy, op.ftr);
         func = asm.opt.builder.CreateIntToPtr(func, methodTy);
     }
@@ -1340,14 +1343,13 @@ BuilderFunc=Func<Value, Value=>Value>;
     setLLVMValue(asm, v);
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
-    Type methodTy = asm.opt.ktype["trmethodPtrTy"];
     Value func;
     if (op.ftr == Stmt.NEW) {
         FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
         DynamicLibrary.loadLibraryPermanently("compiler.dylib");
-        Function tr_new = asm.opt.m.getOrInsertFunction("TR_NEW", fnTy);
-        func  = (Value) tr_new;
+        func = asm.opt.m.getOrInsertFunction("TR_NEW", fnTy);
     } else {
+        Type methodTy = asm.opt.ktype["trmethodPtrTy"];
         func = ConstantInt.get(asm.opt.intTy, op.ftr);
         func = asm.opt.builder.CreateIntToPtr(func, methodTy);
     }
