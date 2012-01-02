@@ -1888,7 +1888,11 @@ KMETHOD BasicBlock_getTerminator(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD BasicBlock_getLastInst(CTX ctx, ksfp_t *sfp _RIX)
 {
 	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
-	Instruction *ptr = --(self->end());
+	BasicBlock::iterator I = self->end();
+	Instruction *ptr;
+	if (self->size() > 0)
+		--I;
+	ptr = I;
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 	RETURN_(p);
 }

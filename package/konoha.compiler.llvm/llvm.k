@@ -50,7 +50,7 @@ KFLAG_PF_BREAK     = (1<<7);
 
 LLVM_ENABLE_SAFEPOINT = true;
 LLVM_ENABLE_VERIFY_EACH = false;
-LLVM_ENABLE_MODULE_DUMP = true;
+LLVM_ENABLE_MODULE_DUMP = false;
 LLVM_ENABLE_OPT = true;
 LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
 LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE = false;
@@ -1133,12 +1133,6 @@ BuilderFunc=Func<Value, Value=>Value>;
         //v = builder.createLoadValueFromSfp(opt.sfp, asm.convertType(type), op.b+op.rix);
         setLLVMValue(asm, v);
     } else {
-        //TODO need debug
-        //Type[] a = [];
-        //a.add(opt.ktype["sfpPtrTy"]);
-        //FunctionType ty = FunctionType.get(intTy, a, false);
-        //FUnction ftest = opt.m.getOrInsertFunction("__test__", ty);
-        //builder.createCall1(ftest, vsfp);
         FunctionType fnTy = opt.kfunctype["typemapmtdTy"];
         Value typemap_exec = opt.m.getOrInsertFunction("knh_TypeMap_exec", fnTy);
         builder.createStoreValueToSfp(opt.sfp, asm.convertType(op.inst0.type), op.b, op.inst0.getLLVMValue(asm));
