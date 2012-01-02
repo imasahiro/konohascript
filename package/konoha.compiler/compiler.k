@@ -1408,11 +1408,11 @@ class SFX {
 @Native int Compiler.gamma_gf_fn(int i);
 @Native Class Compiler.gamma_gf_type(int i);
 @Native Class Compiler.gammaGetThiscid();
-void Compiler.initFunc(K_Function func) {
+@Virtual void Compiler.initFunc(K_Function func) {
     func.func = null;
 }
 
-void Compiler.init(Method mtd) {
+void Compiler.init_common(Method mtd) {
     this.mtd = mtd;
     if (DEBUG) {
         print mtd;
@@ -1487,6 +1487,10 @@ void Compiler.init(Method mtd) {
         this.compiled_methods[mtdName] = [];
     }
     this.compiled_methods[mtdName].add(kfunc);
+}
+
+void Compiler.init(Method mtd) {
+    init_common(mtd);
 }
 
 void Compiler.addSafePoint(int espidx) {
