@@ -619,10 +619,12 @@ static void trapSEGV(int sig RECARG)
 		fprintf(stderr, "address=%p\n", address);
 	}
 #endif /* defined(K_USING_MINGW_) */
+#if 0
 	if(ctx != NULL) {
 		WCTX(ctx)->signal = sig;
 		THROW_Halt(ctx, NULL, "segmentation fault");
 	}
+#endif
 	_Exit(EX_SOFTWARE);
 }
 

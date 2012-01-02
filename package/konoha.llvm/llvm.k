@@ -35,6 +35,8 @@ include "lib:gluelink";
 @RawPtr class Constant extends Value;
 @RawPtr class ConstantInt extends Constant;
 @RawPtr class ConstantFP  extends Constant;
+@RawPtr class ConstantPointerNull extends Constant;
+@RawPtr class ConstantStruct extends Constant;
 @RawPtr class GlobalVariable extends Value;
 @RawPtr class IRBuilder;
 @RawPtr class Instruction extends Value;
@@ -287,8 +289,10 @@ include "lib:gluelink";
 @Native @Public void Method.setFunction(NativeFunction nf);
 @Native @Public void Func.setFunction(NativeFunction nf);
 
-@Native ConstantInt ConstantInt.get(Type type, int v);
-@Native ConstantFP  ConstantFP.get(Type type, float v);
+@Static @Native Constant ConstantInt.get(Type type, int v);
+@Static @Native Constant ConstantFP.get(Type type, float v);
+@Static @Native Constant ConstantPointerNull.get(Type type);
+@Static @Native Constant ConstantStruct.get(Type type, Array<Constant> v);
 
 @RawPtr class DynamicLibrary;
 @Native @Static boolean DynamicLibrary.loadLibraryPermanently(String libname);

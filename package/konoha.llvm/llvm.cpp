@@ -2061,6 +2061,27 @@ KMETHOD ConstantFP_get(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## @Static @Native Value ConstantPointerNull.get(Type type);
+KMETHOD ConstantPointerNull_get(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PointerType *type  = konoha::object_cast<PointerType *>(sfp[1].p);
+	Value *ptr = ConstantPointerNull::get(type);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Static @Native Value ConstantStruct.get(Type type, Array<Constant> V);
+KMETHOD ConstantStruct_get(CTX ctx, ksfp_t *sfp _RIX)
+{
+	StructType *type  = konoha::object_cast<StructType *>(sfp[1].p);
+	kArray *args = sfp[2].a;
+	std::vector<Constant*> List;
+	konoha::convert_array(List, args);
+	Value *ptr = ConstantStruct::get(type, List);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
 //## @Static StructType.get(Array<Type> args, boolean isPacked);
 KMETHOD StructType_get(CTX ctx, ksfp_t *sfp _RIX)
 {

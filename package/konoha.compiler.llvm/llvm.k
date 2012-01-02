@@ -49,7 +49,7 @@ KFLAG_PF_BREAK     = (1<<7);
 
 
 LLVM_ENABLE_SAFEPOINT = true;
-LLVM_ENABLE_VERIFY_EACH = true;
+LLVM_ENABLE_VERIFY_EACH = false;
 LLVM_ENABLE_MODULE_DUMP = true;
 LLVM_ENABLE_OPT = true;
 LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
@@ -201,7 +201,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.ktype = {};
     opt.kfunctype = {};
     init_first();
-    if (LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE) {
+    if (LLVM_ENABLE_OPT && LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE) {
         String libkonoha = "/usr/local/konoha/lib/libkonoha.dylib.bc";
         this.opt.m = LLVM.parseBitcodeFile(libkonoha);
     } else {
@@ -344,17 +344,19 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     if (opt.fpm == null) {
         FunctionPassManager fpm = new FunctionPassManager(opt.m);
         opt.fpm = fpm;
-        //fpm.add(ee.getTargetData());
         fpm.add(LLVM.createVerifierPass());
-        fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
-        fpm.add(LLVM.createBasicAliasAnalysisPass());
-        fpm.add(LLVM.createSimplifyLibCallsPass());
-        fpm.add(LLVM.createCFGSimplificationPass());
-        fpm.add(LLVM.createScalarReplAggregatesPass());
-        fpm.add(LLVM.createEarlyCSEPass());
-        fpm.add(LLVM.createLowerExpectIntrinsicPass());
+        if (LLVM_ENABLE_OPT) {
+            fpm.add(opt.ee.getTargetData());
+            fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
+            fpm.add(LLVM.createBasicAliasAnalysisPass());
+            fpm.add(LLVM.createSimplifyLibCallsPass());
+            fpm.add(LLVM.createCFGSimplificationPass());
+            fpm.add(LLVM.createScalarReplAggregatesPass());
+            fpm.add(LLVM.createEarlyCSEPass());
+            fpm.add(LLVM.createLowerExpectIntrinsicPass());
+        }
     }
-    if (LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
+    if (LLVM_ENABLE_OPT && LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
         if (this.opt.intrinsic_methods == null) {
             this.opt.intrinsic_methods = {};
             Type[] args = [opt.floatTy];
@@ -403,29 +405,31 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             //print this.const_table;
             this.compiled_methods = {};
             PassManager mpm = new PassManager();
-            mpm.add(LLVM.createFunctionAttrsPass());
-            mpm.add(LLVM.createInternalizePass(true));
-            //TODO FIXME BUG
-            //mpm.add(LLVM.createFunctionInliningPass(255));
-            mpm.add(LLVM.createIPSCCPPass());
-            mpm.add(LLVM.createGlobalOptimizerPass());
-            mpm.add(LLVM.createConstantMergePass());
-            mpm.add(LLVM.createInstructionCombiningPass());
-            mpm.add(LLVM.createGlobalOptimizerPass());
-            mpm.add(LLVM.createGlobalDCEPass());
-            mpm.add(LLVM.createInstructionCombiningPass());
-            mpm.add(LLVM.createJumpThreadingPass());
-            mpm.add(LLVM.createScalarReplAggregatesPass());
-            mpm.add(LLVM.createFunctionAttrsPass());
-            mpm.add(LLVM.createGlobalsModRefPass());
-            mpm.add(LLVM.createLICMPass());
-            mpm.add(LLVM.createGVNPass());
-            mpm.add(LLVM.createMemCpyOptPass());
-            mpm.add(LLVM.createDeadStoreEliminationPass());
-            mpm.add(LLVM.createInstructionCombiningPass());
-            mpm.add(LLVM.createJumpThreadingPass());
-            mpm.add(LLVM.createCFGSimplificationPass());
-            mpm.add(LLVM.createGlobalDCEPass());
+            if (LLVM_ENABLE_OPT) {
+                mpm.add(LLVM.createFunctionAttrsPass());
+                mpm.add(LLVM.createInternalizePass(true));
+                //TODO FIXME BUG
+                mpm.add(LLVM.createFunctionInliningPass(225));
+                mpm.add(LLVM.createIPSCCPPass());
+                mpm.add(LLVM.createGlobalOptimizerPass());
+                mpm.add(LLVM.createConstantMergePass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createGlobalOptimizerPass());
+                mpm.add(LLVM.createGlobalDCEPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createJumpThreadingPass());
+                mpm.add(LLVM.createScalarReplAggregatesPass());
+                mpm.add(LLVM.createFunctionAttrsPass());
+                mpm.add(LLVM.createGlobalsModRefPass());
+                mpm.add(LLVM.createLICMPass());
+                mpm.add(LLVM.createGVNPass());
+                mpm.add(LLVM.createMemCpyOptPass());
+                mpm.add(LLVM.createDeadStoreEliminationPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createJumpThreadingPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
+                mpm.add(LLVM.createGlobalDCEPass());
+            }
             if (LLVM_ENABLE_VERIFY_EACH) {
                 mpm.add(LLVM.createVerifierPass());
             }
@@ -810,8 +814,9 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 
         Value vctx  = opt.ctx;
         Value vsfp  = opt.builder.createConstGEP1_32(opt.sfp, this.safepoint);
-        Value vstr  = opt.builder.createGlobalString("%d\n");
-        vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
+        //Value vstr  = opt.builder.createGlobalString("%d\n");
+        //vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
+        Value vstr  = ConstantPointerNull.get(Type.getInt8PtrTy());
         Value vline = ConstantInt.get(Type.getInt32Ty(), 0);
         Value[] args = [vctx, vsfp, vstr, vline];
         opt.builder.createCall(vfunc, args);
@@ -1248,7 +1253,7 @@ BuilderFunc=Func<Value, Value=>Value>;
             }
         }
     }
-    if (LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
+    if (LLVM_ENABLE_OPT && LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
         if (asm.opt.intrinsic_methods[this.op.fname] != null) {
             Function func = asm.opt.intrinsic_methods[this.op.fname];
             vargs = [];
