@@ -387,8 +387,9 @@ extern "C" {
 }\
 
 #define KLR_SCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
+		fTypeMap f = (fTypeMap) op->count;\
 		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
-		knh_TypeMap_exec(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
+		f(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
 	} \
 
 #define KLR_TCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \

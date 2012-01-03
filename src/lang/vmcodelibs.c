@@ -606,6 +606,7 @@ void knh_opcode_shift(kopl_t *c, int shift)
 #define GOTO_PC(pc)         GOTO_NEXT()
 #endif/*K_USING_THCODE_*/
 
+typedef void (*fTypeMap)(CTX ctx, kTypeMap *tmr, ksfp_t *sfp _RIX);
 kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
 {
 #ifdef K_USING_THCODE_
