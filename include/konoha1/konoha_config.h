@@ -51,6 +51,8 @@
 #define K_USING_FASTMALLOC      1
 #define K_USING_BMGC            1
 
+#define K_USING_TJIT            1
+
 #define K_USING_SIGNAL          1
 #define K_USING_SAFEPOINT       1
 //#define K_USING_SUGAR           1

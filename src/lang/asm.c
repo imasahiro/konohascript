@@ -2801,6 +2801,9 @@ static void BLOCK_asm(CTX ctx, kStmtExpr *stmtH)
 }
 
 /* ------------------------------------------------------------------------ */
+#ifdef K_USING_TJIT
+#include "tjit.c"
+#endif
 
 static void _THCODE(CTX ctx, kopl_t *pc, void **codeaddr)
 {
@@ -2849,7 +2852,12 @@ static void Method_compile(CTX ctx, kMethod *mtd, kStmtExpr *stmtB)
 	SP(ctx->gma)->uline = SP(stmtB)->uline;
 	DP(ctx->gma)->bbNC = lbINIT;
 	GammaBuilder_pushLABEL(ctx, stmtB, lbBEGIN, lbEND);
-	ASM(THCODE, _THCODE, ULINE_uri(SP(stmtB)->uline));
+#ifdef K_USING_TJIT
+	klr_Fth fth = _THCODE_TJIT;
+#else
+	klr_Fth fth = _THCODE;
+#endif
+	ASM(THCODE, fth, ULINE_uri(SP(stmtB)->uline));
 	if(Method_isStatic(mtd) && GammaBuilder_hasFIELD(ctx->gma)) {
 		ASM(TR, OC_(0), SFP_(0), RIX_(0), ClassTBL(DP(ctx->gma)->this_cid), _NULVAL);
 	}
@@ -2972,7 +2980,12 @@ void knh_loadScriptSystemKonohaCode(CTX ctx)
 	KNH_SETv(ctx, lsfp[1].o, ib);
 	KNH_SETv(ctx, lsfp[2].o, ic);
 	KNH_SETv(ctx, lsfp[3].o, id);
-	BasicBlock_add(ctx, ia, THCODE, _THCODE, URI_unknown);
+#ifdef K_USING_TJIT
+	klr_Fth fth = _THCODE_TJIT;
+#else
+	klr_Fth fth = _THCODE;
+#endif
+	BasicBlock_add(ctx, ia, THCODE, fth, URI_unknown);
 	BasicBlock_add(ctx, ia, TRY, NULL/*lb*/, OC_(-(K_CALLDELTA+1)));  // LAUNCH
 	ia->nextNC = ib;
 	ia->jumpNC = ic;

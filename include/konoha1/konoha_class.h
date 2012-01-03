@@ -1453,7 +1453,12 @@ typedef struct kopl_t kopl_t;
 
 #ifdef K_INTERNAL
 #define klr_Ffcall    knh_Fmethod
+#ifdef K_USING_TJIT
+typedef void (*klr_Fth)(CTX, struct kopl_t *, void**, void**);
+#else
 typedef void (*klr_Fth)(CTX, struct kopl_t *, void**);
+#endif
+
 struct klr_LDMTD_t;
 typedef void (*klr_Floadmtd)(CTX, ksfp_t *, struct klr_LDMTD_t *);
 typedef long   (*klr_Finttr)(long u);

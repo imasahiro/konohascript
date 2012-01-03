@@ -143,6 +143,7 @@ fCAST      _DEF|_JIT         a:rn b:rn
 
 SAFEPOINT  _JIT              espshift:sfpidx
 JMP        _JIT              addr:addr
+JMP2       _JIT              addr:addr
 JMP_       _JIT              addr:addr
 JMPF       0                 addr:addr a:rn
 NEXT       _DEF              addr:addr a:r b:sfpidx rix:i espshift:sfpidx
@@ -614,6 +615,12 @@ def write_exec(f):
 //#define K_USING_VMASMDISPATCH 1
 //#endif
 
+#ifdef K_USING_TJIT
+#define CASE_END(x)  L_##x##_end :
+#else
+#define CASE_END(x)
+#endif
+
 #ifdef K_USING_THCODE_
 #define CASE(x)  L_##x : 
 #define NEXT_OP   (pc->codeaddr)
@@ -653,6 +660,16 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
 		c += 1
 	f.write('''
 	};
+#ifdef K_USING_TJIT
+	static void *OPJUMP_E[] = {''')
+	c = 0
+	for kc in KCODE_LIST:
+		if c % 4 == 0: f.write('\n\t\t')
+		f.write('''&&%s_end, ''' % kc.OPLABEL)
+		c += 1
+	f.write('''
+	};
+#endif
 #endif
 	krbp_t *rbp = (krbp_t*)sfp0;
 	USE_PROF(
@@ -668,8 +685,9 @@ kopl_t* knh_VirtualMachine_run(CTX ctx, ksfp_t *sfp0, kopl_t *pc)
 		%s *op = (%s*)pc; (void)op;
 		%s;
 		pc++;
+		CASE_END(%s);
 		GOTO_NEXT();
-	} ''' % (kc.ifdef, kc.name, kc.ctype, kc.ctype, getmacro(kc, 'JUMP')))
+	} ''' % (kc.ifdef, kc.name, kc.ctype, kc.ctype, getmacro(kc, 'JUMP'), kc.name))
 	f.write('''
 	DISPATCH_END(pc);
 	L_RETURN:;

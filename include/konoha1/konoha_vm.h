@@ -362,11 +362,19 @@ extern "C" {
 		goto L_RETURN;\
 	}\
 
-#define KLR_THCODE(ctx, th, uri) { \
-		th(ctx, pc, OPJUMP); \
-		pc = PC_NEXT(pc);\
-		goto L_RETURN; \
-	}\
+#ifdef K_USING_TJIT
+#define KLR_THCODE(ctx, th, uri) do { \
+	th(ctx, pc, OPJUMP, OPJUMP_E); \
+	pc = PC_NEXT(pc);\
+	goto L_RETURN; \
+} while (0)
+#else
+#define KLR_THCODE(ctx, th, uri) do { \
+	th(ctx, pc, OPJUMP); \
+	pc = PC_NEXT(pc);\
+	goto L_RETURN; \
+} while (0)
+#endif
 
 /* ------------------------------------------------------------------------- */
 
@@ -417,6 +425,10 @@ extern "C" {
 
 #define KLR_JMP(ctx, PC, JUMP) {\
 	PC; \
+	goto JUMP; \
+}\
+
+#define KLR_JMP2(ctx, PC, JUMP) {\
 	goto JUMP; \
 }\
 
