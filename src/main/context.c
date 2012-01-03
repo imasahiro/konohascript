@@ -335,6 +335,7 @@ static kcontext_t* new_RootContext(void)
 	KNH_INITv(share->urnDictSet, new_DictSet0(ctx, 0, 0/*isCaseMap*/, "System.urnDictSet"));
 	KNH_INITv(share->urns, new_Array0(ctx, 1));
 	KNH_INITv(share->corelang, new_(Lang));
+	knh_initSugarData(ctx);
 	KNH_INITv(share->tokenDictSet, new_DictSet0(ctx, (TT_MAX - STT_MAX), 0/*isCaseMap*/, "System.tokenDictSet"));
 //	KNH_INITv(share->URNAliasDictMap, new_DictMap0(ctx, 0, 0/*isCaseMap*/, "System.URNAliasDictMap"));
 

@@ -832,6 +832,8 @@ static char* new_xmemarena(CTX ctx, size_t size)
 	return (char*)ptr;
 }
 
+#define SIZEOF_VOIDP  sizeof(void*)
+
 void *knh_xmalloc(CTX ctx, size_t size)
 {
 	size_t freesize = ctx->memshare->xmem_freelist - ctx->memshare->xmem_top;

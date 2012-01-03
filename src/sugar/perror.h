@@ -120,6 +120,16 @@ static kString* knh_strerror(CTX ctx, int kerrno)
 	return NULL;
 }
 
+static const char *kToken_s(kToken *tk)
+{
+	switch((int)tk->token) {
+	case AST_PARENTHESIS: return "(... )";
+	case AST_BRACE: return "{... }";
+	case AST_BRANCET: return "[... ]";
+	default: return S_totext(tk->text);
+	}
+}
+
 static void DEBUG_TokenAlias(CTX ctx, kline_t uline, int lpos, kbytes_t t, kString *alias)
 {
 	if(CTX_isDebug(ctx)) {
@@ -146,12 +156,34 @@ static void IGNORE_UnxpectedMultiByteChar(CTX ctx, kline_t uline, int lpos, char
 	text[len] = ch; // danger a little
 }
 
-static void ERROR_NotFoundCloseToken(CTX ctx, kToken *tk, int closech)
+static void ERROR_Expected(CTX ctx, kToken *tk, int closech, const char *token)
 {
-	char buf[8];
-	knh_snprintf(buf, sizeof(buf), "%c", closech);
-	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "'%s' is not closed with '%s'", S_totext(tk->text), buf);
+	if(token == NULL) {
+		char buf[8];
+		knh_snprintf(buf, sizeof(buf), "%c", closech);
+		knh_perror(ctx, ERR_, tk->uline, 0, "%s is expected", buf);
+	}
+	else {
+		knh_perror(ctx, ERR_, tk->uline, 0, "%s is expected", token);
+	}
 }
+
+static kExpr* ERROR_UnexpectedToken(CTX ctx, kToken *tk, const char *token)
+{
+	if(IS_String(tk->text)) {
+		knh_perror(ctx, ERR_, tk->uline, tk->lpos, "unexpected %s; %s is expected", S_totext(tk->text), token);
+	}
+	else {
+		knh_perror(ctx, ERR_, tk->uline, tk->lpos, "unexpected token; %s is expected", token);
+	}
+	return NULL;
+}
+
+static void ERROR_UndefinedToken(CTX ctx, kToken *tk, const char *whatis)
+{
+	knh_perror(ctx, ERR_, tk->uline, tk->lpos, "undefined %s: %s", whatis, S_totext(tk->text));
+}
+
 
 static kbool_t ERROR_SyntaxError(CTX ctx, kline_t uline)
 {
