@@ -37,23 +37,34 @@ FUNC_STATIC = 0;
 FUNC_VIRTUAL = 1;
 FUNC_VIRTUAL2 = 1;
 FUNC_FASTCALL = 2;
-
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
-KFLAG_PF_BOL       = (1<<1);
-KFLAG_PF_TIME      = (1<<2);
-KFLAG_PF_NAME      = (1<<3);
-KFLAG_PF_EOL       = (1<<4);
-KFLAG_PF_NCOMMA    = (1<<5);
-KFLAG_PF_LINE      = (1<<6);
-KFLAG_PF_BREAK     = (1<<7);
-
 
 LLVM_ENABLE_SAFEPOINT = true;
-LLVM_ENABLE_VERIFY_EACH = false;
-LLVM_ENABLE_MODULE_DUMP = false;
-LLVM_ENABLE_OPT = true;
-LLVM_ENABLE_OPT_INTRINSIC_METHOD = true;
-LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE = false;
+
+class LLVMConfig {
+    boolean verify_each = false;
+    boolean module_dump = false;
+    boolean enable_opt = true;
+    boolean method_inlining  = true;
+    boolean intrinsic_method = true;
+    boolean load_library_module = false;
+    LLVMConfig() {
+        boolean v = "true" == $env.LLVM_ENABLE_VERIFY_EACH;
+        boolean d = "true" == $env.LLVM_ENABLE_MODULE_DUMP;
+        boolean e = "true" == $env.LLVM_ENABLE_OPT;
+        boolean m = "true" == $env.LLVM_ENABLE_OPT_METHOD_INLINING;
+        boolean i = "true" == $env.LLVM_ENABLE_OPT_INTRINSIC_METHOD;
+        boolean l = "true" == $env.LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE;
+        this.verify_each         = v;
+        this.module_dump         = d;
+        this.enable_opt          = e;
+        this.method_inlining     = e && m;
+        this.intrinsic_method    = e && i;
+        this.load_library_module = e && l;
+    }
+}
+
+LLVMConfig config = new LLVMConfig();
 
 //class CompilerOpt {
 //    Module m;
@@ -201,7 +212,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.ktype = {};
     opt.kfunctype = {};
     init_first();
-    if (LLVM_ENABLE_OPT && LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE) {
+    if (config.load_library_module) {
         String libkonoha = "/usr/local/konoha/lib/libkonoha.dylib.bc";
         this.opt.m = LLVM.parseBitcodeFile(libkonoha);
     } else {
@@ -276,7 +287,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         FunctionPassManager fpm = new FunctionPassManager(opt.m);
         opt.fpm = fpm;
         fpm.add(LLVM.createVerifierPass());
-        if (LLVM_ENABLE_OPT) {
+        if (config.enable_opt) {
             fpm.add(opt.ee.getTargetData());
             fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
             fpm.add(LLVM.createBasicAliasAnalysisPass());
@@ -287,7 +298,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             fpm.add(LLVM.createLowerExpectIntrinsicPass());
         }
     }
-    if (LLVM_ENABLE_OPT && LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
+    if (config.intrinsic_method) {
         if (this.opt.intrinsic_methods == null) {
             this.opt.intrinsic_methods = {};
             Type[] args = [opt.floatTy];
@@ -306,7 +317,8 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 Intrinsic.Sin,
                 Intrinsic.Cos];
             for (int i=0; i < intrinsic_id.size; i++) {
-                Function f = Intrinsic.getDeclaration(this.opt.m, intrinsic_id[i], args);
+                Function f = Intrinsic.getDeclaration(this.opt.m,
+                        intrinsic_id[i], args);
                 opt.intrinsic_methods[intrinsic_name[i]] = f;
             }
             Int    id2  = Intrinsic.Pow;
@@ -336,11 +348,13 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             //print this.const_table;
             this.compiled_methods = {};
             PassManager mpm = new PassManager();
-            if (LLVM_ENABLE_OPT) {
+            if (config.enable_opt) {
                 mpm.add(LLVM.createFunctionAttrsPass());
                 mpm.add(LLVM.createInternalizePass(true));
-                //TODO FIXME BUG
-                mpm.add(LLVM.createFunctionInliningPass(225));
+                if (config.method_inlining) {
+                    //TODO FIXME BUG
+                    mpm.add(LLVM.createFunctionInliningPass(225));
+                }
                 mpm.add(LLVM.createIPSCCPPass());
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createConstantMergePass());
@@ -361,11 +375,11 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 mpm.add(LLVM.createCFGSimplificationPass());
                 mpm.add(LLVM.createGlobalDCEPass());
             }
-            if (LLVM_ENABLE_VERIFY_EACH) {
+            if (config.verify_each) {
                 mpm.add(LLVM.createVerifierPass());
             }
             mpm.run(opt.m);
-            if (LLVM_ENABLE_MODULE_DUMP) {
+            if (config.module_dump) {
                 opt.m.dump();
             }
         }
@@ -745,8 +759,14 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 
         Value vctx  = opt.ctx;
         Value vsfp  = opt.builder.createConstGEP1_32(opt.sfp, this.safepoint);
-        //Value vstr  = opt.builder.createGlobalString("%d\n");
-        //vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
+        //FIXME(@imasahiro)
+        //If we enable config.method_inlining, global string will
+        //cause assertion fail.
+        /*
+           Value vstr  = opt.builder.createGlobalStringPtr("%d\n");
+           vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
+           Value vstr  = opt.builder.createGlobalStringPtr("");
+        */
         Value vstr  = ConstantPointerNull.get(Type.getInt8PtrTy());
         Value vline = ConstantInt.get(Type.getInt32Ty(), 0);
         Value[] args = [vctx, vsfp, vstr, vline];
@@ -1178,7 +1198,7 @@ BuilderFunc=Func<Value, Value=>Value>;
             }
         }
     }
-    if (LLVM_ENABLE_OPT && LLVM_ENABLE_OPT_INTRINSIC_METHOD) {
+    if (config.intrinsic_method) {
         if (asm.opt.intrinsic_methods[this.op.fname] != null) {
             Function func = asm.opt.intrinsic_methods[this.op.fname];
             vargs = [];
