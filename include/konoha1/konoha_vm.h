@@ -386,11 +386,18 @@ extern "C" {
 	Rf_(c) = (kfloat_t)Ri_(a); \
 }\
 
-#define KLR_SCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
-		fTypeMap f = (fTypeMap) op->count;\
-		klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
-		f(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
-	} \
+#ifdef K_USING_TJIT
+#define KLR_SCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  do { \
+	fTypeMap f = (fTypeMap) op->count;\
+	klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
+	f(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
+} while (0)
+#else
+#define KLR_SCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  do { \
+	klr_setesp(ctx, SFP(rshift(rbp, espidx)));\
+	knh_TypeMap_exec(ctx, tmr, SFP(rshift(rbp,thisidx)), rix); \
+} while (0)
+#endif
 
 #define KLR_TCAST(ctx, rtnidx, thisidx, rix, espidx, tmr)  { \
 		kTypeMap *tmr_ = tmr; \
