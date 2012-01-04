@@ -222,7 +222,7 @@ KMETHOD Stmt_toToken(CTX ctx, ksfp_t *sfp _RIX) {
 	RETURN_(ret);
 }
 
-//## int Token.getT();
+//## Class Token.getT();
 KMETHOD Token_getT(CTX ctx, ksfp_t *sfp _RIX) {
 	kTerm *tk = (kTerm*)sfp[0].o;
 	kClass *res = new_Type(ctx, SP(tk)->type);

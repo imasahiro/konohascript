@@ -38,7 +38,7 @@ Record_Type          second_Record   = new Record_Type();
 }
 
 class Dhry {
-    long number_Of_Runs = 10000000;
+    long number_Of_Runs = 10000;
     public void execute() {
         int         int_Loc_1;
         int         int_Loc_2;
@@ -113,6 +113,9 @@ class Dhry {
 
         end_time = System.getTime();
         total_time = end_time - begin_time;
+        if (total_time == 0) {
+            total_time = 1;
+        }
 
         System.out.println("total time: " + total_time + "ms");
         System.out.println("Result: " + number_Of_Runs * 1000 / total_time + " dhrystone/sec.");

@@ -25,27 +25,16 @@
 
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
-#include <llvm/DerivedTypes.h>
-#include <llvm/Constants.h>
-#include <llvm/GlobalVariable.h>
-#include <llvm/Function.h>
-#include <llvm/BasicBlock.h>
-#include <llvm/Instructions.h>
 #include <llvm/Intrinsics.h>
-#include <llvm/Support/IRBuilder.h>
-#include <llvm/Support/DynamicLibrary.h>
-#include <llvm/Support/TargetSelect.h>
-#include <llvm/Support/raw_ostream.h>
-#include <llvm/Pass.h>
 #include <llvm/PassManager.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/IPO.h>
+#include <llvm/Transforms/IPO/PassManagerBuilder.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Analysis/Passes.h>
-#include <llvm/Analysis/AliasSetTracker.h>
 #include <llvm/Analysis/DomPrinter.h>
-#include <llvm/Analysis/FindUsedTypes.h>
-#include <llvm/Analysis/IntervalPartition.h>
-#include <llvm/Analysis/Passes.h>
-#include <llvm/Analysis/PostDominators.h>
 #include <llvm/Analysis/RegionPass.h>
 #include <llvm/Analysis/RegionPrinter.h>
 #include <llvm/Analysis/ScalarEvolution.h>
@@ -53,15 +42,18 @@
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/Support/IRBuilder.h>
+#include <llvm/Support/DynamicLibrary.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/system_error.h>
+#include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/Target/TargetData.h>
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Transforms/IPO/PassManagerBuilder.h>
-#include <llvm/Transforms/Instrumentation.h>
-#include <llvm/Transforms/IPO.h>
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
-#include <llvm/Assembly/PrintModulePass.h>
 #include <llvm/ADT/Statistic.h>
+#include <llvm/ADT/OwningPtr.h>
+
+#include <iostream>
 
 #undef HAVE_SYS_TYPES_H
 #undef HAVE_SYS_STAT_H
@@ -939,6 +931,50 @@ KMETHOD IRBuilder_createStore(CTX ctx, ksfp_t *sfp _RIX)
 //	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 //	RETURN_(p);
 //}
+
+//## @Native AllocaInst AllocaInst.new(Type ty, Value arraySize);
+KMETHOD AllocaInst_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Type *Ty = konoha::object_cast<Type *>(sfp[1].p);
+	Value *ArraySize = konoha::object_cast<Value *>(sfp[2].p);
+	AllocaInst *ptr = new AllocaInst(Ty, ArraySize);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Native StoreInst StoreInst.new(Value val, Value ptr);
+KMETHOD StoreInst_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Val = konoha::object_cast<Value *>(sfp[1].p);
+	Value *Ptr = konoha::object_cast<Value *>(sfp[2].p);
+	StoreInst *ptr = new StoreInst(Val, Ptr);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Native @Static GetElementPtrInst GetElementPtrInst.create(Value ptr, Array<Value> idxList);
+KMETHOD GetElementPtrInst_create(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
+	kArray *IdxList = sfp[2].a;
+	std::vector<Value*> List;
+	konoha::convert_array(List, IdxList);
+	GetElementPtrInst *ptr = GetElementPtrInst::Create(Ptr, List);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Native @Static GetElementPtrInst GetElementPtrInst.CreateInBounds(Value ptr, Array<Value> idxList);
+KMETHOD GetElementPtrInst_createInBounds(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
+	kArray *IdxList = sfp[2].a;
+	std::vector<Value*> List;
+	konoha::convert_array(List, IdxList);
+	GetElementPtrInst *ptr = GetElementPtrInst::CreateInBounds(Ptr, List);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
 
 //## Value IRBuilder.CreateGEP(Value Ptr, ArrayRef< Value > IdxList);
 KMETHOD IRBuilder_createGEP(CTX ctx, ksfp_t *sfp _RIX)
@@ -1848,6 +1884,29 @@ KMETHOD BasicBlock_getTerminator(CTX ctx, ksfp_t *sfp _RIX)
 //	RETURN_(KNH_NULL);
 //}
 
+//## Instruction BasicBlock.getLastInst();
+KMETHOD BasicBlock_getLastInst(CTX ctx, ksfp_t *sfp _RIX)
+{
+	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
+	BasicBlock::iterator I = self->end();
+	Instruction *ptr;
+	if (self->size() > 0)
+		--I;
+	ptr = I;
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## Instruction BasicBlock.insertBefore(Instruction before, Instruction inst);
+KMETHOD BasicBlock_insertBefore(CTX ctx, ksfp_t *sfp _RIX)
+{
+	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
+	Instruction *inst0 = konoha::object_cast<Instruction *>(sfp[1].p);
+	Instruction *inst1 = konoha::object_cast<Instruction *>(sfp[2].p);
+	self->getInstList().insert(inst0, inst1);
+	RETURNvoid_();
+}
+
 //## int BasicBlock.size();
 KMETHOD BasicBlock_size(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -2002,6 +2061,27 @@ KMETHOD ConstantFP_get(CTX ctx, ksfp_t *sfp _RIX)
 	Type *type  = konoha::object_cast<Type *>(sfp[1].p);
 	kfloat_t v = sfp[2].fvalue;
 	Value *ptr = ConstantFP::get(type, v);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Static @Native Value ConstantPointerNull.get(Type type);
+KMETHOD ConstantPointerNull_get(CTX ctx, ksfp_t *sfp _RIX)
+{
+	PointerType *type  = konoha::object_cast<PointerType *>(sfp[1].p);
+	Value *ptr = ConstantPointerNull::get(type);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Static @Native Value ConstantStruct.get(Type type, Array<Constant> V);
+KMETHOD ConstantStruct_get(CTX ctx, ksfp_t *sfp _RIX)
+{
+	StructType *type  = konoha::object_cast<StructType *>(sfp[1].p);
+	kArray *args = sfp[2].a;
+	std::vector<Constant*> List;
+	konoha::convert_array(List, args);
+	Value *ptr = ConstantStruct::get(type, List);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 	RETURN_(p);
 }
@@ -3195,6 +3275,26 @@ KMETHOD Intrinsic_getDeclaration(CTX ctx, ksfp_t *sfp _RIX)
 	konoha::convert_array(List, args);
 	Function *ptr = Intrinsic::getDeclaration(m, id, List);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+KMETHOD LLVM_parseBitcodeFile(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kString *Str = sfp[1].s;
+	LLVMContext &Context = getGlobalContext();
+	std::string ErrMsg;
+	OwningPtr<MemoryBuffer> BufferPtr;
+	std::string fname(S_totext(Str));
+	if (error_code ec = MemoryBuffer::getFile(fname, BufferPtr)) {
+		std::cout << "Could not open file" << ec.message() << std::endl;
+	}
+	MemoryBuffer *Buffer = BufferPtr.take();
+	//Module *m = getLazyBitcodeModule(Buffer, Context, &ErrMsg);
+	Module *m = ParseBitcodeFile(Buffer, Context, &ErrMsg);
+	if (!m) {
+		std::cout << "error" << ErrMsg << std::endl;
+	}
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(m), konoha::object_free<Module>);
 	RETURN_(p);
 }
 

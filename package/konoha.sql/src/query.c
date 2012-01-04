@@ -37,8 +37,10 @@ extern "C" {
 
 #include "../include/konoha_query.h"
 
-#ifdef K_USING_MYSQL
+#ifdef K_USING_PKG_MYSQL
 extern knh_QueryDSPI_t DB__mysql;
+#elif defined(K_USING_PKG_SQLITE3)
+extern knh_QueryDSPI_t DB__sqlite3;
 #endif
 //#define USE_cwb_open      1
 
@@ -116,8 +118,10 @@ void knh_Connection_open(CTX ctx, kConnection *c, kString *urn)
 {
 	kbytes_t u = S_tobytes(urn);
 	KNH_SETv(ctx, (c)->urn, urn);
-#ifdef K_USING_MYSQL
+#ifdef K_USING_PKG_MYSQL
 	(c)->dspi = &DB__mysql;
+#elif defined(K_USING_PKG_SQLITE3)
+	(c)->dspi = &DB__sqlite3;
 #else
 	(c)->dspi = &NOP_DSPI;
 #endif

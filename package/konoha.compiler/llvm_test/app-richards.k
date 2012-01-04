@@ -10,7 +10,7 @@
 //  Translation from C++, Mario Wolczko
 //  Outer loop added by Alex Jacoby
 
-N=1000;
+N=100;
 
 // Task IDs
 I_IDLE = 1;

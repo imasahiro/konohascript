@@ -137,6 +137,7 @@ class Compiler {
         this.user_type = {};
     }
 };
+@Native void Compiler.getCurrentUline();
 
 String getTypeName(Class type) {
     String res = (to String) type;
@@ -190,12 +191,20 @@ class K_Inst {
     int defidx;
     Class type;
     Value value;
-    Value cached_value;
+    int uline;
 
     /*for callInst*/
     Array<K_Inst> args;
     /*for dump const_value*/
     String dynName;
+    void init_kvalue(K_Value v, Class c) {
+        this.kvalue = v;
+        if (c == null) {
+            c = v.type;
+        }
+        this.type   = c;
+        this.uline  = Compiler.getCurrentUline();
+    }
 
     @Virtual void codegen(Compiler asm) {
         throw new Exception();
@@ -304,8 +313,7 @@ class K_MOV extends K_Inst {
     int idx;
     K_MOVop op;
     K_MOV(K_Value kvalue, K_MOVop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.defidx = op.defcount;
         this.op = op;
         this.idx = idx;
@@ -320,6 +328,7 @@ class K_PHI extends K_Inst {
     Array<Int> bbs;
     Array<K_Inst> insts;
     K_PHI(int idx) {
+        init_kvalue(null);
         idx = idx;
         bbs = [];
         insts = [];
@@ -397,8 +406,7 @@ class K_ARGUMENTop extends K_Opcode {
 class K_ARGUMENT extends K_Inst {
     K_ARGUMENTop op;
     K_ARGUMENT(K_Value kvalue, K_ARGUMENTop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.op = op;
         addDef(kvalue, idx);
     }
@@ -659,9 +667,8 @@ class KBinaryInst extends K_Inst {
     String operand;
     KBinaryInstOp op;
     void init0(String name, K_Value kv, Class type, KBinaryInstOp op, int idx) {
+        init_kvalue(kv, type);
         this.operand = name;
-        this.kvalue  = kv;
-        this.type = type;
         this.op = op;
         addDef(kvalue, idx);
         addUse(op, idx);
@@ -695,8 +702,7 @@ class KUnaryInst extends K_Inst {
     KUnaryInstOp op;
     void init(String name, K_Value kvalue, Class type, KUnaryInstOp op, int idx) {
         this.operand = name;
-        this.kvalue = kvalue;
-        this.type = type;
+        init_kvalue(kvalue, type);
         this.op = op;
         addDef(kvalue, idx);
         addUse(op, idx);
@@ -806,8 +812,7 @@ class K_SELECTop extends K_Opcode {
 class K_SELECT extends K_Inst {
     K_SELECTop op;
     K_SELECT(K_Value kvalue, Class type, K_SELECTop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = type;
+        init_kvalue(kvalue, type);
         this.op = op;
         addDef(kvalue, idx);
         addUse(op, idx);
@@ -843,8 +848,7 @@ class K_CASTop extends K_Opcode{
 class K_CAST extends K_Inst {
     K_CASTop op;
     K_CAST(K_Value kvalue, K_CASTop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = op.tcid;
+        init_kvalue(kvalue, op.tcid);
         assert(this.type != null);
         this.op = op;
         addDef(kvalue, idx);
@@ -868,6 +872,7 @@ class K_JMPop extends K_Opcode {
 class K_JMP extends K_Inst {
     K_JMPop op;
     K_JMP(K_JMPop op) {
+        init_kvalue(null);
         this.op = op;
     }
     @Override String dump() {
@@ -893,6 +898,7 @@ class K_COND extends K_Inst {
     K_CONDop op;
     K_COND(K_CONDop op) {
         this.op = op;
+        init_kvalue(null);
     }
     @Override String dump() {
         String res = "\t_ = cond Boolean " + op.inst0.getName() + " bb" + op.bbThen + " bb" + op.bbElse;
@@ -947,8 +953,7 @@ class K_StaticCallOp extends K_CALLop {
 class K_CALL extends K_Inst {
     K_CALLop op;
     K_CALL(K_Value kvalue, Array<K_Inst> args, K_CALLop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.args = args;
         this.op = op;
         addDef(kvalue, idx);
@@ -978,23 +983,29 @@ class K_CALL extends K_Inst {
 class K_PRINTop extends K_Opcode {
     int sfpidx;
     int opline;
-    int fprint;
-    K_PRINTop (K_Inst inst0, int fprint, int sfpidx, int opline) {
+    int pflag;
+    String msg;
+    K_PRINTop(K_Inst inst0, int flag, int sfpidx, int opline, String msg) {
         this.inst0 = inst0;
+        this.pflag  = flag;
         this.sfpidx = sfpidx;
         this.opline = opline;
-        this.fprint = fprint;
+        this.msg    = msg;
     }
 }
 class K_PRINT extends K_Inst {
     K_PRINTop op;
     K_PRINT(Class type, K_PRINTop op, int idx) {
-        this.type = type;
+        init_kvalue(null, type);
         this.op = op;
         addUse(op, idx);
     }
     @Override String dump() {
-        return null;
+        String v0 = op.inst0.getName();
+        String data = op.pflag + " " + op.opline + " ";
+        String msg = "\"" + escape(op.msg) + "\"";
+        String res = "\t_ = print " + type + " " +data + msg + " "+ v0;
+        return res;
     }
 }
 
@@ -1014,8 +1025,7 @@ class K_TRop extends K_Opcode {
 class K_TR extends K_Inst {
     K_TRop op;
     K_TR(K_Value kvalue, K_TRop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.op = op;
         addDef(kvalue, idx);
     }
@@ -1064,8 +1074,7 @@ class K_NEWop extends K_Opcode {
 class K_NEW extends K_Inst {
     K_NEWop op;
     K_NEW(K_Value kvalue, K_NEWop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.op = op;
         addDef(kvalue, idx);
     }
@@ -1082,8 +1091,7 @@ class K_GETIDXop extends K_Opcode {
 class K_GETIDX extends K_Inst {
     K_GETIDXop op;
     K_GETIDX(K_Value kvalue, K_GETIDXop op,int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.op = op;
         addDef(kvalue, idx);
         addUse(op, idx);
@@ -1102,8 +1110,7 @@ class K_SETIDXop extends K_Opcode {
 class K_SETIDX extends K_Inst {
     K_SETIDXop op;
     K_SETIDX(K_Value kvalue, K_SETIDXop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = type;
+        init_kvalue(kvalue, type);
         this.op = op;
         addDef(kvalue, idx);
         addUse(op, idx);
@@ -1121,6 +1128,7 @@ class K_CHKIDXop extends K_Opcode {
 class K_CHKIDX extends K_Inst {
     K_CHKIDXop op;
     K_CHKIDX(K_CHKIDXop op, int idx) {
+        init_kvalue(null);
         this.op = op;
         addUse(op, idx);
     }
@@ -1142,8 +1150,7 @@ class K_CONST extends K_Inst {
     K_CONSTop op;
     Array<dynamic> const_table;
     K_CONST(K_Value kvalue, Class type, K_CONSTop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = type;
+        init_kvalue(kvalue, type);
         this.op = op;
         addDef(kvalue, idx);
         addUse(op, idx);
@@ -1214,8 +1221,7 @@ class K_TCHECKop extends K_Opcode {
 class K_TCHECK extends K_Inst {
     K_TCHECKop op;
     K_TCHECK(K_Value kvalue, K_TCHECKop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.op = op;
         if (op.inst0.class == K_CONST) {
             K_CONST inst = (K_CONST) op.inst0;
@@ -1239,9 +1245,8 @@ class K_GetFieldOp extends K_Opcode {
 class K_GetField extends K_Inst {
     K_GetFieldOp op;
     K_GetField(K_Value kvalue, K_GetFieldOp op, int idx) {
-        this.kvalue = kvalue;
+        init_kvalue(kvalue);
         if (kvalue == null) dynName = "movtmp";
-        this.type = kvalue.type;
         this.op = op;
         addDef(kvalue, idx);
     }
@@ -1261,7 +1266,7 @@ class K_SetField extends K_Inst {
     K_SetFieldOp op;
     Value field_access_cached;
     K_SetField(K_SetFieldOp op, int idx) {
-        this.type = op.inst0.type;
+        init_kvalue(null, op.inst0.type);
         this.op = op;
         addUse(op, idx);
     }
@@ -1288,8 +1293,7 @@ class K_NEXT extends K_Inst {
     K_NEXTop op;
     int thenBB, elseBB;
     K_NEXT(K_Value kvalue, K_NEXTop op, int idx) {
-        this.kvalue = kvalue;
-        this.type = kvalue.type;
+        init_kvalue(kvalue);
         this.op = op;
         addDef(kvalue, idx);
     }
@@ -1300,6 +1304,7 @@ class K_NEXT extends K_Inst {
 
 class K_TRY extends K_Inst {
     K_TRY() {
+        init_kvalue(null);
     }
     @Override String dump() {
         throw new Exception();
@@ -1309,6 +1314,7 @@ class K_TRY extends K_Inst {
 
 class K_CATCH extends K_Inst {
     K_CATCH() {
+        init_kvalue(null);
     }
     @Override String dump() {
         throw new Exception();
@@ -1318,6 +1324,7 @@ class K_CATCH extends K_Inst {
 
 class K_THROW extends K_Inst {
     K_THROW() {
+        init_kvalue(null);
     }
     @Override String dump() {
         throw new Exception();
@@ -1327,6 +1334,7 @@ class K_THROW extends K_Inst {
 
 class K_CHKSTACK extends K_Inst {
     K_CHKSTACK() {
+        init_kvalue(null);
     }
     @Override String dump() {
         throw new Exception();
@@ -1362,6 +1370,7 @@ class K_LDMTD extends K_Inst {
     K_LDMTDop op;
     K_LDMTD(K_LDMTDop op) {
         this.op = op;
+        init_kvalue(null);
     }
     @Override String dump() {
         throw new Exception();
@@ -1378,6 +1387,7 @@ class K_Ret extends K_Inst {
     K_Retop op;
     K_Ret(K_Retop op) {
         this.op = op;
+        init_kvalue(null);
     }
     @Override String dump() {
         String name = "";
@@ -1400,10 +1410,12 @@ class SFX {
 @Native int Compiler.gamma_gf_fn(int i);
 @Native Class Compiler.gamma_gf_type(int i);
 @Native Class Compiler.gammaGetThiscid();
-void Compiler.initFunc(K_Function func) {
+@Virtual void Compiler.initFunc(K_Function func) {
     func.func = null;
 }
-void Compiler.common_init(Method mtd) {
+
+void Compiler.init_common(Method mtd) {
+    this.mtd = mtd;
     if (DEBUG) {
         print mtd;
         print mtd.toString();
@@ -1481,6 +1493,10 @@ void Compiler.common_init(Method mtd) {
 }
 void Compiler.init(Method mtd) {
     common_init(mtd);
+}
+
+void Compiler.init(Method mtd) {
+    init_common(mtd);
 }
 
 void Compiler.addSafePoint(int espidx) {
@@ -1756,7 +1772,7 @@ void Compiler.asm_smov(int alocal, Token tk) {
             K_Inst inst = new K_CONST(kvalue, c, new K_CONSTop(table_idx, objptr, kfunc.const_table));
             kfunc.curBB.insts.add(inst);
             K_Value vb = kfunc.getKValue(espidx, type);
-            inst = new K_TR(vb, new K_TRop(inst, espidx, espidx - espidx, type, Stmt.PROP), 0);
+            inst = new K_TR(vb, new K_TRop(inst, espidx, 0, type, Stmt.PROP), 0);
             kfunc.curBB.insts.add(inst);
             kfunc.storeKInst(espidx, inst);
             break;
@@ -2229,7 +2245,8 @@ void Compiler.asmYIELD(Stmt stmt) {
     /* TODO */
 }
 void Compiler.asmPRINT(Stmt stmt, int flag) {
-    print stmt, flag;
+    flag = flag | KFLAG_PF_BOL | KFLAG_PF_LINE;
+    int uline = this.getCurrentUline();
     int espidx = stmt.getESPIDX();
     for(int i = 0; i < stmt.getStmtSize(); i++) {
         Token tkn = stmt.getT(i);
@@ -2254,23 +2271,23 @@ void Compiler.asmPRINT(Stmt stmt, int flag) {
                 mask |= KFLAG_PF_NAME;
                 continue;
             }
-            //TODO_ASM(P, _PRINTm, flag | mask, (tkn).getText(), 0);
+            int table_idx = kfunc.addConstTable(tkn.getText());
+            opc = new K_CONSTop(table_idx, tkn.getText().ptr, kfunc.const_table);
+            K_Value kvalue = kfunc.getKValue(espidx + i, String);
+            K_Inst inst = new K_CONST(kvalue, String, opc);
+            kfunc.curBB.insts.add(inst);
+            opp = new K_PRINTop(inst, flag|mask, espidx+i, uline, msg);
+            inst = new K_PRINT(String, opp, 0);
+            kfunc.curBB.insts.add(inst);
             flag = KFLAG_PF_NCOMMA;
         }
         else {
-            Class c = stmt.getT(i).getClass();
-            if(c == Int) {
-                //TODO_ASM(P, _PRINTi, flag | mask, msg, espidx+i);
-            }
-            else if(c == Float) {
-                //TODO_ASM(P, _PRINTf, flag | mask, msg, espidx+i);
-            }
-            else if(c == Boolean) {
-                //TODO_ASM(P, _PRINTb, flag | mask, msg, espidx+i);
-            }
-            else {
-                //TODO_ASM(P, _PRINT, flag | mask, msg, espidx+i);
-            }
+            Class c = stmt.getT(i).getT();
+            if (!c.isUnboxType()) { c = Object; }
+            K_Inst inst = kfunc.getKInst(espidx+i);
+            opp = new K_PRINTop(inst, flag|mask, espidx+i, uline, msg);
+            inst = new K_PRINT(c, opp, 0);
+            kfunc.curBB.insts.add(inst);
             flag = 0;
         }
         mask = 0;
@@ -2567,7 +2584,7 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class type, Stmt lhs, St
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(espidx, inst);
         return;
-    }else if(type == Int || type == Float) {
+    } else if(type == Int || type == Float) {
         asm(lhs, lhs.toToken(), espidx + 1);
         K_Inst inst_l = kfunc.getKInst(espidx + 1);
         K_Inst inst_r = null;
@@ -2577,7 +2594,7 @@ void Compiler.asmOPR(Stmt stmt, int espidx, Method mtd, Class type, Stmt lhs, St
             K_Value kval = kfunc.getKValue(espidx + 2, type);
             inst_r = new K_CONST(kval, type, new K_CONSTop(table_idx, 0, kfunc.const_table));
             kfunc.curBB.insts.add(inst_r);
-        }else if (rhs != null) {
+        } else if (rhs != null) {
             asm(rhs, rhs.toToken(), espidx + 2);
             inst_r = kfunc.getKInst(espidx + 2);
         }

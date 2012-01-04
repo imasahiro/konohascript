@@ -495,6 +495,12 @@ KMETHOD Compiler_asmBLOCK(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
+//## @Native Compiler.getCurrentUline();
+KMETHOD Compiler_getCurrentUline(CTX ctx, ksfp_t *sfp _RIX)
+{
+	RETURNi_(ctx->gma->uline);
+}
+
 KMETHOD Compiler_debug(CTX ctx, ksfp_t *sfp _RIX)
 {
 	asm volatile("int3");

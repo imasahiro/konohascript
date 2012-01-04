@@ -277,6 +277,7 @@ typedef struct knh_sysinfo_t {
 
 #if defined(__APPLE__) /* MacOS X */
 #define		K_USING_PTHREAD
+#define     K_USING_SETJMP_  1
 #define		K_USING_STDC_    1
 #define 	K_USING_POSIX_      1
 #define 	K_USING_BSD_        1

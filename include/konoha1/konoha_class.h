@@ -1096,7 +1096,7 @@ typedef enum {
 	TK_LIST,
 	TK_EXPR,
 	TK_STMT,
-	TK_BLOCK,
+	TK_BLOCK
 } ktoken_t ;
 
 typedef struct kToken kToken;

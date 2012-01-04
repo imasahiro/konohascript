@@ -38,7 +38,8 @@ extern "C" {
 
 #include "../include/konoha_query.h"
 
-#ifdef K_USING_MYSQL
+#ifdef K_USING_PKG_MYSQL
+#include <mysql.h>
 
 #define MYSQL_USER_MAXLEN 16
 #define MYSQL_PASS_MAXLEN 255
@@ -228,7 +229,7 @@ DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
 #endif
 
 
-#endif /* K_USING_MYSQL */
+#endif /* K_USING_PKG_MYSQL */
 #ifdef __cplusplus 
 }
 #endif

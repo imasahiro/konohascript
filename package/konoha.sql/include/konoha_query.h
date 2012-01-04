@@ -41,11 +41,8 @@ extern "C" {
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
 
-#define K_USING_MYSQL
-
-#ifdef K_USING_MYSQL
-#include <mysql.h>
-#endif
+//#define K_USING_PKG_MYSQL
+#define K_USING_PKG_SQLITE3
 
 /* ======================================================================== */
 /* [struct] */
@@ -106,6 +103,7 @@ typedef struct kResultSet {
 
 void knh_Connection_open(CTX ctx, kConnection *c, kString *urn);
 void knh_Connection_close(CTX ctx, kConnection *c);
+void knh_ResultSet_initData(CTX ctx, kResultSet *rs);
 kbool_t knh_ResultSet_next(CTX ctx, kResultSet *o);
 kString *knh_ResultSet_getName(CTX ctx, kResultSet *o, size_t n);
 int knh_ResultSet_findColumn(CTX ctx, kResultSet *o, kbytes_t name);
@@ -120,14 +118,9 @@ KMETHOD ResultSet_setNULL(CTX ctx, kResultSet *o, size_t n);
 KMETHOD ResultSet_setName(CTX ctx, kResultSet *o, size_t n, kString *name);
 KMETHOD ResultSet_setText(CTX ctx, kResultSet *o, size_t n, kbytes_t t);
 
-kconn_t *MYSQL_qopen(CTX ctx, kbytes_t url);
-int MYSQL_qnext(CTX ctx, kqcur_t *qcur, struct kResultSet *rs);
-kqcur_t *MYSQL_query(CTX ctx, kconn_t *hdr, kbytes_t sql, struct kResultSet *rs);
-void MYSQL_qclose(CTX ctx, kconn_t *hdr);
-void MYSQL_qfree(kqcur_t *qcur);
 /* ------------------------------------------------------------------------ */
 /* [driver] */
-/* [TODO] ResultSet driver is global value */
+/* [TODO] Now, ResultSet driver is global value */
 /* but it should be shared using anything without global value */
 
 typedef struct knh_ResultSetDef_t {
@@ -161,11 +154,6 @@ typedef struct _knh_QueryDPI_t {
 	int    (*qcurnext)(CTX, kqcur_t *, kResultSet*);
 	void   (*qcurfree)(kqcur_t *);
 } knh_QueryDSPI_t;
-
-//struct _knh_QueryDPI_t DB__mysql = {
-//	K_DSPI_QUERY, "mysql",
-//	MYSQL_qopen, MYSQL_query, MYSQL_qclose, MYSQL_qnext, MYSQL_qfree
-//};
 
 /* ------------------------------------------------------------------------ */
 /* [Macros] */
