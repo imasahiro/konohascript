@@ -1492,10 +1492,6 @@ void Compiler.init_common(Method mtd) {
     this.compiled_methods[mtdName].add(kfunc);
 }
 void Compiler.init(Method mtd) {
-    common_init(mtd);
-}
-
-void Compiler.init(Method mtd) {
     init_common(mtd);
 }
 

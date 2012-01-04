@@ -322,11 +322,9 @@ LABEL = uscore("label");
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
-    asm.addClass(this.type);
     asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".field" + op.bn + ";", 3);
 }
 @Public @Override void K_SetField.codegen(Compiler asm) {
-    asm.addClass(op.inst0.type);
     asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 3);
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
@@ -355,7 +353,7 @@ LABEL = uscore("label");
     kfunc.codegen(this);
 }
 @Public void Compiler.init(Method mtd) {
-    common_init(mtd);
+    init_common(mtd);
     if (this.opt == null) {
         this.opt = new CompilerOpt();
         this.opt.init();
