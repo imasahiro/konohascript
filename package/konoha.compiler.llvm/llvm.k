@@ -762,6 +762,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         //FIXME(@imasahiro)
         //If we enable config.method_inlining, global string will
         //cause assertion fail.
+
         /*
            Value vstr  = opt.builder.createGlobalStringPtr("%d\n");
            vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
