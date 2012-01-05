@@ -57,7 +57,7 @@ LABEL = uscore("label");
 @Public void Compiler.addSource(String str, int count) {
     String tmp = "";
     for (int i = 0; i < count; i++) {
-        tmp += "  ";
+        tmp += "    ";
     }
     tmp += str;
     int size = this.opt.source.size;
@@ -72,7 +72,7 @@ LABEL = uscore("label");
     if (|bbs| == 1) {
         String res;
         res = "var " + getName() + " = " + insts[0].getName() + ";";
-        asm.addSource(res, 3);
+        asm.addSource(res, 2);
     }
 }
 @Public void K_BasicBlock.codegen(Compiler asm) {
@@ -107,11 +107,12 @@ LABEL = uscore("label");
     if (isStatic == 0 && |funcargs| > 0) {
         asm.addSource("var " + funcargs[0].getName() + " = this;", 1);
     }
+    asm.addSource("'use strict';", 1);
     asm.addSource("var " + LABEL + " = 0;", 1);
-    asm.addSource("while(true) switch (" + LABEL + ") {", 1);
+    asm.addSource("while (true) switch (" + LABEL + ") {", 1);
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] == null) continue;
-        asm.addSource("case " + i + ":", 2);
+        asm.addSource("case " + i + ":", 1);
         foreach(String s in bbs[i].phis.keys()) {
             bbs[i].phis[s].codegen(asm);
         }
@@ -122,7 +123,9 @@ LABEL = uscore("label");
             bbs[i].movs[j].codegen(asm);
         }
         bbs[i].insts[|bbs[i].insts|-1].codegen(asm);
-        asm.addSource("break;", 2);
+        if (bbs[i].insts[|bbs[i].insts|-1].class != K_RET) {
+          asm.addSource("break;", 2);
+        }
     }
     asm.addSource("}", 1);
     asm.addSource("}", 0);
@@ -130,97 +133,97 @@ LABEL = uscore("label");
 @Public @Override void K_MOV.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_ADD.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " + " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_SUB.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " - " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_MUL.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " * " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_DIV.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " / " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_MOD.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " % " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_EQ.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " == " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_NEQ.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " != " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_LT.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " < " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_GT.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " > " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_LTE.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " <= " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_GTE.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " >= " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_AND.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " & " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_OR.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " | " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_NOT.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = !" + op.inst0.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_XOR.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " xor " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_SELECT.codegen(Compiler asm) {
     String res = "";
     res += "var " + getName() + " = " + op.inst0.getName() + " ? " + op.inst1.getName() + " : " + op.inst2.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_LSFT.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " << " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_RSFT.codegen(Compiler asm) {
     String res;
     res = "var " + getName() + " = " + op.inst0.getName() + " >> " + op.inst1.getName() + ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_TCHECK.codegen(Compiler asm) {
     /* do not use */
@@ -228,22 +231,22 @@ LABEL = uscore("label");
 @Public @Override void K_CAST.codegen(Compiler asm) {
     String tcid_str = (to String) op.tcid;
     if (op.scid == Float && op.tcid == Int) {
-        asm.addSource("var " + getName() + " = " + uscore("Math") + ".floor(" + op.inst0.getName() + ");", 3);
+        asm.addSource("var " + getName() + " = " + uscore("Math") + ".floor(" + op.inst0.getName() + ");", 2);
     } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
-        asm.addSource("var " + getName() + " = new " + uscore("Iterator") + "(" + op.inst0.getName() + ");", 3);
+        asm.addSource("var " + getName() + " = new " + uscore("Iterator") + "(" + op.inst0.getName() + ");", 2);
     } else {
-        asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 3);
+        asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 2);
     }
 }
 @Public @Override void K_JMP.codegen(Compiler asm) {
-    asm.addSource(LABEL + " = " + op.jmpidx + ";", 3);
+    asm.addSource(LABEL + " = " + op.jmpidx + ";", 2);
 }
 @Public @Override void K_COND.codegen(Compiler asm) {
-    asm.addSource("if (" + op.inst0.getName() + ") {", 3);
-    asm.addSource(LABEL + " = " + op.bbThen + ";", 4);
-    asm.addSource("} else {", 3);
-    asm.addSource(LABEL + " = " + op.bbElse + ";", 4);
-    asm.addSource("}", 3);
+    asm.addSource("if (" + op.inst0.getName() + ") {", 2);
+    asm.addSource(LABEL + " = " + op.bbThen + ";", 3);
+    asm.addSource("} else {", 2);
+    asm.addSource(LABEL + " = " + op.bbElse + ";", 3);
+    asm.addSource("}", 2);
 }
 @Public @Override void K_CALL.codegen(Compiler asm) {
     boolean flag = false;
@@ -271,7 +274,7 @@ LABEL = uscore("label");
         }
     }
     res += ");";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 @Public @Override void K_PRINT.codegen(Compiler asm) {
     //if (op.inst0 != null) {
@@ -287,53 +290,53 @@ LABEL = uscore("label");
 @Public @Override void K_TR.codegen(Compiler asm) {
     switch (this.getTRMethod()) {
         case "box":
-            asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 3);
+            asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 2);
             break;
         case "bnul":
             if (type == Script) {
-                asm.addSource("var " + getName() + " = script;", 3);
+                asm.addSource("var " + getName() + " = script;", 2);
             }
             break;
         case "cwb":
-            asm.addSource("var " + getName() + " = new __OutputStream__(true);", 3);
+            asm.addSource("var " + getName() + " = new __OutputStream__(true);", 2);
             break;
         case "tostr":
-            asm.addSource("var " + getName() + " = " + op.inst0.getName + ".tostr();", 3);
+            asm.addSource("var " + getName() + " = " + op.inst0.getName + ".tostr();", 2);
             break;
     }
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
     String name = class2str((to String)type);
-    asm.addSource("var " + getName() + " = new " + uscore(name) + "();", 3);
+    asm.addSource("var " + getName() + " = new " + uscore(name) + "();", 2);
 }
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
-    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".get(" + op.inst1.getName() + ");", 3);
+    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".get(" + op.inst1.getName() + ");", 2);
 }
 @Public @Override void K_SETIDX.codegen(Compiler asm) {
-    asm.addSource(op.inst0.getName() + ".set(" + op.inst1.getName() + ", " + op.inst2.getName() + ");", 3);
+    asm.addSource(op.inst0.getName() + ".set(" + op.inst1.getName() + ", " + op.inst2.getName() + ");", 2);
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
     if (this.type == Int || this.type == Float || this.type == Boolean) {
-        asm.addSource("var " + getName() + " = " + quote(op.const_table[op.table_idx]) + ";", 3);
+        asm.addSource("var " + getName() + " = " + quote(op.const_table[op.table_idx]) + ";", 2);
     } else if (this.type == Class) {
-        asm.addSource("var " + getName() + " = new " + uscore("String") + "(" + quote(op.const_table[op.table_idx]) + ");", 3);
+        asm.addSource("var " + getName() + " = new " + uscore("String") + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     } else {
-        asm.addSource("var " + getName() + " = new " + uscore(class2str((to String)this.type)) + "(" + quote(op.const_table[op.table_idx]) + ");", 3);
+        asm.addSource("var " + getName() + " = new " + uscore(class2str((to String)this.type)) + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
-    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".field" + op.bn + ";", 3);
+    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".field" + op.bn + ";", 2);
 }
 @Public @Override void K_SetField.codegen(Compiler asm) {
-    asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 3);
+    asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 2);
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
-    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".next();", 3);
-    asm.addSource("if (" + getName() + " != null) {", 3);
-    asm.addSource(LABEL + " = " + op.nextBB + ";", 4);
-    asm.addSource("} else {", 3);
-    asm.addSource(LABEL + " = " + op.endBB + ";", 4);
-    asm.addSource("}", 3);
+    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".next();", 2);
+    asm.addSource("if (" + getName() + " != null) {", 2);
+    asm.addSource(LABEL + " = " + op.nextBB + ";", 3);
+    asm.addSource("} else {", 2);
+    asm.addSource(LABEL + " = " + op.endBB + ";", 3);
+    asm.addSource("}", 2);
 }
 @Public @Override void K_LDMTD.codegen(Compiler asm) {
 }
@@ -345,7 +348,7 @@ LABEL = uscore("label");
         res += " " + op.inst0.getName();
     }
     res += ";";
-    asm.addSource(res, 3);
+    asm.addSource(res, 2);
 }
 
 @Public void Compiler.emit(Method mtd) {
@@ -369,15 +372,17 @@ LABEL = uscore("label");
     }
     if (hasScr) {
         res += "function " + uscore("Script") + "() {" + EOL;
+        res += "    'use strict';" + EOL;
         res += "}" + EOL;
         res += EOL;
     }
     res += "function " + TOP + " {" + EOL;
+    res += "    'use strict';" + EOL;
     if (hasScr) {
-        res += "  script = new " + uscore("Script") + "();" + EOL;
+        res += "    script = new " + uscore("Script") + "();" + EOL;
     }
     foreach (fnc in this.opt.topLevelFunctionList) {
-        res += "  " + fnc + "(";
+        res += "    " + fnc + "(";
         if (fnc.indexOf("Script") != -1) {
             res += "script";
         }
