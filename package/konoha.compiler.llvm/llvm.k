@@ -816,7 +816,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 bb = BasicBlock.create(asm.opt.func, "bb"+i);
             }
             asm.opt.bblist.add(bb);
-            if (bbs[i].safepoint != -1) {
+            if (LLVM_ENABLE_SAFEPOINT && bbs[i].safepoint != -1) {
                 asm.opt.bblist2.add(BasicBlock.create(asm.opt.func, "bb"+i));
             } else {
                 asm.opt.bblist2.add(null);
@@ -842,7 +842,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 bbs[i].phis[s].codegen(asm);
             }
         }
-        if (bbs[i].safepoint != -1) {
+        if (LLVM_ENABLE_SAFEPOINT && bbs[i].safepoint != -1) {
             bbs[i].codegen(asm);
         }
         if (i == 0) {
