@@ -495,8 +495,10 @@ class K_Function {
     }
     void addClass(Class c) {
         String cname = (to String)c;
-        if (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.") && !cname.startsWith("js.") && declareclass_func.indexOf(c) == -1  && cname != "dynamic") {
+        while (c != null && cname.indexOf("Script") == -1 && !cname.startsWith("konoha.") && !cname.startsWith("js.") && declareclass_func.indexOf(c) == -1  && cname != "dynamic") {
             declareclass_func.add(c);
+            c = c.getSuper();
+            cname = (to String)c;
         }
     }
     void setUndevelop() {
@@ -1421,6 +1423,7 @@ void Compiler.init_common(Method mtd) {
         //print mtd.getParamTypes();
         print mtd.toString();
     }
+    this.mtd = mtd;
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
     this.kfunc = new K_Function(mtd);
@@ -1488,7 +1491,6 @@ void Compiler.init_common(Method mtd) {
     }
     this.compiled_methods[mtdName].add(kfunc);
 }
-
 void Compiler.init(Method mtd) {
     init_common(mtd);
 }
@@ -1798,8 +1800,7 @@ void Compiler.dump(Boolean dump) {
         }
     }
 }
-
-void Compiler.emit(Method mtd) {
+void Compiler.common_emit(Method mtd) {
     foreach (Class c in this.kfunc.declareclass_func) {
         boolean found = false;
         foreach (K_Class kc in this.declareclass) {
@@ -1819,6 +1820,9 @@ void Compiler.emit(Method mtd) {
         kfunc.curBB.insts.add(inst);
         kfunc.curBB.hasReturn = true;
     }
+}
+void Compiler.emit(Method mtd) {
+    common_emit(mtd);
     String result = kfunc.dump();
     this.ir << result;
     if (!kfunc.isUndeveloped()) {
