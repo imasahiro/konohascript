@@ -7,7 +7,7 @@ function __Object__(rawptr) {
 __Object__.prototype.getClass = function() {
     return new __Class__(this.konohaclass);
 }
-__Object__.prototype.__toString = function() {
+__Object__.prototype.toString = function() {
     return this.rawptr;
 }
 
@@ -30,7 +30,7 @@ function __OutputStream__(isCwb) {
                 arguments[i] = arguments[i].replace("\n", "<br>\n");
             }
             if (arguments[i].rawptr) {
-                document.write(arguments[i].__toString());
+                document.write(arguments[i].toString());
             } else {
                 document.write(arguments[i]);
             }
@@ -46,7 +46,7 @@ function __OutputStream__(isCwb) {
             }
             document.write(arguments[i].rawptr);
             if (arguments[i].rawptr) {
-                document.write(arguments[i].__toString());
+                document.write(arguments[i].toString());
             } else {
                 document.write(arguments[i]);
             }
@@ -63,7 +63,7 @@ function __OutputStream__(isCwb) {
                     arguments[i] = arguments[i].replace("\n", "<br>\n");
                 }
                 if (arguments[i].rawptr) {
-                    document.write(arguments[i].__toString());
+                    document.write(arguments[i].toString());
                 } else {
                     document.write(arguments[i]);
                 }
@@ -76,7 +76,7 @@ function __OutputStream__(isCwb) {
                     arguments[i] = arguments[i].replace("\n", "<br>\n");
                 }
                 if (arguments[i].rawptr) {
-                    this.cwb += arguments[i].__toString();
+                    this.cwb += arguments[i].toString();
                 } else {
                     this.cwb += arguments[i];
                 }
@@ -196,10 +196,10 @@ function __Array__(rawptr) {
             throw('Script!!');
         }
     }
-    this.__toString = function() {
+    this.toString = function() {
         var res = '[';
         for(var i = 0; i < this.rawptr.length; i++) {
-            res += this.rawptr[i].__toString();
+            res += this.rawptr[i].toString();
             if (i != this.rawptr.length-1) {
                 res += ', ';
             }

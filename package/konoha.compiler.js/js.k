@@ -17,9 +17,11 @@ String footer = """
 </html>""";
 TOP = "__topLevelFunc__()"
 //class CompilerOpt {
+//    String   mtdName;
 //    String[] source;
 //    String[] topLevelFunctionList;
 //}
+System.addClassField(CompilerOpt, String  , "mtdName");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 @Public void CompilerOpt.init() {
@@ -87,11 +89,14 @@ LABEL = uscore("label");
             int size = |asm.opt.topLevelFunctionList|;
             asm.opt.topLevelFunctionList.add("Script" + size);
             fncdef += "function Script" + size + "(";
+            asm.opt.mtdName = "Script";
         } else if (asm.mtd.getName() == "main") {
             fncdef += "function " + asm.mtd.getName() + "(";
             asm.opt.topLevelFunctionList.add("main");
+            asm.opt.mtdName = asm.mtd.getName();
         } else {
             fncdef += "function " + asm.mtd.getName() + "(";
+            asm.opt.mtdName = asm.mtd.getName();
         }
     } else {
         fncdef += uscore(thisclass) + ".prototype." + asm.mtd.getName() + " = function(";
@@ -277,15 +282,13 @@ LABEL = uscore("label");
     asm.addSource(res, 2);
 }
 @Public @Override void K_PRINT.codegen(Compiler asm) {
-    //if (op.inst0 != null) {
-    //    asm.builder.createStoreValueToSfp(asm.sfp, asm.convertType(type), op.sfpidx, op.inst0.getLLVMValue(asm));
-    //}
-    //Type fmethodTy = asm.ktype["fmethodPtrTy"];
-    //Value func = ConstantInt.get(asm.intTy, op.fprint);
-    //func = asm.builder.CreateIntToPtr(func, fmethodTy);
-    //Value vop = ConstantInt.get(asm.intTy, op.opline);
-    //Value[] vargs = [asm.ctx, asm.sfp, vop];
-    //asm.builder.createCall(func, vargs);
+    int line = (op.opline&((1<<32)-1)<<32)>>32;
+    String strline = "(" + asm.opt.mtdName + ":" + line + ") ";
+    String msg = "";
+    if (op.msg != "") {
+        msg += op.msg + "=";
+    }
+    asm.addSource("document.write(\"" + strline + msg + "\" + " + op.inst0.getName() + ".toString() + \"<br>\");", 2);
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     String type_str = (to String)type;
