@@ -304,6 +304,9 @@ LABEL = uscore("label");
         case "tostr":
             asm.addSource("var " + getName() + " = " + op.inst0.getName + ".tostr();", 2);
             break;
+        case "chktype":
+            asm.addSource("var " + getName() + " = " + op.inst0.getName + ";", 2);
+            break;
     }
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
