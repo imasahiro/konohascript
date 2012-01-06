@@ -32,7 +32,7 @@ include "lib:gluelink";
 
 DEBUG = false;
 //USE_NONSSA = false;
-USE_NONSSA = false;
+USE_NONSSA = true;
 //DEBUG = true;
 FUNC_STATIC = 0;
 FUNC_FASTCALL = 2;

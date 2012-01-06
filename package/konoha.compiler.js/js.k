@@ -107,7 +107,7 @@ LABEL = uscore("label");
     if (isStatic == 0 && |funcargs| > 0) {
         asm.addSource("var " + funcargs[0].getName() + " = this;", 1);
     }
-    asm.addSource("'use strict';", 1);
+    //asm.addSource("'use strict';", 1);
     asm.addSource("var " + LABEL + " = 0;", 1);
     asm.addSource("while (true) switch (" + LABEL + ") {", 1);
     for (int i = 0; i < |bbs|; i++) {
@@ -288,12 +288,13 @@ LABEL = uscore("label");
     //asm.builder.createCall(func, vargs);
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
+    String type_str = (to String)type;
     switch (this.getTRMethod()) {
         case "box":
             asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 2);
             break;
         case "bnul":
-            if (type == Script) {
+            if (type_str.endsWith("Script")) {
                 asm.addSource("var " + getName() + " = script;", 2);
             }
             break;
@@ -372,12 +373,12 @@ LABEL = uscore("label");
     }
     if (hasScr) {
         res += "function " + uscore("Script") + "() {" + EOL;
-        res += "    'use strict';" + EOL;
+        //res += "    'use strict';" + EOL;
         res += "}" + EOL;
         res += EOL;
     }
     res += "function " + TOP + " {" + EOL;
-    res += "    'use strict';" + EOL;
+    //res += "    'use strict';" + EOL;
     if (hasScr) {
         res += "    script = new " + uscore("Script") + "();" + EOL;
     }
