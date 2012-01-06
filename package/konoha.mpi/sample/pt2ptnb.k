@@ -1,7 +1,7 @@
 
 using konoha.mpi.*;
 
-world = MPIComm.WORLD;
+MPIComm world = MPIComm.WORLD;
 rank = world.getRank();
 size = world.getSize();
 
