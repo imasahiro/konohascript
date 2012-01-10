@@ -50,7 +50,7 @@ class LLVMConfig {
     boolean intrinsic_method = true;
     boolean load_library_module = false;
     boolean opt_safepoint = true;
-    String dllext = "dylib;
+    String dllext = "dylib";
     LLVMConfig() {
         boolean b = "true" == $env.LLVM_DEBUG;
         boolean v = "true" == $env.LLVM_ENABLE_VERIFY_EACH;
@@ -172,8 +172,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 
 
-@Public void Compiler.register_user_class(Class c, String cname)
-{
+@Public void Compiler.register_user_class(Class c, String cname) {
     Class[] class_fields = c.getFieldClasses();
     Type[] fields = [];
 
@@ -815,7 +814,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
            Value vstr  = opt.builder.createGlobalStringPtr("%d\n");
            vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
            Value vstr  = opt.builder.createGlobalStringPtr("");
-        */
+         */
         Value vstr  = ConstantPointerNull.get(Type.getInt8PtrTy());
         Value vline = ConstantInt.get(Type.getInt32Ty(), 0);
         Value[] args = [vctx, vsfp, vstr, vline];
@@ -1340,8 +1339,8 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value msg   = opt.get_or_create(strTy, op.msg.getPtr(), "string");
     Value mtdNCPtr = builder.createPtrToInt(mtdNC, intTy);
     builder.createStoreValueToSfp(vsfp, intTy, -1, mtdNCPtr);
-    Value flag  = ConstantInt.get(asm.opt.intTy, op.pflag)
-    Value uline = ConstantInt.get(asm.opt.intTy, op.opline)
+    Value flag  = ConstantInt.get(asm.opt.intTy, op.pflag);
+    Value uline = ConstantInt.get(asm.opt.intTy, op.opline);
     Value[] vargs = [opt.ctx, vsfp, flag, uline, msg, v0];
     builder.createCall(func, vargs);
 }
