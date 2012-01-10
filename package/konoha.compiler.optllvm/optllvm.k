@@ -50,6 +50,7 @@ class LLVMConfig {
     boolean intrinsic_method = true;
     boolean load_library_module = false;
     boolean opt_safepoint = true;
+    String dllext = "dylib;
     LLVMConfig() {
         boolean b = "true" == $env.LLVM_DEBUG;
         boolean v = "true" == $env.LLVM_ENABLE_VERIFY_EACH;
@@ -67,6 +68,10 @@ class LLVMConfig {
         this.intrinsic_method    = e && i;
         this.load_library_module = e && l;
         this.opt_safepoint       = e && !(LLVM_ENABLE_SAFEPOINT) && s;
+        this.dllext = $env.LLVM_OS_ARCH;
+        if (this.debug) {
+            print this;
+        }
     }
 }
 
@@ -219,7 +224,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.kfunctype = {};
     init_first();
     if (config.load_library_module) {
-        String libkonoha = "/usr/local/konoha/lib/libkonoha.dylib.bc";
+        String libkonoha = "/usr/local/konoha/lib/libkonoha." + config.dllext + ".bc";
         this.opt.m = LLVM.parseBitcodeFile(libkonoha);
     } else {
         this.opt.m = new Module("konoha");
@@ -358,11 +363,11 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             if (config.enable_opt) {
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createIPSCCPPass());
-                mpm.add(LLVM.createDeadArgEliminationPass());
+                //FIXME mpm.add(LLVM.createDeadArgEliminationPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
                 mpm.add(LLVM.createCFGSimplificationPass());
                 mpm.add(LLVM.createFunctionAttrsPass());
-                mpm.add(LLVM.createArgumentPromotionPass());
+                //FIXME mpm.add(LLVM.createArgumentPromotionPass());
                 mpm.add(LLVM.createScalarReplAggregatesPass(-1));
                 mpm.add(LLVM.createEarlyCSEPass());
                 mpm.add(LLVM.createJumpThreadingPass());
@@ -400,7 +405,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 mpm.add(LLVM.createIPSCCPPass());
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createConstantMergePass());
-                mpm.add(LLVM.createDeadArgEliminationPass());
+                //FIXME mpm.add(LLVM.createDeadArgEliminationPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
                 if (config.method_inlining) {
                     //TODO FIXME BUG
@@ -408,7 +413,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 }
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createGlobalDCEPass());
-                mpm.add(LLVM.createArgumentPromotionPass());
+                //FIXME mpm.add(LLVM.createArgumentPromotionPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
                 mpm.add(LLVM.createScalarReplAggregatesPass());
                 mpm.add(LLVM.createFunctionAttrsPass());
@@ -1343,7 +1348,7 @@ BuilderFunc=Func<Value, Value=>Value>;
 @Public @Override void K_TR.codegen(Compiler asm) {
     Value func;
     FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
-    DynamicLibrary.loadLibraryPermanently("compiler.dylib");
+    DynamicLibrary.loadLibraryPermanently("compiler." + config.dllext);
     Module m = asm.opt.m;
     if (op.ftr == Stmt.CWB) {
         func = m.getOrInsertFunction("compiler_CWB", fnTy);
@@ -1371,7 +1376,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value func;
     if (op.ftr == Stmt.NEW) {
         FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
-        DynamicLibrary.loadLibraryPermanently("compiler.dylib");
+        DynamicLibrary.loadLibraryPermanently("compiler." + config.dllext);
         func = asm.opt.m.getOrInsertFunction("TR_NEW", fnTy);
     } else {
         Type methodTy = asm.opt.ktype["trmethodPtrTy"];

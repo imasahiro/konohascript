@@ -124,11 +124,13 @@ struct SafePoint : public FunctionPass {
     static char ID;
     SafePoint() : FunctionPass(ID) {}
     virtual bool runOnFunction(Function &F) {
+        bool Changed = false;
         Module *m = F.getParent();
         LLVMContext &Context = m->getContext();
         NamedMDNode *NMD = m->getNamedMetadata("safepoint");
+        if (!NMD)
+            return false;
         unsigned KindID = Context.getMDKindID("safepoint");
-        bool Changed = false;
 
         std::vector<BasicBlock *> BBs;
         std::vector<int64_t> OPs;

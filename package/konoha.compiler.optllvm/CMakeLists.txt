@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
-if(USE_COMPILER_PKG)
+find_program(LLVM_CONFIG NAMES llvm-config DOC "llvm-config")
+if(LLVM_CONFIG)
+
 project(compiler.optllvm)
 set(PACKAGE_SOURCE_CODE opt.cpp)
 set(PACKAGE_SCRIPT_CODE optllvm.k)
@@ -11,8 +13,6 @@ set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 set(PACKAGE_STRING  ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
 set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 
-find_program(LLVM_CONFIG NAMES llvm-config DOC "llvm-config")
-if(LLVM_CONFIG)
 
 execute_process(
 		COMMAND ${LLVM_CONFIG} --version
@@ -69,4 +69,3 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${K
 
 endif()
 endif(LLVM_CONFIG)
-endif(USE_COMPILER_PKG)
