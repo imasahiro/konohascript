@@ -349,6 +349,7 @@ class K_PHI extends K_Inst {
         if (this.kvalue == null) {
             init_kvalue(inst.kvalue);
             this.type = inst.type;
+            addDef(kvalue, idx);
         }
         //if (this.type.isUnboxType()) {
             if (USE_NONSSA) {
