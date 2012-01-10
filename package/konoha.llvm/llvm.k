@@ -232,6 +232,7 @@ include "lib:gluelink";
 @Native Instruction BasicBlock.insertBefore(Instruction before, Instruction inst);
 @Native Instruction BasicBlock.getLastInst();
 @Native Instruction BasicBlock.getTerminator();
+@Native void Instruction.setMetadata(Module m, String name);
 @Native void Function.dump();
 @Native void Value.dump();
 @Native void Type.dump();
