@@ -3298,14 +3298,18 @@ KMETHOD LLVM_parseBitcodeFile(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//TODO Scriptnize
 KMETHOD Instruction_setMetadata(CTX ctx, ksfp_t *sfp _RIX)
 {
 	Instruction *inst = konoha::object_cast<Instruction *>(sfp[0].p);
 	Module *m = konoha::object_cast<Module *>(sfp[1].p);
 	kString *Str = sfp[2].s;
-	std::vector<Value *> V;
+	kint_t N = Int_to(kint_t,sfp[3]);
+	Value *Info[] = {
+		ConstantInt::get(Type::getInt32Ty(getGlobalContext()), N)
+	};
 	LLVMContext &Context = getGlobalContext();
-	MDNode *node = MDNode::get(Context, V);
+	MDNode *node = MDNode::get(Context, Info);
 	NamedMDNode *NMD = m->getOrInsertNamedMetadata(S_totext(Str));
 	unsigned KindID = Context.getMDKindID(S_totext(Str));
 	NMD->addOperand(node);

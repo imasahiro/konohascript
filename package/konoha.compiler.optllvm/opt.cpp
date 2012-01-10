@@ -80,14 +80,23 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
     Function::arg_iterator args = F.arg_begin();
     Value *vctx = args++;
     Value *vsfp = args;
-    Type *IntTy = Type::getInt32Ty(Context);
+    Type *IntTy = Type::getInt64Ty(Context);
     PointerType *Int8PtrTy = Type::getInt8PtrTy(Context);
     BasicBlock *bb0 = BasicBlock::Create(Context, "bb0", &F);
     BasicBlock *bb1 = BasicBlock::Create(Context, "bb1", &F);
     BasicBlock *bb2 = BB->splitBasicBlock(--(BB->end()), "bb2");
     IRBuilder<> builder(bb0);
 
-    BB->getTerminator()->setSuccessor(0, bb0);
+    {
+        TerminatorInst *TI = BB->getTerminator();
+        for (size_t i = 0; i < TI->getNumSuccessors(); ++i) {
+            if (TI->getSuccessor(i) == bb2) {
+                TI->setSuccessor(i, bb0);
+                break;
+            }
+        }
+    }
+
     /* cond = (ctx->safepoint == 1) */
     Value *V    = builder.CreateLoad(builder.CreateStructGEP(vctx, 0));
     Value *Cond = builder.CreateICmpEQ(V, ConstantInt::get(IntTy, 1));
@@ -97,7 +106,7 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
 
     if (espshift > 0) {
         Value *vesp  = builder.CreateStructGEP(vctx, 9);
-        Value *vsfp_ = builder.CreateStructGEP(vsfp, espshift);
+        Value *vsfp_ = builder.CreateConstGEP1_32(vsfp, espshift);
         builder.CreateStore(vsfp_, vesp);
     }
     Type *argsType[]   = {vctx->getType(), vsfp->getType(), Int8PtrTy, IntTy};
@@ -118,32 +127,34 @@ struct SafePoint : public FunctionPass {
         Module *m = F.getParent();
         LLVMContext &Context = m->getContext();
         NamedMDNode *NMD = m->getNamedMetadata("safepoint");
-        MDNode *node = NMD->getOperand(0);
         unsigned KindID = Context.getMDKindID("safepoint");
         bool Changed = false;
 
         std::vector<BasicBlock *> BBs;
+        std::vector<int64_t> OPs;
+        size_t N = NMD->getNumOperands();
         for (Function::iterator I = F.begin(), E = F.end(); I != E; ++I) {
             TerminatorInst *Inst = I->getTerminator();
             if (Inst->hasMetadata()) {
                 MDNode *MD = Inst->getMetadata(KindID);
-                if (MD == node) {
-                    BBs.push_back(I);
-                    Changed = true;
+                for (size_t i = 0; i < N; ++i) {
+                    MDNode *node = NMD->getOperand(i);
+                    if (MD == node) {
+                        ConstantInt *C = cast<ConstantInt>(MD->getOperand(0));
+                        BBs.push_back(I);
+                        OPs.push_back(C->getSExtValue());
+                        Changed = true;
+                    }
                 }
             }
         }
         if (Changed == false) {
             return Changed;
         }
-        for (std::vector<BasicBlock* >::iterator I = BBs.begin(), E = BBs.end(); I != E ; ++I) {
-            BasicBlock *BB = *I;
-            TerminatorInst *Inst = BB->getTerminator();
-            if (BranchInst *BI = dyn_cast<BranchInst>(Inst)) {
-                fprintf(stderr, "succ=%d\n", BI->getNumSuccessors());
-            } else if (ReturnInst *RI = dyn_cast<ReturnInst>(Inst)) {
-                emit(F, m, BB, 0);
-            }
+
+        for (size_t i = 0; i < BBs.size(); ++i) {
+            BasicBlock *BB = BBs[i];
+            emit(F, m, BB, OPs[i]);
         }
         return Changed;
     }

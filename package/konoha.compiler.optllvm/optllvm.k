@@ -40,7 +40,6 @@ FUNC_FASTCALL = 2;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
 
 LLVM_ENABLE_SAFEPOINT = false;
-LLVM_ENABLE_SAFEPOINT_OPT = true;
 
 class LLVMConfig {
     boolean debug = false;
@@ -50,6 +49,7 @@ class LLVMConfig {
     boolean method_inlining  = true;
     boolean intrinsic_method = true;
     boolean load_library_module = false;
+    boolean opt_safepoint = true;
     LLVMConfig() {
         boolean b = "true" == $env.LLVM_DEBUG;
         boolean v = "true" == $env.LLVM_ENABLE_VERIFY_EACH;
@@ -58,6 +58,7 @@ class LLVMConfig {
         boolean m = "true" == $env.LLVM_ENABLE_OPT_METHOD_INLINING;
         boolean i = "true" == $env.LLVM_ENABLE_OPT_INTRINSIC_METHOD;
         boolean l = "true" == $env.LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE;
+        boolean s = "true" == $env.LLVM_ENABLE_OPT_SAFEPOINT;
         this.debug               = b;
         this.verify_each         = v;
         this.module_dump         = d;
@@ -65,7 +66,7 @@ class LLVMConfig {
         this.method_inlining     = e && m;
         this.intrinsic_method    = e && i;
         this.load_library_module = e && l;
-        print this;
+        this.opt_safepoint       = e && !(LLVM_ENABLE_SAFEPOINT) && s;
     }
 }
 
@@ -378,10 +379,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 mpm.add(LLVM.createIndVarSimplifyPass());
                 mpm.add(LLVM.createLoopIdiomPass());
                 mpm.add(LLVM.createLoopDeletionPass());
-                mpm.add(LLVM.createSafepointPass());
+                if (config.opt_safepoint) {
+                    mpm.add(LLVM.createSafepointPass());
+                }
                 mpm.add(LLVM.createLoopUnrollPass());
                 mpm.add(LLVM.createGVNPass());
-                mpm.add(LLVM.createMemCpyOptPass());
+                //mpm.add(LLVM.createMemCpyOptPass());
                 mpm.add(LLVM.createSCCPPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
                 mpm.add(LLVM.createJumpThreadingPass());
@@ -818,9 +821,8 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 
 @Public void K_BasicBlock.setSafePointMetaData(Compiler asm) {
-    print "hi", this.safepoint;
     BasicBlock bb = asm.opt.bblist[bbidx];
-    bb.getTerminator().setMetaData(asm.opt.m, "safepoint");
+    bb.getTerminator().setMetaData(asm.opt.m, "safepoint", this.safepoint);
 }
 
 @Public void K_Function.buildWrapperFunc(Compiler asm) {
@@ -907,7 +909,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         foreach (K_Inst inst in bbs[i].insts) {
             inst.codegen(asm);
         }
-        if (LLVM_ENABLE_SAFEPOINT_OPT && bbs[i].attribute == "loopcond") {
+        if (config.opt_safepoint && bbs[i].attribute == "loopcond") {
             bbs[i].setSafePointMetaData(asm);
         }
     }

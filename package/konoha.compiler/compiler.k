@@ -1498,9 +1498,12 @@ void Compiler.init(Method mtd) {
     init_common(mtd);
 }
 
-void Compiler.addSafePoint(int espidx) {
-    if (kfunc.curBB.safepoint == -1) {
-        kfunc.curBB.safepoint = espidx;
+void Compiler.addSafePoint(int espidx, K_BasicBlock bb) {
+    if (bb == null) {
+        bb = kfunc.curBB;
+    }
+    if (bb.safepoint == -1) {
+        bb.safepoint = espidx;
     }
 }
 
@@ -1968,8 +1971,8 @@ void Compiler.asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     }
     int espidx = stmt.getESPIDX();
     int bbssize = kfunc.bbs.size;
-    K_BasicBlock bbCond  = new K_BasicBlock(bbssize);
-    K_BasicBlock bbBody  = new K_BasicBlock(bbssize + 1);
+    K_BasicBlock bbCond  = new K_BasicBlock(bbssize + 0, "loopcond");
+    K_BasicBlock bbBody  = new K_BasicBlock(bbssize + 1, "loopbody");
     K_BasicBlock bbBreak = new K_BasicBlock(bbssize + 2);
     kfunc.addBB(bbCond, bbssize);
     kfunc.addBB(bbBody, bbssize + 1);
@@ -1977,7 +1980,7 @@ void Compiler.asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
 
     K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx, "while"));
     kfunc.curBB.insts.add(jmpCond);
-    addSafePoint(espidx);
+    addSafePoint(espidx, bbCond);
     Array<K_Inst> regTableEntry = kfunc.register_table;
     Array<K_PHI> regTablePhi = regTableToPHI(espidx, bbCond);
     kfunc.register_table = cloneTable(regTablePhi);
@@ -2017,8 +2020,8 @@ void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     }
 
     int bbssize = kfunc.bbs.size;
-    K_BasicBlock bbBody  = new K_BasicBlock(bbssize);
-    K_BasicBlock bbCond  = new K_BasicBlock(bbssize + 1);
+    K_BasicBlock bbBody  = new K_BasicBlock(bbssize + 0, "loopbody");
+    K_BasicBlock bbCond  = new K_BasicBlock(bbssize + 1, "loopcond");
     K_BasicBlock bbBreak = new K_BasicBlock(bbssize + 2);
     kfunc.addBB(bbBody, bbssize);
     kfunc.addBB(bbCond, bbssize + 1);
@@ -2034,7 +2037,7 @@ void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     kfunc.breakpoint.add(bbBreak);
     kfunc.continuepoint.add(bbCond);
     kfunc.curBB = bbBody;
-    addSafePoint(espidx);
+    addSafePoint(espidx, bbCond);
     asmBlock(stmtBody);
     kfunc.breakpoint.pop();
     kfunc.continuepoint.pop();
@@ -2121,7 +2124,7 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     kfunc.register_table = regTableCont;
     kfunc.curBB = bbContinue;
     asmBlock(stmt3);
-    addSafePoint(espidx);
+    addSafePoint(espidx, bbCond);
     K_Inst jmpNext = new K_JMP(new K_JMPop(bbCond.bbidx, null));
     kfunc.curBB.insts.add(jmpNext);
     createPhiArrayBackEdge(regTablePhi, kfunc.register_table, kfunc.curBB, espidx);
