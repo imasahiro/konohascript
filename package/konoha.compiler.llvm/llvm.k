@@ -40,6 +40,7 @@ FUNC_FASTCALL = 2;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
 
 LLVM_ENABLE_SAFEPOINT = true;
+LLVM_ENABLE_SAFEPOINT_OPT = true;
 
 class LLVMConfig {
     boolean verify_each = false;
@@ -291,7 +292,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             fpm.add(opt.ee.getTargetData());
             fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
             fpm.add(LLVM.createBasicAliasAnalysisPass());
-            fpm.add(LLVM.createSimplifyLibCallsPass());
             fpm.add(LLVM.createCFGSimplificationPass());
             fpm.add(LLVM.createScalarReplAggregatesPass());
             fpm.add(LLVM.createEarlyCSEPass());
@@ -349,29 +349,64 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             this.compiled_methods = {};
             PassManager mpm = new PassManager();
             if (config.enable_opt) {
+                mpm.add(LLVM.createGlobalOptimizerPass());
+                mpm.add(LLVM.createIPSCCPPass());
+                mpm.add(LLVM.createDeadArgEliminationPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
                 mpm.add(LLVM.createFunctionAttrsPass());
-                mpm.add(LLVM.createInternalizePass(true));
-                if (config.method_inlining) {
-                    //TODO FIXME BUG
-                    mpm.add(LLVM.createFunctionInliningPass(225));
-                }
+                mpm.add(LLVM.createArgumentPromotionPass());
+
+                mpm.add(LLVM.createScalarReplAggregatesPass(-1));
+                mpm.add(LLVM.createEarlyCSEPass());
+                mpm.add(LLVM.createJumpThreadingPass());
+                mpm.add(LLVM.createCorrelatedValuePropagationPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createTailCallEliminationPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
+                mpm.add(LLVM.createReassociatePass());
+                mpm.add(LLVM.createLoopRotatePass());
+                mpm.add(LLVM.createLICMPass());
+                mpm.add(LLVM.createLoopUnswitchPass(true));
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createIndVarSimplifyPass());
+                mpm.add(LLVM.createLoopIdiomPass());
+                mpm.add(LLVM.createLoopDeletionPass());
+                mpm.add(LLVM.createLoopUnrollPass());
+                mpm.add(LLVM.createGVNPass());
+                mpm.add(LLVM.createMemCpyOptPass());
+                mpm.add(LLVM.createSCCPPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createJumpThreadingPass());
+                mpm.add(LLVM.createCorrelatedValuePropagationPass());
+                mpm.add(LLVM.createDeadStoreEliminationPass());
+                mpm.add(LLVM.createAggressiveDCEPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createStripDeadPrototypesPass());
+                mpm.add(LLVM.createGlobalDCEPass());
+                mpm.add(LLVM.createConstantMergePass());
+
+                ///* LTO Passes */
                 mpm.add(LLVM.createIPSCCPPass());
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createConstantMergePass());
+                mpm.add(LLVM.createDeadArgEliminationPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
+                if (config.method_inlining) {
+                    //TODO FIXME BUG
+                    mpm.add(LLVM.createFunctionInliningPass());
+                }
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createGlobalDCEPass());
+                mpm.add(LLVM.createArgumentPromotionPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
-                mpm.add(LLVM.createJumpThreadingPass());
                 mpm.add(LLVM.createScalarReplAggregatesPass());
                 mpm.add(LLVM.createFunctionAttrsPass());
-                mpm.add(LLVM.createGlobalsModRefPass());
-                mpm.add(LLVM.createLICMPass());
+                mpm.add(LLVM.createLICMpass());
                 mpm.add(LLVM.createGVNPass());
-                mpm.add(LLVM.createMemCpyOptPass());
                 mpm.add(LLVM.createDeadStoreEliminationPass());
-                mpm.add(LLVM.createInstructionCombiningPass());
-                mpm.add(LLVM.createJumpThreadingPass());
                 mpm.add(LLVM.createCFGSimplificationPass());
                 mpm.add(LLVM.createGlobalDCEPass());
             }
@@ -773,8 +808,11 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         Value[] args = [vctx, vsfp, vstr, vline];
         opt.builder.createCall(vfunc, args);
         opt.builder.createBr(opt.bblist2[idx]);
+        opt.builder.setInsertPoint(opt.bblist2[idx]);
     }
-    opt.builder.setInsertPoint(opt.bblist2[idx]);
+    else if (LLVM_ENABLE_SAFEPOINT_OPT) {
+        print "hi";
+    }
 }
 
 @Public void K_Function.buildWrapperFunc(Compiler asm) {
@@ -843,6 +881,11 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             }
         }
         if (LLVM_ENABLE_SAFEPOINT && bbs[i].safepoint != -1) {
+            bbs[i].codegen(asm);
+        }
+        else if (LLVM_ENABLE_SAFEPOINT_OPT && bbs[i].safepoint != -1) {
+            print i;
+            OUT.println(bbs[i].insts[0].dump());
             bbs[i].codegen(asm);
         }
         if (i == 0) {
