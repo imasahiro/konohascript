@@ -28,8 +28,8 @@
 
 using konoha.math.*;
 using konoha.llvm.*;
+include "lib:gluelink";
 
-DEBUG = false;
 K_MTDIDX2 = -1;
 K_RTNIDX = -4;
 K_CALLDELTA = 4;
@@ -39,10 +39,11 @@ FUNC_VIRTUAL2 = 1;
 FUNC_FASTCALL = 2;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
 
-LLVM_ENABLE_SAFEPOINT = true;
+LLVM_ENABLE_SAFEPOINT = false;
 LLVM_ENABLE_SAFEPOINT_OPT = true;
 
 class LLVMConfig {
+    boolean debug = false;
     boolean verify_each = false;
     boolean module_dump = false;
     boolean enable_opt = true;
@@ -50,18 +51,21 @@ class LLVMConfig {
     boolean intrinsic_method = true;
     boolean load_library_module = false;
     LLVMConfig() {
+        boolean b = "true" == $env.LLVM_DEBUG;
         boolean v = "true" == $env.LLVM_ENABLE_VERIFY_EACH;
         boolean d = "true" == $env.LLVM_ENABLE_MODULE_DUMP;
         boolean e = "true" == $env.LLVM_ENABLE_OPT;
         boolean m = "true" == $env.LLVM_ENABLE_OPT_METHOD_INLINING;
         boolean i = "true" == $env.LLVM_ENABLE_OPT_INTRINSIC_METHOD;
         boolean l = "true" == $env.LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE;
+        this.debug               = b;
         this.verify_each         = v;
         this.module_dump         = d;
         this.enable_opt          = e;
         this.method_inlining     = e && m;
         this.intrinsic_method    = e && i;
         this.load_library_module = e && l;
+        print this;
     }
 }
 
@@ -283,6 +287,8 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     return func;
 }
 
+@Public @Native FunctionPass LLVM.createSafePointPass();
+
 @Public void Compiler.emit(Method mtd) {
     if (opt.fpm == null) {
         FunctionPassManager fpm = new FunctionPassManager(opt.m);
@@ -356,7 +362,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 mpm.add(LLVM.createCFGSimplificationPass());
                 mpm.add(LLVM.createFunctionAttrsPass());
                 mpm.add(LLVM.createArgumentPromotionPass());
-
                 mpm.add(LLVM.createScalarReplAggregatesPass(-1));
                 mpm.add(LLVM.createEarlyCSEPass());
                 mpm.add(LLVM.createJumpThreadingPass());
@@ -373,6 +378,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 mpm.add(LLVM.createIndVarSimplifyPass());
                 mpm.add(LLVM.createLoopIdiomPass());
                 mpm.add(LLVM.createLoopDeletionPass());
+                mpm.add(LLVM.createSafepointPass());
                 mpm.add(LLVM.createLoopUnrollPass());
                 mpm.add(LLVM.createGVNPass());
                 mpm.add(LLVM.createMemCpyOptPass());
@@ -387,7 +393,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 mpm.add(LLVM.createStripDeadPrototypesPass());
                 mpm.add(LLVM.createGlobalDCEPass());
                 mpm.add(LLVM.createConstantMergePass());
-
                 ///* LTO Passes */
                 mpm.add(LLVM.createIPSCCPPass());
                 mpm.add(LLVM.createGlobalOptimizerPass());
@@ -810,9 +815,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         opt.builder.createBr(opt.bblist2[idx]);
         opt.builder.setInsertPoint(opt.bblist2[idx]);
     }
-    else if (LLVM_ENABLE_SAFEPOINT_OPT) {
-        print "hi";
-    }
+}
+
+@Public void K_BasicBlock.setSafePointMetaData(Compiler asm) {
+    print "hi";
+    BasicBlock bb = asm.opt.bblist[bbidx];
+    bb.getTerminator().setMetaData(asm.opt.m, "safepoint");
 }
 
 @Public void K_Function.buildWrapperFunc(Compiler asm) {
@@ -835,6 +843,14 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         innerRetTy = Type.getVoidTy();
     }
     asm.opt.builder.createRetVoid();
+}
+
+@Public K_Inst K_BasicBlock.getTerminator() {
+    if (insts.size == 0) {
+        return null;
+    }
+    int size = insts.size;
+    return insts[size-1];
 }
 
 @Public void K_Function.codegen(Compiler asm) {
@@ -864,7 +880,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             asm.opt.bblist2.add(null);
         }
     }
-    if (DEBUG) {
+    if (config.debug) {
         OUT.println(dump());
     }
     asm.opt.builder = new IRBuilder(asm.opt.bblist[0]);
@@ -883,11 +899,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         if (LLVM_ENABLE_SAFEPOINT && bbs[i].safepoint != -1) {
             bbs[i].codegen(asm);
         }
-        else if (LLVM_ENABLE_SAFEPOINT_OPT && bbs[i].safepoint != -1) {
-            print i;
-            OUT.println(bbs[i].insts[0].dump());
-            bbs[i].codegen(asm);
-        }
         if (i == 0) {
             foreach (K_ARGUMENT inst in funcargs) {
                 inst.codegen(asm);
@@ -895,6 +906,9 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         }
         foreach (K_Inst inst in bbs[i].insts) {
             inst.codegen(asm);
+        }
+        if (LLVM_ENABLE_SAFEPOINT_OPT && bbs[i].attribute == "loopcond") {
+            bbs[i].setSafePointMetaData(asm);
         }
     }
     asm.opt.ctx = old_ctx;
@@ -1237,7 +1251,7 @@ BuilderFunc=Func<Value, Value=>Value>;
             }
             return;
         } else {
-            if (DEBUG) {
+            if (config.debug) {
                 print "**WARN** compiled_methods call failed", this.op.fname;
             }
         }
