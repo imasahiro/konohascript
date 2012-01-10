@@ -192,6 +192,7 @@ class K_Inst {
     Class type;
     Value value;
     int uline;
+    String attribute;
 
     /*for callInst*/
     Array<K_Inst> args;
@@ -383,7 +384,8 @@ class K_BasicBlock {
     Map<String, K_PHI> phis;
     Array<K_MOV> movs;
     int safepoint;
-    K_BasicBlock (int bbidx) {
+    String attribute;
+    K_BasicBlock (int bbidx, String attribute) {
         hasReturn = false;
         hasBrBreakBlock = false;
         hasBrContinueBlock = false;
@@ -393,6 +395,7 @@ class K_BasicBlock {
         this.insts_safepoint = [];
         this.bbidx = bbidx;
         this.safepoint = -1;
+        this.attribute = attribute;
     }
 }
 class K_ARGUMENTop extends K_Opcode {
@@ -542,7 +545,7 @@ class K_Function {
         for (int i = 0; i < |bbs|; i++) {
             String bbStr = "\n";
             if (bbs[i] == null) continue;
-            bbStr += "BasicBlock" + i;
+            bbStr += "BasicBlock" + i + ":" + bbs[i].attribute;
             //bbStr += ":\tpred = ";
             //for (int j = 0; j < |pred[i]|; j++) {
             //    OUT<< "bb" + pred[i][j] + " ";
@@ -2068,8 +2071,8 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     }
     int bbssize = kfunc.bbs.size;
 
-    K_BasicBlock bbCond     = new K_BasicBlock(bbssize);
-    K_BasicBlock bbBody     = new K_BasicBlock(bbssize + 1);
+    K_BasicBlock bbCond     = new K_BasicBlock(bbssize + 0, "loopcond");
+    K_BasicBlock bbBody     = new K_BasicBlock(bbssize + 1, "loopbody");
     K_BasicBlock bbContinue = new K_BasicBlock(bbssize + 2);
     K_BasicBlock bbBreak    = new K_BasicBlock(bbssize + 3);
     if (DEBUG) {

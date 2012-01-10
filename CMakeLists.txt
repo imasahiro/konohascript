@@ -56,6 +56,18 @@ macro(add_konoha_definitions)
 	add_definitions(${ARGN})
 endmacro(add_konoha_definitions)
 
+macro(POP _STR _DELIM _RESULT)
+    string(REPLACE ${_DELIM} ";" _tmp ${_STR})
+    list(REVERSE _tmp)
+    list(GET _tmp 0 ${_RESULT})
+endmacro()
+
+macro(PKGNAME _STR _RESULT)
+    set(_tmp)
+    POP(${_STR} "/" _tmp)
+    POP(${_tmp} "." ${_RESULT})
+endmacro()
+
 add_konoha_definitions(-DHAVE_CONFIG_H)
 
 set(KONOHA_SRC

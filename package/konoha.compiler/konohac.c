@@ -47,7 +47,7 @@ static enum compile_mode {
 
 static const char * codegenerator_file[] = {
     NULL,
-    "konoha.compiler.llvm",
+    "konoha.compiler.optllvm",
     "konoha.compiler.js",
     "konoha.compiler.cpp",
 };

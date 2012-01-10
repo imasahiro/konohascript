@@ -818,7 +818,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 
 @Public void K_BasicBlock.setSafePointMetaData(Compiler asm) {
-    print "hi";
+    print "hi", this.safepoint;
     BasicBlock bb = asm.opt.bblist[bbidx];
     bb.getTerminator().setMetaData(asm.opt.m, "safepoint");
 }
