@@ -144,7 +144,7 @@ String getTypeName (Class type) {
             fncdef += type + " " + asm.mtd.getName() + "(";
         }
     } else {
-        fncdef += (thisclass) + "." + asm.mtd.getName() + " { ";
+        fncdef += (thisclass) + "::" + asm.mtd.getName() + " ( ";
     }
     for (int i = 1 - isStatic; i < |funcargs|; i++) {
         fncdef += asm.declValue(funcargs[i]) + /*class2str(funcargs[i].type) + " " + */funcargs[i].getName();
@@ -507,6 +507,20 @@ String getTypeName (Class type) {
         res += "  " + fclass + " " + "field" + i + ";";
         res += EOL;
         i++;
+    }
+    foreach (Method mtd in c.getMethods) {
+        if (mtd.indexOfGetterField() == -1 && mtd.indexOfSetterField() == -1) {
+            String retTy = class2str(mtd.getReturnType());
+            res += "  " + retTy + " " + mtd.getName() + "(";
+            Class[] params = mtd.getParamTypes();
+            for (int j = 0; j < |params|; j++) {
+                res += class2str(params[j]);
+                if (j != |params|-1) {
+                    res += ", ";
+                }
+            }
+            res += ");" + EOL;
+        }
     }
     res += "};" + EOL;
     foreach (String n in ns) {
