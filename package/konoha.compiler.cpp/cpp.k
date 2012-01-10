@@ -13,7 +13,6 @@ System.addClassField(CompilerOpt, Array<String>, "var_decls");
     this.source = [];
     this.declareClass = [];
     this.topLevelFunctionList = [];
-    this.var_decls = [];
 }
 
 @Public Compiler Compiler.new() {
@@ -59,6 +58,15 @@ String class2str(Class c, boolean isPtr) {
     return s;
 }
 
+@Public String Compiler.declValue(K_Inst inst) {
+    String tmp = class2str(inst.type) + " " + inst.getName() + ";"; 
+    if (|inst.declPoint| <= 1 && !tmp in? opt.var_decls ) {
+        return class2str(inst.type) + " ";
+    } else {
+        return "";
+    }
+}
+
 String getTypeName (Class type) {
     String res = (to String) type;
     return (res == "") ? "null" : res;
@@ -94,9 +102,9 @@ String getTypeName (Class type) {
 
 @Public @Override void K_PHI.codegen(Compiler asm) {
     /* if one node incoming, this phinode behave like K_MOV instruction*/
-    if (|bbs| == 1) {
+    if (|bbs| == 1 && getName() != insts[0].getName()) {
         String res;
-        res = insts[0].type + " " + getName() + " = " + insts[0].getName() + ";";
+        res = asm.declValue(insts[0]) + getName() + " = " + insts[0].getName() + ";";
         asm.addSource(res, 2);
     }
 }
@@ -105,9 +113,14 @@ String getTypeName (Class type) {
 }
 
 @Public @Virtual void K_Inst.check_decls(Compiler asm) {
+    if (type != null && |declPoint| > 1) {
+        asm.addDecl(type, getName());
+    }
 }
 @Public @Override void K_MOV.check_decls(Compiler asm) {
-    asm.addDecl(type, getName());
+    if (getName() != op.inst0.getName()) {
+        asm.addDecl(type, getName());
+    }
 }
 
 @Public void K_Function.codegen(Compiler asm) {
@@ -134,7 +147,7 @@ String getTypeName (Class type) {
         fncdef += (thisclass) + "." + asm.mtd.getName() + " { ";
     }
     for (int i = 1 - isStatic; i < |funcargs|; i++) {
-        fncdef += class2str(funcargs[i].type) + " " + funcargs[i].getName();
+        fncdef += asm.declValue(funcargs[i]) + /*class2str(funcargs[i].type) + " " + */funcargs[i].getName();
         if (i != |funcargs|-1) {
             fncdef += ", ";
         }
@@ -147,7 +160,7 @@ String getTypeName (Class type) {
 
     /* check variable decls */
     for (int i = 0; i < |bbs|; i++) {
-        if (bbs[i] == null) continue;
+        if (bbs[i] == null || |bbs[i].insts| == 0) continue;
         foreach(String s in bbs[i].phis.keys()) {
             bbs[i].phis[s].check_decls(asm);
         }
@@ -165,7 +178,7 @@ String getTypeName (Class type) {
         asm.addSource(var_decls[i], 1);
     }
     for (int i = 0; i < |bbs|; i++) {
-        if (bbs[i] == null) continue;
+        if (bbs[i] == null || |bbs[i].insts| == 0) continue;
         asm.addSource("L_" + i + ": {", 1);
         foreach(String s in bbs[i].phis.keys()) {
             bbs[i].phis[s].codegen(asm);
@@ -182,20 +195,20 @@ String getTypeName (Class type) {
     asm.addSource("}", 0);
 }
 @Public @Override void K_MOV.codegen(Compiler asm) {
+    if (getName() != op.inst0.getName()) {
+        String res;
+        res = getName() + " = " + op.inst0.getName() + ";";
+        asm.addSource(res, 2);
+    }
+}
+@Public void KBinaryInst.emit_binary_op(Compiler asm, Class c, String vname, String lhs, String rhs, String op) {
     String res;
-    res = getName() + " = " + op.inst0.getName() + ";";
+    res = asm.declValue(this) + vname + " = " + lhs + " "+op+" " + rhs + ";";
     asm.addSource(res, 2);
 }
-void emit_binary_op(Compiler asm, Class c, String vname, String lhs, String rhs, String op) {
+@Public void KUnaryInst.emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     String res;
-    String t = class2str(c);
-    res = t + " " + vname + " = " + lhs + " "+op+" " + rhs + ";";
-    asm.addSource(res, 2);
-}
-void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
-    String res;
-    String t = class2str(c);
-    res = t + " " + vname + " = " + op+" " + lhs + ";";
+    res = asm.declValue(this) + vname + " = " + op+" " + lhs + ";";
     asm.addSource(res, 2);
 }
 
@@ -249,7 +262,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     String inst1 = op.inst1.getName();
     String inst2 = op.inst2.getName();
     String t = class2str(type);
-    String res = t + " " + getName() + " = " + (inst0) + " ? " inst1 + " : " + inst2 + ";";
+    String res = asm.declValue(this) + getName() + " = " + (inst0) + " ? " inst1 + " : " + inst2 + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_LSFT.codegen(Compiler asm) {
@@ -263,7 +276,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
 }
 @Public @Override void K_CAST.codegen(Compiler asm) {
     String t = class2str(type);
-    asm.addSource(t + " " + getName() + " = static_cast<" + t + ">("+op.inst0.getName()+");", 2);
+    asm.addSource(asm.declValue(this) + getName() + " = static_cast<" + t + ">("+op.inst0.getName()+");", 2);
 }
 @Public @Override void K_JMP.codegen(Compiler asm) {
     asm.addSource("goto L_" + op.jmpidx + ";", 2);
@@ -285,7 +298,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     }
     String res = "";
     if (op.mtd.getReturnType() != Void) {
-        res = t + " " + getName() + " = ";
+        res = asm.declValue(this) + getName() + " = ";
     }
     String thisclass = mtdclass2str(op.mtd.toString());
     if (flag) {
@@ -316,7 +329,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     //asm.builder.createCall(func, vargs);
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
-    String tn = class2str(type) + " " + getName();
+    String tn = asm.declValue(this) + getName();
     switch (this.getTRMethod()) {
         case "box":
             asm.addSource(tn + " = konoha::cast<"+class2str(type, true)+">(" + op.inst0.getName() + ");", 2);
@@ -336,20 +349,20 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     }
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
-    String t = class2str(type) + " ";
+    String t = asm.declValue(this);
     asm.addClass(this.type);
     String name = class2str(type, true);
     asm.addSource(t + getName() + "( new " + (name) + "());", 2);
 }
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
-    String t = class2str(type) + " ";
+    String t = asm.declValue(this);
     asm.addSource(t + getName() + " = " + op.inst0.getName() + ".get(" + op.inst1.getName() + ");", 2);
 }
 @Public @Override void K_SETIDX.codegen(Compiler asm) {
     asm.addSource(op.inst0.getName() + ".set(" + op.inst1.getName() + ", " + op.inst2.getName() + ");", 2);
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
-    String t = class2str(type) + " ";
+    String t = asm.declValue(this);
     asm.addClass(this.type);
     String const_data = quote(op.const_table[op.table_idx])
     if (this.type == Int || this.type == Float || this.type == Boolean) {
@@ -361,7 +374,7 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
-    String t = class2str(type) + " ";
+    String t = asm.declValue(this);
     asm.addClass(this.type);
     asm.addSource(t + getName() + " = " + op.inst0.getName() + "->field" + op.bn + ";", 2);
 }
@@ -397,12 +410,13 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     if (this.opt == null) {
         this.opt = new CompilerOpt();
     }
+    this.opt.var_decls = [];
     paramsclass = mtd.getParamTypes();
     retclass    = mtd.getReturnType();
     this.kfunc = new K_Function(mtd);
     if (mtd.getName() == ""/*global variable definition*/) {
         K_Value kvalue = kfunc.getKValue(0, Script);
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
+        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0), kfunc.curBB);
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
         initFunc(kfunc);
@@ -410,21 +424,21 @@ void emit_unary_op(Compiler asm, Class c, String vname, String lhs, String op) {
     }
     if (mtd.isStatic() && gamma_hasFIELD()) {
         K_Value kval = kfunc.getKValue(0, Script);
-        K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid().getClassTablePtr(), Stmt.NULL), 0);
+        K_Inst inst = new K_TR(kval, new K_TRop(null, 0, 0, gamma_getThiscid(), Stmt.NULL), kfunc.curBB);
         kfunc.curBB.insts.add(inst);
         kfunc.storeKInst(0, inst);
     }
 
     if (!mtd.isStatic()) {
         K_Value kvalue = kfunc.getKValue(0, mtd.getMethodClass());
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0));
+        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(0), kfunc.curBB);
         kfunc.storeKInst(0, inst);
         kfunc.funcargs.add(inst);
     }
     for (int i =  0; i < |paramsclass|; i++) {
         Class j = paramsclass[i];
         K_Value kvalue = kfunc.getKValue(i+1, j);
-        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1));
+        K_ARGUMENT inst = new K_ARGUMENT(kvalue, new K_ARGUMENTop(i+1), kfunc.curBB);
         kfunc.storeKInst(i+1, inst);
         kfunc.funcargs.add(inst);
     }
