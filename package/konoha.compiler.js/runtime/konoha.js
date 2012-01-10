@@ -1,26 +1,24 @@
-
-function __Object__(rawptr) {
-    this.konohaclass = "konoha.Object";
+function konoha() {
+}
+konoha.Object = function(rawptr) {
     this.rawptr = rawptr;
-
 }
-__Object__.prototype.getClass = function() {
-    return new __Class__(this.konohaclass);
+konoha.Object.prototype.konohaclass = "konoha.Object";
+konoha.Object.prototype.getClass = function() {
+    return new Class(this.konohaclass);
 }
-__Object__.prototype.toString = function() {
+konoha.Object.prototype.toString = function() {
     return this.rawptr;
 }
 
 
-__Class__.prototype = new __Object__();
-function __Class__(rawptr) {
-    this.konohaclass = "konoha.Class";
+konoha.Class = function(rawptr) {
     this.rawptr = rawptr;
 }
+konoha.Class.prototype = new konoha.Object();
+konoha.Class.konohaclass = "konoha.Class";
 /* OutputStream */
-__OutputStream__.prototype = new __Object__();
-function __OutputStream__(isCwb) {
-    this.konohaclass = "konoha.OutputStream";
+konoha.OutputStream = function(isCwb) {
     this.cwb = "";
     this.println = function() {
         document.write(this.cwb);
@@ -86,28 +84,28 @@ function __OutputStream__(isCwb) {
     this.tostr = function() {
         var res = this.cwb;
         this.cwb = "";
-        return new __String__(res);
+        return new konoha.String(res);
     }
 }
+konoha.OutputStream.prototype = new konoha.Object();
+konoha.OutputStream.konohaclass = "konoha.OutputStream";
 
 /* System */
-__System__.prototype = new __Object__();
-function __System__() {
-    this.konohaclass = "konoha.System";
+konoha.System = function() {
 }
-__System__.getOut = function() {
-    os = new __OutputStream__(false);
+konoha.System.prototype = new konoha.Object();
+konoha.System.konohaclass = "konoha.System";
+konoha.System.getOut = function() {
+    var os = new konoha.OutputStream(false);
     return os;
 }
-__System__.getErr = function() {
-    os = new __OutputStream__(false);
+konoha.System.getErr = function() {
+    var os = new konoha.OutputStream(false);
     return os;
 }
 
 /* Map */
-__Map__.prototype = new __Object__();
-function __Map__(rawptr) {
-    this.konohaclass = "konoha.Map";
+konoha.Map = function(rawptr) {
     this.rawptr = rawptr = {};
     this.new = function(init) {
         return this;
@@ -140,12 +138,12 @@ function __Map__(rawptr) {
         return res;
     }
 }
+konoha.Map.prototype = new konoha.Object();
+konoha.Map.konohaclass = "konoha.Map";
 
 
 /* Array */
-__Array__.prototype = new __Object__();
-function __Array__(rawptr) {
-    this.konohaclass = "konoha.Array";
+konoha.Array = function(rawptr) {
     if (rawptr != null) {
         this.rawptr = rawptr;
         this.capacity = rawptr.length;
@@ -208,9 +206,10 @@ function __Array__(rawptr) {
         return res;
     }
 }
+konoha.Array.prototype = new konoha.Object();
+konoha.Array.konohaclass = "konoha.Array";
 /* Iterator */
-__Iterator__.prototype = new __Object__();
-function __Iterator__(rawptr) {
+konoha.Iterator = function(rawptr) {
     this.rawptr = rawptr;
     this.cur = 0;
     this.capacity = rawptr.getSize();
@@ -224,11 +223,11 @@ function __Iterator__(rawptr) {
         }
     }
 }
+konoha.Iterator.prototype = new konoha.Object();
+konoha.Iterator.konohaclass = "konoha.Iterator";
 
 /* String */
-__String__.prototype = new __Object__();
-function __String__(rawptr) {
-    this.konohaclass = "konoha.String";
+konoha.String = function(rawptr) {
     this.rawptr = rawptr;
     this.equals = function(str) {
         return this.rawptr == str.rawptr;
@@ -249,7 +248,7 @@ function __String__(rawptr) {
                 res += arguments[i];
             }
         }
-        return new __String__(res);
+        return new konoha.String(res);
     }
     this.indexOf = function(str) {
         return this.rawptr.indexOf(str.rawptr);
@@ -261,72 +260,75 @@ function __String__(rawptr) {
         var list = this.rawptr.match(re.rawptr);
         var res = [];
         for (element in list) {
-            res.push(new __String__(element));
+            res.push(new konoha.String(element));
         }
-        return new __Array__(res);
+        return new konoha.Array(res);
     }
     this.split = function(re) {
         var list = this.rawptr.split(re.rawptr);
         var res = [];
         for (element in list) {
-            res.push(new __String__(element));
+            res.push(new konoha.String(element));
         }
-        return new __Array__(res);
+        return new konoha.Array(res);
     }
     this.search = function(re) {
         return this.rawptr.search(re.rawptr);
     }
     this.replace = function(source, target) {
-        return new __String__(this.rawptr.replace(source.rawptr, target.rawptr));
+        return new konoha.String(this.rawptr.replace(source.rawptr, target.rawptr));
     }
     this.getSize = function() {
         return this.rawptr.length;
     }
 }
+konoha.String.prototype = new konoha.Object();
+konoha.String.konohaclass = "konoha.String";
 
 /* Regex */
-__Regex__.prototype = new __Object__();
-function __Regex__(rawptr) {
-    this.konohaclass = "konoha.Regex";
+konoha.Regex = function(rawptr) {
     this.rawptr = rawptr;
     this.new = function(pattern, option) {
         this.rawptr = new RegExp(pattern.rawptr, option.rawptr);
         return this;
     }
 }
+konoha.Regex.prototype = new konoha.Object();
+konoha.Regex.konohaclass = "konoha.Regex";
 /* Number */
-__Number__.prototype = new __Object__();
-function __Number__(rawptr) {
-    this.konohaclass = "konoha.Number";
+konoha.Number = function(rawptr) {
     this.rawptr = rawptr;
 }
+konoha.Number.prototype = new konoha.Object();
+konoha.Number.konohaclass = "konoha.Number";
 
 /* Int */
-__Int__.prototype = new __Number__();
-function __Int__(rawptr) {
-    this.konohaclass = "konoha.Int";
+konoha.Int = function(rawptr) {
     this.rawptr = rawptr;
 }
+konoha.Int.prototype = new konoha.Number();
+konoha.Int.konohaclass = "konoha.Int";
 
-__Int__.random = function() {
+konoha.Int.random = function() {
     return Math.random();
 }
-__Int__.format = function(i, format) {
+konoha.Int.format = function(i, format) {
     switch (format.rawptr) {
         case "%x":
-            return new __String__(i.toString(16));
+            return new konoha.String(i.toString(16));
         case "%02x":
             var res = '00' + i.toString(16);
-            return new __String__(res.substring(res.length-2, res.length));
+            return new konoha.String(res.substring(res.length-2, res.length));
     }
 }
 
 /* Float */
-function __Float__(rawptr) {
-    this.konohaclass = "konoha.Int";
+konoha.Float = function(rawptr) {
     this.rawptr = rawptr;
 }
+konoha.Float.prototype = new konoha.Number();
+konoha.Float.konohaclass = "konoha.Float";
 
-__Float__.random = function() {
+konoha.Float.random = function() {
     return Math.random();
 }

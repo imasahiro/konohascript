@@ -12,10 +12,10 @@ String header = """
 String footer = """
 // -->
 </script>
-<body onLoad=" __topLevelFunc__() ">
+<body onLoad=" topLevelFunc() ">
 </body>
 </html>""";
-TOP = "__topLevelFunc__()"
+TOP = "topLevelFunc()"
 //class CompilerOpt {
 //    String   mtdName;
 //    String[] source;
@@ -30,21 +30,31 @@ System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 }
 
 String mtdclass2str(String s) {
-    return s.split(".")[|s.split(".")|-2];
+    String[] ary = s.split(".");
+    if (|ary| >= 3 && ary[|ary|-3] == "konoha") {
+        return "konoha." + ary[|ary|-2];
+    } else {
+        return ary[|ary|-2] + "_";
+    }
 }
 String class2str(String s) {
     if (s.startsWith("konoha.Array")) {
-        return "Array";
+        return "konoha.Array";
     }   
     if (s.startsWith("konoha.Map")) {
-        return "Map";
+        return "konoha.Map";
     }   
     if (s.startsWith("konoha.Iterator")) {
-        return "Iterator";
+        return "konoha.Iterator";
     }   
+    String[] ary = s.split(".");
     if (s.indexof(".") != -1) {
-        s = s.split(".")[|s.split(".")|-1];
-    }   
+        if (|ary| >= 2 && ary[|ary|-2] == "konoha") {
+            return "konoha." + ary[|ary|-1];
+        } else {
+            return ary[|ary|-1] + "_";
+        }
+    }
     return s;
 }
 
@@ -53,9 +63,11 @@ String getTypeName (Class type) {
     return (res == "") ? "null" : res;
 }
 String uscore(String in) {
-    return "__" + in + "__";
+    //return "__" + in + "__";
+    //return "konoha." + in;
+    return in;
 }
-LABEL = uscore("label");
+LABEL = "label";
 @Public void Compiler.addSource(String str, int count) {
     String tmp = "";
     for (int i = 0; i < count; i++) {
@@ -236,9 +248,9 @@ LABEL = uscore("label");
 @Public @Override void K_CAST.codegen(Compiler asm) {
     String tcid_str = (to String) op.tcid;
     if (op.scid == Float && op.tcid == Int) {
-        asm.addSource("var " + getName() + " = " + uscore("Math") + ".floor(" + op.inst0.getName() + ");", 2);
+        asm.addSource("var " + getName() + " = " + "Math_" + ".floor(" + op.inst0.getName() + ");", 2);
     } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
-        asm.addSource("var " + getName() + " = new " + uscore("Iterator") + "(" + op.inst0.getName() + ");", 2);
+        asm.addSource("var " + getName() + " = new " + "konoha.Iterator" + "(" + op.inst0.getName() + ");", 2);
     } else {
         asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 2);
     }
@@ -267,7 +279,7 @@ LABEL = uscore("label");
     String thisclass = mtdclass2str(op.mtd.toString());
     if (flag) {
         res += args[0].getName() + ".";
-    } else if (thisclass != "Script") {
+    } else if (thisclass != "Script_") {
         res += uscore(thisclass) + ".";
     }
     res += op.mtd.getName().replace("%s", "send").replace(":", "_") + "(";
@@ -302,7 +314,7 @@ LABEL = uscore("label");
             }
             break;
         case "cwb":
-            asm.addSource("var " + getName() + " = new __OutputStream__(true);", 2);
+            asm.addSource("var " + getName() + " = new konoha.OutputStream(true);", 2);
             break;
         case "tostr":
             asm.addSource("var " + getName() + " = " + op.inst0.getName + ".tostr();", 2);
@@ -326,7 +338,7 @@ LABEL = uscore("label");
     if (this.type == Int || this.type == Float || this.type == Boolean) {
         asm.addSource("var " + getName() + " = " + quote(op.const_table[op.table_idx]) + ";", 2);
     } else if (this.type == Class) {
-        asm.addSource("var " + getName() + " = new " + uscore("String") + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
+        asm.addSource("var " + getName() + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     } else {
         asm.addSource("var " + getName() + " = new " + uscore(class2str((to String)this.type)) + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     }
@@ -378,7 +390,7 @@ LABEL = uscore("label");
         }
     }
     if (hasScr) {
-        res += "function " + uscore("Script") + "() {" + EOL;
+        res += "function Script_" + "() {" + EOL;
         //res += "    'use strict';" + EOL;
         res += "}" + EOL;
         res += EOL;
@@ -386,7 +398,7 @@ LABEL = uscore("label");
     res += "function " + TOP + " {" + EOL;
     //res += "    'use strict';" + EOL;
     if (hasScr) {
-        res += "    script = new " + uscore("Script") + "();" + EOL;
+        res += "    script = new Script_();" + EOL;
     }
     foreach (fnc in this.opt.topLevelFunctionList) {
         res += "    " + fnc + "(";
