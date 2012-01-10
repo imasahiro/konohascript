@@ -2249,8 +2249,7 @@ void Compiler.asmPRINT(Stmt stmt, int flag) {
     int espidx = stmt.getESPIDX();
     for(int i = 0; i < stmt.getStmtSize(); i++) {
         Token tkn = stmt.getT(i);
-        Object data = tkn.getD();
-        if(tkn.getTT() != Token.TT_CONST || data.class != String) {
+        if(tkn.getTT() != Token.TT_CONST || tkn.getD().class != String) {
             asm(stmt.getS(i), stmt.getS(i).toToken(), espidx + i);
         }
     }
