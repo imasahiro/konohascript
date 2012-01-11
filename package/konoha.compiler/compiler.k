@@ -1980,7 +1980,11 @@ void Compiler.asmWHILE(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
 
     K_Inst jmpCond = new K_JMP(new K_JMPop(bbCond.bbidx, "while"));
     kfunc.curBB.insts.add(jmpCond);
-    addSafePoint(espidx, bbCond);
+    if ($env.LLVM_ENABLE_OPT_SAFEPOINT == "true") {
+        addSafePoint(espidx, bbCond);
+    } else {
+        addSafePoint(espidx);
+    }
     Array<K_Inst> regTableEntry = kfunc.register_table;
     Array<K_PHI> regTablePhi = regTableToPHI(espidx, bbCond);
     kfunc.register_table = cloneTable(regTablePhi);
@@ -2037,7 +2041,12 @@ void Compiler.asmDO(Stmt stmt, Stmt stmtC, Stmt stmtBody) {
     kfunc.breakpoint.add(bbBreak);
     kfunc.continuepoint.add(bbCond);
     kfunc.curBB = bbBody;
-    addSafePoint(espidx, bbCond);
+    if ($env.LLVM_ENABLE_OPT_SAFEPOINT == "true") {
+        addSafePoint(espidx, bbCond);
+    } else {
+        addSafePoint(espidx);
+    }
+
     asmBlock(stmtBody);
     kfunc.breakpoint.pop();
     kfunc.continuepoint.pop();
@@ -2124,7 +2133,11 @@ void Compiler.asmFOR(Stmt stmt, Stmt stmt1, Stmt stmt2, Stmt stmt3, Stmt stmtBod
     kfunc.register_table = regTableCont;
     kfunc.curBB = bbContinue;
     asmBlock(stmt3);
-    addSafePoint(espidx, bbCond);
+    if ($env.LLVM_ENABLE_OPT_SAFEPOINT == "true") {
+        addSafePoint(espidx, bbCond);
+    } else {
+        addSafePoint(espidx);
+    }
     K_Inst jmpNext = new K_JMP(new K_JMPop(bbCond.bbidx, null));
     kfunc.curBB.insts.add(jmpNext);
     createPhiArrayBackEdge(regTablePhi, kfunc.register_table, kfunc.curBB, espidx);

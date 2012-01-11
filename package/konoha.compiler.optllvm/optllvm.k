@@ -51,6 +51,7 @@ class LLVMConfig {
     boolean load_library_module = false;
     boolean opt_safepoint = true;
     boolean opt_array_access = false;
+    boolean opt_object_new = false;
     String dllext = "dylib";
     LLVMConfig() {
         boolean b = "true" == $env.LLVM_DEBUG;
@@ -62,6 +63,7 @@ class LLVMConfig {
         boolean l = "true" == $env.LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE;
         boolean s = "true" == $env.LLVM_ENABLE_OPT_SAFEPOINT;
         boolean a = "true" == $env.LLVM_ENABLE_OPT_ARRAY_ACCESS;
+        boolean o = "true" == $env.LLVM_ENABLE_OPT_OBJECT_NEW;
         this.debug               = b;
         this.verify_each         = v;
         this.module_dump         = d;
@@ -71,6 +73,7 @@ class LLVMConfig {
         this.load_library_module = e && l;
         this.opt_safepoint       = e && !(LLVM_ENABLE_SAFEPOINT) && s;
         this.opt_array_access    = e && a;
+        this.opt_object_new      = e && o;
         this.dllext = $env.LLVM_OS_ARCH;
         if (this.dllext == null) {
             this.dllext = "dylib";
@@ -650,6 +653,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.kfunctype["fmethodTy"] = fmethodTy;
     opt.ktype["fmethodPtrTy"]  = fmethodPtrTy;
     opt.funcTy = fmethodTy;
+
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(int64Ty);
+    FunctionType fnewObjectTy = FunctionType.get(objectPtrTy, argsTy, false);
+    opt.kfunctype["fnewObjectTy"] = fnewObjectTy;
 
     argsTy = [];
     argsTy.add(ctxPtrTy);
@@ -1384,17 +1393,29 @@ BuilderFunc=Func<Value, Value=>Value>;
     setLLVMValue(asm, v);
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
-    Value func;
     assert(op.ftr == Stmt.NEW);
-    FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
-    func = asm.opt.m.getOrInsertFunction("TR_NEW", fnTy);
-    Value vb = ConstantInt.get(asm.opt.intTy, kvalue.idx);
-    vb = asm.opt.builder.createGEP1(asm.opt.sfp, vb);
-    Value rix = ConstantInt.get(asm.opt.intTy, op.rix);
-    Value cid = ConstantInt.get(asm.opt.intTy, op.c.getClassTablePtr());
-    asm.opt.builder.createCall4(func, asm.opt.ctx, vb, rix, cid);
-    Value v = asm.opt.builder.createLoadValueFromSfp(asm.opt.sfp, asm.convertType(type), kvalue.idx + op.rix);
-    setLLVMValue(asm, v);
+    Value ret;
+    CompilerOpt opt = asm.opt;
+    int ridx = kvalue.idx + op.rix;
+    if (config.opt_object_new) {
+        FunctionType fnTy = opt.kfunctype["fnewObjectTy"];
+        Function func = opt.m.getOrInsertFunction("new_Object_init2", fnTy);
+        Value cid = ConstantInt.get(opt.intTy, op.c.getClassTablePtr());
+        ret = opt.builder.createCall2(func, opt.ctx, cid);
+        opt.builder.createStoreValueToSfp(opt.sfp, asm.convertType(op.inst0.type), ridx, ret);
+    } else {
+        FunctionType fnTy = opt.kfunctype["trmethodTy"];
+        Value func = opt.m.getOrInsertFunction("TR_NEW", fnTy);
+        Value vb   = ConstantInt.get(opt.intTy, kvalue.idx);
+        vb = opt.builder.createGEP1(opt.sfp, vb);
+        Value rix = ConstantInt.get(opt.intTy, op.rix);
+        Value cid = ConstantInt.get(opt.intTy, op.c.getClassTablePtr());
+        opt.builder.createCall4(func, opt.ctx, vb, rix, cid);
+        ret = opt.builder.createLoadValueFromSfp(opt.sfp, asm.convertType(type), ridx);
+    }
+    setLLVMValue(asm, ret);
+
+
 }
 Type get_atype(Compiler asm, Class type) {
     Type aType;
