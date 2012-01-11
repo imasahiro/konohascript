@@ -58,9 +58,15 @@ extern "C" {
 #define ALIGN(x,n)  (((x)+((n)-1))&(~((n)-1)))
 #define PTR_SIZE (sizeof(void*))
 #define BITS (PTR_SIZE * 8)
+#ifdef K_USING_WIN64_
+#define FFS(n) __builtin_ffsll(n)
+#define CLZ(n) __builtin_clzll(n)
+#define CTZ(n) __builtin_ctzll(n)
+#else
 #define FFS(n) __builtin_ffsl(n)
 #define CLZ(n) __builtin_clzl(n)
 #define CTZ(n) __builtin_ctzl(n)
+#endif
 #define BSR(n) CLZ(n)
 //#define BSR(n) (CLZ(n) & 0x3f)
 #define BM_SET(m, mask)  (m |= mask)

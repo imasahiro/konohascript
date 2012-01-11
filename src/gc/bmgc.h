@@ -56,6 +56,11 @@ extern "C" {
 #define CEIL(F)     (F-(int)(F) > 0 ? (int)(F+1) : (int)(F))
 #define PTR_SIZE (sizeof(void*))
 #define BITS (PTR_SIZE * 8)
+#ifdef K_USING_WIN64_
+#define FFS(n) __builtin_ffsll(n)
+#define CLZ(n) __builtin_clzll(n)
+#define CTZ(n) __builtin_ctzll(n)
+#else
 #define FFS(n) __builtin_ffsl(n)
 #define CLZ(n) __builtin_clzl(n)
 #define CTZ(n) __builtin_ctzl(n)
