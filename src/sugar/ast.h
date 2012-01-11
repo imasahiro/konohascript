@@ -68,6 +68,7 @@ static const char *symTK(ktoken_t t)
 
 static void dumpTokenArray(CTX ctx, int nest, kArray *a, int s, int e)
 {
+#if defined(K_USING_SUGAR) && defined(K_USING_DEBUG)
 	if(nest == 0) fprintf(stdout, "\n");
 	while(s < e) {
 		kToken *tk = a->tokens[s];
@@ -89,6 +90,7 @@ static void dumpTokenArray(CTX ctx, int nest, kArray *a, int s, int e)
 		s++;
 	}
 	if(nest == 0) fprintf(stdout, "====\n");
+#endif
 }
 
 /* ------------------------------------------------------------------------ */
