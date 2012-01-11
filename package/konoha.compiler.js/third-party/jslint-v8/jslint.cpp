@@ -114,14 +114,11 @@ int main(int argc, char* argv[])
     Handle<ObjectTemplate> global = ObjectTemplate::New();
     Handle<ObjectTemplate> options = ObjectTemplate::New();
     
-    bool overwrite = false;
-    const char* output = 0;
     bool some_parameter = false;
     
     for (int argpos = 1; argpos < argc; ++argpos) {
         if (argv[argpos][0] != '-') {
             source = readFile(argv[argpos]);
-            output = argv[argpos];
 
         } else if (strcmp(argv[argpos], "--help") == 0 ||
                    strcmp(argv[argpos], "-h") == 0) {
@@ -163,7 +160,7 @@ int main(int argc, char* argv[])
     beautifyScript->Run();
     
     Handle<Script> runnerScript = Script::Compile(String::New("JSLINT(source, options);"));
-    Handle<Value> result = runnerScript->Run();
+    runnerScript->Run();
 
     Handle<Script> printScript = Script::Compile(String::New(v8_code));
     printScript->Run();
