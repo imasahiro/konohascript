@@ -42,20 +42,22 @@ FLAG_OBJECT_NULLOBJECT = 1 << 1;
 LLVM_ENABLE_SAFEPOINT = false;
 
 class LLVMConfig {
-    boolean debug = false;
-    boolean verify_each = false;
-    boolean module_dump = false;
-    boolean enable_opt = true;
-    boolean method_inlining  = true;
-    boolean intrinsic_method = true;
-    boolean load_library_module = false;
-    boolean opt_safepoint = true;
-    boolean opt_array_access = false;
-    boolean opt_object_new = false;
-    boolean opt_field_access = false;
+    boolean debug;
+    boolean verify_each;
+    Boolean print_statics;
+    boolean module_dump;
+    boolean enable_opt;
+    boolean method_inlining;
+    boolean intrinsic_method;
+    boolean load_library_module;
+    boolean opt_safepoint;
+    boolean opt_array_access;
+    boolean opt_object_new;
+    boolean opt_field_access;
     String dllext = "dylib";
     LLVMConfig() {
         boolean b = "true" == $env.LLVM_DEBUG;
+        boolean p = "true" == $env.LLVM_ENABLE_PRINT_STATICS;
         boolean v = "true" == $env.LLVM_ENABLE_VERIFY_EACH;
         boolean d = "true" == $env.LLVM_ENABLE_MODULE_DUMP;
         boolean e = "true" == $env.LLVM_ENABLE_OPT;
@@ -67,6 +69,7 @@ class LLVMConfig {
         boolean o = "true" == $env.LLVM_ENABLE_OPT_OBJECT_NEW;
         boolean f = "true" == $env.LLVM_ENABLE_OPT_CACHE_FIELD_ACCESS;
         this.debug               = b;
+        this.print_statics       = p;
         this.verify_each         = v;
         this.module_dump         = d;
         this.enable_opt          = e;
@@ -88,7 +91,18 @@ class LLVMConfig {
     }
 }
 
-LLVMConfig config = new LLVMConfig();
+class LLVMStatics {
+    int opt_method_inlining
+    int opt_intrinsic_method;
+    int opt_safepoint;
+    int opt_array_access;
+    int opt_object_new;
+    int opt_field_access;
+    int compile_time;
+}
+
+LLVMConfig  config  = new LLVMConfig();
+LLVMStatics statics = new LLVMStatics();
 
 //class CompilerOpt {
 //    Module m;
@@ -361,9 +375,13 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
         FunctionPassManager fpm = opt.fpm;
+        int fpm_start = System.getTime();
         fpm.doInitialization();
         fpm.run(opt.wrapperfunc);
         fpm.run(opt.func);
+        int fpm_end = System.getTime();
+        statics.compile_time += fpm_end - fpm_start;
+
         if (mtd.getName() == "") {
         }
         else if (mtd.toString().endsWith("Script.main")) {
@@ -436,9 +454,15 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             if (config.verify_each) {
                 mpm.add(LLVM.createVerifierPass());
             }
+            int mpm_start = System.getTime();
             mpm.run(opt.m);
+            int mpm_end = System.getTime();
+            statics.compile_time += mpm_end - mpm_start;
             if (config.module_dump) {
                 opt.m.dump();
+            }
+            if (config.print_statics) {
+                OUT.println(statics);
             }
         }
         mtd.setFunction(opt.ee.getPointerToFunction(opt.wrapperfunc));
@@ -1300,6 +1324,7 @@ BuilderFunc=Func<Value, Value=>Value>;
             if (type != null/*void*/) {
                 setLLVMValue(asm, ret);
             }
+            statics.opt_intrinsic_method += 1;
             return;
         }
     }
@@ -1403,6 +1428,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     CompilerOpt opt = asm.opt;
     int ridx = kvalue.idx + op.rix;
     if (config.opt_object_new) {
+        statics.opt_object_new += 1;
         FunctionType fnTy = opt.kfunctype["fnewObjectTy"];
         Function func = opt.m.getOrInsertFunction("new_Object_init2", fnTy);
         Value cid = ConstantInt.get(opt.intTy, op.c.getClassTablePtr());
@@ -1425,6 +1451,7 @@ BuilderFunc=Func<Value, Value=>Value>;
 Type get_atype(Compiler asm, Class type) {
     Type aType;
     if (config.opt_array_access) {
+        statics.opt_array_access += 1;
         if (type == Int || type == Boolean) {
             aType = asm.opt.ktype["iArrayPtrTy"];
         } else if (type == Float) {
@@ -1503,6 +1530,7 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
         if (inst0.opt != null) {
             Tuple<Value, BasicBlock> t = inst0.opt;
             if (t[1] == curBB) {
+                statics.opt_field_access += 1;
                 v = t[0];
             }
         }
@@ -1518,7 +1546,6 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
     }
 
     if (userType) {
-        print cname, offset;
         v = builder.createStructGEP(v, offset);
     }
     else {
@@ -1530,7 +1557,6 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
 
 @Public @Override void K_GetField.codegen (Compiler asm) {
     IRBuilder builder = asm.opt.builder;
-    OUT.println(dump());
     Value v = get_field_ptr(asm, op.inst0, op.bn);
     v = builder.createBitCast(v, PointerType.get(asm.convertType(type)));
     v = builder.createLoad(v);
