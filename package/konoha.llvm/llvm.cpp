@@ -388,7 +388,6 @@ KMETHOD IRBuilder_new(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-
 //## ReturnInst IRBuilder.CreateRetVoid();
 KMETHOD IRBuilder_createRetVoid(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -2018,6 +2017,18 @@ KMETHOD Module_createExecutionEngine(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::object_free<ExecutionEngine>);
 	RETURN_(p);
 }
+
+static int BasicBlock_compareTo(kRawPtr *p1, kRawPtr *p2)
+{
+	return (p1->rawptr != p2->rawptr);
+}
+
+DEFAPI(void) defBasicBlock(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
+{
+	cdef->name = "llvm::BasicBlock";
+	cdef->compareTo = BasicBlock_compareTo;
+}
+
 //## @Static BasicBlock BasicBlock.create(Function parent, String name);
 KMETHOD BasicBlock_create(CTX ctx, ksfp_t *sfp _RIX)
 {

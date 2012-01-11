@@ -188,9 +188,10 @@ class K_Opcode {
 
 class K_Inst {
     K_Value kvalue;
-    int defidx;
     Class type;
     Value value;
+    dynamic opt;
+    int defidx;
     int uline;
     String attribute;
 
@@ -199,6 +200,7 @@ class K_Inst {
     /*for dump const_value*/
     String dynName;
     void init_kvalue(K_Value v, Class c) {
+        this.opt = null;
         this.kvalue = v;
         if (c == null) {
             c = v.type;

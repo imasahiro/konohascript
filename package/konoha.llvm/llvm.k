@@ -47,7 +47,7 @@ include "lib:gluelink";
 @RawPtr class BranchInst extends Instruction;
 @RawPtr class CallInst   extends Instruction;
 @RawPtr class GetElementPtrInst extends Instruction;
-@Rawptr class BasicBlock;
+@Rawptr @Native class BasicBlock;
 @RawPtr class Module;
 @RawPtr class Function extends Value;
 @RawPtr class PHINode extends Value;

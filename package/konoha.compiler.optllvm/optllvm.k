@@ -52,6 +52,7 @@ class LLVMConfig {
     boolean opt_safepoint = true;
     boolean opt_array_access = false;
     boolean opt_object_new = false;
+    boolean opt_field_access = false;
     String dllext = "dylib";
     LLVMConfig() {
         boolean b = "true" == $env.LLVM_DEBUG;
@@ -64,6 +65,7 @@ class LLVMConfig {
         boolean s = "true" == $env.LLVM_ENABLE_OPT_SAFEPOINT;
         boolean a = "true" == $env.LLVM_ENABLE_OPT_ARRAY_ACCESS;
         boolean o = "true" == $env.LLVM_ENABLE_OPT_OBJECT_NEW;
+        boolean f = "true" == $env.LLVM_ENABLE_OPT_CACHE_FIELD_ACCESS;
         this.debug               = b;
         this.verify_each         = v;
         this.module_dump         = d;
@@ -74,6 +76,7 @@ class LLVMConfig {
         this.opt_safepoint       = e && !(LLVM_ENABLE_SAFEPOINT) && s;
         this.opt_array_access    = e && a;
         this.opt_object_new      = e && o;
+        this.opt_field_access    = e && f;
         this.dllext = $env.LLVM_OS_ARCH;
         if (this.dllext == null) {
             this.dllext = "dylib";
@@ -498,17 +501,19 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     Type arrayPtrTy = PointerType.get(arrayTy);
     opt.ktype["arrayPtrTy"] = arrayPtrTy;
 
-    fields = [];
-    fields.add(hObjectTy);
-    fields.add(Type.getInt64PtrTy());
-    Type iArrayPtrTy = PointerType.get(StructType.create(fields, "IArray", false));
-    opt.ktype["iArrayPtrTy"] = iArrayPtrTy;
+    if (config.opt_array_access) {
+        fields = [];
+        fields.add(hObjectTy);
+        fields.add(Type.getInt64PtrTy());
+        Type iArrayPtrTy = PointerType.get(StructType.create(fields, "IArray", false));
+        opt.ktype["iArrayPtrTy"] = iArrayPtrTy;
 
-    fields = [];
-    fields.add(hObjectTy);
-    fields.add(Type.getFloatPtrTy());
-    Type fArrayPtrTy = PointerType.get(StructType.create(fields, "FArray", false));
-    opt.ktype["fArrayPtrTy"] = fArrayPtrTy;
+        fields = [];
+        fields.add(hObjectTy);
+        fields.add(Type.getDoublePtrTy());
+        Type fArrayPtrTy = PointerType.get(StructType.create(fields, "FArray", false));
+        opt.ktype["fArrayPtrTy"] = fArrayPtrTy;
+    }
 
     fields = [];
     fields.add(hObjectTy);
@@ -1440,7 +1445,7 @@ Type get_atype(Compiler asm, Class type) {
     v = builder.createBitCast(v, aType);
     v = builder.createStructGEP(v, 1);
     v = builder.createLoad(v);
-    if (!config.opt_array_access) {
+    if (config.opt_array_access == false) {
         v = builder.createBitCast(v, PointerType.get(asm.opt.intTy));
     }
     v = builder.createInBoundsGEP1(v, op.inst1.getLLVMValue(asm));
@@ -1479,44 +1484,62 @@ Type get_atype(Compiler asm, Class type) {
     }
     setLLVMValue(asm, v);
 }
+
+Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
+    Value v = null;
+    IRBuilder builder = asm.opt.builder;
+    BasicBlock curBB = builder.getInsertBlock();
+    String cname = (to String) inst0.type;
+    Type type = asm.user_type[cname];
+    if (type == null) {
+        asm.register_user_class(inst0.type, cname);
+    }
+    type = asm.user_type[cname];
+    Boolean userType = (type != null);
+    if (userType == false) {
+        type = asm.opt.ktype["objectFieldPtrTy"];
+    }
+    if (config.opt_field_access) {
+        if (inst0.opt != null) {
+            Tuple<Value, BasicBlock> t = inst0.opt;
+            if (t[1] == curBB) {
+                v = t[0];
+            }
+        }
+    }
+    if (v == null) {
+        v = inst0.getLLVMValue(asm);
+        v = builder.createBitCast(v, type);
+        v = builder.createStructGEP(v, 1);
+        v = builder.createLoad(v);
+        if (config.opt_field_access) {
+            inst0.opt = (v, curBB);
+        }
+    }
+
+    if (userType) {
+        print cname, offset;
+        v = builder.createStructGEP(v, offset);
+    }
+    else {
+        v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
+        v = builder.createConstGEP1_32(v, offset);
+    }
+    return v;
+}
+
 @Public @Override void K_GetField.codegen (Compiler asm) {
     IRBuilder builder = asm.opt.builder;
-    Value v = op.inst0.getLLVMValue(asm);
-    v = builder.createBitCast(v, asm.opt.ktype["objectPtrTy"]);
-    v = builder.createStructGEP(v, 1);
-    v = builder.createLoad(v);
-    v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
-    Value vn = ConstantInt.get(asm.opt.intTy, op.bn);
-    v = builder.createInBoundsGEP1(v, vn);
+    OUT.println(dump());
+    Value v = get_field_ptr(asm, op.inst0, op.bn);
     v = builder.createBitCast(v, PointerType.get(asm.convertType(type)));
     v = builder.createLoad(v);
     setLLVMValue(asm, v);
 }
 @Public @Override void K_SetField.codegen(Compiler asm) {
     IRBuilder builder = asm.opt.builder;
-    Value v = op.inst0.getLLVMValue(asm);
-    String cname = (to String) op.inst0.type;
-    Type type = asm.user_type[cname];
-    if (type == null) {
-        asm.register_user_class(op.inst0.type, cname);
-    }
-    type = asm.user_type[cname];
-    if (type != null) {
-        v = builder.createBitCast(v, type);
-        v = builder.createStructGEP(v, 1);
-        v = builder.createLoad(v);
-        v = builder.createStructGEP(v, op.an);
-        v = builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
-    }
-    else {
-        Value vn = ConstantInt.get(asm.opt.intTy, op.an);
-        Type ptrTy = PointerType.get(asm.convertType(op.inst1.type));
-        v = builder.createBitCast(v, asm.opt.ktype["objectFieldPtrTy"]);
-        v = builder.createStructGEP(v, 1);
-        v = builder.createLoad(v);
-        v = builder.createInBoundsGEP1(v, vn);
-        v = builder.createBitCast(v, ptrTy);
-    }
+    Value v = get_field_ptr(asm, op.inst0, op.an);
+    v = builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
     v = builder.createStore(op.inst1.getLLVMValue(asm), v);
     setLLVMValue(asm, v);
 }
