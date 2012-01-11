@@ -272,10 +272,10 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 @Virtual @Public void Compiler.initFunc(K_Function func) {
     Value[] wvargs = this.opt.wrapperfunc.getArguments();
-    Type[] innerArgsTy = [wvargs[0].getType(), wvargs[1].getType()];
+    Type[] argsTy = [wvargs[0].getType(), wvargs[1].getType()];
 
     foreach(K_ARGUMENT inst in func.funcargs) {
-        innerArgsTy.add(this.convertType(inst.type));
+        argsTy.add(this.convertType(inst.type));
     }
     Type innerRetTy = null;
     if (this.retclass != null) {
@@ -283,13 +283,20 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     } else {
         innerRetTy = Type.getVoidTy();
     }
-    FunctionType funcTy = FunctionType.get(innerRetTy, innerArgsTy, false);
-    String funcname = this.mtd.toString() + "_inner";
+    FunctionType funcTy = FunctionType.get(innerRetTy, argsTy, false);
+    String funcname = this.mtd.toString();
     func.func = Function.create(funcname, funcTy, this.opt.m, GlobalValue.InternalLinkage);
     this.opt.func = func.func;
+    Array<Value> vargs = func.func.getArguments();
+    vargs[0].setName("lctx");
+    vargs[1].setName("lsfp");
+    for (int i=2; i < vargs.size; i++) {
+        String name = "larg" + (i-2);
+        vargs[i].setName(name);
+    }
 }
 @Public void Compiler.init(Method mtd) {
-    opt.wrapperfunc = Function.create(mtd.toString(), opt.funcTy,
+    opt.wrapperfunc = Function.create(mtd.toString() + "_wrapper", opt.funcTy,
             opt.m, GlobalValue.ExternalLinkage);
     Array<Value> vargs = opt.wrapperfunc.getArguments();
     opt.ctx = vargs[0];
@@ -896,12 +903,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         vargs.add(inst.getLLVMValue(asm));
     }
     Value res = asm.opt.builder.createCall(asm.opt.func, vargs);
-    Type innerRetTy = null;
+    Type retTy = null;
     if (asm.retclass != null) {
-        innerRetTy = asm.convertType(asm.retclass);
-        asm.opt.builder.createStoreValueToSfp(asm.opt.sfp, innerRetTy, K_RTNIDX, res);
+        retTy = asm.convertType(asm.retclass);
+        asm.opt.builder.createStoreValueToSfp(asm.opt.sfp, retTy, K_RTNIDX, res);
     } else {
-        innerRetTy = Type.getVoidTy();
+        retTy = Type.getVoidTy();
     }
     asm.opt.builder.createRetVoid();
 }
@@ -1607,9 +1614,9 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
         if (!(mtd.isStatic() && !mtdName.endsWith("new") && !mtdName.endsWith("Script."))) {
                 index += 1;
         }
-        String name = "arg"+index;
+        String name = "arg"+(index-1);
         v = vargs[index];
-        v.setName();
+        v.setName(name);
         op.inner = false;
     }
     setLLVMValue(asm, v);
