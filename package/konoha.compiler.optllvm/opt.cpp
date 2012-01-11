@@ -99,7 +99,7 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
 
     /* cond = (ctx->safepoint == 1) */
     Value *V    = builder.CreateLoad(builder.CreateStructGEP(vctx, 0));
-    Value *Cond = builder.CreateICmpEQ(V, ConstantInt::get(IntTy, 1));
+    Value *Cond = builder.CreateICmpEQ(V, ConstantInt::get(Type::getInt32Ty(Context), 1));
 
     builder.CreateCondBr(Cond, bb1, bb2);
     builder.SetInsertPoint(bb1);

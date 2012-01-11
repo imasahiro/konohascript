@@ -520,7 +520,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     Type objectPtrPtrTy = PointerType.get(objectPtrTy);
     opt.ktype["objectTy"]       = objectTy;
     opt.ktype["objectPtrTy"]    = objectPtrTy;
-    opt.ktype["objectPtrPtrTy"] = objectPtrPtrTy;
+    //opt.ktype["objectPtrPtrTy"] = objectPtrPtrTy;
 
     fields = [];
     fields.add(hObjectTy);
@@ -562,7 +562,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     fields.add(objectPtrTy);
     Type objectFieldTy    = StructType.create(fields, "ObjectField", false);
     Type objectFieldPtrTy = PointerType.get(objectFieldTy);
-    opt.ktype["objectFieldTy"] = objectFieldTy;
+    //opt.ktype["objectFieldTy"] = objectFieldTy;
     opt.ktype["objectFieldPtrTy"] = PointerType.get(objectFieldTy);
 
     fields = [];
@@ -573,7 +573,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     fields.add(int8PtrTy);
     Type outputStreamTy = StructType.create(fields, "OutputStream", false);
     Type outputStreamPtrTy = PointerType.get(outputStreamTy);
-    opt.ktype["outputStreamPtrTy"] = outputStreamPtrTy;
 
     fields = [];
     fields.add(hObjectTy);
@@ -583,7 +582,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     fields.add(int8PtrTy);
     Type inputStreamTy = StructType.create(fields, "InputStream", false);
     Type inputStreamPtrTy = PointerType.get(inputStreamTy);
-    opt.ktype["inputStreamPtrTy"] = inputStreamPtrTy;
 
     fields = [];
     fields.add(objectPtrTy);
@@ -593,88 +591,45 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.ktype["sfpPtrTy"] = sfpPtrTy;
 
     fields = [];
-    fields.add(int64Ty);
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(inputStreamPtrTy);
+    /* 00 */fields.add(int32Ty);
+    /* 01 */fields.add(PointerType.get(StructType.create(null, "share", false)));
+    /* 02 */fields.add(PointerType.get(StructType.create(null, "memshare", false)));
+    /* 03 */fields.add(PointerType.get(StructType.create(null, "memlocal", false)));
+    /* 04 */fields.add(PointerType.get(StructType.create(null, "stat", false)));
+    /* 05 */fields.add(PointerType.get(StructType.create(null, "spi", false)));
+    /* 06 */fields.add(PointerType.get(StructType.create(null, "api2", false)));
+    /* 07 */fields.add(PointerType.get(StructType.create(null, "script", false)));
+    /* 08 */fields.add(sfpPtrTy); /*stack*/
+    /* 09 */fields.add(sfpPtrTy); /*esp*/
+    /* 10 */fields.add(int64Ty);  /*stacksize*/
+    /* 11 */fields.add(sfpPtrTy); /*stack_uplimit*/
+    /* 12 */fields.add(int8PtrTy);/*cstack_bottom*/
+    /* 13 */fields.add(PointerType.get(StructType.create(null, "Exception", false)));
+    /* 14 */fields.add(PointerType.get(StructType.create(null, "ExceptionHandler", false)));
+    /* 15 */fields.add(objectPtrTy);
+    /* 16 */fields.add(int64Ty); /*isEvaled*/
+    /* 17 */fields.add(arrayPtrTy);
+    /* 18 */fields.add(arrayPtrTy);
+    /* 19 */fields.add(PointerType.get(StructType.create(null, "mtdcache", false)));
+    /* 20 */fields.add(PointerType.get(StructType.create(null, "tmrcache", false)));
+    /* 21 */fields.add(stringPtrTy);
+    /* 22 */fields.add(inputStreamPtrTy);
+    /* 23 */fields.add(outputStreamPtrTy);
+    /* 24 */fields.add(outputStreamPtrTy);
+    fields.add(PointerType.get(StructType.create(null, "kBytes", false)));
     fields.add(outputStreamPtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
+    fields.add(PointerType.get(StructType.create(null, "kGamma", false)));
+    fields.add(PointerType.get(StructType.create(null, "kMap", false)));
+    fields.add(Type.getInt32Ty()); /*flag*/
+    fields.add(Type.getInt32Ty());
+    fields.add(PointerType.get(StructType.create(null, "kCtx", false)));
+    fields.add(int8PtrTy);/*parent*/
+    fields.add(int8PtrTy);/*ctxlock*/
+    fields.add(ArrayType.get(Type.getInt8Ty(), 16));
     fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(arrayPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    Type sysExTy = StructType.create(fields, "sysEx", false);
-
-    fields = [];
-    fields.add(hObjectTy);
-    fields.add(sysExTy);
-    Type sysTy = StructType.create(fields, "System", false);
-    Type sysPtrTy = PointerType.get(sysTy);
-    opt.ktype["sysPtrTy"] = sysPtrTy;
-
-    fields = [];
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(sysPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(sfpPtrTy);
-    fields.add(sfpPtrTy);
-    fields.add(int64Ty);
-    fields.add(sfpPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(objectPtrTy);
-    fields.add(objectPtrTy);
-    fields.add(int64Ty);
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(objectPtrPtrTy);
-    fields.add(int64Ty);
-    fields.add(objectPtrPtrTy);
-    fields.add(int64Ty);
-    fields.add(objectPtrPtrTy);
-    fields.add(int64Ty);
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(inputStreamPtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(Type.getInt32Ty);
-    fields.add(Type.getInt32Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    Type[] vec16_fields = [];
-    for (int i=0; i < 16; i++) {
-        vec16_fields.add(Type.getInt1Ty());
-    }
-    fields.add(StructType.get(vec16_fields, false));
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(objectPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
+    fields.add(int32Ty);
+    fields.add(voidPtrTy);
+    fields.add(PointerType.get(StructType.create(null, "kFunc", false)));
 
     Type ctxTy = StructType.create(fields, "ctx", false);
     Type ctxPtrTy = PointerType.get(ctxTy);
@@ -857,7 +812,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         Value vsafepoint = opt.builder.createStructGEP(opt.ctx, 0);
         vsafepoint = opt.builder.createLoad(vsafepoint);
         BasicBlock bbThen = BasicBlock.create(opt.func, "safepoint");
-        Value cond = opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(opt.intTy, 1));
+        Value cond = opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(Type.getInt32Ty(), 1));
         opt.builder.createCondBr(cond, bbThen, opt.bblist2[idx]);
         opt.builder.setInsertPoint(bbThen);
         asm.shiftesp(this.safepoint);
@@ -1335,6 +1290,29 @@ BuilderFunc=Func<Value, Value=>Value>;
             return;
         }
     }
+
+    if (op.mtd == asm.system_method[1]) {
+        /* Ctx.getIn() */
+        Value v = builder.createStructGEP(vctx, 22);
+        v = builder.createLoad(v);
+        v = builder.createBitCast(v, asm.convertType(type));
+        setLLVMValue(asm, v);
+        return;
+    } else if (op.mtd == asm.system_method[2]) {
+        /* Ctx.getOut() */
+        Value v = builder.createStructGEP(vctx, 23);
+        v = builder.createLoad(v);
+        v = builder.createBitCast(v, asm.convertType(type));
+        setLLVMValue(asm, v);
+        return;
+    } else if (op.mtd == asm.system_method[3]) {
+        /* Ctx.getErr() */
+        Value v = builder.createStructGEP(vctx, 24);
+        v = builder.createLoad(v);
+        v = builder.createBitCast(v, asm.convertType(type));
+        setLLVMValue(asm, v);
+        return;
+    }
     if (op.ftype != FUNC_FASTCALL) {
         func = mtdNC;
         func = builder.createStructGEP(func, 4);
@@ -1556,6 +1534,8 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
         v = builder.createStructGEP(v, offset);
     }
     else {
+        throw new Exception();
+        //TODO
         v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
         v = builder.createConstGEP1_32(v, offset);
     }

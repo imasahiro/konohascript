@@ -2131,6 +2131,16 @@ KMETHOD StructType_create(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## @Native @Static ArrayType ArrayType.get(Type t, int elemSize);
+KMETHOD ArrayType_get(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Type *Ty = konoha::object_cast<Type *>(sfp[1].p);
+	kint_t N = sfp[2].bvalue;
+	ArrayType *ptr = ArrayType::get(Ty, N);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
 //## @Native void StructType.setBody(Array<Type> args, boolean isPacked);
 KMETHOD StructType_setBody(CTX ctx, ksfp_t *sfp _RIX)
 {
