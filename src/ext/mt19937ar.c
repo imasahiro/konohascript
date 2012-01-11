@@ -41,8 +41,6 @@
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 */
 
-#include <konoha1.h>  // added to integrate konoha
-
 #ifdef __cplusplus
 extern "C" {
 #endif

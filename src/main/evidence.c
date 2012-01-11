@@ -33,7 +33,6 @@
 
 #if defined(K_USING_POSIX_)
 #include<time.h>
-#include<errno.h>
 #include<unistd.h>
 #endif
 

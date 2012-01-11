@@ -832,7 +832,9 @@ static char* new_xmemarena(CTX ctx, size_t size)
 	return (char*)ptr;
 }
 
+#ifndef SIZEOF_VOIDP
 #define SIZEOF_VOIDP  sizeof(void*)
+#endif
 
 void *knh_xmalloc(CTX ctx, size_t size)
 {
