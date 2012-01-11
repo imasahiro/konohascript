@@ -598,6 +598,18 @@ class K_Function {
         return v;
     }
 
+    Boolean checkBaseType(Class c1, Class c2) {
+        String t1 = (to String) c1;
+        String t2 = (to String) c2;
+        String[] types = ["konoha.Array", "konoha.Map", "konoha.Array", "konoha.Func", "konoha.Iterator"];
+        for (int i=0; i < types.size; i++) {
+            String type = types[i];
+            if (t1.startsWith(type) && t2.startsWith(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
     K_Value getKValue(int idx, Class type) {
         this.addClass(type);
         K_Value res = value_table[(String)idx];
@@ -605,18 +617,7 @@ class K_Function {
             value_table[(String)idx] = new K_Value(idx, type);
         } else {
             Class rtype = res.type;
-            //boolean tcheck = res.type != type &&
-            //    !(
-            //            str_type1.startsWith("konoha.Array")
-            //            && str_type2.startsWith("konoha.Array")
-            //            || str_type1.startsWith("konoha.Map")
-            //            && str_type2.startsWith("konoha.Map")
-            //            || str_type1.startsWith("konoha.Func")
-            //            && str_type2.startsWith("konoha.Func")
-            //            || str_type1.startsWith("konoha.Iterator")
-            //            && str_type2.startsWith("konoha.Iterator")
-            //     );
-            if (rtype != type && !(rtype.baseClass == type.baseClass)) {
+            if (rtype != type && !checkBaseType(rtype, type)) {
                 value_table[(String)idx] = new K_Value(idx, type);
             }
         }
