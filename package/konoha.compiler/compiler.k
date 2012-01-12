@@ -432,6 +432,7 @@ class K_ARGUMENT extends K_Inst {
 }
 class K_Function {
     boolean undeveloped;
+    Method mtd;
     String name;
     K_BasicBlock[] bbs;
     Class[] declareclass_func;
@@ -471,8 +472,10 @@ class K_Function {
     K_BasicBlock curBB;
     String mtdName;
     Function func;
+    Function wfunc;
 
     K_Function(Method mtd) {
+        this.mtd = mtd;
         this.declareclass_func = [];
         this.undeveloped = false;
         this.hasReturn = false;

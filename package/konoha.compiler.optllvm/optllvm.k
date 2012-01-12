@@ -54,6 +54,7 @@ class LLVMConfig {
     boolean opt_array_access;
     boolean opt_object_new;
     boolean opt_field_access;
+    boolean opt_lazycompilation;
     String dllext = "dylib";
     LLVMConfig() {
         boolean b = "true" == $env.LLVM_DEBUG;
@@ -68,6 +69,7 @@ class LLVMConfig {
         boolean a = "true" == $env.LLVM_ENABLE_OPT_ARRAY_ACCESS;
         boolean o = "true" == $env.LLVM_ENABLE_OPT_OBJECT_NEW;
         boolean f = "true" == $env.LLVM_ENABLE_OPT_CACHE_FIELD_ACCESS;
+        boolean c = "true" == $env.LLVM_ENABLE_OPT_LAZY_COMPILATION;
         this.debug               = b;
         this.print_statics       = p;
         this.verify_each         = v;
@@ -80,6 +82,11 @@ class LLVMConfig {
         this.opt_array_access    = e && a;
         this.opt_object_new      = e && o;
         this.opt_field_access    = e && f;
+        //FIXME if we enable config.opt_lazycompilation,
+        //      lambda method with global variable decl will
+        //      break because Constructor for global variable IS_Stmt
+        //      not defined and Constructor is abstract methods.
+        this.opt_lazycompilation = e && c;
         this.dllext = $env.LLVM_OS_ARCH;
         if (this.dllext == null) {
             this.dllext = "dylib";
@@ -99,6 +106,7 @@ class LLVMStatics {
     int opt_object_new;
     int opt_field_access;
     int compile_time;
+    int optimize_time;
 }
 
 LLVMConfig  config  = new LLVMConfig();
@@ -121,7 +129,6 @@ LLVMStatics statics = new LLVMStatics();
 //    Type objectTy;
 //    Value     ctx;
 //    Value     sfp;
-//    Value     rix;
 //    BasicBlock[] bblist;
 //    BasicBlock[] bblist2;
 //}
@@ -148,6 +155,16 @@ System.addClassField(CompilerOpt, BasicBlock[],         "bblist");
 System.addClassField(CompilerOpt, BasicBlock[],         "bblist2");
 System.addClassField(CompilerOpt, GlobalVariable[],     "global_list");
 System.addClassField(CompilerOpt, Int[],                "addr_list");
+System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
+
+@Public void CompilerOpt.reset(Value[] args, K_Function f) {
+    this.func = f.func;
+    this.wrapperfunc = f.wfunc;
+    this.ctx = args[0];
+    this.sfp = args[1];
+    this.bblist = [];
+    this.bblist2 = [];
+}
 
 @Public GlobalVariable CompilerOpt.get_or_create(Type type, int addr, String name) {
     GlobalVariable[] glist = this.global_list;
@@ -271,7 +288,8 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     }
 }
 @Virtual @Public void Compiler.initFunc(K_Function func) {
-    Value[] wvargs = this.opt.wrapperfunc.getArguments();
+    func.wfunc = this.opt.wrapperfunc;
+    Value[] wvargs = func.wfunc.getArguments();
     Type[] argsTy = [wvargs[0].getType(), wvargs[1].getType()];
 
     foreach(K_ARGUMENT inst in func.funcargs) {
@@ -330,15 +348,17 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     if (opt.fpm == null) {
         FunctionPassManager fpm = new FunctionPassManager(opt.m);
         opt.fpm = fpm;
-        fpm.add(LLVM.createVerifierPass());
-        if (config.enable_opt) {
-            fpm.add(opt.ee.getTargetData());
-            fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
-            fpm.add(LLVM.createBasicAliasAnalysisPass());
-            fpm.add(LLVM.createCFGSimplificationPass());
-            fpm.add(LLVM.createScalarReplAggregatesPass());
-            fpm.add(LLVM.createEarlyCSEPass());
-            fpm.add(LLVM.createLowerExpectIntrinsicPass());
+        if (config.opt_lazycompilation == false) {
+            fpm.add(LLVM.createVerifierPass());
+            if (config.enable_opt) {
+                fpm.add(opt.ee.getTargetData());
+                fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
+                fpm.add(LLVM.createBasicAliasAnalysisPass());
+                fpm.add(LLVM.createCFGSimplificationPass());
+                fpm.add(LLVM.createScalarReplAggregatesPass());
+                fpm.add(LLVM.createEarlyCSEPass());
+                fpm.add(LLVM.createLowerExpectIntrinsicPass());
+            }
         }
     }
     if (config.intrinsic_method) {
@@ -379,15 +399,34 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         kfunc.curBB.insts.add(inst);
         kfunc.curBB.hasReturn = true;
     }
+    if (config.opt_lazycompilation) {
+        if (mtd.getName() != "" && mtd.toString().endsWith("Script.main") == false) {
+            this.opt.compilation_queue.add(kfunc);
+            return;
+        }
+    }
     if (!kfunc.isUndeveloped()) {
-        kfunc.codegen(this);
         FunctionPassManager fpm = opt.fpm;
-        int fpm_start = System.getTime();
         fpm.doInitialization();
-        fpm.run(opt.wrapperfunc);
-        fpm.run(opt.func);
+        int compile_start = System.getTime();
+        if (config.opt_lazycompilation &&
+                (mtd.getName() == "" || mtd.toString().endsWith("Script.main"))) {
+            K_Function[] cqueue = this.opt.compilation_queue;
+            //FIXME Iterator BUG foreach (K_Function f in cqueue);
+            for (int i; i < cqueue.size; i++) {
+                K_Function f = cqueue[i];
+                f.codegen(this);
+            }
+        }
+        kfunc.codegen(this);
+        int compile_end = System.getTime();
+        statics.compile_time += compile_end - compile_start;
+
+        int fpm_start = System.getTime();
+        fpm.run(kfunc.wfunc);
+        fpm.run(kfunc.func);
         int fpm_end = System.getTime();
-        statics.compile_time += fpm_end - fpm_start;
+        statics.optimize_time += fpm_end - fpm_start;
 
         if (mtd.getName() == "") {
         }
@@ -396,6 +435,15 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             this.compiled_methods = {};
             PassManager mpm = new PassManager();
             if (config.enable_opt) {
+                if (config.opt_lazycompilation) {
+                    fpm.add(opt.ee.getTargetData());
+                    fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
+                    fpm.add(LLVM.createBasicAliasAnalysisPass());
+                    fpm.add(LLVM.createCFGSimplificationPass());
+                    fpm.add(LLVM.createScalarReplAggregatesPass());
+                    fpm.add(LLVM.createEarlyCSEPass());
+                    fpm.add(LLVM.createLowerExpectIntrinsicPass());
+                }
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createIPSCCPPass());
                 //FIXME mpm.add(LLVM.createDeadArgEliminationPass());
@@ -464,15 +512,27 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             int mpm_start = System.getTime();
             mpm.run(opt.m);
             int mpm_end = System.getTime();
-            statics.compile_time += mpm_end - mpm_start;
+            statics.optimize_time += mpm_end - mpm_start;
             if (config.module_dump) {
                 opt.m.dump();
             }
-            if (config.print_statics) {
-                OUT.println(statics);
+        }
+        if (config.opt_lazycompilation) {
+            if ((mtd.getName() == "" || mtd.toString().endsWith("Script.main"))) {
+                K_Function[] cqueue = this.opt.compilation_queue;
+                //FIXME Iterator BUG foreach (K_Function f in cqueue);
+                for (int i; i < cqueue.size; i++) {
+                    K_Function f = cqueue[i];
+                    f.mtd.setFunction(opt.ee.getPointerToFunction(f.wfunc));
+                }
+                this.opt.compilation_queue = [];
+
             }
         }
-        mtd.setFunction(opt.ee.getPointerToFunction(opt.wrapperfunc));
+        mtd.setFunction(opt.ee.getPointerToFunction(kfunc.wfunc));
+        if (config.print_statics && mtd.toString().endsWith("Script.main")) {
+            OUT.println(statics);
+        }
     }
 }
 
@@ -847,17 +907,19 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 
 @Public void K_Function.buildWrapperFunc(Compiler asm) {
-    BasicBlock bb = BasicBlock.create(asm.opt.wrapperfunc, "EntryBlock");
+    BasicBlock bb = BasicBlock.create(wfunc, "EntryBlock");
     asm.opt.builder = new IRBuilder(bb);
     asm.opt.builder.setInsertPoint(bb);
-    Array<Value> wvargs = asm.opt.wrapperfunc.getArguments();
+    Array<Value> wvargs = wfunc.getArguments();
     Value[] vargs = [wvargs[0], wvargs[1]];
+    asm.opt.ctx = vargs[0];
+    asm.opt.sfp = vargs[1];
     foreach(K_ARGUMENT inst in funcargs) {
         inst.value = null;
         inst.codegen(asm);
         vargs.add(inst.getLLVMValue(asm));
     }
-    Value res = asm.opt.builder.createCall(asm.opt.func, vargs);
+    Value res = asm.opt.builder.createCall(this.func, vargs);
     Type retTy = null;
     if (asm.retclass != null) {
         retTy = asm.convertType(asm.retclass);
@@ -877,11 +939,10 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 
 @Public void K_Function.codegen(Compiler asm) {
-    Array<Value> args = asm.opt.func.getArguments();
-    Value old_ctx = asm.opt.ctx;
-    Value old_sfp = asm.opt.sfp;
-    asm.opt.ctx = args[0];
-    asm.opt.sfp = args[1];
+    Array<Value> args = this.func.getArguments();
+    asm.mtd = this.mtd;
+    asm.retclass = this.mtd.getReturnType();
+    asm.opt.reset(args, this);
 
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] != null) {
@@ -932,9 +993,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             bbs[i].setSafePointMetaData(asm);
         }
     }
-    asm.opt.ctx = old_ctx;
-    asm.opt.sfp = old_sfp;
-
     buildWrapperFunc(asm);
 }
 
