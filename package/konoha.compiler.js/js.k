@@ -32,7 +32,14 @@ System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 String mtdclass2str(String s) {
     String[] ary = s.split(".");
     if (|ary| >= 3 && ary[0] == "konoha") {
-        return ary[0] + "." + ary[|ary|-2];
+        String res = "";
+        for (int i = 0; i < |ary|-1; i++) {
+            res += ary[i];
+            if (i != |ary|-2) {
+                res += ".";
+            }
+        }
+        return res;
     } else {
         return ary[|ary|-2] + "_";
     }
