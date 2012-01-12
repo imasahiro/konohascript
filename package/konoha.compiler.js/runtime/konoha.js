@@ -11,12 +11,13 @@ konoha.Object.prototype.toString = function() {
     return this.rawptr;
 }
 
-
+/* Class */
 konoha.Class = function(rawptr) {
     this.rawptr = rawptr;
 }
 konoha.Class.prototype = new konoha.Object();
-konoha.Class.konohaclass = "konoha.Class";
+konoha.Class.prototype.konohaclass = "konoha.Class";
+
 /* OutputStream */
 konoha.OutputStream = function(isCwb) {
     this.cwb = "";
@@ -88,13 +89,13 @@ konoha.OutputStream = function(isCwb) {
     }
 }
 konoha.OutputStream.prototype = new konoha.Object();
-konoha.OutputStream.konohaclass = "konoha.OutputStream";
+konoha.OutputStream.prototype.konohaclass = "konoha.OutputStream";
 
 /* System */
 konoha.System = function() {
 }
 konoha.System.prototype = new konoha.Object();
-konoha.System.konohaclass = "konoha.System";
+konoha.System.prototype.konohaclass = "konoha.System";
 konoha.System.getOut = function() {
     var os = new konoha.OutputStream(false);
     return os;
@@ -139,7 +140,7 @@ konoha.Map = function(rawptr) {
     }
 }
 konoha.Map.prototype = new konoha.Object();
-konoha.Map.konohaclass = "konoha.Map";
+konoha.Map.prototype.konohaclass = "konoha.Map";
 
 
 /* Array */
@@ -207,7 +208,7 @@ konoha.Array = function(rawptr) {
     }
 }
 konoha.Array.prototype = new konoha.Object();
-konoha.Array.konohaclass = "konoha.Array";
+konoha.Array.prototype.konohaclass = "konoha.Array";
 /* Iterator */
 konoha.Iterator = function(rawptr) {
     this.rawptr = rawptr;
@@ -224,7 +225,7 @@ konoha.Iterator = function(rawptr) {
     }
 }
 konoha.Iterator.prototype = new konoha.Object();
-konoha.Iterator.konohaclass = "konoha.Iterator";
+konoha.Iterator.prototype.konohaclass = "konoha.Iterator";
 
 /* String */
 konoha.String = function(rawptr) {
@@ -283,7 +284,7 @@ konoha.String = function(rawptr) {
     }
 }
 konoha.String.prototype = new konoha.Object();
-konoha.String.konohaclass = "konoha.String";
+konoha.String.prototype.konohaclass = "konoha.String";
 
 /* Regex */
 konoha.Regex = function(rawptr) {
@@ -294,20 +295,20 @@ konoha.Regex = function(rawptr) {
     }
 }
 konoha.Regex.prototype = new konoha.Object();
-konoha.Regex.konohaclass = "konoha.Regex";
+konoha.Regex.prototype.konohaclass = "konoha.Regex";
 /* Number */
 konoha.Number = function(rawptr) {
     this.rawptr = rawptr;
 }
 konoha.Number.prototype = new konoha.Object();
-konoha.Number.konohaclass = "konoha.Number";
+konoha.Number.prototype.konohaclass = "konoha.Number";
 
 /* Int */
 konoha.Int = function(rawptr) {
     this.rawptr = rawptr;
 }
 konoha.Int.prototype = new konoha.Number();
-konoha.Int.konohaclass = "konoha.Int";
+konoha.Int.prototype.konohaclass = "konoha.Int";
 
 konoha.Int.random = function() {
     return Math.random();
@@ -327,7 +328,7 @@ konoha.Float = function(rawptr) {
     this.rawptr = rawptr;
 }
 konoha.Float.prototype = new konoha.Number();
-konoha.Float.konohaclass = "konoha.Float";
+konoha.Float.prototype.konohaclass = "konoha.Float";
 
 konoha.Float.random = function() {
     return Math.random();

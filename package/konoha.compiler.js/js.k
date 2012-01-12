@@ -31,8 +31,8 @@ System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 
 String mtdclass2str(String s) {
     String[] ary = s.split(".");
-    if (|ary| >= 3 && ary[|ary|-3] == "konoha") {
-        return "konoha." + ary[|ary|-2];
+    if (|ary| >= 3 && ary[0] == "konoha") {
+        return ary[0] + "." + ary[|ary|-2];
     } else {
         return ary[|ary|-2] + "_";
     }
@@ -248,7 +248,7 @@ LABEL = "label";
 @Public @Override void K_CAST.codegen(Compiler asm) {
     String tcid_str = (to String) op.tcid;
     if (op.scid == Float && op.tcid == Int) {
-        asm.addSource("var " + getName() + " = " + "Math_" + ".floor(" + op.inst0.getName() + ");", 2);
+        asm.addSource("var " + getName() + " = " + "Math" + ".floor(" + op.inst0.getName() + ");", 2);
     } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
         asm.addSource("var " + getName() + " = new " + "konoha.Iterator" + "(" + op.inst0.getName() + ");", 2);
     } else {

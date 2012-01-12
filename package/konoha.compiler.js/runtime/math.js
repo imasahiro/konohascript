@@ -1,15 +1,21 @@
 /* Math */
-function Math_() {
+konoha.Math = function() {
 }
-Math_.sqrt = function(f) {
+
+konoha.Math.prototype = new konoha.Object();
+konoha.Math.prototype.konohaclass = "konoha.math.Math";
+konoha.Math.prototype.sqrt = function(f) {
     return Math.sqrt(f);
 }
-Math_.cos = function(f) {
+konoha.Math.prototype.cos = function(f) {
     return Math.cos(f);
 }
-Math_.sin = function(f) {
+konoha.Math.prototype.sin = function(f) {
     return Math.sin(f);
 }
-Math_.floor = function(f) {
+konoha.Math.prototype.floor = function(f) {
     return Math.floor(f);
+}
+konoha.Math.abs = function(f) {
+    return Math.abs(f);
 }
