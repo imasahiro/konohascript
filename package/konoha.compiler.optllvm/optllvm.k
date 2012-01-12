@@ -520,7 +520,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     Type objectPtrPtrTy = PointerType.get(objectPtrTy);
     opt.ktype["objectTy"]       = objectTy;
     opt.ktype["objectPtrTy"]    = objectPtrTy;
-    //opt.ktype["objectPtrPtrTy"] = objectPtrPtrTy;
+    opt.ktype["objectPtrPtrTy"] = objectPtrPtrTy;
 
     fields = [];
     fields.add(hObjectTy);
@@ -1534,8 +1534,7 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
         v = builder.createStructGEP(v, offset);
     }
     else {
-        throw new Exception();
-        //TODO
+        // access Script Field
         v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
         v = builder.createConstGEP1_32(v, offset);
     }
