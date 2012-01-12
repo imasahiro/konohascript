@@ -1,15 +1,15 @@
 /* Math */
-function __Math__() {
+function Math_() {
 }
-__Math__.sqrt = function(f) {
+Math_.sqrt = function(f) {
     return Math.sqrt(f);
 }
-__Math__.cos = function(f) {
+Math_.cos = function(f) {
     return Math.cos(f);
 }
-__Math__.sin = function(f) {
+Math_.sin = function(f) {
     return Math.sin(f);
 }
-__Math__.floor = function(f) {
+Math_.floor = function(f) {
     return Math.floor(f);
 }

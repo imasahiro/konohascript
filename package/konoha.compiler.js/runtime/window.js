@@ -1,14 +1,14 @@
 /* Document */
 
-__Node__.prototype = new __Object__();
-function __Node__(rawptr){
+Node_.prototype = new konoha.Object();
+function Node_(rawptr){
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Node";
     this.getNodeName = function() {
-        return new __String__(this.rawptr.nodeName);
+        return new konoha.String(this.rawptr.nodeName);
     }
     this.getNodeValue = function() {
-        return new __String__(this.rawptr.nodeValue);
+        return new konoha.String(this.rawptr.nodeValue);
     }
     this.setNodeValue = function(value) {
         this.rawptr.nodeValue = value.rawptr;
@@ -17,40 +17,40 @@ function __Node__(rawptr){
         return this.rawptr.nodeType;
     }
     this.getParentNode = function() {
-        return new __Node__(this.rawptr.parentNode);
+        return new Node_(this.rawptr.parentNode);
     }
     this.appendChild = function(newChild) {
-        return new __Node__(this.rawptr.appendChild(newChild.rawptr));
+        return new Node_(this.rawptr.appendChild(newChild.rawptr));
     }
     this.insertBefore = function(newChild, refChild) {
-        return new __Node__(this.rawptr.insertBefore(newChild.rawptr, refChild.node));
+        return new Node_(this.rawptr.insertBefore(newChild.rawptr, refChild.node));
     }
     this.replaceChild = function(newChild, oldChild) {
-        return new __Node__(this.rawptr.replaceChild(newChild.rawptr, oldChild.rawptr));
+        return new Node_(this.rawptr.replaceChild(newChild.rawptr, oldChild.rawptr));
     }
     this.removeChild = function(oldChild) {
-        return new __Node__(this.rawptr.removeChild(oldChild));
+        return new Node_(this.rawptr.removeChild(oldChild));
     }
     this.getChildNodes = function() {
-        return new __NodeList__(this.rawptr.childNodes);
+        return new Nodelist_(this.rawptr.childNodes);
     }
     this.getAttributes = function() {
-        return new __NamedNodeMap__(this.rawptr.attributes);
+        return new NamedNodeMap_(this.rawptr.attributes);
     }
     this.getOwnerDocument = function() {
-        return new __Document__(this.rawptr.ownerDocument);
+        return new Document_(this.rawptr.ownerDocument);
     }
     this.getFirstChild = function() {
-        return new __Node__(this.rawptr.firstChild);
+        return new Node_(this.rawptr.firstChild);
     }
     this.getLastChild = function() {
-        return new __Node__(this.rawptr.lastChild);
+        return new Node_(this.rawptr.lastChild);
     }
     this.getPreviousSibling = function() {
-        return new __Node__(this.rawptr.previousSibling);
+        return new Node_(this.rawptr.previousSibling);
     }
     this.getNextSibling = function() {
-        return new __Node__(this.rawptr.nextSibling);
+        return new Node_(this.rawptr.nextSibling);
     }
     this.getPrefix = function() {
         return this.rawptr.prefix;
@@ -68,37 +68,37 @@ function __Node__(rawptr){
         return this.rawptr.hasAttributes();
     }
 }
-__NodeList__.prototype = new __Object__();
-function __NodeList__(rawptr) {
+Nodelist_.prototype = new konoha.Object();
+function Nodelist_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.NodeList";
     this.item = function(index) {
-        return new __Node__(this.rawptr.item(index));
+        return new Node_(this.rawptr.item(index));
     }
 }
-__NamedNodeMap__.prototype = new __Object__();
-function __NamedNodeMap__(rawptr) {
+NamedNodeMap_.prototype = new konoha.Object();
+function NamedNodeMap_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.NamedNodeMap";
     this.getNamedItem = function(name) {
-        return new __Node__(this.rawptr.getNamedItem(name.rawptr));
+        return new Node_(this.rawptr.getNamedItem(name.rawptr));
     }
     this.setNamedItem = function(arg) {
-        return new __Node__(this.rawptr.setNamedItem(arg));
+        return new Node_(this.rawptr.setNamedItem(arg));
     }
     this.removeNamedItem = function(name) {
-        return new __Node__(this.rawptr.removeNamedItem(name.raw));
+        return new Node_(this.rawptr.removeNamedItem(name.raw));
     }
     this.item = function(index) {
-        return new __Node__(this.rawptr.item(index));
+        return new Node_(this.rawptr.item(index));
     }
 }
-__CharacterData__.prototype = new __Node__();
-function __CharacterData__(rawptr) {
+CharacterData_.prototype = new Node_();
+function CharacterData_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CharacterData";
     this.getData = function() {
-        return new __String__(this.rawptr.data);
+        return new konoha.String(this.rawptr.data);
     }
     this.setData = function(data) {
         this.rawptr.data = data;
@@ -116,50 +116,50 @@ function __CharacterData__(rawptr) {
         this.rawptr.replaceData(offset, count, arg.rawptr);
     }
 }
-__Text__.prototype = new __CharacterData__();
-function __Text__(rawptr) {
+Text_.prototype = new CharacterData_();
+function Text_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Text";
     this.splitText = function(offset) {
-        return new __Text__(this.rawptr.splitText(offset));
+        return new Text_(this.rawptr.splitText(offset));
     }
 }
-__Attr__.prototype = new __Node__();
-function __Attr__(rawptr) {
+Attr_.prototype = new Node_();
+function Attr_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Attr";
     this.getName = function() {
-        return new __String__(this.rawptr.name);
+        return new konoha.String(this.rawptr.name);
     }
     this.setValue = function(value) {
         this.rawptr.value = value.rawptr;
     }
     this.getValue = function() {
-        return new __String__(this.rawptr.value);
+        return new konoha.String(this.rawptr.value);
     }
 }
-__ImageData__.prototype = new __Object__();
-function __ImageData__(rawptr) {
+ImageData_.prototype = new konoha.Object();
+function ImageData_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.ImageData";
 }
-__Gradient__.prototype = new __Object__();
-function __Gradient__(rawptr) {
+Gradient_.prototype = new konoha.Object();
+function Gradient_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Gradient";
 }
-__Element__.prototype = new __Node__();
-function __Element__(rawptr) {
+Element_.prototype = new Node_();
+function Element_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Element";
     this.getTagName = function() {
         return this.rawptr.tagName;
     }
     this.getAttribute = function(name) {
-        return new __String__(this.rawptr.getAttribute(name.rawptr));
+        return new konoha.String(this.rawptr.getAttribute(name.rawptr));
     }
     this.getAttributeNode = function(name) {
-        return new __Attr__(this.rawptr.getAttributeNode(name.rawptr));
+        return new Attr_(this.rawptr.getAttributeNode(name.rawptr));
     }
     this.setAttribute = function(name, value) {
         this.rawptr.setAttribute(name.rawptr, value.rawptr);
@@ -168,21 +168,21 @@ function __Element__(rawptr) {
         this.rawptr.removeAttribute(name);
     }
     this.removeAttributeNode = function(oldAttr) {
-        return new __Attr__(this.rawptr.removeAttributeNode(oldAttr));
+        return new Attr_(this.rawptr.removeAttributeNode(oldAttr));
     }
     this.getElementsByTagName = function(name) {
         var obj = this.rawptr.getElementsByTagName(name.rawptr);
-        return new __NodeList__(obj);
+        return new Nodelist_(obj);
     }
     this.setAttributeNode = function(newAttr) {
-        return new __Attr__(this.rawptr.setAttributeNode(newAttr.attr));
+        return new Attr_(this.rawptr.setAttributeNode(newAttr.attr));
     }
     this.hasAttribute = function(name) {
         return this.rawptr.hasAttribute(name);
     }
 }
-__Context__.prototype = new __Object__();
-function __Context__(rawptr) {
+Context_.prototype = new konoha.Object();
+function Context_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CanvasContext";
     this.arc = function(x, y, startAngle, endAngle, anticlockwise) {
@@ -207,13 +207,13 @@ function __Context__(rawptr) {
         this.rawptr.closePath();
     }
     this.createImageData = function(image) {
-        return new __ImageData__(this.rawptr.createImageData(image.rawptr));
+        return new ImageData_(this.rawptr.createImageData(image.rawptr));
     }
     this.createLinearGradient = function(x0, y0, x1, y1) {
-        return new __Gradient__(this.rawptr.createLinearGradient(x0, y0, x1, y1));
+        return new Gradient_(this.rawptr.createLinearGradient(x0, y0, x1, y1));
     }
     this.createRadialGradient = function(x0, y0, r0, x1, y1, r1) {
-        return new __Gradient__(this.rawptr.createRadialGradient(x0, y0, r0, x1, y1, r1));
+        return new Gradient_(this.rawptr.createRadialGradient(x0, y0, r0, x1, y1, r1));
     }
     this.drawImage = function(image, dx, dy, dw, dh) {
         this.rawptr.drawImage(image.rawptr, dx, dy, dw, dh);
@@ -228,7 +228,7 @@ function __Context__(rawptr) {
         this.rawptr.fillText(text.rawptr, x, y);
     }
     this.getImageData = function(sx, sy, sw, sh) {
-        return new __ImageData__(this.rawptr.getImageData(sx, sy, sw, sh));
+        return new ImageData_(this.rawptr.getImageData(sx, sy, sw, sh));
     }
     this.isPointInPath = function(x, y) {
         return this.rawptr.isPointInPath(x, y);
@@ -282,22 +282,22 @@ function __Context__(rawptr) {
         this.rawptr.fillStyle = style.rawptr;
     }
 }
-__Canvas__.prototype = new __Element__();
-function __Canvas__(rawptr) {
+Canvas_.prototype = new Element_();
+function Canvas_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Canvas";
     this.getContext = function(str) {
-        return new __Context__(this.rawptr.getContext(str.rawptr));
+        return new Context_(this.rawptr.getContext(str.rawptr));
     }
 }
 
-__Img__.prototype = new __Element__();
-function __Img__(rawptr) {
+Img_.prototype = new Element_();
+function Img_(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Img";
 }
-__Document__.prototype = new __Node__();
-function __Document__(rawptr) {
+Document_.prototype = new Node_();
+function Document_(rawptr) {
     if (rawptr != null) {
         this.rawptr = rawptr;
     } else {
@@ -309,21 +309,21 @@ function __Document__(rawptr) {
     //}
     this.createAttribute = function(name) {
         var attr = this.rawptr.createAttribute(name.rawptr);
-        return new __Attr__(attr);
+        return new Attr_(attr);
     }
     this.getElementsByTagName = function(name) {
         var obj = this.rawptr.getElementsByTagName(name.rawptr);
-        return new __NodeList__(obj);
+        return new Nodelist_(obj);
     }
     this.getElementById = function(elementId) {
         var obj = this.rawptr.getElementById(elementId.rawptr);
         switch (obj.nodeName) {
             case 'CANVAS':
-                return new __Canvas__(obj);
+                return new Canvas_(obj);
             case 'IMG':
-                return new __Img__(obj);
+                return new Img_(obj);
             default:
-                return new __Element__(obj);
+                return new Element_(obj);
                 break;
         }
     }
@@ -331,15 +331,15 @@ function __Document__(rawptr) {
         var obj = this.rawptr.createElement(tagName.rawptr);
         switch(obj.nodeName) {
             case 'CANVAS':
-                return new __Canvas__(obj);
+                return new Canvas_(obj);
             case 'IMG':
-                return new __Img__(obj);
+                return new Img_(obj);
             default:
-                return new __Element__(obj);
+                return new Element_(obj);
         }
     }
     this.createTextNode = function(data) {
-        return new __Text__(this.rawptr.createTextNode(data.rawptr));
+        return new Text_(this.rawptr.createTextNode(data.rawptr));
     }
 
     this.write = function(str) {
