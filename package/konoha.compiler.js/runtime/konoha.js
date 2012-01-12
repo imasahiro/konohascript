@@ -1,4 +1,4 @@
-function konoha() {
+var konoha = function() {
 }
 konoha.Object = function(rawptr) {
     this.rawptr = rawptr;
