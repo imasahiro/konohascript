@@ -795,7 +795,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     } else {
         PHINode pn = asm.opt.builder.createPHI(asm.convertType(type), |bbs|);
         for (int i = 0; i < |bbs|; i++) {
-            if (asm.opt.bblist2[bbs[i]] != null) {
+            if (LLVM_ENABLE_SAFEPOINT && config.asm.opt.bblist2[bbs[i]] != null) {
                 pn.addIncoming(insts[i].getLLVMValue(asm), asm.opt.bblist2[bbs[i]]);
             } else {
                 pn.addIncoming(insts[i].getLLVMValue(asm), asm.opt.bblist[bbs[i]]);
@@ -894,11 +894,11 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             if (LLVM_ENABLE_SAFEPOINT && bbs[i].safepoint != -1) {
                 asm.opt.bblist2.add(BasicBlock.create(asm.opt.func, "bb"+i));
             } else {
-                asm.opt.bblist2.add(null);
+                //asm.opt.bblist2.add(null);
             }
         } else {
             asm.opt.bblist.add(null);
-            asm.opt.bblist2.add(null);
+            //asm.opt.bblist2.add(null);
         }
     }
     if (config.debug) {
