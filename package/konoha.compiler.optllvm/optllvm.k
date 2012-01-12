@@ -91,7 +91,14 @@ class LLVMConfig {
         if (this.dllext == null) {
             this.dllext = "dylib";
         }
-        DynamicLibrary.loadLibraryPermanently("compiler." + dllext);
+        String path = $konoha.package.path + "/konoha.compiler/compiler." + dllext;
+        assert(DynamicLibrary.loadLibraryPermanently(path) == false);
+        if (dllext == "so" || dllext == "dylib") {
+            String libname = "libm." + dllext;
+            assert(DynamicLibrary.loadLibraryPermanently(libname) == false);
+        } else {
+            throw new Exception("not support your architecture");
+        }
         if (this.debug) {
             print this;
         }
