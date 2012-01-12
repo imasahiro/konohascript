@@ -2372,6 +2372,12 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
         if (flag) {
             isStatic = 1;
         }
+
+        /* @Hidden Func.() */
+        if (mtd.getMethodClass() == Func && mtd.getName() == "") {
+            rtype = kfunc.getKInst(thisidx).type.getP1();
+        }
+
         Array<K_Inst> args = [];
         for (int i = isStatic; i <= argc; i++) {
             K_Inst arg = kfunc.getKInst(thisidx + i);
