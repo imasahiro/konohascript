@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
 if(USE_COMPILER_PKG)
+add_subdirectory(js.dom)
+add_subdirectory(js.jquery)
 project(compiler.js)
 set(PACKAGE_SCRIPT_CODE js.k)
 
