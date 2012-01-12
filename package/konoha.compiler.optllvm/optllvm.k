@@ -28,8 +28,8 @@
 
 using konoha.math.*;
 using konoha.llvm.*;
+include "lib:gluelink";
 
-DEBUG = false;
 K_MTDIDX2 = -1;
 K_RTNIDX = -4;
 K_CALLDELTA = 4;
@@ -39,32 +39,70 @@ FUNC_VIRTUAL2 = 1;
 FUNC_FASTCALL = 2;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
 
-LLVM_ENABLE_SAFEPOINT = true;
+LLVM_ENABLE_SAFEPOINT = false;
 
 class LLVMConfig {
-    boolean verify_each = false;
-    boolean module_dump = false;
-    boolean enable_opt = true;
-    boolean method_inlining  = true;
-    boolean intrinsic_method = true;
-    boolean load_library_module = false;
+    boolean debug;
+    boolean verify_each;
+    Boolean print_statics;
+    boolean module_dump;
+    boolean enable_opt;
+    boolean method_inlining;
+    boolean intrinsic_method;
+    boolean load_library_module;
+    boolean opt_safepoint;
+    boolean opt_array_access;
+    boolean opt_object_new;
+    boolean opt_field_access;
+    String dllext = "dylib";
     LLVMConfig() {
+        boolean b = "true" == $env.LLVM_DEBUG;
+        boolean p = "true" == $env.LLVM_ENABLE_PRINT_STATICS;
         boolean v = "true" == $env.LLVM_ENABLE_VERIFY_EACH;
         boolean d = "true" == $env.LLVM_ENABLE_MODULE_DUMP;
         boolean e = "true" == $env.LLVM_ENABLE_OPT;
         boolean m = "true" == $env.LLVM_ENABLE_OPT_METHOD_INLINING;
         boolean i = "true" == $env.LLVM_ENABLE_OPT_INTRINSIC_METHOD;
         boolean l = "true" == $env.LLVM_ENABLE_OPT_LOAD_LIBRARY_MODULE;
+        boolean s = "true" == $env.LLVM_ENABLE_OPT_SAFEPOINT;
+        boolean a = "true" == $env.LLVM_ENABLE_OPT_ARRAY_ACCESS;
+        boolean o = "true" == $env.LLVM_ENABLE_OPT_OBJECT_NEW;
+        boolean f = "true" == $env.LLVM_ENABLE_OPT_CACHE_FIELD_ACCESS;
+        this.debug               = b;
+        this.print_statics       = p;
         this.verify_each         = v;
         this.module_dump         = d;
         this.enable_opt          = e;
         this.method_inlining     = e && m;
         this.intrinsic_method    = e && i;
         this.load_library_module = e && l;
+        this.opt_safepoint       = e && !(LLVM_ENABLE_SAFEPOINT) && s;
+        this.opt_array_access    = e && a;
+        this.opt_object_new      = e && o;
+        this.opt_field_access    = e && f;
+        this.dllext = $env.LLVM_OS_ARCH;
+        if (this.dllext == null) {
+            this.dllext = "dylib";
+        }
+        DynamicLibrary.loadLibraryPermanently("compiler." + dllext);
+        if (this.debug) {
+            print this;
+        }
     }
 }
 
-LLVMConfig config = new LLVMConfig();
+class LLVMStatics {
+    int opt_method_inlining
+    int opt_intrinsic_method;
+    int opt_safepoint;
+    int opt_array_access;
+    int opt_object_new;
+    int opt_field_access;
+    int compile_time;
+}
+
+LLVMConfig  config  = new LLVMConfig();
+LLVMStatics statics = new LLVMStatics();
 
 //class CompilerOpt {
 //    Module m;
@@ -106,7 +144,6 @@ System.addClassField(CompilerOpt, Type,                 "boolTy");
 System.addClassField(CompilerOpt, Type,                 "objectTy");
 System.addClassField(CompilerOpt, Value,                "ctx");
 System.addClassField(CompilerOpt, Value,                "sfp");
-System.addClassField(CompilerOpt, Value,                "rix");
 System.addClassField(CompilerOpt, BasicBlock[],         "bblist");
 System.addClassField(CompilerOpt, BasicBlock[],         "bblist2");
 System.addClassField(CompilerOpt, GlobalVariable[],     "global_list");
@@ -161,8 +198,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 
 
-@Public void Compiler.register_user_class(Class c, String cname)
-{
+@Public void Compiler.register_user_class(Class c, String cname) {
     Class[] class_fields = c.getFieldClasses();
     Type[] fields = [];
 
@@ -213,7 +249,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.kfunctype = {};
     init_first();
     if (config.load_library_module) {
-        String libkonoha = "/usr/local/konoha/lib/libkonoha.dylib.bc";
+        String libkonoha = "/usr/local/konoha/lib/libkonoha." + config.dllext + ".bc";
         this.opt.m = LLVM.parseBitcodeFile(libkonoha);
     } else {
         this.opt.m = new Module("konoha");
@@ -236,10 +272,10 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
 }
 @Virtual @Public void Compiler.initFunc(K_Function func) {
     Value[] wvargs = this.opt.wrapperfunc.getArguments();
-    Type[] innerArgsTy = [wvargs[0].getType(), wvargs[1].getType(), wvargs[2].getType()];
+    Type[] argsTy = [wvargs[0].getType(), wvargs[1].getType()];
 
     foreach(K_ARGUMENT inst in func.funcargs) {
-        innerArgsTy.add(this.convertType(inst.type));
+        argsTy.add(this.convertType(inst.type));
     }
     Type innerRetTy = null;
     if (this.retclass != null) {
@@ -247,18 +283,24 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     } else {
         innerRetTy = Type.getVoidTy();
     }
-    FunctionType funcTy = FunctionType.get(innerRetTy, innerArgsTy, false);
-    String funcname = this.mtd.toString() + "_inner";
+    FunctionType funcTy = FunctionType.get(innerRetTy, argsTy, false);
+    String funcname = this.mtd.toString();
     func.func = Function.create(funcname, funcTy, this.opt.m, GlobalValue.InternalLinkage);
     this.opt.func = func.func;
+    Array<Value> vargs = func.func.getArguments();
+    vargs[0].setName("lctx");
+    vargs[1].setName("lsfp");
+    for (int i=2; i < vargs.size; i++) {
+        String name = "larg" + (i-2);
+        vargs[i].setName(name);
+    }
 }
 @Public void Compiler.init(Method mtd) {
-    opt.wrapperfunc = Function.create(mtd.toString(), opt.funcTy,
+    opt.wrapperfunc = Function.create(mtd.toString() + "_wrapper", opt.funcTy,
             opt.m, GlobalValue.ExternalLinkage);
     Array<Value> vargs = opt.wrapperfunc.getArguments();
     opt.ctx = vargs[0];
     opt.sfp = vargs[1];
-    opt.rix = vargs[2];
     opt.bblist  = [];
     opt.bblist2 = [];
 
@@ -282,6 +324,8 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     return func;
 }
 
+@Public @Native FunctionPass LLVM.createSafePointPass();
+
 @Public void Compiler.emit(Method mtd) {
     if (opt.fpm == null) {
         FunctionPassManager fpm = new FunctionPassManager(opt.m);
@@ -291,7 +335,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             fpm.add(opt.ee.getTargetData());
             fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
             fpm.add(LLVM.createBasicAliasAnalysisPass());
-            fpm.add(LLVM.createSimplifyLibCallsPass());
             fpm.add(LLVM.createCFGSimplificationPass());
             fpm.add(LLVM.createScalarReplAggregatesPass());
             fpm.add(LLVM.createEarlyCSEPass());
@@ -339,9 +382,13 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     if (!kfunc.isUndeveloped()) {
         kfunc.codegen(this);
         FunctionPassManager fpm = opt.fpm;
+        int fpm_start = System.getTime();
         fpm.doInitialization();
         fpm.run(opt.wrapperfunc);
         fpm.run(opt.func);
+        int fpm_end = System.getTime();
+        statics.compile_time += fpm_end - fpm_start;
+
         if (mtd.getName() == "") {
         }
         else if (mtd.toString().endsWith("Script.main")) {
@@ -349,38 +396,80 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             this.compiled_methods = {};
             PassManager mpm = new PassManager();
             if (config.enable_opt) {
+                mpm.add(LLVM.createGlobalOptimizerPass());
+                mpm.add(LLVM.createIPSCCPPass());
+                //FIXME mpm.add(LLVM.createDeadArgEliminationPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
                 mpm.add(LLVM.createFunctionAttrsPass());
-                mpm.add(LLVM.createInternalizePass(true));
-                if (config.method_inlining) {
-                    //TODO FIXME BUG
-                    mpm.add(LLVM.createFunctionInliningPass(225));
+                //FIXME mpm.add(LLVM.createArgumentPromotionPass());
+                mpm.add(LLVM.createScalarReplAggregatesPass(-1));
+                mpm.add(LLVM.createEarlyCSEPass());
+                mpm.add(LLVM.createJumpThreadingPass());
+                mpm.add(LLVM.createCorrelatedValuePropagationPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createTailCallEliminationPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
+                mpm.add(LLVM.createReassociatePass());
+                mpm.add(LLVM.createLoopRotatePass());
+                mpm.add(LLVM.createLICMPass());
+                mpm.add(LLVM.createLoopUnswitchPass(true));
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createIndVarSimplifyPass());
+                mpm.add(LLVM.createLoopIdiomPass());
+                mpm.add(LLVM.createLoopDeletionPass());
+                if (config.opt_safepoint) {
+                    mpm.add(LLVM.createSafepointPass());
                 }
+                mpm.add(LLVM.createLoopUnrollPass());
+                mpm.add(LLVM.createGVNPass());
+                //mpm.add(LLVM.createMemCpyOptPass());
+                mpm.add(LLVM.createSCCPPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createJumpThreadingPass());
+                mpm.add(LLVM.createCorrelatedValuePropagationPass());
+                mpm.add(LLVM.createDeadStoreEliminationPass());
+                mpm.add(LLVM.createAggressiveDCEPass());
+                mpm.add(LLVM.createCFGSimplificationPass());
+                mpm.add(LLVM.createInstructionCombiningPass());
+                mpm.add(LLVM.createStripDeadPrototypesPass());
+                mpm.add(LLVM.createGlobalDCEPass());
+                mpm.add(LLVM.createConstantMergePass());
+                ///* LTO Passes */
                 mpm.add(LLVM.createIPSCCPPass());
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createConstantMergePass());
+                //FIXME mpm.add(LLVM.createDeadArgEliminationPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
+                if (config.method_inlining) {
+                    //TODO FIXME BUG
+                    mpm.add(LLVM.createFunctionInliningPass());
+                }
                 mpm.add(LLVM.createGlobalOptimizerPass());
                 mpm.add(LLVM.createGlobalDCEPass());
+                //FIXME mpm.add(LLVM.createArgumentPromotionPass());
                 mpm.add(LLVM.createInstructionCombiningPass());
-                mpm.add(LLVM.createJumpThreadingPass());
                 mpm.add(LLVM.createScalarReplAggregatesPass());
                 mpm.add(LLVM.createFunctionAttrsPass());
-                mpm.add(LLVM.createGlobalsModRefPass());
-                mpm.add(LLVM.createLICMPass());
+                mpm.add(LLVM.createLICMpass());
                 mpm.add(LLVM.createGVNPass());
-                mpm.add(LLVM.createMemCpyOptPass());
                 mpm.add(LLVM.createDeadStoreEliminationPass());
-                mpm.add(LLVM.createInstructionCombiningPass());
-                mpm.add(LLVM.createJumpThreadingPass());
                 mpm.add(LLVM.createCFGSimplificationPass());
                 mpm.add(LLVM.createGlobalDCEPass());
             }
             if (config.verify_each) {
                 mpm.add(LLVM.createVerifierPass());
             }
+            int mpm_start = System.getTime();
             mpm.run(opt.m);
+            int mpm_end = System.getTime();
+            statics.compile_time += mpm_end - mpm_start;
             if (config.module_dump) {
                 opt.m.dump();
+            }
+            if (config.print_statics) {
+                OUT.println(statics);
             }
         }
         mtd.setFunction(opt.ee.getPointerToFunction(opt.wrapperfunc));
@@ -431,17 +520,31 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     Type objectPtrPtrTy = PointerType.get(objectPtrTy);
     opt.ktype["objectTy"]       = objectTy;
     opt.ktype["objectPtrTy"]    = objectPtrTy;
-    opt.ktype["objectPtrPtrTy"] = objectPtrPtrTy;
+    //opt.ktype["objectPtrPtrTy"] = objectPtrPtrTy;
 
     fields = [];
     fields.add(hObjectTy);
-    fields.add(int8PtrTy);
+    fields.add(objectPtrPtrTy);
     fields.add(int64Ty);
     fields.add(int8PtrTy);
     fields.add(int8PtrTy);
     Type arrayTy = StructType.create(fields, "Array", false);
     Type arrayPtrTy = PointerType.get(arrayTy);
     opt.ktype["arrayPtrTy"] = arrayPtrTy;
+
+    if (config.opt_array_access) {
+        fields = [];
+        fields.add(hObjectTy);
+        fields.add(Type.getInt64PtrTy());
+        Type iArrayPtrTy = PointerType.get(StructType.create(fields, "IArray", false));
+        opt.ktype["iArrayPtrTy"] = iArrayPtrTy;
+
+        fields = [];
+        fields.add(hObjectTy);
+        fields.add(Type.getDoublePtrTy());
+        Type fArrayPtrTy = PointerType.get(StructType.create(fields, "FArray", false));
+        opt.ktype["fArrayPtrTy"] = fArrayPtrTy;
+    }
 
     fields = [];
     fields.add(hObjectTy);
@@ -459,7 +562,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     fields.add(objectPtrTy);
     Type objectFieldTy    = StructType.create(fields, "ObjectField", false);
     Type objectFieldPtrTy = PointerType.get(objectFieldTy);
-    opt.ktype["objectFieldTy"] = objectFieldTy;
+    //opt.ktype["objectFieldTy"] = objectFieldTy;
     opt.ktype["objectFieldPtrTy"] = PointerType.get(objectFieldTy);
 
     fields = [];
@@ -470,7 +573,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     fields.add(int8PtrTy);
     Type outputStreamTy = StructType.create(fields, "OutputStream", false);
     Type outputStreamPtrTy = PointerType.get(outputStreamTy);
-    opt.ktype["outputStreamPtrTy"] = outputStreamPtrTy;
 
     fields = [];
     fields.add(hObjectTy);
@@ -480,7 +582,6 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     fields.add(int8PtrTy);
     Type inputStreamTy = StructType.create(fields, "InputStream", false);
     Type inputStreamPtrTy = PointerType.get(inputStreamTy);
-    opt.ktype["inputStreamPtrTy"] = inputStreamPtrTy;
 
     fields = [];
     fields.add(objectPtrTy);
@@ -490,88 +591,45 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.ktype["sfpPtrTy"] = sfpPtrTy;
 
     fields = [];
-    fields.add(int64Ty);
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(inputStreamPtrTy);
+    /* 00 */fields.add(int32Ty);
+    /* 01 */fields.add(PointerType.get(StructType.create(null, "share", false)));
+    /* 02 */fields.add(PointerType.get(StructType.create(null, "memshare", false)));
+    /* 03 */fields.add(PointerType.get(StructType.create(null, "memlocal", false)));
+    /* 04 */fields.add(PointerType.get(StructType.create(null, "stat", false)));
+    /* 05 */fields.add(PointerType.get(StructType.create(null, "spi", false)));
+    /* 06 */fields.add(PointerType.get(StructType.create(null, "api2", false)));
+    /* 07 */fields.add(PointerType.get(StructType.create(null, "script", false)));
+    /* 08 */fields.add(sfpPtrTy); /*stack*/
+    /* 09 */fields.add(sfpPtrTy); /*esp*/
+    /* 10 */fields.add(int64Ty);  /*stacksize*/
+    /* 11 */fields.add(sfpPtrTy); /*stack_uplimit*/
+    /* 12 */fields.add(int8PtrTy);/*cstack_bottom*/
+    /* 13 */fields.add(PointerType.get(StructType.create(null, "Exception", false)));
+    /* 14 */fields.add(PointerType.get(StructType.create(null, "ExceptionHandler", false)));
+    /* 15 */fields.add(objectPtrTy);
+    /* 16 */fields.add(int64Ty); /*isEvaled*/
+    /* 17 */fields.add(arrayPtrTy);
+    /* 18 */fields.add(arrayPtrTy);
+    /* 19 */fields.add(PointerType.get(StructType.create(null, "mtdcache", false)));
+    /* 20 */fields.add(PointerType.get(StructType.create(null, "tmrcache", false)));
+    /* 21 */fields.add(stringPtrTy);
+    /* 22 */fields.add(inputStreamPtrTy);
+    /* 23 */fields.add(outputStreamPtrTy);
+    /* 24 */fields.add(outputStreamPtrTy);
+    fields.add(PointerType.get(StructType.create(null, "kBytes", false)));
     fields.add(outputStreamPtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
+    fields.add(PointerType.get(StructType.create(null, "kGamma", false)));
+    fields.add(PointerType.get(StructType.create(null, "kMap", false)));
+    fields.add(Type.getInt32Ty()); /*flag*/
+    fields.add(Type.getInt32Ty());
+    fields.add(PointerType.get(StructType.create(null, "kCtx", false)));
+    fields.add(int8PtrTy);/*parent*/
+    fields.add(int8PtrTy);/*ctxlock*/
+    fields.add(ArrayType.get(Type.getInt8Ty(), 16));
     fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(arrayPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    Type sysExTy = StructType.create(fields, "sysEx", false);
-
-    fields = [];
-    fields.add(hObjectTy);
-    fields.add(sysExTy);
-    Type sysTy = StructType.create(fields, "System", false);
-    Type sysPtrTy = PointerType.get(sysTy);
-    opt.ktype["sysPtrTy"] = sysPtrTy;
-
-    fields = [];
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(sysPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(sfpPtrTy);
-    fields.add(sfpPtrTy);
-    fields.add(int64Ty);
-    fields.add(sfpPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(objectPtrTy);
-    fields.add(objectPtrTy);
-    fields.add(int64Ty);
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(objectPtrPtrTy);
-    fields.add(int64Ty);
-    fields.add(objectPtrPtrTy);
-    fields.add(int64Ty);
-    fields.add(objectPtrPtrTy);
-    fields.add(int64Ty);
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(inputStreamPtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(outputStreamPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(Type.getInt32Ty);
-    fields.add(Type.getInt32Ty);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    Type[] vec16_fields = [];
-    for (int i=0; i < 16; i++) {
-        vec16_fields.add(Type.getInt1Ty());
-    }
-    fields.add(StructType.get(vec16_fields, false));
-    fields.add(int64Ty);
-    fields.add(int8PtrTy);
-    fields.add(objectPtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
-    fields.add(int8PtrTy);
+    fields.add(int32Ty);
+    fields.add(voidPtrTy);
+    fields.add(PointerType.get(StructType.create(null, "kFunc", false)));
 
     Type ctxTy = StructType.create(fields, "ctx", false);
     Type ctxPtrTy = PointerType.get(ctxTy);
@@ -586,6 +644,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     opt.kfunctype["fmethodTy"] = fmethodTy;
     opt.ktype["fmethodPtrTy"]  = fmethodPtrTy;
     opt.funcTy = fmethodTy;
+
+    argsTy = [];
+    argsTy.add(ctxPtrTy);
+    argsTy.add(int64Ty);
+    FunctionType fnewObjectTy = FunctionType.get(objectPtrTy, argsTy, false);
+    opt.kfunctype["fnewObjectTy"] = fnewObjectTy;
 
     argsTy = [];
     argsTy.add(ctxPtrTy);
@@ -748,7 +812,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         Value vsafepoint = opt.builder.createStructGEP(opt.ctx, 0);
         vsafepoint = opt.builder.createLoad(vsafepoint);
         BasicBlock bbThen = BasicBlock.create(opt.func, "safepoint");
-        Value cond = opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(opt.intTy, 1));
+        Value cond = opt.builder.createICmpEQ(vsafepoint, ConstantInt.get(Type.getInt32Ty(), 1));
         opt.builder.createCondBr(cond, bbThen, opt.bblist2[idx]);
         opt.builder.setInsertPoint(bbThen);
         asm.shiftesp(this.safepoint);
@@ -762,18 +826,24 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         //FIXME(@imasahiro)
         //If we enable config.method_inlining, global string will
         //cause assertion fail.
+
         /*
            Value vstr  = opt.builder.createGlobalStringPtr("%d\n");
            vstr = opt.builder.createBitCast(vstr, Type.getInt8PtrTy());
            Value vstr  = opt.builder.createGlobalStringPtr("");
-        */
+         */
         Value vstr  = ConstantPointerNull.get(Type.getInt8PtrTy());
         Value vline = ConstantInt.get(Type.getInt32Ty(), 0);
         Value[] args = [vctx, vsfp, vstr, vline];
         opt.builder.createCall(vfunc, args);
         opt.builder.createBr(opt.bblist2[idx]);
+        opt.builder.setInsertPoint(opt.bblist2[idx]);
     }
-    opt.builder.setInsertPoint(opt.bblist2[idx]);
+}
+
+@Public void K_BasicBlock.setSafePointMetaData(Compiler asm) {
+    BasicBlock bb = asm.opt.bblist[bbidx];
+    bb.getTerminator().setMetaData(asm.opt.m, "safepoint", this.safepoint);
 }
 
 @Public void K_Function.buildWrapperFunc(Compiler asm) {
@@ -781,31 +851,37 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
     asm.opt.builder = new IRBuilder(bb);
     asm.opt.builder.setInsertPoint(bb);
     Array<Value> wvargs = asm.opt.wrapperfunc.getArguments();
-    Value[] vargs = [wvargs[0], wvargs[1], wvargs[2]];
+    Value[] vargs = [wvargs[0], wvargs[1]];
     foreach(K_ARGUMENT inst in funcargs) {
         inst.value = null;
         inst.codegen(asm);
         vargs.add(inst.getLLVMValue(asm));
     }
     Value res = asm.opt.builder.createCall(asm.opt.func, vargs);
-    Type innerRetTy = null;
+    Type retTy = null;
     if (asm.retclass != null) {
-        innerRetTy = asm.convertType(asm.retclass);
-        asm.opt.builder.createStoreValueToSfp(asm.opt.sfp, innerRetTy, K_RTNIDX, res);
+        retTy = asm.convertType(asm.retclass);
+        asm.opt.builder.createStoreValueToSfp(asm.opt.sfp, retTy, K_RTNIDX, res);
     } else {
-        innerRetTy = Type.getVoidTy();
+        retTy = Type.getVoidTy();
     }
     asm.opt.builder.createRetVoid();
+}
+
+@Public K_Inst K_BasicBlock.getTerminator() {
+    if (insts.size == 0) {
+        return null;
+    }
+    int size = insts.size;
+    return insts[size-1];
 }
 
 @Public void K_Function.codegen(Compiler asm) {
     Array<Value> args = asm.opt.func.getArguments();
     Value old_ctx = asm.opt.ctx;
     Value old_sfp = asm.opt.sfp;
-    Value old_rix = asm.opt.rix;
     asm.opt.ctx = args[0];
     asm.opt.sfp = args[1];
-    asm.opt.rix = args[2];
 
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] != null) {
@@ -815,7 +891,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 bb = BasicBlock.create(asm.opt.func, "bb"+i);
             }
             asm.opt.bblist.add(bb);
-            if (bbs[i].safepoint != -1) {
+            if (LLVM_ENABLE_SAFEPOINT && bbs[i].safepoint != -1) {
                 asm.opt.bblist2.add(BasicBlock.create(asm.opt.func, "bb"+i));
             } else {
                 asm.opt.bblist2.add(null);
@@ -825,7 +901,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
             asm.opt.bblist2.add(null);
         }
     }
-    if (DEBUG) {
+    if (config.debug) {
         OUT.println(dump());
     }
     asm.opt.builder = new IRBuilder(asm.opt.bblist[0]);
@@ -841,7 +917,7 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
                 bbs[i].phis[s].codegen(asm);
             }
         }
-        if (bbs[i].safepoint != -1) {
+        if (LLVM_ENABLE_SAFEPOINT && bbs[i].safepoint != -1) {
             bbs[i].codegen(asm);
         }
         if (i == 0) {
@@ -852,10 +928,12 @@ System.addClassField(CompilerOpt, Int[],                "addr_list");
         foreach (K_Inst inst in bbs[i].insts) {
             inst.codegen(asm);
         }
+        if (config.opt_safepoint && bbs[i].attribute == "loopcond") {
+            bbs[i].setSafePointMetaData(asm);
+        }
     }
     asm.opt.ctx = old_ctx;
     asm.opt.sfp = old_sfp;
-    asm.opt.rix = old_rix;
 
     buildWrapperFunc(asm);
 }
@@ -1157,8 +1235,7 @@ BuilderFunc=Func<Value, Value=>Value>;
     else if (asm.compiled_methods[this.op.fname] != null) {
         Value thisidx = ConstantInt.get(intTy, op.thisidx);
         Value sfp = builder.createGEP1(vsfp, thisidx);
-        Value vrix = ConstantInt.get(intTy, op.rix);
-        vargs = [vctx, sfp, vrix];
+        vargs = [vctx, sfp];
         for (int i = 0; i < args.size; i++) {
             vargs.add(args[i].getLLVMValue(asm));
         }
@@ -1193,7 +1270,7 @@ BuilderFunc=Func<Value, Value=>Value>;
             }
             return;
         } else {
-            if (DEBUG) {
+            if (config.debug) {
                 print "**WARN** compiled_methods call failed", this.op.fname;
             }
         }
@@ -1209,8 +1286,32 @@ BuilderFunc=Func<Value, Value=>Value>;
             if (type != null/*void*/) {
                 setLLVMValue(asm, ret);
             }
+            statics.opt_intrinsic_method += 1;
             return;
         }
+    }
+
+    if (op.mtd == asm.system_method[1]) {
+        /* Ctx.getIn() */
+        Value v = builder.createStructGEP(vctx, 22);
+        v = builder.createLoad(v);
+        v = builder.createBitCast(v, asm.convertType(type));
+        setLLVMValue(asm, v);
+        return;
+    } else if (op.mtd == asm.system_method[2]) {
+        /* Ctx.getOut() */
+        Value v = builder.createStructGEP(vctx, 23);
+        v = builder.createLoad(v);
+        v = builder.createBitCast(v, asm.convertType(type));
+        setLLVMValue(asm, v);
+        return;
+    } else if (op.mtd == asm.system_method[3]) {
+        /* Ctx.getErr() */
+        Value v = builder.createStructGEP(vctx, 24);
+        v = builder.createLoad(v);
+        v = builder.createBitCast(v, asm.convertType(type));
+        setLLVMValue(asm, v);
+        return;
     }
     if (op.ftype != FUNC_FASTCALL) {
         func = mtdNC;
@@ -1275,15 +1376,14 @@ BuilderFunc=Func<Value, Value=>Value>;
     Value msg   = opt.get_or_create(strTy, op.msg.getPtr(), "string");
     Value mtdNCPtr = builder.createPtrToInt(mtdNC, intTy);
     builder.createStoreValueToSfp(vsfp, intTy, -1, mtdNCPtr);
-    Value flag  = ConstantInt.get(asm.opt.intTy, op.pflag)
-    Value uline = ConstantInt.get(asm.opt.intTy, op.opline)
+    Value flag  = ConstantInt.get(asm.opt.intTy, op.pflag);
+    Value uline = ConstantInt.get(asm.opt.intTy, op.opline);
     Value[] vargs = [opt.ctx, vsfp, flag, uline, msg, v0];
     builder.createCall(func, vargs);
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     Value func;
     FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
-    DynamicLibrary.loadLibraryPermanently("compiler.dylib");
     Module m = asm.opt.m;
     if (op.ftr == Stmt.CWB) {
         func = m.getOrInsertFunction("compiler_CWB", fnTy);
@@ -1308,31 +1408,58 @@ BuilderFunc=Func<Value, Value=>Value>;
     setLLVMValue(asm, v);
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
-    Value func;
-    if (op.ftr == Stmt.NEW) {
-        FunctionType fnTy = asm.opt.kfunctype["trmethodTy"];
-        DynamicLibrary.loadLibraryPermanently("compiler.dylib");
-        func = asm.opt.m.getOrInsertFunction("TR_NEW", fnTy);
+    assert(op.ftr == Stmt.NEW);
+    Value ret;
+    CompilerOpt opt = asm.opt;
+    int ridx = kvalue.idx + op.rix;
+    if (config.opt_object_new) {
+        statics.opt_object_new += 1;
+        FunctionType fnTy = opt.kfunctype["fnewObjectTy"];
+        Function func = opt.m.getOrInsertFunction("new_Object_init2", fnTy);
+        Value cid = ConstantInt.get(opt.intTy, op.c.getClassTablePtr());
+        ret = opt.builder.createCall2(func, opt.ctx, cid);
+        opt.builder.createStoreValueToSfp(opt.sfp, asm.convertType(op.inst0.type), ridx, ret);
     } else {
-        Type methodTy = asm.opt.ktype["trmethodPtrTy"];
-        func = ConstantInt.get(asm.opt.intTy, op.ftr);
-        func = asm.opt.builder.CreateIntToPtr(func, methodTy);
+        FunctionType fnTy = opt.kfunctype["trmethodTy"];
+        Value func = opt.m.getOrInsertFunction("TR_NEW", fnTy);
+        Value vb   = ConstantInt.get(opt.intTy, kvalue.idx);
+        vb = opt.builder.createGEP1(opt.sfp, vb);
+        Value rix = ConstantInt.get(opt.intTy, op.rix);
+        Value cid = ConstantInt.get(opt.intTy, op.c.getClassTablePtr());
+        opt.builder.createCall4(func, opt.ctx, vb, rix, cid);
+        ret = opt.builder.createLoadValueFromSfp(opt.sfp, asm.convertType(type), ridx);
     }
-    Value vb = ConstantInt.get(asm.opt.intTy, kvalue.idx);
-    vb = asm.opt.builder.createGEP1(asm.opt.sfp, vb);
-    Value rix = ConstantInt.get(asm.opt.intTy, op.rix);
-    Value cid = ConstantInt.get(asm.opt.intTy, op.c.getClassTablePtr());
-    asm.opt.builder.createCall4(func, asm.opt.ctx, vb, rix, cid);
-    Value v = asm.opt.builder.createLoadValueFromSfp(asm.opt.sfp, asm.convertType(type), kvalue.idx + op.rix);
-    setLLVMValue(asm, v);
+    setLLVMValue(asm, ret);
+
+
 }
+Type get_atype(Compiler asm, Class type) {
+    Type aType;
+    if (config.opt_array_access) {
+        statics.opt_array_access += 1;
+        if (type == Int || type == Boolean) {
+            aType = asm.opt.ktype["iArrayPtrTy"];
+        } else if (type == Float) {
+            aType = asm.opt.ktype["fArrayPtrTy"];
+        } else {
+            aType = asm.opt.ktype["arrayPtrTy"];
+        }
+    } else {
+        aType = asm.opt.ktype["arrayPtrTy"];
+    }
+    return aType;
+}
+
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
     IRBuilder builder = asm.opt.builder;
     Value v = op.inst0.getLLVMValue(asm);
-    v = builder.createBitCast(v, asm.opt.ktype["arrayPtrTy"]);
+    Type aType = get_atype(asm, type);
+    v = builder.createBitCast(v, aType);
     v = builder.createStructGEP(v, 1);
     v = builder.createLoad(v);
-    v = builder.createBitCast(v, PointerType.get(asm.opt.intTy));
+    if (config.opt_array_access == false) {
+        v = builder.createBitCast(v, PointerType.get(asm.opt.intTy));
+    }
     v = builder.createInBoundsGEP1(v, op.inst1.getLLVMValue(asm));
     v = builder.createBitCast(v, PointerType.get(asm.convertType(type)));
     v = builder.createLoad(v);
@@ -1341,11 +1468,13 @@ BuilderFunc=Func<Value, Value=>Value>;
 @Public @Override void K_SETIDX.codegen(Compiler asm) {
     IRBuilder builder = asm.opt.builder;
     Value v = op.inst0.getLLVMValue(asm);
-    v = builder.createBitCast(v, asm.opt.ktype["objectPtrTy"]);
+    Type aType = get_atype(asm, type);
+    v = builder.createBitCast(v, aType);
     v = builder.createStructGEP(v, 1);
     v = builder.createLoad(v);
-    v = builder.createBitCast(v, PointerType.get(asm.opt.intTy));
-    //v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
+    if (!config.opt_array_access) {
+        v = builder.createBitCast(v, PointerType.get(asm.opt.intTy));
+    }
     v = builder.createInBoundsGEP1(v, op.inst1.getLLVMValue(asm));
     v = builder.createBitCast(v, PointerType.get(asm.convertType(op.inst2.type)));
     v = builder.createStore(op.inst2.getLLVMValue(asm), v);
@@ -1367,44 +1496,63 @@ BuilderFunc=Func<Value, Value=>Value>;
     }
     setLLVMValue(asm, v);
 }
+
+Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
+    Value v = null;
+    IRBuilder builder = asm.opt.builder;
+    BasicBlock curBB = builder.getInsertBlock();
+    String cname = (to String) inst0.type;
+    Type type = asm.user_type[cname];
+    if (type == null) {
+        asm.register_user_class(inst0.type, cname);
+    }
+    type = asm.user_type[cname];
+    Boolean userType = (type != null);
+    if (userType == false) {
+        type = asm.opt.ktype["objectFieldPtrTy"];
+    }
+    if (config.opt_field_access) {
+        if (inst0.opt != null) {
+            Tuple<Value, BasicBlock> t = inst0.opt;
+            if (t[1] == curBB) {
+                statics.opt_field_access += 1;
+                v = t[0];
+            }
+        }
+    }
+    if (v == null) {
+        v = inst0.getLLVMValue(asm);
+        v = builder.createBitCast(v, type);
+        v = builder.createStructGEP(v, 1);
+        v = builder.createLoad(v);
+        if (config.opt_field_access) {
+            inst0.opt = (v, curBB);
+        }
+    }
+
+    if (userType) {
+        v = builder.createStructGEP(v, offset);
+    }
+    else {
+        throw new Exception();
+        //TODO
+        v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
+        v = builder.createConstGEP1_32(v, offset);
+    }
+    return v;
+}
+
 @Public @Override void K_GetField.codegen (Compiler asm) {
     IRBuilder builder = asm.opt.builder;
-    Value v = op.inst0.getLLVMValue(asm);
-    v = builder.createBitCast(v, asm.opt.ktype["objectPtrTy"]);
-    v = builder.createStructGEP(v, 1);
-    v = builder.createLoad(v);
-    v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
-    Value vn = ConstantInt.get(asm.opt.intTy, op.bn);
-    v = builder.createInBoundsGEP1(v, vn);
+    Value v = get_field_ptr(asm, op.inst0, op.bn);
     v = builder.createBitCast(v, PointerType.get(asm.convertType(type)));
     v = builder.createLoad(v);
     setLLVMValue(asm, v);
 }
 @Public @Override void K_SetField.codegen(Compiler asm) {
     IRBuilder builder = asm.opt.builder;
-    Value v = op.inst0.getLLVMValue(asm);
-    String cname = (to String) op.inst0.type;
-    Type type = asm.user_type[cname];
-    if (type == null) {
-        asm.register_user_class(op.inst0.type, cname);
-    }
-    type = asm.user_type[cname];
-    if (type != null) {
-        v = builder.createBitCast(v, type);
-        v = builder.createStructGEP(v, 1);
-        v = builder.createLoad(v);
-        v = builder.createStructGEP(v, op.an);
-        v = builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
-    }
-    else {
-        Value vn = ConstantInt.get(asm.opt.intTy, op.an);
-        Type ptrTy = PointerType.get(asm.convertType(op.inst1.type));
-        v = builder.createBitCast(v, asm.opt.ktype["objectFieldPtrTy"]);
-        v = builder.createStructGEP(v, 1);
-        v = builder.createLoad(v);
-        v = builder.createInBoundsGEP1(v, vn);
-        v = builder.createBitCast(v, ptrTy);
-    }
+    Value v = get_field_ptr(asm, op.inst0, op.an);
+    v = builder.createBitCast(v, PointerType.get(asm.convertType(op.inst1.type)));
     v = builder.createStore(op.inst1.getLLVMValue(asm), v);
     setLLVMValue(asm, v);
 }
@@ -1440,9 +1588,15 @@ BuilderFunc=Func<Value, Value=>Value>;
         v = asm.opt.builder.createLoadValueFromSfp(asm.opt.sfp, asm.convertType(type), op.argidx);
     } else {
         Value[] vargs = asm.opt.func.getArguments();
-        int difference = 2 + ((asm.mtd.isStatic() && !asm.mtd.toString().endsWith("new") && !asm.mtd.toString().endsWith("Script.")) ? 0 : 1);
-        v = vargs[op.argidx+difference];
-        v.setName("arg"+(op.argidx+difference));
+        Method mtd = asm.mtd;
+        String mtdName = mtd.toString();
+        int index = op.argidx + 1;
+        if (!(mtd.isStatic() && !mtdName.endsWith("new") && !mtdName.endsWith("Script."))) {
+                index += 1;
+        }
+        String name = "arg"+(index-1);
+        v = vargs[index];
+        v.setName(name);
         op.inner = false;
     }
     setLLVMValue(asm, v);

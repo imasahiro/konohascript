@@ -388,7 +388,6 @@ KMETHOD IRBuilder_new(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-
 //## ReturnInst IRBuilder.CreateRetVoid();
 KMETHOD IRBuilder_createRetVoid(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -2018,6 +2017,18 @@ KMETHOD Module_createExecutionEngine(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::object_free<ExecutionEngine>);
 	RETURN_(p);
 }
+
+static int BasicBlock_compareTo(kRawPtr *p1, kRawPtr *p2)
+{
+	return (p1->rawptr != p2->rawptr);
+}
+
+DEFAPI(void) defBasicBlock(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
+{
+	cdef->name = "llvm::BasicBlock";
+	cdef->compareTo = BasicBlock_compareTo;
+}
+
 //## @Static BasicBlock BasicBlock.create(Function parent, String name);
 KMETHOD BasicBlock_create(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -2116,6 +2127,16 @@ KMETHOD StructType_create(CTX ctx, ksfp_t *sfp _RIX)
 		konoha::convert_array(List, args);
 		ptr = StructType::create(List, S_totext(name), isPacked);
 	}
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//## @Native @Static ArrayType ArrayType.get(Type t, int elemSize);
+KMETHOD ArrayType_get(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Type *Ty = konoha::object_cast<Type *>(sfp[1].p);
+	kint_t N = sfp[2].bvalue;
+	ArrayType *ptr = ArrayType::get(Ty, N);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 	RETURN_(p);
 }
@@ -3296,6 +3317,25 @@ KMETHOD LLVM_parseBitcodeFile(CTX ctx, ksfp_t *sfp _RIX)
 	}
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(m), konoha::object_free<Module>);
 	RETURN_(p);
+}
+
+//TODO Scriptnize
+KMETHOD Instruction_setMetadata(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Instruction *inst = konoha::object_cast<Instruction *>(sfp[0].p);
+	Module *m = konoha::object_cast<Module *>(sfp[1].p);
+	kString *Str = sfp[2].s;
+	kint_t N = Int_to(kint_t,sfp[3]);
+	Value *Info[] = {
+		ConstantInt::get(Type::getInt32Ty(getGlobalContext()), N)
+	};
+	LLVMContext &Context = getGlobalContext();
+	MDNode *node = MDNode::get(Context, Info);
+	NamedMDNode *NMD = m->getOrInsertNamedMetadata(S_totext(Str));
+	unsigned KindID = Context.getMDKindID(S_totext(Str));
+	NMD->addOperand(node);
+	inst->setMetadata(KindID, node);
+	RETURNvoid_();
 }
 
 static knh_IntData_t IntIntrinsic[] = {

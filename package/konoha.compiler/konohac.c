@@ -47,7 +47,7 @@ static enum compile_mode {
 
 static const char * codegenerator_file[] = {
     NULL,
-    "konoha.compiler.llvm",
+    "konoha.compiler.optllvm",
     "konoha.compiler.js",
     "konoha.compiler.cpp",
 };
@@ -109,6 +109,7 @@ static void CompilerAPI_disable(CTX ctx)
 
 static void load_codegenerator(CTX ctx)
 {
+    KONOHA_BEGIN(ctx);
     CompilerAPI_disable(ctx);
     if (codegenerator_file[compile_mode]) {
         kbytes_t t = new_bytes((char*)codegenerator_file[compile_mode]);
@@ -127,6 +128,7 @@ static void load_codegenerator(CTX ctx)
         CWB_close(ctx, cwb);
     }
     CompilerAPI_enable(ctx);
+    KONOHA_END(ctx);
 }
 /* ------------------------------------------------------------------------ */
 
