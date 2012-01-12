@@ -591,6 +591,13 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 
     fields = [];
     fields.add(hObjectTy);
+    fields.add(int8PtrTy);
+    fields.add(int64Ty);
+    Type listTy = StructType.create(fields, "Abstract_List", false);
+    opt.ktype["Abstract.ListPtrTy"] = PointerType.get(listTy);
+
+    fields = [];
+    fields.add(hObjectTy);
     fields.add(objectPtrPtrTy);
     fields.add(int64Ty);
     fields.add(int8PtrTy);
@@ -1377,6 +1384,18 @@ BuilderFunc=Func<Value, Value=>Value>;
         v = builder.createBitCast(v, asm.convertType(type));
         setLLVMValue(asm, v);
         return;
+    } else if (op.mtd.getName() == "getSize") {
+        if (op.mtd.getMethodClass() == Array ||
+                op.mtd.getMethodClass() == String ||
+                op.mtd.getMethodClass() == Bytes) {
+            Value v = args[0].getLLVMValue(asm);
+            Type  t = asm.opt.ktype["Abstract.ListPtrTy"];
+            v = builder.createBitCast(v, t);
+            v = builder.createStructGEP(v, 2);
+            v = builder.createLoad(v);
+            setLLVMValue(asm, v);
+            return;
+        }
     }
     if (op.ftype != FUNC_FASTCALL) {
         func = mtdNC;
