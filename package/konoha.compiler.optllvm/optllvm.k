@@ -1690,10 +1690,11 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
     if (v == null) {
         v = inst0.getLLVMValue(asm);
         v = builder.createBitCast(v, type);
-        if (userType == true && inst0.type.isSMALLOBJECT()) {
-            Value field = builder.createStructGEP(v, offset+2);
-            return field;
-        }
+        //FIXME class A{}; class B exntends A {int x;}; A.x
+        //if (userType == true && inst0.type.isSMALLOBJECT()) {
+        //    Value field = builder.createStructGEP(v, offset+2);
+        //    return field;
+        //}
         v = builder.createStructGEP(v, 1);
         v = builder.createLoad(v);
         if (config.opt_field_access) {
