@@ -402,6 +402,24 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 }
 
 @Public @Native FunctionPass LLVM.createSafePointPass();
+@Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
+    int idx;
+    if (rTy.class == PointerType)
+        idx = 0;
+    else
+        idx = 1;
+    Value v = this.createConstGEP2_32(sfp, sfpidx, idx);
+    return this.createBitCast(v, PointerType.get(rTy));
+}
+
+@Public Value IRBuilder.createLoadValueFromSfp(Value sfp, Type rTy, int sfpidx) {
+    Value v = this.getValueFromSfp(sfp, rTy, sfpidx);
+    return this.createLoad(v);
+}
+@Public void IRBuilder.createStoreValueToSfp(Value sfp, Type rTy, int sfpidx, Value v) {
+    Value r  = this.getValueFromSfp(sfp, rTy, sfpidx);
+    this.createStore(v, r);
+}
 
 @Public void Compiler.emit(Method mtd) {
     if (opt.fpm == null) {
