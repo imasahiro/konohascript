@@ -78,7 +78,7 @@ class LLVMConfig {
         this.method_inlining     = e && m;
         this.intrinsic_method    = e && i;
         this.load_library_module = e && l;
-        this.opt_safepoint       = e && !(LLVM_ENABLE_SAFEPOINT) && s;
+        this.opt_safepoint       = !(LLVM_ENABLE_SAFEPOINT) && s;
         this.opt_array_access    = e && a;
         this.opt_object_new      = e && o;
         this.opt_field_access    = e && f;
@@ -474,10 +474,12 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
                 mpm.add(LLVM.createIndVarSimplifyPass());
                 mpm.add(LLVM.createLoopIdiomPass());
                 mpm.add(LLVM.createLoopDeletionPass());
-                if (config.opt_safepoint) {
-                    mpm.add(LLVM.createSafepointPass());
-                }
                 mpm.add(LLVM.createLoopUnrollPass());
+            }
+            if (config.opt_safepoint) {
+                mpm.add(LLVM.createSafepointPass());
+            }
+            if (config.enable_opt) {
                 mpm.add(LLVM.createGVNPass());
                 //mpm.add(LLVM.createMemCpyOptPass());
                 mpm.add(LLVM.createSCCPPass());

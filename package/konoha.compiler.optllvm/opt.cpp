@@ -26,10 +26,10 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 #include <llvm/Pass.h>
+#include <llvm/Constants.h>
 #include <llvm/Function.h>
 #include <llvm/Instructions.h>
 #include <llvm/Metadata.h>
-#include <llvm/Support/IRBuilder.h>
 #include <llvm/ADT/Statistic.h>
 
 #undef HAVE_SYS_TYPES_H
@@ -74,7 +74,7 @@ static void object_free(void *p)
 
 using namespace llvm;
 
-namespace compiler {
+#if 0
 static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
     LLVMContext &Context = m->getContext();
     Function::arg_iterator args = F.arg_begin();
@@ -119,7 +119,60 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
     builder.CreateCall4(fcheck, vctx, vsfp, vstr, vline);
     builder.CreateBr(bb2);
 }
+#else
 
+extern "C" void compiler_checkSafePoint(CTX ctx, int espshift)
+{
+    if (ctx->safepoint != 0) {
+        asm volatile("int3");
+        ((kcontext_t*)ctx)->esp = ctx->esp + espshift;
+        knh_checkSafePoint(ctx, ctx->esp, __FILE__, __LINE__);
+    }
+}
+
+static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
+    LLVMContext &Context = m->getContext();
+    Function::arg_iterator args = F.arg_begin();
+    Value *vctx = args;
+    Type *Int32Ty = Type::getInt32Ty(Context);
+    Type *VoidTy  = Type::getVoidTy(Context);
+    Instruction *I = --(BB->end());
+    Constant *C    = ConstantInt::get(Int32Ty, espshift);
+    ///* cond = (ctx->safepoint == 1) */
+    //if (espshift > 0) {
+    //    Value *Zero = ConstantInt::get(Int32Ty, 0);
+    //    Value *Idx0[] = { Zero, ConstantInt::get(Int32Ty, 9)};
+    //    Value *Idx1[] = { C };
+    //    GetElementPtrInst *vesp  = GetElementPtrInst::Create(vctx, Idx0);
+    //    GetElementPtrInst *vsfp_ = GetElementPtrInst::Create(vsfp, Idx1);
+    //    StoreInst *SI = new StoreInst(vsfp_, vesp);
+    //    BB->getInstList().insert(I, vesp);
+    //    BB->getInstList().insert(I, vsfp_);
+    //    BB->getInstList().insert(I, SI);
+    //}
+    Type *argsType[]   = {vctx->getType(), Int32Ty};
+    FunctionType *fnTy = FunctionType::get(VoidTy, argsType, false);
+    Value *Args[] = { vctx, C };
+
+#if 0
+#if SIZEOF_VOIDP == 8
+    Type *LongTy = Type::getInt64Ty(Context);
+#else
+    Type *LongTy = Type::getInt32Ty(Context);
+#endif
+    PointerType  *fnPtrTy = PointerType::get(fnTy, 0);
+    Constant *Fptr  = ConstantInt::get(LongTy, (intptr_t)compiler_checkSafePoint);
+    Value *Check = ConstantExpr::getBitCast(Fptr, fnPtrTy);
+#else
+    Value *Check = m->getOrInsertFunction("compiler_checkSafePoint", fnTy);
+#endif
+    CallInst *CI = CallInst::Create(Check, Args);
+    CI->setTailCall(true);
+    BB->getInstList().insert(I, CI);
+}
+#endif
+
+namespace compiler {
 struct SafePoint : public FunctionPass {
     static char ID;
     SafePoint() : FunctionPass(ID) {}
