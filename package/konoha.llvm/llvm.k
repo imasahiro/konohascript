@@ -145,6 +145,7 @@ include "lib:gluelink";
 @Native AllocaInst IRBuilder.createAlloca(Type ty, Value arraySize);
 @Native AllocaInst AllocaInst.new(Type ty, Value arraySize);
 @Native LoadInst IRBuilder.createLoad(Value ptr, boolean isVolatile);
+@Native LoadInst LoadInst.new(Value ptr);
 @Native StoreInst IRBuilder.createStore(Value val, Value ptr, boolean isVolatile);
 @Native StoreInst StoreInst.new(Value val, Value ptr);
 //@Native FenceInst IRBuilder.createFence(AtomicOrdering ordering, SynchronizationScope SynchScope);

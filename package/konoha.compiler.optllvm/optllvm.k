@@ -182,17 +182,26 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 }
 
 @public Value Compiler.getsfp() {
-    if (this.opt.sfp == null) {
-        Value vsfp;
+    Value vsfp = this.opt.sfp;
+    if (vsfp == null) {
         if (config.opt_remove_sfp) {
-            Value vesp = opt.builder.createStructGEP(opt.ctx, 9);
-            vsfp = opt.builder.createLoad(vesp);
+            Value[] index = [];
+            Type int32Ty = Type.getInt32Ty();
+            index.add(ConstantInt.get(int32Ty, 0));
+            index.add(ConstantInt.get(int32Ty, 9));
+            GetElementPtrInst esp = GetElementPtrInst.create(opt.ctx, index);
+            LoadInst li = new LoadInst(esp);
+            vsfp = li;
+            BasicBlock bb = this.opt.bblist[0];
+            Instruction inst = bb.getLastInst();
+            bb.insertBefore(inst, esp);
+            bb.insertBefore(inst, li);
         } else {
             vsfp = opt.func.getArguments()[1];
         }
         this.opt.sfp = vsfp;
     }
-    return this.opt.sfp;
+    return vsfp;
 }
 
 @Public GlobalVariable CompilerOpt.get_or_create(Type type, int addr, String name) {

@@ -894,6 +894,16 @@ KMETHOD IRBuilder_createLoad(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//@Native LoadInst LoadInst.new(Value ptr);
+//## LoadInst IRBuilder.CreateLoad(Value Ptr, boolean isVolatile);
+KMETHOD LoadInst_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
+	LoadInst *ptr = new LoadInst(Ptr);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
 //## StoreInst IRBuilder.CreateStore(Value Val, Value Ptr, boolean isVolatile);
 KMETHOD IRBuilder_createStore(CTX ctx, ksfp_t *sfp _RIX)
 {
