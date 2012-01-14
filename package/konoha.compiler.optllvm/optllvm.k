@@ -38,6 +38,7 @@ FUNC_VIRTUAL = 1;
 FUNC_VIRTUAL2 = 1;
 FUNC_FASTCALL = 2;
 FLAG_OBJECT_NULLOBJECT = 1 << 1;
+K_SMALLOBJECT_FIELDSIZE = 3;
 
 LLVM_ENABLE_SAFEPOINT = false;
 
@@ -69,7 +70,7 @@ class LLVMConfig {
         boolean s = "true" == $env.LLVM_ENABLE_OPT_SAFEPOINT;
         boolean a = "true" == $env.LLVM_ENABLE_OPT_ARRAY_ACCESS;
         boolean o = "true" == $env.LLVM_ENABLE_OPT_OBJECT_NEW;
-        boolean f = "true" == $env.LLVM_ENABLE_OPT_CACHE_FIELD_ACCESS;
+        boolean f = "true" == $env.LLVM_ENABLE_OPT_FIELD_ACCESS;
         boolean c = "true" == $env.LLVM_ENABLE_OPT_LAZY_COMPILATION;
         boolean r = "true" == $env.LLVM_ENABLE_OPT_REMOVE_SFP;
         this.debug               = b;
@@ -242,6 +243,13 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     }
 }
 
+@Public boolean Class.isSMALLOBJECT() {
+    String cname = (to String) this;
+    if (cname.startsWith("konoha.") || "Script" in? cname) {
+        return false;
+    }
+    return (this.getFieldClasses().size <= K_SMALLOBJECT_FIELDSIZE);
+}
 
 @Public void Compiler.register_user_class(Class c, String cname) {
     Class[] class_fields = c.getFieldClasses();
@@ -250,7 +258,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     if (cname.startsWith("konoha.") || "Script" in? cname) {
         return;
     }
-    StructType klassTy = StructType.create(null, cname);/*create no-body StructType*/
+    StructType klassTy = StructType.create(null, cname);
     Type objectPtrTy = PointerType.get(klassTy);
     this.user_type[cname] = objectPtrTy;
 
@@ -282,9 +290,14 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     //print fields.size, cname;
     Type klassFieldTy = StructType.create(fields, cname+"_field", false);
     Type fieldPtrTy   = PointerType.get(klassFieldTy);
-    fields = [opt.ktype["hobjectTy"], fieldPtrTy];
+    Type[] obj_fields = [opt.ktype["hobjectTy"], fieldPtrTy];
+    if (fields.size <= K_SMALLOBJECT_FIELDSIZE) {
+        for (int i=0; i < fields.size; i++) {
+            obj_fields.add(fields[i]);
+        }
+    }
     assert(klassTy.isOpaque() == true);
-    klassTy.setBody(fields, false);
+    klassTy.setBody(obj_fields, false);
 }
 
 @Public void Compiler.constructKonohaTypes();
@@ -1650,6 +1663,10 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
     if (v == null) {
         v = inst0.getLLVMValue(asm);
         v = builder.createBitCast(v, type);
+        if (userType == true && inst0.type.isSMALLOBJECT()) {
+            Value field = builder.createStructGEP(v, offset+2);
+            return field;
+        }
         v = builder.createStructGEP(v, 1);
         v = builder.createLoad(v);
         if (config.opt_field_access) {
@@ -1662,6 +1679,7 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
     }
     else {
         // access Script Field
+        //TODO support opt_field_access for Script class
         v = builder.createBitCast(v, asm.opt.ktype["objectPtrPtrTy"]);
         v = builder.createConstGEP1_32(v, offset);
     }
