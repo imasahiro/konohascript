@@ -136,7 +136,8 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
     Value *vctx = args;
     Type *Int32Ty = Type::getInt32Ty(Context);
     Type *VoidTy  = Type::getVoidTy(Context);
-    Instruction *I = --(BB->end());
+    BasicBlock::iterator Itr = BB->end();
+    Instruction *I = --Itr;
     Constant *C    = ConstantInt::get(Int32Ty, espshift);
     ///* cond = (ctx->safepoint == 1) */
     //if (espshift > 0) {
@@ -154,7 +155,8 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
     FunctionType *fnTy = FunctionType::get(VoidTy, argsType, false);
     Value *Args[] = { vctx, C };
 
-#if 0
+//#define USE_FUNC_AS_LONGNUM
+#ifdef USE_FUNC_AS_LONGNUM
 #if SIZEOF_VOIDP == 8
     Type *LongTy = Type::getInt64Ty(Context);
 #else
@@ -167,6 +169,19 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
     Value *Check = m->getOrInsertFunction("compiler_checkSafePoint", fnTy);
 #endif
     CallInst *CI = CallInst::Create(Check, Args);
+#ifndef USE_FUNC_AS_LONGNUM
+    if (Itr != BB->begin()) {
+        if (CallInst *Prev = dyn_cast<CallInst>(--Itr)) {
+            if (Prev->getNumOperands() != 3) {
+                goto L_emit;
+            }
+            Function *F = Prev->getCalledFunction();
+            if (F == Check)
+                return;
+        }
+    }
+    L_emit:;
+#endif
     CI->setTailCall(true);
     BB->getInstList().insert(I, CI);
 }
