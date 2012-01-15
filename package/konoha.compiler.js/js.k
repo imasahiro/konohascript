@@ -5,8 +5,10 @@ String header = """
 <title>sample</title>
 </head>
 <script type="text/javascript" language="javascript" src="./konoha.js" > </script>
-<script type="text/javascript" language="javascript" src="./math.js" > </script>
-<script type="text/javascript" language="javascript" src="./window.js" > </script>
+<script type="text/javascript" language="javascript" src="./konoha.math.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.dom.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.jquery.js" > </script>
 <script type="text/javascript">
 <!--""";
 String footer = """
