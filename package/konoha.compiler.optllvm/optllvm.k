@@ -401,7 +401,6 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     return func;
 }
 
-@Public @Native FunctionPass LLVM.createSafePointPass();
 @Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
     int idx;
     if (rTy.class == PointerType)
@@ -421,6 +420,8 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     this.createStore(v, r);
 }
 
+@Public @Native FunctionPass LLVM.createSafePointPass();
+//@Public @Native FunctionPass LLVM.createPartialEvaluationPass();
 @Public void Compiler.emit(Method mtd) {
     if (opt.fpm == null) {
         FunctionPassManager fpm = new FunctionPassManager(opt.m);
@@ -431,6 +432,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
                 fpm.add(opt.ee.getTargetData());
                 fpm.add(LLVM.createTypeBasedAliasAnalysisPass());
                 fpm.add(LLVM.createBasicAliasAnalysisPass());
+                //fpm.add(LLVM.createPartialEvaluationPass());
                 fpm.add(LLVM.createCFGSimplificationPass());
                 fpm.add(LLVM.createScalarReplAggregatesPass());
                 fpm.add(LLVM.createEarlyCSEPass());
