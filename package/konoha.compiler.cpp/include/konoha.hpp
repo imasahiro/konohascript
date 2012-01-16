@@ -112,11 +112,6 @@ public:
         assert(check_index(idx));
         list_[idx] = v;
     }
-    ~Array() {
-        free(list_);
-        list_ = 0;
-        capacity_ = length_ = 0;
-    }
     inline size_t size() const {
         return length_;
     }
@@ -161,7 +156,7 @@ public:
     virtual void send(uintptr_t v) {};
     virtual void send(Int     v) {};
     virtual void send(Float   v) {};
-    virtual void send(Boolean v) {};
+    //virtual void send(Boolean v) {};
     virtual void send(boost::shared_ptr<IntObject>     v) { send(v->unbox()); }
     virtual void send(boost::shared_ptr<FloatObject>   v) { send(v->unbox()); }
     virtual void send(boost::shared_ptr<BooleanObject> v) { send(v->unbox()); }
@@ -188,7 +183,7 @@ public:
     void send(uintptr_t v) { std::ostringstream os; os << v; send(os.str()); };
     void send(Int     v)   { std::ostringstream os; os << v; send(os.str()); };
     void send(Float   v)   { std::ostringstream os; os << v; send(os.str()); };
-    void send(Boolean v)   { std::ostringstream os; os << v; send(os.str()); };
+    //void send(Boolean v)   { std::ostringstream os; os << v; send(os.str()); };
     void send(boost::shared_ptr<String> text) {
         buf.append(text->toCString());
     }
@@ -210,7 +205,7 @@ public:
     void send(uintptr_t v) { os() << v; };
     void send(Int     v)   { os() << v; };
     void send(Float   v)   { os() << v; };
-    void send(Boolean v)   { os() << v; };
+    //void send(Boolean v)   { os() << v; };
     void send(boost::shared_ptr<String> text) {
         os() << text->toCString();
     }

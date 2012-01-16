@@ -1099,7 +1099,7 @@ typedef enum {
 	AST_BRANCET,
 	AST_EXPR,
 	AST_STMT,
-	AST_BLOCK,
+	AST_BLOCK
 } ktoken_t ;
 
 typedef struct kToken kToken;

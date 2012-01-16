@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
-if(USE_COMPILER_PKG)
 project(compiler)
 set(PACKAGE_SOURCE_CODE compiler.c)
 set(PACKAGE_SCRIPT_CODE compiler.k)
@@ -104,5 +103,4 @@ add_test(NAME "vm-pagerank"       COMMAND ${k} ${opt} "${DIR}/vm-pagerank.k"    
 add_test(NAME "vm-qsbench"        COMMAND ${k} ${opt} "${DIR}/vm-qsbench.k"       )
 add_test(NAME "vm-string"         COMMAND ${k} ${opt} "${DIR}/vm-string.k"        )
 add_test(NAME "vm-toyinterpreter" COMMAND ${k} ${opt} "${DIR}/vm-toyinterpreter.k")
-endif(USE_COMPILER_PKG)
 

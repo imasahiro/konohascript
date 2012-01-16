@@ -780,7 +780,7 @@ class DeltaBlue {
     void run() {
         long total_ms;
         System.out.println("DeltaBlue benchmark starting...");
-        int iterations= 4000;
+        int iterations= 10;
         long startTime= System.getTime();
         for (int j= 0; j < iterations; ++j) {
             chainTest(100);
