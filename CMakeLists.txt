@@ -68,7 +68,7 @@ macro(PKGNAME _STR _RESULT)
     POP(${_tmp} "." ${_RESULT})
 endmacro()
 
-add_konoha_definitions(-DHAVE_CONFIG_H)
+konoha_add_definitions(-DHAVE_CONFIG_H)
 
 set(KONOHA_SRC
 	src/lang/typing.c
