@@ -3367,6 +3367,7 @@ static knh_IntData_t IntIntrinsic[] = {
 	{"Log"  ,    (int) Intrinsic::log},
 	{"Sin"  ,    (int) Intrinsic::sin},
 	{"Cos"  ,    (int) Intrinsic::cos},
+	{NULL, 0}
 };
 
 static knh_IntData_t IntGlobalVariable[] = {
@@ -3384,7 +3385,8 @@ static knh_IntData_t IntGlobalVariable[] = {
 	{"DLLImportLinkage",                GlobalValue::DLLImportLinkage},
 	{"DLLExportLinkage",                GlobalValue::DLLExportLinkage},
 	{"ExternalWeakLinkage",             GlobalValue::ExternalWeakLinkage},
-	{"CommonLinkage",                   GlobalValue::CommonLinkage}
+	{"CommonLinkage",                   GlobalValue::CommonLinkage},
+	{NULL, 0}
 };
 
 DEFAPI(void) defGlobalValue(CTX ctx, kclass_t cid, kclassdef_t *cdef)
@@ -3410,33 +3412,34 @@ DEFAPI(void) constIntrinsic(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 #define C_(S) {#S , S}
 using namespace llvm::Attribute;
 static const knh_IntData_t IntAttributes[] = {
-    C_(None),
-    C_(ZExt),
-    C_(SExt),
-    C_(NoReturn),
-    C_(InReg),
-    C_(StructRet),
-    C_(NoUnwind),
-    C_(NoAlias),
-    C_(ByVal),
-    C_(Nest),
-    C_(ReadNone),
-    C_(ReadOnly),
-    C_(NoInline),
-    C_(AlwaysInline),
-    C_(OptimizeForSize),
-    C_(StackProtect),
-    C_(StackProtectReq),
-    C_(Alignment),
-    C_(NoCapture),
-    C_(NoRedZone),
-    C_(NoImplicitFloat),
-    C_(Naked),
-    C_(InlineHint),
-    C_(StackAlignment),
-    C_(ReturnsTwice),
-    C_(UWTable),
-    C_(NonLazyBind)
+	C_(None),
+	C_(ZExt),
+	C_(SExt),
+	C_(NoReturn),
+	C_(InReg),
+	C_(StructRet),
+	C_(NoUnwind),
+	C_(NoAlias),
+	C_(ByVal),
+	C_(Nest),
+	C_(ReadNone),
+	C_(ReadOnly),
+	C_(NoInline),
+	C_(AlwaysInline),
+	C_(OptimizeForSize),
+	C_(StackProtect),
+	C_(StackProtectReq),
+	C_(Alignment),
+	C_(NoCapture),
+	C_(NoRedZone),
+	C_(NoImplicitFloat),
+	C_(Naked),
+	C_(InlineHint),
+	C_(StackAlignment),
+	C_(ReturnsTwice),
+	C_(UWTable),
+	C_(NonLazyBind),
+	{NULL, 0}
 };
 #undef C_
 
