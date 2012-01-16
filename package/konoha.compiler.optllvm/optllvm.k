@@ -398,6 +398,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     Value v0   = builder.createFNeg(arg0);
     Value ret  = builder.createSelect(v, arg0, v0);
     builder.createRet(ret);
+    func.addFnAttr(Attributes.AlwaysInline);
     return func;
 }
 
