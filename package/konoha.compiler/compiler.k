@@ -51,6 +51,8 @@ KFLAG_PF_BREAK     = (1<<7);
 NOT_SCAST = -1;
 SHANEIR_ENABLE_FUNCTION_DUMP=true;
 
+@Native @public void Method.setLazycompile();
+
 @public boolean Class.isUnboxType() {
     if (this == Int) {
         return true;

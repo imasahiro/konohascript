@@ -562,6 +562,27 @@ kMethod *compiler_LOOKUPMTD(CTX ctx, kObject *o, knh_mtdcache_t *cache)
 	return mtd;
 }
 
+KMETHOD Method_lazycompile(CTX ctx, ksfp_t *sfp _RIX) {
+    kMethod *mtd = sfp[-1].mtdNC;
+    assert(IS_Method(mtd));
+    asm volatile("int3");
+    CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
+    knh_write_cid(ctx, cwb->w, (mtd)->cid);
+    knh_putc(ctx, cwb->w, '.');
+    knh_write_mn(ctx, cwb->w, (mtd)->mn);
+    fprintf(stderr, "%s\n", CWB_tobytes(cwb).utext);
+    CWB_close(ctx, cwb);
+    RETURNvoid_();
+}
+
+KMETHOD Method_setLazycompile(CTX ctx, ksfp_t *sfp _RIX) {
+    kMethod *mtd = sfp[0].mtd;
+    assert(IS_Method(mtd));
+    assert(Method_isAbstract(mtd));
+    knh_Method_setFunc(ctx, mtd, Method_lazycompile);
+    RETURNvoid_();
+}
+
 static kMethod *load_method(CTX ctx, kclass_t cid, kbytes_t t)
 {
 	kmethodn_t mn = knh_getmn(ctx, t, MN_NONAME);

@@ -389,6 +389,36 @@ add_executable(konoha1 ${KONOHA_BIN})
 target_link_libraries(konoha1 konoha)
 set_target_properties(konoha1 PROPERTIES OUTPUT_NAME konoha)
 
+find_program(CLANG_BIN NAMES clang DOC "clang")
+if(CLANG_BIN)
+       set(COMPILED_LIB_BC libkonoha.dylib.bc)
+       SET (COMPILED_BC)
+       string(TOUPPER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+       set(_cflag "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${BUILD_TYPE}}")
+       set(_tmp "${_cflag} ${KONOHA_CFLAGS} -I${CMAKE_CURRENT_BINARY_DIR} -g0")
+       string(REPLACE " " ";" LLVM_C_FLAGS ${_tmp})
+       foreach(it ${KONOHA_SRC})
+               string(REPLACE "/" ";" _source ${it})
+               list(REVERSE _source)
+               list(GET _source 0 _file)
+               set(_output ${CMAKE_CURRENT_BINARY_DIR}/${_file}.bc)
+               add_custom_command(
+                               OUTPUT  ${_output}
+                               DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_it}
+                               COMMAND clang ${PROJECT_SOURCE_DIR}/${it}
+                               ${LLVM_C_FLAGS} -emit-llvm -c -o
+                               ${_output})
+               list(APPEND COMPILED_BC ${_output})
+       endforeach()
+       add_custom_command(
+                       OUTPUT  ${COMPILED_LIB_BC}
+                       DEPENDS ${COMPILED_BC}
+                       COMMAND llvm-ld -link-as-library -o ${COMPILED_LIB_BC} ${COMPILED_BC})
+       add_custom_target(CREATE_BC_LIB DEPENDS ${COMPILED_LIB_BC})
+      #add_dependencies(konoha CREATE_BC_LIB)
+      #install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${COMPILED_LIB_BC} DESTINATION konoha/lib/)
+endif(CLANG_BIN)
+
 if(USE_CTEST)
 	include(CTest)
 	message(STATUS "*** Enable CTest Option ***")
