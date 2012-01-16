@@ -56,7 +56,7 @@ extern "C" {
 #define CEIL(F)     (F-(int)(F) > 0 ? (int)(F+1) : (int)(F))
 #define PTR_SIZE (sizeof(void*))
 #define BITS (PTR_SIZE * 8)
-#ifdef K_USING_WIN64_
+#if _WIN64
 #define FFS(n) __builtin_ffsll(n)
 #define CLZ(n) __builtin_clzll(n)
 #define CTZ(n) __builtin_ctzll(n)
@@ -1584,6 +1584,7 @@ static void HeapManager_expandHeap(CTX ctx, HeapManager *mng, size_t list_size)
 
 	ARRAY_add(SegmentPtr, &mng->segment_pool_a, segment_pool);
 	ARRAY_add(size_t, &mng->segment_size_a, list_size);
+	DBG_(ctx->stat->usedMemorySize += heap_size);
 #ifdef GCSTAT
 	gc_stat("Expand Heap(%luMB)[%p, %p]", heap_size/MB_, managed_heap, managed_heap_end);
 #endif
@@ -1705,6 +1706,7 @@ static bool DBG_CHECK_OBJECT_IN_HEAP(kObject *o, SubHeap *h)
 
 static void deferred_sweep(CTX ctx, kObject *o)
 {
+	STAT_(ctx->stat->collectedObject++);
 	bmgc_Object_free(ctx, o);
 	CLEAR_GCINFO(o);
 }
@@ -1904,7 +1906,7 @@ static void bmgc_gc_init(CTX ctx, HeapManager *mng)
 	SubHeap *h;
 
 	STAT_(ctx->stat->markedObject = 0;)
-		BMGC_dump(mng);
+	BMGC_dump(mng);
 	for_each_heap(h, i, mng->heaps) {
 		clearAllBitMapsAndCount(mng, h);
 	}
@@ -1953,7 +1955,7 @@ static void mark_ostack(CTX ctx, HeapManager *mng, kObject *o, knh_ostack_t *ost
 		bitmap_mark(*bm, seg, bpidx, bpmask);
 		++(seg->live_count);
 		ostack_push(ctx, ostack, o);
-		//STAT_(++(ctx->stat->markedObject););
+		STAT_(++(ctx->stat->markedObject););
 #ifdef GCSTAT
 		global_gc_stat.marked[klass]++;
 #endif
@@ -2098,16 +2100,36 @@ static void bmgc_gc_sweep(CTX ctx, HeapManager *mng)
 static void bitmapMarkingGC(CTX ctx, HeapManager *mng)
 {
 	bmgc_gc_init(ctx, mng);
-	bmgc_gc_mark(ctx, mng, 1);
-
 #ifdef GCSTAT
 	size_t i = 0, marked = 0, collected = 0, heap_size = 0;
 	FOR_EACH_ARRAY_(mng->heap_size_a, i) {
 		heap_size += ARRAY_n(mng->heap_size_a, i);
 	}
 #endif
+	STAT_(
+		kstatinfo_t *ctxstat = ctx->stat;
+		kuint64_t start_time = knh_getTimeMilliSecond();
+		kuint64_t mark_time = 0;
+	);
 
-	bmgc_gc_sweep(ctx, mng);
+	bmgc_gc_mark(ctx, mng, 1);
+
+	STAT_(mark_time = knh_getTimeMilliSecond());
+
+	bmgc_gc_sweep(ctx, GCDATA(ctx));
+
+	STAT_(
+		ctxstat->gcCount++;
+		ctxstat->markingTime += (mark_time-start_time);
+		ctxstat->latestGcTime = knh_getTimeMilliSecond();
+		ctxstat->gcTime += (ctxstat->latestGcTime - start_time);
+		GC_LOG("GC(%dMb): marked:%d, collected:%d marking_time=%dms",
+			ctxstat->usedMemorySize/ MB_,
+			ctxstat->markedObject, ctxstat->collectedObject, 
+			(int)(mark_time - start_time));
+		ctxstat->collectedObject = 0;
+		);
+
 #ifdef GCSTAT
 	SubHeap *h;
 	for_each_heap(h, i, mng->heaps) {
@@ -2192,7 +2214,7 @@ void knh_System_gc(CTX ctx, int needsCStackTrace)
 {
 	kstatinfo_t *ctxstat = ctx->stat;
 	size_t avail = ctx->memlocal->freeObjectListSize;
-	kuint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, sweep_time= 0, intval;
+	kuint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, intval;
 	if(stop_the_world(ctx)) {
 		bmgc_gc_init(ctx, GCDATA(ctx));
 		bmgc_gc_mark(ctx, GCDATA(ctx), needsCStackTrace);
@@ -2200,18 +2222,17 @@ void knh_System_gc(CTX ctx, int needsCStackTrace)
 		start_the_world(ctx);
 	}
 	bmgc_gc_sweep(ctx, GCDATA(ctx));
-	sweep_time = knh_getTimeMilliSecond();
 	intval = start_time - ctxstat->latestGcTime;
-	GC_LOG("GC(%dMb): marked=%lu, collected=%lu, avail=%lu=>%lu, interval=%dms, marking_time=%dms, sweeping_time=%dms",
+	GC_LOG("GC(%dMb): marked=%lu, collected=%lu, avail=%lu=>%lu, interval=%dms, marking_time=%dms",
 			ctxstat->usedMemorySize/ MB_,
 			ctxstat->markedObject, ctxstat->collectedObject,
 			avail, ctx->memlocal->freeObjectListSize,
-			(int)(intval), (int)(mark_time-start_time), (int)(sweep_time-mark_time));
+			(int)(intval), (int)(mark_time-start_time));
 	ctxstat->gcCount++;
 	ctxstat->markingTime += (mark_time-start_time);
-	ctxstat->sweepingTime += (sweep_time-mark_time);
 	ctxstat->latestGcTime = knh_getTimeMilliSecond();
 	ctxstat->gcTime += (ctxstat->latestGcTime - start_time);
+	ctxstat->collectedObject = 0;
 }
 
 #ifdef __cplusplus

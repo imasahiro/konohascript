@@ -1862,6 +1862,7 @@ static void HeapManager_expandHeap(CTX ctx, HeapManager *mng, size_t list_size)
 
 	ARRAY_add(SegmentPtr, &mng->segment_pool_a, segment_pool);
 	ARRAY_add(size_t, &mng->segment_size_a, list_size);
+	DBG_(ctx->stat->usedMemorySize += heap_size);
 #ifdef GCSTAT
 	gc_stat("Expand Heap(%luMB)[%p, %p]", heap_size/MB_, managed_heap, managed_heap_end);
 #endif
@@ -1987,6 +1988,7 @@ static bool DBG_CHECK_OBJECT_IN_HEAP(kObject *o, SubHeap *h)
 
 static void deferred_sweep(CTX ctx, kObject *o)
 {
+	STAT_(ctx->stat->collectedObject++;)
 	bmgc_Object_free(ctx, o);
 	CLEAR_GCINFO(o);
 }
@@ -2329,7 +2331,7 @@ static void mark_ostack(CTX ctx, HeapManager *mng, kObject *o, knh_ostack_t *ost
 		bitmap_mark(*bm, seg, bpidx, bpmask);
 		++(seg->live_count);
 		ostack_push(ctx, ostack, o);
-		//STAT_(++(ctx->stat->markedObject););
+		STAT_(++(ctx->stat->markedObject););
 #ifdef GCSTAT
 		global_gc_stat.marked[klass]++;
 #endif
@@ -2561,21 +2563,37 @@ void dump_memstat() {
 
 static void bitmapMarkingGC(CTX ctx, HeapManager *mng, int isTenure)
 {
-#ifdef GCSTAT
-	kuint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, sweep_time = 0;
-#endif
 	bmgc_gc_init(ctx, mng, isTenure);
-	bmgc_gc_mark(ctx, mng, STACKTRACE, isTenure);
 #ifdef GCSTAT
-	mark_time = knh_getTimeMilliSecond();
 	size_t i = 0, marked = 0, collected = 0, heap_size = 0;
 	FOR_EACH_ARRAY_(mng->heap_size_a, i) {
 		heap_size += ARRAY_n(mng->heap_size_a, i);
 	}
 #endif
+	STAT_(
+		kstatinfo_t *ctxstat = ctx->stat;
+		kuint64_t start_time = knh_getTimeMilliSecond();
+		kuint64_t mark_time = 0;
+	);
+
+	bmgc_gc_mark(ctx, mng, STACKTRACE, isTenure);
+
+	STAT_(mark_time = knh_getTimeMilliSecond());
+
 	bmgc_gc_sweep(ctx, mng, isTenure);
+
+	STAT_(
+		ctxstat->gcCount++;
+		ctxstat->markingTime += (mark_time-start_time);
+		ctxstat->latestGcTime = knh_getTimeMilliSecond();
+		ctxstat->gcTime += (ctxstat->latestGcTime - start_time);
+		GC_LOG("GC(%dMb): marked:%d, collected:%d marking_time=%dms, sweeping_time=%dms",
+			ctxstat->usedMemorySize/ MB_,
+			ctxstat->markedObject, ctxstat->collectedObject, 
+			(int)(mark_time - start_time));
+		ctxstat->collectedObject = 0;
+	);
 #ifdef GCSTAT
-	sweep_time = knh_getTimeMilliSecond();
 	SubHeap *h;
 	for_each_heap(h, i, mng->heaps) {
 		marked    += global_gc_stat.marked[i];
@@ -2585,7 +2603,6 @@ static void bitmapMarkingGC(CTX ctx, HeapManager *mng, int isTenure)
 	}
 	global_gc_stat.gc_count += 1;
 	global_gc_stat.markingTime += (mark_time-start_time);
-	global_gc_stat.sweepingTime += (sweep_time-mark_time);
 
 	if (isTenure) {
 		gc_stat("MajorGC(%lu) HeapSize=%luMB, last_collected=%lu, marked=%lu",
@@ -2707,7 +2724,7 @@ void knh_System_gc(CTX ctx, int needsCStackTrace, int isTenure)
 {
 	kstatinfo_t *ctxstat = ctx->stat;
 	size_t avail = ctx->memlocal->freeObjectListSize;
-	kuint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, sweep_time= 0, intval;
+	kuint64_t start_time = knh_getTimeMilliSecond(), mark_time = 0, intval;
 	if(stop_the_world(ctx)) {
 #ifdef K_USING_CTRACE
 		knh_dump_cstack(ctx);
@@ -2719,7 +2736,6 @@ void knh_System_gc(CTX ctx, int needsCStackTrace, int isTenure)
 		start_the_world(ctx);
 	}
 	gc_sweep(ctx, (HeapManager *)GCDATA(ctx));
-	sweep_time = knh_getTimeMilliSecond();
 	intval = start_time - ctxstat->latestGcTime;
 	//	if(knh_isVerboseGC()) {
 	//		STAT_(
@@ -2727,7 +2743,7 @@ void knh_System_gc(CTX ctx, int needsCStackTrace, int isTenure)
 			ctxstat->usedMemorySize/ MB_,
 			ctxstat->markedObject, ctxstat->collectedObject,
 			avail, ctx->memlocal->freeObjectListSize,
-			(int)(intval), (int)(mark_time-start_time), (int)(sweep_time-mark_time));
+			(int)(intval), (int)(mark_time-start_time));
 	//		)
 	//	}
 	//STAT_(KNH_ASSERT(ctxstat->markedObject == ctxstat->usedObjectSize);)
@@ -2737,7 +2753,6 @@ void knh_System_gc(CTX ctx, int needsCStackTrace, int isTenure)
 	//	})
 	ctxstat->gcCount++;
 	ctxstat->markingTime += (mark_time-start_time);
-	ctxstat->sweepingTime += (sweep_time-mark_time);
 	ctxstat->latestGcTime = knh_getTimeMilliSecond();
 	ctxstat->gcTime += (ctxstat->latestGcTime - start_time);
 }
