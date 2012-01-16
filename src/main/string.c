@@ -787,7 +787,7 @@ static kbool_t knh_linkDynamicPCRE(CTX ctx)
 	void *h = knh_dlopen(ctx, "libpcre" K_OSDLLEXT);
 	if(h == NULL) return 0;
 	_pcre_version = (const char* (*)(void))knh_dlsym(ctx, h, "pcre_version", NULL, 0/*isTest*/);
-	_pcre_free = (void (*)(void*))knh_dlsym(ctx, h, "free", NULL, 0/*isTest*/);
+	_pcre_free = free; // same as pcre_free
 	_pcre_fullinfo = (int (*)(const pcre*, const pcre_extra*, int, void*))knh_dlsym(ctx, h, "pcre_fullinfo", NULL, 0/*isTest*/);
 	_pcre_compile = (pcre* (*)(const char *, int, const char **, int *, const unsigned char *))knh_dlsym(ctx, h, "pcre_compile", NULL, 0/*isTest*/);
 	_pcre_exec = (int  (*)(const pcre *, const pcre_extra *, const char*, int, int, int, int *, int))knh_dlsym(ctx, h, "pcre_exec", NULL, 0/*isTest*/);

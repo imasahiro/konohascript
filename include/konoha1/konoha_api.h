@@ -755,7 +755,7 @@ void* kthread_getspecific(kthread_key_t key);
 int kthread_key_delete(kthread_key_t key);
 kArray* new_TokenArray(CTX ctx, const char *text, kline_t uline);
 void knh_initSugarFuncData(CTX ctx, const knh_LoaderAPI_t *kapi);
-void knh_initSugarData(CTX ctx, const knh_LoaderAPI_t *kapi);
+void knh_initSugarData(CTX ctx);
 
 #ifdef __cplusplus
 }

@@ -30,6 +30,7 @@ include "lib:gluelink";
 @Native MPIComm MPIComm.create(int[] ranks);
 
 @Native class MPIData;
+@Native MPIData MPIData.new (byte[] data, Class c);
 @Native MPIData : (int i);
 @Native MPIData : (int[] ia);
 @Native MPIData : (float f);
@@ -39,6 +40,7 @@ include "lib:gluelink";
 @Native float[] : (MPIData md);
 @Native byte[]  : (MPIData md);
 @Native Class   MPIData.getContentClass();
+@Native int     MPIData.getSize();
 @Native MPIData MPIData.opADD(int offset);
 
 @Native class MPIRequest;
@@ -71,3 +73,24 @@ include "lib:gluelink";
 @Native boolean MPIComm.allToAll(MPIData sdata, int scount, MPIData rdata, int rcount);
 @Native boolean MPIComm.reduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op, int root_rank);
 @Native boolean MPIComm.allReduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op);
+
+
+/* ------------------------------------------------------------------------ */
+/* MPITask Construction */
+
+//@Native void MPIComm.addTask(Path taskpath);
+//@Native @Static MPIComm MPIComm.getTaskComm();
+
+/* ======================================================================== */
+/* Utility Functions */
+
+using konoha.io.*;
+
+MPIData : (Object o) {
+    byte[] bt = new byte[0];
+    bt.writeMsgPack(o);
+    return new MPIData(bt, o.class);
+}
+dynamic MPIData.decode(Class c) {
+    return ((byte[])this).readMsgPack(0, 0, c);
+}

@@ -227,6 +227,14 @@ typedef void (*knh_Fconstdef)(CTX, kclass_t, const knh_LoaderAPI_t*);
 	return; \
 } while (0)
 
+#define GCRETURN_(V) {\
+		INIT_GCSTACK(ctx);\
+		KNH_SETv(ctx, sfp[_rix].o, V);\
+		KNH_SAFEPOINT(ctx, sfp);\
+		RESET_GCSTACK(ctx);\
+		return;\
+	}\
+
 #endif
 
 #define RETURNd_(d) do {\
