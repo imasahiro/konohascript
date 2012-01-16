@@ -22,29 +22,20 @@ TOP = "topLevelFunc()"
 //    String   mtdName;
 //    String[] source;
 //    String[] topLevelFunctionList;
+//    Map<String, String> funcNameMap;
 //}
 System.addClassField(CompilerOpt, String  , "mtdName");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
+System.addClassField(CompilerOpt, Map<String, String>, "funcNameMap");
 @Public void CompilerOpt.init() {
     this.source = [];
     this.topLevelFunctionList = [];
 }
 
-String mtdclass2str(String s) {
-    String[] ary = s.split(".");
-    if (|ary| >= 3 && ary[0] == "konoha") {
-        String res = "";
-        for (int i = 0; i < |ary|-1; i++) {
-            res += ary[i];
-            if (i != |ary|-2) {
-                res += ".";
-            }
-        }
-        return res;
-    } else {
-        return ary[|ary|-2] + "_";
-    }
+boolean isKonohaClass(Class c) {
+    String s = (to String)c;
+    return (s.startsWith("konoha") || s.startsWith("js"));
 }
 String class2str(String s) {
     if (s.startsWith("konoha.Array")) {
@@ -55,18 +46,25 @@ String class2str(String s) {
     }   
     if (s.startsWith("konoha.Iterator")) {
         return "konoha.Iterator";
-    }   
-    String[] ary = s.split(".");
-    if (s.indexof(".") != -1) {
-        if (|ary| >= 2 && ary[|ary|-2] == "konoha") {
-            return "konoha." + ary[|ary|-1];
-        } else {
-            return ary[|ary|-1] + "_";
-        }
     }
-    return s;
+    String[] ary = s.split(".");
+    if (|ary| >= 2 && ary[0] == "konoha") {
+        String res = "";
+        for (int i = 0; i < |ary|; i++) {
+            res += ary[i];
+            if (i != |ary|-1) {
+                res += ".";
+            }
+        }
+        return res;
+    } else {
+        return ary[|ary|-1] + "_";
+    }
 }
 
+String mtdclass2str(String s) {
+    return class2str(s[0 to s.lastIndexOf(".")-1]);
+}
 String getTypeName (Class type) {
     String res = (to String) type;
     return (res == "") ? "null" : res;
@@ -77,6 +75,9 @@ String uscore(String in) {
     return in;
 }
 LABEL = "label";
+@Public String Compiler.getMapedMethodName(Method mtd) {
+    return "";
+}
 @Public void Compiler.addSource(String str, int count) {
     String tmp = "";
     for (int i = 0; i < count; i++) {
