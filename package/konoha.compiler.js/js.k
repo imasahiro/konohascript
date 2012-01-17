@@ -67,7 +67,7 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
         return "var ";
     }
 }
-String obfuscateString(int size, int idx, char base, boolean needDoller) {
+@Overload String obfuscateString(int size, int idx, char base, boolean needDoller) {
     int l = 'z' - 'a';
     int i = size, j = idx;
     Bytes b;
@@ -89,6 +89,15 @@ String obfuscateString(int size, int idx, char base, boolean needDoller) {
         b[0] = '$';
     }
     return b.decode();
+}
+@Overload String obfuscateString(int idx, char base, boolean needDoller) {
+    int size = 1, j = idx;
+    int l = 'Z' - 'A';
+    while (j > l) {
+        size++;
+        j /= (l+1);
+    }
+    return obfuscateString(size, idx, base, needDoller);
 }
 @Public @Overload String K_Inst.getVarName(Compiler asm) {
     String s = getName();
@@ -517,10 +526,10 @@ LABEL = "label";
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
-    asm.addSource(declVar(asm) + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".field" + op.bn + ";");
+    asm.addSource(declVar(asm) + getVarName(asm) + " = " + op.inst0.getVarName(asm) + "." + obfuscateString(op.bn, 'a', true) + ";");
 }
 @Public @Override void K_SetField.codegen(Compiler asm) {
-    asm.addSource(op.inst0.getVarName(asm) + ".field" + op.an + " = " + op.inst1.getVarName(asm) + ";");
+    asm.addSource(op.inst0.getVarName(asm) + "." + obfuscateString(op.an, 'a', true) + " = " + op.inst1.getVarName(asm) + ";");
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
     asm.addSource(declVar(asm) + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".next();");
@@ -589,9 +598,9 @@ LABEL = "label";
     int i = 0;
     foreach (Class fieldclass in c.getFieldClasses()) {
         if (fieldclass.isUnboxType()) {
-            res += "    " + "this.field" + i + " = 0;";
+            res += "    " + "this." + obfuscateString(i, 'a', true) + " = 0;";
         } else {
-            res += "    " + "this.field" + i + " = null;";
+            res += "    " + "this." + obfuscateString(i, 'a', true) + " = null;";
         }
         res += EOL;
         i++;
