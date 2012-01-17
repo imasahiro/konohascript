@@ -1,4 +1,3 @@
-using konoha.math.*;
 String header = """
 <html>
 <head>
@@ -41,10 +40,12 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
     this.methodNameMap = {};
     this.classNameMap = {};
 }
-
-boolean isKonohaClass(Class c) {
-    String s = (to String)c;
+@Overload boolean isKonohaClass(String s) {
     return (s.startsWith("konoha") || s.startsWith("js") || s.endsWith("Script"));
+}
+@Overload boolean isKonohaClass(Class c) {
+    String s = (to String)c;
+    return isKonohaClass(s);
 }
 @Public @Overload String K_Inst.getVarName(Compiler asm) {
     String s = getName();
@@ -59,7 +60,7 @@ boolean isKonohaClass(Class c) {
         i++;
         j /= (l+1);
     }
-    Bytes b = new byte[i];
+    Bytes b = new byte[i+1];
     j = varIdx;
     for (int k = i-1; k >= 0; k--) {
         b[k] = 'a' + j % (l+1);
@@ -68,6 +69,7 @@ boolean isKonohaClass(Class c) {
     if (i > 1) {
         b[0] = b[0]-1;
     }
+    b[i] = '_';
     asm.opt.varNameMap.set(s, b.decode());
     return b.decode();
 }
@@ -94,15 +96,18 @@ boolean isKonohaClass(Class c) {
     if (i > 1) {
         b[0] = b[0]-1;
     }
-    opt.classNameMap.set(s, b.decode());
+    opt.classNameMap[s] = b.decode();
 }
 @Public String Compiler.getUserClassName(String s) {
-    if (!s in? opt.classNameMap) {
+    if (opt.classNameMap[s] == null) {
         setUserClassName(s);
     }
     return opt.classNameMap[s];
 }
 @Public String Compiler.class2str(String s) {
+    if (s.endsWith("Script")) {
+        return "Script";
+    }
     if (s.startsWith("konoha.Array")) {
         return "konoha.Array";
     }   
@@ -113,7 +118,7 @@ boolean isKonohaClass(Class c) {
         return "konoha.Iterator";
     }
     String[] ary = s.split(".");
-    if (|ary| >= 2 && ary[0] == "konoha") {
+    if (|ary| >= 2 && isKonohaClass(s)) {
         String res = "";
         for (int i = 0; i < |ary|; i++) {
             res += ary[i];
@@ -151,7 +156,7 @@ LABEL = "label";
     Class c = mtd.getMethodClass();
     while (!isKonohaClass(c.getSuper())) {
         c = c.getSuper();
-        mtdId += |c.getMethods()|;
+        mtdId = mtdId + |c.getMethods()|;
     }
     int i = 1, j = mtdId;
     int l = 'z' - 'a';
@@ -205,7 +210,7 @@ LABEL = "label";
 @Public void K_Function.codegen(Compiler asm) {
     asm.getMethodName(asm.mtd);
     if (!isKonohaClass(asm.mtd.getMethodClass())) {
-        asm.opt.obfuscatedClassName = asm.getUserClassName((to String)asm.mtd.getMethodClass());
+        asm.opt.obfuscatedClassName = asm.class2str((to String)asm.mtd.getMethodClass());
     }
     String fncdef = "";
     String thisclass = asm.opt.obfuscatedClassName;
@@ -392,7 +397,7 @@ LABEL = "label";
     String thisclass = asm.mtdclass2str(op.mtd.toString());
     if (flag) {
         res += args[0].getVarName(asm) + ".";
-    } else if (thisclass != "Script_") {
+    } else if (thisclass != "Script") {
         res += uscore(thisclass) + ".";
     }
     res += op.mtd.getName().replace("%s", "send").replace(":", "_") + "(";
@@ -497,23 +502,14 @@ LABEL = "label";
 }
 @Public String Compiler.createKickFunc() {
     String res = "";
-    boolean hasScr = false;
-    foreach (fnc in this.opt.topLevelFunctionList) {
-        if (fnc.indexOf("Script") != -1) {
-            hasScr = true;
-        }
-    }
-    if (hasScr) {
-        res += "function Script_" + "() {" + EOL;
-        //res += "    'use strict';" + EOL;
-        res += "}" + EOL;
-        res += EOL;
-    }
+    boolean flagScript = false;
+    res += "function Script" + "() {" + EOL;
+    //res += "    'use strict';" + EOL;
+    res += "}" + EOL;
+    res += EOL;
     res += "function " + TOP + " {" + EOL;
     //res += "    'use strict';" + EOL;
-    if (hasScr) {
-        res += "    script = new Script_();" + EOL;
-    }
+    res += "    script = new Script();" + EOL;
     foreach (fnc in this.opt.topLevelFunctionList) {
         res += "    " + fnc + "(";
         if (fnc.indexOf("Script") != -1) {
