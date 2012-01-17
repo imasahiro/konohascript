@@ -26,6 +26,7 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 #include <llvm/Intrinsics.h>
+#include <llvm/Attributes.h>
 #include <llvm/PassManager.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/IPO.h>
@@ -890,6 +891,16 @@ KMETHOD IRBuilder_createLoad(CTX ctx, ksfp_t *sfp _RIX)
 	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
 	kbool_t isVolatile = sfp[2].bvalue;
 	LoadInst *ptr = self->CreateLoad(Ptr, isVolatile);
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
+//@Native LoadInst LoadInst.new(Value ptr);
+//## LoadInst IRBuilder.CreateLoad(Value Ptr, boolean isVolatile);
+KMETHOD LoadInst_new(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Value *Ptr = konoha::object_cast<Value *>(sfp[1].p);
+	LoadInst *ptr = new LoadInst(Ptr);
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
 	RETURN_(p);
 }
@@ -2008,6 +2019,16 @@ KMETHOD Function_dump(CTX ctx, ksfp_t *sfp _RIX)
 	func->dump();
 	RETURNvoid_();
 }
+
+//## @Native void Function.addFnAttr(Int attributes);
+KMETHOD Function_addFnAttr(CTX ctx, ksfp_t *sfp _RIX)
+{
+	Function *F = konoha::object_cast<Function *>(sfp[0].p);
+	Attributes N = (Attributes) sfp[1].ivalue;
+	F->addFnAttr(N);
+	RETURNvoid_();
+}
+
 
 //## ExecutionEngine Module.createExecutionEngine();
 KMETHOD Module_createExecutionEngine(CTX ctx, ksfp_t *sfp _RIX)
@@ -3346,6 +3367,7 @@ static knh_IntData_t IntIntrinsic[] = {
 	{"Log"  ,    (int) Intrinsic::log},
 	{"Sin"  ,    (int) Intrinsic::sin},
 	{"Cos"  ,    (int) Intrinsic::cos},
+	{NULL, 0}
 };
 
 static knh_IntData_t IntGlobalVariable[] = {
@@ -3363,7 +3385,8 @@ static knh_IntData_t IntGlobalVariable[] = {
 	{"DLLImportLinkage",                GlobalValue::DLLImportLinkage},
 	{"DLLExportLinkage",                GlobalValue::DLLExportLinkage},
 	{"ExternalWeakLinkage",             GlobalValue::ExternalWeakLinkage},
-	{"CommonLinkage",                   GlobalValue::CommonLinkage}
+	{"CommonLinkage",                   GlobalValue::CommonLinkage},
+	{NULL, 0}
 };
 
 DEFAPI(void) defGlobalValue(CTX ctx, kclass_t cid, kclassdef_t *cdef)
@@ -3384,6 +3407,50 @@ DEFAPI(void) defIntrinsic(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 DEFAPI(void) constIntrinsic(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, IntIntrinsic);
+}
+
+#define C_(S) {#S , S}
+using namespace llvm::Attribute;
+static const knh_IntData_t IntAttributes[] = {
+	C_(None),
+	C_(ZExt),
+	C_(SExt),
+	C_(NoReturn),
+	C_(InReg),
+	C_(StructRet),
+	C_(NoUnwind),
+	C_(NoAlias),
+	C_(ByVal),
+	C_(Nest),
+	C_(ReadNone),
+	C_(ReadOnly),
+	C_(NoInline),
+	C_(AlwaysInline),
+	C_(OptimizeForSize),
+	C_(StackProtect),
+	C_(StackProtectReq),
+	C_(Alignment),
+	C_(NoCapture),
+	C_(NoRedZone),
+	C_(NoImplicitFloat),
+	C_(Naked),
+	C_(InlineHint),
+	C_(StackAlignment),
+	C_(ReturnsTwice),
+	C_(UWTable),
+	C_(NonLazyBind),
+	{NULL, 0}
+};
+#undef C_
+
+DEFAPI(void) defAttributes(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+{
+	cdef->name = "Attributes";
+}
+
+DEFAPI(void) constAttributes(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
+{
+	kapi->loadClassIntConst(ctx, cid, IntAttributes);
 }
 
 DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)

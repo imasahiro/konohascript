@@ -394,7 +394,7 @@ const char *knh_getopname(kmethodn_t mn);
 /* Object */
 /* ------------------------------------------------------------------------ */
 
-#define K_OBJECT_MAGIC        (578L << ((sizeof(kflag_t)*8)+1))
+#define K_OBJECT_MAGIC        (578L << ((sizeof(kflag_t)*8)))
 #define K_CFLAGMASK           (FLAG_Object_Ref)
 #define KNH_MAGICFLAG(f)      (K_OBJECT_MAGIC | ((kuintptr_t)(f) & K_CFLAGMASK))
 #define DBG_ASSERT_ISOBJECT(o)   DBG_ASSERT(TFLAG_is(kuintptr_t,(o)->h.magicflag, K_OBJECT_MAGIC))

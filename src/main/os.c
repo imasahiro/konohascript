@@ -31,8 +31,6 @@
 
 #ifdef K_USING_POSIX_
 #include <unistd.h>
-#include <signal.h>
-#include <dirent.h>
 #include <sys/stat.h>
 #include <dlfcn.h>
 #include <time.h>

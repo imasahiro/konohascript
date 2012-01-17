@@ -281,7 +281,6 @@ static void Lang_init(CTX ctx, kRawPtr *o)
 	knh_bzero(b, sizeof(knh_LangEX_t));
 	lang->parentNULL       = NULL;
 	KNH_INITv(lang->name,  TS_EMPTY);
-	KNH_INITv(lang->gcbuf, new_Array0(ctx, 0));
 }
 
 static void Lang_reftrace(CTX ctx, kRawPtr *o FTRARG)
@@ -289,11 +288,10 @@ static void Lang_reftrace(CTX ctx, kRawPtr *o FTRARG)
 	kLang *lang = (kLang*)o;
 	knh_LangEX_t *b = DP(lang);
 	KNH_ADDREF(ctx, lang->name);
-	KNH_ADDREF(ctx, lang->gcbuf);
 	KNH_ADDNNREF(ctx, lang->parentNULL);
 	KNH_ADDNNREF(ctx, b->tokenRulesNULL);
-	KNH_ADDNNREF(ctx, b->uninaryRulesNULL);
-	KNH_ADDNNREF(ctx, b->binaryRulesNULL);
+	KNH_ADDNNREF(ctx, b->uninaryDictSetNULL);
+	KNH_ADDNNREF(ctx, b->binaryDictSetNULL);
 	KNH_ADDNNREF(ctx, b->stmtRulesNULL);
 	KNH_ADDNNREF(ctx, b->exprRulesNULL);
 	KNH_SIZEREF(ctx);

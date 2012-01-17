@@ -51,6 +51,8 @@ KFLAG_PF_BREAK     = (1<<7);
 NOT_SCAST = -1;
 SHANEIR_ENABLE_FUNCTION_DUMP=true;
 
+@Native @public void Method.setLazycompile();
+
 @public boolean Class.isUnboxType() {
     if (this == Int) {
         return true;
@@ -147,25 +149,6 @@ String getTypeName(Class type) {
     else {
         return res;
     }
-}
-
-@Public Value IRBuilder.getValueFromSfp(Value sfp, Type rTy, int sfpidx) {
-    int idx;
-    if (rTy.class == PointerType)
-        idx = 0;
-    else
-        idx = 1;
-    Value v = this.createConstGEP2_32(sfp, sfpidx, idx);
-    return this.createBitCast(v, PointerType.get(rTy));
-}
-
-@Public Value IRBuilder.createLoadValueFromSfp(Value sfp, Type rTy, int sfpidx) {
-    Value v = this.getValueFromSfp(sfp, rTy, sfpidx);
-    return this.createLoad(v);
-}
-@Public void IRBuilder.createStoreValueToSfp(Value sfp, Type rTy, int sfpidx, Value v) {
-    Value r  = this.getValueFromSfp(sfp, rTy, sfpidx);
-    this.createStore(v, r);
 }
 
 class K_Value {
@@ -431,11 +414,9 @@ class K_ARGUMENT extends K_Inst {
     }
 }
 class K_Function {
-    boolean undeveloped;
-    String name;
+    Method mtd;
     K_BasicBlock[] bbs;
     Class[] declareclass_func;
-    Func<K_Function,Method, int=>void>[] klrasm;
     Array<dynamic> const_table;
     Array<K_Inst> register_table;
     Array<K_BasicBlock> breakpoint;
@@ -443,11 +424,12 @@ class K_Function {
     Array<Tuple<K_BasicBlock, Array<K_Inst>>> breakList;
     Array<Tuple<K_BasicBlock, Array<K_Inst>>> continueList;
     Class retTy;
-    boolean hasReturn;
-    int isStatic;
     K_ARGUMENT[] funcargs;
     K_Inst retval;
     Map<String, K_Value> value_table;
+    boolean undeveloped;
+    boolean hasReturn;
+    int isStatic;
 
     /*for SSA*/
     /*
@@ -471,8 +453,10 @@ class K_Function {
     K_BasicBlock curBB;
     String mtdName;
     Function func;
+    Function wfunc;
 
     K_Function(Method mtd) {
+        this.mtd = mtd;
         this.declareclass_func = [];
         this.undeveloped = false;
         this.hasReturn = false;

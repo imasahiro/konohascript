@@ -1093,10 +1093,13 @@ typedef enum {
 	TK_REGEX,
 	TK_META,
 	TK_PROP,
-	TK_LIST,
-	TK_EXPR,
-	TK_STMT,
-	TK_BLOCK
+	// ast
+	AST_PARENTHESIS,
+	AST_BRACE,
+	AST_BRANCET,
+	AST_EXPR,
+	AST_STMT,
+	AST_BLOCK
 } ktoken_t ;
 
 typedef struct kToken kToken;
@@ -1106,7 +1109,10 @@ struct kToken {
 	ktoken_t token;
 	union {
 		struct kString *text;
-		struct kExpr *expr;
+		struct kArray  *sub;
+		struct kExpr   *expr;
+		struct kStmt   *stmt;
+		struct kBlock  *bk;
 	};
 	kline_t     uline;
 	kushort_t lpos; kshort_t  topch;
@@ -1125,7 +1131,11 @@ typedef struct kSugar kSugar;
 #ifdef USE_STRUCT_Sugar
 struct kSugar {
 	kObjectHeader h;
-	ksugar_t sugar;  kshort_t optnum;
+	ksugar_t sugar;
+	union {
+		kshort_t optnum;
+		kshort_t priority;
+	};
 	struct kString *key;
 	struct kArray  *rules;
 };
@@ -1133,11 +1143,12 @@ struct kSugar {
 
 #define UEXPR_USER_DEFINED   0
 #define UEXPR_TOKEN          1
-#define UEXPR_METHOD_CALL    2
-#define UEXPR_NEW            3
-#define UEXPR_CALL           4
-#define UEXPR_BINARY         5
-#define UEXPR_GETTER         6
+#define UEXPR_NULL           2
+#define UEXPR_METHOD_CALL    3
+#define UEXPR_NEW            4
+#define UEXPR_CALL           5
+#define UEXPR_BINARY         6
+#define UEXPR_GETTER         7
 
 #define TEXPR_TYPE           10
 #define TEXPR_CONST          (TEXPR_TYPE+1)
@@ -1189,8 +1200,8 @@ typedef struct kLang kLang;
 #ifdef USE_STRUCT_Lang
 typedef struct knh_LangEX_t {
 	struct kDictMap*   tokenRulesNULL;
-	struct kDictMap*   uninaryRulesNULL;
-	struct kDictMap*   binaryRulesNULL;
+	struct kDictSet*   uninaryDictSetNULL;
+	struct kDictSet*   binaryDictSetNULL;
 	struct kArray*     stmtRulesNULL;
 	struct kArray*     exprRulesNULL;
 } knh_LangEX_t ;
@@ -1201,7 +1212,6 @@ struct kLang {
 	knh_LangEX_t KNH_EX_REF b;
 	struct kString  *name;
 	struct kLang    *parentNULL;
-	struct kArray   *gcbuf;   // gc buffer
 };
 #endif
 

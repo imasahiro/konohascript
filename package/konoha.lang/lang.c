@@ -61,6 +61,15 @@ KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
 	kclass_t cid = c->cTBL->supcid;
 	RETURN_(new_Type(ctx, cid));
 }
+
+//@Public @Native boolean Class.isFinal();
+KMETHOD Class_isFinal(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kclass_t cid = c->cTBL->cid;
+	RETURNb_(class_isFinal(cid));
+}
+
+
 //## Class Class.getBaseClass();
 KMETHOD Class_getBaseClass(CTX ctx, ksfp_t *sfp _RIX) {
 	kClass *c = sfp[0].c;

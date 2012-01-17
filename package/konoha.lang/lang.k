@@ -65,6 +65,7 @@ String : (Class c) {
 @Public @Native Class Class.getP1();
 @Public @Native Class Class.getSuper();
 @Public @Native Class Class.getBaseClass();
+@Public @Native boolean Class.isFinal();
 
 @Public @Native Method Method.opLINK(String path, NameSpace _);
 @Public @Native Method[] Class.getMethods(NameSpace _);

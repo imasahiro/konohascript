@@ -299,6 +299,9 @@ typedef struct knh_sysinfo_t {
 //#define     K_USING_SYSLOG       1   // if not available, report to konohaken
 #define     K_USING_SQLITE3  1
 #define		K_USING_WINTHREAD_   1
+#if defined(_WIN64)
+#define		K_USING_WIN64_       1
+#endif
 #define 	K_OSLINEFEED "\r\n"
 #define 	K_OSDLLEXT ".dll"
 #define		K_SEP '\\'

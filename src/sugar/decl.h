@@ -45,20 +45,21 @@ static kbool_t checkTEXT(CTX ctx, kToken *tk)
 	return ERROR_TokenMustBe(ctx, tk, "\"TEXT\"");
 }
 
-static kbool_t checkexpr(CTX ctx, kToken *tk)
-{
-	if (tk->token == TK_SYMBOL && knh_String_equals(tk->text, "expr")) {
-		return 1;
-	}
-	return ERROR_TokenMustBe(ctx, tk, "expr");
-}
+//static kbool_t checkexpr(CTX ctx, kToken *tk)
+//{
+//	if (tk->token == TK_SYMBOL && knh_String_equals(tk->text, "expr")) {
+//		return 1;
+//	}
+//	return ERROR_TokenMustBe(ctx, tk, "expr");
+//}
 
 static kbool_t checkSugarRule(CTX ctx, kArray *rules)
 {
 	size_t i, size = knh_Array_size(rules);
 	for(i = 0; i < size; i++) {
 		kToken *tk = rules->tokens[i];
-		if(tk->token == TK_TEXT || tk->token == TK_STEXT || tk->token == TK_SYMBOL || tk->token == TK_USYMBOL) continue;
+		if(tk->token == TK_STEXT) tk->token = TK_TEXT;
+		if(tk->token == TK_TEXT || tk->token == TK_SYMBOL || tk->token == TK_USYMBOL) continue;
 		if(tk->topch == '[' || tk->topch == ']' || tk->topch == '^' || tk->topch == ':') continue;
 		return ERROR_TokenError(ctx, tk);
 	}
@@ -87,6 +88,9 @@ static kbool_t Lang_addSugar(CTX ctx, kLang *lang, kSugar *sgr, kline_t uline)
 	case SUGAR_DECL:
 	case SUGAR_STMT:
 		if(checkSugarRule(ctx, rules)) {
+			if(DP(lang)->stmtRulesNULL == NULL) {
+				KNH_INITv(DP(lang)->stmtRulesNULL, new_Array0(ctx, 0));
+			}
 			knh_Array_add(ctx, DP(lang)->stmtRulesNULL, sgr);
 			return 1;
 		}
@@ -94,27 +98,30 @@ static kbool_t Lang_addSugar(CTX ctx, kLang *lang, kSugar *sgr, kline_t uline)
 	case SUGAR_EXPR:
 	case SUGAR_TYPE:
 		if(checkSugarRule(ctx, rules)) {
+			if(DP(lang)->exprRulesNULL == NULL) {
+				KNH_INITv(DP(lang)->exprRulesNULL, new_Array0(ctx, 0));
+			}
 			knh_Array_add(ctx, DP(lang)->exprRulesNULL, sgr);
 			return 1;
 		}
 		break;
-	case SUGAR_BINARY:
-		if(size == 3) {
-			kToken *tk1 = rules->tokens[1];
-			if(checkTEXT(ctx, tk1) && checkexpr(ctx, rules->tokens[0]) && checkexpr(ctx, rules->tokens[2])) {
-				knh_DictMap_set(ctx, DP(lang)->binaryRulesNULL, tk1->text, sgr);
-				return 1;
-			}
-		}
-		else if(size == 2){
-			kToken *tk0 = rules->tokens[0];
-			if(checkTEXT(ctx, tk0) && checkexpr(ctx, rules->tokens[1])) {
-				sgr->sugar = SUGAR_UNINARY;
-				knh_DictMap_set(ctx, DP(lang)->uninaryRulesNULL, tk0->text, sgr);
-				return 1;
-			}
-		}
-		return checkSizeEq(ctx, uline, size, 3);
+//	case SUGAR_BINARY:
+//		if(size == 3) {
+//			kToken *tk1 = rules->tokens[1];
+//			if(checkTEXT(ctx, tk1) && checkexpr(ctx, rules->tokens[0]) && checkexpr(ctx, rules->tokens[2])) {
+//				knh_DictMap_set(ctx, DP(lang)->binaryRulesNULL, tk1->text, sgr);
+//				return 1;
+//			}
+//		}
+//		else if(size == 2){
+//			kToken *tk0 = rules->tokens[0];
+//			if(checkTEXT(ctx, tk0) && checkexpr(ctx, rules->tokens[1])) {
+//				sgr->sugar = SUGAR_UNINARY;
+//				knh_DictMap_set(ctx, DP(lang)->uninaryRulesNULL, tk0->text, sgr);
+//				return 1;
+//			}
+//		}
+//		return checkSizeEq(ctx, uline, size, 3);
 	}
 	return 0;
 }
@@ -146,19 +153,19 @@ static kbool_t declSugar(CTX ctx, kStmt *stmt, kLang *lang)
 	kbytes_t n = S_tobytes(tk->text);
 	ksugar_t sugar = -1;
 	if(n.len > 0) {
-		if(knh_bytes_endsWith(n, "Decl")) {
+		if(knh_bytes_endsWith(n, "Decl")) {       // IfDecl ::=
 			sugar = SUGAR_DECL;
 		}
-		else if(knh_bytes_endsWith(n, "Stmt")) {
+		else if(knh_bytes_endsWith(n, "Stmt")) {  // IfStmt ::=
 			sugar = SUGAR_STMT;
 		}
-		else if(knh_bytes_endsWith(n, "Expr")) {
+		else if(knh_bytes_endsWith(n, "Expr")) {  // IfExpr ::=
 			sugar = SUGAR_EXPR;
 		}
-		else if(knh_bytes_endsWith(n, "Type")) {
+		else if(knh_bytes_endsWith(n, "Type")) {  // IfType ::= "if"
 			sugar = SUGAR_TYPE;
 		}
-		else if(knh_bytes_startsWith(n, "op")) {
+		else if(knh_bytes_startsWith(n, "op")) {  // AddOp  ::= expr "+" expr
 			sugar = SUGAR_BINARY;
 		}
 	}
@@ -175,6 +182,7 @@ static kbool_t declSugar(CTX ctx, kStmt *stmt, kLang *lang)
 	}
 	return 0;
 }
+
 
 /* ------------------------------------------------------------------------ */
 /* [MethodDecl] */

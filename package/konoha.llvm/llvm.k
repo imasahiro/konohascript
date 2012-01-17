@@ -57,6 +57,7 @@ include "lib:gluelink";
 
 @Native class GlobalValue;
 @Native class Intrinsic;
+@Native class Attributes;
 
 @RawPtr class LLVM;
 @RawPtr class Pass;
@@ -145,6 +146,7 @@ include "lib:gluelink";
 @Native AllocaInst IRBuilder.createAlloca(Type ty, Value arraySize);
 @Native AllocaInst AllocaInst.new(Type ty, Value arraySize);
 @Native LoadInst IRBuilder.createLoad(Value ptr, boolean isVolatile);
+@Native LoadInst LoadInst.new(Value ptr);
 @Native StoreInst IRBuilder.createStore(Value val, Value ptr, boolean isVolatile);
 @Native StoreInst StoreInst.new(Value val, Value ptr);
 //@Native FenceInst IRBuilder.createFence(AtomicOrdering ordering, SynchronizationScope SynchScope);
@@ -239,6 +241,8 @@ include "lib:gluelink";
 @Native void Type.dump();
 @Native void BasicBlock.dump();
 @Native @Static Function Function.create(String name, FunctionType fnTy, Module m, int linkage);
+@Native void Function.addFnAttr(Int attributes);
+
 //@Native iterator BasicBlock.begin();
 //@Native iterator BasicBlock.end();
 @Native int BasicBlock.size();
