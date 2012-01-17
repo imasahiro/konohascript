@@ -231,6 +231,7 @@ LABEL = "label";
 }
 
 @Public void K_Function.codegen(Compiler asm) {
+    boolean flagPrototype = false;
     asm.opt.obfuscatedMethodName = asm.getMethodName(asm.mtd);
     asm.opt.obfuscatedClassName = asm.class2str((to String)asm.mtd.getMethodClass());
     String fncdef = "";
@@ -251,7 +252,8 @@ LABEL = "label";
             asm.opt.mtdName = asm.opt.obfuscatedMethodName;
         }
     } else {
-        fncdef += uscore(thisclass) + ".prototype." + asm.opt.obfuscatedMethodName + " = function(";
+        flagPrototype = true;
+        fncdef += uscore(thisclass) + ".prototype." + asm.opt.obfuscatedMethodName + " = function (";
     }
     for (int i = 1 - isStatic; i < |funcargs|; i++) {
         fncdef += funcargs[i].getVarName(asm);
@@ -313,7 +315,11 @@ LABEL = "label";
         asm.decIndentLevel();
     }
     asm.decIndentLevel();
-    asm.addSource("}");
+    if (flagPrototype) {
+        asm.addSource("};");
+    } else {
+        asm.addSource("}");
+    }
 }
 @Public @Override void K_MOV.codegen(Compiler asm) {
     String res;
@@ -588,9 +594,9 @@ LABEL = "label";
     int i = 0;
     foreach (Class fieldclass in c.getFieldClasses()) {
         if (fieldclass.isUnboxType()) {
-            res += "  " + "this.field" + i + " = 0;";
+            res += "    " + "this.field" + i + " = 0;";
         } else {
-            res += "  " + "this.field" + i + " = null;";
+            res += "    " + "this.field" + i + " = null;";
         }
         res += EOL;
         i++;
