@@ -67,6 +67,29 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
         return "var ";
     }
 }
+String obfuscateString(int size, int idx, char base, boolean needDoller) {
+    int l = 'z' - 'a';
+    int i = size, j = idx;
+    Bytes b;
+    if (needDoller) {
+        b = new byte[i+1];
+    } else {
+        b = new byte[i];
+    }
+    int m = 0;
+    for (int k = (needDoller) ? i : i-1; m < size; k--) {
+        b[k] = base + j % (l+1);
+        j /= (l+1);
+        m++;
+    }
+    if (i > 1) {
+        b[0] = b[0]-1;
+    }
+    if (needDoller) {
+        b[0] = '$';
+    }
+    return b.decode();
+}
 @Public @Overload String K_Inst.getVarName(Compiler asm) {
     String s = getName();
     if (asm.opt.varNameMap[s] != null) {
@@ -80,18 +103,8 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
         i++;
         j /= (l+1);
     }
-    Bytes b = new byte[i+1];
-    j = varIdx;
-    for (int k = i; k >= 1; k--) {
-        b[k] = 'a' + j % (l+1);
-        j /= (l+1);
-    }
-    if (i > 1) {
-        b[0] = b[0]-1;
-    }
-    b[0] = '$';
-    asm.opt.varNameMap.set(s, b.decode());
-    return b.decode();
+    asm.opt.varNameMap.set(s, obfuscateString(i, varIdx, 'a', true));
+    return asm.opt.varNameMap[s];
 }
 @Public void Compiler.setUserClassName(String s) {
     int i = 1, j, classIdx = 0;
@@ -107,16 +120,7 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
         i++;
         j /= (l+1);
     }
-    Bytes b = new byte[i];
-    j = classIdx;
-    for (int k = i-1; k >= 0; k--) {
-        b[k] = 'A' + j % (l+1);
-        j /= (l+1);
-    }
-    if (i > 1) {
-        b[0] = b[0]-1;
-    }
-    opt.classNameMap[s] = b.decode();
+    opt.classNameMap[s] = obfuscateString(i, classIdx, 'A', false);
 }
 @Public String Compiler.getUserClassName(String s) {
     if (opt.classNameMap[s] == null) {
@@ -184,16 +188,7 @@ LABEL = "label";
         i++;
         j /= (l+1);
     }
-    Bytes b = new byte[i];
-    j = mtdId;
-    for (int k = i-1; k >= 0; k--) {
-        b[k] = 'a' + j % (l+1);
-        j /= (l+1);
-    }
-    if (i > 1) {
-        b[0] = b[0]-1;
-    }
-    opt.methodNameMap.set(mtd.toString(), b.decode());
+    opt.methodNameMap.set(mtd.toString(), obfuscateString(i, mtdId, 'a', false));
 }
 @Public String Compiler.getMethodName(Method mtd) {
     if (isKonohaClass(mtd.getMethodClass()) && mtd.getMethodClass() != Script) {
