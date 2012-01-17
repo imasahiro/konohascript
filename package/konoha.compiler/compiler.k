@@ -270,7 +270,7 @@ class K_Inst {
             }
         }
     }
-    String getName() {
+    @Overload String getName() {
         String res = "";
         String str_type = "";
         Class type = kvalue.type;

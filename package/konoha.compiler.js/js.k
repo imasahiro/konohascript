@@ -24,17 +24,20 @@ TOP = "topLevelFunc()"
 //    String[] topLevelFunctionList;
 //    String   obfuscatedClassName;
 //    String   obfuscatedMethodName;
+//    Map<String, String> varNameMap;
 //    Map<String, String> methodNameMap;
 //    Map<String, String> classNameMap;
 //}
 System.addClassField(CompilerOpt, String  , "mtdName");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
+System.addClassField(CompilerOpt, Map<String, String>, "varNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Public void CompilerOpt.init() {
     this.source = [];
     this.topLevelFunctionList = [];
+    this.varNameMap = {};
     this.methodNameMap = {};
     this.classNameMap = {};
 }
@@ -43,20 +46,54 @@ boolean isKonohaClass(Class c) {
     String s = (to String)c;
     return (s.startsWith("konoha") || s.startsWith("js") || s.endsWith("Script"));
 }
-@Public void Compiler.setUserClassName(String s) {
-    int i = 1, j = |opt.classNameMap.keys()|;
-    int l = 'z' - 'a';
+@Public @Overload String K_Inst.getVarName(Compiler asm) {
+    String s = getName();
+    if (asm.opt.varNameMap[s] != null) {
+        return asm.opt.varNameMap[s];
+    }
+    Array<String> keys = asm.opt.varNameMap.keys();
+    int i = 1, j, varIdx = |keys|;
+    j = varIdx;
+    int l = 'Z' - 'A';
     while (j > l) {
         i++;
-        j /= l;
+        j /= (l+1);
     }
     Bytes b = new byte[i];
-    j = |opt.classNameMap.keys()|;
-    for (int k = 0; k < i; k++) {
-        b[k] = 'a' + j % l;
-        j /= l;
+    j = varIdx;
+    for (int k = i-1; k >= 0; k--) {
+        b[k] = 'a' + j % (l+1);
+        j /= (l+1);
     }
-    print "setClass", s, b.decode();
+    if (i > 1) {
+        b[0] = b[0]-1;
+    }
+    asm.opt.varNameMap.set(s, b.decode());
+    return b.decode();
+}
+@Public void Compiler.setUserClassName(String s) {
+    int i = 1, j, classIdx = 0;
+    Array<String> keys = opt.classNameMap.keys();
+    for (; classIdx < |keys|; classIdx++) {
+        if (s == keys[classIdx]) {
+            break;
+        }
+    }
+    j = classIdx;
+    int l = 'Z' - 'A';
+    while (j > l) {
+        i++;
+        j /= (l+1);
+    }
+    Bytes b = new byte[i];
+    j = classIdx;
+    for (int k = i-1; k >= 0; k--) {
+        b[k] = 'A' + j % (l+1);
+        j /= (l+1);
+    }
+    if (i > 1) {
+        b[0] = b[0]-1;
+    }
     opt.classNameMap.set(s, b.decode());
 }
 @Public String Compiler.getUserClassName(String s) {
@@ -111,19 +148,26 @@ LABEL = "label";
             break;
         }
     }
+    Class c = mtd.getMethodClass();
+    while (!isKonohaClass(c.getSuper())) {
+        c = c.getSuper();
+        mtdId += |c.getMethods()|;
+    }
     int i = 1, j = mtdId;
     int l = 'z' - 'a';
     while (j > l) {
         i++;
-        j /= l;
+        j /= (l+1);
     }
     Bytes b = new byte[i];
-    j = mtdId
-    for (int k = 0; k < i; k++) {
-        b[k] = 'a' + j % l;
-        j /= l;
+    j = mtdId;
+    for (int k = i-1; k >= 0; k--) {
+        b[k] = 'a' + j % (l+1);
+        j /= (l+1);
     }
-    print "setMethod", mtd, b.decode();
+    if (i > 1) {
+        b[0] = b[0]-1;
+    }
     opt.methodNameMap.set(mtd.toString(), b.decode());
 }
 @Public String Compiler.getMethodName(Method mtd) {
@@ -150,7 +194,7 @@ LABEL = "label";
     /* if one node incoming, this phinode behave like K_MOV instruction*/
     if (|bbs| == 1) {
         String res;
-        res = "var " + getName() + " = " + insts[0].getName() + ";";
+        res = "var " + getVarName(asm) + " = " + insts[0].getVarName(asm) + ";";
         asm.addSource(res, 2);
     }
 }
@@ -183,7 +227,7 @@ LABEL = "label";
         fncdef += uscore(thisclass) + ".prototype." + asm.mtd.getName() + " = function(";
     }
     for (int i = 1 - isStatic; i < |funcargs|; i++) {
-        fncdef += funcargs[i].getName();
+        fncdef += funcargs[i].getVarName(asm);
         if (i != |funcargs|-1) {
             fncdef += ", ";
         }
@@ -191,7 +235,7 @@ LABEL = "label";
     fncdef += ") {" + EOL;
     asm.addFunc(fncdef);
     if (isStatic == 0 && |funcargs| > 0) {
-        asm.addSource("var " + funcargs[0].getName() + " = this;", 1);
+        asm.addSource("var " + funcargs[0].getVarName(asm) + " = this;", 1);
     }
     //asm.addSource("'use strict';", 1);
     asm.addSource("var " + LABEL + " = 0;", 1);
@@ -218,97 +262,97 @@ LABEL = "label";
 }
 @Public @Override void K_MOV.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_ADD.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " + " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " + " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_SUB.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " - " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " - " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_MUL.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " * " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " * " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_DIV.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " / " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_MOD.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " % " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " % " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_EQ.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " == " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " == " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_NEQ.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " != " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " != " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_LT.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " < " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " < " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_GT.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " > " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " > " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_LTE.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " <= " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " <= " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_GTE.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " >= " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " >= " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_AND.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " & " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " & " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_OR.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " | " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " | " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_NOT.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = !" + op.inst0.getName() + ";";
+    res = "var " + getVarName(asm) + " = !" + op.inst0.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_XOR.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " xor " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " xor " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_SELECT.codegen(Compiler asm) {
     String res = "";
-    res += "var " + getName() + " = " + op.inst0.getName() + " ? " + op.inst1.getName() + " : " + op.inst2.getName() + ";";
+    res += "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " ? " + op.inst1.getVarName(asm) + " : " + op.inst2.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_LSFT.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " << " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " << " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_RSFT.codegen(Compiler asm) {
     String res;
-    res = "var " + getName() + " = " + op.inst0.getName() + " >> " + op.inst1.getName() + ";";
+    res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " >> " + op.inst1.getVarName(asm) + ";";
     asm.addSource(res, 2);
 }
 @Public @Override void K_TCHECK.codegen(Compiler asm) {
@@ -317,18 +361,18 @@ LABEL = "label";
 @Public @Override void K_CAST.codegen(Compiler asm) {
     String tcid_str = (to String) op.tcid;
     if (op.scid == Float && op.tcid == Int) {
-        asm.addSource("var " + getName() + " = " + "Math" + ".floor(" + op.inst0.getName() + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = " + "Math" + ".floor(" + op.inst0.getVarName(asm) + ");", 2);
     } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
-        asm.addSource("var " + getName() + " = new " + "konoha.Iterator" + "(" + op.inst0.getName() + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = new " + "konoha.Iterator" + "(" + op.inst0.getVarName(asm) + ");", 2);
     } else {
-        asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 2);
+        asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";", 2);
     }
 }
 @Public @Override void K_JMP.codegen(Compiler asm) {
     asm.addSource(LABEL + " = " + op.jmpidx + ";", 2);
 }
 @Public @Override void K_COND.codegen(Compiler asm) {
-    asm.addSource("if (" + op.inst0.getName() + ") {", 2);
+    asm.addSource("if (" + op.inst0.getVarName(asm) + ") {", 2);
     asm.addSource(LABEL + " = " + op.bbThen + ";", 3);
     asm.addSource("} else {", 2);
     asm.addSource(LABEL + " = " + op.bbElse + ";", 3);
@@ -343,18 +387,18 @@ LABEL = "label";
     }
     String res = "";
     if (op.mtd.getReturnType() != Void) {
-        res = "var " + getName() + " = ";
+        res = "var " + getVarName(asm) + " = ";
     }
     String thisclass = asm.mtdclass2str(op.mtd.toString());
     if (flag) {
-        res += args[0].getName() + ".";
+        res += args[0].getVarName(asm) + ".";
     } else if (thisclass != "Script_") {
         res += uscore(thisclass) + ".";
     }
     res += op.mtd.getName().replace("%s", "send").replace(":", "_") + "(";
     int cur = flag ? 1 : 0;
     for (; cur < |args|; cur++) {
-        res += args[cur].getName();
+        res += args[cur].getVarName(asm);
         if (cur != |args|-1) {
             res += ", ";
         }
@@ -369,58 +413,58 @@ LABEL = "label";
     if (op.msg != "") {
         msg += op.msg + "=";
     }
-    asm.addSource("document.write(\"" + strline + msg + "\" + " + op.inst0.getName() + ".toString() + \"<br>\");", 2);
+    asm.addSource("document.write(\"" + strline + msg + "\" + " + op.inst0.getVarName(asm) + ".toString() + \"<br>\");", 2);
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     String type_str = (to String)type;
     switch (this.getTRMethod()) {
         case "box":
-            asm.addSource("var " + getName() + " = " + op.inst0.getName() + ";", 2);
+            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";", 2);
             break;
         case "bnul":
             if (type_str.endsWith("Script")) {
-                asm.addSource("var " + getName() + " = script;", 2);
+                asm.addSource("var " + getVarName(asm) + " = script;", 2);
             }
             break;
         case "cwb":
-            asm.addSource("var " + getName() + " = new konoha.OutputStream(true);", 2);
+            asm.addSource("var " + getVarName(asm) + " = new konoha.OutputStream(true);", 2);
             break;
         case "tostr":
-            asm.addSource("var " + getName() + " = " + op.inst0.getName + ".tostr();", 2);
+            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".tostr();", 2);
             break;
         case "chktype":
-            asm.addSource("var " + getName() + " = " + op.inst0.getName + ";", 2);
+            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";", 2);
             break;
     }
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
     String name = asm.class2str((to String)type);
-    asm.addSource("var " + getName() + " = new " + uscore(name) + "();", 2);
+    asm.addSource("var " + getVarName(asm) + " = new " + uscore(name) + "();", 2);
 }
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
-    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".get(" + op.inst1.getName() + ");", 2);
+    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".get(" + op.inst1.getVarName(asm) + ");", 2);
 }
 @Public @Override void K_SETIDX.codegen(Compiler asm) {
-    asm.addSource(op.inst0.getName() + ".set(" + op.inst1.getName() + ", " + op.inst2.getName() + ");", 2);
+    asm.addSource(op.inst0.getVarName(asm) + ".set(" + op.inst1.getVarName(asm) + ", " + op.inst2.getVarName(asm) + ");", 2);
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
     if (this.type == Int || this.type == Float || this.type == Boolean) {
-        asm.addSource("var " + getName() + " = " + quote(op.const_table[op.table_idx]) + ";", 2);
+        asm.addSource("var " + getVarName(asm) + " = " + quote(op.const_table[op.table_idx]) + ";", 2);
     } else if (this.type == Class) {
-        asm.addSource("var " + getName() + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     } else {
-        asm.addSource("var " + getName() + " = new " + asm.class2str((to String)this.type) + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = new " + asm.class2str((to String)this.type) + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
-    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".field" + op.bn + ";", 2);
+    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".field" + op.bn + ";", 2);
 }
 @Public @Override void K_SetField.codegen(Compiler asm) {
-    asm.addSource(op.inst0.getName() + ".field" + op.an + " = " + op.inst1.getName() + ";", 2);
+    asm.addSource(op.inst0.getVarName(asm) + ".field" + op.an + " = " + op.inst1.getVarName(asm) + ";", 2);
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
-    asm.addSource("var " + getName() + " = " + op.inst0.getName() + ".next();", 2);
-    asm.addSource("if (" + getName() + " != null) {", 2);
+    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".next();", 2);
+    asm.addSource("if (" + getVarName(asm) + " != null) {", 2);
     asm.addSource(LABEL + " = " + op.nextBB + ";", 3);
     asm.addSource("} else {", 2);
     asm.addSource(LABEL + " = " + op.endBB + ";", 3);
@@ -433,7 +477,7 @@ LABEL = "label";
 @Public @Override void K_RET.codegen(Compiler asm) {
     String res = "return";
     if (asm.retclass != null && op.inst0 != null) {
-        res += " " + op.inst0.getName();
+        res += " " + op.inst0.getVarName(asm);
     }
     res += ";";
     asm.addSource(res, 2);
@@ -449,6 +493,7 @@ LABEL = "label";
         this.opt = new CompilerOpt();
         this.opt.init();
     }
+    this.opt.getVarNameMap = {};
 }
 @Public String Compiler.createKickFunc() {
     String res = "";
