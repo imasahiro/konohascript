@@ -22,22 +22,50 @@ TOP = "topLevelFunc()"
 //    String   mtdName;
 //    String[] source;
 //    String[] topLevelFunctionList;
-//    Map<String, String> funcNameMap;
+//    String   obfuscatedClassName;
+//    String   obfuscatedMethodName;
+//    Map<String, String> methodNameMap;
+//    Map<String, String> classNameMap;
 //}
 System.addClassField(CompilerOpt, String  , "mtdName");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
-System.addClassField(CompilerOpt, Map<String, String>, "funcNameMap");
+System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
+System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Public void CompilerOpt.init() {
     this.source = [];
     this.topLevelFunctionList = [];
+    this.methodNameMap = {};
+    this.classNameMap = {};
 }
 
 boolean isKonohaClass(Class c) {
     String s = (to String)c;
-    return (s.startsWith("konoha") || s.startsWith("js"));
+    return (s.startsWith("konoha") || s.startsWith("js") || s.endsWith("Script"));
 }
-String class2str(String s) {
+@Public void Compiler.setUserClassName(String s) {
+    int i = 1, j = |opt.classNameMap.keys()|;
+    int l = 'z' - 'a';
+    while (j > l) {
+        i++;
+        j /= l;
+    }
+    Bytes b = new byte[i];
+    j = |opt.classNameMap.keys()|;
+    for (int k = 0; k < i; k++) {
+        b[k] = 'a' + j % l;
+        j /= l;
+    }
+    print "setClass", s, b.decode();
+    opt.classNameMap.set(s, b.decode());
+}
+@Public String Compiler.getUserClassName(String s) {
+    if (!s in? opt.classNameMap) {
+        setUserClassName(s);
+    }
+    return opt.classNameMap[s];
+}
+@Public String Compiler.class2str(String s) {
     if (s.startsWith("konoha.Array")) {
         return "konoha.Array";
     }   
@@ -58,11 +86,11 @@ String class2str(String s) {
         }
         return res;
     } else {
-        return ary[|ary|-1] + "_";
+        return getUserClassName(ary[|ary|-1]);
     }
 }
 
-String mtdclass2str(String s) {
+@Public String Compiler.mtdclass2str(String s) {
     return class2str(s[0 to s.lastIndexOf(".")-1]);
 }
 String getTypeName (Class type) {
@@ -75,8 +103,35 @@ String uscore(String in) {
     return in;
 }
 LABEL = "label";
-@Public String Compiler.getMapedMethodName(Method mtd) {
-    return "";
+@Public void Compiler.setMethodName(Method mtd) {
+    int mtdId = 0;
+    Array<Method> mtds = mtd.getMethodClass().getMethods();
+    for (; mtdId < |mtds|; mtdId++) {
+        if (mtd == mtds[mtdId]) {
+            break;
+        }
+    }
+    int i = 1, j = mtdId;
+    int l = 'z' - 'a';
+    while (j > l) {
+        i++;
+        j /= l;
+    }
+    Bytes b = new byte[i];
+    j = mtdId
+    for (int k = 0; k < i; k++) {
+        b[k] = 'a' + j % l;
+        j /= l;
+    }
+    print "setMethod", mtd, b.decode();
+    opt.methodNameMap.set(mtd.toString(), b.decode());
+}
+@Public String Compiler.getMethodName(Method mtd) {
+    String s = mtd.toString();
+    if (!s in? opt.methodNameMap) {
+        setMethodName(mtd);
+    }
+    return opt.methodNameMap[s];
 }
 @Public void Compiler.addSource(String str, int count) {
     String tmp = "";
@@ -104,8 +159,12 @@ LABEL = "label";
 }
 
 @Public void K_Function.codegen(Compiler asm) {
+    asm.getMethodName(asm.mtd);
+    if (!isKonohaClass(asm.mtd.getMethodClass())) {
+        asm.opt.obfuscatedClassName = asm.getUserClassName((to String)asm.mtd.getMethodClass());
+    }
     String fncdef = "";
-    String thisclass = mtdclass2str(asm.mtd.toString());
+    String thisclass = asm.opt.obfuscatedClassName;
     if (isStatic == 1 || thisclass == "Script") {
         if (asm.mtd.getName() == "") {
             int size = |asm.opt.topLevelFunctionList|;
@@ -286,7 +345,7 @@ LABEL = "label";
     if (op.mtd.getReturnType() != Void) {
         res = "var " + getName() + " = ";
     }
-    String thisclass = mtdclass2str(op.mtd.toString());
+    String thisclass = asm.mtdclass2str(op.mtd.toString());
     if (flag) {
         res += args[0].getName() + ".";
     } else if (thisclass != "Script_") {
@@ -335,7 +394,7 @@ LABEL = "label";
     }
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
-    String name = class2str((to String)type);
+    String name = asm.class2str((to String)type);
     asm.addSource("var " + getName() + " = new " + uscore(name) + "();", 2);
 }
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
@@ -350,7 +409,7 @@ LABEL = "label";
     } else if (this.type == Class) {
         asm.addSource("var " + getName() + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     } else {
-        asm.addSource("var " + getName() + " = new " + uscore(class2str((to String)this.type)) + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
+        asm.addSource("var " + getName() + " = new " + asm.class2str((to String)this.type) + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
