@@ -1,23 +1,27 @@
+DUMP_JS_ONLY = true;
 String header = """
 <html>
 <head>
 <title>sample</title>
 </head>
+<!--
 <script type="text/javascript" language="javascript" src="./konoha.js" > </script>
 <script type="text/javascript" language="javascript" src="./konoha.math.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.dom.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.jquery.js" > </script>
 <script type="text/javascript">
-<!--""";
+""";
 String footer = """
-// -->
 </script>
-<body onLoad=" topLevelFunc() ">
+// -->
+<body onload=" topLevelFunc() ">
 </body>
-</html>""";
+</html>
+""";
 TOP = "topLevelFunc()"
 //class CompilerOpt {
+//    int      indentLevel;
 //    String   mtdName;
 //    String[] source;
 //    String[] topLevelFunctionList;
@@ -34,6 +38,7 @@ System.addClassField(CompilerOpt, Map<String, String>, "varNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Public void CompilerOpt.init() {
+    this.indentLevel = 0;
     this.source = [];
     this.topLevelFunctionList = [];
     this.varNameMap = {};
@@ -46,6 +51,15 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Overload boolean isKonohaClass(Class c) {
     String s = (to String)c;
     return isKonohaClass(s);
+}
+@Public void Compiler.setIndentLevel(int n) {
+    this.opt.indentLevel = n;
+}
+@Public void Compiler.incIndentLevel() {
+    this.opt.indentLevel = this.opt.indentLevel + 1;
+}
+@Public void Compiler.decIndentLevel() {
+    this.opt.indentLevel = this.opt.indentLevel - 1;
 }
 @Public @Overload String K_Inst.getVarName(Compiler asm) {
     String s = getName();
@@ -62,14 +76,14 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
     }
     Bytes b = new byte[i+1];
     j = varIdx;
-    for (int k = i-1; k >= 0; k--) {
+    for (int k = i; k >= 1; k--) {
         b[k] = 'a' + j % (l+1);
         j /= (l+1);
     }
     if (i > 1) {
         b[0] = b[0]-1;
     }
-    b[i] = '_';
+    b[0] = '$';
     asm.opt.varNameMap.set(s, b.decode());
     return b.decode();
 }
@@ -182,9 +196,9 @@ LABEL = "label";
     }
     return opt.methodNameMap[s];
 }
-@Public void Compiler.addSource(String str, int count) {
+@Public void Compiler.addSource(String str) {
     String tmp = "";
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < opt.indentLevel; i++) {
         tmp += "    ";
     }
     tmp += str;
@@ -200,7 +214,7 @@ LABEL = "label";
     if (|bbs| == 1) {
         String res;
         res = "var " + getVarName(asm) + " = " + insts[0].getVarName(asm) + ";";
-        asm.addSource(res, 2);
+        asm.addSource(res);
     }
 }
 @Public void K_BasicBlock.codegen(Compiler asm) {
@@ -239,15 +253,34 @@ LABEL = "label";
     }
     fncdef += ") {" + EOL;
     asm.addFunc(fncdef);
+    asm.setIndentLevel(1);
     if (isStatic == 0 && |funcargs| > 0) {
-        asm.addSource("var " + funcargs[0].getVarName(asm) + " = this;", 1);
+        asm.addSource("var " + funcargs[0].getVarName(asm) + " = this;");
+    }
+    boolean needSwitch = false;
+    int count = 0;
+    for (int i = 0; i < |bbs|; i++) {
+        if (bbs[i] != null) {
+            count++;
+            if (count == 2) {
+                needSwitch = true;
+                break;
+            }
+        }
     }
     //asm.addSource("'use strict';", 1);
-    asm.addSource("var " + LABEL + " = 0;", 1);
-    asm.addSource("while (true) switch (" + LABEL + ") {", 1);
+    asm.addSource("var " + LABEL + " = 0;");
+    if (needSwitch) {
+        asm.addSource("while (true) {");
+        asm.incIndentLevel();
+        asm.addSource("switch (" + LABEL + ") {");
+    }
     for (int i = 0; i < |bbs|; i++) {
         if (bbs[i] == null) continue;
-        asm.addSource("case " + i + ":", 1);
+        if (needSwitch) {
+            asm.addSource("case " + i + ":");
+            asm.incIndentLevel();
+        }
         foreach(String s in bbs[i].phis.keys()) {
             bbs[i].phis[s].codegen(asm);
         }
@@ -258,107 +291,113 @@ LABEL = "label";
             bbs[i].movs[j].codegen(asm);
         }
         bbs[i].insts[|bbs[i].insts|-1].codegen(asm);
-        if (bbs[i].insts[|bbs[i].insts|-1].class != K_RET) {
-          asm.addSource("break;", 2);
+        if (needSwitch && bbs[i].insts[|bbs[i].insts|-1].class != K_RET) {
+          asm.addSource("break;");
         }
     }
-    asm.addSource("}", 1);
-    asm.addSource("}", 0);
+    if (needSwitch) {
+        asm.decIndentLevel();
+        asm.addSource("}");
+        asm.decIndentLevel();
+        asm.addSource("}");
+    }
+    asm.decIndentLevel();
+    asm.addSource("}");
 }
 @Public @Override void K_MOV.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_ADD.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " + " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_SUB.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " - " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_MUL.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " * " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_DIV.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_MOD.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " % " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_EQ.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " == " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_NEQ.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " != " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_LT.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " < " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_GT.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " > " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_LTE.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " <= " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_GTE.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " >= " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_AND.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " & " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_OR.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " | " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_NOT.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = !" + op.inst0.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_XOR.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " xor " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_SELECT.codegen(Compiler asm) {
     String res = "";
     res += "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " ? " + op.inst1.getVarName(asm) + " : " + op.inst2.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_LSFT.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " << " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_RSFT.codegen(Compiler asm) {
     String res;
     res = "var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " >> " + op.inst1.getVarName(asm) + ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_TCHECK.codegen(Compiler asm) {
     /* do not use */
@@ -366,22 +405,26 @@ LABEL = "label";
 @Public @Override void K_CAST.codegen(Compiler asm) {
     String tcid_str = (to String) op.tcid;
     if (op.scid == Float && op.tcid == Int) {
-        asm.addSource("var " + getVarName(asm) + " = " + "Math" + ".floor(" + op.inst0.getVarName(asm) + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = " + "Math" + ".floor(" + op.inst0.getVarName(asm) + ");");
     } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
-        asm.addSource("var " + getVarName(asm) + " = new " + "konoha.Iterator" + "(" + op.inst0.getVarName(asm) + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = new " + "konoha.Iterator" + "(" + op.inst0.getVarName(asm) + ");");
     } else {
-        asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";", 2);
+        asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";");
     }
 }
 @Public @Override void K_JMP.codegen(Compiler asm) {
-    asm.addSource(LABEL + " = " + op.jmpidx + ";", 2);
+    asm.addSource(LABEL + " = " + op.jmpidx + ";");
 }
 @Public @Override void K_COND.codegen(Compiler asm) {
-    asm.addSource("if (" + op.inst0.getVarName(asm) + ") {", 2);
-    asm.addSource(LABEL + " = " + op.bbThen + ";", 3);
-    asm.addSource("} else {", 2);
-    asm.addSource(LABEL + " = " + op.bbElse + ";", 3);
-    asm.addSource("}", 2);
+    asm.addSource("if (" + op.inst0.getVarName(asm) + ") {");
+    asm.incIndentLevel();
+    asm.addSource(LABEL + " = " + op.bbThen + ";");
+    asm.decIndentLevel();
+    asm.addSource("} else {");
+    asm.incIndentLevel();
+    asm.addSource(LABEL + " = " + op.bbElse + ";");
+    asm.decIndentLevel();
+    asm.addSource("}");
 }
 @Public @Override void K_CALL.codegen(Compiler asm) {
     boolean flag = false;
@@ -409,7 +452,7 @@ LABEL = "label";
         }
     }
     res += ");";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 @Public @Override void K_PRINT.codegen(Compiler asm) {
     int line = (op.opline&((1<<32)-1)<<32)>>32;
@@ -418,62 +461,66 @@ LABEL = "label";
     if (op.msg != "") {
         msg += op.msg + "=";
     }
-    asm.addSource("document.write(\"" + strline + msg + "\" + " + op.inst0.getVarName(asm) + ".toString() + \"<br>\");", 2);
+    asm.addSource("document.write(\"" + strline + msg + "\" + " + op.inst0.getVarName(asm) + ".toString() + \"<br>\");");
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     String type_str = (to String)type;
     switch (this.getTRMethod()) {
         case "box":
-            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";", 2);
+            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";");
             break;
         case "bnul":
             if (type_str.endsWith("Script")) {
-                asm.addSource("var " + getVarName(asm) + " = script;", 2);
+                asm.addSource("var " + getVarName(asm) + " = script;");
             }
             break;
         case "cwb":
-            asm.addSource("var " + getVarName(asm) + " = new konoha.OutputStream(true);", 2);
+            asm.addSource("var " + getVarName(asm) + " = new konoha.OutputStream(true);");
             break;
         case "tostr":
-            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".tostr();", 2);
+            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".tostr();");
             break;
         case "chktype":
-            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";", 2);
+            asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ";");
             break;
     }
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
     String name = asm.class2str((to String)type);
-    asm.addSource("var " + getVarName(asm) + " = new " + uscore(name) + "();", 2);
+    asm.addSource("var " + getVarName(asm) + " = new " + uscore(name) + "();");
 }
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
-    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".get(" + op.inst1.getVarName(asm) + ");", 2);
+    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".get(" + op.inst1.getVarName(asm) + ");");
 }
 @Public @Override void K_SETIDX.codegen(Compiler asm) {
-    asm.addSource(op.inst0.getVarName(asm) + ".set(" + op.inst1.getVarName(asm) + ", " + op.inst2.getVarName(asm) + ");", 2);
+    asm.addSource(op.inst0.getVarName(asm) + ".set(" + op.inst1.getVarName(asm) + ", " + op.inst2.getVarName(asm) + ");");
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
     if (this.type == Int || this.type == Float || this.type == Boolean) {
-        asm.addSource("var " + getVarName(asm) + " = " + quote(op.const_table[op.table_idx]) + ";", 2);
+        asm.addSource("var " + getVarName(asm) + " = " + quote(op.const_table[op.table_idx]) + ";");
     } else if (this.type == Class) {
-        asm.addSource("var " + getVarName(asm) + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");");
     } else {
-        asm.addSource("var " + getVarName(asm) + " = new " + asm.class2str((to String)this.type) + "(" + quote(op.const_table[op.table_idx]) + ");", 2);
+        asm.addSource("var " + getVarName(asm) + " = new " + asm.class2str((to String)this.type) + "(" + quote(op.const_table[op.table_idx]) + ");");
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
-    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".field" + op.bn + ";", 2);
+    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".field" + op.bn + ";");
 }
 @Public @Override void K_SetField.codegen(Compiler asm) {
-    asm.addSource(op.inst0.getVarName(asm) + ".field" + op.an + " = " + op.inst1.getVarName(asm) + ";", 2);
+    asm.addSource(op.inst0.getVarName(asm) + ".field" + op.an + " = " + op.inst1.getVarName(asm) + ";");
 }
 @Public @Override void K_NEXT.codegen(Compiler asm) {
-    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".next();", 2);
-    asm.addSource("if (" + getVarName(asm) + " != null) {", 2);
-    asm.addSource(LABEL + " = " + op.nextBB + ";", 3);
-    asm.addSource("} else {", 2);
-    asm.addSource(LABEL + " = " + op.endBB + ";", 3);
-    asm.addSource("}", 2);
+    asm.addSource("var " + getVarName(asm) + " = " + op.inst0.getVarName(asm) + ".next();");
+    asm.addSource("if (" + getVarName(asm) + " != null) {");
+    asm.incIndentLevel();
+    asm.addSource(LABEL + " = " + op.nextBB + ";");
+    asm.decIndentLevel();
+    asm.addSource("} else {");
+    asm.incIndentLevel();
+    asm.addSource(LABEL + " = " + op.endBB + ";");
+    asm.decIndentLevel();
+    asm.addSource("}");
 }
 @Public @Override void K_LDMTD.codegen(Compiler asm) {
 }
@@ -485,7 +532,7 @@ LABEL = "label";
         res += " " + op.inst0.getVarName(asm);
     }
     res += ";";
-    asm.addSource(res, 2);
+    asm.addSource(res);
 }
 
 @Public void Compiler.emit(Method mtd) {
@@ -541,7 +588,9 @@ LABEL = "label";
     return res;
 }
 @Public void Compiler.dump(Boolean dump) {
-    OUT << header << EOL + EOL;
+    if (!DUMP_JS_ONLY) {
+        OUT << header << EOL + EOL;
+    }
     foreach (K_Class kc in this.declareclass) {
         String cname = class2str((to String)kc.c);
         OUT << createClassDefinition(kc.c, cname) << EOL;
@@ -550,5 +599,7 @@ LABEL = "label";
         OUT << str << EOL;
     }
     OUT << createKickFunc() << EOL;
-    OUT << footer;
+    if (!DUMP_JS_ONLY) {
+        OUT << footer;
+    }
 }
