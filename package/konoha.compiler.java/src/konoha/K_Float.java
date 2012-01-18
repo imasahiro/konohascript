@@ -12,9 +12,9 @@ public class K_Float extends K_Number {
 		return random.nextDouble();
 	}
 	
-	public K_String format(K_String fmt) {
+	public String format(String fmt) {
 		String r = String.format(fmt.toString(), n);
-		return new K_String(r);
+		return r;
 	}
 	
 	public String toString() {

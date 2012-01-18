@@ -210,13 +210,15 @@ public class Parser {
 	}
 	
 	public Type toType(String type) throws GenInstException {
-		if(type.startsWith("konoha.Int")) {
+		if(type.equals("konoha.Int")) {
 			return Type.INT_TYPE;
-		} else if(type.startsWith("konoha.Float")) {
+		} else if(type.equals("konoha.Float")) {
 			return Type.DOUBLE_TYPE;
-		} else if(type.startsWith("konoha.Boolean")) {
+		} else if(type.equals("konoha.Boolean")) {
 			return Type.BOOLEAN_TYPE;
-		} else if(type.startsWith("dynamic")) {
+		} else if(type.equals("konoha.String")) {
+			return Type.getType(String.class);
+		} else if(type.equals("dynamic")) {
 			return Type.getType(Object.class);
 		} else if(type.equals("konoha.compiler.Script")) {
 			return Type.getType("LScript;");

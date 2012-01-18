@@ -11,11 +11,11 @@ public class K_OutputStream extends K_Object {
 		return new K_OutputStream();
 	}
 	
-	public void println(K_Object o) {
+	public void println(Object o) {
 		out.println(o);
 	}
 	
-	public void send(K_String s) {
+	public void send(String s) {
 		if(s.equals("\n")) {
 			out.println(cwb.toString());
 			cwb = new StringBuilder();
@@ -44,7 +44,7 @@ public class K_OutputStream extends K_Object {
 		out.write(bytes.data, offset, length);
 	}
 	
-	public K_OutputStream _new(K_Path name, K_String nanika, K_Map nanikaMap) {
+	public K_OutputStream _new(K_Path name, String nanika, K_Map nanikaMap) {
 		try {
 			out = new PrintStream(new FileOutputStream(name.toString()));
 		} catch (FileNotFoundException e) {
@@ -61,8 +61,8 @@ public class K_OutputStream extends K_Object {
 		out.close();
 	}
 	
-	public K_String toStr() {
-		return new K_String(cwb.toString());
+	public String toStr() {
+		return cwb.toString();
 	}
 	
 }

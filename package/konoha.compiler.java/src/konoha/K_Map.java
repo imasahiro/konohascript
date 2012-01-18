@@ -14,16 +14,16 @@ public class K_Map extends K_Object {
 		return this;
 	}
 	
-	public void set(K_String key, K_Object value) {
-		map.put(key.toString(), value);
+	public void set(String key, K_Object value) {
+		map.put(key, value);
 	}
 	
-	public K_Object get(K_String key) {
-		return map.get(key.toString());
+	public K_Object get(String key) {
+		return map.get(key);
 	}
 	
-	public void remove(K_String key) {
-		map.remove(key.toString());
+	public void remove(String key) {
+		map.remove(key);
 	}
 	
 	public int getSize() {

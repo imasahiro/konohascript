@@ -24,6 +24,10 @@ public class K_System extends K_Object {
 		return new K_Boolean(n);
 	}
 	
+	public static K_String boxString(String s) {
+		return new K_String(s);
+	}
+	
 	public static int unboxInt(K_Int n) {
 		return n != null ? n.n : 0;
 	}
@@ -36,12 +40,16 @@ public class K_System extends K_Object {
 		return n != null ? n.b : false;
 	}
 	
-	public static int castInt(K_String obj) {
-		return Integer.parseInt(obj.toString());
+	public static String unboxString(K_String n) {
+		return n != null ? n.string : "";
 	}
 	
-	public static double castFloat(K_String obj) {
-		return Double.parseDouble(obj.toString());
+	public static int castInt(String s) {
+		return Integer.parseInt(s);
+	}
+	
+	public static double castFloat(String s) {
+		return Double.parseDouble(s);
 	}
 	
 	public static void print(String varName, int n1, int n2, Object obj) {

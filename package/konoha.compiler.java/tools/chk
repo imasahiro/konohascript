@@ -1,15 +1,14 @@
 #!/bin/sh
 
-java -jar jkonoha.jar test/array.k
-java -jar jkonoha.jar test/foreach.k
-java -jar jkonoha.jar test/inheri.k
-java -jar jkonoha.jar test/map.k
-java -jar jkonoha.jar test/str.k
-java -jar jkonoha.jar test/print.k
-time -p java -jar jkonoha.jar test/binarytrees.k 18
+jkonoha test/array.k
+jkonoha test/foreach.k
+jkonoha test/inheri.k
+jkonoha test/map.k
+jkonoha test/str.k
+jkonoha test/print.k
+time -p jkonoha test/binarytrees.k 18
 echo aobench...
-time -p java -jar jkonoha.jar test/aobench.k
+time -p jkonoha test/aobench.k
 
-rm -rf *.class
 rm -f ao.ppm
 
