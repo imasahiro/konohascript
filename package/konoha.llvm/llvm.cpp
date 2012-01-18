@@ -1959,7 +1959,7 @@ KMETHOD Module_new(CTX ctx, ksfp_t *sfp _RIX)
 	kString *name = sfp[1].s;
 	LLVMContext &Context = getGlobalContext();
 	Module *M = new Module(S_totext(name), Context);
-#if 1
+#if 0
 	Triple T(sys::getDefaultTargetTriple());
 	const Target *Target = 0;
 	std::string Arch = T.getArchName();
