@@ -35,7 +35,6 @@ public class ConstInst extends Inst {
 			val = val.replace("\\t", "\t");
 			val = val.replace("\"", "");
 			gen.mv.visitLdcInsn(val);
-			gen.invokeStatic(K_String.class, "create");
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.Path")) {
 			val = val.replace("\\n", "\n");
@@ -55,6 +54,7 @@ public class ConstInst extends Inst {
 				for(int i=0; i<vals.length; i++) {
 					vals[i] = Integer.parseInt(tk[i]);
 				}
+				
 			}
 			gen.pushArray(res, Type.getType(konoha.K_Array.class), vals);
 		} else if(typeName.equals("konoha.Array<konoha.Float>")) {

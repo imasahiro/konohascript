@@ -6,8 +6,8 @@ public class K_Date extends K_Object {
 		
 	}
 	
-	public K_String castString() {
-		return new K_String("date");
+	public String castString() {
+		return "date";
 	}
 	
 }

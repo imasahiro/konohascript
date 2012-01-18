@@ -1,5 +1,6 @@
 package compiler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.objectweb.asm.*;
@@ -31,7 +32,7 @@ public class KMethod implements Opcodes {
 	
 	public static final Type type_Array = Type.getType(konoha.K_Array.class);
 	public static final Type type_Date = Type.getType(konoha.K_Date.class);
-	public static final Type type_String = Type.getType(konoha.K_String.class);
+	public static final Type type_String = Type.getType(String.class);
 	public static final Type type_Path = Type.getType(konoha.K_Path.class);
 	public static final Type type_Iterator = Type.getType(konoha.K_Iterator.class);
 	public static final Type type_Regex = Type.getType(konoha.K_Regex.class);
@@ -140,6 +141,8 @@ public class KMethod implements Opcodes {
 			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxFloat", "(D)Lkonoha/K_Float;");
 		} else if(type == Type.BOOLEAN_TYPE) {
 			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxBoolean", "(Z)Lkonoha/K_Boolean;");
+		} else if(type.equals(type_String)) {
+			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxString", "(Ljava/lang/String;)Lkonoha/K_String;");
 		}
 	}
 	
@@ -153,6 +156,9 @@ public class KMethod implements Opcodes {
 		} else if(type == Type.BOOLEAN_TYPE) {
 			mv.visitTypeInsn(CHECKCAST, "konoha/K_Boolean");
 			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxBoolean", "(Lkonoha/K_Boolean;)Z");
+		} else if(type.equals(type_String)) {
+			mv.visitTypeInsn(CHECKCAST, "konoha/K_String");
+			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxString", "(Lkonoha/K_String;)Ljava/lang/String;");
 		} else {
 			mv.visitTypeInsn(CHECKCAST, type.getInternalName());
 		}
