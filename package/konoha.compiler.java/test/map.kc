@@ -1,0 +1,43 @@
+def null Script.main ( konoha.Array<konoha.String> aval1_0 ) {
+BasicBlock0:
+	map6_0 = new konoha.Map<konoha.String,konoha.String> 
+	ival7_0 = const konoha.Int 0
+	map2_0 = call konoha.Map<konoha.String,konoha.String> konoha.Map<konoha.String,dynamic>.new ( map6_0 ival7_0 ) @nonstatic
+	str8_0 = const konoha.String "aa"
+	str9_0 = const konoha.String "hello"
+	_ = call null konoha.Map<konoha.String,dynamic>.set ( map2_0 str8_0 str9_0 ) @nonstatic
+	str8_1 = const konoha.String "bb"
+	str9_1 = const konoha.String "world"
+	_ = call null konoha.Map<konoha.String,dynamic>.set ( map2_0 str8_1 str9_1 ) @nonstatic
+	str8_2 = const konoha.String "cc"
+	str9_2 = const konoha.String "hoge"
+	_ = call null konoha.Map<konoha.String,dynamic>.set ( map2_0 str8_2 str9_2 ) @nonstatic
+	ous7_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival8_0 = call konoha.Int konoha.Map<konoha.String,dynamic>.getSize ( map2_0 ) @nonstatic
+	obj8_0 = box konoha.Object ival8_0
+	_ = call null konoha.OutputStream.println ( ous7_0 obj8_0 ) @nonstatic
+	str8_0 = const konoha.String "bb"
+	_ = call null konoha.Map<konoha.String,dynamic>.remove ( map2_0 str8_0 ) @nonstatic
+	ival4_0 = call konoha.Int konoha.Array<dynamic>.getSize ( aval1_0 ) @nonstatic
+	ival5_0 = const konoha.Int 1
+	bval3_0 = gte konoha.Boolean ival4_0 ival5_0
+	_ = cond Boolean bval3_0 bb1 bb2 @if
+
+BasicBlock1:
+	ous7_1 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = const konoha.Int 0
+	str13_0 = getidx konoha.String aval1_0 ival14_0
+	dyn8_0 = call dynamic konoha.Map<konoha.String,dynamic>.get ( map2_0 str13_0 ) @nonstatic
+	_ = call null konoha.OutputStream.println ( ous7_1 dyn8_0 ) @nonstatic
+	_ = jmp bb3 @merge
+
+BasicBlock2:
+	_ = jmp bb3 @merge
+
+BasicBlock3:
+	ous7_2 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	aval8_0 = call konoha.Array<T1> konoha.Map<konoha.String,dynamic>.keys ( map2_0 ) @nonstatic
+	_ = call null konoha.OutputStream.println ( ous7_2 aval8_0 ) @nonstatic
+	_ = return 
+}
+

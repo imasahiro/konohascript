@@ -1,0 +1,55 @@
+def null Script.main (  ) {
+BasicBlock0:
+	aval1_0 = bnul konoha.Array<konoha.String> 
+	aval2_0 = bnul konoha.Array<konoha.Int> 
+	aval7_0 = new konoha.Array<konoha.String> 
+	str8_0 = const konoha.String "aa"
+	str9_0 = const konoha.String "bb"
+	str10_0 = const konoha.String "cc"
+	str11_0 = const konoha.String "dd"
+	aval3_0 = call konoha.Array<konoha.String> konoha.Array<dynamic>.new:LIST ( aval7_0 str8_0 str9_0 str10_0 str11_0 ) @nonstatic
+	itr4_0 = cast konoha.Iterator<konoha.String> aval3_0
+	aval3_1 = mov konoha.Array<konoha.String> aval3_0 @nonssa
+	aval2_1 = mov konoha.Array<konoha.Int> aval2_0 @nonssa
+	itr4_1 = mov konoha.Iterator<konoha.String> itr4_0 @nonssa
+	_ = jmp bb1 @foreach
+
+BasicBlock1:
+	aval3_1 = mov konoha.Array<konoha.String> aval3_0
+	aval2_1 = mov konoha.Array<konoha.Int> aval2_0
+	itr4_1 = mov konoha.Iterator<konoha.String> itr4_0
+	str3_0 = next konoha.String itr4_1 bb2 bb3
+
+BasicBlock2:
+	ous9_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	_ = call null konoha.OutputStream.println ( ous9_0 str3_0 ) @nonstatic
+	_ = jmp bb1 @foreach
+
+BasicBlock3:
+	aval7_1 = new konoha.Array<konoha.String> 
+	ival8_0 = const konoha.Int 1
+	ival9_0 = const konoha.Int 2
+	ival10_0 = const konoha.Int 3
+	aval3_0 = call konoha.Array<konoha.Int> konoha.Array<dynamic>.new:LIST ( aval7_1 ival8_0 ival9_0 ival10_0 ) @nonstatic
+	itr4_2 = cast konoha.Iterator<konoha.Int> aval3_0
+	aval3_2 = mov konoha.Array<konoha.String> aval3_1 @nonssa
+	aval3_1 = mov konoha.Array<konoha.Int> aval3_0 @nonssa
+	itr4_3 = mov konoha.Iterator<konoha.String> itr4_2 @nonssa
+	_ = jmp bb4 @foreach
+
+BasicBlock4:
+	aval3_2 = mov konoha.Array<konoha.String> aval3_1
+	aval3_1 = mov konoha.Array<konoha.Int> aval3_0
+	itr4_3 = mov konoha.Iterator<konoha.Int> itr4_2
+	ival3_0 = next konoha.Int itr4_3 bb5 bb6
+
+BasicBlock5:
+	ous9_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	obj10_0 = box konoha.Object ival3_0
+	_ = call null konoha.OutputStream.println ( ous9_0 obj10_0 ) @nonstatic
+	_ = jmp bb4 @foreach
+
+BasicBlock6:
+	_ = return 
+}
+

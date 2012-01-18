@@ -1,0 +1,121 @@
+class inheri.A extends konoha.Object
+{
+	konoha.Int x
+}
+
+class inheri.B extends inheri.A
+{
+	konoha.Int y
+}
+
+class inheri.C extends inheri.A
+{
+	konoha.Int z
+}
+
+class inheri.D extends inheri.C
+{
+	konoha.Int w
+}
+
+def konoha.Int A.f a0_0 (  ) {
+BasicBlock0:
+	ous5_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str6_0 = const konoha.String "A.f"
+	_ = call null konoha.OutputStream.println ( ous5_0 str6_0 ) @nonstatic
+	ival1_0 = const konoha.Int 0
+	_ = return ival1_0
+}
+
+def konoha.Int B.f b0_0 (  ) {
+BasicBlock0:
+	ous5_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str6_0 = const konoha.String "B.f"
+	_ = call null konoha.OutputStream.println ( ous5_0 str6_0 ) @nonstatic
+	ival1_0 = const konoha.Int 1
+	_ = return ival1_0
+}
+
+def konoha.Int C.f c0_0 (  ) {
+BasicBlock0:
+	ous5_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str6_0 = const konoha.String "C.f"
+	_ = call null konoha.OutputStream.println ( ous5_0 str6_0 ) @nonstatic
+	ival1_0 = const konoha.Int 2
+	_ = return ival1_0
+}
+
+def konoha.Int D.f d0_0 (  ) {
+BasicBlock0:
+	ous5_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str6_0 = const konoha.String "D.f"
+	_ = call null konoha.OutputStream.println ( ous5_0 str6_0 ) @nonstatic
+	ival1_0 = const konoha.Int 3
+	_ = return ival1_0
+}
+
+def null Script.main (  ) {
+BasicBlock0:
+	a1_0 = new inheri.A 
+	b2_0 = new inheri.B 
+	c3_0 = new inheri.C 
+	d4_0 = new inheri.D 
+	ival5_0 = call konoha.Int inheri.A.f ( a1_0 ) @nonstatic
+	ival5_1 = call konoha.Int inheri.A.f ( b2_0 ) @nonstatic
+	ival5_2 = call konoha.Int inheri.A.f ( c3_0 ) @nonstatic
+	ival5_3 = call konoha.Int inheri.A.f ( d4_0 ) @nonstatic
+	a5_0 = new inheri.A 
+	b6_0 = new inheri.B 
+	c7_0 = new inheri.C 
+	d8_0 = new inheri.D 
+	ival11_0 = const konoha.Int 1
+	_ = setfield inheri.A a5_0 0 ival11_0
+	ival11_1 = const konoha.Int 2
+	_ = setfield inheri.B b6_0 0 ival11_1
+	ival11_2 = const konoha.Int 3
+	_ = setfield inheri.B b6_0 1 ival11_2
+	ival11_3 = const konoha.Int 4
+	_ = setfield inheri.C c7_0 0 ival11_3
+	ival11_4 = const konoha.Int 5
+	_ = setfield inheri.C c7_0 1 ival11_4
+	ival11_5 = const konoha.Int 6
+	_ = setfield inheri.D d8_0 0 ival11_5
+	ival11_6 = const konoha.Int 7
+	_ = setfield inheri.D d8_0 1 ival11_6
+	ival11_7 = const konoha.Int 8
+	_ = setfield inheri.D d8_0 2 ival11_7
+	ous13_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int a5_0 0
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_0 obj14_0 ) @nonstatic
+	ous13_1 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int b6_0 0
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_1 obj14_0 ) @nonstatic
+	ous13_2 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int b6_0 1
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_2 obj14_0 ) @nonstatic
+	ous13_3 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int c7_0 0
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_3 obj14_0 ) @nonstatic
+	ous13_4 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int c7_0 1
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_4 obj14_0 ) @nonstatic
+	ous13_5 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int d8_0 0
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_5 obj14_0 ) @nonstatic
+	ous13_6 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int d8_0 1
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_6 obj14_0 ) @nonstatic
+	ous13_7 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival14_0 = getfield konoha.Int d8_0 2
+	obj14_0 = box konoha.Object ival14_0
+	_ = call null konoha.OutputStream.println ( ous13_7 obj14_0 ) @nonstatic
+	_ = return 
+}
+
