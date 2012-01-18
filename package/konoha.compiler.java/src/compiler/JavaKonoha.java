@@ -9,7 +9,7 @@ public class JavaKonoha {
 	
 	public static boolean compile_only = false;
 	
-	public static void main(String args[]) throws Exception {
+	public static void main(String args[]) {
 		String file = null;
 		for(String arg : args) {
 			if(arg.startsWith("-")) {
@@ -55,7 +55,11 @@ public class JavaKonoha {
 		}
 		c.end();
 		if(compile_only) {
-			c.writeClassFile();
+			try {
+				c.writeClassFile();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
 		} else {
 			try {
 				Method mtd = c.getMainMethod();
@@ -64,7 +68,9 @@ public class JavaKonoha {
 			} catch(VerifyError e) {
 				System.err.println(e);
 			} catch(NoSuchMethodException e) {
-				System.err.println("(Error) main method not found");
+				e.printStackTrace();
+			} catch(IllegalAccessException e) {
+				e.printStackTrace();
 			} catch(InvocationTargetException e) {
 				System.err.println("(Error) Exception in script");
 				e.getTargetException().printStackTrace();

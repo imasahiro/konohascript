@@ -99,7 +99,7 @@ public class Compiler extends ClassLoader implements Opcodes {
 			}
 			mv.visitMethodInsn(INVOKESTATIC, "Script", "main", mainMethod.methodType.getDescriptor());
 		} else {
-			System.err.println("main method not found!");
+			System.err.println("(Warning) main method not found!");
 		}
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(0, 0);
