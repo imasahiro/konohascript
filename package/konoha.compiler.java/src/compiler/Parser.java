@@ -191,6 +191,8 @@ public class Parser {
 		if(name.startsWith("konoha.")) {
 			if(name.startsWith("konoha.compiler.java")) {
 				name = name.substring(16);
+			} else if(name.equals("konoha.math.Math")) {
+				return "java/lang/Math";
 			} else if(name.startsWith("konoha")) {
 				n = name.lastIndexOf('.');
 				name = name.substring(0, n + 1) + "K_" + name.substring(n + 1);

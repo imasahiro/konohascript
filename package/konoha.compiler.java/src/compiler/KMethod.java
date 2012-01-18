@@ -1,6 +1,6 @@
 package compiler;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.objectweb.asm.*;
@@ -209,9 +209,18 @@ public class KMethod implements Opcodes {
 			for(int i=0; i<args.length; i++) {
 				loadLocal(args[i]);
 			}
-			mv.visitMethodInsn(INVOKESPECIAL, cName, "<init>", "()V");
-			loadLocal(args[0]);
-			storeLocal(ret, retType);
+			try {
+				for(Constructor<?> con : Class.forName(cName.replace("/", ".")).getConstructors()) {
+					int n = con.getParameterTypes().length;
+					if(n == args.length - 1) {
+						mv.visitMethodInsn(INVOKESPECIAL, cName, "<init>", Type.getConstructorDescriptor(con));
+						loadLocal(args[0]);
+						storeLocal(ret, retType);
+						return;
+					}
+				}
+			} catch(Exception e) {e.printStackTrace();}
+			throw new GenInstException("constructor not found: " + cName + " arg=" + args.length);
 		} else {
 			asmCall(false, cName, "_new", args, retType, ret);
 		}
@@ -280,7 +289,7 @@ public class KMethod implements Opcodes {
 	}
 	
 	public void jump(int opcode, int bb) {
-		mv.visitJumpInsn(opcode, getLabel(bb));
+		jump(opcode, getLabel(bb));
 	}
 	
 	public void jump(int opcode, Label label) {
@@ -305,36 +314,6 @@ public class KMethod implements Opcodes {
 	
 	public void invokeVirtual(Class<?> klass, String methodName) throws GenInstException {
 		invoke(klass, methodName, INVOKEVIRTUAL);
-	}
-	
-	public void asmIsNull(String obj, String res) throws GenInstException {
-		Label l1 = new Label();
-		Label l2 = new Label();
-
-		loadLocal(obj);
-		mv.visitJumpInsn(IFNULL, l1);
-		mv.visitInsn(ICONST_0);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitJumpInsn(GOTO, l2);
-		mv.visitLabel(l1);
-		mv.visitInsn(ICONST_1);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitLabel(l2);
-	}
-	
-	public void asmIsNotNull(String obj, String res) throws GenInstException {
-		Label l1 = new Label();
-		Label l2 = new Label();
-		
-		loadLocal(obj);
-		mv.visitJumpInsn(IFNONNULL, l1);
-		mv.visitInsn(ICONST_0);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitJumpInsn(GOTO, l2);
-		mv.visitLabel(l1);
-		mv.visitInsn(ICONST_1);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitLabel(l2);
 	}
 	
 	public void end() {
