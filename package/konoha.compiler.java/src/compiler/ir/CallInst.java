@@ -51,13 +51,15 @@ public class CallInst extends Inst {
 			m_name = "newList";
 		} else if(m_name.equals("new:MAP")) {
 			m_name = "newMap";
-		} else if(m_name.equals("new")) {
-			m_name = "_new";
 		} else if(m_name.equals("==")) {
 			m_name = "equals";
 		} else if(m_name.equals("-")) {
 			m_name = "minus";
 		}
-		gen.asmCall(isStatic, c_name, m_name, args, retType, ret);
+		if(m_name.equals("new")) {
+			gen.asmCallConstructor(c_name, args, retType, ret);
+		} else {
+			gen.asmCall(isStatic, c_name, m_name, args, retType, ret);
+		}
 	}
 }

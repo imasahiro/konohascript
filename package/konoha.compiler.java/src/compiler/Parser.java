@@ -41,7 +41,7 @@ public class Parser {
 					l = br.readLine();
 					no++;
 					if(l == null || l.equals("}")) break;
-					parseField(c, l);
+					if(c != null) parseField(c, l);
 				}
 			} else if(l.startsWith("def")) {
 				KMethod mtd = parseMethod(l);
@@ -120,8 +120,13 @@ public class Parser {
 	private KClass parseClass(String line) throws GenInstException {
 		String[] tk = splitToken(line);
 		Type type = toType(tk[1]);
+		String className = type.getInternalName();
 		Type superType = toType(tk[3]);
-		return com.createClass(type.getInternalName(), superType.getInternalName());
+		if(className.startsWith("java/")) {
+			return null;
+		} else {
+			return com.createClass(className, superType.getInternalName());
+		}
 	}
 	
 	private void parseField(KClass c, String line) throws GenInstException {

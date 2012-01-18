@@ -223,8 +223,10 @@ public abstract class Inst implements Opcodes {
 			gen.mv.visitTypeInsn(NEW, className);
 			gen.storeLocal(res, Type.getType("L" + className + ";"));
 			// call constructor
-			gen.loadLocal(res);
-			gen.mv.visitMethodInsn(INVOKESPECIAL, className, "<init>", "()V");
+			if(!className.startsWith("java/")) {
+				gen.loadLocal(res);
+				gen.mv.visitMethodInsn(INVOKESPECIAL, className, "<init>", "()V");
+			}
 		}
 	}
 	public static class GetIdxInst extends Inst {

@@ -197,6 +197,20 @@ public class KMethod implements Opcodes {
 		return false;
 	}
 	
+	public void asmCallConstructor(String cName, String[] args, Type retType, String ret) throws GenInstException {
+		if(cName.startsWith("java/")) {
+			// library constructor
+			for(int i=0; i<args.length; i++) {
+				loadLocal(args[i]);
+			}
+			mv.visitMethodInsn(INVOKESPECIAL, cName, "<init>", "()V");
+			loadLocal(args[0]);
+			storeLocal(ret, retType);
+		} else {
+			asmCall(false, cName, "_new", args, retType, ret);
+		}
+	}
+	
 	public void asmCall(boolean isStatic, String cName, String mName, String[] args, Type retType, String ret) throws GenInstException {
 		int op = isStatic ? INVOKESTATIC : INVOKEVIRTUAL;
 		if(!isStatic) {
@@ -219,7 +233,7 @@ public class KMethod implements Opcodes {
 				loadLocal(args[i]);
 			}
 		}
-		if(cName.startsWith("konoha/")) { // konoha method call
+		if(cName.startsWith("konoha/") || cName.startsWith("java/")) { // library method call
 			Class<?> c = toClass(cName.replace("/", "."));
 			invoke(c, mName, op);
 		} else { // user method
