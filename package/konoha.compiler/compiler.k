@@ -976,9 +976,8 @@ class K_CALL extends K_Inst {
             } else {
                 ret = getName();
             }
-            String fname = op.fname[op.fname.indexOf(".")+1 to |op.fname|-1];
             String type  = getTypeName(kvalue.type);
-            res += ret + " = call " + type + " " + fname + " ( ";
+            res += ret + " = call " + type + " " + op.fname + " ( ";
         }
         for (int i = 0; i < |args|; i++) {
             res += args[i].getName() + " ";
