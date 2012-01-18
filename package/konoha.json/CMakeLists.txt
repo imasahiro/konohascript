@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
+find_library(HAVE_LIB_JSON json)
+check_include_files("json/json.h" HAVE_JSON_JSON_H)
+
+if(HAVE_LIB_JSON)
+if(HAVE_JSON_JSON_H)
 
 project(json)
-find_library(HAVE_LIB_JSON json)
-if(HAVE_LIB_JSON)
 set(PACKAGE_SOURCE_CODE json.c)
 set(PACKAGE_SCRIPT_CODE json.k)
 
@@ -26,5 +29,5 @@ target_link_libraries(${PACKAGE_NAME} konoha ${HAVE_LIB_JSON})
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
+endif(HAVE_JSON_JSON_H)
 endif(HAVE_LIB_JSON)
-
