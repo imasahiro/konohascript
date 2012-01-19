@@ -257,7 +257,6 @@ class Java_lang_reflect_WildcardType {
 /* short names */
 AccessibleObject = Java_lang_reflect_AccessibleObject
 AnnotatedElement = Java_lang_reflect_AnnotatedElement
-Array = Java_lang_reflect_Array
 Constructor = Java_lang_reflect_Constructor
 Field = Java_lang_reflect_Field
 GenericArrayType = Java_lang_reflect_GenericArrayType

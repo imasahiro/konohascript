@@ -1223,7 +1223,6 @@ class Java_sql_Wrapper {
 
 /*------------------------------------------------------------*/
 /* short names */
-Array = Java_sql_Array
 BatchUpdateException = Java_sql_BatchUpdateException
 Blob = Java_sql_Blob
 CallableStatement = Java_sql_CallableStatement

@@ -1,6 +1,7 @@
 package compiler.ir;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.objectweb.asm.Type;
 
@@ -8,6 +9,13 @@ import compiler.KMethod;
 import compiler.Parser;
 
 public class CallInst extends Inst {
+	
+	private static final HashMap<String, String> mathFunc = new HashMap<String, String>() {{
+		put("fabs", "abs");
+		put("ldexp", "scalb");
+		put("fmod", "IEEEreminder");
+		put("frexp", "exp");
+	}};
 	
 	@Override public void asm(KMethod gen, Parser parser, String[] token) throws GenInstException {
 		// parse
@@ -39,6 +47,9 @@ public class CallInst extends Inst {
 		} else if(cName.equals("konoha/K_Boolean") && mName.equals("%s")) {
 			cName = "konoha/K_OutputStream";
 			mName = "sendBoolean";
+		} else if(cName.equals("java/lang/Math")) {
+			String s = mathFunc.get(mName);
+			if(s != null) mName = s;
 		} else if(mName.equals("new:ARRAY")) {
 			mName = "newArray";
 		} else if(mName.equals("new:LIST")) {

@@ -56,7 +56,6 @@ class Java_lang_Number;
 class Java_lang_Byte extends Java_lang_Number;
 class Java_lang_CharSequence;
 class Java_lang_Character;
-class Class;
 class Java_lang_ClassCastException extends Java_lang_RuntimeException;
 class Java_lang_ClassCircularityError extends Java_lang_LinkageError;
 class Java_lang_ClassFormatError extends Java_lang_LinkageError;
@@ -99,7 +98,6 @@ class Java_lang_NoSuchMethodError extends Java_lang_IncompatibleClassChangeError
 class Java_lang_NoSuchMethodException extends Java_lang_ReflectiveOperationException;
 class Java_lang_NullPointerException extends Java_lang_RuntimeException;
 class Java_lang_NumberFormatException extends Java_lang_IllegalArgumentException;
-class Object;
 class Java_lang_OutOfMemoryError extends Java_lang_VirtualMachineError;
 class Java_lang_Override;
 class Java_lang_Package;
@@ -116,7 +114,6 @@ class Java_lang_Short extends Java_lang_Number;
 class Java_lang_StackOverflowError extends Java_lang_VirtualMachineError;
 class Java_lang_StackTraceElement;
 class Java_lang_StrictMath;
-class String;
 class Java_lang_StringBuffer;
 class Java_lang_StringBuilder;
 class Java_lang_StringIndexOutOfBoundsException extends Java_lang_IndexOutOfBoundsException;
@@ -1526,12 +1523,10 @@ ArrayIndexOutOfBoundsException = Java_lang_ArrayIndexOutOfBoundsException
 ArrayStoreException = Java_lang_ArrayStoreException
 AssertionError = Java_lang_AssertionError
 AutoCloseable = Java_lang_AutoCloseable
-Boolean = Java_lang_Boolean
 BootstrapMethodError = Java_lang_BootstrapMethodError
 Byte = Java_lang_Byte
 CharSequence = Java_lang_CharSequence
 Character = Java_lang_Character
-Class = Class
 ClassCastException = Java_lang_ClassCastException
 ClassCircularityError = Java_lang_ClassCircularityError
 ClassFormatError = Java_lang_ClassFormatError
@@ -1543,13 +1538,11 @@ Cloneable = Java_lang_Cloneable
 Comparable = Java_lang_Comparable
 Compiler = Java_lang_Compiler
 Deprecated = Java_lang_Deprecated
-Double = Java_lang_Double
 Enum = Java_lang_Enum
 EnumConstantNotPresentException = Java_lang_EnumConstantNotPresentException
 Error = Java_lang_Error
 Exception = Java_lang_Exception
 ExceptionInInitializerError = Java_lang_ExceptionInInitializerError
-Float = Java_lang_Float
 IllegalAccessError = Java_lang_IllegalAccessError
 IllegalAccessException = Java_lang_IllegalAccessException
 IllegalArgumentException = Java_lang_IllegalArgumentException
@@ -1561,13 +1554,11 @@ IndexOutOfBoundsException = Java_lang_IndexOutOfBoundsException
 InheritableThreadLocal = Java_lang_InheritableThreadLocal
 InstantiationError = Java_lang_InstantiationError
 InstantiationException = Java_lang_InstantiationException
-Integer = Java_lang_Integer
 InternalError = Java_lang_InternalError
 InterruptedException = Java_lang_InterruptedException
 Iterable = Java_lang_Iterable
 LinkageError = Java_lang_LinkageError
 Long = Java_lang_Long
-Math = Java_lang_Math
 NegativeArraySizeException = Java_lang_NegativeArraySizeException
 NoClassDefFoundError = Java_lang_NoClassDefFoundError
 NoSuchFieldError = Java_lang_NoSuchFieldError
@@ -1577,7 +1568,6 @@ NoSuchMethodException = Java_lang_NoSuchMethodException
 NullPointerException = Java_lang_NullPointerException
 Number = Java_lang_Number
 NumberFormatException = Java_lang_NumberFormatException
-Object = Object
 OutOfMemoryError = Java_lang_OutOfMemoryError
 Override = Java_lang_Override
 Package = Java_lang_Package
@@ -1596,12 +1586,10 @@ Short = Java_lang_Short
 StackOverflowError = Java_lang_StackOverflowError
 StackTraceElement = Java_lang_StackTraceElement
 StrictMath = Java_lang_StrictMath
-String = String
 StringBuffer = Java_lang_StringBuffer
 StringBuilder = Java_lang_StringBuilder
 StringIndexOutOfBoundsException = Java_lang_StringIndexOutOfBoundsException
 SuppressWarnings = Java_lang_SuppressWarnings
-System = Java_lang_System
 Thread = Java_lang_Thread
 ThreadDeath = Java_lang_ThreadDeath
 ThreadGroup = Java_lang_ThreadGroup

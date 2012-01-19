@@ -12,9 +12,8 @@ public class K_Float extends K_Number {
 		return random.nextDouble();
 	}
 	
-	public String format(String fmt) {
-		String r = String.format(fmt.toString(), n);
-		return r;
+	public static String format(double n, String fmt) {
+		return String.format(fmt.toString(), n);
 	}
 	
 	public String toString() {
