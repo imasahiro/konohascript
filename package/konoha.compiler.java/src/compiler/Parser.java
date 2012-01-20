@@ -1,6 +1,8 @@
 package compiler;
+
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 import org.objectweb.asm.Type;
 
@@ -98,21 +100,13 @@ public class Parser {
 		}
 	}
 	
-	private String[] splitToken(String line) { //TODO
+	private static final Pattern splitPattern = Pattern.compile("[ \t]*(\".*?[^\\\\]\"|[^ ]+)");
+	
+	private String[] splitToken(String line) {
 		ArrayList<String> tk = new ArrayList<String>();
-		for(int i=0; i<line.length(); ) {
-			if(line.charAt(i) == '\"') {
-				int n = line.indexOf("\"", i+1);
-				tk.add(line.substring(i+1, n));
-				i = n+2;
-			} else if(line.charAt(i) == '\t') {
-				i++;
-			} else {
-				int n = line.indexOf(" ", i);
-				if(n == -1) n = line.length();
-				tk.add(line.substring(i, n));
-				i = n+1;
-			}
+		Matcher m = splitPattern.matcher(line);
+		while(m.find()) {
+			tk.add(m.group().trim());
 		}
 		return tk.toArray(new String[0]);
 	}
