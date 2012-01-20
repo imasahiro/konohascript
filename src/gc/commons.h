@@ -65,17 +65,14 @@
 //#define K_USING_MEMLOG   1
 
 #ifdef K_USING_MEMLOG
-static kuint64_t memlog_start = 0;
+//static kuint64_t memlog_start = 0;
+//#define MEMLOG_INIT()  memlog_start = knh_getTimeMilliSecond()
 
-#define MEMLOG_INIT()  memlog_start = knh_getTimeMilliSecond()
-
-#define MEMLOG(action, fmt, ...) { \
-		knh_logprintf(action, 0, "T%llu, " fmt , (knh_getTimeMilliSecond()-memlog_start),  ## __VA_ARGS__);\
-	} \
+#define MEMLOG(ctx, action, pe, ...) KNH_NTRACE2(ctx, action, pe, ## __VA_ARGS__)
 
 #else
-#define MEMLOG_INIT()
-#define MEMLOG(action, fmt, ...)
+//#define MEMLOG_INIT()
+#define MEMLOG(ctx, action, pe, ...)
 #endif
 
 #define KNH_ATOMIC_ADD(a, b) __sync_add_and_fetch(&(a), b)
