@@ -1,9 +1,6 @@
-using js.jquery.*;
+using js.dom.*;
 class Offset {
-    Offset(int top, int left) {
-        _top = top;
-        _left = left;
-    }
+    Offset(int top, int left);
     int getTop();
     int getLeft();
 }
@@ -19,7 +16,7 @@ class JQuery {
               //JQyery (callback)
 
     /* Selectors */
-              void     each(Func<Int=>Boolean> callback);
+              void     each_(Method callback);
               int      size();
               String   getSelector();
               Node     getContext();
@@ -28,27 +25,27 @@ class JQuery {
               //int      index(Element elemtnt);
 
     /* Attributes */
-              JQuery   attr(String name);
-              JQuery   attr(Map<String, dynamic> properties);
-              JQuery   attr(String key, dynamic value);
+    @Overload JQuery   attr(String name);
+    @Overload JQuery   attr(Map<String, dynamic> properties);
+    @Overload JQuery   attr(String key, dynamic value);
               JQuery   removeAttr(String name);
               JQuery   addClass(String className);
               JQuery   removeClass(String className);
-              JQuery   toggleClass(String className);
-              JQuery   toggleClass(String className, Boolean flagSwitch);
+    @Overload JQuery   toggleClass(String className);
+    @Overload JQuery   toggleClass(String className, Boolean flagSwitch);
               String   getHTML();
-              JQuery   HTML(String val);
+              JQuery   html(String val);
               String   getText();
               JQuery   text(String val);
               Array    getVal();
               JQuery   val(String val);
 
-   /* Traversing */
+    /* Traversing */
               JQuery   eq(int position);
               Boolean  hasClass(String className);
-              JQuery   filter(int expr);
-              JQuery   filter(String expr);
-              JQuery   filter(Func<Int=>Boolean> callback);
+    @Overload JQuery   filter(int expr);
+    @Overload JQuery   filter(String expr);
+    @Overload JQuery   filter(Method callback);
               Boolean  is(String expr);
               //JQuery   map();
               JQuery not(String expr);
@@ -140,53 +137,53 @@ class JQuery {
     @Overload void show();
     @Overload void show(int speed);
     @Overload void show(String speed);
-    @Overload void show(int speed, Func<void=>void> callback);
-    @Overload void show(String speed, Func<void=>void> callback);
+    @Overload void show(int speed, Method callback);
+    @Overload void show(String speed, Method callback);
     @Overload void hide();
     @Overload void hide(int speed);
     @Overload void hide(String speed);
-    @Overload void hide(int speed, Func<void=>void> callback);
-    @Overload void hide(String speed, Func<void=>void> callback);
+    @Overload void hide(int speed, Method callback);
+    @Overload void hide(String speed, Method callback);
     @Overload void toggle();
     @Overload void toggle(Boolean flagSwitch);
     @Overload void toggle(int speed);
     @Overload void toggle(String speed);
-    @Overload void toggle(int speed, Func<void=>void> callback);
-    @Overload void toggle(String speed, Func<void=>void> callback);
+    @Overload void toggle(int speed, Method callback);
+    @Overload void toggle(String speed, Method callback);
     @Overload void slideDown();
-    @Overload void slideDown(Func<void=>void> callback);
+    @Overload void slideDown(Method callback);
     @Overload void slideDown(int speed);
     @Overload void slideDown(String speed);
-    @Overload void slideDown(int speed, Func<void=>void> callback);
-    @Overload void slideDown(String speed, Func<void=>void> callback);
+    @Overload void slideDown(int speed, Method callback);
+    @Overload void slideDown(String speed, Method callback);
     @Overload void slideUp();
-    @Overload void slideUp(Func<void=>void> callback);
+    @Overload void slideUp(Method callback);
     @Overload void slideUp(int speed);
     @Overload void slideUp(String speed);
-    @Overload void slideUp(int speed, Func<void=>void> callback);
-    @Overload void slideUp(String speed, Func<void=>void> callback);
+    @Overload void slideUp(int speed, Method callback);
+    @Overload void slideUp(String speed, Method callback);
     @Overload void slideToggle();
-    @Overload void slideToggle(Func<void=>void> callback);
+    @Overload void slideToggle(Method callback);
     @Overload void slideToggle(int speed);
     @Overload void slideToggle(String speed);
-    @Overload void slideToggle(int speed, Func<void=>void> callback);
-    @Overload void slideToggle(String speed, Func<void=>void> callback);
+    @Overload void slideToggle(int speed, Method callback);
+    @Overload void slideToggle(String speed, Method callback);
     @Overload void fadeIn();
-    @Overload void fadeIn(Func<void=>void> callback);
+    @Overload void fadeIn(Method callback);
     @Overload void fadeIn(int speed);
     @Overload void fadeIn(String speed);
-    @Overload void fadeIn(int speed, Func<void=>void> callback);
-    @Overload void fadeIn(String speed, Func<void=>void> callback);
+    @Overload void fadeIn(int speed, Method callback);
+    @Overload void fadeIn(String speed, Method callback);
     @Overload void fadeOutjj();
-    @Overload void fadeOut(Func<void=>void> callback);
+    @Overload void fadeOut(Method callback);
     @Overload void fadeOut(int speed);
     @Overload void fadeOut(String speed);
-    @Overload void fadeOut(int speed, Func<void=>void> callback);
-    @Overload void fadeOut(String speed, Func<void=>void> callback);
+    @Overload void fadeOut(int speed, Method callback);
+    @Overload void fadeOut(String speed, Method callback);
     @Overload void fadeTo(int speed, int opacity);
     @Overload void fadeTo(String speed, int opacity);
-    @Overload void fadeTo(int speed, Func<void=>void> callback);
-    @Overload void fadeTo(String speed, int opacity, Func<void=>void> callback);
+    @Overload void fadeTo(int speed, Method callback);
+    @Overload void fadeTo(String speed, int opacity, Method callback);
               //void animate();
               //void stop();
               //void queue();

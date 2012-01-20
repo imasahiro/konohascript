@@ -159,6 +159,9 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
     if (s.startsWith("konoha.Iterator")) {
         return "konoha.Iterator";
     }
+    if (s.startsWith("konoha.Func")) {
+        return "konoha.Func";
+    }
     String[] ary = s.split(".");
     if (|ary| >= 2 && isKonohaClass(s)) {
         String res = "";
