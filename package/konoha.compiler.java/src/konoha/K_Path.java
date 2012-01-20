@@ -8,10 +8,6 @@ public class K_Path {
 		path = str;
 	}
 	
-	public static K_Path create(String s) {
-		return new K_Path(s);
-	}
-	
 	@Override public String toString() {
 		return path;
 	}

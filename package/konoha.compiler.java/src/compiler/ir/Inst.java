@@ -58,39 +58,40 @@ public abstract class Inst implements Opcodes {
 			// parse
 			String obj = token[4];
 			String res = token[0];
-			Type type = parser.toType(token[3]);
+			Type to = parser.toType(token[3]);
 			// gen
-			Type t = gen.getLocalType(obj);
+			Type from = gen.getLocalType(obj);
 			gen.loadLocal(obj);
-			if(t == Type.INT_TYPE) {
-				if(type == Type.DOUBLE_TYPE) {
+			if(from == Type.INT_TYPE) {
+				if(to == Type.DOUBLE_TYPE) {
 					gen.mv.visitInsn(I2D);
 				} else {
-					throw new GenInstException("cast error " + t + " to " + type);
+					throw new GenInstException("cast error " + from + " to " + to);
 				}
-			} else if(t == Type.DOUBLE_TYPE) {
-				if(type == Type.INT_TYPE) {
+			} else if(from == Type.DOUBLE_TYPE) {
+				if(to == Type.INT_TYPE) {
 					gen.mv.visitInsn(D2I);
 				} else {
-					throw new GenInstException("cast error " + t + " to " + type);
+					throw new GenInstException("cast error " + from + " to " + to);
 				}
 			} else {
-				if(type == Type.INT_TYPE) {
+				if(to == Type.INT_TYPE) {
 					gen.invokeStatic(K_System.class, "castInt");
-				} else if(type == Type.DOUBLE_TYPE) {
+				} else if(to == Type.DOUBLE_TYPE) {
 					gen.invokeStatic(K_System.class, "castFloat");
-				} else if(t.equals(gen.type_String) && type.equals(gen.type_Path)) {
+				} else if(from.equals(gen.type_String) && to.equals(gen.type_Path)) {
 					gen.invokeStatic(K_String.class, "castPath");
-				} else if(t.equals(gen.type_String) && type.equals(gen.type_Iterator)) {
+				} else if(from.equals(gen.type_String) && to.equals(gen.type_Iterator)) {
 					gen.invokeVirtual(K_String.class, "toIterator");
-				} else if(t.equals(gen.type_Array) && type.equals(gen.type_Iterator)) {
+				} else if(from.equals(gen.type_Array) && to.equals(gen.type_Iterator)) {
 					gen.invokeVirtual(K_Array.class, "toIterator");
-				} else if(t.equals(gen.type_Date) && type.equals(gen.type_String)) {
+				} else if(from.equals(gen.type_Date) && to.equals(gen.type_String)) {
+					gen.invokeVirtual(K_Date.class, "castString");
 				} else {
-					throw new GenInstException("cast error " + t + " to " + type);
+					throw new GenInstException("cast error " + from + " to " + to);
 				}
 			}
-			gen.storeLocal(res, type);
+			gen.storeLocal(res, to);
 		}
 	}
 	public static class JmpInst extends Inst {

@@ -11,6 +11,15 @@ public class K_OutputStream extends K_Object {
 		return new K_OutputStream();
 	}
 	
+	public K_OutputStream _new(K_Path name, String nanika, K_Map nanikaMap) {
+		try {
+			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(name.toString())));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
 	public void println(Object o) {
 		out.println(o);
 	}
@@ -42,15 +51,6 @@ public class K_OutputStream extends K_Object {
 	
 	public void write(K_Bytes bytes, int offset, int length) {
 		out.write(bytes.data, offset, length);
-	}
-	
-	public K_OutputStream _new(K_Path name, String nanika, K_Map nanikaMap) {
-		try {
-			out = new PrintStream(new FileOutputStream(name.toString()));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return this;
 	}
 	
 	public void flush() {

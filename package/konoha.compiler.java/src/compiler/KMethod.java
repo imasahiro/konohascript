@@ -3,6 +3,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import konoha.K_Class;
+
 import org.objectweb.asm.*;
 
 import compiler.ir.GenInstException;
@@ -181,9 +183,12 @@ public class KMethod implements Opcodes {
 	}
 	
 	public void pushClass(String res, Type type, String val) throws GenInstException {
+		mv.visitTypeInsn(NEW, "konoha/K_Class");
+		mv.visitInsn(DUP);
 		mv.visitLdcInsn(val);
-		mv.visitMethodInsn(INVOKESTATIC, "konoha/K_Class", "create", "(Ljava/lang/String;)Lkonoha/K_Class;");
+		mv.visitMethodInsn(INVOKESPECIAL, "konoha/K_Class", "<init>", "(Ljava/lang/String;)V");
 		storeLocal(res, type);
+		
 	}
 	
 	private static Class<?> toClass(String name) throws GenInstException {
