@@ -9,12 +9,23 @@ public class JavaKonoha {
 	
 	public static boolean compile_only = false;
 	
-	public static void main(String args[]) throws Exception {
+	public static void printHelp() {
+		System.out.println("usage: [command] [file] [args...]");
+		System.out.println("  -c  compile only");
+		System.out.println("  -h  show help");
+	}
+	
+	public static void main(String args[]) {
 		String file = null;
+		int argn = 0;
 		for(String arg : args) {
+			argn++;
 			if(arg.startsWith("-")) {
 				if(arg.equals("-c")) {
 					compile_only = true;
+				} else if(arg.equals("-h")) {
+					printHelp();
+					return;
 				} else {
 					System.err.println("bad arg: " + arg);
 					return;
@@ -25,7 +36,7 @@ public class JavaKonoha {
 			}
 		}
 		if(file == null) {
-			System.err.println("[file] [args...]");
+			printHelp();
 			return;
 		}
 		Compiler c = new Compiler();
@@ -55,16 +66,22 @@ public class JavaKonoha {
 		}
 		c.end();
 		if(compile_only) {
-			c.writeClassFile();
+			try {
+				c.writeClassFile();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
 		} else {
 			try {
 				Method mtd = c.getMainMethod();
-				Object arg = Arrays.copyOfRange(args, 1, args.length);
+				Object arg = Arrays.copyOfRange(args, argn, args.length);
 				mtd.invoke(null, arg);
 			} catch(VerifyError e) {
 				System.err.println(e);
 			} catch(NoSuchMethodException e) {
-				System.err.println("(Error) main method not found");
+				e.printStackTrace();
+			} catch(IllegalAccessException e) {
+				e.printStackTrace();
 			} catch(InvocationTargetException e) {
 				System.err.println("(Error) Exception in script");
 				e.getTargetException().printStackTrace();

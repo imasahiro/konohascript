@@ -2,18 +2,17 @@ package konoha;
 
 public class K_Class extends K_Object {
 	
-	public static K_Class create(String name) {
-		return new K_Class(name);
-	}
-	
-	private final String name;
+	private final Class<?> klass;
 	
 	public K_Class(String name) {
-		this.name = name;
-	}
-	
-	public String toString() {
-		return name;
+		Class<?> c;
+		try {
+			c = Class.forName(name);
+		} catch(ClassNotFoundException e) {
+			e.printStackTrace();
+			c = null;
+		}
+		klass = c;
 	}
 	
 }
