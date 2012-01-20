@@ -1,6 +1,9 @@
 package compiler;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+
+import konoha.K_Class;
 
 import org.objectweb.asm.*;
 
@@ -31,7 +34,7 @@ public class KMethod implements Opcodes {
 	
 	public static final Type type_Array = Type.getType(konoha.K_Array.class);
 	public static final Type type_Date = Type.getType(konoha.K_Date.class);
-	public static final Type type_String = Type.getType(konoha.K_String.class);
+	public static final Type type_String = Type.getType(String.class);
 	public static final Type type_Path = Type.getType(konoha.K_Path.class);
 	public static final Type type_Iterator = Type.getType(konoha.K_Iterator.class);
 	public static final Type type_Regex = Type.getType(konoha.K_Regex.class);
@@ -140,6 +143,8 @@ public class KMethod implements Opcodes {
 			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxFloat", "(D)Lkonoha/K_Float;");
 		} else if(type == Type.BOOLEAN_TYPE) {
 			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxBoolean", "(Z)Lkonoha/K_Boolean;");
+		} else if(type.equals(type_String)) {
+			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxString", "(Ljava/lang/String;)Lkonoha/K_String;");
 		}
 	}
 	
@@ -153,6 +158,9 @@ public class KMethod implements Opcodes {
 		} else if(type == Type.BOOLEAN_TYPE) {
 			mv.visitTypeInsn(CHECKCAST, "konoha/K_Boolean");
 			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxBoolean", "(Lkonoha/K_Boolean;)Z");
+		} else if(type.equals(type_String)) {
+			mv.visitTypeInsn(CHECKCAST, "konoha/K_String");
+			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxString", "(Lkonoha/K_String;)Ljava/lang/String;");
 		} else {
 			mv.visitTypeInsn(CHECKCAST, type.getInternalName());
 		}
@@ -175,9 +183,12 @@ public class KMethod implements Opcodes {
 	}
 	
 	public void pushClass(String res, Type type, String val) throws GenInstException {
+		mv.visitTypeInsn(NEW, "konoha/K_Class");
+		mv.visitInsn(DUP);
 		mv.visitLdcInsn(val);
-		mv.visitMethodInsn(INVOKESTATIC, "konoha/K_Class", "create", "(Ljava/lang/String;)Lkonoha/K_Class;");
+		mv.visitMethodInsn(INVOKESPECIAL, "konoha/K_Class", "<init>", "(Ljava/lang/String;)V");
 		storeLocal(res, type);
+		
 	}
 	
 	private static Class<?> toClass(String name) throws GenInstException {
@@ -195,6 +206,29 @@ public class KMethod implements Opcodes {
 			}
 		}
 		return false;
+	}
+	
+	public void asmCallConstructor(String cName, String[] args, Type retType, String ret) throws GenInstException {
+		if(cName.startsWith("java/")) {
+			// library constructor
+			for(int i=0; i<args.length; i++) {
+				loadLocal(args[i]);
+			}
+			try {
+				for(Constructor<?> con : Class.forName(cName.replace("/", ".")).getConstructors()) {
+					int n = con.getParameterTypes().length;
+					if(n == args.length - 1) {
+						mv.visitMethodInsn(INVOKESPECIAL, cName, "<init>", Type.getConstructorDescriptor(con));
+						loadLocal(args[0]);
+						storeLocal(ret, retType);
+						return;
+					}
+				}
+			} catch(Exception e) {e.printStackTrace();}
+			throw new GenInstException("constructor not found: " + cName + " arg=" + args.length);
+		} else {
+			asmCall(false, cName, "_new", args, retType, ret);
+		}
 	}
 	
 	public void asmCall(boolean isStatic, String cName, String mName, String[] args, Type retType, String ret) throws GenInstException {
@@ -219,7 +253,7 @@ public class KMethod implements Opcodes {
 				loadLocal(args[i]);
 			}
 		}
-		if(cName.startsWith("konoha/")) { // konoha method call
+		if(cName.startsWith("konoha/") || cName.startsWith("java/")) { // library method call
 			Class<?> c = toClass(cName.replace("/", "."));
 			invoke(c, mName, op);
 		} else { // user method
@@ -260,7 +294,7 @@ public class KMethod implements Opcodes {
 	}
 	
 	public void jump(int opcode, int bb) {
-		mv.visitJumpInsn(opcode, getLabel(bb));
+		jump(opcode, getLabel(bb));
 	}
 	
 	public void jump(int opcode, Label label) {
@@ -285,36 +319,6 @@ public class KMethod implements Opcodes {
 	
 	public void invokeVirtual(Class<?> klass, String methodName) throws GenInstException {
 		invoke(klass, methodName, INVOKEVIRTUAL);
-	}
-	
-	public void asmIsNull(String obj, String res) throws GenInstException {
-		Label l1 = new Label();
-		Label l2 = new Label();
-
-		loadLocal(obj);
-		mv.visitJumpInsn(IFNULL, l1);
-		mv.visitInsn(ICONST_0);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitJumpInsn(GOTO, l2);
-		mv.visitLabel(l1);
-		mv.visitInsn(ICONST_1);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitLabel(l2);
-	}
-	
-	public void asmIsNotNull(String obj, String res) throws GenInstException {
-		Label l1 = new Label();
-		Label l2 = new Label();
-		
-		loadLocal(obj);
-		mv.visitJumpInsn(IFNONNULL, l1);
-		mv.visitInsn(ICONST_0);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitJumpInsn(GOTO, l2);
-		mv.visitLabel(l1);
-		mv.visitInsn(ICONST_1);
-		storeLocal(res, Type.INT_TYPE);
-		mv.visitLabel(l2);
 	}
 	
 	public void end() {

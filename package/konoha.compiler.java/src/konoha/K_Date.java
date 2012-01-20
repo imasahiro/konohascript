@@ -1,13 +1,17 @@
 package konoha;
 
+import java.util.Calendar;
+
 public class K_Date extends K_Object {
 	
-	public void _new(int year, int month, int day, int hour, int min, int sec) {
-		
+	private final Calendar calendar = Calendar.getInstance();
+	
+	public void _new(int year, int month, int date, int hourOfDay, int minute, int second) {
+		calendar.set(year, month, date, hourOfDay, minute, second);
 	}
 	
-	public K_String castString() {
-		return new K_String("date");
+	public String castString() {
+		return calendar.toString();
 	}
 	
 }

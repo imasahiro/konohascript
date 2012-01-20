@@ -1,6 +1,8 @@
 package compiler;
+
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 import org.objectweb.asm.Type;
 
@@ -41,7 +43,7 @@ public class Parser {
 					l = br.readLine();
 					no++;
 					if(l == null || l.equals("}")) break;
-					parseField(c, l);
+					if(c != null) parseField(c, l);
 				}
 			} else if(l.startsWith("def")) {
 				KMethod mtd = parseMethod(l);
@@ -98,21 +100,13 @@ public class Parser {
 		}
 	}
 	
-	private String[] splitToken(String line) { //TODO
+	private static final Pattern splitPattern = Pattern.compile("[ \t]*(\".*?[^\\\\]\"|[^ ]+)");
+	
+	private String[] splitToken(String line) {
 		ArrayList<String> tk = new ArrayList<String>();
-		for(int i=0; i<line.length(); ) {
-			if(line.charAt(i) == '\"') {
-				int n = line.indexOf("\"", i+1);
-				tk.add(line.substring(i+1, n));
-				i = n+2;
-			} else if(line.charAt(i) == '\t') {
-				i++;
-			} else {
-				int n = line.indexOf(" ", i);
-				if(n == -1) n = line.length();
-				tk.add(line.substring(i, n));
-				i = n+1;
-			}
+		Matcher m = splitPattern.matcher(line);
+		while(m.find()) {
+			tk.add(m.group().trim());
 		}
 		return tk.toArray(new String[0]);
 	}
@@ -120,8 +114,13 @@ public class Parser {
 	private KClass parseClass(String line) throws GenInstException {
 		String[] tk = splitToken(line);
 		Type type = toType(tk[1]);
+		String className = type.getInternalName();
 		Type superType = toType(tk[3]);
-		return com.createClass(type.getInternalName(), superType.getInternalName());
+		if(className.startsWith("java/")) {
+			return null;
+		} else {
+			return com.createClass(className, superType.getInternalName());
+		}
 	}
 	
 	private void parseField(KClass c, String line) throws GenInstException {
@@ -186,6 +185,8 @@ public class Parser {
 		if(name.startsWith("konoha.")) {
 			if(name.startsWith("konoha.compiler.java")) {
 				name = name.substring(16);
+			} else if(name.equals("konoha.math.Math")) {
+				return "java/lang/Math";
 			} else if(name.startsWith("konoha")) {
 				n = name.lastIndexOf('.');
 				name = name.substring(0, n + 1) + "K_" + name.substring(n + 1);
@@ -205,13 +206,15 @@ public class Parser {
 	}
 	
 	public Type toType(String type) throws GenInstException {
-		if(type.startsWith("konoha.Int")) {
+		if(type.equals("konoha.Int")) {
 			return Type.INT_TYPE;
-		} else if(type.startsWith("konoha.Float")) {
+		} else if(type.equals("konoha.Float")) {
 			return Type.DOUBLE_TYPE;
-		} else if(type.startsWith("konoha.Boolean")) {
+		} else if(type.equals("konoha.Boolean")) {
 			return Type.BOOLEAN_TYPE;
-		} else if(type.startsWith("dynamic")) {
+		} else if(type.equals("konoha.String")) {
+			return Type.getType(String.class);
+		} else if(type.equals("dynamic")) {
 			return Type.getType(Object.class);
 		} else if(type.equals("konoha.compiler.Script")) {
 			return Type.getType("LScript;");

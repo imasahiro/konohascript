@@ -35,14 +35,15 @@ public class ConstInst extends Inst {
 			val = val.replace("\\t", "\t");
 			val = val.replace("\"", "");
 			gen.mv.visitLdcInsn(val);
-			gen.invokeStatic(K_String.class, "create");
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.Path")) {
 			val = val.replace("\\n", "\n");
 			val = val.replace("\\t", "\t");
 			val = val.replace("\"", "");
+			gen.mv.visitTypeInsn(NEW, "konoha/K_Path");
+			gen.mv.visitInsn(DUP);
 			gen.mv.visitLdcInsn(val);
-			gen.invokeStatic(K_Path.class, "create");
+			gen.mv.visitMethodInsn(INVOKESPECIAL, "konoha/K_Path", "<init>", "(Ljava/lang/String;)V");
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.Array<konoha.Int>")) {
 			line = line.substring(line.indexOf("[") + 1, line.lastIndexOf("]")).replace(" ", "");
@@ -55,6 +56,7 @@ public class ConstInst extends Inst {
 				for(int i=0; i<vals.length; i++) {
 					vals[i] = Integer.parseInt(tk[i]);
 				}
+				
 			}
 			gen.pushArray(res, Type.getType(konoha.K_Array.class), vals);
 		} else if(typeName.equals("konoha.Array<konoha.Float>")) {
@@ -89,8 +91,10 @@ public class ConstInst extends Inst {
 			gen.pushArray(res, Type.getType(konoha.K_Array.class), vals);
 		} else if(typeName.equals("konoha.Regex")) {
 			val = val.substring(1, val.length() - 1);
+			gen.mv.visitTypeInsn(NEW, "konoha/K_Regex");
+			gen.mv.visitInsn(DUP);
 			gen.mv.visitLdcInsn(val);
-			gen.invokeStatic(K_Regex.class, "create");
+			gen.mv.visitMethodInsn(INVOKESPECIAL, "konoha/K_Regex", "<init>", "(Ljava/lang/String;)V");
 			gen.storeLocal(res, type);
 		} else {
 			parser.warning("unknown const type: " + typeName);

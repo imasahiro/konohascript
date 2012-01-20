@@ -2,84 +2,82 @@ package konoha;
 
 public class K_String extends K_Object {
 	
-	public static K_String create(String s) {
-		return new K_String(s);
-	}
-	
-	private final String string;
+	public final String string;
 	
 	public K_String(String s) {
 		this.string = s;
 	}
 	
-	public boolean equals(String s) {
-		return string.equals(s);
+	@Override public boolean equals(Object o) {
+		if(o instanceof String || o instanceof K_String) {
+			return o.toString().equals(string);
+		}
+		return false;
 	}
 	
-	public boolean equals(K_Object o) {
-		return string.equals(o.toString());
-	}
-	
-	public String toString() {
+	@Override public String toString() {
 		return string;
 	}
 	
-	public K_Array split(K_Regex r) {
+	public static K_Array split(String self, K_Regex r) {
 		K_Array a = new K_Array();
-		for(String s : string.split(r.toString())) {
+		for(String s : self.split(r.toString())) {
 			a.add1(new K_String(s));
 		}
 		return a;
 	}
 	
-	public K_String substring(int n, int len) {
-		return new K_String(string.substring(n, n + len));
+	public static String substring(String self, int n, int len) {
+		return self.substring(n, n + len);
 	}
 	
-	public boolean startsWith(K_String s) {
-		return string.startsWith(s.string);
+	public static boolean startsWith(String self, String s) {
+		return self.startsWith(s);
 	}
 	
-	public boolean endsWith(K_String s) {
-		return string.endsWith(s.string);
+	public static boolean endsWith(String self, String s) {
+		return self.endsWith(s);
 	}
 	
-	public int indexOf(K_String s) {
-		return string.indexOf(s.string);
+	public static int indexOf(String self, String s) {
+		return self.indexOf(s);
 	}
 	
-	public int getSize() {
-		return string.length();
+	public static int getSize(String self) {
+		return self.length();
 	}
 	
-	public K_String get(int n) {
-		char c = string.charAt(n);
-		return new K_String(Character.toString(c));
+	public static String trim(String self) {
+		return self.trim();
 	}
 	
-	public K_String replace(K_Regex r, K_String s) {
-		return new K_String(string.replaceAll(r.toString(), s.string));
+	public static String get(String self, int n) {
+		return Character.toString(self.charAt(n));
 	}
 	
-	public K_String minus(K_String s) {
-		return new K_String(string.replaceAll(s.string, ""));
+	public static String replace(String self, K_Regex r, String s) {
+		return self.replaceAll(r.toString(), s);
 	}
 	
-	public K_Path castPath() {
-		return new K_Path(string);
+	public static String minus(String self, String s) {
+		return self.replaceAll(s, "");
 	}
 	
-	public K_Iterator toIterator() {
+	public static K_Path castPath(String self) {
+		return new K_Path(self);
+	}
+	
+	public static K_Iterator toIterator(final String self) {
 		return new K_Iterator() {
 			int index = 0;
 			
 			public boolean hasNext() {
-				return index < string.length();
+				return index < self.length();
 			}
 
 			@Override
 			public K_Object getNext() {
-				return get(index++);
+				return K_System.boxString(get(self, index++));
 			}
 			
 		};
