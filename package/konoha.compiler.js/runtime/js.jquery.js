@@ -46,7 +46,7 @@ var initJQuery = function() {
     jquery.prototype.each_ = function(callback) {
         this.rawptr.each(callback.rawptr);
     }
-    jquery.prorotype.size = function() {
+    jquery.prototype.size = function() {
         return this.rawptr.size();
     }
     jquery.prototype.getSelector = function() {
@@ -166,7 +166,7 @@ var initJQuery = function() {
         return new jquery(this.rawptr.andSelf());
     }
     jquery.prototype.end = function() {
-        return ne wjquery(this.rawptr.end());
+        return new jquery(this.rawptr.end());
     }
 
     /* Manipulation */
