@@ -136,6 +136,7 @@ class Java_lang_AbstractMethodError extends Java_lang_IncompatibleClassChangeErr
 }
 @Overload Java_lang_AbstractMethodError Java_lang_AbstractMethodError.new();
 @Overload Java_lang_AbstractMethodError Java_lang_AbstractMethodError.new(String p0);
+
 /* interface java.lang.Appendable */
 class Java_lang_Appendable {
 	/*-- Method --*/
@@ -143,22 +144,26 @@ class Java_lang_Appendable {
 	@Virtual @Overload Java_lang_Appendable append(Java_lang_CharSequence p0, int p1, int p2);
 	@Virtual @Overload Java_lang_Appendable append(int p0);
 }
+
 /* class java.lang.ArithmeticException */
 class Java_lang_ArithmeticException extends Java_lang_RuntimeException {
 }
 @Overload Java_lang_ArithmeticException Java_lang_ArithmeticException.new();
 @Overload Java_lang_ArithmeticException Java_lang_ArithmeticException.new(String p0);
+
 /* class java.lang.ArrayIndexOutOfBoundsException */
 class Java_lang_ArrayIndexOutOfBoundsException extends Java_lang_IndexOutOfBoundsException {
 }
 @Overload Java_lang_ArrayIndexOutOfBoundsException Java_lang_ArrayIndexOutOfBoundsException.new();
 @Overload Java_lang_ArrayIndexOutOfBoundsException Java_lang_ArrayIndexOutOfBoundsException.new(int p0);
 @Overload Java_lang_ArrayIndexOutOfBoundsException Java_lang_ArrayIndexOutOfBoundsException.new(String p0);
+
 /* class java.lang.ArrayStoreException */
 class Java_lang_ArrayStoreException extends Java_lang_RuntimeException {
 }
 @Overload Java_lang_ArrayStoreException Java_lang_ArrayStoreException.new();
 @Overload Java_lang_ArrayStoreException Java_lang_ArrayStoreException.new(String p0);
+
 /* class java.lang.AssertionError */
 class Java_lang_AssertionError extends Java_lang_Error {
 }
@@ -171,13 +176,16 @@ class Java_lang_AssertionError extends Java_lang_Error {
 @Overload Java_lang_AssertionError Java_lang_AssertionError.new(float p0);
 @Overload Java_lang_AssertionError Java_lang_AssertionError.new(double p0);
 @Overload Java_lang_AssertionError Java_lang_AssertionError.new(String p0, Java_lang_Throwable p1);
+
 /* interface java.lang.AutoCloseable */
 class Java_lang_AutoCloseable {
 	/*-- Method --*/
 	@Virtual @Overload void close();
 }
+
 /* class java.lang.Boolean */
 class Java_lang_Boolean {
+	// implements java.io.Serializable, java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload boolean booleanValue();
 	@Virtual @Overload int compare(boolean p0, boolean p1);
@@ -194,6 +202,7 @@ class Java_lang_Boolean {
 }
 @Overload Java_lang_Boolean Java_lang_Boolean.new(boolean p0);
 @Overload Java_lang_Boolean Java_lang_Boolean.new(String p0);
+
 /* class java.lang.BootstrapMethodError */
 class Java_lang_BootstrapMethodError extends Java_lang_LinkageError {
 }
@@ -201,8 +210,10 @@ class Java_lang_BootstrapMethodError extends Java_lang_LinkageError {
 @Overload Java_lang_BootstrapMethodError Java_lang_BootstrapMethodError.new(String p0);
 @Overload Java_lang_BootstrapMethodError Java_lang_BootstrapMethodError.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_BootstrapMethodError Java_lang_BootstrapMethodError.new(Java_lang_Throwable p0);
+
 /* class java.lang.Byte */
 class Java_lang_Byte extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int compare(int p0, int p1);
 	@Virtual @Overload int compareTo(Java_lang_Byte p0);
@@ -217,6 +228,7 @@ class Java_lang_Byte extends Java_lang_Number {
 }
 @Overload Java_lang_Byte Java_lang_Byte.new(int p0);
 @Overload Java_lang_Byte Java_lang_Byte.new(String p0);
+
 /* interface java.lang.CharSequence */
 class Java_lang_CharSequence {
 	/*-- Method --*/
@@ -225,8 +237,10 @@ class Java_lang_CharSequence {
 	@Virtual @Overload Java_lang_CharSequence subSequence(int p0, int p1);
 	@Virtual @Overload String toString();
 }
+
 /* class java.lang.Character */
 class Java_lang_Character {
+	// implements java.io.Serializable, java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int charCount(int p0);
 	@Virtual @Overload int charValue();
@@ -313,8 +327,10 @@ class Java_lang_Character {
 	@Virtual @Overload Java_lang_Character valueOf(int p0);
 }
 Java_lang_Character Java_lang_Character.new(int p0);
+
 /* class java.lang.Class */
 class Class {
+	// implements java.io.Serializable, java.lang.reflect.GenericDeclaration, java.lang.reflect.Type, java.lang.reflect.AnnotatedElement
 	/*-- Method --*/
 	@Virtual @Overload Class asSubclass(Class p0);
 	@Virtual @Overload Object cast(Object p0);
@@ -374,21 +390,25 @@ class Class {
 	@Virtual @Overload Object newInstance();
 	@Virtual @Overload String toString();
 }
+
 /* class java.lang.ClassCastException */
 class Java_lang_ClassCastException extends Java_lang_RuntimeException {
 }
 @Overload Java_lang_ClassCastException Java_lang_ClassCastException.new();
 @Overload Java_lang_ClassCastException Java_lang_ClassCastException.new(String p0);
+
 /* class java.lang.ClassCircularityError */
 class Java_lang_ClassCircularityError extends Java_lang_LinkageError {
 }
 @Overload Java_lang_ClassCircularityError Java_lang_ClassCircularityError.new();
 @Overload Java_lang_ClassCircularityError Java_lang_ClassCircularityError.new(String p0);
+
 /* class java.lang.ClassFormatError */
 class Java_lang_ClassFormatError extends Java_lang_LinkageError {
 }
 @Overload Java_lang_ClassFormatError Java_lang_ClassFormatError.new();
 @Overload Java_lang_ClassFormatError Java_lang_ClassFormatError.new(String p0);
+
 /* class java.lang.ClassLoader */
 class Java_lang_ClassLoader {
 	/*-- Method --*/
@@ -406,6 +426,7 @@ class Java_lang_ClassLoader {
 	@Virtual @Overload void setDefaultAssertionStatus(boolean p0);
 	@Virtual @Overload void setPackageAssertionStatus(String p0, boolean p1);
 }
+
 /* class java.lang.ClassNotFoundException */
 class Java_lang_ClassNotFoundException extends Java_lang_ReflectiveOperationException {
 	/*-- Method --*/
@@ -414,25 +435,30 @@ class Java_lang_ClassNotFoundException extends Java_lang_ReflectiveOperationExce
 @Overload Java_lang_ClassNotFoundException Java_lang_ClassNotFoundException.new();
 @Overload Java_lang_ClassNotFoundException Java_lang_ClassNotFoundException.new(String p0);
 @Overload Java_lang_ClassNotFoundException Java_lang_ClassNotFoundException.new(String p0, Java_lang_Throwable p1);
+
 /* class java.lang.ClassValue */
 class Java_lang_ClassValue {
 	/*-- Method --*/
 	@Virtual @Overload Object get(Class p0);
 	@Virtual @Overload void remove(Class p0);
 }
+
 /* class java.lang.CloneNotSupportedException */
 class Java_lang_CloneNotSupportedException extends Java_lang_Exception {
 }
 @Overload Java_lang_CloneNotSupportedException Java_lang_CloneNotSupportedException.new();
 @Overload Java_lang_CloneNotSupportedException Java_lang_CloneNotSupportedException.new(String p0);
+
 /* interface java.lang.Cloneable */
 class Java_lang_Cloneable {
 }
+
 /* interface java.lang.Comparable */
 class Java_lang_Comparable {
 	/*-- Method --*/
 	@Virtual @Overload int compareTo(Object p0);
 }
+
 /* class java.lang.Compiler */
 class Java_lang_Compiler {
 	/*-- Method --*/
@@ -442,11 +468,15 @@ class Java_lang_Compiler {
 	@Virtual @Overload void disable();
 	@Virtual @Overload void enable();
 }
+
 /* interface java.lang.Deprecated */
 class Java_lang_Deprecated {
+	// implements java.lang.annotation.Annotation
 }
+
 /* class java.lang.Double */
 class Java_lang_Double extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int compare(double p0, double p1);
 	@Virtual @Overload int compareTo(Java_lang_Double p0);
@@ -466,8 +496,10 @@ class Java_lang_Double extends Java_lang_Number {
 }
 @Overload Java_lang_Double Java_lang_Double.new(double p0);
 @Overload Java_lang_Double Java_lang_Double.new(String p0);
+
 /* class java.lang.Enum */
 class Java_lang_Enum {
+	// implements java.lang.Comparable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload int compareTo(Java_lang_Enum p0);
 	@Virtual @Overload int compareTo(Object p0);
@@ -479,6 +511,7 @@ class Java_lang_Enum {
 	@Virtual @Overload String toString();
 	@Virtual @Overload Java_lang_Enum valueOf(Class p0, String p1);
 }
+
 /* class java.lang.EnumConstantNotPresentException */
 class Java_lang_EnumConstantNotPresentException extends Java_lang_RuntimeException {
 	/*-- Method --*/
@@ -486,6 +519,7 @@ class Java_lang_EnumConstantNotPresentException extends Java_lang_RuntimeExcepti
 	@Virtual @Overload Class enumType();
 }
 Java_lang_EnumConstantNotPresentException Java_lang_EnumConstantNotPresentException.new(Class p0, String p1);
+
 /* class java.lang.Error */
 class Java_lang_Error extends Java_lang_Throwable {
 }
@@ -493,6 +527,7 @@ class Java_lang_Error extends Java_lang_Throwable {
 @Overload Java_lang_Error Java_lang_Error.new(String p0);
 @Overload Java_lang_Error Java_lang_Error.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_Error Java_lang_Error.new(Java_lang_Throwable p0);
+
 /* class java.lang.Exception */
 class Java_lang_Exception extends Java_lang_Throwable {
 }
@@ -500,6 +535,7 @@ class Java_lang_Exception extends Java_lang_Throwable {
 @Overload Java_lang_Exception Java_lang_Exception.new(String p0);
 @Overload Java_lang_Exception Java_lang_Exception.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_Exception Java_lang_Exception.new(Java_lang_Throwable p0);
+
 /* class java.lang.ExceptionInInitializerError */
 class Java_lang_ExceptionInInitializerError extends Java_lang_LinkageError {
 	/*-- Method --*/
@@ -508,8 +544,10 @@ class Java_lang_ExceptionInInitializerError extends Java_lang_LinkageError {
 @Overload Java_lang_ExceptionInInitializerError Java_lang_ExceptionInInitializerError.new();
 @Overload Java_lang_ExceptionInInitializerError Java_lang_ExceptionInInitializerError.new(Java_lang_Throwable p0);
 @Overload Java_lang_ExceptionInInitializerError Java_lang_ExceptionInInitializerError.new(String p0);
+
 /* class java.lang.Float */
 class Java_lang_Float extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int compare(float p0, float p1);
 	@Virtual @Overload int compareTo(Java_lang_Float p0);
@@ -530,16 +568,19 @@ class Java_lang_Float extends Java_lang_Number {
 @Overload Java_lang_Float Java_lang_Float.new(float p0);
 @Overload Java_lang_Float Java_lang_Float.new(double p0);
 @Overload Java_lang_Float Java_lang_Float.new(String p0);
+
 /* class java.lang.IllegalAccessError */
 class Java_lang_IllegalAccessError extends Java_lang_IncompatibleClassChangeError {
 }
 @Overload Java_lang_IllegalAccessError Java_lang_IllegalAccessError.new();
 @Overload Java_lang_IllegalAccessError Java_lang_IllegalAccessError.new(String p0);
+
 /* class java.lang.IllegalAccessException */
 class Java_lang_IllegalAccessException extends Java_lang_ReflectiveOperationException {
 }
 @Overload Java_lang_IllegalAccessException Java_lang_IllegalAccessException.new();
 @Overload Java_lang_IllegalAccessException Java_lang_IllegalAccessException.new(String p0);
+
 /* class java.lang.IllegalArgumentException */
 class Java_lang_IllegalArgumentException extends Java_lang_RuntimeException {
 }
@@ -547,11 +588,13 @@ class Java_lang_IllegalArgumentException extends Java_lang_RuntimeException {
 @Overload Java_lang_IllegalArgumentException Java_lang_IllegalArgumentException.new(String p0);
 @Overload Java_lang_IllegalArgumentException Java_lang_IllegalArgumentException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_IllegalArgumentException Java_lang_IllegalArgumentException.new(Java_lang_Throwable p0);
+
 /* class java.lang.IllegalMonitorStateException */
 class Java_lang_IllegalMonitorStateException extends Java_lang_RuntimeException {
 }
 @Overload Java_lang_IllegalMonitorStateException Java_lang_IllegalMonitorStateException.new();
 @Overload Java_lang_IllegalMonitorStateException Java_lang_IllegalMonitorStateException.new(String p0);
+
 /* class java.lang.IllegalStateException */
 class Java_lang_IllegalStateException extends Java_lang_RuntimeException {
 }
@@ -559,37 +602,45 @@ class Java_lang_IllegalStateException extends Java_lang_RuntimeException {
 @Overload Java_lang_IllegalStateException Java_lang_IllegalStateException.new(String p0);
 @Overload Java_lang_IllegalStateException Java_lang_IllegalStateException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_IllegalStateException Java_lang_IllegalStateException.new(Java_lang_Throwable p0);
+
 /* class java.lang.IllegalThreadStateException */
 class Java_lang_IllegalThreadStateException extends Java_lang_IllegalArgumentException {
 }
 @Overload Java_lang_IllegalThreadStateException Java_lang_IllegalThreadStateException.new();
 @Overload Java_lang_IllegalThreadStateException Java_lang_IllegalThreadStateException.new(String p0);
+
 /* class java.lang.IncompatibleClassChangeError */
 class Java_lang_IncompatibleClassChangeError extends Java_lang_LinkageError {
 }
 @Overload Java_lang_IncompatibleClassChangeError Java_lang_IncompatibleClassChangeError.new();
 @Overload Java_lang_IncompatibleClassChangeError Java_lang_IncompatibleClassChangeError.new(String p0);
+
 /* class java.lang.IndexOutOfBoundsException */
 class Java_lang_IndexOutOfBoundsException extends Java_lang_RuntimeException {
 }
 @Overload Java_lang_IndexOutOfBoundsException Java_lang_IndexOutOfBoundsException.new();
 @Overload Java_lang_IndexOutOfBoundsException Java_lang_IndexOutOfBoundsException.new(String p0);
+
 /* class java.lang.InheritableThreadLocal */
 class Java_lang_InheritableThreadLocal extends Java_lang_ThreadLocal {
 }
 Java_lang_InheritableThreadLocal Java_lang_InheritableThreadLocal.new();
+
 /* class java.lang.InstantiationError */
 class Java_lang_InstantiationError extends Java_lang_IncompatibleClassChangeError {
 }
 @Overload Java_lang_InstantiationError Java_lang_InstantiationError.new();
 @Overload Java_lang_InstantiationError Java_lang_InstantiationError.new(String p0);
+
 /* class java.lang.InstantiationException */
 class Java_lang_InstantiationException extends Java_lang_ReflectiveOperationException {
 }
 @Overload Java_lang_InstantiationException Java_lang_InstantiationException.new();
 @Overload Java_lang_InstantiationException Java_lang_InstantiationException.new(String p0);
+
 /* class java.lang.Integer */
 class Java_lang_Integer extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int bitCount(int p0);
 	@Virtual @Overload int compare(int p0, int p1);
@@ -621,29 +672,35 @@ class Java_lang_Integer extends Java_lang_Number {
 }
 @Overload Java_lang_Integer Java_lang_Integer.new(int p0);
 @Overload Java_lang_Integer Java_lang_Integer.new(String p0);
+
 /* class java.lang.InternalError */
 class Java_lang_InternalError extends Java_lang_VirtualMachineError {
 }
 @Overload Java_lang_InternalError Java_lang_InternalError.new();
 @Overload Java_lang_InternalError Java_lang_InternalError.new(String p0);
+
 /* class java.lang.InterruptedException */
 class Java_lang_InterruptedException extends Java_lang_Exception {
 }
 @Overload Java_lang_InterruptedException Java_lang_InterruptedException.new();
 @Overload Java_lang_InterruptedException Java_lang_InterruptedException.new(String p0);
+
 /* interface java.lang.Iterable */
 class Java_lang_Iterable {
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Iterator iterator();
 }
+
 /* class java.lang.LinkageError */
 class Java_lang_LinkageError extends Java_lang_Error {
 }
 @Overload Java_lang_LinkageError Java_lang_LinkageError.new();
 @Overload Java_lang_LinkageError Java_lang_LinkageError.new(String p0);
 @Overload Java_lang_LinkageError Java_lang_LinkageError.new(String p0, Java_lang_Throwable p1);
+
 /* class java.lang.Long */
 class Java_lang_Long extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int bitCount(long p0);
 	@Virtual @Overload int compare(long p0, long p1);
@@ -675,6 +732,7 @@ class Java_lang_Long extends Java_lang_Number {
 }
 @Overload Java_lang_Long Java_lang_Long.new(long p0);
 @Overload Java_lang_Long Java_lang_Long.new(String p0);
+
 /* class java.lang.Math */
 class Java_lang_Math {
 	/*-- Method --*/
@@ -733,43 +791,52 @@ class Java_lang_Math {
 	@Virtual @Overload double ulp(double p0);
 	@Virtual @Overload float ulp(float p0);
 }
+
 /* class java.lang.NegativeArraySizeException */
 class Java_lang_NegativeArraySizeException extends Java_lang_RuntimeException {
 }
 @Overload Java_lang_NegativeArraySizeException Java_lang_NegativeArraySizeException.new();
 @Overload Java_lang_NegativeArraySizeException Java_lang_NegativeArraySizeException.new(String p0);
+
 /* class java.lang.NoClassDefFoundError */
 class Java_lang_NoClassDefFoundError extends Java_lang_LinkageError {
 }
 @Overload Java_lang_NoClassDefFoundError Java_lang_NoClassDefFoundError.new();
 @Overload Java_lang_NoClassDefFoundError Java_lang_NoClassDefFoundError.new(String p0);
+
 /* class java.lang.NoSuchFieldError */
 class Java_lang_NoSuchFieldError extends Java_lang_IncompatibleClassChangeError {
 }
 @Overload Java_lang_NoSuchFieldError Java_lang_NoSuchFieldError.new();
 @Overload Java_lang_NoSuchFieldError Java_lang_NoSuchFieldError.new(String p0);
+
 /* class java.lang.NoSuchFieldException */
 class Java_lang_NoSuchFieldException extends Java_lang_ReflectiveOperationException {
 }
 @Overload Java_lang_NoSuchFieldException Java_lang_NoSuchFieldException.new();
 @Overload Java_lang_NoSuchFieldException Java_lang_NoSuchFieldException.new(String p0);
+
 /* class java.lang.NoSuchMethodError */
 class Java_lang_NoSuchMethodError extends Java_lang_IncompatibleClassChangeError {
 }
 @Overload Java_lang_NoSuchMethodError Java_lang_NoSuchMethodError.new();
 @Overload Java_lang_NoSuchMethodError Java_lang_NoSuchMethodError.new(String p0);
+
 /* class java.lang.NoSuchMethodException */
 class Java_lang_NoSuchMethodException extends Java_lang_ReflectiveOperationException {
 }
 @Overload Java_lang_NoSuchMethodException Java_lang_NoSuchMethodException.new();
 @Overload Java_lang_NoSuchMethodException Java_lang_NoSuchMethodException.new(String p0);
+
 /* class java.lang.NullPointerException */
 class Java_lang_NullPointerException extends Java_lang_RuntimeException {
 }
 @Overload Java_lang_NullPointerException Java_lang_NullPointerException.new();
 @Overload Java_lang_NullPointerException Java_lang_NullPointerException.new(String p0);
+
 /* class java.lang.Number */
 class Java_lang_Number {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload int byteValue();
 	@Virtual @Overload double doubleValue();
@@ -779,11 +846,13 @@ class Java_lang_Number {
 	@Virtual @Overload int shortValue();
 }
 Java_lang_Number Java_lang_Number.new();
+
 /* class java.lang.NumberFormatException */
 class Java_lang_NumberFormatException extends Java_lang_IllegalArgumentException {
 }
 @Overload Java_lang_NumberFormatException Java_lang_NumberFormatException.new();
 @Overload Java_lang_NumberFormatException Java_lang_NumberFormatException.new(String p0);
+
 /* class java.lang.Object */
 class Object {
 	/*-- Method --*/
@@ -798,16 +867,21 @@ class Object {
 	@Virtual @Overload void wait();
 }
 Object Object.new();
+
 /* class java.lang.OutOfMemoryError */
 class Java_lang_OutOfMemoryError extends Java_lang_VirtualMachineError {
 }
 @Overload Java_lang_OutOfMemoryError Java_lang_OutOfMemoryError.new();
 @Overload Java_lang_OutOfMemoryError Java_lang_OutOfMemoryError.new(String p0);
+
 /* interface java.lang.Override */
 class Java_lang_Override {
+	// implements java.lang.annotation.Annotation
 }
+
 /* class java.lang.Package */
 class Java_lang_Package {
+	// implements java.lang.reflect.AnnotatedElement
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_annotation_Annotation getAnnotation(Class p0);
 	@Virtual @Overload Java_lang_annotation_Annotation[] getAnnotations();
@@ -828,6 +902,7 @@ class Java_lang_Package {
 	@Virtual @Overload boolean isSealed(Java_net_URL p0);
 	@Virtual @Overload String toString();
 }
+
 /* class java.lang.Process */
 class Java_lang_Process {
 	/*-- Method --*/
@@ -839,6 +914,7 @@ class Java_lang_Process {
 	@Virtual @Overload int waitFor();
 }
 Java_lang_Process Java_lang_Process.new();
+
 /* class java.lang.ProcessBuilder */
 class Java_lang_ProcessBuilder {
 	/*-- Method --*/
@@ -864,11 +940,13 @@ class Java_lang_ProcessBuilder {
 }
 @Overload Java_lang_ProcessBuilder Java_lang_ProcessBuilder.new(Java_util_List p0);
 @Overload Java_lang_ProcessBuilder Java_lang_ProcessBuilder.new(String[] p0);
+
 /* interface java.lang.Readable */
 class Java_lang_Readable {
 	/*-- Method --*/
 	@Virtual @Overload int read(Java_nio_CharBuffer p0);
 }
+
 /* class java.lang.ReflectiveOperationException */
 class Java_lang_ReflectiveOperationException extends Java_lang_Exception {
 }
@@ -876,11 +954,13 @@ class Java_lang_ReflectiveOperationException extends Java_lang_Exception {
 @Overload Java_lang_ReflectiveOperationException Java_lang_ReflectiveOperationException.new(String p0);
 @Overload Java_lang_ReflectiveOperationException Java_lang_ReflectiveOperationException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_ReflectiveOperationException Java_lang_ReflectiveOperationException.new(Java_lang_Throwable p0);
+
 /* interface java.lang.Runnable */
 class Java_lang_Runnable {
 	/*-- Method --*/
 	@Virtual @Overload void run();
 }
+
 /* class java.lang.Runtime */
 class Java_lang_Runtime {
 	/*-- Method --*/
@@ -906,6 +986,7 @@ class Java_lang_Runtime {
 	@Virtual @Overload void traceInstructions(boolean p0);
 	@Virtual @Overload void traceMethodCalls(boolean p0);
 }
+
 /* class java.lang.RuntimeException */
 class Java_lang_RuntimeException extends Java_lang_Exception {
 }
@@ -913,14 +994,18 @@ class Java_lang_RuntimeException extends Java_lang_Exception {
 @Overload Java_lang_RuntimeException Java_lang_RuntimeException.new(String p0);
 @Overload Java_lang_RuntimeException Java_lang_RuntimeException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_RuntimeException Java_lang_RuntimeException.new(Java_lang_Throwable p0);
+
 /* class java.lang.RuntimePermission */
 class Java_lang_RuntimePermission extends Java_security_BasicPermission {
 }
 @Overload Java_lang_RuntimePermission Java_lang_RuntimePermission.new(String p0);
 @Overload Java_lang_RuntimePermission Java_lang_RuntimePermission.new(String p0, String p1);
+
 /* interface java.lang.SafeVarargs */
 class Java_lang_SafeVarargs {
+	// implements java.lang.annotation.Annotation
 }
+
 /* class java.lang.SecurityException */
 class Java_lang_SecurityException extends Java_lang_RuntimeException {
 }
@@ -928,6 +1013,7 @@ class Java_lang_SecurityException extends Java_lang_RuntimeException {
 @Overload Java_lang_SecurityException Java_lang_SecurityException.new(String p0);
 @Overload Java_lang_SecurityException Java_lang_SecurityException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_SecurityException Java_lang_SecurityException.new(Java_lang_Throwable p0);
+
 /* class java.lang.SecurityManager */
 class Java_lang_SecurityManager {
 	/*-- Method --*/
@@ -965,8 +1051,10 @@ class Java_lang_SecurityManager {
 	@Virtual @Overload Java_lang_ThreadGroup getThreadGroup();
 }
 Java_lang_SecurityManager Java_lang_SecurityManager.new();
+
 /* class java.lang.Short */
 class Java_lang_Short extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int compare(int p0, int p1);
 	@Virtual @Overload int compareTo(Java_lang_Short p0);
@@ -982,13 +1070,16 @@ class Java_lang_Short extends Java_lang_Number {
 }
 @Overload Java_lang_Short Java_lang_Short.new(int p0);
 @Overload Java_lang_Short Java_lang_Short.new(String p0);
+
 /* class java.lang.StackOverflowError */
 class Java_lang_StackOverflowError extends Java_lang_VirtualMachineError {
 }
 @Overload Java_lang_StackOverflowError Java_lang_StackOverflowError.new();
 @Overload Java_lang_StackOverflowError Java_lang_StackOverflowError.new(String p0);
+
 /* class java.lang.StackTraceElement */
 class Java_lang_StackTraceElement {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean equals(Object p0);
 	@Virtual @Overload String getClassName();
@@ -1000,6 +1091,7 @@ class Java_lang_StackTraceElement {
 	@Virtual @Overload String toString();
 }
 Java_lang_StackTraceElement Java_lang_StackTraceElement.new(String p0, String p1, String p2, int p3);
+
 /* class java.lang.StrictMath */
 class Java_lang_StrictMath {
 	/*-- Method --*/
@@ -1058,8 +1150,10 @@ class Java_lang_StrictMath {
 	@Virtual @Overload double ulp(double p0);
 	@Virtual @Overload float ulp(float p0);
 }
+
 /* class java.lang.String */
 class String {
+	// implements java.io.Serializable, java.lang.Comparable, java.lang.CharSequence
 	/*-- Method --*/
 	@Virtual @Overload int charAt(int p0);
 	@Virtual @Overload int codePointAt(int p0);
@@ -1142,8 +1236,10 @@ class String {
 @Overload String String.new(int[] p0);
 @Overload String String.new(Java_lang_StringBuffer p0);
 @Overload String String.new(Java_lang_StringBuilder p0);
+
 /* class java.lang.StringBuffer */
 class Java_lang_StringBuffer {
+	// implements java.io.Serializable, java.lang.CharSequence
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_StringBuffer append(Object p0);
 	@Virtual @Overload Java_lang_StringBuffer append(String p0);
@@ -1233,8 +1329,10 @@ class Java_lang_StringBuffer {
 @Overload Java_lang_StringBuffer Java_lang_StringBuffer.new(int p0);
 @Overload Java_lang_StringBuffer Java_lang_StringBuffer.new(String p0);
 @Overload Java_lang_StringBuffer Java_lang_StringBuffer.new(Java_lang_CharSequence p0);
+
 /* class java.lang.StringBuilder */
 class Java_lang_StringBuilder {
+	// implements java.io.Serializable, java.lang.CharSequence
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_StringBuilder append(Object p0);
 	@Virtual @Overload Java_lang_StringBuilder append(String p0);
@@ -1324,17 +1422,21 @@ class Java_lang_StringBuilder {
 @Overload Java_lang_StringBuilder Java_lang_StringBuilder.new(int p0);
 @Overload Java_lang_StringBuilder Java_lang_StringBuilder.new(String p0);
 @Overload Java_lang_StringBuilder Java_lang_StringBuilder.new(Java_lang_CharSequence p0);
+
 /* class java.lang.StringIndexOutOfBoundsException */
 class Java_lang_StringIndexOutOfBoundsException extends Java_lang_IndexOutOfBoundsException {
 }
 @Overload Java_lang_StringIndexOutOfBoundsException Java_lang_StringIndexOutOfBoundsException.new();
 @Overload Java_lang_StringIndexOutOfBoundsException Java_lang_StringIndexOutOfBoundsException.new(String p0);
 @Overload Java_lang_StringIndexOutOfBoundsException Java_lang_StringIndexOutOfBoundsException.new(int p0);
+
 /* interface java.lang.SuppressWarnings */
 class Java_lang_SuppressWarnings {
+	// implements java.lang.annotation.Annotation
 	/*-- Method --*/
 	@Virtual @Overload String[] value();
 }
+
 /* class java.lang.System */
 class Java_lang_System {
 	/*-- Method --*/
@@ -1365,8 +1467,10 @@ class Java_lang_System {
 	@Virtual @Overload String setProperty(String p0, String p1);
 	@Virtual @Overload void setSecurityManager(Java_lang_SecurityManager p0);
 }
+
 /* class java.lang.Thread */
 class Java_lang_Thread {
+	// implements java.lang.Runnable
 	/*-- Method --*/
 	@Virtual @Overload int activeCount();
 	@Virtual @Overload void checkAccess();
@@ -1413,12 +1517,15 @@ class Java_lang_Thread {
 @Overload Java_lang_Thread Java_lang_Thread.new(Java_lang_Runnable p0, String p1);
 @Overload Java_lang_Thread Java_lang_Thread.new(Java_lang_ThreadGroup p0, Java_lang_Runnable p1, String p2);
 @Overload Java_lang_Thread Java_lang_Thread.new(Java_lang_ThreadGroup p0, Java_lang_Runnable p1, String p2, long p3);
+
 /* class java.lang.ThreadDeath */
 class Java_lang_ThreadDeath extends Java_lang_Error {
 }
 Java_lang_ThreadDeath Java_lang_ThreadDeath.new();
+
 /* class java.lang.ThreadGroup */
 class Java_lang_ThreadGroup {
+	// implements java.lang.Thread$UncaughtExceptionHandler
 	/*-- Method --*/
 	@Virtual @Overload int activeCount();
 	@Virtual @Overload int activeGroupCount();
@@ -1443,6 +1550,7 @@ class Java_lang_ThreadGroup {
 }
 @Overload Java_lang_ThreadGroup Java_lang_ThreadGroup.new(String p0);
 @Overload Java_lang_ThreadGroup Java_lang_ThreadGroup.new(Java_lang_ThreadGroup p0, String p1);
+
 /* class java.lang.ThreadLocal */
 class Java_lang_ThreadLocal {
 	/*-- Method --*/
@@ -1451,8 +1559,10 @@ class Java_lang_ThreadLocal {
 	@Virtual @Overload void set(Object p0);
 }
 Java_lang_ThreadLocal Java_lang_ThreadLocal.new();
+
 /* class java.lang.Throwable */
 class Java_lang_Throwable {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addSuppressed(Java_lang_Throwable p0);
 	@Virtual @Overload Java_lang_Throwable fillInStackTrace();
@@ -1472,27 +1582,32 @@ class Java_lang_Throwable {
 @Overload Java_lang_Throwable Java_lang_Throwable.new(String p0);
 @Overload Java_lang_Throwable Java_lang_Throwable.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_Throwable Java_lang_Throwable.new(Java_lang_Throwable p0);
+
 /* class java.lang.TypeNotPresentException */
 class Java_lang_TypeNotPresentException extends Java_lang_RuntimeException {
 	/*-- Method --*/
 	@Virtual @Overload String typeName();
 }
 Java_lang_TypeNotPresentException Java_lang_TypeNotPresentException.new(String p0, Java_lang_Throwable p1);
+
 /* class java.lang.UnknownError */
 class Java_lang_UnknownError extends Java_lang_VirtualMachineError {
 }
 @Overload Java_lang_UnknownError Java_lang_UnknownError.new();
 @Overload Java_lang_UnknownError Java_lang_UnknownError.new(String p0);
+
 /* class java.lang.UnsatisfiedLinkError */
 class Java_lang_UnsatisfiedLinkError extends Java_lang_LinkageError {
 }
 @Overload Java_lang_UnsatisfiedLinkError Java_lang_UnsatisfiedLinkError.new();
 @Overload Java_lang_UnsatisfiedLinkError Java_lang_UnsatisfiedLinkError.new(String p0);
+
 /* class java.lang.UnsupportedClassVersionError */
 class Java_lang_UnsupportedClassVersionError extends Java_lang_ClassFormatError {
 }
 @Overload Java_lang_UnsupportedClassVersionError Java_lang_UnsupportedClassVersionError.new();
 @Overload Java_lang_UnsupportedClassVersionError Java_lang_UnsupportedClassVersionError.new(String p0);
+
 /* class java.lang.UnsupportedOperationException */
 class Java_lang_UnsupportedOperationException extends Java_lang_RuntimeException {
 }
@@ -1500,19 +1615,23 @@ class Java_lang_UnsupportedOperationException extends Java_lang_RuntimeException
 @Overload Java_lang_UnsupportedOperationException Java_lang_UnsupportedOperationException.new(String p0);
 @Overload Java_lang_UnsupportedOperationException Java_lang_UnsupportedOperationException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_lang_UnsupportedOperationException Java_lang_UnsupportedOperationException.new(Java_lang_Throwable p0);
+
 /* class java.lang.VerifyError */
 class Java_lang_VerifyError extends Java_lang_LinkageError {
 }
 @Overload Java_lang_VerifyError Java_lang_VerifyError.new();
 @Overload Java_lang_VerifyError Java_lang_VerifyError.new(String p0);
+
 /* class java.lang.VirtualMachineError */
 class Java_lang_VirtualMachineError extends Java_lang_Error {
 }
 @Overload Java_lang_VirtualMachineError Java_lang_VirtualMachineError.new();
 @Overload Java_lang_VirtualMachineError Java_lang_VirtualMachineError.new(String p0);
+
 /* class java.lang.Void */
 class Java_lang_Void {
 }
+
 
 /*------------------------------------------------------------*/
 /* short names */

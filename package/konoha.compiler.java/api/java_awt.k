@@ -230,6 +230,7 @@ class Java_awt_TrayIcon;
 class Java_awt_AWTError extends Java_lang_Error {
 }
 Java_awt_AWTError Java_awt_AWTError.new(String p0);
+
 /* class java.awt.AWTEvent */
 class Java_awt_AWTEvent extends Java_util_EventObject {
 	/*-- Method --*/
@@ -239,8 +240,10 @@ class Java_awt_AWTEvent extends Java_util_EventObject {
 }
 @Overload Java_awt_AWTEvent Java_awt_AWTEvent.new(Java_awt_Event p0);
 @Overload Java_awt_AWTEvent Java_awt_AWTEvent.new(Object p0, int p1);
+
 /* class java.awt.AWTEventMulticaster */
 class Java_awt_AWTEventMulticaster {
+	// implements java.awt.event.ComponentListener, java.awt.event.ContainerListener, java.awt.event.FocusListener, java.awt.event.KeyListener, java.awt.event.MouseListener, java.awt.event.MouseMotionListener, java.awt.event.WindowListener, java.awt.event.WindowFocusListener, java.awt.event.WindowStateListener, java.awt.event.ActionListener, java.awt.event.ItemListener, java.awt.event.AdjustmentListener, java.awt.event.TextListener, java.awt.event.InputMethodListener, java.awt.event.HierarchyListener, java.awt.event.HierarchyBoundsListener, java.awt.event.MouseWheelListener
 	/*-- Method --*/
 	@Virtual @Overload void actionPerformed(Java_awt_event_ActionEvent p0);
 	@Virtual @Overload Java_awt_event_ComponentListener add(Java_awt_event_ComponentListener p0, Java_awt_event_ComponentListener p1);
@@ -316,12 +319,15 @@ class Java_awt_AWTEventMulticaster {
 	@Virtual @Overload void windowOpened(Java_awt_event_WindowEvent p0);
 	@Virtual @Overload void windowStateChanged(Java_awt_event_WindowEvent p0);
 }
+
 /* class java.awt.AWTException */
 class Java_awt_AWTException extends Java_lang_Exception {
 }
 Java_awt_AWTException Java_awt_AWTException.new(String p0);
+
 /* class java.awt.AWTKeyStroke */
 class Java_awt_AWTKeyStroke {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean equals(Object p0);
 	@Virtual @Overload Java_awt_AWTKeyStroke getAWTKeyStroke(int p0);
@@ -338,16 +344,19 @@ class Java_awt_AWTKeyStroke {
 	@Virtual @Overload boolean isOnKeyRelease();
 	@Virtual @Overload String toString();
 }
+
 /* class java.awt.AWTPermission */
 class Java_awt_AWTPermission extends Java_security_BasicPermission {
 }
 @Overload Java_awt_AWTPermission Java_awt_AWTPermission.new(String p0);
 @Overload Java_awt_AWTPermission Java_awt_AWTPermission.new(String p0, String p1);
+
 /* interface java.awt.ActiveEvent */
 class Java_awt_ActiveEvent {
 	/*-- Method --*/
 	@Virtual @Overload void dispatch();
 }
+
 /* interface java.awt.Adjustable */
 class Java_awt_Adjustable {
 	/*-- Method --*/
@@ -367,8 +376,10 @@ class Java_awt_Adjustable {
 	@Virtual @Overload void setValue(int p0);
 	@Virtual @Overload void setVisibleAmount(int p0);
 }
+
 /* class java.awt.AlphaComposite */
 class Java_awt_AlphaComposite {
+	// implements java.awt.Composite
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_CompositeContext createContext(Java_awt_image_ColorModel p0, Java_awt_image_ColorModel p1, Java_awt_RenderingHints p2);
 	@Virtual @Overload Java_awt_AlphaComposite derive(int p0);
@@ -380,8 +391,10 @@ class Java_awt_AlphaComposite {
 	@Virtual @Overload int getRule();
 	//@Virtual @Overload int hashCode();
 }
+
 /* class java.awt.BasicStroke */
 class Java_awt_BasicStroke {
+	// implements java.awt.Stroke
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Shape createStrokedShape(Java_awt_Shape p0);
 	@Virtual @Overload boolean equals(Object p0);
@@ -398,8 +411,10 @@ class Java_awt_BasicStroke {
 @Overload Java_awt_BasicStroke Java_awt_BasicStroke.new(float p0, int p1, int p2);
 @Overload Java_awt_BasicStroke Java_awt_BasicStroke.new(float p0);
 @Overload Java_awt_BasicStroke Java_awt_BasicStroke.new();
+
 /* class java.awt.BorderLayout */
 class Java_awt_BorderLayout {
+	// implements java.awt.LayoutManager2, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addLayoutComponent(Java_awt_Component p0, Object p1);
 	@Virtual @Overload Object getConstraints(Java_awt_Component p0);
@@ -421,8 +436,10 @@ class Java_awt_BorderLayout {
 }
 @Overload Java_awt_BorderLayout Java_awt_BorderLayout.new();
 @Overload Java_awt_BorderLayout Java_awt_BorderLayout.new(int p0, int p1);
+
 /* class java.awt.BufferCapabilities */
 class Java_awt_BufferCapabilities {
+	// implements java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload Java_awt_ImageCapabilities getBackBufferCapabilities();
@@ -433,8 +450,10 @@ class Java_awt_BufferCapabilities {
 	@Virtual @Overload boolean isPageFlipping();
 }
 Java_awt_BufferCapabilities Java_awt_BufferCapabilities.new(Java_awt_ImageCapabilities p0, Java_awt_ImageCapabilities p1, Java_awt_BufferCapabilities_FlipContents p2);
+
 /* class java.awt.Button */
 class Java_awt_Button extends Java_awt_Component {
+	// implements javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void addActionListener(Java_awt_event_ActionListener p0);
 	@Virtual @Overload String getActionCommand();
@@ -446,8 +465,10 @@ class Java_awt_Button extends Java_awt_Component {
 }
 @Overload Java_awt_Button Java_awt_Button.new();
 @Overload Java_awt_Button Java_awt_Button.new(String p0);
+
 /* class java.awt.Canvas */
 class Java_awt_Canvas extends Java_awt_Component {
+	// implements javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void createBufferStrategy(int p0);
 	@Virtual @Overload void createBufferStrategy(int p0, Java_awt_BufferCapabilities p1);
@@ -455,8 +476,10 @@ class Java_awt_Canvas extends Java_awt_Component {
 }
 @Overload Java_awt_Canvas Java_awt_Canvas.new();
 @Overload Java_awt_Canvas Java_awt_Canvas.new(Java_awt_GraphicsConfiguration p0);
+
 /* class java.awt.CardLayout */
 class Java_awt_CardLayout {
+	// implements java.awt.LayoutManager2, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addLayoutComponent(Java_awt_Component p0, Object p1);
 	@Virtual @Overload void first(Java_awt_Container p0);
@@ -480,8 +503,10 @@ class Java_awt_CardLayout {
 }
 @Overload Java_awt_CardLayout Java_awt_CardLayout.new();
 @Overload Java_awt_CardLayout Java_awt_CardLayout.new(int p0, int p1);
+
 /* class java.awt.Checkbox */
 class Java_awt_Checkbox extends Java_awt_Component {
+	// implements java.awt.ItemSelectable, javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void addItemListener(Java_awt_event_ItemListener p0);
 	@Virtual @Overload Java_awt_CheckboxGroup getCheckboxGroup();
@@ -499,16 +524,20 @@ class Java_awt_Checkbox extends Java_awt_Component {
 @Overload Java_awt_Checkbox Java_awt_Checkbox.new(String p0, boolean p1);
 @Overload Java_awt_Checkbox Java_awt_Checkbox.new(String p0, boolean p1, Java_awt_CheckboxGroup p2);
 @Overload Java_awt_Checkbox Java_awt_Checkbox.new(String p0, Java_awt_CheckboxGroup p1, boolean p2);
+
 /* class java.awt.CheckboxGroup */
 class Java_awt_CheckboxGroup {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Checkbox getSelectedCheckbox();
 	@Virtual @Overload void setSelectedCheckbox(Java_awt_Checkbox p0);
 	@Virtual @Overload String toString();
 }
 Java_awt_CheckboxGroup Java_awt_CheckboxGroup.new();
+
 /* class java.awt.CheckboxMenuItem */
 class Java_awt_CheckboxMenuItem extends Java_awt_MenuItem {
+	// implements java.awt.ItemSelectable, javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void addItemListener(Java_awt_event_ItemListener p0);
 	@Virtual @Overload Java_awt_event_ItemListener[] getItemListeners();
@@ -520,8 +549,10 @@ class Java_awt_CheckboxMenuItem extends Java_awt_MenuItem {
 @Overload Java_awt_CheckboxMenuItem Java_awt_CheckboxMenuItem.new();
 @Overload Java_awt_CheckboxMenuItem Java_awt_CheckboxMenuItem.new(String p0);
 @Overload Java_awt_CheckboxMenuItem Java_awt_CheckboxMenuItem.new(String p0, boolean p1);
+
 /* class java.awt.Choice */
 class Java_awt_Choice extends Java_awt_Component {
+	// implements java.awt.ItemSelectable, javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void add(String p0);
 	@Virtual @Overload void addItem(String p0);
@@ -541,8 +572,10 @@ class Java_awt_Choice extends Java_awt_Component {
 	@Virtual @Overload void select(String p0);
 }
 Java_awt_Choice Java_awt_Choice.new();
+
 /* class java.awt.Color */
 class Java_awt_Color {
+	// implements java.awt.Paint, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload int HSBtoRGB(float p0, float p1, float p2);
 	@Virtual @Overload float[] RGBtoHSB(int p0, int p1, int p2, float[] p3);
@@ -578,8 +611,10 @@ class Java_awt_Color {
 @Overload Java_awt_Color Java_awt_Color.new(float p0, float p1, float p2);
 @Overload Java_awt_Color Java_awt_Color.new(float p0, float p1, float p2, float p3);
 @Overload Java_awt_Color Java_awt_Color.new(Java_awt_color_ColorSpace p0, float[] p1, float p2);
+
 /* class java.awt.Component */
 class Java_awt_Component {
+	// implements java.awt.image.ImageObserver, java.awt.MenuContainer, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void add(Java_awt_PopupMenu p0);
 	@Virtual @Overload void addComponentListener(Java_awt_event_ComponentListener p0);
@@ -750,24 +785,29 @@ class Java_awt_Component {
 	@Virtual @Overload void update(Java_awt_Graphics p0);
 	@Virtual @Overload void validate();
 }
+
 /* class java.awt.ComponentOrientation */
 class Java_awt_ComponentOrientation {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_ComponentOrientation getOrientation(Java_util_Locale p0);
 	@Virtual @Overload boolean isHorizontal();
 	@Virtual @Overload boolean isLeftToRight();
 }
+
 /* interface java.awt.Composite */
 class Java_awt_Composite {
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_CompositeContext createContext(Java_awt_image_ColorModel p0, Java_awt_image_ColorModel p1, Java_awt_RenderingHints p2);
 }
+
 /* interface java.awt.CompositeContext */
 class Java_awt_CompositeContext {
 	/*-- Method --*/
 	@Virtual @Overload void compose(Java_awt_image_Raster p0, Java_awt_image_Raster p1, Java_awt_image_WritableRaster p2);
 	@Virtual @Overload void dispose();
 }
+
 /* class java.awt.Container */
 class Java_awt_Container extends Java_awt_Component {
 	/*-- Method --*/
@@ -807,15 +847,19 @@ class Java_awt_Container extends Java_awt_Component {
 	@Virtual @Overload void transferFocusDownCycle();
 }
 Java_awt_Container Java_awt_Container.new();
+
 /* class java.awt.ContainerOrderFocusTraversalPolicy */
 class Java_awt_ContainerOrderFocusTraversalPolicy extends Java_awt_FocusTraversalPolicy {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean getImplicitDownCycleTraversal();
 	@Virtual @Overload void setImplicitDownCycleTraversal(boolean p0);
 }
 Java_awt_ContainerOrderFocusTraversalPolicy Java_awt_ContainerOrderFocusTraversalPolicy.new();
+
 /* class java.awt.Cursor */
 class Java_awt_Cursor {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Cursor getDefaultCursor();
 	@Virtual @Overload String getName();
@@ -825,14 +869,17 @@ class Java_awt_Cursor {
 	@Virtual @Overload String toString();
 }
 Java_awt_Cursor Java_awt_Cursor.new(int p0);
+
 /* class java.awt.DefaultFocusTraversalPolicy */
 class Java_awt_DefaultFocusTraversalPolicy extends Java_awt_ContainerOrderFocusTraversalPolicy {
 }
 Java_awt_DefaultFocusTraversalPolicy Java_awt_DefaultFocusTraversalPolicy.new();
+
 /* class java.awt.DefaultKeyboardFocusManager */
 class Java_awt_DefaultKeyboardFocusManager extends Java_awt_KeyboardFocusManager {
 }
 Java_awt_DefaultKeyboardFocusManager Java_awt_DefaultKeyboardFocusManager.new();
+
 /* class java.awt.Desktop */
 class Java_awt_Desktop {
 	/*-- Method --*/
@@ -846,6 +893,7 @@ class Java_awt_Desktop {
 	@Virtual @Overload void open(Java_io_File p0);
 	//@Virtual @Overload void print(Java_io_File p0);
 }
+
 /* class java.awt.Dialog */
 class Java_awt_Dialog extends Java_awt_Window {
 	/*-- Method --*/
@@ -874,8 +922,10 @@ class Java_awt_Dialog extends Java_awt_Window {
 @Overload Java_awt_Dialog Java_awt_Dialog.new(Java_awt_Window p0, Java_awt_Dialog_ModalityType p1);
 @Overload Java_awt_Dialog Java_awt_Dialog.new(Java_awt_Window p0, String p1, Java_awt_Dialog_ModalityType p2);
 @Overload Java_awt_Dialog Java_awt_Dialog.new(Java_awt_Window p0, String p1, Java_awt_Dialog_ModalityType p2, Java_awt_GraphicsConfiguration p3);
+
 /* class java.awt.Dimension */
 class Java_awt_Dimension extends Java_awt_geom_Dimension2D {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Dimension getSize();
 	@Virtual @Overload void setSize(Java_awt_Dimension p0);
@@ -884,6 +934,7 @@ class Java_awt_Dimension extends Java_awt_geom_Dimension2D {
 @Overload Java_awt_Dimension Java_awt_Dimension.new();
 @Overload Java_awt_Dimension Java_awt_Dimension.new(Java_awt_Dimension p0);
 @Overload Java_awt_Dimension Java_awt_Dimension.new(int p0, int p1);
+
 /* class java.awt.DisplayMode */
 class Java_awt_DisplayMode {
 	/*-- Method --*/
@@ -896,8 +947,10 @@ class Java_awt_DisplayMode {
 	//@Virtual @Overload int hashCode();
 }
 Java_awt_DisplayMode Java_awt_DisplayMode.new(int p0, int p1, int p2, int p3);
+
 /* class java.awt.Event */
 class Java_awt_Event {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean controlDown();
 	@Virtual @Overload boolean metaDown();
@@ -908,6 +961,7 @@ class Java_awt_Event {
 @Overload Java_awt_Event Java_awt_Event.new(Object p0, long p1, int p2, int p3, int p4, int p5, int p6, Object p7);
 @Overload Java_awt_Event Java_awt_Event.new(Object p0, long p1, int p2, int p3, int p4, int p5, int p6);
 @Overload Java_awt_Event Java_awt_Event.new(Object p0, int p1, Object p2);
+
 /* class java.awt.EventQueue */
 class Java_awt_EventQueue {
 	/*-- Method --*/
@@ -924,6 +978,7 @@ class Java_awt_EventQueue {
 	@Virtual @Overload void push(Java_awt_EventQueue p0);
 }
 Java_awt_EventQueue Java_awt_EventQueue.new();
+
 /* class java.awt.FileDialog */
 class Java_awt_FileDialog extends Java_awt_Dialog {
 	/*-- Method --*/
@@ -945,8 +1000,10 @@ class Java_awt_FileDialog extends Java_awt_Dialog {
 @Overload Java_awt_FileDialog Java_awt_FileDialog.new(Java_awt_Dialog p0);
 @Overload Java_awt_FileDialog Java_awt_FileDialog.new(Java_awt_Dialog p0, String p1);
 @Overload Java_awt_FileDialog Java_awt_FileDialog.new(Java_awt_Dialog p0, String p1, int p2);
+
 /* class java.awt.FlowLayout */
 class Java_awt_FlowLayout {
+	// implements java.awt.LayoutManager, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addLayoutComponent(String p0, Java_awt_Component p1);
 	@Virtual @Overload boolean getAlignOnBaseline();
@@ -966,6 +1023,7 @@ class Java_awt_FlowLayout {
 @Overload Java_awt_FlowLayout Java_awt_FlowLayout.new();
 @Overload Java_awt_FlowLayout Java_awt_FlowLayout.new(int p0);
 @Overload Java_awt_FlowLayout Java_awt_FlowLayout.new(int p0, int p1, int p2);
+
 /* class java.awt.FocusTraversalPolicy */
 class Java_awt_FocusTraversalPolicy {
 	/*-- Method --*/
@@ -977,8 +1035,10 @@ class Java_awt_FocusTraversalPolicy {
 	@Virtual @Overload Java_awt_Component getLastComponent(Java_awt_Container p0);
 }
 Java_awt_FocusTraversalPolicy Java_awt_FocusTraversalPolicy.new();
+
 /* class java.awt.Font */
 class Java_awt_Font {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean canDisplay(int p0);
 	@Virtual @Overload boolean canDisplay(int p0);
@@ -1039,12 +1099,15 @@ class Java_awt_Font {
 }
 @Overload Java_awt_Font Java_awt_Font.new(String p0, int p1, int p2);
 @Overload Java_awt_Font Java_awt_Font.new(Java_util_Map p0);
+
 /* class java.awt.FontFormatException */
 class Java_awt_FontFormatException extends Java_lang_Exception {
 }
 Java_awt_FontFormatException Java_awt_FontFormatException.new(String p0);
+
 /* class java.awt.FontMetrics */
 class Java_awt_FontMetrics {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload int bytesWidth(int[] p0, int p1, int p2);
 	@Virtual @Overload int charWidth(int p0);
@@ -1073,8 +1136,10 @@ class Java_awt_FontMetrics {
 	@Virtual @Overload int stringWidth(String p0);
 	@Virtual @Overload String toString();
 }
+
 /* class java.awt.Frame */
 class Java_awt_Frame extends Java_awt_Window {
+	// implements java.awt.MenuContainer
 	/*-- Method --*/
 	@Virtual @Overload int getExtendedState();
 	@Virtual @Overload Java_awt_Frame[] getFrames();
@@ -1097,8 +1162,10 @@ class Java_awt_Frame extends Java_awt_Window {
 @Overload Java_awt_Frame Java_awt_Frame.new(Java_awt_GraphicsConfiguration p0);
 @Overload Java_awt_Frame Java_awt_Frame.new(String p0);
 @Overload Java_awt_Frame Java_awt_Frame.new(String p0, Java_awt_GraphicsConfiguration p1);
+
 /* class java.awt.GradientPaint */
 class Java_awt_GradientPaint {
+	// implements java.awt.Paint
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_PaintContext createContext(Java_awt_image_ColorModel p0, Java_awt_Rectangle p1, Java_awt_geom_Rectangle2D p2, Java_awt_geom_AffineTransform p3, Java_awt_RenderingHints p4);
 	@Virtual @Overload Java_awt_Color getColor1();
@@ -1112,6 +1179,7 @@ class Java_awt_GradientPaint {
 @Overload Java_awt_GradientPaint Java_awt_GradientPaint.new(Java_awt_geom_Point2D p0, Java_awt_Color p1, Java_awt_geom_Point2D p2, Java_awt_Color p3);
 @Overload Java_awt_GradientPaint Java_awt_GradientPaint.new(float p0, float p1, Java_awt_Color p2, float p3, float p4, Java_awt_Color p5, boolean p6);
 @Overload Java_awt_GradientPaint Java_awt_GradientPaint.new(Java_awt_geom_Point2D p0, Java_awt_Color p1, Java_awt_geom_Point2D p2, Java_awt_Color p3, boolean p4);
+
 /* class java.awt.Graphics */
 class Java_awt_Graphics {
 	/*-- Method --*/
@@ -1165,6 +1233,7 @@ class Java_awt_Graphics {
 	@Virtual @Overload String toString();
 	@Virtual @Overload void translate(int p0, int p1);
 }
+
 /* class java.awt.Graphics2D */
 class Java_awt_Graphics2D extends Java_awt_Graphics {
 	/*-- Method --*/
@@ -1203,13 +1272,16 @@ class Java_awt_Graphics2D extends Java_awt_Graphics {
 	@Virtual @Overload void transform(Java_awt_geom_AffineTransform p0);
 	@Virtual @Overload void translate(double p0, double p1);
 }
+
 /* class java.awt.GraphicsConfigTemplate */
 class Java_awt_GraphicsConfigTemplate {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_GraphicsConfiguration getBestConfiguration(Java_awt_GraphicsConfiguration[] p0);
 	@Virtual @Overload boolean isGraphicsConfigSupported(Java_awt_GraphicsConfiguration p0);
 }
 Java_awt_GraphicsConfigTemplate Java_awt_GraphicsConfigTemplate.new();
+
 /* class java.awt.GraphicsConfiguration */
 class Java_awt_GraphicsConfiguration {
 	/*-- Method --*/
@@ -1229,6 +1301,7 @@ class Java_awt_GraphicsConfiguration {
 	@Virtual @Overload Java_awt_geom_AffineTransform getNormalizingTransform();
 	@Virtual @Overload boolean isTranslucencyCapable();
 }
+
 /* class java.awt.GraphicsDevice */
 class Java_awt_GraphicsDevice {
 	/*-- Method --*/
@@ -1247,6 +1320,7 @@ class Java_awt_GraphicsDevice {
 	@Virtual @Overload void setDisplayMode(Java_awt_DisplayMode p0);
 	@Virtual @Overload void setFullScreenWindow(Java_awt_Window p0);
 }
+
 /* class java.awt.GraphicsEnvironment */
 class Java_awt_GraphicsEnvironment {
 	/*-- Method --*/
@@ -1265,15 +1339,19 @@ class Java_awt_GraphicsEnvironment {
 	@Virtual @Overload void preferProportionalFonts();
 	@Virtual @Overload boolean registerFont(Java_awt_Font p0);
 }
+
 /* class java.awt.GridBagConstraints */
 class Java_awt_GridBagConstraints {
+	// implements java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 }
 @Overload Java_awt_GridBagConstraints Java_awt_GridBagConstraints.new();
 @Overload Java_awt_GridBagConstraints Java_awt_GridBagConstraints.new(int p0, int p1, int p2, int p3, double p4, double p5, int p6, int p7, Java_awt_Insets p8, int p9, int p10);
+
 /* class java.awt.GridBagLayout */
 class Java_awt_GridBagLayout {
+	// implements java.awt.LayoutManager2, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addLayoutComponent(String p0, Java_awt_Component p1);
 	@Virtual @Overload void addLayoutComponent(Java_awt_Component p0, Object p1);
@@ -1294,11 +1372,15 @@ class Java_awt_GridBagLayout {
 	@Virtual @Overload String toString();
 }
 Java_awt_GridBagLayout Java_awt_GridBagLayout.new();
+
 /* class java.awt.GridBagLayoutInfo */
 class Java_awt_GridBagLayoutInfo {
+	// implements java.io.Serializable
 }
+
 /* class java.awt.GridLayout */
 class Java_awt_GridLayout {
+	// implements java.awt.LayoutManager, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addLayoutComponent(String p0, Java_awt_Component p1);
 	@Virtual @Overload int getColumns();
@@ -1318,16 +1400,19 @@ class Java_awt_GridLayout {
 @Overload Java_awt_GridLayout Java_awt_GridLayout.new();
 @Overload Java_awt_GridLayout Java_awt_GridLayout.new(int p0, int p1);
 @Overload Java_awt_GridLayout Java_awt_GridLayout.new(int p0, int p1, int p2, int p3);
+
 /* class java.awt.HeadlessException */
 class Java_awt_HeadlessException extends Java_lang_UnsupportedOperationException {
 }
 @Overload Java_awt_HeadlessException Java_awt_HeadlessException.new();
 @Overload Java_awt_HeadlessException Java_awt_HeadlessException.new(String p0);
+
 /* class java.awt.IllegalComponentStateException */
 class Java_awt_IllegalComponentStateException extends Java_lang_IllegalStateException {
 }
 @Overload Java_awt_IllegalComponentStateException Java_awt_IllegalComponentStateException.new();
 @Overload Java_awt_IllegalComponentStateException Java_awt_IllegalComponentStateException.new(String p0);
+
 /* class java.awt.Image */
 class Java_awt_Image {
 	/*-- Method --*/
@@ -1343,16 +1428,20 @@ class Java_awt_Image {
 	@Virtual @Overload void setAccelerationPriority(float p0);
 }
 Java_awt_Image Java_awt_Image.new();
+
 /* class java.awt.ImageCapabilities */
 class Java_awt_ImageCapabilities {
+	// implements java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload boolean isAccelerated();
 	@Virtual @Overload boolean isTrueVolatile();
 }
 Java_awt_ImageCapabilities Java_awt_ImageCapabilities.new(boolean p0);
+
 /* class java.awt.Insets */
 class Java_awt_Insets {
+	// implements java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload boolean equals(Object p0);
@@ -1361,6 +1450,7 @@ class Java_awt_Insets {
 	@Virtual @Overload String toString();
 }
 Java_awt_Insets Java_awt_Insets.new(int p0, int p1, int p2, int p3);
+
 /* interface java.awt.ItemSelectable */
 class Java_awt_ItemSelectable {
 	/*-- Method --*/
@@ -1368,8 +1458,10 @@ class Java_awt_ItemSelectable {
 	@Virtual @Overload Object[] getSelectedObjects();
 	@Virtual @Overload void removeItemListener(Java_awt_event_ItemListener p0);
 }
+
 /* class java.awt.JobAttributes */
 class Java_awt_JobAttributes {
+	// implements java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload boolean equals(Object p0);
@@ -1409,18 +1501,22 @@ class Java_awt_JobAttributes {
 @Overload Java_awt_JobAttributes Java_awt_JobAttributes.new();
 @Overload Java_awt_JobAttributes Java_awt_JobAttributes.new(Java_awt_JobAttributes p0);
 @Overload Java_awt_JobAttributes Java_awt_JobAttributes.new(int p0, Java_awt_JobAttributes_DefaultSelectionType p1, Java_awt_JobAttributes_DestinationType p2, Java_awt_JobAttributes_DialogType p3, String p4, int p5, int p6, Java_awt_JobAttributes_MultipleDocumentHandlingType p7, int[][] p8, String p9, Java_awt_JobAttributes_SidesType p10);
+
 /* interface java.awt.KeyEventDispatcher */
 class Java_awt_KeyEventDispatcher {
 	/*-- Method --*/
 	@Virtual @Overload boolean dispatchKeyEvent(Java_awt_event_KeyEvent p0);
 }
+
 /* interface java.awt.KeyEventPostProcessor */
 class Java_awt_KeyEventPostProcessor {
 	/*-- Method --*/
 	@Virtual @Overload boolean postProcessKeyEvent(Java_awt_event_KeyEvent p0);
 }
+
 /* class java.awt.KeyboardFocusManager */
 class Java_awt_KeyboardFocusManager {
+	// implements java.awt.KeyEventDispatcher, java.awt.KeyEventPostProcessor
 	/*-- Method --*/
 	@Virtual @Overload void addKeyEventDispatcher(Java_awt_KeyEventDispatcher p0);
 	@Virtual @Overload void addKeyEventPostProcessor(Java_awt_KeyEventPostProcessor p0);
@@ -1466,8 +1562,10 @@ class Java_awt_KeyboardFocusManager {
 	@Virtual @Overload void upFocusCycle();
 }
 Java_awt_KeyboardFocusManager Java_awt_KeyboardFocusManager.new();
+
 /* class java.awt.Label */
 class Java_awt_Label extends Java_awt_Component {
+	// implements javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload int getAlignment();
 	@Virtual @Overload String getText();
@@ -1477,6 +1575,7 @@ class Java_awt_Label extends Java_awt_Component {
 @Overload Java_awt_Label Java_awt_Label.new();
 @Overload Java_awt_Label Java_awt_Label.new(String p0);
 @Overload Java_awt_Label Java_awt_Label.new(String p0, int p1);
+
 /* interface java.awt.LayoutManager */
 class Java_awt_LayoutManager {
 	/*-- Method --*/
@@ -1486,8 +1585,10 @@ class Java_awt_LayoutManager {
 	@Virtual @Overload Java_awt_Dimension preferredLayoutSize(Java_awt_Container p0);
 	@Virtual @Overload void removeLayoutComponent(Java_awt_Component p0);
 }
+
 /* interface java.awt.LayoutManager2 */
 class Java_awt_LayoutManager2 {
+	// implements java.awt.LayoutManager
 	/*-- Method --*/
 	@Virtual @Overload void addLayoutComponent(Java_awt_Component p0, Object p1);
 	@Virtual @Overload float getLayoutAlignmentX(Java_awt_Container p0);
@@ -1495,6 +1596,7 @@ class Java_awt_LayoutManager2 {
 	@Virtual @Overload void invalidateLayout(Java_awt_Container p0);
 	@Virtual @Overload Java_awt_Dimension maximumLayoutSize(Java_awt_Container p0);
 }
+
 /* class java.awt.LinearGradientPaint */
 class Java_awt_LinearGradientPaint extends Java_awt_MultipleGradientPaint {
 	/*-- Method --*/
@@ -1506,8 +1608,10 @@ class Java_awt_LinearGradientPaint extends Java_awt_MultipleGradientPaint {
 @Overload Java_awt_LinearGradientPaint Java_awt_LinearGradientPaint.new(Java_awt_geom_Point2D p0, Java_awt_geom_Point2D p1, float[] p2, Java_awt_Color[] p3);
 @Overload Java_awt_LinearGradientPaint Java_awt_LinearGradientPaint.new(Java_awt_geom_Point2D p0, Java_awt_geom_Point2D p1, float[] p2, Java_awt_Color[] p3, Java_awt_MultipleGradientPaint_CycleMethod p4);
 @Overload Java_awt_LinearGradientPaint Java_awt_LinearGradientPaint.new(Java_awt_geom_Point2D p0, Java_awt_geom_Point2D p1, float[] p2, Java_awt_Color[] p3, Java_awt_MultipleGradientPaint_CycleMethod p4, Java_awt_MultipleGradientPaint_ColorSpaceType p5, Java_awt_geom_AffineTransform p6);
+
 /* class java.awt.List */
 class Java_awt_List extends Java_awt_Component {
+	// implements java.awt.ItemSelectable, javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void add(String p0);
 	@Virtual @Overload void add(String p0, int p1);
@@ -1543,8 +1647,10 @@ class Java_awt_List extends Java_awt_Component {
 @Overload Java_awt_List Java_awt_List.new();
 @Overload Java_awt_List Java_awt_List.new(int p0);
 @Overload Java_awt_List Java_awt_List.new(int p0, boolean p1);
+
 /* class java.awt.MediaTracker */
 class Java_awt_MediaTracker {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addImage(Java_awt_Image p0, int p1);
 	@Virtual @Overload void addImage(Java_awt_Image p0, int p1, int p2, int p3);
@@ -1567,8 +1673,10 @@ class Java_awt_MediaTracker {
 	@Virtual @Overload boolean waitForID(int p0, long p1);
 }
 Java_awt_MediaTracker Java_awt_MediaTracker.new(Java_awt_Component p0);
+
 /* class java.awt.Menu */
 class Java_awt_Menu extends Java_awt_MenuItem {
+	// implements java.awt.MenuContainer, javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_MenuItem add(Java_awt_MenuItem p0);
 	@Virtual @Overload void add(String p0);
@@ -1586,8 +1694,10 @@ class Java_awt_Menu extends Java_awt_MenuItem {
 @Overload Java_awt_Menu Java_awt_Menu.new();
 @Overload Java_awt_Menu Java_awt_Menu.new(String p0);
 @Overload Java_awt_Menu Java_awt_Menu.new(String p0, boolean p1);
+
 /* class java.awt.MenuBar */
 class Java_awt_MenuBar extends Java_awt_MenuComponent {
+	// implements java.awt.MenuContainer, javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Menu add(Java_awt_Menu p0);
 	@Virtual @Overload void addNotify();
@@ -1602,8 +1712,10 @@ class Java_awt_MenuBar extends Java_awt_MenuComponent {
 	@Virtual @Overload Java_util_Enumeration shortcuts();
 }
 Java_awt_MenuBar Java_awt_MenuBar.new();
+
 /* class java.awt.MenuComponent */
 class Java_awt_MenuComponent {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void dispatchEvent(Java_awt_AWTEvent p0);
 	@Virtual @Overload javax.accessibility.AccessibleContext getAccessibleContext();
@@ -1616,14 +1728,17 @@ class Java_awt_MenuComponent {
 	@Virtual @Overload String toString();
 }
 Java_awt_MenuComponent Java_awt_MenuComponent.new();
+
 /* interface java.awt.MenuContainer */
 class Java_awt_MenuContainer {
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Font getFont();
 	@Virtual @Overload void remove(Java_awt_MenuComponent p0);
 }
+
 /* class java.awt.MenuItem */
 class Java_awt_MenuItem extends Java_awt_MenuComponent {
+	// implements javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void addActionListener(Java_awt_event_ActionListener p0);
 	@Virtual @Overload void addNotify();
@@ -1644,8 +1759,10 @@ class Java_awt_MenuItem extends Java_awt_MenuComponent {
 @Overload Java_awt_MenuItem Java_awt_MenuItem.new();
 @Overload Java_awt_MenuItem Java_awt_MenuItem.new(String p0);
 @Overload Java_awt_MenuItem Java_awt_MenuItem.new(String p0, Java_awt_MenuShortcut p1);
+
 /* class java.awt.MenuShortcut */
 class Java_awt_MenuShortcut {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean equals(Java_awt_MenuShortcut p0);
 	@Virtual @Overload boolean equals(Object p0);
@@ -1656,14 +1773,17 @@ class Java_awt_MenuShortcut {
 }
 @Overload Java_awt_MenuShortcut Java_awt_MenuShortcut.new(int p0);
 @Overload Java_awt_MenuShortcut Java_awt_MenuShortcut.new(int p0, boolean p1);
+
 /* class java.awt.MouseInfo */
 class Java_awt_MouseInfo {
 	/*-- Method --*/
 	@Virtual @Overload int getNumberOfButtons();
 	@Virtual @Overload Java_awt_PointerInfo getPointerInfo();
 }
+
 /* class java.awt.MultipleGradientPaint */
 class Java_awt_MultipleGradientPaint {
+	// implements java.awt.Paint
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_MultipleGradientPaint_ColorSpaceType getColorSpace();
 	@Virtual @Overload Java_awt_Color[] getColors();
@@ -1672,8 +1792,10 @@ class Java_awt_MultipleGradientPaint {
 	@Virtual @Overload Java_awt_geom_AffineTransform getTransform();
 	@Virtual @Overload int getTransparency();
 }
+
 /* class java.awt.PageAttributes */
 class Java_awt_PageAttributes {
+	// implements java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload boolean equals(Object p0);
@@ -1703,11 +1825,14 @@ class Java_awt_PageAttributes {
 @Overload Java_awt_PageAttributes Java_awt_PageAttributes.new();
 @Overload Java_awt_PageAttributes Java_awt_PageAttributes.new(Java_awt_PageAttributes p0);
 @Overload Java_awt_PageAttributes Java_awt_PageAttributes.new(Java_awt_PageAttributes_ColorType p0, Java_awt_PageAttributes_MediaType p1, Java_awt_PageAttributes_OrientationRequestedType p2, Java_awt_PageAttributes_OriginType p3, Java_awt_PageAttributes_PrintQualityType p4, int[] p5);
+
 /* interface java.awt.Paint */
 class Java_awt_Paint {
+	// implements java.awt.Transparency
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_PaintContext createContext(Java_awt_image_ColorModel p0, Java_awt_Rectangle p1, Java_awt_geom_Rectangle2D p2, Java_awt_geom_AffineTransform p3, Java_awt_RenderingHints p4);
 }
+
 /* interface java.awt.PaintContext */
 class Java_awt_PaintContext {
 	/*-- Method --*/
@@ -1715,13 +1840,17 @@ class Java_awt_PaintContext {
 	@Virtual @Overload Java_awt_image_ColorModel getColorModel();
 	@Virtual @Overload Java_awt_image_Raster getRaster(int p0, int p1, int p2, int p3);
 }
+
 /* class java.awt.Panel */
 class Java_awt_Panel extends Java_awt_Container {
+	// implements javax.accessibility.Accessible
 }
 @Overload Java_awt_Panel Java_awt_Panel.new();
 @Overload Java_awt_Panel Java_awt_Panel.new(Java_awt_LayoutManager p0);
+
 /* class java.awt.Point */
 class Java_awt_Point extends Java_awt_geom_Point2D {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Point getLocation();
 	@Virtual @Overload void move(int p0, int p1);
@@ -1732,14 +1861,17 @@ class Java_awt_Point extends Java_awt_geom_Point2D {
 @Overload Java_awt_Point Java_awt_Point.new();
 @Overload Java_awt_Point Java_awt_Point.new(Java_awt_Point p0);
 @Overload Java_awt_Point Java_awt_Point.new(int p0, int p1);
+
 /* class java.awt.PointerInfo */
 class Java_awt_PointerInfo {
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_GraphicsDevice getDevice();
 	@Virtual @Overload Java_awt_Point getLocation();
 }
+
 /* class java.awt.Polygon */
 class Java_awt_Polygon {
+	// implements java.awt.Shape, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addPoint(int p0, int p1);
 	@Virtual @Overload boolean contains(Java_awt_Point p0);
@@ -1760,6 +1892,7 @@ class Java_awt_Polygon {
 }
 @Overload Java_awt_Polygon Java_awt_Polygon.new();
 @Overload Java_awt_Polygon Java_awt_Polygon.new(int[] p0, int[] p1, int p2);
+
 /* class java.awt.PopupMenu */
 class Java_awt_PopupMenu extends Java_awt_Menu {
 	/*-- Method --*/
@@ -1767,11 +1900,13 @@ class Java_awt_PopupMenu extends Java_awt_Menu {
 }
 @Overload Java_awt_PopupMenu Java_awt_PopupMenu.new();
 @Overload Java_awt_PopupMenu Java_awt_PopupMenu.new(String p0);
+
 /* interface java.awt.PrintGraphics */
 class Java_awt_PrintGraphics {
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_PrintJob getPrintJob();
 }
+
 /* class java.awt.PrintJob */
 class Java_awt_PrintJob {
 	/*-- Method --*/
@@ -1783,6 +1918,7 @@ class Java_awt_PrintJob {
 	@Virtual @Overload boolean lastPageFirst();
 }
 Java_awt_PrintJob Java_awt_PrintJob.new();
+
 /* class java.awt.RadialGradientPaint */
 class Java_awt_RadialGradientPaint extends Java_awt_MultipleGradientPaint {
 	/*-- Method --*/
@@ -1798,8 +1934,10 @@ class Java_awt_RadialGradientPaint extends Java_awt_MultipleGradientPaint {
 @Overload Java_awt_RadialGradientPaint Java_awt_RadialGradientPaint.new(Java_awt_geom_Point2D p0, float p1, Java_awt_geom_Point2D p2, float[] p3, Java_awt_Color[] p4, Java_awt_MultipleGradientPaint_CycleMethod p5);
 @Overload Java_awt_RadialGradientPaint Java_awt_RadialGradientPaint.new(Java_awt_geom_Point2D p0, float p1, Java_awt_geom_Point2D p2, float[] p3, Java_awt_Color[] p4, Java_awt_MultipleGradientPaint_CycleMethod p5, Java_awt_MultipleGradientPaint_ColorSpaceType p6, Java_awt_geom_AffineTransform p7);
 @Overload Java_awt_RadialGradientPaint Java_awt_RadialGradientPaint.new(Java_awt_geom_Rectangle2D p0, float[] p1, Java_awt_Color[] p2, Java_awt_MultipleGradientPaint_CycleMethod p3);
+
 /* class java.awt.Rectangle */
 class Java_awt_Rectangle extends Java_awt_geom_Rectangle2D {
+	// implements java.awt.Shape, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void add(int p0, int p1);
 	@Virtual @Overload void add(Java_awt_Point p0);
@@ -1829,8 +1967,10 @@ class Java_awt_Rectangle extends Java_awt_geom_Rectangle2D {
 @Overload Java_awt_Rectangle Java_awt_Rectangle.new(Java_awt_Point p0, Java_awt_Dimension p1);
 @Overload Java_awt_Rectangle Java_awt_Rectangle.new(Java_awt_Point p0);
 @Overload Java_awt_Rectangle Java_awt_Rectangle.new(Java_awt_Dimension p0);
+
 /* class java.awt.RenderingHints */
 class Java_awt_RenderingHints {
+	// implements java.util.Map, java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload void add(Java_awt_RenderingHints p0);
 	@Virtual @Overload void clear();
@@ -1852,6 +1992,7 @@ class Java_awt_RenderingHints {
 }
 @Overload Java_awt_RenderingHints Java_awt_RenderingHints.new(Java_util_Map p0);
 @Overload Java_awt_RenderingHints Java_awt_RenderingHints.new(Java_awt_RenderingHints_Key p0, Object p1);
+
 /* class java.awt.Robot */
 class Java_awt_Robot {
 	/*-- Method --*/
@@ -1873,8 +2014,10 @@ class Java_awt_Robot {
 }
 @Overload Java_awt_Robot Java_awt_Robot.new();
 @Overload Java_awt_Robot Java_awt_Robot.new(Java_awt_GraphicsDevice p0);
+
 /* class java.awt.ScrollPane */
 class Java_awt_ScrollPane extends Java_awt_Container {
+	// implements javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Adjustable getHAdjustable();
 	@Virtual @Overload int getHScrollbarHeight();
@@ -1891,8 +2034,10 @@ class Java_awt_ScrollPane extends Java_awt_Container {
 }
 @Overload Java_awt_ScrollPane Java_awt_ScrollPane.new();
 @Overload Java_awt_ScrollPane Java_awt_ScrollPane.new(int p0);
+
 /* class java.awt.ScrollPaneAdjustable */
 class Java_awt_ScrollPaneAdjustable {
+	// implements java.awt.Adjustable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addAdjustmentListener(Java_awt_event_AdjustmentListener p0);
 	@Virtual @Overload Java_awt_event_AdjustmentListener[] getAdjustmentListeners();
@@ -1915,8 +2060,10 @@ class Java_awt_ScrollPaneAdjustable {
 	@Virtual @Overload void setVisibleAmount(int p0);
 	@Virtual @Overload String toString();
 }
+
 /* class java.awt.Scrollbar */
 class Java_awt_Scrollbar extends Java_awt_Component {
+	// implements java.awt.Adjustable, javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void addAdjustmentListener(Java_awt_event_AdjustmentListener p0);
 	@Virtual @Overload Java_awt_event_AdjustmentListener[] getAdjustmentListeners();
@@ -1942,12 +2089,14 @@ class Java_awt_Scrollbar extends Java_awt_Component {
 @Overload Java_awt_Scrollbar Java_awt_Scrollbar.new();
 @Overload Java_awt_Scrollbar Java_awt_Scrollbar.new(int p0);
 @Overload Java_awt_Scrollbar Java_awt_Scrollbar.new(int p0, int p1, int p2, int p3, int p4);
+
 /* interface java.awt.SecondaryLoop */
 class Java_awt_SecondaryLoop {
 	/*-- Method --*/
 	@Virtual @Overload boolean enter();
 	@Virtual @Overload boolean exit();
 }
+
 /* interface java.awt.Shape */
 class Java_awt_Shape {
 	/*-- Method --*/
@@ -1962,6 +2111,7 @@ class Java_awt_Shape {
 	@Virtual @Overload boolean intersects(double p0, double p1, double p2, double p3);
 	@Virtual @Overload boolean intersects(Java_awt_geom_Rectangle2D p0);
 }
+
 /* class java.awt.SplashScreen */
 class Java_awt_SplashScreen {
 	/*-- Method --*/
@@ -1975,14 +2125,18 @@ class Java_awt_SplashScreen {
 	@Virtual @Overload void setImageURL(Java_net_URL p0);
 	@Virtual @Overload void update();
 }
+
 /* interface java.awt.Stroke */
 class Java_awt_Stroke {
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_Shape createStrokedShape(Java_awt_Shape p0);
 }
+
 /* class java.awt.SystemColor */
 class Java_awt_SystemColor extends Java_awt_Color {
+	// implements java.io.Serializable
 }
+
 /* class java.awt.SystemTray */
 class Java_awt_SystemTray {
 	/*-- Method --*/
@@ -1996,6 +2150,7 @@ class Java_awt_SystemTray {
 	@Virtual @Overload void remove(Java_awt_TrayIcon p0);
 	@Virtual @Overload void removePropertyChangeListener(String p0, Java_beans_PropertyChangeListener p1);
 }
+
 /* class java.awt.TextArea */
 class Java_awt_TextArea extends Java_awt_TextComponent {
 	/*-- Method --*/
@@ -2015,8 +2170,10 @@ class Java_awt_TextArea extends Java_awt_TextComponent {
 @Overload Java_awt_TextArea Java_awt_TextArea.new(int p0, int p1);
 @Overload Java_awt_TextArea Java_awt_TextArea.new(String p0, int p1, int p2);
 @Overload Java_awt_TextArea Java_awt_TextArea.new(String p0, int p1, int p2, int p3);
+
 /* class java.awt.TextComponent */
 class Java_awt_TextComponent extends Java_awt_Component {
+	// implements javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void addTextListener(Java_awt_event_TextListener p0);
 	@Virtual @Overload int getCaretPosition();
@@ -2035,6 +2192,7 @@ class Java_awt_TextComponent extends Java_awt_Component {
 	@Virtual @Overload void setSelectionStart(int p0);
 	@Virtual @Overload void setText(String p0);
 }
+
 /* class java.awt.TextField */
 class Java_awt_TextField extends Java_awt_TextComponent {
 	/*-- Method --*/
@@ -2053,8 +2211,10 @@ class Java_awt_TextField extends Java_awt_TextComponent {
 @Overload Java_awt_TextField Java_awt_TextField.new(String p0);
 @Overload Java_awt_TextField Java_awt_TextField.new(int p0);
 @Overload Java_awt_TextField Java_awt_TextField.new(String p0, int p1);
+
 /* class java.awt.TexturePaint */
 class Java_awt_TexturePaint {
+	// implements java.awt.Paint
 	/*-- Method --*/
 	@Virtual @Overload Java_awt_PaintContext createContext(Java_awt_image_ColorModel p0, Java_awt_Rectangle p1, Java_awt_geom_Rectangle2D p2, Java_awt_geom_AffineTransform p3, Java_awt_RenderingHints p4);
 	@Virtual @Overload Java_awt_geom_Rectangle2D getAnchorRect();
@@ -2062,6 +2222,7 @@ class Java_awt_TexturePaint {
 	@Virtual @Overload int getTransparency();
 }
 Java_awt_TexturePaint Java_awt_TexturePaint.new(Java_awt_image_BufferedImage p0, Java_awt_geom_Rectangle2D p1);
+
 /* class java.awt.Toolkit */
 class Java_awt_Toolkit {
 	/*-- Method --*/
@@ -2114,11 +2275,13 @@ class Java_awt_Toolkit {
 	@Virtual @Overload void sync();
 }
 Java_awt_Toolkit Java_awt_Toolkit.new();
+
 /* interface java.awt.Transparency */
 class Java_awt_Transparency {
 	/*-- Method --*/
 	@Virtual @Overload int getTransparency();
 }
+
 /* class java.awt.TrayIcon */
 class Java_awt_TrayIcon {
 	/*-- Method --*/
@@ -2147,8 +2310,10 @@ class Java_awt_TrayIcon {
 @Overload Java_awt_TrayIcon Java_awt_TrayIcon.new(Java_awt_Image p0);
 @Overload Java_awt_TrayIcon Java_awt_TrayIcon.new(Java_awt_Image p0, String p1);
 @Overload Java_awt_TrayIcon Java_awt_TrayIcon.new(Java_awt_Image p0, String p1, Java_awt_PopupMenu p2);
+
 /* class java.awt.Window */
 class Java_awt_Window extends Java_awt_Container {
+	// implements javax.accessibility.Accessible
 	/*-- Method --*/
 	@Virtual @Overload void addWindowFocusListener(Java_awt_event_WindowFocusListener p0);
 	@Virtual @Overload void addWindowListener(Java_awt_event_WindowListener p0);
@@ -2201,6 +2366,7 @@ class Java_awt_Window extends Java_awt_Container {
 @Overload Java_awt_Window Java_awt_Window.new(Java_awt_Frame p0);
 @Overload Java_awt_Window Java_awt_Window.new(Java_awt_Window p0);
 @Overload Java_awt_Window Java_awt_Window.new(Java_awt_Window p0, Java_awt_GraphicsConfiguration p1);
+
 
 /*------------------------------------------------------------*/
 /* short names */

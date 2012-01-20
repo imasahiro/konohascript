@@ -17,6 +17,7 @@ class Java_math_RoundingMode extends Java_lang_Enum;
 /*------------------------------------------------------------*/
 /* class java.math.BigDecimal */
 class Java_math_BigDecimal extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload Java_math_BigDecimal abs();
 	@Virtual @Overload Java_math_BigDecimal abs(Java_math_MathContext p0);
@@ -89,8 +90,10 @@ class Java_math_BigDecimal extends Java_lang_Number {
 @Overload Java_math_BigDecimal Java_math_BigDecimal.new(int p0, Java_math_MathContext p1);
 @Overload Java_math_BigDecimal Java_math_BigDecimal.new(long p0);
 @Overload Java_math_BigDecimal Java_math_BigDecimal.new(long p0, Java_math_MathContext p1);
+
 /* class java.math.BigInteger */
 class Java_math_BigInteger extends Java_lang_Number {
+	// implements java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload Java_math_BigInteger abs();
 	@Virtual @Overload Java_math_BigInteger add(Java_math_BigInteger p0);
@@ -137,8 +140,10 @@ class Java_math_BigInteger extends Java_lang_Number {
 @Overload Java_math_BigInteger Java_math_BigInteger.new(String p0);
 @Overload Java_math_BigInteger Java_math_BigInteger.new(int p0, Java_util_Random p1);
 @Overload Java_math_BigInteger Java_math_BigInteger.new(int p0, int p1, Java_util_Random p2);
+
 /* class java.math.MathContext */
 class Java_math_MathContext {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean equals(Object p0);
 	@Virtual @Overload int getPrecision();
@@ -149,6 +154,7 @@ class Java_math_MathContext {
 @Overload Java_math_MathContext Java_math_MathContext.new(int p0);
 @Overload Java_math_MathContext Java_math_MathContext.new(int p0, Java_math_RoundingMode p1);
 @Overload Java_math_MathContext Java_math_MathContext.new(String p0);
+
 /* class java.math.RoundingMode */
 class Java_math_RoundingMode extends Java_lang_Enum {
 	/*-- Method --*/
@@ -156,6 +162,7 @@ class Java_math_RoundingMode extends Java_lang_Enum {
 	@Virtual @Overload Java_math_RoundingMode valueOf(int p0);
 	@Virtual @Overload Java_math_RoundingMode[] values();
 }
+
 
 /*------------------------------------------------------------*/
 /* short names */

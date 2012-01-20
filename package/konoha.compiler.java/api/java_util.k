@@ -132,6 +132,7 @@ class Java_util_WeakHashMap extends Java_util_AbstractMap;
 /*------------------------------------------------------------*/
 /* class java.util.AbstractCollection */
 class Java_util_AbstractCollection {
+	// implements java.util.Collection
 	/*-- Method --*/
 	@Virtual @Overload boolean add(Object p0);
 	@Virtual @Overload boolean addAll(Java_util_Collection p0);
@@ -148,8 +149,10 @@ class Java_util_AbstractCollection {
 	@Virtual @Overload Object[] toArray(Object[] p0);
 	@Virtual @Overload String toString();
 }
+
 /* class java.util.AbstractList */
 class Java_util_AbstractList extends Java_util_AbstractCollection {
+	// implements java.util.List
 	/*-- Method --*/
 	@Virtual @Overload void add(int p0, Object p1);
 	@Virtual @Overload boolean addAll(int p0, Java_util_Collection p1);
@@ -162,8 +165,10 @@ class Java_util_AbstractList extends Java_util_AbstractCollection {
 	@Virtual @Overload Object set(int p0, Object p1);
 	@Virtual @Overload Java_util_List subList(int p0, int p1);
 }
+
 /* class java.util.AbstractMap */
 class Java_util_AbstractMap {
+	// implements java.util.Map
 	/*-- Method --*/
 	@Virtual @Overload void clear();
 	@Virtual @Overload boolean containsKey(Object p0);
@@ -181,20 +186,27 @@ class Java_util_AbstractMap {
 	@Virtual @Overload String toString();
 	@Virtual @Overload Java_util_Collection values();
 }
+
 /* class java.util.AbstractQueue */
 class Java_util_AbstractQueue extends Java_util_AbstractCollection {
+	// implements java.util.Queue
 	/*-- Method --*/
 	@Virtual @Overload Object element();
 	@Virtual @Overload Object remove();
 }
+
 /* class java.util.AbstractSequentialList */
 class Java_util_AbstractSequentialList extends Java_util_AbstractList {
 }
+
 /* class java.util.AbstractSet */
 class Java_util_AbstractSet extends Java_util_AbstractCollection {
+	// implements java.util.Set
 }
+
 /* class java.util.ArrayDeque */
 class Java_util_ArrayDeque extends Java_util_AbstractCollection {
+	// implements java.util.Deque, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addFirst(Object p0);
 	@Virtual @Overload void addLast(Object p0);
@@ -224,8 +236,10 @@ class Java_util_ArrayDeque extends Java_util_AbstractCollection {
 @Overload Java_util_ArrayDeque Java_util_ArrayDeque.new();
 @Overload Java_util_ArrayDeque Java_util_ArrayDeque.new(int p0);
 @Overload Java_util_ArrayDeque Java_util_ArrayDeque.new(Java_util_Collection p0);
+
 /* class java.util.ArrayList */
 class Java_util_ArrayList extends Java_util_AbstractList {
+	// implements java.util.List, java.util.RandomAccess, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload void ensureCapacity(int p0);
@@ -234,6 +248,7 @@ class Java_util_ArrayList extends Java_util_AbstractList {
 @Overload Java_util_ArrayList Java_util_ArrayList.new(int p0);
 @Overload Java_util_ArrayList Java_util_ArrayList.new();
 @Overload Java_util_ArrayList Java_util_ArrayList.new(Java_util_Collection p0);
+
 /* class java.util.Arrays */
 class Java_util_Arrays {
 	/*-- Method --*/
@@ -343,8 +358,10 @@ class Java_util_Arrays {
 	@Virtual @Overload String toString(double[] p0);
 	@Virtual @Overload String toString(Object[] p0);
 }
+
 /* class java.util.BitSet */
 class Java_util_BitSet {
+	// implements java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void and(Java_util_BitSet p0);
 	@Virtual @Overload void andNot(Java_util_BitSet p0);
@@ -383,8 +400,10 @@ class Java_util_BitSet {
 }
 @Overload Java_util_BitSet Java_util_BitSet.new();
 @Overload Java_util_BitSet Java_util_BitSet.new(int p0);
+
 /* class java.util.Calendar */
 class Java_util_Calendar {
+	// implements java.io.Serializable, java.lang.Cloneable, java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload void add(int p0, int p1);
 	@Virtual @Overload boolean after(Object p0);
@@ -435,8 +454,10 @@ class Java_util_Calendar {
 	@Virtual @Overload void setWeekDate(int p0, int p1, int p2);
 	@Virtual @Overload String toString();
 }
+
 /* interface java.util.Collection */
 class Java_util_Collection {
+	// implements java.lang.Iterable
 	/*-- Method --*/
 	@Virtual @Overload boolean add(Object p0);
 	@Virtual @Overload boolean addAll(Java_util_Collection p0);
@@ -454,6 +475,7 @@ class Java_util_Collection {
 	@Virtual @Overload Object[] toArray();
 	@Virtual @Overload Object[] toArray(Object[] p0);
 }
+
 /* class java.util.Collections */
 class Java_util_Collections {
 	/*-- Method --*/
@@ -513,12 +535,14 @@ class Java_util_Collections {
 	@Virtual @Overload Java_util_SortedMap unmodifiableSortedMap(Java_util_SortedMap p0);
 	@Virtual @Overload Java_util_SortedSet unmodifiableSortedSet(Java_util_SortedSet p0);
 }
+
 /* interface java.util.Comparator */
 class Java_util_Comparator {
 	/*-- Method --*/
 	@Virtual @Overload int compare(Object p0, Object p1);
 	@Virtual @Overload boolean equals(Object p0);
 }
+
 /* class java.util.ConcurrentModificationException */
 class Java_util_ConcurrentModificationException extends Java_lang_RuntimeException {
 }
@@ -526,8 +550,10 @@ class Java_util_ConcurrentModificationException extends Java_lang_RuntimeExcepti
 @Overload Java_util_ConcurrentModificationException Java_util_ConcurrentModificationException.new(String p0);
 @Overload Java_util_ConcurrentModificationException Java_util_ConcurrentModificationException.new(Java_lang_Throwable p0);
 @Overload Java_util_ConcurrentModificationException Java_util_ConcurrentModificationException.new(String p0, Java_lang_Throwable p1);
+
 /* class java.util.Currency */
 class Java_util_Currency {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Set getAvailableCurrencies();
 	@Virtual @Overload String getCurrencyCode();
@@ -541,8 +567,10 @@ class Java_util_Currency {
 	@Virtual @Overload String getSymbol(Java_util_Locale p0);
 	@Virtual @Overload String toString();
 }
+
 /* class java.util.Date */
 class Java_util_Date {
+	// implements java.io.Serializable, java.lang.Cloneable, java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload boolean after(Java_util_Date p0);
 	@Virtual @Overload boolean before(Java_util_Date p0);
@@ -561,8 +589,10 @@ class Java_util_Date {
 @Overload Java_util_Date Java_util_Date.new(int p0, int p1, int p2, int p3, int p4);
 @Overload Java_util_Date Java_util_Date.new(int p0, int p1, int p2, int p3, int p4, int p5);
 @Overload Java_util_Date Java_util_Date.new(String p0);
+
 /* interface java.util.Deque */
 class Java_util_Deque {
+	// implements java.util.Queue
 	/*-- Method --*/
 	@Virtual @Overload boolean add(Object p0);
 	@Virtual @Overload void addFirst(Object p0);
@@ -592,6 +622,7 @@ class Java_util_Deque {
 	@Virtual @Overload boolean removeLastOccurrence(Object p0);
 	@Virtual @Overload int size();
 }
+
 /* class java.util.Dictionary */
 class Java_util_Dictionary {
 	/*-- Method --*/
@@ -604,18 +635,22 @@ class Java_util_Dictionary {
 	@Virtual @Overload int size();
 }
 Java_util_Dictionary Java_util_Dictionary.new();
+
 /* class java.util.DuplicateFormatFlagsException */
 class Java_util_DuplicateFormatFlagsException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload String getFlags();
 }
 Java_util_DuplicateFormatFlagsException Java_util_DuplicateFormatFlagsException.new(String p0);
+
 /* class java.util.EmptyStackException */
 class Java_util_EmptyStackException extends Java_lang_RuntimeException {
 }
 Java_util_EmptyStackException Java_util_EmptyStackException.new();
+
 /* class java.util.EnumMap */
 class Java_util_EnumMap extends Java_util_AbstractMap {
+	// implements java.io.Serializable, java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Java_util_EnumMap clone();
 	@Virtual @Overload Object clone();
@@ -624,8 +659,10 @@ class Java_util_EnumMap extends Java_util_AbstractMap {
 @Overload Java_util_EnumMap Java_util_EnumMap.new(Class p0);
 @Overload Java_util_EnumMap Java_util_EnumMap.new(Java_util_EnumMap p0);
 @Overload Java_util_EnumMap Java_util_EnumMap.new(Java_util_Map p0);
+
 /* class java.util.EnumSet */
 class Java_util_EnumSet extends Java_util_AbstractSet {
+	// implements java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_util_EnumSet allOf(Class p0);
 	@Virtual @Overload Java_util_EnumSet clone();
@@ -642,28 +679,35 @@ class Java_util_EnumSet extends Java_util_AbstractSet {
 	@Virtual @Overload Java_util_EnumSet of(Java_lang_Enum p0, Java_lang_Enum[] p1);
 	@Virtual @Overload Java_util_EnumSet range(Java_lang_Enum p0, Java_lang_Enum p1);
 }
+
 /* interface java.util.Enumeration */
 class Java_util_Enumeration {
 	/*-- Method --*/
 	@Virtual @Overload boolean hasMoreElements();
 	@Virtual @Overload Object nextElement();
 }
+
 /* interface java.util.EventListener */
 class Java_util_EventListener {
 }
+
 /* class java.util.EventListenerProxy */
 class Java_util_EventListenerProxy {
+	// implements java.util.EventListener
 	/*-- Method --*/
 	@Virtual @Overload Java_util_EventListener getListener();
 }
 Java_util_EventListenerProxy Java_util_EventListenerProxy.new(Java_util_EventListener p0);
+
 /* class java.util.EventObject */
 class Java_util_EventObject {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object getSource();
 	@Virtual @Overload String toString();
 }
 Java_util_EventObject Java_util_EventObject.new(Object p0);
+
 /* class java.util.FormatFlagsConversionMismatchException */
 class Java_util_FormatFlagsConversionMismatchException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
@@ -671,16 +715,20 @@ class Java_util_FormatFlagsConversionMismatchException extends Java_util_Illegal
 	@Virtual @Overload String getFlags();
 }
 Java_util_FormatFlagsConversionMismatchException Java_util_FormatFlagsConversionMismatchException.new(String p0, int p1);
+
 /* interface java.util.Formattable */
 class Java_util_Formattable {
 	/*-- Method --*/
 	@Virtual @Overload void formatTo(Java_util_Formatter p0, int p1, int p2, int p3);
 }
+
 /* class java.util.FormattableFlags */
 class Java_util_FormattableFlags {
 }
+
 /* class java.util.Formatter */
 class Java_util_Formatter {
+	// implements java.io.Closeable, java.io.Flushable
 	/*-- Method --*/
 	@Virtual @Overload void close();
 	@Virtual @Overload void flush();
@@ -705,10 +753,12 @@ class Java_util_Formatter {
 @Overload Java_util_Formatter Java_util_Formatter.new(Java_io_OutputStream p0);
 @Overload Java_util_Formatter Java_util_Formatter.new(Java_io_OutputStream p0, String p1);
 @Overload Java_util_Formatter Java_util_Formatter.new(Java_io_OutputStream p0, String p1, Java_util_Locale p2);
+
 /* class java.util.FormatterClosedException */
 class Java_util_FormatterClosedException extends Java_lang_IllegalStateException {
 }
 Java_util_FormatterClosedException Java_util_FormatterClosedException.new();
+
 /* class java.util.GregorianCalendar */
 class Java_util_GregorianCalendar extends Java_util_Calendar {
 	/*-- Method --*/
@@ -723,8 +773,10 @@ class Java_util_GregorianCalendar extends Java_util_Calendar {
 @Overload Java_util_GregorianCalendar Java_util_GregorianCalendar.new(int p0, int p1, int p2);
 @Overload Java_util_GregorianCalendar Java_util_GregorianCalendar.new(int p0, int p1, int p2, int p3, int p4);
 @Overload Java_util_GregorianCalendar Java_util_GregorianCalendar.new(int p0, int p1, int p2, int p3, int p4, int p5);
+
 /* class java.util.HashMap */
 class Java_util_HashMap extends Java_util_AbstractMap {
+	// implements java.util.Map, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 }
@@ -732,8 +784,10 @@ class Java_util_HashMap extends Java_util_AbstractMap {
 @Overload Java_util_HashMap Java_util_HashMap.new(int p0);
 @Overload Java_util_HashMap Java_util_HashMap.new();
 @Overload Java_util_HashMap Java_util_HashMap.new(Java_util_Map p0);
+
 /* class java.util.HashSet */
 class Java_util_HashSet extends Java_util_AbstractSet {
+	// implements java.util.Set, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 }
@@ -741,8 +795,10 @@ class Java_util_HashSet extends Java_util_AbstractSet {
 @Overload Java_util_HashSet Java_util_HashSet.new(Java_util_Collection p0);
 @Overload Java_util_HashSet Java_util_HashSet.new(int p0, float p1);
 @Overload Java_util_HashSet Java_util_HashSet.new(int p0);
+
 /* class java.util.Hashtable */
 class Java_util_Hashtable extends Java_util_Dictionary {
+	// implements java.util.Map, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void clear();
 	@Virtual @Overload Object clone();
@@ -758,20 +814,24 @@ class Java_util_Hashtable extends Java_util_Dictionary {
 @Overload Java_util_Hashtable Java_util_Hashtable.new(int p0);
 @Overload Java_util_Hashtable Java_util_Hashtable.new();
 @Overload Java_util_Hashtable Java_util_Hashtable.new(Java_util_Map p0);
+
 /* class java.util.IdentityHashMap */
 class Java_util_IdentityHashMap extends Java_util_AbstractMap {
+	// implements java.util.Map, java.io.Serializable, java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 }
 @Overload Java_util_IdentityHashMap Java_util_IdentityHashMap.new();
 @Overload Java_util_IdentityHashMap Java_util_IdentityHashMap.new(int p0);
 @Overload Java_util_IdentityHashMap Java_util_IdentityHashMap.new(Java_util_Map p0);
+
 /* class java.util.IllegalFormatCodePointException */
 class Java_util_IllegalFormatCodePointException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload int getCodePoint();
 }
 Java_util_IllegalFormatCodePointException Java_util_IllegalFormatCodePointException.new(int p0);
+
 /* class java.util.IllegalFormatConversionException */
 class Java_util_IllegalFormatConversionException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
@@ -779,27 +839,32 @@ class Java_util_IllegalFormatConversionException extends Java_util_IllegalFormat
 	@Virtual @Overload int getConversion();
 }
 Java_util_IllegalFormatConversionException Java_util_IllegalFormatConversionException.new(int p0, Class p1);
+
 /* class java.util.IllegalFormatException */
 class Java_util_IllegalFormatException extends Java_lang_IllegalArgumentException {
 }
+
 /* class java.util.IllegalFormatFlagsException */
 class Java_util_IllegalFormatFlagsException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload String getFlags();
 }
 Java_util_IllegalFormatFlagsException Java_util_IllegalFormatFlagsException.new(String p0);
+
 /* class java.util.IllegalFormatPrecisionException */
 class Java_util_IllegalFormatPrecisionException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload int getPrecision();
 }
 Java_util_IllegalFormatPrecisionException Java_util_IllegalFormatPrecisionException.new(int p0);
+
 /* class java.util.IllegalFormatWidthException */
 class Java_util_IllegalFormatWidthException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload int getWidth();
 }
 Java_util_IllegalFormatWidthException Java_util_IllegalFormatWidthException.new(int p0);
+
 /* class java.util.IllformedLocaleException */
 class Java_util_IllformedLocaleException extends Java_lang_RuntimeException {
 	/*-- Method --*/
@@ -808,16 +873,19 @@ class Java_util_IllformedLocaleException extends Java_lang_RuntimeException {
 @Overload Java_util_IllformedLocaleException Java_util_IllformedLocaleException.new();
 @Overload Java_util_IllformedLocaleException Java_util_IllformedLocaleException.new(String p0);
 @Overload Java_util_IllformedLocaleException Java_util_IllformedLocaleException.new(String p0, int p1);
+
 /* class java.util.InputMismatchException */
 class Java_util_InputMismatchException extends Java_util_NoSuchElementException {
 }
 @Overload Java_util_InputMismatchException Java_util_InputMismatchException.new();
 @Overload Java_util_InputMismatchException Java_util_InputMismatchException.new(String p0);
+
 /* class java.util.InvalidPropertiesFormatException */
 class Java_util_InvalidPropertiesFormatException extends Java_io_IOException {
 }
 @Overload Java_util_InvalidPropertiesFormatException Java_util_InvalidPropertiesFormatException.new(Java_lang_Throwable p0);
 @Overload Java_util_InvalidPropertiesFormatException Java_util_InvalidPropertiesFormatException.new(String p0);
+
 /* interface java.util.Iterator */
 class Java_util_Iterator {
 	/*-- Method --*/
@@ -825,23 +893,29 @@ class Java_util_Iterator {
 	@Virtual @Overload Object next();
 	@Virtual @Overload void remove();
 }
+
 /* class java.util.LinkedHashMap */
 class Java_util_LinkedHashMap extends Java_util_HashMap {
+	// implements java.util.Map
 }
 @Overload Java_util_LinkedHashMap Java_util_LinkedHashMap.new(int p0, float p1);
 @Overload Java_util_LinkedHashMap Java_util_LinkedHashMap.new(int p0);
 @Overload Java_util_LinkedHashMap Java_util_LinkedHashMap.new();
 @Overload Java_util_LinkedHashMap Java_util_LinkedHashMap.new(Java_util_Map p0);
 @Overload Java_util_LinkedHashMap Java_util_LinkedHashMap.new(int p0, float p1, boolean p2);
+
 /* class java.util.LinkedHashSet */
 class Java_util_LinkedHashSet extends Java_util_HashSet {
+	// implements java.util.Set, java.lang.Cloneable, java.io.Serializable
 }
 @Overload Java_util_LinkedHashSet Java_util_LinkedHashSet.new(int p0, float p1);
 @Overload Java_util_LinkedHashSet Java_util_LinkedHashSet.new(int p0);
 @Overload Java_util_LinkedHashSet Java_util_LinkedHashSet.new();
 @Overload Java_util_LinkedHashSet Java_util_LinkedHashSet.new(Java_util_Collection p0);
+
 /* class java.util.LinkedList */
 class Java_util_LinkedList extends Java_util_AbstractSequentialList {
+	// implements java.util.List, java.util.Deque, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addFirst(Object p0);
 	@Virtual @Overload void addLast(Object p0);
@@ -869,8 +943,10 @@ class Java_util_LinkedList extends Java_util_AbstractSequentialList {
 }
 @Overload Java_util_LinkedList Java_util_LinkedList.new();
 @Overload Java_util_LinkedList Java_util_LinkedList.new(Java_util_Collection p0);
+
 /* interface java.util.List */
 class Java_util_List {
+	// implements java.util.Collection
 	/*-- Method --*/
 	@Virtual @Overload boolean add(Object p0);
 	@Virtual @Overload void add(int p0, Object p1);
@@ -898,8 +974,10 @@ class Java_util_List {
 	@Virtual @Overload Object[] toArray();
 	@Virtual @Overload Object[] toArray(Object[] p0);
 }
+
 /* interface java.util.ListIterator */
 class Java_util_ListIterator {
+	// implements java.util.Iterator
 	/*-- Method --*/
 	@Virtual @Overload void add(Object p0);
 	@Virtual @Overload boolean hasNext();
@@ -911,14 +989,17 @@ class Java_util_ListIterator {
 	@Virtual @Overload void remove();
 	@Virtual @Overload void set(Object p0);
 }
+
 /* class java.util.ListResourceBundle */
 class Java_util_ListResourceBundle extends Java_util_ResourceBundle {
 	/*-- Method --*/
 	@Virtual @Overload Object handleGetObject(String p0);
 }
 Java_util_ListResourceBundle Java_util_ListResourceBundle.new();
+
 /* class java.util.Locale */
 class Java_util_Locale {
+	// implements java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload boolean equals(Object p0);
@@ -958,6 +1039,7 @@ class Java_util_Locale {
 @Overload Java_util_Locale Java_util_Locale.new(String p0, String p1, String p2);
 @Overload Java_util_Locale Java_util_Locale.new(String p0, String p1);
 @Overload Java_util_Locale Java_util_Locale.new(String p0);
+
 /* interface java.util.Map */
 class Java_util_Map {
 	/*-- Method --*/
@@ -976,18 +1058,21 @@ class Java_util_Map {
 	@Virtual @Overload int size();
 	@Virtual @Overload Java_util_Collection values();
 }
+
 /* class java.util.MissingFormatArgumentException */
 class Java_util_MissingFormatArgumentException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload String getFormatSpecifier();
 }
 Java_util_MissingFormatArgumentException Java_util_MissingFormatArgumentException.new(String p0);
+
 /* class java.util.MissingFormatWidthException */
 class Java_util_MissingFormatWidthException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload String getFormatSpecifier();
 }
 Java_util_MissingFormatWidthException Java_util_MissingFormatWidthException.new(String p0);
+
 /* class java.util.MissingResourceException */
 class Java_util_MissingResourceException extends Java_lang_RuntimeException {
 	/*-- Method --*/
@@ -995,8 +1080,10 @@ class Java_util_MissingResourceException extends Java_lang_RuntimeException {
 	@Virtual @Overload String getKey();
 }
 Java_util_MissingResourceException Java_util_MissingResourceException.new(String p0, String p1, String p2);
+
 /* interface java.util.NavigableMap */
 class Java_util_NavigableMap {
+	// implements java.util.SortedMap
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Map_Entry ceilingEntry(Object p0);
 	@Virtual @Overload Object ceilingKey(Object p0);
@@ -1020,8 +1107,10 @@ class Java_util_NavigableMap {
 	@Virtual @Overload Java_util_NavigableMap tailMap(Object p0, boolean p1);
 	@Virtual @Overload Java_util_SortedMap tailMap(Object p0);
 }
+
 /* interface java.util.NavigableSet */
 class Java_util_NavigableSet {
+	// implements java.util.SortedSet
 	/*-- Method --*/
 	@Virtual @Overload Object ceiling(Object p0);
 	@Virtual @Overload Java_util_Iterator descendingIterator();
@@ -1039,11 +1128,13 @@ class Java_util_NavigableSet {
 	@Virtual @Overload Java_util_NavigableSet tailSet(Object p0, boolean p1);
 	@Virtual @Overload Java_util_SortedSet tailSet(Object p0);
 }
+
 /* class java.util.NoSuchElementException */
 class Java_util_NoSuchElementException extends Java_lang_RuntimeException {
 }
 @Overload Java_util_NoSuchElementException Java_util_NoSuchElementException.new();
 @Overload Java_util_NoSuchElementException Java_util_NoSuchElementException.new(String p0);
+
 /* class java.util.Objects */
 class Java_util_Objects {
 	/*-- Method --*/
@@ -1057,6 +1148,7 @@ class Java_util_Objects {
 	@Virtual @Overload String toString(Object p0);
 	@Virtual @Overload String toString(Object p0, String p1);
 }
+
 /* class java.util.Observable */
 class Java_util_Observable {
 	/*-- Method --*/
@@ -1069,13 +1161,16 @@ class Java_util_Observable {
 	@Virtual @Overload void notifyObservers(Object p0);
 }
 Java_util_Observable Java_util_Observable.new();
+
 /* interface java.util.Observer */
 class Java_util_Observer {
 	/*-- Method --*/
 	@Virtual @Overload void update(Java_util_Observable p0, Object p1);
 }
+
 /* class java.util.PriorityQueue */
 class Java_util_PriorityQueue extends Java_util_AbstractQueue {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Comparator comparator();
 }
@@ -1085,6 +1180,7 @@ class Java_util_PriorityQueue extends Java_util_AbstractQueue {
 @Overload Java_util_PriorityQueue Java_util_PriorityQueue.new(Java_util_Collection p0);
 @Overload Java_util_PriorityQueue Java_util_PriorityQueue.new(Java_util_PriorityQueue p0);
 @Overload Java_util_PriorityQueue Java_util_PriorityQueue.new(Java_util_SortedSet p0);
+
 /* class java.util.Properties */
 class Java_util_Properties extends Java_util_Hashtable {
 	/*-- Method --*/
@@ -1105,10 +1201,12 @@ class Java_util_Properties extends Java_util_Hashtable {
 }
 @Overload Java_util_Properties Java_util_Properties.new();
 @Overload Java_util_Properties Java_util_Properties.new(Java_util_Properties p0);
+
 /* class java.util.PropertyPermission */
 class Java_util_PropertyPermission extends Java_security_BasicPermission {
 }
 Java_util_PropertyPermission Java_util_PropertyPermission.new(String p0, String p1);
+
 /* class java.util.PropertyResourceBundle */
 class Java_util_PropertyResourceBundle extends Java_util_ResourceBundle {
 	/*-- Method --*/
@@ -1116,8 +1214,10 @@ class Java_util_PropertyResourceBundle extends Java_util_ResourceBundle {
 }
 @Overload Java_util_PropertyResourceBundle Java_util_PropertyResourceBundle.new(Java_io_InputStream p0);
 @Overload Java_util_PropertyResourceBundle Java_util_PropertyResourceBundle.new(Java_io_Reader p0);
+
 /* interface java.util.Queue */
 class Java_util_Queue {
+	// implements java.util.Collection
 	/*-- Method --*/
 	@Virtual @Overload boolean add(Object p0);
 	@Virtual @Overload Object element();
@@ -1126,8 +1226,10 @@ class Java_util_Queue {
 	@Virtual @Overload Object poll();
 	@Virtual @Overload Object remove();
 }
+
 /* class java.util.Random */
 class Java_util_Random {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean nextBoolean();
 	@Virtual @Overload void nextBytes(int[] p0);
@@ -1141,9 +1243,11 @@ class Java_util_Random {
 }
 @Overload Java_util_Random Java_util_Random.new();
 @Overload Java_util_Random Java_util_Random.new(long p0);
+
 /* interface java.util.RandomAccess */
 class Java_util_RandomAccess {
 }
+
 /* class java.util.ResourceBundle */
 class Java_util_ResourceBundle {
 	/*-- Method --*/
@@ -1164,8 +1268,10 @@ class Java_util_ResourceBundle {
 	@Virtual @Overload Java_util_Set keySet();
 }
 Java_util_ResourceBundle Java_util_ResourceBundle.new();
+
 /* class java.util.Scanner */
 class Java_util_Scanner {
+	// implements java.util.Iterator, java.io.Closeable
 	/*-- Method --*/
 	@Virtual @Overload void close();
 	@Virtual @Overload Java_util_regex_Pattern delimiter();
@@ -1234,13 +1340,16 @@ class Java_util_Scanner {
 @Overload Java_util_Scanner Java_util_Scanner.new(String p0);
 @Overload Java_util_Scanner Java_util_Scanner.new(Java_nio_channels_ReadableByteChannel p0);
 @Overload Java_util_Scanner Java_util_Scanner.new(Java_nio_channels_ReadableByteChannel p0, String p1);
+
 /* class java.util.ServiceConfigurationError */
 class Java_util_ServiceConfigurationError extends Java_lang_Error {
 }
 @Overload Java_util_ServiceConfigurationError Java_util_ServiceConfigurationError.new(String p0);
 @Overload Java_util_ServiceConfigurationError Java_util_ServiceConfigurationError.new(String p0, Java_lang_Throwable p1);
+
 /* class java.util.ServiceLoader */
 class Java_util_ServiceLoader {
+	// implements java.lang.Iterable
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Iterator iterator();
 	@Virtual @Overload Java_util_ServiceLoader load(Class p0, Java_lang_ClassLoader p1);
@@ -1249,8 +1358,10 @@ class Java_util_ServiceLoader {
 	@Virtual @Overload void reload();
 	@Virtual @Overload String toString();
 }
+
 /* interface java.util.Set */
 class Java_util_Set {
+	// implements java.util.Collection
 	/*-- Method --*/
 	@Virtual @Overload boolean add(Object p0);
 	@Virtual @Overload boolean addAll(Java_util_Collection p0);
@@ -1268,6 +1379,7 @@ class Java_util_Set {
 	@Virtual @Overload Object[] toArray();
 	@Virtual @Overload Object[] toArray(Object[] p0);
 }
+
 /* class java.util.SimpleTimeZone */
 class Java_util_SimpleTimeZone extends Java_util_TimeZone {
 	/*-- Method --*/
@@ -1284,8 +1396,10 @@ class Java_util_SimpleTimeZone extends Java_util_TimeZone {
 @Overload Java_util_SimpleTimeZone Java_util_SimpleTimeZone.new(int p0, String p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9);
 @Overload Java_util_SimpleTimeZone Java_util_SimpleTimeZone.new(int p0, String p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10);
 @Overload Java_util_SimpleTimeZone Java_util_SimpleTimeZone.new(int p0, String p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10, int p11, int p12);
+
 /* interface java.util.SortedMap */
 class Java_util_SortedMap {
+	// implements java.util.Map
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Comparator comparator();
 	@Virtual @Overload Java_util_Set entrySet();
@@ -1297,8 +1411,10 @@ class Java_util_SortedMap {
 	@Virtual @Overload Java_util_SortedMap tailMap(Object p0);
 	@Virtual @Overload Java_util_Collection values();
 }
+
 /* interface java.util.SortedSet */
 class Java_util_SortedSet {
+	// implements java.util.Set
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Comparator comparator();
 	@Virtual @Overload Object first();
@@ -1307,6 +1423,7 @@ class Java_util_SortedSet {
 	@Virtual @Overload Java_util_SortedSet subSet(Object p0, Object p1);
 	@Virtual @Overload Java_util_SortedSet tailSet(Object p0);
 }
+
 /* class java.util.Stack */
 class Java_util_Stack extends Java_util_Vector {
 	/*-- Method --*/
@@ -1317,8 +1434,10 @@ class Java_util_Stack extends Java_util_Vector {
 	@Virtual @Overload int search(Object p0);
 }
 Java_util_Stack Java_util_Stack.new();
+
 /* class java.util.StringTokenizer */
 class Java_util_StringTokenizer {
+	// implements java.util.Enumeration
 	/*-- Method --*/
 	@Virtual @Overload int countTokens();
 	@Virtual @Overload boolean hasMoreElements();
@@ -1330,8 +1449,10 @@ class Java_util_StringTokenizer {
 @Overload Java_util_StringTokenizer Java_util_StringTokenizer.new(String p0, String p1, boolean p2);
 @Overload Java_util_StringTokenizer Java_util_StringTokenizer.new(String p0, String p1);
 @Overload Java_util_StringTokenizer Java_util_StringTokenizer.new(String p0);
+
 /* class java.util.TimeZone */
 class Java_util_TimeZone {
+	// implements java.io.Serializable, java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload String[] getAvailableIDs(int p0);
@@ -1356,6 +1477,7 @@ class Java_util_TimeZone {
 	@Virtual @Overload boolean useDaylightTime();
 }
 Java_util_TimeZone Java_util_TimeZone.new();
+
 /* class java.util.Timer */
 class Java_util_Timer {
 	/*-- Method --*/
@@ -1372,20 +1494,25 @@ class Java_util_Timer {
 @Overload Java_util_Timer Java_util_Timer.new(boolean p0);
 @Overload Java_util_Timer Java_util_Timer.new(String p0);
 @Overload Java_util_Timer Java_util_Timer.new(String p0, boolean p1);
+
 /* class java.util.TimerTask */
 class Java_util_TimerTask {
+	// implements java.lang.Runnable
 	/*-- Method --*/
 	@Virtual @Overload boolean cancel();
 	@Virtual @Overload void run();
 	@Virtual @Overload long scheduledExecutionTime();
 }
+
 /* class java.util.TooManyListenersException */
 class Java_util_TooManyListenersException extends Java_lang_Exception {
 }
 @Overload Java_util_TooManyListenersException Java_util_TooManyListenersException.new();
 @Overload Java_util_TooManyListenersException Java_util_TooManyListenersException.new(String p0);
+
 /* class java.util.TreeMap */
 class Java_util_TreeMap extends Java_util_AbstractMap {
+	// implements java.util.NavigableMap, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_util_Map_Entry ceilingEntry(Object p0);
 	@Virtual @Overload Object ceilingKey(Object p0);
@@ -1417,8 +1544,10 @@ class Java_util_TreeMap extends Java_util_AbstractMap {
 @Overload Java_util_TreeMap Java_util_TreeMap.new(Java_util_Comparator p0);
 @Overload Java_util_TreeMap Java_util_TreeMap.new(Java_util_Map p0);
 @Overload Java_util_TreeMap Java_util_TreeMap.new(Java_util_SortedMap p0);
+
 /* class java.util.TreeSet */
 class Java_util_TreeSet extends Java_util_AbstractSet {
+	// implements java.util.NavigableSet, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Object ceiling(Object p0);
 	@Virtual @Overload Object clone();
@@ -1443,8 +1572,10 @@ class Java_util_TreeSet extends Java_util_AbstractSet {
 @Overload Java_util_TreeSet Java_util_TreeSet.new(Java_util_Comparator p0);
 @Overload Java_util_TreeSet Java_util_TreeSet.new(Java_util_Collection p0);
 @Overload Java_util_TreeSet Java_util_TreeSet.new(Java_util_SortedSet p0);
+
 /* class java.util.UUID */
 class Java_util_UUID {
+	// implements java.io.Serializable, java.lang.Comparable
 	/*-- Method --*/
 	@Virtual @Overload int clockSequence();
 	@Virtual @Overload int compareTo(Java_util_UUID p0);
@@ -1463,20 +1594,24 @@ class Java_util_UUID {
 	@Virtual @Overload int version();
 }
 Java_util_UUID Java_util_UUID.new(long p0, long p1);
+
 /* class java.util.UnknownFormatConversionException */
 class Java_util_UnknownFormatConversionException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload String getConversion();
 }
 Java_util_UnknownFormatConversionException Java_util_UnknownFormatConversionException.new(String p0);
+
 /* class java.util.UnknownFormatFlagsException */
 class Java_util_UnknownFormatFlagsException extends Java_util_IllegalFormatException {
 	/*-- Method --*/
 	@Virtual @Overload String getFlags();
 }
 Java_util_UnknownFormatFlagsException Java_util_UnknownFormatFlagsException.new(String p0);
+
 /* class java.util.Vector */
 class Java_util_Vector extends Java_util_AbstractList {
+	// implements java.util.List, java.util.RandomAccess, java.lang.Cloneable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload void addElement(Object p0);
 	@Virtual @Overload int capacity();
@@ -1501,13 +1636,16 @@ class Java_util_Vector extends Java_util_AbstractList {
 @Overload Java_util_Vector Java_util_Vector.new(int p0);
 @Overload Java_util_Vector Java_util_Vector.new();
 @Overload Java_util_Vector Java_util_Vector.new(Java_util_Collection p0);
+
 /* class java.util.WeakHashMap */
 class Java_util_WeakHashMap extends Java_util_AbstractMap {
+	// implements java.util.Map
 }
 @Overload Java_util_WeakHashMap Java_util_WeakHashMap.new(int p0, float p1);
 @Overload Java_util_WeakHashMap Java_util_WeakHashMap.new(int p0);
 @Overload Java_util_WeakHashMap Java_util_WeakHashMap.new();
 @Overload Java_util_WeakHashMap Java_util_WeakHashMap.new(Java_util_Map p0);
+
 
 /*------------------------------------------------------------*/
 /* short names */

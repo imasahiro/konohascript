@@ -92,6 +92,7 @@ class Java_sql_Array {
 	@Virtual @Overload Java_sql_ResultSet getResultSet(long p0, int p1);
 	@Virtual @Overload Java_sql_ResultSet getResultSet(long p0, int p1, Java_util_Map p2);
 }
+
 /* class java.sql.BatchUpdateException */
 class Java_sql_BatchUpdateException extends Java_sql_SQLException {
 	/*-- Method --*/
@@ -107,6 +108,7 @@ class Java_sql_BatchUpdateException extends Java_sql_SQLException {
 @Overload Java_sql_BatchUpdateException Java_sql_BatchUpdateException.new(String p0, int[] p1, Java_lang_Throwable p2);
 @Overload Java_sql_BatchUpdateException Java_sql_BatchUpdateException.new(String p0, String p1, int[] p2, Java_lang_Throwable p3);
 @Overload Java_sql_BatchUpdateException Java_sql_BatchUpdateException.new(String p0, String p1, int p2, int[] p3, Java_lang_Throwable p4);
+
 /* interface java.sql.Blob */
 class Java_sql_Blob {
 	/*-- Method --*/
@@ -122,8 +124,10 @@ class Java_sql_Blob {
 	@Virtual @Overload int setBytes(long p0, int[] p1, int p2, int p3);
 	@Virtual @Overload void truncate(long p0);
 }
+
 /* interface java.sql.CallableStatement */
 class Java_sql_CallableStatement {
+	// implements java.sql.PreparedStatement
 	/*-- Method --*/
 	@Virtual @Overload Java_sql_Array getArray(int p0);
 	@Virtual @Overload Java_sql_Array getArray(String p0);
@@ -239,12 +243,14 @@ class Java_sql_CallableStatement {
 	@Virtual @Overload void setURL(String p0, Java_net_URL p1);
 	@Virtual @Overload boolean wasNull();
 }
+
 /* class java.sql.ClientInfoStatus */
 class Java_sql_ClientInfoStatus extends Java_lang_Enum {
 	/*-- Method --*/
 	@Virtual @Overload Java_sql_ClientInfoStatus valueOf(String p0);
 	@Virtual @Overload Java_sql_ClientInfoStatus[] values();
 }
+
 /* interface java.sql.Clob */
 class Java_sql_Clob {
 	/*-- Method --*/
@@ -262,8 +268,10 @@ class Java_sql_Clob {
 	@Virtual @Overload int setString(long p0, String p1, int p2, int p3);
 	@Virtual @Overload void truncate(long p0);
 }
+
 /* interface java.sql.Connection */
 class Java_sql_Connection {
+	// implements java.sql.Wrapper, java.lang.AutoCloseable
 	/*-- Method --*/
 	@Virtual @Overload void abort(Java_util_concurrent_Executor p0);
 	@Virtual @Overload void clearWarnings();
@@ -318,6 +326,7 @@ class Java_sql_Connection {
 	@Virtual @Overload void setTransactionIsolation(int p0);
 	@Virtual @Overload void setTypeMap(Java_util_Map p0);
 }
+
 /* class java.sql.DataTruncation */
 class Java_sql_DataTruncation extends Java_sql_SQLWarning {
 	/*-- Method --*/
@@ -329,8 +338,10 @@ class Java_sql_DataTruncation extends Java_sql_SQLWarning {
 }
 @Overload Java_sql_DataTruncation Java_sql_DataTruncation.new(int p0, boolean p1, boolean p2, int p3, int p4);
 @Overload Java_sql_DataTruncation Java_sql_DataTruncation.new(int p0, boolean p1, boolean p2, int p3, int p4, Java_lang_Throwable p5);
+
 /* interface java.sql.DatabaseMetaData */
 class Java_sql_DatabaseMetaData {
+	// implements java.sql.Wrapper
 	/*-- Method --*/
 	@Virtual @Overload boolean allProceduresAreCallable();
 	@Virtual @Overload boolean allTablesAreSelectable();
@@ -507,6 +518,7 @@ class Java_sql_DatabaseMetaData {
 	@Virtual @Overload boolean usesLocalFilePerTable();
 	@Virtual @Overload boolean usesLocalFiles();
 }
+
 /* class java.sql.Date */
 class Java_sql_Date extends Java_util_Date {
 	/*-- Method --*/
@@ -514,6 +526,7 @@ class Java_sql_Date extends Java_util_Date {
 }
 @Overload Java_sql_Date Java_sql_Date.new(int p0, int p1, int p2);
 @Overload Java_sql_Date Java_sql_Date.new(long p0);
+
 /* interface java.sql.Driver */
 class Java_sql_Driver {
 	/*-- Method --*/
@@ -525,6 +538,7 @@ class Java_sql_Driver {
 	@Virtual @Overload Java_sql_DriverPropertyInfo[] getPropertyInfo(String p0, Java_util_Properties p1);
 	@Virtual @Overload boolean jdbcCompliant();
 }
+
 /* class java.sql.DriverManager */
 class Java_sql_DriverManager {
 	/*-- Method --*/
@@ -543,15 +557,20 @@ class Java_sql_DriverManager {
 	@Virtual @Overload void setLogWriter(Java_io_PrintWriter p0);
 	@Virtual @Overload void setLoginTimeout(int p0);
 }
+
 /* class java.sql.DriverPropertyInfo */
 class Java_sql_DriverPropertyInfo {
 }
 Java_sql_DriverPropertyInfo Java_sql_DriverPropertyInfo.new(String p0, String p1);
+
 /* interface java.sql.NClob */
 class Java_sql_NClob {
+	// implements java.sql.Clob
 }
+
 /* interface java.sql.ParameterMetaData */
 class Java_sql_ParameterMetaData {
+	// implements java.sql.Wrapper
 	/*-- Method --*/
 	@Virtual @Overload String getParameterClassName(int p0);
 	@Virtual @Overload int getParameterCount();
@@ -563,8 +582,10 @@ class Java_sql_ParameterMetaData {
 	@Virtual @Overload int isNullable(int p0);
 	@Virtual @Overload boolean isSigned(int p0);
 }
+
 /* interface java.sql.PreparedStatement */
 class Java_sql_PreparedStatement {
+	// implements java.sql.Statement
 	/*-- Method --*/
 	@Virtual @Overload void addBatch();
 	@Virtual @Overload void clearParameters();
@@ -622,12 +643,14 @@ class Java_sql_PreparedStatement {
 	@Virtual @Overload void setURL(int p0, Java_net_URL p1);
 	@Virtual @Overload void setUnicodeStream(int p0, Java_io_InputStream p1, int p2);
 }
+
 /* class java.sql.PseudoColumnUsage */
 class Java_sql_PseudoColumnUsage extends Java_lang_Enum {
 	/*-- Method --*/
 	@Virtual @Overload Java_sql_PseudoColumnUsage valueOf(String p0);
 	@Virtual @Overload Java_sql_PseudoColumnUsage[] values();
 }
+
 /* interface java.sql.Ref */
 class Java_sql_Ref {
 	/*-- Method --*/
@@ -636,8 +659,10 @@ class Java_sql_Ref {
 	@Virtual @Overload Object getObject();
 	@Virtual @Overload void setObject(Object p0);
 }
+
 /* interface java.sql.ResultSet */
 class Java_sql_ResultSet {
+	// implements java.sql.Wrapper, java.lang.AutoCloseable
 	/*-- Method --*/
 	@Virtual @Overload boolean absolute(int p0);
 	@Virtual @Overload void afterLast();
@@ -829,8 +854,10 @@ class Java_sql_ResultSet {
 	@Virtual @Overload void updateTimestamp(String p0, Java_sql_Timestamp p1);
 	@Virtual @Overload boolean wasNull();
 }
+
 /* interface java.sql.ResultSetMetaData */
 class Java_sql_ResultSetMetaData {
+	// implements java.sql.Wrapper
 	/*-- Method --*/
 	@Virtual @Overload String getCatalogName(int p0);
 	@Virtual @Overload String getColumnClassName(int p0);
@@ -854,6 +881,7 @@ class Java_sql_ResultSetMetaData {
 	@Virtual @Overload boolean isSigned(int p0);
 	@Virtual @Overload boolean isWritable(int p0);
 }
+
 /* interface java.sql.RowId */
 class Java_sql_RowId {
 	/*-- Method --*/
@@ -862,12 +890,14 @@ class Java_sql_RowId {
 	//@Virtual @Overload int hashCode();
 	@Virtual @Overload String toString();
 }
+
 /* class java.sql.RowIdLifetime */
 class Java_sql_RowIdLifetime extends Java_lang_Enum {
 	/*-- Method --*/
 	@Virtual @Overload Java_sql_RowIdLifetime valueOf(String p0);
 	@Virtual @Overload Java_sql_RowIdLifetime[] values();
 }
+
 /* class java.sql.SQLClientInfoException */
 class Java_sql_SQLClientInfoException extends Java_sql_SQLException {
 	/*-- Method --*/
@@ -882,6 +912,7 @@ class Java_sql_SQLClientInfoException extends Java_sql_SQLException {
 @Overload Java_sql_SQLClientInfoException Java_sql_SQLClientInfoException.new(String p0, String p1, Java_util_Map p2, Java_lang_Throwable p3);
 @Overload Java_sql_SQLClientInfoException Java_sql_SQLClientInfoException.new(String p0, String p1, int p2, Java_util_Map p3);
 @Overload Java_sql_SQLClientInfoException Java_sql_SQLClientInfoException.new(String p0, String p1, int p2, Java_util_Map p3, Java_lang_Throwable p4);
+
 /* interface java.sql.SQLData */
 class Java_sql_SQLData {
 	/*-- Method --*/
@@ -889,6 +920,7 @@ class Java_sql_SQLData {
 	@Virtual @Overload void readSQL(Java_sql_SQLInput p0, String p1);
 	@Virtual @Overload void writeSQL(Java_sql_SQLOutput p0);
 }
+
 /* class java.sql.SQLDataException */
 class Java_sql_SQLDataException extends Java_sql_SQLNonTransientException {
 }
@@ -900,8 +932,10 @@ class Java_sql_SQLDataException extends Java_sql_SQLNonTransientException {
 @Overload Java_sql_SQLDataException Java_sql_SQLDataException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLDataException Java_sql_SQLDataException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLDataException Java_sql_SQLDataException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLException */
 class Java_sql_SQLException extends Java_lang_Exception {
+	// implements java.lang.Iterable
 	/*-- Method --*/
 	@Virtual @Overload int getErrorCode();
 	@Virtual @Overload Java_sql_SQLException getNextException();
@@ -917,6 +951,7 @@ class Java_sql_SQLException extends Java_lang_Exception {
 @Overload Java_sql_SQLException Java_sql_SQLException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLException Java_sql_SQLException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLException Java_sql_SQLException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLFeatureNotSupportedException */
 class Java_sql_SQLFeatureNotSupportedException extends Java_sql_SQLNonTransientException {
 }
@@ -928,6 +963,7 @@ class Java_sql_SQLFeatureNotSupportedException extends Java_sql_SQLNonTransientE
 @Overload Java_sql_SQLFeatureNotSupportedException Java_sql_SQLFeatureNotSupportedException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLFeatureNotSupportedException Java_sql_SQLFeatureNotSupportedException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLFeatureNotSupportedException Java_sql_SQLFeatureNotSupportedException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* interface java.sql.SQLInput */
 class Java_sql_SQLInput {
 	/*-- Method --*/
@@ -959,6 +995,7 @@ class Java_sql_SQLInput {
 	@Virtual @Overload Java_net_URL readURL();
 	@Virtual @Overload boolean wasNull();
 }
+
 /* class java.sql.SQLIntegrityConstraintViolationException */
 class Java_sql_SQLIntegrityConstraintViolationException extends Java_sql_SQLNonTransientException {
 }
@@ -970,6 +1007,7 @@ class Java_sql_SQLIntegrityConstraintViolationException extends Java_sql_SQLNonT
 @Overload Java_sql_SQLIntegrityConstraintViolationException Java_sql_SQLIntegrityConstraintViolationException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLIntegrityConstraintViolationException Java_sql_SQLIntegrityConstraintViolationException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLIntegrityConstraintViolationException Java_sql_SQLIntegrityConstraintViolationException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLInvalidAuthorizationSpecException */
 class Java_sql_SQLInvalidAuthorizationSpecException extends Java_sql_SQLNonTransientException {
 }
@@ -981,6 +1019,7 @@ class Java_sql_SQLInvalidAuthorizationSpecException extends Java_sql_SQLNonTrans
 @Overload Java_sql_SQLInvalidAuthorizationSpecException Java_sql_SQLInvalidAuthorizationSpecException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLInvalidAuthorizationSpecException Java_sql_SQLInvalidAuthorizationSpecException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLInvalidAuthorizationSpecException Java_sql_SQLInvalidAuthorizationSpecException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLNonTransientConnectionException */
 class Java_sql_SQLNonTransientConnectionException extends Java_sql_SQLNonTransientException {
 }
@@ -992,6 +1031,7 @@ class Java_sql_SQLNonTransientConnectionException extends Java_sql_SQLNonTransie
 @Overload Java_sql_SQLNonTransientConnectionException Java_sql_SQLNonTransientConnectionException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLNonTransientConnectionException Java_sql_SQLNonTransientConnectionException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLNonTransientConnectionException Java_sql_SQLNonTransientConnectionException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLNonTransientException */
 class Java_sql_SQLNonTransientException extends Java_sql_SQLException {
 }
@@ -1003,6 +1043,7 @@ class Java_sql_SQLNonTransientException extends Java_sql_SQLException {
 @Overload Java_sql_SQLNonTransientException Java_sql_SQLNonTransientException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLNonTransientException Java_sql_SQLNonTransientException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLNonTransientException Java_sql_SQLNonTransientException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* interface java.sql.SQLOutput */
 class Java_sql_SQLOutput {
 	/*-- Method --*/
@@ -1034,11 +1075,13 @@ class Java_sql_SQLOutput {
 	@Virtual @Overload void writeTimestamp(Java_sql_Timestamp p0);
 	@Virtual @Overload void writeURL(Java_net_URL p0);
 }
+
 /* class java.sql.SQLPermission */
 class Java_sql_SQLPermission extends Java_security_BasicPermission {
 }
 @Overload Java_sql_SQLPermission Java_sql_SQLPermission.new(String p0);
 @Overload Java_sql_SQLPermission Java_sql_SQLPermission.new(String p0, String p1);
+
 /* class java.sql.SQLRecoverableException */
 class Java_sql_SQLRecoverableException extends Java_sql_SQLException {
 }
@@ -1050,6 +1093,7 @@ class Java_sql_SQLRecoverableException extends Java_sql_SQLException {
 @Overload Java_sql_SQLRecoverableException Java_sql_SQLRecoverableException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLRecoverableException Java_sql_SQLRecoverableException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLRecoverableException Java_sql_SQLRecoverableException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLSyntaxErrorException */
 class Java_sql_SQLSyntaxErrorException extends Java_sql_SQLNonTransientException {
 }
@@ -1061,6 +1105,7 @@ class Java_sql_SQLSyntaxErrorException extends Java_sql_SQLNonTransientException
 @Overload Java_sql_SQLSyntaxErrorException Java_sql_SQLSyntaxErrorException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLSyntaxErrorException Java_sql_SQLSyntaxErrorException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLSyntaxErrorException Java_sql_SQLSyntaxErrorException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLTimeoutException */
 class Java_sql_SQLTimeoutException extends Java_sql_SQLTransientException {
 }
@@ -1072,6 +1117,7 @@ class Java_sql_SQLTimeoutException extends Java_sql_SQLTransientException {
 @Overload Java_sql_SQLTimeoutException Java_sql_SQLTimeoutException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLTimeoutException Java_sql_SQLTimeoutException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLTimeoutException Java_sql_SQLTimeoutException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLTransactionRollbackException */
 class Java_sql_SQLTransactionRollbackException extends Java_sql_SQLTransientException {
 }
@@ -1083,6 +1129,7 @@ class Java_sql_SQLTransactionRollbackException extends Java_sql_SQLTransientExce
 @Overload Java_sql_SQLTransactionRollbackException Java_sql_SQLTransactionRollbackException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLTransactionRollbackException Java_sql_SQLTransactionRollbackException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLTransactionRollbackException Java_sql_SQLTransactionRollbackException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLTransientConnectionException */
 class Java_sql_SQLTransientConnectionException extends Java_sql_SQLTransientException {
 }
@@ -1094,6 +1141,7 @@ class Java_sql_SQLTransientConnectionException extends Java_sql_SQLTransientExce
 @Overload Java_sql_SQLTransientConnectionException Java_sql_SQLTransientConnectionException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLTransientConnectionException Java_sql_SQLTransientConnectionException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLTransientConnectionException Java_sql_SQLTransientConnectionException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLTransientException */
 class Java_sql_SQLTransientException extends Java_sql_SQLException {
 }
@@ -1105,6 +1153,7 @@ class Java_sql_SQLTransientException extends Java_sql_SQLException {
 @Overload Java_sql_SQLTransientException Java_sql_SQLTransientException.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLTransientException Java_sql_SQLTransientException.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLTransientException Java_sql_SQLTransientException.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* class java.sql.SQLWarning */
 class Java_sql_SQLWarning extends Java_sql_SQLException {
 	/*-- Method --*/
@@ -1119,6 +1168,7 @@ class Java_sql_SQLWarning extends Java_sql_SQLException {
 @Overload Java_sql_SQLWarning Java_sql_SQLWarning.new(String p0, Java_lang_Throwable p1);
 @Overload Java_sql_SQLWarning Java_sql_SQLWarning.new(String p0, String p1, Java_lang_Throwable p2);
 @Overload Java_sql_SQLWarning Java_sql_SQLWarning.new(String p0, String p1, int p2, Java_lang_Throwable p3);
+
 /* interface java.sql.SQLXML */
 class Java_sql_SQLXML {
 	/*-- Method --*/
@@ -1132,14 +1182,17 @@ class Java_sql_SQLXML {
 	@Virtual @Overload javax.xml.transform.Result setResult(Class p0);
 	@Virtual @Overload void setString(String p0);
 }
+
 /* interface java.sql.Savepoint */
 class Java_sql_Savepoint {
 	/*-- Method --*/
 	@Virtual @Overload int getSavepointId();
 	@Virtual @Overload String getSavepointName();
 }
+
 /* interface java.sql.Statement */
 class Java_sql_Statement {
+	// implements java.sql.Wrapper, java.lang.AutoCloseable
 	/*-- Method --*/
 	@Virtual @Overload void addBatch(String p0);
 	@Virtual @Overload void cancel();
@@ -1184,6 +1237,7 @@ class Java_sql_Statement {
 	@Virtual @Overload void setPoolable(boolean p0);
 	@Virtual @Overload void setQueryTimeout(int p0);
 }
+
 /* interface java.sql.Struct */
 class Java_sql_Struct {
 	/*-- Method --*/
@@ -1191,6 +1245,7 @@ class Java_sql_Struct {
 	@Virtual @Overload Object[] getAttributes(Java_util_Map p0);
 	@Virtual @Overload String getSQLTypeName();
 }
+
 /* class java.sql.Time */
 class Java_sql_Time extends Java_util_Date {
 	/*-- Method --*/
@@ -1198,6 +1253,7 @@ class Java_sql_Time extends Java_util_Date {
 }
 @Overload Java_sql_Time Java_sql_Time.new(int p0, int p1, int p2);
 @Overload Java_sql_Time Java_sql_Time.new(long p0);
+
 /* class java.sql.Timestamp */
 class Java_sql_Timestamp extends Java_util_Date {
 	/*-- Method --*/
@@ -1211,15 +1267,18 @@ class Java_sql_Timestamp extends Java_util_Date {
 }
 @Overload Java_sql_Timestamp Java_sql_Timestamp.new(int p0, int p1, int p2, int p3, int p4, int p5, int p6);
 @Overload Java_sql_Timestamp Java_sql_Timestamp.new(long p0);
+
 /* class java.sql.Types */
 class Java_sql_Types {
 }
+
 /* interface java.sql.Wrapper */
 class Java_sql_Wrapper {
 	/*-- Method --*/
 	@Virtual @Overload boolean isWrapperFor(Class p0);
 	@Virtual @Overload Object unwrap(Class p0);
 }
+
 
 /*------------------------------------------------------------*/
 /* short names */

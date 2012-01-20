@@ -47,6 +47,10 @@ public class K_String extends K_Object {
 		return self.length();
 	}
 	
+	public static String trim(String self) {
+		return self.trim();
+	}
+	
 	public static String get(String self, int n) {
 		return Character.toString(self.charAt(n));
 	}

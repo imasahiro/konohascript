@@ -12,10 +12,20 @@ public class KClass implements Opcodes {
 	public final ArrayList<KMethod> methods = new ArrayList<KMethod>();
 	
 	public KClass(String name, String superName) {
+		String[] interfaceNames = null;
+		if(superName.startsWith("java/")) {
+			try {
+				Class<?> c = Class.forName(superName.replace("/", "."));
+				if(c.isInterface()) {
+					interfaceNames = new String[] { superName };
+					superName = "konoha/K_Object";
+				}
+			} catch(ClassNotFoundException e) {}
+
+		}
 		this.name = name;
 		this.superName = superName;
-		cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, name,
-				null/*generics*/, superName, null/*interface*/);
+		cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, name, null/*generics*/, superName, interfaceNames);
 		// constructor
 		int acc = Opcodes.ACC_PUBLIC;
 		MethodVisitor mv = cw.visitMethod(acc, "<init>", "()V", null/*generics*/, null/*throws*/);

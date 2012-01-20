@@ -103,11 +103,13 @@ class Java_net_Authenticator {
 	@Virtual @Overload void setDefault(Java_net_Authenticator p0);
 }
 Java_net_Authenticator Java_net_Authenticator.new();
+
 /* class java.net.BindException */
 class Java_net_BindException extends Java_net_SocketException {
 }
 @Overload Java_net_BindException Java_net_BindException.new(String p0);
 @Overload Java_net_BindException Java_net_BindException.new();
+
 /* class java.net.CacheRequest */
 class Java_net_CacheRequest {
 	/*-- Method --*/
@@ -115,6 +117,7 @@ class Java_net_CacheRequest {
 	@Virtual @Overload Java_io_OutputStream getBody();
 }
 Java_net_CacheRequest Java_net_CacheRequest.new();
+
 /* class java.net.CacheResponse */
 class Java_net_CacheResponse {
 	/*-- Method --*/
@@ -122,11 +125,13 @@ class Java_net_CacheResponse {
 	@Virtual @Overload Java_util_Map getHeaders();
 }
 Java_net_CacheResponse Java_net_CacheResponse.new();
+
 /* class java.net.ConnectException */
 class Java_net_ConnectException extends Java_net_SocketException {
 }
 @Overload Java_net_ConnectException Java_net_ConnectException.new(String p0);
 @Overload Java_net_ConnectException Java_net_ConnectException.new();
+
 /* class java.net.ContentHandler */
 class Java_net_ContentHandler {
 	/*-- Method --*/
@@ -134,11 +139,13 @@ class Java_net_ContentHandler {
 	@Virtual @Overload Object getContent(Java_net_URLConnection p0, Class[] p1);
 }
 Java_net_ContentHandler Java_net_ContentHandler.new();
+
 /* interface java.net.ContentHandlerFactory */
 class Java_net_ContentHandlerFactory {
 	/*-- Method --*/
 	@Virtual @Overload Java_net_ContentHandler createContentHandler(String p0);
 }
+
 /* class java.net.CookieHandler */
 class Java_net_CookieHandler {
 	/*-- Method --*/
@@ -148,6 +155,7 @@ class Java_net_CookieHandler {
 	@Virtual @Overload void setDefault(Java_net_CookieHandler p0);
 }
 Java_net_CookieHandler Java_net_CookieHandler.new();
+
 /* class java.net.CookieManager */
 class Java_net_CookieManager extends Java_net_CookieHandler {
 	/*-- Method --*/
@@ -156,11 +164,13 @@ class Java_net_CookieManager extends Java_net_CookieHandler {
 }
 @Overload Java_net_CookieManager Java_net_CookieManager.new();
 @Overload Java_net_CookieManager Java_net_CookieManager.new(Java_net_CookieStore p0, Java_net_CookiePolicy p1);
+
 /* interface java.net.CookiePolicy */
 class Java_net_CookiePolicy {
 	/*-- Method --*/
 	@Virtual @Overload boolean shouldAccept(Java_net_URI p0, Java_net_HttpCookie p1);
 }
+
 /* interface java.net.CookieStore */
 class Java_net_CookieStore {
 	/*-- Method --*/
@@ -171,6 +181,7 @@ class Java_net_CookieStore {
 	@Virtual @Overload boolean remove(Java_net_URI p0, Java_net_HttpCookie p1);
 	@Virtual @Overload boolean removeAll();
 }
+
 /* class java.net.DatagramPacket */
 class Java_net_DatagramPacket {
 	/*-- Method --*/
@@ -193,8 +204,10 @@ class Java_net_DatagramPacket {
 @Overload Java_net_DatagramPacket Java_net_DatagramPacket.new(int[] p0, int p1, int p2, Java_net_SocketAddress p3);
 @Overload Java_net_DatagramPacket Java_net_DatagramPacket.new(int[] p0, int p1, Java_net_InetAddress p2, int p3);
 @Overload Java_net_DatagramPacket Java_net_DatagramPacket.new(int[] p0, int p1, Java_net_SocketAddress p2);
+
 /* class java.net.DatagramSocket */
 class Java_net_DatagramSocket {
+	// implements java.io.Closeable
 	/*-- Method --*/
 	@Virtual @Overload void bind(Java_net_SocketAddress p0);
 	@Virtual @Overload void close();
@@ -231,22 +244,28 @@ class Java_net_DatagramSocket {
 @Overload Java_net_DatagramSocket Java_net_DatagramSocket.new(Java_net_SocketAddress p0);
 @Overload Java_net_DatagramSocket Java_net_DatagramSocket.new(int p0);
 @Overload Java_net_DatagramSocket Java_net_DatagramSocket.new(int p0, Java_net_InetAddress p1);
+
 /* class java.net.DatagramSocketImpl */
 class Java_net_DatagramSocketImpl {
+	// implements java.net.SocketOptions
 }
 Java_net_DatagramSocketImpl Java_net_DatagramSocketImpl.new();
+
 /* interface java.net.DatagramSocketImplFactory */
 class Java_net_DatagramSocketImplFactory {
 	/*-- Method --*/
 	@Virtual @Overload Java_net_DatagramSocketImpl createDatagramSocketImpl();
 }
+
 /* interface java.net.FileNameMap */
 class Java_net_FileNameMap {
 	/*-- Method --*/
 	@Virtual @Overload String getContentTypeFor(String p0);
 }
+
 /* class java.net.HttpCookie */
 class Java_net_HttpCookie {
+	// implements java.lang.Cloneable
 	/*-- Method --*/
 	@Virtual @Overload Object clone();
 	@Virtual @Overload boolean domainMatches(String p0, String p1);
@@ -280,6 +299,7 @@ class Java_net_HttpCookie {
 	@Virtual @Overload String toString();
 }
 Java_net_HttpCookie Java_net_HttpCookie.new(String p0, String p1);
+
 /* class java.net.HttpRetryException */
 class Java_net_HttpRetryException extends Java_io_IOException {
 	/*-- Method --*/
@@ -289,6 +309,7 @@ class Java_net_HttpRetryException extends Java_io_IOException {
 }
 @Overload Java_net_HttpRetryException Java_net_HttpRetryException.new(String p0, int p1);
 @Overload Java_net_HttpRetryException Java_net_HttpRetryException.new(String p0, int p1, String p2);
+
 /* class java.net.HttpURLConnection */
 class Java_net_HttpURLConnection extends Java_net_URLConnection {
 	/*-- Method --*/
@@ -307,6 +328,7 @@ class Java_net_HttpURLConnection extends Java_net_URLConnection {
 	@Virtual @Overload void setRequestMethod(String p0);
 	@Virtual @Overload boolean usingProxy();
 }
+
 /* class java.net.IDN */
 class Java_net_IDN {
 	/*-- Method --*/
@@ -315,9 +337,11 @@ class Java_net_IDN {
 	@Virtual @Overload String toUnicode(String p0, int p1);
 	@Virtual @Overload String toUnicode(String p0);
 }
+
 /* class java.net.Inet4Address */
 class Java_net_Inet4Address extends Java_net_InetAddress {
 }
+
 /* class java.net.Inet6Address */
 class Java_net_Inet6Address extends Java_net_InetAddress {
 	/*-- Method --*/
@@ -327,8 +351,10 @@ class Java_net_Inet6Address extends Java_net_InetAddress {
 	@Virtual @Overload Java_net_NetworkInterface getScopedInterface();
 	@Virtual @Overload boolean isIPv4CompatibleAddress();
 }
+
 /* class java.net.InetAddress */
 class Java_net_InetAddress {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean equals(Object p0);
 	@Virtual @Overload int[] getAddress();
@@ -356,6 +382,7 @@ class Java_net_InetAddress {
 	@Virtual @Overload boolean isSiteLocalAddress();
 	@Virtual @Overload String toString();
 }
+
 /* class java.net.InetSocketAddress */
 class Java_net_InetSocketAddress extends Java_net_SocketAddress {
 	/*-- Method --*/
@@ -369,6 +396,7 @@ class Java_net_InetSocketAddress extends Java_net_SocketAddress {
 @Overload Java_net_InetSocketAddress Java_net_InetSocketAddress.new(int p0);
 @Overload Java_net_InetSocketAddress Java_net_InetSocketAddress.new(Java_net_InetAddress p0, int p1);
 @Overload Java_net_InetSocketAddress Java_net_InetSocketAddress.new(String p0, int p1);
+
 /* class java.net.InterfaceAddress */
 class Java_net_InterfaceAddress {
 	/*-- Method --*/
@@ -379,6 +407,7 @@ class Java_net_InterfaceAddress {
 	//@Virtual @Overload int hashCode();
 	@Virtual @Overload String toString();
 }
+
 /* class java.net.JarURLConnection */
 class Java_net_JarURLConnection extends Java_net_URLConnection {
 	/*-- Method --*/
@@ -391,11 +420,13 @@ class Java_net_JarURLConnection extends Java_net_URLConnection {
 	@Virtual @Overload Java_util_jar_Attributes getMainAttributes();
 	@Virtual @Overload Java_util_jar_Manifest getManifest();
 }
+
 /* class java.net.MalformedURLException */
 class Java_net_MalformedURLException extends Java_io_IOException {
 }
 @Overload Java_net_MalformedURLException Java_net_MalformedURLException.new();
 @Overload Java_net_MalformedURLException Java_net_MalformedURLException.new(String p0);
+
 /* class java.net.MulticastSocket */
 class Java_net_MulticastSocket extends Java_net_DatagramSocket {
 	/*-- Method --*/
@@ -415,11 +446,13 @@ class Java_net_MulticastSocket extends Java_net_DatagramSocket {
 @Overload Java_net_MulticastSocket Java_net_MulticastSocket.new();
 @Overload Java_net_MulticastSocket Java_net_MulticastSocket.new(int p0);
 @Overload Java_net_MulticastSocket Java_net_MulticastSocket.new(Java_net_SocketAddress p0);
+
 /* class java.net.NetPermission */
 class Java_net_NetPermission extends Java_security_BasicPermission {
 }
 @Overload Java_net_NetPermission Java_net_NetPermission.new(String p0);
 @Overload Java_net_NetPermission Java_net_NetPermission.new(String p0, String p1);
+
 /* class java.net.NetworkInterface */
 class Java_net_NetworkInterface {
 	/*-- Method --*/
@@ -445,11 +478,13 @@ class Java_net_NetworkInterface {
 	@Virtual @Overload boolean supportsMulticast();
 	@Virtual @Overload String toString();
 }
+
 /* class java.net.NoRouteToHostException */
 class Java_net_NoRouteToHostException extends Java_net_SocketException {
 }
 @Overload Java_net_NoRouteToHostException Java_net_NoRouteToHostException.new(String p0);
 @Overload Java_net_NoRouteToHostException Java_net_NoRouteToHostException.new();
+
 /* class java.net.PasswordAuthentication */
 class Java_net_PasswordAuthentication {
 	/*-- Method --*/
@@ -457,21 +492,25 @@ class Java_net_PasswordAuthentication {
 	@Virtual @Overload String getUserName();
 }
 Java_net_PasswordAuthentication Java_net_PasswordAuthentication.new(String p0, int[] p1);
+
 /* class java.net.PortUnreachableException */
 class Java_net_PortUnreachableException extends Java_net_SocketException {
 }
 @Overload Java_net_PortUnreachableException Java_net_PortUnreachableException.new(String p0);
 @Overload Java_net_PortUnreachableException Java_net_PortUnreachableException.new();
+
 /* class java.net.ProtocolException */
 class Java_net_ProtocolException extends Java_io_IOException {
 }
 @Overload Java_net_ProtocolException Java_net_ProtocolException.new(String p0);
 @Overload Java_net_ProtocolException Java_net_ProtocolException.new();
+
 /* interface java.net.ProtocolFamily */
 class Java_net_ProtocolFamily {
 	/*-- Method --*/
 	@Virtual @Overload String name();
 }
+
 /* class java.net.Proxy */
 class Java_net_Proxy {
 	/*-- Method --*/
@@ -482,6 +521,7 @@ class Java_net_Proxy {
 	@Virtual @Overload Java_net_Proxy_Type type();
 }
 Java_net_Proxy Java_net_Proxy.new(Java_net_Proxy_Type p0, Java_net_SocketAddress p1);
+
 /* class java.net.ProxySelector */
 class Java_net_ProxySelector {
 	/*-- Method --*/
@@ -491,6 +531,7 @@ class Java_net_ProxySelector {
 	@Virtual @Overload void setDefault(Java_net_ProxySelector p0);
 }
 Java_net_ProxySelector Java_net_ProxySelector.new();
+
 /* class java.net.ResponseCache */
 class Java_net_ResponseCache {
 	/*-- Method --*/
@@ -500,6 +541,7 @@ class Java_net_ResponseCache {
 	@Virtual @Overload void setDefault(Java_net_ResponseCache p0);
 }
 Java_net_ResponseCache Java_net_ResponseCache.new();
+
 /* class java.net.SecureCacheResponse */
 class Java_net_SecureCacheResponse extends Java_net_CacheResponse {
 	/*-- Method --*/
@@ -510,8 +552,10 @@ class Java_net_SecureCacheResponse extends Java_net_CacheResponse {
 	@Virtual @Overload Java_util_List getServerCertificateChain();
 }
 Java_net_SecureCacheResponse Java_net_SecureCacheResponse.new();
+
 /* class java.net.ServerSocket */
 class Java_net_ServerSocket {
+	// implements java.io.Closeable
 	/*-- Method --*/
 	@Virtual @Overload Java_net_Socket accept();
 	@Virtual @Overload void bind(Java_net_SocketAddress p0);
@@ -537,8 +581,10 @@ class Java_net_ServerSocket {
 @Overload Java_net_ServerSocket Java_net_ServerSocket.new(int p0);
 @Overload Java_net_ServerSocket Java_net_ServerSocket.new(int p0, int p1);
 @Overload Java_net_ServerSocket Java_net_ServerSocket.new(int p0, int p1, Java_net_InetAddress p2);
+
 /* class java.net.Socket */
 class Java_net_Socket {
+	// implements java.io.Closeable
 	/*-- Method --*/
 	@Virtual @Overload void bind(Java_net_SocketAddress p0);
 	@Virtual @Overload void close();
@@ -591,58 +637,74 @@ class Java_net_Socket {
 @Overload Java_net_Socket Java_net_Socket.new(Java_net_InetAddress p0, int p1, Java_net_InetAddress p2, int p3);
 @Overload Java_net_Socket Java_net_Socket.new(String p0, int p1, boolean p2);
 @Overload Java_net_Socket Java_net_Socket.new(Java_net_InetAddress p0, int p1, boolean p2);
+
 /* class java.net.SocketAddress */
 class Java_net_SocketAddress {
+	// implements java.io.Serializable
 }
 Java_net_SocketAddress Java_net_SocketAddress.new();
+
 /* class java.net.SocketException */
 class Java_net_SocketException extends Java_io_IOException {
 }
 @Overload Java_net_SocketException Java_net_SocketException.new(String p0);
 @Overload Java_net_SocketException Java_net_SocketException.new();
+
 /* class java.net.SocketImpl */
 class Java_net_SocketImpl {
+	// implements java.net.SocketOptions
 	/*-- Method --*/
 	@Virtual @Overload String toString();
 }
 Java_net_SocketImpl Java_net_SocketImpl.new();
+
 /* interface java.net.SocketImplFactory */
 class Java_net_SocketImplFactory {
 	/*-- Method --*/
 	@Virtual @Overload Java_net_SocketImpl createSocketImpl();
 }
+
 /* interface java.net.SocketOption */
 class Java_net_SocketOption {
 	/*-- Method --*/
 	@Virtual @Overload String name();
 	@Virtual @Overload Class type();
 }
+
 /* interface java.net.SocketOptions */
 class Java_net_SocketOptions {
 	/*-- Method --*/
 	@Virtual @Overload Object getOption(int p0);
 	@Virtual @Overload void setOption(int p0, Object p1);
 }
+
 /* class java.net.SocketPermission */
 class Java_net_SocketPermission extends Java_security_Permission {
+	// implements java.io.Serializable
 }
 Java_net_SocketPermission Java_net_SocketPermission.new(String p0, String p1);
+
 /* class java.net.SocketTimeoutException */
 class Java_net_SocketTimeoutException extends Java_io_InterruptedIOException {
 }
 @Overload Java_net_SocketTimeoutException Java_net_SocketTimeoutException.new(String p0);
 @Overload Java_net_SocketTimeoutException Java_net_SocketTimeoutException.new();
+
 /* class java.net.StandardProtocolFamily */
 class Java_net_StandardProtocolFamily extends Java_lang_Enum {
+	// implements java.net.ProtocolFamily
 	/*-- Method --*/
 	@Virtual @Overload Java_net_StandardProtocolFamily valueOf(String p0);
 	@Virtual @Overload Java_net_StandardProtocolFamily[] values();
 }
+
 /* class java.net.StandardSocketOptions */
 class Java_net_StandardSocketOptions {
 }
+
 /* class java.net.URI */
 class Java_net_URI {
+	// implements java.lang.Comparable, java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload int compareTo(Java_net_URI p0);
 	@Virtual @Overload int compareTo(Object p0);
@@ -680,6 +742,7 @@ class Java_net_URI {
 @Overload Java_net_URI Java_net_URI.new(String p0, String p1, String p2, String p3, String p4);
 @Overload Java_net_URI Java_net_URI.new(String p0, String p1, String p2, String p3);
 @Overload Java_net_URI Java_net_URI.new(String p0, String p1, String p2);
+
 /* class java.net.URISyntaxException */
 class Java_net_URISyntaxException extends Java_lang_Exception {
 	/*-- Method --*/
@@ -689,8 +752,10 @@ class Java_net_URISyntaxException extends Java_lang_Exception {
 }
 @Overload Java_net_URISyntaxException Java_net_URISyntaxException.new(String p0, String p1, int p2);
 @Overload Java_net_URISyntaxException Java_net_URISyntaxException.new(String p0, String p1);
+
 /* class java.net.URL */
 class Java_net_URL {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload boolean equals(Object p0);
 	@Virtual @Overload String getAuthority();
@@ -721,8 +786,10 @@ class Java_net_URL {
 @Overload Java_net_URL Java_net_URL.new(String p0);
 @Overload Java_net_URL Java_net_URL.new(Java_net_URL p0, String p1);
 @Overload Java_net_URL Java_net_URL.new(Java_net_URL p0, String p1, Java_net_URLStreamHandler p2);
+
 /* class java.net.URLClassLoader */
 class Java_net_URLClassLoader extends Java_security_SecureClassLoader {
+	// implements java.io.Closeable
 	/*-- Method --*/
 	@Virtual @Overload void close();
 	@Virtual @Overload Java_net_URL findResource(String p0);
@@ -734,6 +801,7 @@ class Java_net_URLClassLoader extends Java_security_SecureClassLoader {
 @Overload Java_net_URLClassLoader Java_net_URLClassLoader.new(Java_net_URL[] p0, Java_lang_ClassLoader p1);
 @Overload Java_net_URLClassLoader Java_net_URLClassLoader.new(Java_net_URL[] p0);
 @Overload Java_net_URLClassLoader Java_net_URLClassLoader.new(Java_net_URL[] p0, Java_lang_ClassLoader p1, Java_net_URLStreamHandlerFactory p2);
+
 /* class java.net.URLConnection */
 class Java_net_URLConnection {
 	/*-- Method --*/
@@ -787,36 +855,43 @@ class Java_net_URLConnection {
 	@Virtual @Overload void setUseCaches(boolean p0);
 	@Virtual @Overload String toString();
 }
+
 /* class java.net.URLDecoder */
 class Java_net_URLDecoder {
 	/*-- Method --*/
 	@Virtual @Overload String decode(String p0, String p1);
 }
 Java_net_URLDecoder Java_net_URLDecoder.new();
+
 /* class java.net.URLEncoder */
 class Java_net_URLEncoder {
 	/*-- Method --*/
 	@Virtual @Overload String encode(String p0, String p1);
 }
+
 /* class java.net.URLStreamHandler */
 class Java_net_URLStreamHandler {
 }
 Java_net_URLStreamHandler Java_net_URLStreamHandler.new();
+
 /* interface java.net.URLStreamHandlerFactory */
 class Java_net_URLStreamHandlerFactory {
 	/*-- Method --*/
 	@Virtual @Overload Java_net_URLStreamHandler createURLStreamHandler(String p0);
 }
+
 /* class java.net.UnknownHostException */
 class Java_net_UnknownHostException extends Java_io_IOException {
 }
 @Overload Java_net_UnknownHostException Java_net_UnknownHostException.new(String p0);
 @Overload Java_net_UnknownHostException Java_net_UnknownHostException.new();
+
 /* class java.net.UnknownServiceException */
 class Java_net_UnknownServiceException extends Java_io_IOException {
 }
 @Overload Java_net_UnknownServiceException Java_net_UnknownServiceException.new();
 @Overload Java_net_UnknownServiceException Java_net_UnknownServiceException.new(String p0);
+
 
 /*------------------------------------------------------------*/
 /* short names */

@@ -38,6 +38,7 @@ class Java_lang_reflect_WildcardType;
 /*------------------------------------------------------------*/
 /* class java.lang.reflect.AccessibleObject */
 class Java_lang_reflect_AccessibleObject {
+	// implements java.lang.reflect.AnnotatedElement
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_annotation_Annotation getAnnotation(Class p0);
 	@Virtual @Overload Java_lang_annotation_Annotation[] getAnnotations();
@@ -47,6 +48,7 @@ class Java_lang_reflect_AccessibleObject {
 	@Virtual @Overload void setAccessible(Java_lang_reflect_AccessibleObject[] p0, boolean p1);
 	@Virtual @Overload void setAccessible(boolean p0);
 }
+
 /* interface java.lang.reflect.AnnotatedElement */
 class Java_lang_reflect_AnnotatedElement {
 	/*-- Method --*/
@@ -55,6 +57,7 @@ class Java_lang_reflect_AnnotatedElement {
 	@Virtual @Overload Java_lang_annotation_Annotation[] getDeclaredAnnotations();
 	@Virtual @Overload boolean isAnnotationPresent(Class p0);
 }
+
 /* class java.lang.reflect.Array */
 class Java_lang_reflect_Array {
 	/*-- Method --*/
@@ -80,8 +83,10 @@ class Java_lang_reflect_Array {
 	@Virtual @Overload void setLong(Object p0, int p1, long p2);
 	@Virtual @Overload void setShort(Object p0, int p1, int p2);
 }
+
 /* class java.lang.reflect.Constructor */
 class Java_lang_reflect_Constructor extends Java_lang_reflect_AccessibleObject {
+	// implements java.lang.reflect.GenericDeclaration, java.lang.reflect.Member
 	/*-- Method --*/
 	@Virtual @Overload Class getDeclaringClass();
 	@Virtual @Overload Class[] getExceptionTypes();
@@ -97,8 +102,10 @@ class Java_lang_reflect_Constructor extends Java_lang_reflect_AccessibleObject {
 	@Virtual @Overload Object newInstance(Object[] p0);
 	@Virtual @Overload String toGenericString();
 }
+
 /* class java.lang.reflect.Field */
 class Java_lang_reflect_Field extends Java_lang_reflect_AccessibleObject {
+	// implements java.lang.reflect.Member
 	/*-- Method --*/
 	@Virtual @Overload Object get(Object p0);
 	@Virtual @Overload boolean getBoolean(Object p0);
@@ -127,25 +134,31 @@ class Java_lang_reflect_Field extends Java_lang_reflect_AccessibleObject {
 	@Virtual @Overload void setShort(Object p0, int p1);
 	@Virtual @Overload String toGenericString();
 }
+
 /* interface java.lang.reflect.GenericArrayType */
 class Java_lang_reflect_GenericArrayType {
+	// implements java.lang.reflect.Type
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_reflect_Type getGenericComponentType();
 }
+
 /* interface java.lang.reflect.GenericDeclaration */
 class Java_lang_reflect_GenericDeclaration {
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_reflect_TypeVariable[] getTypeParameters();
 }
+
 /* class java.lang.reflect.GenericSignatureFormatError */
 class Java_lang_reflect_GenericSignatureFormatError extends Java_lang_ClassFormatError {
 }
 Java_lang_reflect_GenericSignatureFormatError Java_lang_reflect_GenericSignatureFormatError.new();
+
 /* interface java.lang.reflect.InvocationHandler */
 class Java_lang_reflect_InvocationHandler {
 	/*-- Method --*/
 	@Virtual @Overload Object invoke(Object p0, Java_lang_reflect_Method p1, Object[] p2);
 }
+
 /* class java.lang.reflect.InvocationTargetException */
 class Java_lang_reflect_InvocationTargetException extends Java_lang_ReflectiveOperationException {
 	/*-- Method --*/
@@ -153,10 +166,12 @@ class Java_lang_reflect_InvocationTargetException extends Java_lang_ReflectiveOp
 }
 @Overload Java_lang_reflect_InvocationTargetException Java_lang_reflect_InvocationTargetException.new(Java_lang_Throwable p0);
 @Overload Java_lang_reflect_InvocationTargetException Java_lang_reflect_InvocationTargetException.new(Java_lang_Throwable p0, String p1);
+
 /* class java.lang.reflect.MalformedParameterizedTypeException */
 class Java_lang_reflect_MalformedParameterizedTypeException extends Java_lang_RuntimeException {
 }
 Java_lang_reflect_MalformedParameterizedTypeException Java_lang_reflect_MalformedParameterizedTypeException.new();
+
 /* interface java.lang.reflect.Member */
 class Java_lang_reflect_Member {
 	/*-- Method --*/
@@ -165,8 +180,10 @@ class Java_lang_reflect_Member {
 	@Virtual @Overload String getName();
 	@Virtual @Overload boolean isSynthetic();
 }
+
 /* class java.lang.reflect.Method */
 class Java_lang_reflect_Method extends Java_lang_reflect_AccessibleObject {
+	// implements java.lang.reflect.GenericDeclaration, java.lang.reflect.Member
 	/*-- Method --*/
 	@Virtual @Overload Class getDeclaringClass();
 	@Virtual @Overload Object getDefaultValue();
@@ -186,6 +203,7 @@ class Java_lang_reflect_Method extends Java_lang_reflect_AccessibleObject {
 	@Virtual @Overload boolean isVarArgs();
 	@Virtual @Overload String toGenericString();
 }
+
 /* class java.lang.reflect.Modifier */
 class Java_lang_reflect_Modifier {
 	/*-- Method --*/
@@ -209,36 +227,45 @@ class Java_lang_reflect_Modifier {
 	@Virtual @Overload String toString(int p0);
 }
 Java_lang_reflect_Modifier Java_lang_reflect_Modifier.new();
+
 /* interface java.lang.reflect.ParameterizedType */
 class Java_lang_reflect_ParameterizedType {
+	// implements java.lang.reflect.Type
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_reflect_Type[] getActualTypeArguments();
 	@Virtual @Overload Java_lang_reflect_Type getOwnerType();
 	@Virtual @Overload Java_lang_reflect_Type getRawType();
 }
+
 /* class java.lang.reflect.Proxy */
 class Java_lang_reflect_Proxy {
+	// implements java.io.Serializable
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_reflect_InvocationHandler getInvocationHandler(Object p0);
 	@Virtual @Overload Class getProxyClass(Java_lang_ClassLoader p0, Class[] p1);
 	@Virtual @Overload boolean isProxyClass(Class p0);
 	@Virtual @Overload Object newProxyInstance(Java_lang_ClassLoader p0, Class[] p1, Java_lang_reflect_InvocationHandler p2);
 }
+
 /* class java.lang.reflect.ReflectPermission */
 class Java_lang_reflect_ReflectPermission extends Java_security_BasicPermission {
 }
 @Overload Java_lang_reflect_ReflectPermission Java_lang_reflect_ReflectPermission.new(String p0);
 @Overload Java_lang_reflect_ReflectPermission Java_lang_reflect_ReflectPermission.new(String p0, String p1);
+
 /* interface java.lang.reflect.Type */
 class Java_lang_reflect_Type {
 }
+
 /* interface java.lang.reflect.TypeVariable */
 class Java_lang_reflect_TypeVariable {
+	// implements java.lang.reflect.Type
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_reflect_Type[] getBounds();
 	@Virtual @Overload Java_lang_reflect_GenericDeclaration getGenericDeclaration();
 	@Virtual @Overload String getName();
 }
+
 /* class java.lang.reflect.UndeclaredThrowableException */
 class Java_lang_reflect_UndeclaredThrowableException extends Java_lang_RuntimeException {
 	/*-- Method --*/
@@ -246,12 +273,15 @@ class Java_lang_reflect_UndeclaredThrowableException extends Java_lang_RuntimeEx
 }
 @Overload Java_lang_reflect_UndeclaredThrowableException Java_lang_reflect_UndeclaredThrowableException.new(Java_lang_Throwable p0);
 @Overload Java_lang_reflect_UndeclaredThrowableException Java_lang_reflect_UndeclaredThrowableException.new(Java_lang_Throwable p0, String p1);
+
 /* interface java.lang.reflect.WildcardType */
 class Java_lang_reflect_WildcardType {
+	// implements java.lang.reflect.Type
 	/*-- Method --*/
 	@Virtual @Overload Java_lang_reflect_Type[] getLowerBounds();
 	@Virtual @Overload Java_lang_reflect_Type[] getUpperBounds();
 }
+
 
 /*------------------------------------------------------------*/
 /* short names */
