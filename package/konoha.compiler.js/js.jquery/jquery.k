@@ -174,7 +174,7 @@ class JQuery {
     @Overload void fadeIn(String speed);
     @Overload void fadeIn(int speed, Method callback);
     @Overload void fadeIn(String speed, Method callback);
-    @Overload void fadeOutjj();
+    @Overload void fadeOut();
     @Overload void fadeOut(Method callback);
     @Overload void fadeOut(int speed);
     @Overload void fadeOut(String speed);
