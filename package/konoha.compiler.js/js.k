@@ -15,11 +15,17 @@ String header = """
 String footer = """
 // -->
 </script>
-<body onload=" topLevelFunc() ">
+<body onload="">
+<script type="text/javascript">
+<!--
+konoha_main();
+konoha.printOUT();
+// -->
+</script>
 </body>
 </html>
 """;
-TOP = "topLevelFunc()"
+TOP = "konoha_main()"
 //class CompilerOpt {
 //    int      indentLevel;
 //    String   mtdName;
@@ -568,18 +574,17 @@ LABEL = "label";
     }
     this.opt.getVarNameMap = {};
 }
-@Public String Compiler.createKickFunc() {
+@Public String Compiler.createMain() {
+    String indent = "    ";
     String res = "";
     boolean flagScript = false;
     res += "function Script" + "() {" + EOL;
-    //res += "    'use strict';" + EOL;
     res += "}" + EOL;
     res += EOL;
     res += "function " + TOP + " {" + EOL;
-    //res += "    'use strict';" + EOL;
-    res += "    script = new Script();" + EOL;
+    res += indent + "script = new Script();" + EOL;
     foreach (fnc in this.opt.topLevelFunctionList) {
-        res += "    " + getMethodName(fnc) + "(";
+        res += indent + getMethodName(fnc) + "(";
         if (fnc.getMethodClass() == Script && fnc.getName() == "") {
             res += "script";
         }
@@ -619,7 +624,7 @@ LABEL = "label";
     foreach (str in this.opt.source) {
         OUT << str << EOL;
     }
-    OUT << createKickFunc() << EOL;
+    OUT << createMain() << EOL;
     if (!DUMP_JS_ONLY) {
         OUT << footer;
     }

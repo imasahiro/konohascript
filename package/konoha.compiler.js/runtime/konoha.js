@@ -1,5 +1,16 @@
 var konoha = function() {
+    this.OUT = "";
+    this.ERR = "";
+    this.printOUT = function() {
+        var strings = this.OUT.split("\n");
+        var body = document.getElementsByTagName('body').item(0);
+        for (var i = 0; i < strings.length; i++) {
+            body.appendChild(document.createTextNode(strings[i]));
+            body.appendChild(document.createElement('br'));
+        }
+    }
 }
+konoha = new konoha();
 konoha.Object = function(rawptr) {
     this.rawptr = rawptr;
 }
@@ -22,32 +33,25 @@ konoha.Class.prototype.konohaclass = "konoha.Class";
 konoha.OutputStream = function(isCwb) {
     this.cwb = "";
     this.println = function() {
-        document.write(this.cwb);
+        konoha.OUT += (this.cwb);
         this.cwb = "";
         for (var i=0; i < arguments.length; i++) {
-            if (arguments[i].replace) {
-                arguments[i] = arguments[i].replace("\n", "<br>\n");
-            }
             if (arguments[i].rawptr) {
-                document.write(arguments[i].toString());
+                konoha.OUT += arguments[i].toString();
             } else {
-                document.write(arguments[i]);
+                konoha.OUT += arguments[i];
             }
         }
-        document.write("<br>");
     }
     this.print = function() {
-        document.write(this.cwb);
+        konoha.OUT += (this.cwb);
         this.cwb = "";
         for (var i=0; i < arguments.length; i++) {
-            if (arguments[i].replace) {
-                arguments[i] = arguments[i].replace("\n", "<br>\n");
-            }
-            document.write(arguments[i].rawptr);
+            konoha.OUT += (arguments[i].rawptr);
             if (arguments[i].rawptr) {
-                document.write(arguments[i].toString());
+                konoha.OUT += (arguments[i].toString());
             } else {
-                document.write(arguments[i]);
+                konoha.OUT += (arguments[i]);
             }
 
         }
@@ -55,25 +59,19 @@ konoha.OutputStream = function(isCwb) {
 
     if (!isCwb) {
         this.send = function() {
-            document.write(this.cwb);
+            konoha.OUT += (this.cwb);
             this.cwb = "";
             for (var i = 0; i < arguments.length; i++) {
-                if (arguments[i].replace) {
-                    arguments[i] = arguments[i].replace("\n", "<br>\n");
-                }
                 if (arguments[i].rawptr) {
-                    document.write(arguments[i].toString());
+                    konoha.OUT += (arguments[i].toString());
                 } else {
-                    document.write(arguments[i]);
+                    konoha.OUT += (arguments[i]);
                 }
             }
         }
     } else {
         this.send = function() {
             for (var i = 0; i < arguments.length; i++) {
-                if (arguments[i].replace) {
-                    arguments[i] = arguments[i].replace("\n", "<br>\n");
-                }
                 if (arguments[i].rawptr) {
                     this.cwb += arguments[i].toString();
                 } else {
