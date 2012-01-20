@@ -30,6 +30,7 @@ TOP = "konoha_main()"
 //    int      indentLevel;
 //    String   mtdName;
 //    String[] source;
+//    String[] unexpectedMethods;
 //    Method[] topLevelFunctionList;
 //    String   obfuscatedClassName;
 //    Map<String, String> varNameMap;
@@ -38,6 +39,7 @@ TOP = "konoha_main()"
 //}
 System.addClassField(CompilerOpt, String  , "mtdName");
 System.addClassField(CompilerOpt, String[], "source");
+System.addClassField(CompilerOpt, String[], "unexpectedMethods");
 System.addClassField(CompilerOpt, Method[], "topLevelFunctionList");
 System.addClassField(CompilerOpt, Map<String, String>, "varNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
@@ -45,6 +47,7 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Public void CompilerOpt.init() {
     this.indentLevel = 0;
     this.source = [];
+    this.unexpectedMethods = ["isNull"];
     this.topLevelFunctionList = [];
     this.varNameMap = {};
     this.methodNameMap = {};
@@ -453,12 +456,21 @@ LABEL = "label";
     asm.decIndentLevel();
     asm.addSource("}");
 }
+@Public void K_CALL.genUnexpectedMethod(Compiler asm) {
+    if (op.mtd.getName() == asm.opt.unexpectedMethods[0]) {
+        asm.addSource(declVar(asm) + getVarName(asm) + " = " + args[0].getVarName(asm) + " == null;");
+    }
+}
 @Public @Override void K_CALL.codegen(Compiler asm) {
     boolean flag = false;
     if (op.flagStatic == 0) {
         if (!args[0].kvalue.type.isUnboxType()) {
             flag = true;
         }
+    }
+    if (op.mtd.getName() in? asm.opt.unexpectedMethods) {
+        genUnexpectedMethod(asm);
+        return;
     }
     String res = "";
     if (op.mtd.getReturnType() != Void) {
