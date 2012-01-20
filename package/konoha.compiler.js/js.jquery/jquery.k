@@ -1,21 +1,21 @@
 using js.jquery.*;
 class Offset {
-    int top;
-    int left;
     Offset(int top, int left) {
         _top = top;
         _left = left;
     }
+    int getTop();
+    int getLeft();
 }
 class JQuery {
     /* Core */
-              JQuery (String expression, Document context);
-              JQuery (String expression, Element context);
-              JQuery (String expression, NodeList context);
-              JQuery (String expression, jQuery context);
-              JQuery (String html);
-              JQuery (Element  element);
-              JQuery (NodeList elements);
+    @Overload JQuery (String expression, Document context);
+    @Overload JQuery (String expression, Element context);
+    @Overload JQuery (String expression, NodeList context);
+    @Overload JQuery (String expression, jQuery context);
+    @Overload JQuery (String html);
+    @Overload JQuery (Element  element);
+    @Overload JQuery (NodeList elements);
               //JQyery (callback)
 
     /* Selectors */
