@@ -64,8 +64,8 @@ var initJQuery = function() {
 
     /* Attributes */
     jquery.prototype.attr = function() {
-        arguments = verifyArgs(arguments);
-        return new jquery(this.rawptr.attr.apply(this.rawptr, arguments));
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.attr.apply(this.rawptr, args));
     }
     jquery.prototype.removeAttr = function(name) {
         return new jquery(this.rawptr.removeAttr(name.rawptr));
@@ -77,8 +77,8 @@ var initJQuery = function() {
         return new jquery(this.rawptr.removeClass(className.rawptr));
     }
     jquery.prototype.toggleClass = function() {
-        arguments = verifyArgs(arguments);
-        return new jquery(this.rawptr.toggleClass.apply(this.rawptr, arguments));
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.toggleClass.apply(this.rawptr, args));
     }
     jquery.prototype.getHTML = function() {
         return new konoha.String(this.rawptr.html());
@@ -100,6 +100,75 @@ var initJQuery = function() {
     }
 
     /* Traversing */
+    jquery.prototype.eq = function(position) {
+        return new jquery(this.rawptr.eq(position));
+    }
+    jquery.prototype.filter = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.filter.apply(this.rawptr, args));
+    }
+    jquery.prototype.is = function(expr) {
+        return this.rawptr.is(expr.rawptr);
+    }
+    jquery.prototype.not = function(expr) {
+        return this.rawptr.not(expr.rawptr);
+    }
+    jquery.prototype.slice = function() {
+        return new jquery(this.rawptr.slice.apply(this.rawptr, arguments));
+    }
+    jquery.prototype.add = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.add.apply(this.rawptr, args));
+    }
+    jquery.prototype.children = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.children.apply(this.rawptr, args));
+    }
+    jquery.prototype.closest = function() {
+        var args  =verifyArgs(arguments);
+        return new jquery(this.rawptr.closest.apply(this.rawptr, args));
+    }
+    jquery.prototype.contents = function() {
+        return new jquery(this.rawptr.contents());
+    }
+    jquery.prototype.find = function(expr) {
+        return new jquery(this.rawptr.find(expr.rawptr));
+    }
+    jquery.prototype.next = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.next.apply(this.rawptr, args));
+    }
+    jquery.prototype.nextAll = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.nextAll.apply(this.rawptr, args));
+    }
+    jquery.prototype.parent = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.parent.apply(this.rawptr, args));
+    }
+    jquery.prototype.parents = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.parents.apply(this.rawptr, args));
+    }
+    jquery.prototype.prev = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.prev.apply(this.rawptr, args));
+    }
+    jquery.prototype.prevAll = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.prevAll.apply(this.rawptr, args));
+    }
+    jquery.prototype.siblings = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.siblings.apply(this.rawptr, args));
+    }
+    jquery.prototype.andSelf = function() {
+        return new jquery(this.rawptr.andSelf());
+    }
+    jquery.prototype.end = function() {
+        return ne wjquery(this.rawptr.end());
+    }
+
     return new jquery();
 }
 js.jquery.JQuery = initJQuery();
