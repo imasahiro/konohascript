@@ -169,6 +169,65 @@ var initJQuery = function() {
         return ne wjquery(this.rawptr.end());
     }
 
+    /* Manipulation */
+    jquery.prototype.append = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.append.apply(this.rawptr, args));
+    }
+    jquery.prototype.appendTo = function(content) {
+        return new jquery(this.rawptr.appendTo(content.rawptr));
+    }
+    jquery.prototype.prepend = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.prepend.apply(this.rawptr, args));
+    }
+    jquery.prototype.prependTo = function(content) {
+        return new jquery(this.rawptr.prependTo(content.rawptr));
+    }
+    jquery.prototype.after = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.after.apply(this.rawptr, args));
+    }
+    jquery.prototype.before = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.before.apply(this.rawptr, args));
+    }
+    jquery.prototype.insertAfter = function(content) {
+        return new jquery(this.rawptr.insertAfter(content.rawptr));
+    }
+    jquery.prototype.insertBefore = function(content) {
+        return new jquery(this.rawptr.insertBefore(content.rawptr));
+    }
+    jquery.prototype.wrap = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.wrap.apply(this.rawptr, args));
+    }
+    jquery.prototype.wrapAll = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.wrapAll.apply(this.rawptr, args));
+    }
+    jquery.prototype.wrapInner = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.wrapInner.apply(this.rawptr, args));
+    }
+    jquery.prototype.replaceWith = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.replaceWith.apply(this.rawptr, args));
+    }
+    jquery.prototype.replaceAll = function(selector) {
+        return new jquery(this.rawptr.replaceAll(selector.rawptr));
+    }
+    jquery.prototype.empty = function() {
+        return new jquery(this.rawptr.empty());
+    }
+    jquery.prototype.remove = function() {
+        var args = verifyArgs(arguments);
+        return new jquery(this.rawptr.remove.apply(this.rawptr, args));
+    }
+    jquery.prototype.clone = function() {
+        return new jquery(this.rawptr.clone.apply(this.rawptr, arguments));
+    }
+
     return new jquery();
 }
 js.jquery.JQuery = initJQuery();
