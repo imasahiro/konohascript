@@ -54,7 +54,7 @@ public class K_System extends K_Object {
 	
 	public static void print(String varName, int n1, int n2, Object obj) {
 		System.out.printf("(line %d) ", n1);
-		if(varName == null) {
+		if(varName == null || varName.equals("")) {
 			System.out.println(obj);
 		} else {
 			System.out.println(varName + "=" + obj);

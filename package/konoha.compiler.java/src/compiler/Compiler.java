@@ -115,17 +115,6 @@ public class Compiler extends ClassLoader implements Opcodes {
 		return a;
 	}
 	
-	private void defineClass(KClass c, HashMap<String, Class<?>> map) {
-		if(!c.superName.equals("konoha/K_Object")) {
-			defineClass(classList.get(c.superName), map);
-		}
-		if(!map.containsKey(c.name)) {
-			byte[] code = c.cw.toByteArray();
-			Class<?> cl = defineClass(c.name, code, 0, code.length);
-			map.put(c.name, cl);
-		}
-	}
-	
 	public void addTopLevelMethod(String name) {
 		initList.add(name);
 	}
@@ -138,6 +127,18 @@ public class Compiler extends ClassLoader implements Opcodes {
 			mainMethod = mtd;
 		} else {
 			System.err.println("main method arguments error: " + mtd.methodType);
+		}
+	}
+	
+	private void defineClass(KClass c, HashMap<String, Class<?>> map) {
+		KClass superClass = classList.get(c.superName);
+		if(superClass != null) {
+			defineClass(superClass, map);
+		}
+		if(!map.containsKey(c.name)) {
+			byte[] code = c.cw.toByteArray();
+			Class<?> cl = defineClass(c.name, code, 0, code.length);
+			map.put(c.name, cl);
 		}
 	}
 	

@@ -21,7 +21,6 @@ public class KClass implements Opcodes {
 					superName = "konoha/K_Object";
 				}
 			} catch(ClassNotFoundException e) {}
-
 		}
 		this.name = name;
 		this.superName = superName;
