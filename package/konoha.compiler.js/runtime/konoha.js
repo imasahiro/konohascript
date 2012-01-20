@@ -156,6 +156,8 @@ konoha.Array = function(rawptr) {
         this.capacity = rawptr.length;
     }
 }
+konoha.Array.prototype = new konoha.Object();
+konoha.Array.prototype.konohaclass = "konoha.Array";
 konoha.Array.prototype.new_ARRAY = function(initCapacity) {
     this.rawptr = new Array(initCapacity);
     for(var i = 0; i < initCapacity; i++) {
@@ -213,8 +215,6 @@ konoha.Array.prototype.toString = function() {
     res += ']';
     return res;
 }
-konoha.Array.prototype = new konoha.Object();
-konoha.Array.prototype.konohaclass = "konoha.Array";
 
 /* Iterator */
 konoha.Iterator = function(rawptr) {
