@@ -1626,6 +1626,7 @@ static void HeapManager_delete(CTX ctx, HeapManager *mng)
 	FOR_EACH_ARRAY(mng->managed_heap_a, p, i) {
 		size_t size = ARRAY_n(mng->heap_size_a, i);
 		call_free_aligned(ctx, p, size);
+		DBG_(ctx->stat->usedMemorySize -= size);
 	}
 	ARRAY_dispose(size_t,  &mng->heap_size_a);
 	ARRAY_dispose(VoidPtr, &mng->managed_heap_a);

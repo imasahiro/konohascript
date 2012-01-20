@@ -324,7 +324,13 @@ static void io2_closeFD(CTX ctx, kio_t *io2)
 	io2->isRunning = 0;
 }
 
-kio_t* new_io2(CTX ctx, int fd, size_t bufsiz)
+static void io2_closeFD_stdio(CTX ctx, kio_t *io2)
+{
+	DBG_ASSERT(io2->isRunning == 1);
+	io2->isRunning = 0;
+}
+
+static kio_t* new_io2_(CTX ctx, int fd, size_t bufsiz, void (*_close)(CTX, struct kio_t *))
 {
 	kio_t *io2 = KNH_MALLOC(ctx, sizeof(kio_t));
 	io2->handler  = NULL;
@@ -337,7 +343,7 @@ kio_t* new_io2(CTX ctx, int fd, size_t bufsiz)
 	}
 	io2->top  = 0;
 	io2->tail = 0;
-	io2->_close         = io2_closeFD;
+	io2->_close         = _close;
 	io2->_blockread     = io2_blockread;
 	io2->_unblockread   = io2_unblockread;
 	io2->_read          = io2_blockread;
@@ -345,6 +351,16 @@ kio_t* new_io2(CTX ctx, int fd, size_t bufsiz)
 	io2->_unblockwrite  = io2_unblockwrite;
 	io2->_write         = io2_blockwrite;
 	return io2;
+}
+
+kio_t* new_io2(CTX ctx, int fd, size_t bufsiz)
+{
+	return new_io2_(ctx, fd, bufsiz, io2_closeFD);
+}
+
+kio_t* new_io2_stdio(CTX ctx, int fd, size_t bufsiz)
+{
+	return new_io2_(ctx, fd, bufsiz, io2_closeFD_stdio);
 }
 
 kio_t* new_io2ReadBuffer(CTX ctx, const char *buf, size_t bufsiz)
