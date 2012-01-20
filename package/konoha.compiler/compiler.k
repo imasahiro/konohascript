@@ -28,6 +28,10 @@
 
 using konoha.lang.*;
 using konoha.llvm.*;
+/* XXX
+ * To avoid konoha runtime class loader bug.
+ */
+using konoha.math.*;
 include "lib:gluelink";
 
 DEBUG = false;
