@@ -1,18 +1,18 @@
 document.write("<script type='text/javascript' src='jquery-1.7.1.min.js'></script>");
-js.offset = function(rawptr) {
+js.Offset = function(rawptr) {
     this.rawptr = rawptr;
 }
-js.offset.prototype = new konoha.Object();
-js.offset.prototype.new = function(top, left) {
+js.Offset.prototype = new konoha.Object();
+js.Offset.prototype.new = function(top, left) {
     this.rawptr = {
      top: top,
      left: left
     };
 }
-js.offset.prototype.getTop = function() {
+js.Offset.prototype.getTop = function() {
     return this.rawptr.top;
 }
-js.offset.prototype.getLeft = function() {
+js.Offset.prototype.getLeft = function() {
     return this.rawptr.left;
 }
 
@@ -228,6 +228,79 @@ var initJQuery = function() {
         return new jquery(this.rawptr.clone.apply(this.rawptr, arguments));
     }
 
-    return new jquery();
+    /* CSS */
+    jquery.prototype.css = function() {
+        var args = verifyArgs(arguments);
+        return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
+    }
+    jquery.prototype.offset = function() {
+        return new js.Offset(this.rawptr.offset());
+    }
+    jquery.prototype.position = function() {
+        return new js.Offset(this.rawptr.position());
+    }
+    jquery.prototype.scrollTop = function() {
+        return this.rawptr.scrollTop.apply(this.rawptr, arguments);
+    }
+    jquery.prototype.scrollLeft = function() {
+        return this.rawptr.scrollLeft.apply(this.rawptr, arguments);
+    }
+    jquery.prototype.height = function() {
+        return this.rawptr.height.apply(this.rawptr, arguments);
+    }
+    jquery.prototype.width = function() {
+        return this.rawptr.width.apply(this.rawptr, arguments);
+    }
+    jquery.prototype.innerHeight = function() {
+        return this.rawptr.innerHeight();
+    }
+    jquery.prototype.innerWidth = function() {
+        return this.rawptr.innerWidth();
+    }
+    jquery.prototype.outerHeight = function() {
+        return this.rawptr.outerHeight();
+    }
+    jquery.prototype.outerWidth = function() {
+        return this.rawptr.outerWidth();
+    }
+
+    /* Effects */
+    jquery.prototype.show = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.show.apply(this.rawptr, args);
+    }
+    jquery.prototype.hide = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.hide.apply(this.rawptr, args);
+    }
+    jquery.prototype.toggle = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.toggle.apply(this.rawptr, args);
+    }
+    jquery.prototype.slideDown = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.slideDown.apply(this.rawptr, args);
+    }
+    jquery.prototype.slideUp = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.slideUp.apply(this.rawptr, args);
+    }
+    jquery.prototype.slideToggle = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.slideToggle.apply(this.rawptr, args);
+    }
+    jquery.prototype.fadeIn = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.fadeIn.apply(this.rawptr, args);
+    }
+    jquery.prototype.fadeOut = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.fadeOut.apply(this.rawptr, args);
+    }
+    jquery.prototype.fadeTo = function() {
+        var args = verifyArgs(arguments);
+        this.rawptr.fadeTo.apply(this.rawptr, args);
+    }
+    return jquery();
 }
 js.jquery.JQuery = initJQuery();
