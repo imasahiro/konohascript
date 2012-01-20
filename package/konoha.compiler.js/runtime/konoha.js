@@ -29,6 +29,13 @@ konoha.Class = function(rawptr) {
 konoha.Class.prototype = new konoha.Object();
 konoha.Class.prototype.konohaclass = "konoha.Class";
 
+/* Method */
+konoha.Method = function(rawptr) {
+    this.rawptr = rawptr;
+}
+konoha.Method.prototype = new konoha.Object();
+konoha.Class.prototype.konohaclass = "konoha.Method";
+
 /* OutputStream */
 konoha.OutputStream = function(isCwb) {
     this.cwb = "";

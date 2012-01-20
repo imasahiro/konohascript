@@ -1172,7 +1172,7 @@ class K_CONST extends K_Inst {
         } else if (value.class == Float) {
             Float f = value;
             return f.format("%.20f");
-        }else if(value.class == Array<dynamic>) {
+        } else if(value.class == Array<dynamic>) {
             Array a = value;
             String res = "[";
             for(int i=0; i<|a|; i++) {
@@ -1202,6 +1202,9 @@ class K_CONST extends K_Inst {
             }
             res += "]";
             return res;
+        } else if (value.class == Method) {
+            Method m = (to Method)value;
+            return m.getMethodClass() + "." + m.getName();
         } else if (value == null && value.class.isUnboxType()) {
             return "0";
         } else {
