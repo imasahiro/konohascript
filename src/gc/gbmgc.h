@@ -663,7 +663,7 @@ static void BMGC_exit(CTX ctx, HeapManager *mng);
 void *knh_malloc(CTX ctx, size_t size)
 {
 	void *block = malloc(size);
-	MEMLOG("malloc", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "malloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
@@ -673,7 +673,7 @@ void *knh_malloc(CTX ctx, size_t size)
 
 void knh_free(CTX ctx, void *block, size_t size)
 {
-	MEMLOG("free", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "free", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 	free(block);
 	STAT_dmem(ctx, size);
 }
@@ -683,7 +683,7 @@ void *knh_valloc(CTX ctx, size_t size)
 #if defined(HAVE_POSIX_MEMALIGN)
 	void *block = NULL;
 	int ret = posix_memalign(&block, K_PAGESIZE, size);
-	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "valloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 	if(ret != 0) {
 		THROW_OutOfMemory(ctx, size);
 	}
@@ -691,21 +691,21 @@ void *knh_valloc(CTX ctx, size_t size)
 	return block;
 #elif defined(HAVE_MEMALIGN)
 	void *block = memalign(K_PAGESIZE, size);
-	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "valloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
 	return block;
 #elif defined(K_USING_WINDOWS_)
 	void *block = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "valloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
 	return block;
 #else
 	void *block = malloc(size + K_PAGESIZE);
-	MEMLOG("valloc", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "valloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 	if (unlikely(block == NULL)) {
 		THROW_OutOfMemory(ctx, size);
 	}
@@ -728,7 +728,7 @@ void *knh_valloc(CTX ctx, size_t size)
 
 void knh_vfree(CTX ctx, void *block, size_t size)
 {
-	MEMLOG("vfree", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "vfree", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 #if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_MEMALIGN)
 	free(block);
 	STAT_dmem(ctx, size);
@@ -1018,12 +1018,12 @@ void *knh_fastmalloc(CTX ctx, size_t size)
 		m = ctx->memlocal->freeMemoryList;
 		WCTX(ctx)->memlocal->freeMemoryList = m->ref;
 		m->ref = NULL;
-		MEMLOG("fastmalloc", "ptr=%p, size=%lu", m, size);
+		MEMLOG(ctx, "fastmalloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", m), LOG_u("size", size)));
 		return (void*)m;
 	}
 	else {
 		void *block = malloc(size);
-		MEMLOG("fastmalloc", "ptr=%p, size=%lu", block, size);
+		MEMLOG(ctx, "fastmalloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 		if (unlikely(block == NULL)) {
 			THROW_OutOfMemory(ctx, size);
 		}
@@ -1034,7 +1034,7 @@ void *knh_fastmalloc(CTX ctx, size_t size)
 
 void knh_fastfree(CTX ctx, void *block, size_t size)
 {
-	MEMLOG("fastfree", "ptr=%p, size=%lu", block, size);
+	MEMLOG(ctx, "fastfree", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", size)));
 	if(size <= K_FASTMALLOC_SIZE) {
 		mempage_t *m = (mempage_t*)block;
 		KNH_FREEZERO(m, K_FASTMALLOC_SIZE);
@@ -1062,7 +1062,7 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 			DBG_ASSERT(block == NULL);
 			knh_bzero(newblock, newsize);
 		}
-		MEMLOG("fastrealloc", "ptr=%p, size=%lu, newptr=%p, newsize=%lu", block, oldsize, newblock, newsize);
+		MEMLOG(ctx, "fastrealloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", oldsize), LOG_p("ptr", newblock), LOG_u("size", newsize)));
 		return newblock;
 	}
 	else {
@@ -1073,7 +1073,7 @@ void* knh_fastrealloc(CTX ctx, void *block, size_t os, size_t ns, size_t wsize)
 		}
 		STAT_mem(ctx, (newsize - oldsize));
 		knh_bzero((char*)newblock + oldsize, (newsize - oldsize));
-		MEMLOG("fastrealloc", "ptr=%p, size=%lu, newptr=%p, newsize=%lu", block, oldsize, newblock, newsize);
+		MEMLOG(ctx, "fastrealloc", K_NOTICE, KNH_LDATA(LOG_p("ptr", block), LOG_u("size", oldsize), LOG_p("ptr", newblock), LOG_u("size", newsize)));
 		return newblock;
 	}
 }
@@ -1221,7 +1221,7 @@ kObject *new_hObject_(CTX ctx, const knh_ClassTBL_t *ct)
 	kObject *o = bm_malloc_internal(ctx, GCDATA(ctx), ct->struct_size);
 	OBJECT_INIT(o, ct);
 	STAT_Object(ctx, ct);
-	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
+	MEMLOG(ctx, "new", K_NOTICE, KNH_LDATA(LOG_p("ptr", o), LOG_u("size", ct->cid)));
 	return o;
 }
 
@@ -1232,7 +1232,7 @@ kObject *new_Object_init2(CTX ctx, const knh_ClassTBL_t *ct)
 	OBJECT_INIT(o, ct);
 	ct->cdef->init(ctx, RAWPTR(o));
 	STAT_Object(ctx, ct);
-	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
+	MEMLOG(ctx, "new", K_NOTICE, KNH_LDATA(LOG_p("ptr", o), LOG_u("size", ct->cid)));
 	return o;
 }
 
@@ -1243,7 +1243,7 @@ void TR_NEW(CTX ctx, ksfp_t *sfp, ksfpidx_t c, const knh_ClassTBL_t *ct)
 	OBJECT_INIT(o, ct);
 	ct->cdef->init(ctx, RAWPTR(o));
 	STAT_Object(ctx, ct);
-	MEMLOG("new", "ptr=%p, cid=%d", o, ct->cid);
+	MEMLOG(ctx, "new", K_NOTICE, KNH_LDATA(LOG_p("ptr", o), LOG_u("size", ct->cid)));
 	KNH_SETv(ctx, sfp[c].o, o);
 }
 
@@ -2676,7 +2676,7 @@ static inline void bmgc_Object_free(CTX ctx, kObject *o)
 {
 	const knh_ClassTBL_t *ct = O_cTBL(o);
 	if (ct) {
-		MEMLOG("~Object", "ptr=%p, cid=%d", o, ct->cid);
+		MEMLOG(ctx, "~Object", K_NOTICE, KNH_LDATA(LOG_p("ptr", o), LOG_u("size", ct->cid)));
 		//gc_info("~Object ptr=%p, cid=%d, o->h.meta=%p", o, ct->cid, o->h.meta);
 		if(unlikely(Object_isXData(o))) {
 			knh_PtrMap_rm(ctx, ctx->share->xdataPtrMap, o);
