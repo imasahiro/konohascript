@@ -256,6 +256,183 @@ var initJQuery = function() {
         return this.rawptr.outerWidth();
     }
 
+    /* Events */
+    jquery.prototype.ready = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.ready.apply(this.rawptr, args);
+    }
+    jquery.prototype.bind = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.bind.apply(this.rawptr, args);
+    }
+    jquery.prototype.one = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.one.apply(this.rawptr, args);
+    }
+    jquery.prototype.trigger = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.trigger.apply(this.rawptr, args);
+    }
+    jquery.prototype.triggerHandler = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.triggerHandler.apply(this.rawptr, args);
+    }
+    jquery.prototype.unbind = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.unbind.apply(this.rawptr, args);
+    }
+    jquery.prototype.unbind = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.unbind.apply(this.rawptr, args);
+    }
+    jquery.prototype.hover = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.hover.apply(this.rawptr, args);
+    }
+    jquery.prototype.toggle = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.toggle.apply(this.rawptr, args);
+    }
+    jquery.prototype.live = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.live.apply(this.rawptr, args);
+    }
+    jquery.prototype.die = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.die.apply(this.rawptr, args);
+    }
+    jquery.prototype.die = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.die.apply(this.rawptr, args);
+    }
+    jquery.prototype.die = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.die.apply(this.rawptr, args);
+    }
+    jquery.prototype.blur = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.blur.apply(this.rawptr, args);
+    }
+    jquery.prototype.blur = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.blur.apply(this.rawptr, args);
+    }
+    jquery.prototype.change = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.change.apply(this.rawptr, args);
+    }
+    jquery.prototype.change = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.change.apply(this.rawptr, args);
+    }
+    jquery.prototype.click = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.click.apply(this.rawptr, args);
+    }
+    jquery.prototype.click = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.click.apply(this.rawptr, args);
+    }
+    jquery.prototype.dblclick = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.dblclick.apply(this.rawptr, args);
+    }
+    jquery.prototype.dblclick = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.dblclick.apply(this.rawptr, args);
+    }
+    jquery.prototype.error = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.error.apply(this.rawptr, args);
+    }
+    jquery.prototype.error = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.error.apply(this.rawptr, args);
+    }
+    jquery.prototype.focus = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.focus.apply(this.rawptr, args);
+    }
+    jquery.prototype.fucus = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.fucus.apply(this.rawptr, args);
+    }
+    jquery.prototype.keydown = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.keydown.apply(this.rawptr, args);
+    }
+    jquery.prototype.keydown = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.keydown.apply(this.rawptr, args);
+    }
+    jquery.prototype.keypress = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.keypress.apply(this.rawptr, args);
+    }
+    jquery.prototype.keypress = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.keypress.apply(this.rawptr, args);
+    }
+    jquery.prototype.keyup = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.keyup.apply(this.rawptr, args);
+    }
+    jquery.prototype.keyup = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.keyup.apply(this.rawptr, args);
+    }
+    jquery.prototype.load = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.load.apply(this.rawptr, args);
+    }
+    jquery.prototype.mousedown = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.mousedown.apply(this.rawptr, args);
+    }
+    jquery.prototype.mousemove = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.mousemove.apply(this.rawptr, args);
+    }
+    jquery.prototype.mouseout = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.mouseout.apply(this.rawptr, args);
+    }
+    jquery.prototype.mouseover = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.mouseover.apply(this.rawptr, args);
+    }
+    jquery.prototype.mouseup = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.mouseup.apply(this.rawptr, args);
+    }
+    jquery.prototype.resize = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.resize.apply(this.rawptr, args);
+    }
+    jquery.prototype.scroll = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.scroll.apply(this.rawptr, args);
+    }
+    jquery.prototype.select = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.select.apply(this.rawptr, args);
+    }
+    jquery.prototype.select = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.select.apply(this.rawptr, args);
+    }
+    jquery.prototype.submit = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.submit.apply(this.rawptr, args);
+    }
+    jquery.prototype.submit = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.submit.apply(this.rawptr, args);
+    }
+    jquery.prototype.upload = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        this.rawptr.upload.apply(this.rawptr, args);
+    }
     /* Effects */
     jquery.prototype.show = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
