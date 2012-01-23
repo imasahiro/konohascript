@@ -133,7 +133,42 @@ class JQuery {
     @Overload void    unbind();
     @Overload void    unbind(String type);
               void    hover(Method over, Method out);
-
+              void    toggle(Array<Method> callbacks);
+              void    live(String type, Method callback);
+    @Overload void    die();
+    @Overload void    die(String type);
+    @Overload void    die(String type, Method callback);
+    @Overload void    blur();
+    @Overload void    blur(Method callback);
+    @Overload void    change();
+    @Overload void    change(Method callback);
+    @Overload void    click();
+    @Overload void    click(Method callback);
+    @Overload void    dblclick();
+    @Overload void    dblclick(Method callback);
+    @Overload void    error();
+    @Overload void    error(Method callback);
+    @Overload void    focus();
+    @Overload void    fucus(Method callback);
+    @Overload void    keydown();
+    @Overload void    keydown(Method callback);
+    @Overload void    keypress();
+    @Overload void    keypress(Method callback);
+    @Overload void    keyup();
+    @Overload void    keyup(Method callback);
+              void    load(Method callback);
+              void    mousedown(Method callback);
+              void    mousemove(Method callback);
+              void    mouseout(Method callback);
+              void    mouseover(Method callback);
+              void    mouseup(Method callback);
+              void    resize(Method callback);
+              void    scroll(Method callback);
+    @Overload void    select();
+    @Overload void    select(Method callback);
+    @Overload void    submit();
+    @Overload void    submit(Method callback);
+              void    upload(Method callback);
 
     /* Effects */
     @Overload void  show();
