@@ -1,18 +1,11 @@
 using js.dom.*;
 class Offset {
-    Offset(int top, int left);
     int getTop();
     int getLeft();
 }
+Offset Offset.new(int top, int left);
 class JQuery {
     /* Core */
-    @Overload JQuery (String expression, Document context);
-    @Overload JQuery (String expression, Element context);
-    @Overload JQuery (String expression, NodeList context);
-    @Overload JQuery (String expression, jQuery context);
-    @Overload JQuery (String html);
-    @Overload JQuery (Element  element);
-    @Overload JQuery (NodeList elements);
               //JQyery (callback)
 
     /* Selectors */
@@ -48,7 +41,7 @@ class JQuery {
     @Overload JQuery   filter(Method callback);
               Boolean  is(String expr);
               //JQuery   map();
-              JQuery  not(String expr);
+              JQuery  opnot(String expr);
     @Overload JQuery  slice(int start);
     @Overload JQuery  slice(int start, int end);
     @Overload JQuery  add(String expr);
@@ -198,3 +191,10 @@ class JQuery {
               //void queue();
               //void dequeue();
 }
+@Overload JQuery JQuery.new (String expression, Document context);
+@Overload JQuery JQuery.new (String expression, Element context);
+@Overload JQuery JQuery.new (String expression, NodeList context);
+@Overload JQuery JQuery.new (String expression, jQuery context);
+@Overload JQuery JQuery.new (String html);
+@Overload JQuery JQuery.new (Element  element);
+@Overload JQuery JQuery.new (NodeList elements);

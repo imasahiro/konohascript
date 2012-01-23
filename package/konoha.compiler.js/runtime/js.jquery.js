@@ -110,7 +110,7 @@ var initJQuery = function() {
     jquery.prototype.is = function(expr) {
         return this.rawptr.is(expr.rawptr);
     }
-    jquery.prototype.not = function(expr) {
+    jquery.prototype.opnot = function(expr) {
         return this.rawptr.not(expr.rawptr);
     }
     jquery.prototype.slice = function() {
