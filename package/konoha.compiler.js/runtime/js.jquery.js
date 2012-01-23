@@ -469,7 +469,7 @@ var initJQuery = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.fadeTo.apply(this.rawptr, args);
     }
-    jquery.prototype.new = function() {
+    jquery.prototype._new = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (arguments.length == 1) {
             this.rawptr = new $(args[0]);
