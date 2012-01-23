@@ -2,6 +2,7 @@ var konoha = function() {
     this.OUT = "";
     this.ERR = "";
     this.printOUT = function() {
+        if (this.OUT == "") return;
         var strings = this.OUT.split("\n");
         var body = document.getElementsByTagName('body').item(0);
         for (var i = 0; i < strings.length; i++) {

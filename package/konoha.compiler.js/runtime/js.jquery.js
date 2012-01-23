@@ -16,8 +16,7 @@ js.Offset.prototype.getLeft = function() {
     return this.rawptr.left;
 }
 
-js.jquery = function(rawptr) {
-}
+js.jquery = {};
 var initJQuery = function() {
     var verifyArgs = function(args) {
         for (var i = 0; i < args.length; i++) {
@@ -27,21 +26,11 @@ var initJQuery = function() {
         }
         return args;
     }
-    var jquery= function(rawptr) {
+    var jquery = function(rawptr) {
         this.rawptr = rawptr;
     }
     jquery.prototype = new konoha.Object();
     jquery.konohaclass = "js.jquery.JQuery";
-    jquery.prototype.new = function() {
-        if (arguments.length == 2) {
-            this.rawptr = $(arguments[0].rawptr, arguments[1].rawptr);
-        } else if (arguments.length == 1) {
-            this.rawptr = $(arguments[0].rawptr);
-        } else {
-            throw("Script!!");
-        }
-    }
-
     /* Selectors */
     jquery.prototype.each_ = function(callback) {
         this.rawptr.each(callback.rawptr);
@@ -64,7 +53,7 @@ var initJQuery = function() {
 
     /* Attributes */
     jquery.prototype.attr = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.attr.apply(this.rawptr, args));
     }
     jquery.prototype.removeAttr = function(name) {
@@ -77,7 +66,7 @@ var initJQuery = function() {
         return new jquery(this.rawptr.removeClass(className.rawptr));
     }
     jquery.prototype.toggleClass = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.toggleClass.apply(this.rawptr, args));
     }
     jquery.prototype.getHTML = function() {
@@ -104,7 +93,7 @@ var initJQuery = function() {
         return new jquery(this.rawptr.eq(position));
     }
     jquery.prototype.filter = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.filter.apply(this.rawptr, args));
     }
     jquery.prototype.is = function(expr) {
@@ -114,18 +103,18 @@ var initJQuery = function() {
         return this.rawptr.not(expr.rawptr);
     }
     jquery.prototype.slice = function() {
-        return new jquery(this.rawptr.slice.apply(this.rawptr, arguments));
+        return new jquery(this.rawptr.slice.apply(this.rawptr, Array.prototype.slice.call(arguments)));
     }
     jquery.prototype.add = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.add.apply(this.rawptr, args));
     }
     jquery.prototype.children = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.children.apply(this.rawptr, args));
     }
     jquery.prototype.closest = function() {
-        var args  =verifyArgs(arguments);
+        var args  =verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.closest.apply(this.rawptr, args));
     }
     jquery.prototype.contents = function() {
@@ -135,31 +124,31 @@ var initJQuery = function() {
         return new jquery(this.rawptr.find(expr.rawptr));
     }
     jquery.prototype.next = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.next.apply(this.rawptr, args));
     }
     jquery.prototype.nextAll = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.nextAll.apply(this.rawptr, args));
     }
     jquery.prototype.parent = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.parent.apply(this.rawptr, args));
     }
     jquery.prototype.parents = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.parents.apply(this.rawptr, args));
     }
     jquery.prototype.prev = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.prev.apply(this.rawptr, args));
     }
     jquery.prototype.prevAll = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.prevAll.apply(this.rawptr, args));
     }
     jquery.prototype.siblings = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.siblings.apply(this.rawptr, args));
     }
     jquery.prototype.andSelf = function() {
@@ -171,25 +160,25 @@ var initJQuery = function() {
 
     /* Manipulation */
     jquery.prototype.append = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.append.apply(this.rawptr, args));
     }
     jquery.prototype.appendTo = function(content) {
         return new jquery(this.rawptr.appendTo(content.rawptr));
     }
     jquery.prototype.prepend = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.prepend.apply(this.rawptr, args));
     }
     jquery.prototype.prependTo = function(content) {
         return new jquery(this.rawptr.prependTo(content.rawptr));
     }
     jquery.prototype.after = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.after.apply(this.rawptr, args));
     }
     jquery.prototype.before = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.before.apply(this.rawptr, args));
     }
     jquery.prototype.insertAfter = function(content) {
@@ -199,19 +188,19 @@ var initJQuery = function() {
         return new jquery(this.rawptr.insertBefore(content.rawptr));
     }
     jquery.prototype.wrap = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.wrap.apply(this.rawptr, args));
     }
     jquery.prototype.wrapAll = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.wrapAll.apply(this.rawptr, args));
     }
     jquery.prototype.wrapInner = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.wrapInner.apply(this.rawptr, args));
     }
     jquery.prototype.replaceWith = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.replaceWith.apply(this.rawptr, args));
     }
     jquery.prototype.replaceAll = function(selector) {
@@ -221,17 +210,20 @@ var initJQuery = function() {
         return new jquery(this.rawptr.empty());
     }
     jquery.prototype.remove = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.remove.apply(this.rawptr, args));
     }
     jquery.prototype.clone = function() {
-        return new jquery(this.rawptr.clone.apply(this.rawptr, arguments));
+        return new jquery(this.rawptr.clone.apply(this.rawptr, Array.prototype.slice.call(arguments)));
     }
 
     /* CSS */
     jquery.prototype.css = function() {
-        var args = verifyArgs(arguments);
-        return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        console.log(this);
+        console.log(args);
+        this.rawptr.css(args[0], args[1]);
+        //return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
     }
     jquery.prototype.offset = function() {
         return new js.Offset(this.rawptr.offset());
@@ -240,16 +232,16 @@ var initJQuery = function() {
         return new js.Offset(this.rawptr.position());
     }
     jquery.prototype.scrollTop = function() {
-        return this.rawptr.scrollTop.apply(this.rawptr, arguments);
+        return this.rawptr.scrollTop.apply(this.rawptr, Array.prototype.slice.call(arguments));
     }
     jquery.prototype.scrollLeft = function() {
-        return this.rawptr.scrollLeft.apply(this.rawptr, arguments);
+        return this.rawptr.scrollLeft.apply(this.rawptr, Array.prototype.slice.call(arguments));
     }
     jquery.prototype.height = function() {
-        return this.rawptr.height.apply(this.rawptr, arguments);
+        return this.rawptr.height.apply(this.rawptr, Array.prototype.slice.call(arguments));
     }
     jquery.prototype.width = function() {
-        return this.rawptr.width.apply(this.rawptr, arguments);
+        return this.rawptr.width.apply(this.rawptr, Array.prototype.slice.call(arguments));
     }
     jquery.prototype.innerHeight = function() {
         return this.rawptr.innerHeight();
@@ -266,41 +258,52 @@ var initJQuery = function() {
 
     /* Effects */
     jquery.prototype.show = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.show.apply(this.rawptr, args);
     }
     jquery.prototype.hide = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.hide.apply(this.rawptr, args);
     }
     jquery.prototype.toggle = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.toggle.apply(this.rawptr, args);
     }
     jquery.prototype.slideDown = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.slideDown.apply(this.rawptr, args);
     }
     jquery.prototype.slideUp = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.slideUp.apply(this.rawptr, args);
     }
     jquery.prototype.slideToggle = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.slideToggle.apply(this.rawptr, args);
     }
     jquery.prototype.fadeIn = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.fadeIn.apply(this.rawptr, args);
     }
     jquery.prototype.fadeOut = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.fadeOut.apply(this.rawptr, args);
     }
     jquery.prototype.fadeTo = function() {
-        var args = verifyArgs(arguments);
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.fadeTo.apply(this.rawptr, args);
     }
-    return jquery();
+    jquery.prototype.new = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        if (arguments.length == 1) {
+            this.rawptr = new $(args[0] + "");
+        } else if (arguments.length == 2) {
+            this.rawptr = new $(args[0], args[1]);
+        } else {
+            throw ("Script !!");
+        }
+        return this;
+    }
+    return jquery;
 }
-js.jquery.JQuery = initJQuery();
+js.jquery.JQuery = new initJQuery();

@@ -181,7 +181,7 @@ js.dom.Element = function(rawptr) {
         return this.rawptr.hasAttribute(name);
     }
 }
-Element.prototype = new js.dom.Node();
+js.dom.Element.prototype = new js.dom.Node();
 js.dom.Context = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CanvasContext";
