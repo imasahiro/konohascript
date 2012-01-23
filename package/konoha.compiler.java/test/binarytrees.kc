@@ -1,0 +1,248 @@
+class binarytrees.TreeNode extends konoha.Object
+{
+	binarytrees.TreeNode left
+	binarytrees.TreeNode right
+	konoha.Int item
+}
+
+def binarytrees.TreeNode TreeNode.new treenode0_0 ( binarytrees.TreeNode treenode1_0 binarytrees.TreeNode treenode2_0 konoha.Int ival3_0 ) {
+BasicBlock0:
+	_ = setfield binarytrees.TreeNode treenode0_0 0 treenode1_0
+	_ = setfield binarytrees.TreeNode treenode0_0 1 treenode2_0
+	_ = setfield binarytrees.TreeNode treenode0_0 2 ival3_0
+	_ = return treenode0_0
+}
+
+def konoha.Int TreeNode.itemCheck treenode0_0 (  ) {
+BasicBlock0:
+	treenode5_0 = getfield binarytrees.TreeNode treenode0_0 0
+	bval1_0 = call konoha.Boolean konoha.Object.isNull ( treenode5_0 ) @nonstatic
+	_ = cond Boolean bval1_0 bb1 bb2 @if
+
+BasicBlock1:
+	ival1_0 = getfield konoha.Int treenode0_0 2
+	_ = return ival1_0
+
+BasicBlock2:
+	_ = jmp bb3 @merge
+
+BasicBlock3:
+	ival3_0 = getfield konoha.Int treenode0_0 2
+	treenode8_0 = getfield binarytrees.TreeNode treenode0_0 0
+	ival4_0 = call konoha.Int binarytrees.TreeNode.itemCheck ( treenode8_0 ) @nonstatic
+	ival2_0 = add konoha.Int ival3_0 ival4_0
+	treenode7_0 = getfield binarytrees.TreeNode treenode0_0 1
+	ival3_1 = call konoha.Int binarytrees.TreeNode.itemCheck ( treenode7_0 ) @nonstatic
+	ival1_1 = sub konoha.Int ival2_0 ival3_1
+	_ = return ival1_1
+}
+
+def binarytrees.TreeNode Script.bottomUpTree ( konoha.Int ival1_0 konoha.Int ival2_0 ) {
+BasicBlock0:
+	ival5_0 = const konoha.Int 0
+	bval3_0 = gt konoha.Boolean ival2_0 ival5_0
+	_ = cond Boolean bval3_0 bb1 bb2 @if
+
+BasicBlock1:
+	treenode7_0 = new binarytrees.TreeNode 
+	ival15_0 = const konoha.Int 2
+	ival14_0 = mul konoha.Int ival15_0 ival1_0
+	ival15_1 = const konoha.Int 1
+	ival13_0 = sub konoha.Int ival14_0 ival15_1
+	ival16_0 = const konoha.Int 1
+	ival14_1 = sub konoha.Int ival2_0 ival16_0
+	treenode8_0 = call binarytrees.TreeNode binarytrees.Script.bottomUpTree ( ival13_0 ival14_1 ) @static
+	ival15_2 = const konoha.Int 2
+	ival14_2 = mul konoha.Int ival15_2 ival1_0
+	ival17_0 = const konoha.Int 1
+	ival15_3 = sub konoha.Int ival2_0 ival17_0
+	treenode9_0 = call binarytrees.TreeNode binarytrees.Script.bottomUpTree ( ival14_2 ival15_3 ) @static
+	treenode3_0 = call binarytrees.TreeNode binarytrees.TreeNode.new ( treenode7_0 treenode8_0 treenode9_0 ival1_0 ) @nonstatic
+	_ = return treenode3_0
+
+BasicBlock2:
+	treenode7_1 = new binarytrees.TreeNode 
+	treenode8_1 = const binarytrees.TreeNode null
+	treenode9_1 = const binarytrees.TreeNode null
+	treenode3_1 = call binarytrees.TreeNode binarytrees.TreeNode.new ( treenode7_1 treenode8_1 treenode9_1 ival1_0 ) @nonstatic
+	_ = return treenode3_1
+}
+
+def null Script.main ( konoha.Array<konoha.String> aval1_0 ) {
+BasicBlock0:
+	ival2_0 = const konoha.Int 0
+	ival3_0 = const konoha.Int 20
+	ival5_0 = call konoha.Int konoha.Array<dynamic>.getSize ( aval1_0 ) @nonstatic
+	ival6_0 = const konoha.Int 0
+	bval4_0 = gt konoha.Boolean ival5_0 ival6_0
+	_ = cond Boolean bval4_0 bb1 bb2 @if
+
+BasicBlock1:
+	ival5_1 = const konoha.Int 0
+	str4_0 = getidx konoha.String aval1_0 ival5_1
+	ival4_0 = cast konoha.Int str4_0
+	ival4_1 = mov konoha.Int ival4_0 @nonssa
+	_ = jmp bb3 @merge
+
+BasicBlock2:
+	ival4_1 = mov konoha.Int ival3_0 @nonssa
+	_ = jmp bb3 @merge
+
+BasicBlock3:
+	ival4_1 = phi [[ival4_0, bb1], [ival3_0, bb2]]
+	ival5_2 = const konoha.Int 6
+	bval4_0 = gt konoha.Boolean ival5_2 ival4_1
+	ival5_3 = const konoha.Int 6
+	ival4_0 = select konoha.Int bval4_0 ival5_3 ival4_1
+	ival7_0 = const konoha.Int 1
+	ival5_4 = add konoha.Int ival4_0 ival7_0
+	ival15_0 = const konoha.Int 0
+	treenode10_0 = call binarytrees.TreeNode binarytrees.Script.bottomUpTree ( ival15_0 ival5_4 ) @static
+	ival6_1 = call konoha.Int binarytrees.TreeNode.itemCheck ( treenode10_0 ) @nonstatic
+	ous11_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str12_0 = const konoha.String "stretch tree of depth "
+	_ = call null konoha.OutputStream.send ( ous11_0 str12_0 ) @nonstatic
+	_ = call null konoha.Int.%s ( ous11_0 ival5_4 ) @nonstatic
+	str12_1 = const konoha.String "\t check: "
+	_ = call null konoha.OutputStream.send ( ous11_0 str12_1 ) @nonstatic
+	_ = call null konoha.Int.%s ( ous11_0 ival6_1 ) @nonstatic
+	str12_2 = const konoha.String "\n"
+	_ = call null konoha.OutputStream.send ( ous11_0 str12_2 ) @nonstatic
+	ival12_0 = const konoha.Int 0
+	treenode7_0 = call binarytrees.TreeNode binarytrees.Script.bottomUpTree ( ival12_0 ival4_0 ) @static
+	ival8_0 = const konoha.Int 4
+	aval1_1 = mov konoha.Array<konoha.String> aval1_0 @nonssa
+	ival2_1 = mov konoha.Int ival2_0 @nonssa
+	ival4_2 = mov konoha.Int ival4_1 @nonssa
+	ival4_1 = mov konoha.Int ival4_0 @nonssa
+	ival5_5 = mov konoha.Int ival5_4 @nonssa
+	ival6_2 = mov konoha.Int ival6_1 @nonssa
+	treenode7_1 = mov binarytrees.TreeNode treenode7_0 @nonssa
+	ival8_1 = mov konoha.Int ival8_0 @nonssa
+	_ = jmp bb4 @for
+
+BasicBlock4:loopcond
+	aval1_1 = phi [[aval1_0, bb3], [aval1_2, bb6]]
+	ival2_1 = phi [[ival2_0, bb3], [ival2_3, bb6]]
+	ival4_2 = phi [[ival4_1, bb3], [ival4_3, bb6]]
+	ival4_1 = phi [[ival4_0, bb3], [ival4_2, bb6]]
+	ival5_5 = phi [[ival5_4, bb3], [ival5_6, bb6]]
+	ival6_2 = phi [[ival6_1, bb3], [ival6_4, bb6]]
+	treenode7_1 = phi [[treenode7_0, bb3], [treenode7_2, bb6]]
+	ival8_1 = phi [[ival8_0, bb3], [ival9_2, bb6]]
+	bval10_0 = lte konoha.Boolean ival8_1 ival4_1
+	_ = cond Boolean bval10_0 bb5 bb7
+
+BasicBlock5:loopbody
+	ival10_0 = const konoha.Int 1
+	ival12_1 = sub konoha.Int ival4_1 ival8_1
+	ival13_0 = const konoha.Int 4
+	ival11_0 = add konoha.Int ival12_1 ival13_0
+	ival9_0 = lsft konoha.Int ival10_0 ival11_0
+	ival6_3 = const konoha.Int 0
+	ival2_2 = const konoha.Int 1
+	aval1_2 = mov konoha.Array<konoha.String> aval1_1 @nonssa
+	ival2_3 = mov konoha.Int ival2_2 @nonssa
+	ival4_3 = mov konoha.Int ival4_2 @nonssa
+	ival4_2 = mov konoha.Int ival4_1 @nonssa
+	ival5_6 = mov konoha.Int ival5_5 @nonssa
+	ival6_4 = mov konoha.Int ival6_3 @nonssa
+	treenode7_2 = mov binarytrees.TreeNode treenode7_1 @nonssa
+	ival8_2 = mov konoha.Int ival8_1 @nonssa
+	ival9_1 = mov konoha.Int ival9_0 @nonssa
+	_ = jmp bb8 @for
+
+BasicBlock6:
+	ival11_0 = const konoha.Int 2
+	ival9_2 = add konoha.Int ival8_2 ival11_0
+	aval1_1 = mov konoha.Array<konoha.String> aval1_2 @nonssa
+	ival2_1 = mov konoha.Int ival2_3 @nonssa
+	ival4_2 = mov konoha.Int ival4_3 @nonssa
+	ival4_1 = mov konoha.Int ival4_2 @nonssa
+	ival5_5 = mov konoha.Int ival5_6 @nonssa
+	ival6_2 = mov konoha.Int ival6_4 @nonssa
+	treenode7_1 = mov binarytrees.TreeNode treenode7_2 @nonssa
+	ival8_1 = mov konoha.Int ival9_2 @nonssa
+	_ = jmp bb4
+
+BasicBlock7:
+	ous12_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ous17_0 = cwb konoha.OutputStream 
+	ous22_0 = cwb konoha.OutputStream 
+	ous27_0 = cwb konoha.OutputStream 
+	str28_0 = const konoha.String "long lived tree of depth "
+	_ = call null konoha.OutputStream.send ( ous27_0 str28_0 ) @nonstatic
+	_ = call null konoha.Int.%s ( ous27_0 ival4_1 ) @nonstatic
+	str23_0 = tostr konoha.String ous27_0
+	_ = call null konoha.OutputStream.send ( ous22_0 str23_0 ) @nonstatic
+	str23_1 = const konoha.String "\t check: "
+	_ = call null konoha.OutputStream.send ( ous22_0 str23_1 ) @nonstatic
+	str18_0 = tostr konoha.String ous22_0
+	_ = call null konoha.OutputStream.send ( ous17_0 str18_0 ) @nonstatic
+	ival18_0 = call konoha.Int binarytrees.TreeNode.itemCheck ( treenode7_1 ) @nonstatic
+	_ = call null konoha.Int.%s ( ous17_0 ival18_0 ) @nonstatic
+	str13_0 = tostr konoha.String ous17_0
+	_ = call null konoha.OutputStream.send ( ous12_0 str13_0 ) @nonstatic
+	str13_1 = const konoha.String "\n"
+	_ = call null konoha.OutputStream.send ( ous12_0 str13_1 ) @nonstatic
+	_ = return 
+
+BasicBlock8:loopcond
+	aval1_2 = mov konoha.Array<konoha.String> aval1_1
+	ival2_3 = phi [[ival2_2, bb5], [ival10_3, bb10]]
+	ival4_3 = mov konoha.Int ival4_2
+	ival4_2 = mov konoha.Int ival4_1
+	ival5_6 = mov konoha.Int ival5_5
+	ival6_4 = phi [[ival6_3, bb5], [ival10_2, bb10]]
+	treenode7_2 = mov binarytrees.TreeNode treenode7_1
+	ival8_2 = mov konoha.Int ival8_1
+	ival9_1 = mov konoha.Int ival9_0
+	bval11_0 = lte konoha.Boolean ival2_3 ival9_1
+	_ = cond Boolean bval11_0 bb9 bb11
+
+BasicBlock9:loopbody
+	treenode16_0 = call binarytrees.TreeNode binarytrees.Script.bottomUpTree ( ival2_3 ival8_2 ) @static
+	ival12_2 = call konoha.Int binarytrees.TreeNode.itemCheck ( treenode16_0 ) @nonstatic
+	ival10_1 = add konoha.Int ival6_4 ival12_2
+	ival23_0 = const konoha.Int 0
+	ival21_0 = sub konoha.Int ival23_0 ival2_3
+	treenode16_1 = call binarytrees.TreeNode binarytrees.Script.bottomUpTree ( ival21_0 ival8_2 ) @static
+	ival12_3 = call konoha.Int binarytrees.TreeNode.itemCheck ( treenode16_1 ) @nonstatic
+	ival10_2 = add konoha.Int ival10_1 ival12_3
+	_ = jmp bb10 @forcont
+
+BasicBlock10:
+	ival12_4 = const konoha.Int 1
+	ival10_3 = add konoha.Int ival2_3 ival12_4
+	ival2_3 = mov konoha.Int ival10_3 @nonssa
+	ival6_4 = mov konoha.Int ival10_2 @nonssa
+	_ = jmp bb8
+
+BasicBlock11:
+	ous14_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ous19_0 = cwb konoha.OutputStream 
+	ous24_0 = cwb konoha.OutputStream 
+	ous29_0 = cwb konoha.OutputStream 
+	ous34_0 = cwb konoha.OutputStream 
+	ival37_0 = const konoha.Int 2
+	ival35_0 = mul konoha.Int ival9_1 ival37_0
+	_ = call null konoha.Int.%s ( ous34_0 ival35_0 ) @nonstatic
+	str35_0 = const konoha.String "\t trees of depth "
+	_ = call null konoha.OutputStream.send ( ous34_0 str35_0 ) @nonstatic
+	str30_0 = tostr konoha.String ous34_0
+	_ = call null konoha.OutputStream.send ( ous29_0 str30_0 ) @nonstatic
+	_ = call null konoha.Int.%s ( ous29_0 ival8_2 ) @nonstatic
+	str25_0 = tostr konoha.String ous29_0
+	_ = call null konoha.OutputStream.send ( ous24_0 str25_0 ) @nonstatic
+	str25_1 = const konoha.String "\t check: "
+	_ = call null konoha.OutputStream.send ( ous24_0 str25_1 ) @nonstatic
+	str20_0 = tostr konoha.String ous24_0
+	_ = call null konoha.OutputStream.send ( ous19_0 str20_0 ) @nonstatic
+	_ = call null konoha.Int.%s ( ous19_0 ival6_4 ) @nonstatic
+	str15_0 = tostr konoha.String ous19_0
+	_ = call null konoha.OutputStream.send ( ous14_0 str15_0 ) @nonstatic
+	str15_1 = const konoha.String "\n"
+	_ = call null konoha.OutputStream.send ( ous14_0 str15_1 ) @nonstatic
+	_ = jmp bb6 @forcont
+}
+

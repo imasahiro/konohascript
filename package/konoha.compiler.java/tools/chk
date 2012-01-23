@@ -1,0 +1,14 @@
+#!/bin/sh
+
+jkonoha test/array.k
+jkonoha test/foreach.k
+jkonoha test/inheri.k
+jkonoha test/map.k
+jkonoha test/str.k
+jkonoha test/print.k
+time -p jkonoha test/binarytrees.k 18
+echo aobench...
+time -p jkonoha test/aobench.k
+
+rm -f ao.ppm
+

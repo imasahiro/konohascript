@@ -1,0 +1,11 @@
+konoha benchmark suite
+
+HOW TO RUN
+    $ konoha run.k
+
+HOW TO RUN (server mode)
+    $ python ./daemon/server.py &
+    $ konoha ./daemon/_service.k
+    /* access http://localhost:10080/ */
+
+

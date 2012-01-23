@@ -32,7 +32,6 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${K
 
 enable_testing()
 set(k ${CMAKE_INSTALL_PREFIX}/bin/konohac)
-    message(STATUS "${k}")
 set(opt "--emit-llvm" "--run")
 set(DIR "${CMAKE_CURRENT_SOURCE_DIR}/llvm_test")
 add_test(NAME "cast.k"    COMMAND ${k} ${opt} "${DIR}/cast.k")

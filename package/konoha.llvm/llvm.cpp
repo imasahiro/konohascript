@@ -46,13 +46,16 @@
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/Support/DynamicLibrary.h>
 #include <llvm/Support/TargetSelect.h>
-#include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/TargetRegistry.h>
+#include <llvm/Support/Host.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/system_error.h>
 #include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/Target/TargetData.h>
+#include <llvm/Target/TargetMachine.h>
 #include <llvm/ADT/Statistic.h>
 #include <llvm/ADT/OwningPtr.h>
+#include <llvm/ADT/Triple.h>
 
 #include <iostream>
 
@@ -1942,12 +1945,41 @@ KMETHOD Argument_new(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+static void str_replace (std::string& str, const std::string& from, const std::string& to) {
+	std::string::size_type pos = 0;
+	while ((pos = str.find(from, pos)) != std::string::npos) {
+		str.replace( pos, from.size(), to );
+		pos++;
+	}
+}
+
 //## Module Module.new(String name);
 KMETHOD Module_new(CTX ctx, ksfp_t *sfp _RIX)
 {
 	kString *name = sfp[1].s;
-	Module *ptr = new Module(S_totext(name), getGlobalContext());
-	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::object_free<Module>);
+	LLVMContext &Context = getGlobalContext();
+	Module *M = new Module(S_totext(name), Context);
+#if 0
+	Triple T(sys::getDefaultTargetTriple());
+	const Target *Target = 0;
+	std::string Arch = T.getArchName();
+	for (TargetRegistry::iterator it = TargetRegistry::begin(),
+			ie = TargetRegistry::end(); it != ie; ++it) {
+		std::string tmp(it->getName());
+		str_replace(tmp, "-", "_");
+		if (Arch == tmp) {
+			Target = &*it;
+			break;
+		}
+	}
+	assert(Target != 0);
+	std::string FeaturesStr;
+	TargetOptions Options;
+	TargetMachine *TM = Target->createTargetMachine(T.getTriple(), Target->getName(), FeaturesStr, Options);
+	M->setTargetTriple(T.getTriple());
+	M->setDataLayout(TM->getTargetData()->getStringRepresentation());
+#endif
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(M), konoha::object_free<Module>);
 	RETURN_(p);
 }
 
@@ -2028,7 +2060,6 @@ KMETHOD Function_addFnAttr(CTX ctx, ksfp_t *sfp _RIX)
 	F->addFnAttr(N);
 	RETURNvoid_();
 }
-
 
 //## ExecutionEngine Module.createExecutionEngine();
 KMETHOD Module_createExecutionEngine(CTX ctx, ksfp_t *sfp _RIX)

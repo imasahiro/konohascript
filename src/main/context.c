@@ -48,13 +48,13 @@ extern "C" {
 
 static kInputStream *new_InputStreamStdIn(CTX ctx, kString *enc)
 {
-	kio_t *io2 = new_io2(ctx, 0, 0);
+	kio_t *io2 = new_io2_stdio(ctx, 0, 0);
 	return new_InputStream(ctx, io2, new_Path(ctx, TS_DEVSTDIN));
 }
 
 static kOutputStream *new_OutputStreamStdOut(CTX ctx, kString *enc)
 {
-	kio_t *io2 = new_io2(ctx, 1, 4096);
+	kio_t *io2 = new_io2_stdio(ctx, 1, 4096);
 	kOutputStream *w = new_OutputStream(ctx, io2, new_Path(ctx, TS_DEVSTDOUT));
 	OutputStream_setAutoFlush(w, 1);
 	return w;
@@ -62,7 +62,7 @@ static kOutputStream *new_OutputStreamStdOut(CTX ctx, kString *enc)
 
 static kOutputStream *new_OutputStreamStdErr(CTX ctx, kString *enc)
 {
-	kio_t *io2 = new_io2(ctx, 2, 0);
+	kio_t *io2 = new_io2_stdio(ctx, 2, 0);
 	return new_OutputStream(ctx, io2, new_Path(ctx, TS_DEVSTDERR));
 }
 

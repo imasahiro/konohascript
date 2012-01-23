@@ -1,0 +1,37 @@
+class print.A extends konoha.Object
+{
+	konoha.Int x
+	konoha.String y
+	konoha.Float z
+}
+
+def print.A A.new a0_0 (  ) {
+BasicBlock0:
+	ival2_0 = const konoha.Int 10
+	_ = setfield print.A a0_0 0 ival2_0
+	str2_0 = const konoha.String "abc"
+	_ = setfield print.A a0_0 1 str2_0
+	fval2_0 = const konoha.Float 1.23399999999999998579
+	_ = setfield print.A a0_0 2 fval2_0
+	_ = return a0_0
+}
+
+def null Script.main (  ) {
+BasicBlock0:
+	ival1_0 = const konoha.Int 200
+	ival2_0 = const konoha.Int 100
+	_ = print konoha.Int 82 17179869199 "" ival2_0
+	_ = print konoha.Int 90 17179869200 "n" ival1_0
+	str2_0 = const konoha.String "hello"
+	_ = print konoha.String 82 17179869201 "" str2_0
+	a6_0 = new print.A 
+	a2_0 = call print.A print.A.new ( a6_0 ) @nonstatic
+	_ = print konoha.Object 90 17179869204 "a" a2_0
+	fval6_0 = const konoha.Float 1.50000000000000000000
+	_ = print konoha.Int 74 17179869206 "n" ival1_0
+	str5_0 = const konoha.String "abc"
+	_ = print konoha.String 0 17179869206 "" str5_0
+	_ = print konoha.Float 48 17179869206 "" fval6_0
+	_ = return 
+}
+
