@@ -220,8 +220,6 @@ var initJQuery = function() {
     /* CSS */
     jquery.prototype.css = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        console.log(this);
-        console.log(args);
         this.rawptr.css(args[0], args[1]);
         //return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
     }
@@ -473,7 +471,7 @@ var initJQuery = function() {
     jquery.prototype.new = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (arguments.length == 1) {
-            this.rawptr = new $(args[0] + "");
+            this.rawptr = new $(args[0]);
         } else if (arguments.length == 2) {
             this.rawptr = new $(args[0], args[1]);
         } else {
