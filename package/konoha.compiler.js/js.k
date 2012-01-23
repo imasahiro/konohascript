@@ -538,12 +538,12 @@ LABEL = "label";
     asm.addSource(op.inst0.getVarName(asm) + ".set(" + op.inst1.getVarName(asm) + ", " + op.inst2.getVarName(asm) + ");");
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
-    if (this.type == Int || this.type == Float || this.type == Boolean) {
+    if (op.const_table[op.table_idx].class == Int || op.const_table[op.table_idx].class == Float || op.const_table[op.table_idx].class == Boolean) {
         asm.addSource(declVar(asm) + getVarName(asm) + " = " + quote(op.const_table[op.table_idx]) + ";");
-    } else if (this.type == Class) {
+    } else if (op.const_table[op.table_idx].class == Class) {
         asm.addSource(declVar(asm) + getVarName(asm) + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");");
     } else {
-        asm.addSource(declVar(asm) + getVarName(asm) + " = new " + asm.class2str((to String)this.type) + "(" + quote(op.const_table[op.table_idx]) + ");");
+        asm.addSource(declVar(asm) + getVarName(asm) + " = new " + asm.class2str((to String)op.const_table[op.table_idx].class) + "(" + quote(op.const_table[op.table_idx]) + ");");
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {

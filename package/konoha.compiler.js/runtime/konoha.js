@@ -49,6 +49,7 @@ konoha.OutputStream = function(isCwb) {
                 konoha.OUT += arguments[i];
             }
         }
+        konoha.OUT += '\n';
     }
     this.print = function() {
         konoha.OUT += (this.cwb);
@@ -114,6 +115,10 @@ konoha.System.getErr = function() {
 konoha.Map = function(rawptr) {
     this.rawptr = rawptr = {};
 }
+
+konoha.Map.prototype = new konoha.Object();
+konoha.Map.prototype.konohaclass = "konoha.Map";
+
 konoha.Map.prototype.new = function(init) {
     return this;
 }
@@ -144,9 +149,6 @@ konoha.Map.prototype.getSize = function() {
     }
     return res;
 }
-
-konoha.Map.prototype = new konoha.Object();
-konoha.Map.prototype.konohaclass = "konoha.Map";
 
 
 /* Array */
