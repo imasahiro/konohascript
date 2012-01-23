@@ -1,4 +1,3 @@
-DUMP_JS_ONLY = false;
 String header = """
 <html>
 <head>
@@ -629,18 +628,27 @@ LABEL = "label";
     return res;
 }
 @Public void Compiler.dump(Boolean dump) {
-    if (!DUMP_JS_ONLY) {
-        OUT << header << EOL + EOL;
+    String output = $script.output;
+    OutputStream ous;
+    if (output != null) {
+        ous = new OutputStream(output);
+    } else {
+        ous = OUT;
+    }
+    boolean genFunc = $script.genfunc;
+    if ((genFunc) != true) {
+        ous << header << EOL + EOL;
     }
     foreach (K_Class kc in this.declareclass) {
         String cname = class2str((to String)kc.c);
-        OUT << createClassDefinition(kc.c, cname) << EOL;
+        ous << createClassDefinition(kc.c, cname) << EOL;
     }
     foreach (str in this.opt.source) {
-        OUT << str << EOL;
+        ous << str << EOL;
     }
-    OUT << createMain() << EOL;
-    if (!DUMP_JS_ONLY) {
-        OUT << footer;
+    ous << createMain() << EOL;
+    if ((genFunc) != true) {
+        ous << footer;
     }
+    ous.close();
 }

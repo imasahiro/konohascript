@@ -53,16 +53,29 @@ static const char * codegenerator_file[] = {
 };
 
 static int compiler_run_main = 0;
+static int compiler_gen_func = 0;
+static int compiler_output_file = 0;
+static kbytes_t output;
 
 static const char *parse_option(int *argc, const char *argv[], const char *argv_[])
 {
     int i, argc_ = 0;
+    int opt_o = -2;
     if (*argc <= 1) {
         fprintf(stderr, "usage: %s script.k\n", argv[0]);
         exit(EXIT_FAILURE);
     }
     for (i = 0; i < *argc; ++i) {
         kbytes_t t = B(argv[i]);
+        if (i < *argc - 1 && knh_bytes_equals(t, STEXT("-o"))) {
+            opt_o = i;
+            continue;
+        }
+        if (i == opt_o + 1) {
+            compiler_output_file = 1;
+            output = new_bytes((char*)argv[i]);
+            continue;
+        }
         if (knh_bytes_equals(t, STEXT("--emit-llvm"))) {
             compile_mode = EMIT_LLVM;
             continue;
@@ -73,6 +86,10 @@ static const char *parse_option(int *argc, const char *argv[], const char *argv_
         }
         if (knh_bytes_equals(t, STEXT("--emit-c++"))) {
             compile_mode = EMIT_CPP;
+            continue;
+        }
+        if (compile_mode == EMIT_JS&& knh_bytes_equals(t, STEXT("--genfunc"))) {
+            compiler_gen_func = 1;
             continue;
         }
         if (compile_mode == EMIT_LLVM && knh_bytes_equals(t, STEXT("--run"))) {
@@ -186,6 +203,12 @@ int main(int argc, const char *argv[])
     load_codegenerator(ctx);
     if (!compiler_run_main) {
         knh_setCompileMode(ctx, 1);
+    }
+    if (compiler_gen_func) {
+        knh_DictMap_set(ctx, ctx->share->props, new_T("script.genfunc"), new_Boolean(ctx, 1));
+    }
+    if (compiler_output_file) {
+        knh_DictMap_set(ctx, ctx->share->props, new_T("script.output"), new_S(output.text, output.len));
     }
     knh_startScript(ctx, (const char*)fname);
 
