@@ -287,8 +287,9 @@ var initJQuery = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.hover.apply(this.rawptr, args);
     }
-    jquery.prototype.toggle = function() {
+    jquery.prototype.toggleEvent = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
+        args = verifyArgs(args[0]);
         this.rawptr.toggle.apply(this.rawptr, args);
     }
     jquery.prototype.live = function() {

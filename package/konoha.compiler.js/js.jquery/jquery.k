@@ -133,7 +133,7 @@ class JQuery {
     @Overload void    unbind();
     @Overload void    unbind(String type);
               void    hover(Method over, Method out);
-              void    toggle(Array<Method> callbacks);
+              void    toggleEvent(Array<Method> callbacks);
               void    live(String type, Method callback);
     @Overload void    die();
     @Overload void    die(String type);

@@ -251,7 +251,9 @@ LABEL = "label";
     asm.opt.obfuscatedClassName = asm.class2str((to String)asm.mtd.getMethodClass());
     String fncdef = "";
     String thisclass = asm.opt.obfuscatedClassName;
-    if (isStatic == 1 || ((to String)asm.mtd.getMethodClass()).endsWith("Script")) {
+    if (isKonohaClass(asm.mtd.getMethodClass())) {
+        fncdef += uscore(thisclass) + "." + asm.opt.obfuscatedMethodName + " = function (";
+    } else if (isStatic == 1 || ((to String)asm.mtd.getMethodClass()).endsWith("Script")) {
         if (asm.mtd.getName() == "") {
             int size = |asm.opt.topLevelFunctionList|;
             asm.opt.topLevelFunctionList.add(asm.mtd);
