@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
+#add_subdirectory(java.awt)
+#add_subdirectory(java.awt.event)
+
 project(compiler.java)
+set(PACKAGE_SCRIPT_CODE java.k)
 
 find_package(Java REQUIRED)
 set(PACKAGE_NAME ${PROJECT_NAME})
@@ -30,4 +34,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/jkonoha DESTINATION bin
         PERMISSIONS
         OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
         WORLD_READ WORLD_EXECUTE)
-
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})

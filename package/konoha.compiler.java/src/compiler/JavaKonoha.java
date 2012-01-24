@@ -59,6 +59,8 @@ public class JavaKonoha {
 				System.err.printf("(Error:%d) %s\n", p.getLineNo(), e);
 				e.printStackTrace();
 				return;
+			} finally {
+				r.close();
 			}
 		} catch(IOException e) {
 			e.printStackTrace();

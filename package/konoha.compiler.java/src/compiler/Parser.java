@@ -182,7 +182,7 @@ public class Parser {
 		if(n != -1) {
 			name = name.substring(0, n);
 		}
-		if(name.startsWith("konoha.")) {
+		if(name.startsWith("konoha.") || name.startsWith("java.") || name.startsWith("javax.")) {
 			if(name.startsWith("konoha.compiler.java")) {
 				name = name.substring(16);
 			} else if(name.equals("konoha.math.Math")) {
@@ -198,9 +198,6 @@ public class Parser {
 			}
 		} else {
 			name = name.substring(name.indexOf('.') + 1);
-			if(name.startsWith("Java_")) {
-				name = "j" + name.substring(1).replace("_", ".");
-			}
 		}
 		return name.replace(".", "/");
 	}
