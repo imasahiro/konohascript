@@ -9,11 +9,11 @@ void buildHTML() {
     body.appendChild(div);
 }
 @Public void Element.f0() {
-    new JQuery("div").css("border", "3px solid blue");
+    new JQuery(this).css("border", "3px solid blue");
     new JQuery(this).css("color", "blue")
 }
 @Public void Element.f1() {
-    new JQuery("div").css("border", "3px solid red");
+    new JQuery(this).css("border", "3px solid red");
     new JQuery(this).css("color", "red");
 }
 void main() {
