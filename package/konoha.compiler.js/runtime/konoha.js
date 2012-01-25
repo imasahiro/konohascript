@@ -2,6 +2,7 @@ var konoha = function() {
     this.OUT = "";
     this.ERR = "";
     this.printOUT = function() {
+        if (this.OUT == "") return;
         var strings = this.OUT.split("\n");
         var body = document.getElementsByTagName('body').item(0);
         for (var i = 0; i < strings.length; i++) {
@@ -119,7 +120,7 @@ konoha.Map = function(rawptr) {
 konoha.Map.prototype = new konoha.Object();
 konoha.Map.prototype.konohaclass = "konoha.Map";
 
-konoha.Map.prototype.new = function(init) {
+konoha.Map.prototype._new = function(init) {
     return this;
 }
 konoha.Map.prototype.set = function(key, value) {
@@ -301,7 +302,7 @@ konoha.String.prototype.konohaclass = "konoha.String";
 konoha.Regex = function(rawptr) {
     this.rawptr = rawptr;
 }
-konoha.Regex.prototype.new = function(pattern, option) {
+konoha.Regex.prototype._new = function(pattern, option) {
     this.rawptr = new RegExp(pattern.rawptr, option.rawptr);
     return this;
 }

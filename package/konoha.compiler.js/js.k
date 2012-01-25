@@ -251,7 +251,10 @@ LABEL = "label";
     asm.opt.obfuscatedClassName = asm.class2str((to String)asm.mtd.getMethodClass());
     String fncdef = "";
     String thisclass = asm.opt.obfuscatedClassName;
-    if (isStatic == 1 || ((to String)asm.mtd.getMethodClass()).endsWith("Script")) {
+    if (isKonohaClass(asm.mtd.getMethodClass())) {
+        flagPrototype = true;
+        fncdef += uscore(thisclass) + "." + asm.opt.obfuscatedMethodName + " = function (";
+    } else if (isStatic == 1 || ((to String)asm.mtd.getMethodClass()).endsWith("Script")) {
         if (asm.mtd.getName() == "") {
             int size = |asm.opt.topLevelFunctionList|;
             asm.opt.topLevelFunctionList.add(asm.mtd);
@@ -294,8 +297,8 @@ LABEL = "label";
         }
     }
     //asm.addSource("'use strict';", 1);
-    asm.addSource("var " + LABEL + " = 0;");
     if (needSwitch) {
+        asm.addSource("var " + LABEL + " = 0;");
         asm.addSource("while (true) {");
         asm.incIndentLevel();
         asm.addSource("switch (" + LABEL + ") {");
@@ -484,7 +487,12 @@ LABEL = "label";
     } else if (thisclass != "Script") {
         res += uscore(thisclass) + ".";
     }
-    res += asm.getMethodName(op.mtd).replace("%s", "send").replace(":", "_") + "(";
+    if (asm.getMethodName(op.mtd) == "new") {
+        res += "_new";
+    } else {
+        res += asm.getMethodName(op.mtd).replace("%s", "send").replace(":", "_");
+    }
+    res += "(";
     int cur = flag ? 1 : 0;
     for (; cur < |args|; cur++) {
         res += args[cur].getVarName(asm);

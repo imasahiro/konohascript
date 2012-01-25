@@ -29,6 +29,8 @@ add_test(NAME "transpile_array.k"    COMMAND ${js} ${opt} "${DIR}/array.k" "-o" 
 add_test(NAME "jslint_array.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/array.js")
 add_test(NAME "transpile_aobench_canvas.k"    COMMAND ${js} ${opt} "${DIR}/aobench_canvas.k" "-o" "${DIR}/aobench_canvas.js")
 add_test(NAME "jslint_aobench_canvas.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/aobench_canvas.js")
+add_test(NAME "transpile_jquery.k"    COMMAND ${js} ${opt} "${DIR}/jquery.k" "-o" "${DIR}/jquery.js")
+add_test(NAME "jslint_jquery.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/jquery.js")
 
 
 endif(HAVE_LIB_V8)
@@ -38,5 +40,9 @@ set(PACKAGE_STRING ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
 set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/jskonoha DESTINATION bin
+        PERMISSIONS 
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE)
 
 endif(USE_COMPILER_PKG)

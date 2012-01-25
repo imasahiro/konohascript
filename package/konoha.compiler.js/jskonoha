@@ -1,0 +1,22 @@
+#!/bin/sh
+NUM_EXPECTED_ARGS=2
+
+PROGRAM=`basename $0`
+
+if [ $# -lt $NUM_EXPECTED_ARGS ]; then
+	echo "usage: $PROGRAM <SCRIPT> [args..]";
+	echo "example: $PROGRAM source.k target.js"
+	exit 1;
+fi
+
+FILE=$1
+OUTPUT=$2
+
+export JS_GEN_HTML=true
+#export JS_GEN_HTML=false
+export JS_USE_OBFUSCATE=true
+if [ $# -lt 2 ]; then
+    `which konohac` --emit-js $FILE
+else
+    `which konohac` --emit-js -o $OUTPUT $FILE
+fi
