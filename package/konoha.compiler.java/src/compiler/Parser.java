@@ -101,14 +101,15 @@ public class Parser {
 	}
 	
 	private static final Pattern splitPattern = Pattern.compile("[ \t]*(\".*?[^\\\\]\"|[^ ]+)");
+	private final ArrayList<String> tokenBuff = new ArrayList<String>();
 	
 	private String[] splitToken(String line) {
-		ArrayList<String> tk = new ArrayList<String>();
+		tokenBuff.clear();
 		Matcher m = splitPattern.matcher(line);
 		while(m.find()) {
-			tk.add(m.group().trim());
+			tokenBuff.add(m.group().trim());
 		}
-		return tk.toArray(new String[0]);
+		return tokenBuff.toArray(new String[tokenBuff.size()]);
 	}
 	
 	private KClass parseClass(String line) throws GenInstException {

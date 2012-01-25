@@ -249,31 +249,39 @@ public class KMethod implements Opcodes {
 		int op = isStatic ? INVOKESTATIC : INVOKEVIRTUAL;
 		if(!isStatic) {
 			loadLocal(args[0]);
+			args = Arrays.copyOfRange(args, 1, args.length);
 		}
+		Type type = getMtdType(cName, mName, args.length);
 		if(isVariableLengthArgMethod(cName, mName)) { // variable length argument method
 			// create object array
-			mv.visitIntInsn(SIPUSH, args.length - 1);
+			mv.visitIntInsn(SIPUSH, args.length);
 			mv.visitTypeInsn(ANEWARRAY, "konoha/K_Object");
 			// store args
-			for(int i=1; i<args.length; i++) {
+			for(int i=0; i<args.length; i++) {
 				mv.visitInsn(DUP);
-				mv.visitIntInsn(SIPUSH, i - 1);
+				mv.visitIntInsn(SIPUSH, i);
 				loadLocal(args[i]);
 				box(getLocalType(args[i]));
 				mv.visitInsn(AASTORE);
 			}
 		} else {
-			if(!isStatic) {
-				args = Arrays.copyOfRange(args, 1, args.length);
-			}
-			Type type = getMtdType(cName, mName, args.length);
 			Type[] argTypes = type.getArgumentTypes();
 			for(int i=0; i<args.length; i++) {
-
 				loadLocal(args[i]);
 				Type ty = getLocalType(args[i]);
-				if(ty == Type.INT_TYPE && argTypes[i] == Type.LONG_TYPE) {
-					mv.visitInsn(I2L);
+				if(argTypes[i] == Type.LONG_TYPE) {
+					if(ty == Type.INT_TYPE) {
+						mv.visitInsn(I2L);
+					} else if(ty == Type.DOUBLE_TYPE) {
+						mv.visitInsn(D2L);
+					}
+				}
+				if(argTypes[i] == Type.FLOAT_TYPE) {
+					if(ty == Type.INT_TYPE) {
+						mv.visitInsn(I2F);
+					} else if(ty == Type.DOUBLE_TYPE) {
+						mv.visitInsn(D2F);
+					}
 				}
 			}
 		}
@@ -295,6 +303,11 @@ public class KMethod implements Opcodes {
 			}
 		}
 		if(retType != Type.VOID_TYPE) {
+			if(retType == Type.LONG_TYPE) {
+				mv.visitInsn(L2I);
+			} else if(retType == Type.FLOAT_TYPE) {
+				mv.visitInsn(F2D);
+			}
 			storeLocal(ret, retType);
 		}
 	}
