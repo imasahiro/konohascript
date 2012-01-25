@@ -297,8 +297,8 @@ LABEL = "label";
         }
     }
     //asm.addSource("'use strict';", 1);
-    asm.addSource("var " + LABEL + " = 0;");
     if (needSwitch) {
+        asm.addSource("var " + LABEL + " = 0;");
         asm.addSource("while (true) {");
         asm.incIndentLevel();
         asm.addSource("switch (" + LABEL + ") {");
