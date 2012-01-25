@@ -52,6 +52,18 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
     this.methodNameMap = {};
     this.classNameMap = {};
 }
+class JSConfig {
+    boolean use_obfuscate;
+    boolean gen_html;
+    JSConfig() {
+        boolean b = "true" == $env.JS_USE_OBFUSCATE;
+        boolean c = "true" == $env.JS_GEN_HTML;
+        this.use_obfuscate = b;
+        this.gen_html = c;
+    }
+}
+JSConfig config = new JSConfig();
+
 @Overload boolean isKonohaClass(String s) {
     return (s.startsWith("konoha") || s.startsWith("js"));
 }
@@ -643,8 +655,7 @@ LABEL = "label";
     } else {
         ous = OUT;
     }
-    boolean genFunc = $script.genfunc;
-    if ((genFunc) != true) {
+    if ((config.gen_html) == true) {
         ous << header << EOL + EOL;
     }
     foreach (K_Class kc in this.declareclass) {
@@ -655,7 +666,7 @@ LABEL = "label";
         ous << str << EOL;
     }
     ous << createMain() << EOL;
-    if ((genFunc) != true) {
+    if ((config.gen_html) == true) {
         ous << footer;
     }
     ous.close();

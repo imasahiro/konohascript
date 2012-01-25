@@ -1,22 +1,28 @@
 #!/bin/sh
-NUM_EXPECTED_ARGS=2
-
 PROGRAM=`basename $0`
 
-if [ $# -lt $NUM_EXPECTED_ARGS ]; then
-	echo "usage: $PROGRAM <SCRIPT> [args..]";
-	echo "example: $PROGRAM source.k target.js"
-	exit 1;
-fi
 
-FILE=$1
-OUTPUT=$2
-
+export JS_USE_OBFUSCATE=true
 export JS_GEN_HTML=true
 #export JS_GEN_HTML=false
-export JS_USE_OBFUSCATE=true
-if [ $# -lt 2 ]; then
-    `which konohac` --emit-js $FILE
+
+if  test $1 = "--test" ; then 
+    export JS_GEN_HTML=false
+    INPUT=$2
+    OUTPUT=$3
+    `which konohac` --emit-js $INPUT > $OUTPUT
 else
-    `which konohac` --emit-js -o $OUTPUT $FILE
+    NUM_EXPECTED_ARGS=1
+    if [ $# -lt $NUM_EXPECTED_ARGS ]; then
+    	echo "example: $PROGRAM source.k target.js"
+    	exit 1;
+    fi
+
+    INPUT=$1
+    OUTPUT=$2
+    if [ $# -lt 2 ]; then
+        `which konohac` --emit-js $INPUT
+    else
+        `which konohac` --emit-js $INPUT > $OUTPUT
+    fi
 fi
