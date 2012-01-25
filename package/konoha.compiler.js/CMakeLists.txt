@@ -7,13 +7,10 @@ add_subdirectory(js.jquery)
 project(compiler.js)
 set(PACKAGE_SCRIPT_CODE js.k)
 
-find_library(HAVE_LIB_V8 v8)
-if(HAVE_LIB_V8)
-find_path(HAVE_V8_H  v8.h  PATHS ${include_locations})
-
-include_directories(${HAVE_V8_H})
+if(LIB_V8_DIR)
+LINK_DIRECTORIES(${LIB_V8_DIR})
 add_executable(jslint "third-party/jslint-v8/jslint.cpp")
-target_link_libraries(jslint ${HAVE_LIB_V8})
+target_link_libraries(jslint v8)
 install(TARGETS jslint RUNTIME DESTINATION bin)
 enable_testing()
 set(js ${CMAKE_INSTALL_PREFIX}/bin/konohac)
@@ -33,7 +30,7 @@ add_test(NAME "transpile_jquery.k"    COMMAND ${js} ${opt} "${DIR}/jquery.k" "-o
 add_test(NAME "jslint_jquery.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/jquery.js")
 
 
-endif(HAVE_LIB_V8)
+endif(LIB_V8_DIR)
 set(PACKAGE_NAME ${PROJECT_NAME})
 set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 set(PACKAGE_STRING ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
