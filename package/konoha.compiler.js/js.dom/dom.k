@@ -7,7 +7,7 @@ class Node {
     void setNodeValue(String value);
     int getNodeType();
     Node getParentNode();
-    Node appendChild(Node newChild);
+    void appendChild(Node newChild);
     Node insertBefore(Node newChild, Node refChild);
     Node replaceChild(Node newChild, Node oldChild);
     Node removeChild(Node oldChild);
