@@ -1,0 +1,28 @@
+#!/bin/sh
+PROGRAM=`basename $0`
+
+
+export JS_USE_OBFUSCATE=true
+export JS_GEN_HTML=true
+#export JS_GEN_HTML=false
+
+if  test $1 = "--test" ; then 
+    export JS_GEN_HTML=false
+    INPUT=$2
+    OUTPUT=$3
+    `which konohac` --emit-js $INPUT > $OUTPUT
+else
+    NUM_EXPECTED_ARGS=1
+    if [ $# -lt $NUM_EXPECTED_ARGS ]; then
+    	echo "example: $PROGRAM source.k target.js"
+    	exit 1;
+    fi
+
+    INPUT=$1
+    OUTPUT=$2
+    if [ $# -lt 2 ]; then
+        `which konohac` --emit-js $INPUT
+    else
+        `which konohac` --emit-js $INPUT > $OUTPUT
+    fi
+fi
