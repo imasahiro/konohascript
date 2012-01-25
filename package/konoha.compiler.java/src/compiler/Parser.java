@@ -184,7 +184,8 @@ public class Parser {
 		}
 		if(name.startsWith("konoha.") || name.startsWith("java.") || name.startsWith("javax.")) {
 			if(name.startsWith("konoha.compiler.java")) {
-				name = name.substring(16);
+				name = name.substring(21);
+				name = "j" + name.substring(1).replace("_", ".");
 			} else if(name.equals("konoha.math.Math")) {
 				return "java/lang/Math";
 			} else if(name.startsWith("konoha")) {

@@ -1,5 +1,6 @@
-using java.awt.*;
-using java.awt.event.*;
+using konoha.compiler.java.*;
+
+Frame = Java_awt_Frame;
 
 void main() {
 	Frame f = new Frame();

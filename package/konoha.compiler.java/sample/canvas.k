@@ -1,5 +1,13 @@
-using java.awt.*;
-using java.awt.event.*;
+using konoha.compiler.java.*;
+
+Canvas = Java_awt_Canvas
+Frame = Java_awt_Frame
+MouseListener = Java_awt_event_MouseListener
+MouseEvent = Java_awt_event_MouseEvent
+MouseMotionListener = Java_awt_event_MouseMotionListener
+Graphics = Java_awt_Graphics
+Font = Java_awt_Font
+Color = Java_awt_Color
 
 Canvas cv;
 int mouse_x=0, mouse_y=0;
@@ -27,7 +35,7 @@ class B extends MouseMotionListener {
 
 class MyCanvas extends Canvas {
 	MyCanvas() {
-		setFont(new Font("", 1, 22));
+		setFont(new Font("", 2, 22));
 	}
 	@Override @Overload void paint(Graphics g) {
 		g.setColor(new Color(0, 100, 0));

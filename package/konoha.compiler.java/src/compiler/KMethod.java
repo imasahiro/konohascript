@@ -3,8 +3,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import konoha.K_Class;
-
 import org.objectweb.asm.*;
 
 import compiler.ir.GenInstException;
@@ -231,6 +229,22 @@ public class KMethod implements Opcodes {
 		}
 	}
 	
+	private Type getMtdType(String cName, String mName, int args) throws GenInstException {
+		if(cName.startsWith("konoha/") || cName.startsWith("java/")) {
+			for(Method method : toClass(cName.replace("/", ".")).getMethods()) {
+				if(method.getName().equals(mName)) {
+					return Type.getType(method);
+				}
+			}
+		} else {
+			KMethod mtd = compiler.getMethod(cName, mName, args);
+			if(mtd != null) {
+				return mtd.methodType;
+			}
+		}
+		throw new GenInstException("method not found");
+	}
+	
 	public void asmCall(boolean isStatic, String cName, String mName, String[] args, Type retType, String ret) throws GenInstException {
 		int op = isStatic ? INVOKESTATIC : INVOKEVIRTUAL;
 		if(!isStatic) {
@@ -249,8 +263,18 @@ public class KMethod implements Opcodes {
 				mv.visitInsn(AASTORE);
 			}
 		} else {
-			for(int i=isStatic ? 0 : 1; i<args.length; i++) {
+			if(!isStatic) {
+				args = Arrays.copyOfRange(args, 1, args.length);
+			}
+			Type type = getMtdType(cName, mName, args.length);
+			Type[] argTypes = type.getArgumentTypes();
+			for(int i=0; i<args.length; i++) {
+
 				loadLocal(args[i]);
+				Type ty = getLocalType(args[i]);
+				if(ty == Type.INT_TYPE && argTypes[i] == Type.LONG_TYPE) {
+					mv.visitInsn(I2L);
+				}
 			}
 		}
 		if(cName.startsWith("konoha/") || cName.startsWith("java/")) { // library method call
@@ -263,7 +287,7 @@ public class KMethod implements Opcodes {
 				//mv.visitInvokeDynamicInsn(m_name, a, h);
 				throw new GenInstException("TODO: dynamic call");
 			} else {
-				KMethod mtd = compiler.getMethod(cName, mName, args.length - (isStatic ? 0 : 1));
+				KMethod mtd = compiler.getMethod(cName, mName, args.length);
 				if(mtd == null) {
 					throw new GenInstException("method not found: " + cName + "." + mName);
 				}
