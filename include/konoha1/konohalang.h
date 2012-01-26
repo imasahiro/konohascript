@@ -528,7 +528,6 @@ static ALIASDATA_t __AliasData[] = {
 	{"!", "not"}, 
 	{"&&", "and"}, 
 	{"===", "is"}, 
-	{"ArrayList", "Array"}, 
 	{"FALSE", "false"}, 
 	{"False", "false"}, 
 	{"Integer", "Int"}, 
