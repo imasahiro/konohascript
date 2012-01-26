@@ -207,7 +207,7 @@ public class KMethod implements Opcodes {
 	}
 	
 	public void asmCallConstructor(String cName, String[] args, Type retType, String ret) throws GenInstException {
-		if(cName.startsWith("java/")) {
+		if(cName.startsWith("java/") || cName.startsWith("javax/")) {
 			// library constructor
 			for(int i=0; i<args.length; i++) {
 				loadLocal(args[i]);
@@ -230,7 +230,7 @@ public class KMethod implements Opcodes {
 	}
 	
 	private Type getMtdType(String cName, String mName, int args) throws GenInstException {
-		if(cName.startsWith("konoha/") || cName.startsWith("java/")) {
+		if(cName.startsWith("konoha/") || cName.startsWith("java/") || cName.startsWith("javax/")) {
 			for(Method method : toClass(cName.replace("/", ".")).getMethods()) {
 				if(method.getName().equals(mName)) {
 					return Type.getType(method);
@@ -285,7 +285,7 @@ public class KMethod implements Opcodes {
 				}
 			}
 		}
-		if(cName.startsWith("konoha/") || cName.startsWith("java/")) { // library method call
+		if(cName.startsWith("konoha/") || cName.startsWith("java/") || cName.startsWith("javax/")) { // library method call
 			Class<?> c = toClass(cName.replace("/", "."));
 			invoke(c, mName, op);
 		} else { // user method

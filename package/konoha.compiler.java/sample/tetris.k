@@ -2,9 +2,9 @@ using konoha.compiler.java.*;
 
 KeyListener = Java_awt_event_KeyListener
 KeyEvent = Java_awt_event_KeyEvent
-Frame = Java_awt_Frame
+Frame = Javax_swing_JFrame
+Canvas = Javax_swing_JComponent
 Graphics = Java_awt_Graphics
-Canvas = Java_awt_Canvas
 Color = Java_awt_Color
 Thread = Java_lang_Thread
 
@@ -18,7 +18,9 @@ STAGE_W = 10;
 STAGE_H = 20;
 int[] stage;
 Canvas cv;
+Frame frame;
 BLKSIZE = 24;
+Color[] colors;
 
 void setMinoBlock(int x, int y, int c) {
 	mino[y*4+x] = c;
@@ -43,7 +45,7 @@ void initMino(int type) {
 		setMinoBlock(3, 1, 3);
 		setMinoBlock(3, 2, 3);
 		setMinoBlock(2, 2, 3);
-		setMinoBlock(1, 2, 3);
+		setMinoBlock(2, 3, 3);
 	} else if(type == 4) {
 		setMinoBlock(1, 1, 4);
 		setMinoBlock(1, 2, 4);
@@ -100,12 +102,12 @@ boolean tryMove(int dx, int dy, int[] m) {
 void putMino(int[] m) {
 	for(int i=0; i<MINO_W; i++) {
 		for(int j=0; j<MINO_H; j++) {
-			int m = m[j * MINO_W + i];
-			if(m != 0) {
+			int block = m[j * MINO_W + i];
+			if(block != 0) {
 				int x = minoX + i;
 				int y = minoY + j;
 				if(x >= 0 && x < STAGE_W && y >= 0 && y < STAGE_H) {
-					stage[y * STAGE_W + x] = m;
+					stage[y * STAGE_W + x] = block;
 				}
 			}
 		}
@@ -131,7 +133,7 @@ void shiftLine(int n) {
 	for(int y=n; y>=1; y--) {
 		int b = y * STAGE_W;
 		for(int x=0; x<STAGE_W; x++) {
-			stage[b+x] = stage[b-STAGE_W+x];
+			stage[b+x] = stage[b+x-STAGE_W];
 		}
 	}
 	for(int x=0; x<STAGE_W; x++) {
@@ -139,38 +141,44 @@ void shiftLine(int n) {
 	}
 }
 
-void clearLines() {
+int clearLines() {
+	int lines = 0;
 	for(int y=STAGE_H-1; y>=0; y--) {
-		boolean fill = true;
-		for(int i=0; i<STAGE_W; i++) {
-			if(getMinoBlock(i, y) == 0) {
-				fill = false;
+		int x;
+		for(x=0; x<STAGE_W; x++) {
+			if(getMinoBlock(x, y) == 0) {
 				break;
 			}
 		}
-		if(fill) {
+		if(x >= STAGE_W) {
 			shiftLine(y);
 			y++;
+			lines++;
 		}
 	}
+	return lines
 }
 
-class Lis extends KeyListener {
+class VimBindKeyListener extends KeyListener {
 	@Override @Overload void keyPressed(KeyEvent e) {
 		int n = e.getKeyChar();
 		boolean rep = false;
-		if(n == 104) {
+		if(n == 104) { // LEFT: h
 			rep = tryMove(-1, 0, mino);
 		} else
-		if(n == 106) {
+		if(n == 106) { // DOWN: j
 			rep = tryMove(0, 1, mino);
 		} else
-		if(n == 107) {
+		if(n == 107) { // UP: k
 			rep = tryRotateLeft();
 		} else
-		if(n == 108) {
+		if(n == 108) { // RIGHT: l
 			rep = tryMove(1, 0, mino);
 		}
+		if(n == 113) { // q
+			Java_lang_System.exit(0);
+		}
+		print n;
 		if(rep) {
 			cv.repaint();
 		}
@@ -179,54 +187,58 @@ class Lis extends KeyListener {
 	@Override @Overload void keyTyped(KeyEvent e){}
 }
 
-
 class TetCanvas extends Canvas {
 	TetCanvas(){} // TODO
-	@Override @Overload void update(Graphics g) {
-		paint(g);
-	}
-	@Override @Overload void paint(Graphics g) {
+	@Override @Overload void paintComponent(Graphics g) {
 		g.clearRect(0, 0, BLKSIZE * STAGE_W, BLKSIZE * STAGE_H);
 		for(int y=0; y<STAGE_H; y++) {
 			for(int x=0; x<STAGE_W; x++) {
 				int b = getStageOrMinoBlock(x, y);
-				if(b != 0) {
-					g.setColor(new Color(0, 0, 0));
-				} else {
-					g.setColor(new Color(255,255,255));
-				}
-				g.fillRect(BLKSIZE*x, BLKSIZE*y, BLKSIZE, BLKSIZE);
+				g.setColor(colors[b]);
+				g.fill3DRect(BLKSIZE*x, BLKSIZE*y, BLKSIZE, BLKSIZE, true);
 			}
 		}
 	}
 }
 
-
 void mainloop() {
+	int lines = 0;
+	frame.setTitle("lines = " + lines);
 	initMino(int.random(MINO_TYPES));
 	while(true) {
 		if(!tryMove(0, 1, mino)) {
 			putMino(mino);
-			clearLines();
+			lines += clearLines();
+			frame.setTitle("lines = " + lines);
 			initMino(int.random(MINO_TYPES));
 			if(!tryMove(0, 0, mino)) {
-				OUT.println("GameOver");
+				Javax_swing_JOptionPane.showMessageDialog(frame, "GameOver!");
 				Java_lang_System.exit(0);
 			}
 		}
 		cv.repaint();
-		Thread.sleep(400);
+		Thread.sleep(333);
 	}
 }
 
 void main() {
+	colors = new Color[8];
+	colors[0] = new Color(230, 230, 230);
+	colors[1] = new Color(200, 120, 120);
+	colors[2] = new Color(120, 200, 120);
+	colors[3] = new Color(120, 120, 200);
+	colors[4] = new Color(120, 200, 200);
+	colors[5] = new Color(200, 120, 200);
+	colors[6] = new Color(200, 200, 120);
+	colors[7] = new Color(120, 120, 120);
+	
 	stage = new int[STAGE_W * STAGE_H];
 	cv = new TetCanvas();
-	cv.addKeyListener(new Lis());
-
-	Frame frame = new Frame();
+	cv.setPreferredSize(new Java_awt_Dimension(STAGE_W * BLKSIZE, STAGE_H * BLKSIZE));
+	frame = new Frame();
+	frame.addKeyListener(new VimBindKeyListener());
 	frame.add(cv);
-	frame.setSize(400, 600);
+	frame.pack();
 	frame.setVisible(true);
 	
 	mainloop();
