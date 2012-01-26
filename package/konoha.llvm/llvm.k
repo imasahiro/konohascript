@@ -253,7 +253,7 @@ include "lib:gluelink";
 
 @Native void Module.dump();
 @Native Function Module.getOrInsertFunction(String name, FunctionType fnTy);
-@Native ExecutionEngine Module.createExecutionEngine();
+@Native ExecutionEngine Module.createExecutionEngine(int optLevel);
 @Native @Static BasicBlock BasicBlock.create(Function parent, String name);
 @Native @Static FunctionType FunctionType.get(Type retTy, Array<Type> args, boolean b);
 @Native @Static ArrayType ArrayType.get(Type t, int elemSize);

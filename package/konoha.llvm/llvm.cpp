@@ -2061,11 +2061,12 @@ KMETHOD Function_addFnAttr(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//## ExecutionEngine Module.createExecutionEngine();
+//## ExecutionEngine Module.createExecutionEngine(int optLevel);
 KMETHOD Module_createExecutionEngine(CTX ctx, ksfp_t *sfp _RIX)
 {
 	Module *self = konoha::object_cast<Module *>(sfp[0].p);
-	ExecutionEngine *ptr = EngineBuilder(self).setEngineKind(EngineKind::JIT).create();
+	CodeGenOpt::Level OptLevel = (CodeGenOpt::Level) sfp[1].ivalue;
+	ExecutionEngine *ptr = EngineBuilder(self).setEngineKind(EngineKind::JIT).setOptLevel(OptLevel).create();
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::object_free<ExecutionEngine>);
 	RETURN_(p);
 }
