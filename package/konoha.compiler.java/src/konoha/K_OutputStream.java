@@ -20,8 +20,28 @@ public class K_OutputStream extends K_Object {
 		return this;
 	}
 	
+	public void print(Object o) {
+		out.print(o);
+	}
+
 	public void println(Object o) {
 		out.println(o);
+	}
+
+	public void putByte(int n) {
+		out.write(n);
+	}
+	
+	public void write(K_Bytes bytes, int offset, int length) {
+		out.write(bytes.data, offset, length);
+	}
+	
+	public void flush() {
+		out.flush();
+	}
+	
+	public void close() {
+		out.close();
 	}
 	
 	public void send(String s) {
@@ -43,22 +63,6 @@ public class K_OutputStream extends K_Object {
 	
 	public void sendBoolean(boolean n) {
 		cwb.append(n);
-	}
-	
-	public void putByte(int n) {
-		out.write(n);
-	}
-	
-	public void write(K_Bytes bytes, int offset, int length) {
-		out.write(bytes.data, offset, length);
-	}
-	
-	public void flush() {
-		out.flush();
-	}
-	
-	public void close() {
-		out.close();
 	}
 	
 	public String toStr() {

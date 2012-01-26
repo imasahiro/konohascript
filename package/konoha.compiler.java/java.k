@@ -3442,6 +3442,627 @@ class Java_awt_image_WritableRenderedImage extends Java_awt_image_RenderedImage 
 }
 
 /*============================================================*/
+/* java package java.awt.font */
+
+/*------------------------------------------------------------*/
+/* unknown or another package classes .. */
+class Java_awt_Font;
+class Java_awt_Graphics2D;
+class Java_awt_Image;
+class Java_awt_Rectangle;
+class Java_awt_Shape;
+class Java_awt_font_NumericShaper_Range;
+class Java_awt_font_TextLayout_CaretPolicy;
+class Java_awt_geom_AffineTransform;
+class Java_awt_geom_Point2D;
+class Java_awt_geom_Rectangle2D;
+class Java_io_Serializable;
+class Java_lang_Cloneable;
+class Java_text_AttributedCharacterIterator;
+class Java_text_BreakIterator;
+class Java_util_Map;
+class Java_util_Set;
+
+/*------------------------------------------------------------*/
+/* this package classes .. */
+class Java_awt_font_FontRenderContext;
+class Java_awt_font_GlyphJustificationInfo;
+class Java_awt_font_GlyphMetrics;
+class Java_awt_font_GlyphVector extends Java_lang_Cloneable;
+class Java_awt_font_GraphicAttribute;
+class Java_awt_font_ImageGraphicAttribute extends Java_awt_font_GraphicAttribute;
+class Java_awt_font_LayoutPath;
+class Java_awt_font_LineBreakMeasurer;
+class Java_awt_font_LineMetrics;
+class Java_awt_font_MultipleMaster;
+class Java_awt_font_NumericShaper extends Java_io_Serializable;
+class Java_awt_font_OpenType;
+class Java_awt_font_ShapeGraphicAttribute extends Java_awt_font_GraphicAttribute;
+class Java_awt_font_TextAttribute;
+class Java_awt_font_TextHitInfo;
+class Java_awt_font_TextLayout extends Java_lang_Cloneable;
+class Java_awt_font_TextMeasurer extends Java_lang_Cloneable;
+class Java_awt_font_TransformAttribute extends Java_io_Serializable;
+
+/*------------------------------------------------------------*/
+/* class java.awt.font.FontRenderContext */
+class Java_awt_font_FontRenderContext {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_geom_AffineTransform getTransform();
+	@Virtual @Overload Object getAntiAliasingHint();
+	@Virtual @Overload Object getFractionalMetricsHint();
+	@Virtual @Overload boolean equals(Java_awt_font_FontRenderContext p0);
+	@Virtual @Overload boolean equals(Object p0);
+	@Virtual @Overload boolean isAntiAliased();
+	@Virtual @Overload boolean isTransformed();
+	@Virtual @Overload boolean usesFractionalMetrics();
+	@Virtual @Overload int getTransformType();
+}
+@Overload Java_awt_font_FontRenderContext Java_awt_font_FontRenderContext.new(Java_awt_geom_AffineTransform p0, boolean p1, boolean p2);
+@Overload Java_awt_font_FontRenderContext Java_awt_font_FontRenderContext.new(Java_awt_geom_AffineTransform p0, Object p1, Object p2);
+
+/* class java.awt.font.GlyphJustificationInfo */
+class Java_awt_font_GlyphJustificationInfo {
+}
+Java_awt_font_GlyphJustificationInfo Java_awt_font_GlyphJustificationInfo.new(float p0, boolean p1, int p2, float p3, float p4, boolean p5, int p6, float p7, float p8);
+
+/* class java.awt.font.GlyphMetrics */
+class Java_awt_font_GlyphMetrics {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_geom_Rectangle2D getBounds2D();
+	@Virtual @Overload boolean isCombining();
+	@Virtual @Overload boolean isComponent();
+	@Virtual @Overload boolean isLigature();
+	@Virtual @Overload boolean isStandard();
+	@Virtual @Overload boolean isWhitespace();
+	@Virtual @Overload float getAdvance();
+	@Virtual @Overload float getAdvanceX();
+	@Virtual @Overload float getAdvanceY();
+	@Virtual @Overload float getLSB();
+	@Virtual @Overload float getRSB();
+	@Virtual @Overload int getType();
+}
+@Overload Java_awt_font_GlyphMetrics Java_awt_font_GlyphMetrics.new(float p0, Java_awt_geom_Rectangle2D p1, int p2);
+@Overload Java_awt_font_GlyphMetrics Java_awt_font_GlyphMetrics.new(boolean p0, float p1, float p2, Java_awt_geom_Rectangle2D p3, int p4);
+
+/* class java.awt.font.GlyphVector */
+class Java_awt_font_GlyphVector extends Java_lang_Cloneable {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Font getFont();
+	@Virtual @Overload Java_awt_Rectangle getGlyphPixelBounds(int p0, Java_awt_font_FontRenderContext p1, float p2, float p3);
+	@Virtual @Overload Java_awt_Rectangle getPixelBounds(Java_awt_font_FontRenderContext p0, float p1, float p2);
+	@Virtual @Overload Java_awt_Shape getGlyphLogicalBounds(int p0);
+	@Virtual @Overload Java_awt_Shape getGlyphOutline(int p0);
+	@Virtual @Overload Java_awt_Shape getGlyphOutline(int p0, float p1, float p2);
+	@Virtual @Overload Java_awt_Shape getGlyphVisualBounds(int p0);
+	@Virtual @Overload Java_awt_Shape getOutline();
+	@Virtual @Overload Java_awt_Shape getOutline(float p0, float p1);
+	@Virtual @Overload Java_awt_font_FontRenderContext getFontRenderContext();
+	@Virtual @Overload Java_awt_font_GlyphJustificationInfo getGlyphJustificationInfo(int p0);
+	@Virtual @Overload Java_awt_font_GlyphMetrics getGlyphMetrics(int p0);
+	@Virtual @Overload Java_awt_geom_AffineTransform getGlyphTransform(int p0);
+	@Virtual @Overload Java_awt_geom_Point2D getGlyphPosition(int p0);
+	@Virtual @Overload Java_awt_geom_Rectangle2D getLogicalBounds();
+	@Virtual @Overload Java_awt_geom_Rectangle2D getVisualBounds();
+	@Virtual @Overload boolean equals(Java_awt_font_GlyphVector p0);
+	@Virtual @Overload float[] getGlyphPositions(int p0, int p1, float[] p2);
+	@Virtual @Overload int getGlyphCharIndex(int p0);
+	@Virtual @Overload int getGlyphCode(int p0);
+	@Virtual @Overload int getLayoutFlags();
+	@Virtual @Overload int getNumGlyphs();
+	@Virtual @Overload int[] getGlyphCharIndices(int p0, int p1, int[] p2);
+	@Virtual @Overload int[] getGlyphCodes(int p0, int p1, int[] p2);
+	@Virtual @Overload void performDefaultLayout();
+	@Virtual @Overload void setGlyphPosition(int p0, Java_awt_geom_Point2D p1);
+	@Virtual @Overload void setGlyphTransform(int p0, Java_awt_geom_AffineTransform p1);
+}
+Java_awt_font_GlyphVector Java_awt_font_GlyphVector.new();
+
+/* class java.awt.font.GraphicAttribute */
+class Java_awt_font_GraphicAttribute {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Shape getOutline(Java_awt_geom_AffineTransform p0);
+	@Virtual @Overload Java_awt_font_GlyphJustificationInfo getJustificationInfo();
+	@Virtual @Overload Java_awt_geom_Rectangle2D getBounds();
+	@Virtual @Overload float getAdvance();
+	@Virtual @Overload float getAscent();
+	@Virtual @Overload float getDescent();
+	@Virtual @Overload int getAlignment();
+	@Virtual @Overload void draw(Java_awt_Graphics2D p0, float p1, float p2);
+}
+
+/* class java.awt.font.ImageGraphicAttribute */
+class Java_awt_font_ImageGraphicAttribute extends Java_awt_font_GraphicAttribute {
+	/*-- Method --*/
+	@Virtual @Overload boolean equals(Java_awt_font_ImageGraphicAttribute p0);
+}
+@Overload Java_awt_font_ImageGraphicAttribute Java_awt_font_ImageGraphicAttribute.new(Java_awt_Image p0, int p1);
+@Overload Java_awt_font_ImageGraphicAttribute Java_awt_font_ImageGraphicAttribute.new(Java_awt_Image p0, int p1, float p2, float p3);
+
+/* class java.awt.font.LayoutPath */
+class Java_awt_font_LayoutPath {
+	/*-- Method --*/
+	@Virtual @Overload boolean pointToPath(Java_awt_geom_Point2D p0, Java_awt_geom_Point2D p1);
+	@Virtual @Overload void pathToPoint(Java_awt_geom_Point2D p0, boolean p1, Java_awt_geom_Point2D p2);
+}
+Java_awt_font_LayoutPath Java_awt_font_LayoutPath.new();
+
+/* class java.awt.font.LineBreakMeasurer */
+class Java_awt_font_LineBreakMeasurer {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_font_TextLayout nextLayout(float p0);
+	@Virtual @Overload Java_awt_font_TextLayout nextLayout(float p0, int p1, boolean p2);
+	@Virtual @Overload int getPosition();
+	@Virtual @Overload int nextOffset(float p0);
+	@Virtual @Overload int nextOffset(float p0, int p1, boolean p2);
+	@Virtual @Overload void deleteChar(Java_text_AttributedCharacterIterator p0, int p1);
+	@Virtual @Overload void insertChar(Java_text_AttributedCharacterIterator p0, int p1);
+	@Virtual @Overload void setPosition(int p0);
+}
+@Overload Java_awt_font_LineBreakMeasurer Java_awt_font_LineBreakMeasurer.new(Java_text_AttributedCharacterIterator p0, Java_awt_font_FontRenderContext p1);
+@Overload Java_awt_font_LineBreakMeasurer Java_awt_font_LineBreakMeasurer.new(Java_text_AttributedCharacterIterator p0, Java_text_BreakIterator p1, Java_awt_font_FontRenderContext p2);
+
+/* class java.awt.font.LineMetrics */
+class Java_awt_font_LineMetrics {
+	/*-- Method --*/
+	@Virtual @Overload float getAscent();
+	@Virtual @Overload float getDescent();
+	@Virtual @Overload float getHeight();
+	@Virtual @Overload float getLeading();
+	@Virtual @Overload float getStrikethroughOffset();
+	@Virtual @Overload float getStrikethroughThickness();
+	@Virtual @Overload float getUnderlineOffset();
+	@Virtual @Overload float getUnderlineThickness();
+	@Virtual @Overload float[] getBaselineOffsets();
+	@Virtual @Overload int getBaselineIndex();
+	@Virtual @Overload int getNumChars();
+}
+Java_awt_font_LineMetrics Java_awt_font_LineMetrics.new();
+
+/* interface java.awt.font.MultipleMaster */
+class Java_awt_font_MultipleMaster {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Font deriveMMFont(float[] p0);
+	@Virtual @Overload Java_awt_Font deriveMMFont(float[] p0, float p1, float p2, float p3, float p4);
+	@Virtual @Overload String[] getDesignAxisNames();
+	@Virtual @Overload float[] getDesignAxisDefaults();
+	@Virtual @Overload float[] getDesignAxisRanges();
+	@Virtual @Overload int getNumDesignAxes();
+}
+
+/* class java.awt.font.NumericShaper */
+class Java_awt_font_NumericShaper extends Java_io_Serializable {
+	/*-- Method --*/
+	@Static @Overload Java_awt_font_NumericShaper getContextualShaper(Java_util_Set p0);
+	@Static @Overload Java_awt_font_NumericShaper getContextualShaper(Java_util_Set p0, Java_awt_font_NumericShaper_Range p1);
+	@Static @Overload Java_awt_font_NumericShaper getContextualShaper(int p0);
+	@Static @Overload Java_awt_font_NumericShaper getContextualShaper(int p0, int p1);
+	@Static @Overload Java_awt_font_NumericShaper getShaper(Java_awt_font_NumericShaper_Range p0);
+	@Static @Overload Java_awt_font_NumericShaper getShaper(int p0);
+	@Virtual @Overload Java_util_Set getRangeSet();
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean equals(Object p0);
+	@Virtual @Overload boolean isContextual();
+	@Virtual @Overload int getRanges();
+	@Virtual @Overload void shape(int[] p0, int p1, int p2);
+	@Virtual @Overload void shape(int[] p0, int p1, int p2, Java_awt_font_NumericShaper_Range p3);
+	@Virtual @Overload void shape(int[] p0, int p1, int p2, int p3);
+}
+
+/* interface java.awt.font.OpenType */
+class Java_awt_font_OpenType {
+	/*-- Method --*/
+	@Virtual @Overload int getFontTableSize(String p0);
+	@Virtual @Overload int getFontTableSize(int p0);
+	@Virtual @Overload int getVersion();
+	@Virtual @Overload int[] getFontTable(String p0);
+	@Virtual @Overload int[] getFontTable(String p0, int p1, int p2);
+	@Virtual @Overload int[] getFontTable(int p0);
+	@Virtual @Overload int[] getFontTable(int p0, int p1, int p2);
+}
+
+/* class java.awt.font.ShapeGraphicAttribute */
+class Java_awt_font_ShapeGraphicAttribute extends Java_awt_font_GraphicAttribute {
+	/*-- Method --*/
+	@Virtual @Overload boolean equals(Java_awt_font_ShapeGraphicAttribute p0);
+}
+Java_awt_font_ShapeGraphicAttribute Java_awt_font_ShapeGraphicAttribute.new(Java_awt_Shape p0, int p1, boolean p2);
+
+/* class java.awt.font.TextAttribute */
+class Java_awt_font_TextAttribute {
+}
+
+/* class java.awt.font.TextHitInfo */
+class Java_awt_font_TextHitInfo {
+	/*-- Method --*/
+	@Static @Overload Java_awt_font_TextHitInfo afterOffset(int p0);
+	@Static @Overload Java_awt_font_TextHitInfo beforeOffset(int p0);
+	@Static @Overload Java_awt_font_TextHitInfo leading(int p0);
+	@Static @Overload Java_awt_font_TextHitInfo trailing(int p0);
+	@Virtual @Overload Java_awt_font_TextHitInfo getOffsetHit(int p0);
+	@Virtual @Overload Java_awt_font_TextHitInfo getOtherHit();
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean equals(Java_awt_font_TextHitInfo p0);
+	@Virtual @Overload boolean equals(Object p0);
+	@Virtual @Overload boolean isLeadingEdge();
+	@Virtual @Overload int getCharIndex();
+	@Virtual @Overload int getInsertionIndex();
+}
+
+/* class java.awt.font.TextLayout */
+class Java_awt_font_TextLayout extends Java_lang_Cloneable {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Rectangle getPixelBounds(Java_awt_font_FontRenderContext p0, float p1, float p2);
+	@Virtual @Overload Java_awt_Shape getBlackBoxBounds(int p0, int p1);
+	@Virtual @Overload Java_awt_Shape getCaretShape(Java_awt_font_TextHitInfo p0);
+	@Virtual @Overload Java_awt_Shape getCaretShape(Java_awt_font_TextHitInfo p0, Java_awt_geom_Rectangle2D p1);
+	@Virtual @Overload Java_awt_Shape getLogicalHighlightShape(int p0, int p1);
+	@Virtual @Overload Java_awt_Shape getLogicalHighlightShape(int p0, int p1, Java_awt_geom_Rectangle2D p2);
+	@Virtual @Overload Java_awt_Shape getOutline(Java_awt_geom_AffineTransform p0);
+	@Virtual @Overload Java_awt_Shape getVisualHighlightShape(Java_awt_font_TextHitInfo p0, Java_awt_font_TextHitInfo p1);
+	@Virtual @Overload Java_awt_Shape getVisualHighlightShape(Java_awt_font_TextHitInfo p0, Java_awt_font_TextHitInfo p1, Java_awt_geom_Rectangle2D p2);
+	@Virtual @Overload Java_awt_Shape[] getCaretShapes(int p0);
+	@Virtual @Overload Java_awt_Shape[] getCaretShapes(int p0, Java_awt_geom_Rectangle2D p1);
+	@Virtual @Overload Java_awt_Shape[] getCaretShapes(int p0, Java_awt_geom_Rectangle2D p1, Java_awt_font_TextLayout_CaretPolicy p2);
+	@Virtual @Overload Java_awt_font_LayoutPath getLayoutPath();
+	@Virtual @Overload Java_awt_font_TextHitInfo getNextLeftHit(Java_awt_font_TextHitInfo p0);
+	@Virtual @Overload Java_awt_font_TextHitInfo getNextLeftHit(int p0);
+	@Virtual @Overload Java_awt_font_TextHitInfo getNextLeftHit(int p0, Java_awt_font_TextLayout_CaretPolicy p1);
+	@Virtual @Overload Java_awt_font_TextHitInfo getNextRightHit(Java_awt_font_TextHitInfo p0);
+	@Virtual @Overload Java_awt_font_TextHitInfo getNextRightHit(int p0);
+	@Virtual @Overload Java_awt_font_TextHitInfo getNextRightHit(int p0, Java_awt_font_TextLayout_CaretPolicy p1);
+	@Virtual @Overload Java_awt_font_TextHitInfo getVisualOtherHit(Java_awt_font_TextHitInfo p0);
+	@Virtual @Overload Java_awt_font_TextHitInfo hitTestChar(float p0, float p1);
+	@Virtual @Overload Java_awt_font_TextHitInfo hitTestChar(float p0, float p1, Java_awt_geom_Rectangle2D p2);
+	@Virtual @Overload Java_awt_font_TextLayout getJustifiedLayout(float p0);
+	@Virtual @Overload Java_awt_geom_Rectangle2D getBounds();
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean equals(Java_awt_font_TextLayout p0);
+	@Virtual @Overload boolean equals(Object p0);
+	@Virtual @Overload boolean isLeftToRight();
+	@Virtual @Overload boolean isVertical();
+	@Virtual @Overload float getAdvance();
+	@Virtual @Overload float getAscent();
+	@Virtual @Overload float getDescent();
+	@Virtual @Overload float getLeading();
+	@Virtual @Overload float getVisibleAdvance();
+	@Virtual @Overload float[] getBaselineOffsets();
+	@Virtual @Overload float[] getCaretInfo(Java_awt_font_TextHitInfo p0);
+	@Virtual @Overload float[] getCaretInfo(Java_awt_font_TextHitInfo p0, Java_awt_geom_Rectangle2D p1);
+	@Virtual @Overload int getBaseline();
+	@Virtual @Overload int getCharacterCount();
+	@Virtual @Overload int getCharacterLevel(int p0);
+	@Virtual @Overload int[] getLogicalRangesForVisualSelection(Java_awt_font_TextHitInfo p0, Java_awt_font_TextHitInfo p1);
+	@Virtual @Overload void draw(Java_awt_Graphics2D p0, float p1, float p2);
+	@Virtual @Overload void hitToPoint(Java_awt_font_TextHitInfo p0, Java_awt_geom_Point2D p1);
+}
+@Overload Java_awt_font_TextLayout Java_awt_font_TextLayout.new(String p0, Java_awt_Font p1, Java_awt_font_FontRenderContext p2);
+@Overload Java_awt_font_TextLayout Java_awt_font_TextLayout.new(String p0, Java_util_Map p1, Java_awt_font_FontRenderContext p2);
+@Overload Java_awt_font_TextLayout Java_awt_font_TextLayout.new(Java_text_AttributedCharacterIterator p0, Java_awt_font_FontRenderContext p1);
+
+/* class java.awt.font.TextMeasurer */
+class Java_awt_font_TextMeasurer extends Java_lang_Cloneable {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_font_TextLayout getLayout(int p0, int p1);
+	@Virtual @Overload float getAdvanceBetween(int p0, int p1);
+	@Virtual @Overload int getLineBreakIndex(int p0, float p1);
+	@Virtual @Overload void deleteChar(Java_text_AttributedCharacterIterator p0, int p1);
+	@Virtual @Overload void insertChar(Java_text_AttributedCharacterIterator p0, int p1);
+}
+Java_awt_font_TextMeasurer Java_awt_font_TextMeasurer.new(Java_text_AttributedCharacterIterator p0, Java_awt_font_FontRenderContext p1);
+
+/* class java.awt.font.TransformAttribute */
+class Java_awt_font_TransformAttribute extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_geom_AffineTransform getTransform();
+	@Virtual @Overload boolean equals(Object p0);
+	@Virtual @Overload boolean isIdentity();
+}
+Java_awt_font_TransformAttribute Java_awt_font_TransformAttribute.new(Java_awt_geom_AffineTransform p0);
+
+/*============================================================*/
+/* java package java.awt.dnd */
+
+/*------------------------------------------------------------*/
+/* unknown or another package classes .. */
+class Java_awt_Component;
+class Java_awt_Cursor;
+class Java_awt_Image;
+class Java_awt_Insets;
+class Java_awt_Point;
+class Java_awt_datatransfer_DataFlavor;
+class Java_awt_datatransfer_FlavorMap;
+class Java_awt_datatransfer_Transferable;
+class Java_awt_dnd_peer_DragSourceContextPeer;
+class Java_awt_dnd_peer_DropTargetContextPeer;
+class Java_awt_event_InputEvent;
+class Java_awt_event_MouseEvent;
+class Java_awt_peer_ComponentPeer;
+class Java_io_Serializable;
+class Java_lang_IllegalStateException;
+class Java_util_EventListener;
+class Java_util_EventObject;
+class Java_util_Iterator;
+class Java_util_List;
+
+/*------------------------------------------------------------*/
+/* this package classes .. */
+class Java_awt_dnd_Autoscroll;
+class Java_awt_dnd_DnDConstants;
+class Java_awt_dnd_DragGestureEvent extends Java_util_EventObject;
+class Java_awt_dnd_DragGestureListener extends Java_util_EventListener;
+class Java_awt_dnd_DragGestureRecognizer extends Java_io_Serializable;
+class Java_awt_dnd_DragSource extends Java_io_Serializable;
+class Java_awt_dnd_DragSourceListener extends Java_util_EventListener;
+class Java_awt_dnd_DragSourceAdapter extends Java_awt_dnd_DragSourceListener;
+class Java_awt_dnd_DragSourceContext extends Java_awt_dnd_DragSourceListener;
+class Java_awt_dnd_DragSourceEvent extends Java_util_EventObject;
+class Java_awt_dnd_DragSourceDragEvent extends Java_awt_dnd_DragSourceEvent;
+class Java_awt_dnd_DragSourceDropEvent extends Java_awt_dnd_DragSourceEvent;
+class Java_awt_dnd_DragSourceMotionListener extends Java_util_EventListener;
+class Java_awt_dnd_DropTargetListener extends Java_util_EventListener;
+class Java_awt_dnd_DropTarget extends Java_awt_dnd_DropTargetListener;
+class Java_awt_dnd_DropTargetAdapter extends Java_awt_dnd_DropTargetListener;
+class Java_awt_dnd_DropTargetContext extends Java_io_Serializable;
+class Java_awt_dnd_DropTargetEvent extends Java_util_EventObject;
+class Java_awt_dnd_DropTargetDragEvent extends Java_awt_dnd_DropTargetEvent;
+class Java_awt_dnd_DropTargetDropEvent extends Java_awt_dnd_DropTargetEvent;
+class Java_awt_dnd_InvalidDnDOperationException extends Java_lang_IllegalStateException;
+class Java_awt_dnd_MouseDragGestureRecognizer extends Java_awt_dnd_DragGestureRecognizer;
+
+/*------------------------------------------------------------*/
+/* interface java.awt.dnd.Autoscroll */
+class Java_awt_dnd_Autoscroll {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Insets getAutoscrollInsets();
+	@Virtual @Overload void autoscroll(Java_awt_Point p0);
+}
+
+/* class java.awt.dnd.DnDConstants */
+class Java_awt_dnd_DnDConstants {
+}
+
+/* class java.awt.dnd.DragGestureEvent */
+class Java_awt_dnd_DragGestureEvent extends Java_util_EventObject {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Component getComponent();
+	@Virtual @Overload Java_awt_Point getDragOrigin();
+	@Virtual @Overload Java_awt_dnd_DragGestureRecognizer getSourceAsDragGestureRecognizer();
+	@Virtual @Overload Java_awt_dnd_DragSource getDragSource();
+	@Virtual @Overload Java_awt_event_InputEvent getTriggerEvent();
+	@Virtual @Overload Java_util_Iterator iterator();
+	@Virtual @Overload Object[] toArray();
+	@Virtual @Overload Object[] toArray(Object[] p0);
+	@Virtual @Overload int getDragAction();
+	@Virtual @Overload void startDrag(Java_awt_Cursor p0, Java_awt_Image p1, Java_awt_Point p2, Java_awt_datatransfer_Transferable p3, Java_awt_dnd_DragSourceListener p4);
+	@Virtual @Overload void startDrag(Java_awt_Cursor p0, Java_awt_datatransfer_Transferable p1);
+	@Virtual @Overload void startDrag(Java_awt_Cursor p0, Java_awt_datatransfer_Transferable p1, Java_awt_dnd_DragSourceListener p2);
+}
+Java_awt_dnd_DragGestureEvent Java_awt_dnd_DragGestureEvent.new(Java_awt_dnd_DragGestureRecognizer p0, int p1, Java_awt_Point p2, Java_util_List p3);
+
+/* interface java.awt.dnd.DragGestureListener */
+class Java_awt_dnd_DragGestureListener extends Java_util_EventListener {
+	/*-- Method --*/
+	@Virtual @Overload void dragGestureRecognized(Java_awt_dnd_DragGestureEvent p0);
+}
+
+/* class java.awt.dnd.DragGestureRecognizer */
+class Java_awt_dnd_DragGestureRecognizer extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Component getComponent();
+	@Virtual @Overload Java_awt_dnd_DragSource getDragSource();
+	@Virtual @Overload Java_awt_event_InputEvent getTriggerEvent();
+	@Virtual @Overload int getSourceActions();
+	@Virtual @Overload void addDragGestureListener(Java_awt_dnd_DragGestureListener p0);
+	@Virtual @Overload void removeDragGestureListener(Java_awt_dnd_DragGestureListener p0);
+	@Virtual @Overload void resetRecognizer();
+	@Virtual @Overload void setComponent(Java_awt_Component p0);
+	@Virtual @Overload void setSourceActions(int p0);
+}
+
+/* class java.awt.dnd.DragSource */
+class Java_awt_dnd_DragSource extends Java_io_Serializable {
+	/*-- Method --*/
+	@Static @Overload Java_awt_dnd_DragSource getDefaultDragSource();
+	@Static @Overload boolean isDragImageSupported();
+	@Static @Overload int getDragThreshold();
+	@Virtual @Overload Java_awt_datatransfer_FlavorMap getFlavorMap();
+	@Virtual @Overload Java_awt_dnd_DragGestureRecognizer createDefaultDragGestureRecognizer(Java_awt_Component p0, int p1, Java_awt_dnd_DragGestureListener p2);
+	@Virtual @Overload Java_awt_dnd_DragGestureRecognizer createDragGestureRecognizer(Class p0, Java_awt_Component p1, int p2, Java_awt_dnd_DragGestureListener p3);
+	@Virtual @Overload Java_awt_dnd_DragSourceListener[] getDragSourceListeners();
+	@Virtual @Overload Java_awt_dnd_DragSourceMotionListener[] getDragSourceMotionListeners();
+	@Virtual @Overload Java_util_EventListener[] getListeners(Class p0);
+	@Virtual @Overload void addDragSourceListener(Java_awt_dnd_DragSourceListener p0);
+	@Virtual @Overload void addDragSourceMotionListener(Java_awt_dnd_DragSourceMotionListener p0);
+	@Virtual @Overload void removeDragSourceListener(Java_awt_dnd_DragSourceListener p0);
+	@Virtual @Overload void removeDragSourceMotionListener(Java_awt_dnd_DragSourceMotionListener p0);
+	@Virtual @Overload void startDrag(Java_awt_dnd_DragGestureEvent p0, Java_awt_Cursor p1, Java_awt_Image p2, Java_awt_Point p3, Java_awt_datatransfer_Transferable p4, Java_awt_dnd_DragSourceListener p5);
+	@Virtual @Overload void startDrag(Java_awt_dnd_DragGestureEvent p0, Java_awt_Cursor p1, Java_awt_Image p2, Java_awt_Point p3, Java_awt_datatransfer_Transferable p4, Java_awt_dnd_DragSourceListener p5, Java_awt_datatransfer_FlavorMap p6);
+	@Virtual @Overload void startDrag(Java_awt_dnd_DragGestureEvent p0, Java_awt_Cursor p1, Java_awt_datatransfer_Transferable p2, Java_awt_dnd_DragSourceListener p3);
+	@Virtual @Overload void startDrag(Java_awt_dnd_DragGestureEvent p0, Java_awt_Cursor p1, Java_awt_datatransfer_Transferable p2, Java_awt_dnd_DragSourceListener p3, Java_awt_datatransfer_FlavorMap p4);
+}
+Java_awt_dnd_DragSource Java_awt_dnd_DragSource.new();
+
+/* interface java.awt.dnd.DragSourceListener */
+class Java_awt_dnd_DragSourceListener extends Java_util_EventListener {
+	/*-- Method --*/
+	@Virtual @Overload void dragDropEnd(Java_awt_dnd_DragSourceDropEvent p0);
+	@Virtual @Overload void dragEnter(Java_awt_dnd_DragSourceDragEvent p0);
+	@Virtual @Overload void dragExit(Java_awt_dnd_DragSourceEvent p0);
+	@Virtual @Overload void dragOver(Java_awt_dnd_DragSourceDragEvent p0);
+	@Virtual @Overload void dropActionChanged(Java_awt_dnd_DragSourceDragEvent p0);
+}
+
+/* class java.awt.dnd.DragSourceAdapter */
+class Java_awt_dnd_DragSourceAdapter extends Java_awt_dnd_DragSourceListener {
+	/*-- Method --*/
+	@Virtual @Overload void dragMouseMoved(Java_awt_dnd_DragSourceDragEvent p0);
+}
+Java_awt_dnd_DragSourceAdapter Java_awt_dnd_DragSourceAdapter.new();
+
+/* class java.awt.dnd.DragSourceContext */
+class Java_awt_dnd_DragSourceContext extends Java_awt_dnd_DragSourceListener {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Component getComponent();
+	@Virtual @Overload Java_awt_Cursor getCursor();
+	@Virtual @Overload Java_awt_datatransfer_Transferable getTransferable();
+	@Virtual @Overload Java_awt_dnd_DragGestureEvent getTrigger();
+	@Virtual @Overload Java_awt_dnd_DragSource getDragSource();
+	@Virtual @Overload int getSourceActions();
+	@Virtual @Overload void addDragSourceListener(Java_awt_dnd_DragSourceListener p0);
+	@Virtual @Overload void dragMouseMoved(Java_awt_dnd_DragSourceDragEvent p0);
+	@Virtual @Overload void removeDragSourceListener(Java_awt_dnd_DragSourceListener p0);
+	@Virtual @Overload void setCursor(Java_awt_Cursor p0);
+	@Virtual @Overload void transferablesFlavorsChanged();
+}
+Java_awt_dnd_DragSourceContext Java_awt_dnd_DragSourceContext.new(Java_awt_dnd_peer_DragSourceContextPeer p0, Java_awt_dnd_DragGestureEvent p1, Java_awt_Cursor p2, Java_awt_Image p3, Java_awt_Point p4, Java_awt_datatransfer_Transferable p5, Java_awt_dnd_DragSourceListener p6);
+
+/* class java.awt.dnd.DragSourceEvent */
+class Java_awt_dnd_DragSourceEvent extends Java_util_EventObject {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Point getLocation();
+	@Virtual @Overload Java_awt_dnd_DragSourceContext getDragSourceContext();
+	@Virtual @Overload int getX();
+	@Virtual @Overload int getY();
+}
+@Overload Java_awt_dnd_DragSourceEvent Java_awt_dnd_DragSourceEvent.new(Java_awt_dnd_DragSourceContext p0);
+@Overload Java_awt_dnd_DragSourceEvent Java_awt_dnd_DragSourceEvent.new(Java_awt_dnd_DragSourceContext p0, int p1, int p2);
+
+/* class java.awt.dnd.DragSourceDragEvent */
+class Java_awt_dnd_DragSourceDragEvent extends Java_awt_dnd_DragSourceEvent {
+	/*-- Method --*/
+	@Virtual @Overload int getDropAction();
+	@Virtual @Overload int getGestureModifiers();
+	@Virtual @Overload int getGestureModifiersEx();
+	@Virtual @Overload int getTargetActions();
+	@Virtual @Overload int getUserAction();
+}
+@Overload Java_awt_dnd_DragSourceDragEvent Java_awt_dnd_DragSourceDragEvent.new(Java_awt_dnd_DragSourceContext p0, int p1, int p2, int p3);
+@Overload Java_awt_dnd_DragSourceDragEvent Java_awt_dnd_DragSourceDragEvent.new(Java_awt_dnd_DragSourceContext p0, int p1, int p2, int p3, int p4, int p5);
+
+/* class java.awt.dnd.DragSourceDropEvent */
+class Java_awt_dnd_DragSourceDropEvent extends Java_awt_dnd_DragSourceEvent {
+	/*-- Method --*/
+	@Virtual @Overload boolean getDropSuccess();
+	@Virtual @Overload int getDropAction();
+}
+@Overload Java_awt_dnd_DragSourceDropEvent Java_awt_dnd_DragSourceDropEvent.new(Java_awt_dnd_DragSourceContext p0, int p1, boolean p2);
+@Overload Java_awt_dnd_DragSourceDropEvent Java_awt_dnd_DragSourceDropEvent.new(Java_awt_dnd_DragSourceContext p0, int p1, boolean p2, int p3, int p4);
+@Overload Java_awt_dnd_DragSourceDropEvent Java_awt_dnd_DragSourceDropEvent.new(Java_awt_dnd_DragSourceContext p0);
+
+/* interface java.awt.dnd.DragSourceMotionListener */
+class Java_awt_dnd_DragSourceMotionListener extends Java_util_EventListener {
+	/*-- Method --*/
+	@Virtual @Overload void dragMouseMoved(Java_awt_dnd_DragSourceDragEvent p0);
+}
+
+/* interface java.awt.dnd.DropTargetListener */
+class Java_awt_dnd_DropTargetListener extends Java_util_EventListener {
+	/*-- Method --*/
+	@Virtual @Overload void dragEnter(Java_awt_dnd_DropTargetDragEvent p0);
+	@Virtual @Overload void dragExit(Java_awt_dnd_DropTargetEvent p0);
+	@Virtual @Overload void dragOver(Java_awt_dnd_DropTargetDragEvent p0);
+	@Virtual @Overload void drop(Java_awt_dnd_DropTargetDropEvent p0);
+	@Virtual @Overload void dropActionChanged(Java_awt_dnd_DropTargetDragEvent p0);
+}
+
+/* class java.awt.dnd.DropTarget */
+class Java_awt_dnd_DropTarget extends Java_awt_dnd_DropTargetListener {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Component getComponent();
+	@Virtual @Overload Java_awt_datatransfer_FlavorMap getFlavorMap();
+	@Virtual @Overload Java_awt_dnd_DropTargetContext getDropTargetContext();
+	@Virtual @Overload boolean isActive();
+	@Virtual @Overload int getDefaultActions();
+	@Virtual @Overload void addDropTargetListener(Java_awt_dnd_DropTargetListener p0);
+	@Virtual @Overload void addNotify(Java_awt_peer_ComponentPeer p0);
+	@Virtual @Overload void removeDropTargetListener(Java_awt_dnd_DropTargetListener p0);
+	@Virtual @Overload void removeNotify(Java_awt_peer_ComponentPeer p0);
+	@Virtual @Overload void setActive(boolean p0);
+	@Virtual @Overload void setComponent(Java_awt_Component p0);
+	@Virtual @Overload void setDefaultActions(int p0);
+	@Virtual @Overload void setFlavorMap(Java_awt_datatransfer_FlavorMap p0);
+}
+@Overload Java_awt_dnd_DropTarget Java_awt_dnd_DropTarget.new(Java_awt_Component p0, int p1, Java_awt_dnd_DropTargetListener p2, boolean p3, Java_awt_datatransfer_FlavorMap p4);
+@Overload Java_awt_dnd_DropTarget Java_awt_dnd_DropTarget.new(Java_awt_Component p0, int p1, Java_awt_dnd_DropTargetListener p2, boolean p3);
+@Overload Java_awt_dnd_DropTarget Java_awt_dnd_DropTarget.new();
+@Overload Java_awt_dnd_DropTarget Java_awt_dnd_DropTarget.new(Java_awt_Component p0, Java_awt_dnd_DropTargetListener p1);
+@Overload Java_awt_dnd_DropTarget Java_awt_dnd_DropTarget.new(Java_awt_Component p0, int p1, Java_awt_dnd_DropTargetListener p2);
+
+/* class java.awt.dnd.DropTargetAdapter */
+class Java_awt_dnd_DropTargetAdapter extends Java_awt_dnd_DropTargetListener {
+}
+Java_awt_dnd_DropTargetAdapter Java_awt_dnd_DropTargetAdapter.new();
+
+/* class java.awt.dnd.DropTargetContext */
+class Java_awt_dnd_DropTargetContext extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Component getComponent();
+	@Virtual @Overload Java_awt_dnd_DropTarget getDropTarget();
+	@Virtual @Overload void addNotify(Java_awt_dnd_peer_DropTargetContextPeer p0);
+	@Virtual @Overload void dropComplete(boolean p0);
+	@Virtual @Overload void removeNotify();
+}
+
+/* class java.awt.dnd.DropTargetEvent */
+class Java_awt_dnd_DropTargetEvent extends Java_util_EventObject {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_dnd_DropTargetContext getDropTargetContext();
+}
+Java_awt_dnd_DropTargetEvent Java_awt_dnd_DropTargetEvent.new(Java_awt_dnd_DropTargetContext p0);
+
+/* class java.awt.dnd.DropTargetDragEvent */
+class Java_awt_dnd_DropTargetDragEvent extends Java_awt_dnd_DropTargetEvent {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Point getLocation();
+	@Virtual @Overload Java_awt_datatransfer_DataFlavor[] getCurrentDataFlavors();
+	@Virtual @Overload Java_awt_datatransfer_Transferable getTransferable();
+	@Virtual @Overload Java_util_List getCurrentDataFlavorsAsList();
+	@Virtual @Overload boolean isDataFlavorSupported(Java_awt_datatransfer_DataFlavor p0);
+	@Virtual @Overload int getDropAction();
+	@Virtual @Overload int getSourceActions();
+	@Virtual @Overload void acceptDrag(int p0);
+	@Virtual @Overload void rejectDrag();
+}
+Java_awt_dnd_DropTargetDragEvent Java_awt_dnd_DropTargetDragEvent.new(Java_awt_dnd_DropTargetContext p0, Java_awt_Point p1, int p2, int p3);
+
+/* class java.awt.dnd.DropTargetDropEvent */
+class Java_awt_dnd_DropTargetDropEvent extends Java_awt_dnd_DropTargetEvent {
+	/*-- Method --*/
+	@Virtual @Overload Java_awt_Point getLocation();
+	@Virtual @Overload Java_awt_datatransfer_DataFlavor[] getCurrentDataFlavors();
+	@Virtual @Overload Java_awt_datatransfer_Transferable getTransferable();
+	@Virtual @Overload Java_util_List getCurrentDataFlavorsAsList();
+	@Virtual @Overload boolean isDataFlavorSupported(Java_awt_datatransfer_DataFlavor p0);
+	@Virtual @Overload boolean isLocalTransfer();
+	@Virtual @Overload int getDropAction();
+	@Virtual @Overload int getSourceActions();
+	@Virtual @Overload void acceptDrop(int p0);
+	@Virtual @Overload void dropComplete(boolean p0);
+	@Virtual @Overload void rejectDrop();
+}
+@Overload Java_awt_dnd_DropTargetDropEvent Java_awt_dnd_DropTargetDropEvent.new(Java_awt_dnd_DropTargetContext p0, Java_awt_Point p1, int p2, int p3);
+@Overload Java_awt_dnd_DropTargetDropEvent Java_awt_dnd_DropTargetDropEvent.new(Java_awt_dnd_DropTargetContext p0, Java_awt_Point p1, int p2, int p3, boolean p4);
+
+/* class java.awt.dnd.InvalidDnDOperationException */
+class Java_awt_dnd_InvalidDnDOperationException extends Java_lang_IllegalStateException {
+}
+@Overload Java_awt_dnd_InvalidDnDOperationException Java_awt_dnd_InvalidDnDOperationException.new();
+@Overload Java_awt_dnd_InvalidDnDOperationException Java_awt_dnd_InvalidDnDOperationException.new(String p0);
+
+/* class java.awt.dnd.MouseDragGestureRecognizer */
+class Java_awt_dnd_MouseDragGestureRecognizer extends Java_awt_dnd_DragGestureRecognizer {
+	/*-- Method --*/
+	@Virtual @Overload void mouseClicked(Java_awt_event_MouseEvent p0);
+	@Virtual @Overload void mouseDragged(Java_awt_event_MouseEvent p0);
+	@Virtual @Overload void mouseEntered(Java_awt_event_MouseEvent p0);
+	@Virtual @Overload void mouseExited(Java_awt_event_MouseEvent p0);
+	@Virtual @Overload void mouseMoved(Java_awt_event_MouseEvent p0);
+	@Virtual @Overload void mousePressed(Java_awt_event_MouseEvent p0);
+	@Virtual @Overload void mouseReleased(Java_awt_event_MouseEvent p0);
+}
+
+/*============================================================*/
 /* java package java.io */
 
 /*------------------------------------------------------------*/
@@ -5045,7 +5666,6 @@ class Java_lang_Class extends Java_io_Serializable {
 	@Virtual @Overload Java_lang_reflect_Method getEnclosingMethod();
 	@Virtual @Overload Java_lang_reflect_Method getMethod(String p0, Class[] p1);
 	@Virtual @Overload Java_lang_reflect_Method[] getDeclaredMethods();
-	@Virtual @Overload Java_lang_reflect_Method[] getMethods();
 	@Virtual @Overload Java_lang_reflect_Type getGenericSuperclass();
 	@Virtual @Overload Java_lang_reflect_TypeVariable[] getTypeParameters();
 	@Virtual @Overload Java_lang_reflect_Type[] getGenericInterfaces();
@@ -9465,6 +10085,388 @@ class Java_util_concurrent_TransferQueue extends Java_util_concurrent_BlockingQu
 	@Virtual @Overload int getWaitingConsumerCount();
 	@Virtual @Overload void transfer(Object p0);
 }
+
+/*============================================================*/
+/* java package java.util.concurrent.atomic */
+
+/*------------------------------------------------------------*/
+/* unknown or another package classes .. */
+class Java_io_Serializable;
+class Java_lang_Number;
+
+/*------------------------------------------------------------*/
+/* this package classes .. */
+class Java_util_concurrent_atomic_AtomicBoolean extends Java_io_Serializable;
+class Java_util_concurrent_atomic_AtomicInteger extends Java_lang_Number;
+class Java_util_concurrent_atomic_AtomicIntegerArray extends Java_io_Serializable;
+class Java_util_concurrent_atomic_AtomicIntegerFieldUpdater;
+class Java_util_concurrent_atomic_AtomicLong extends Java_lang_Number;
+class Java_util_concurrent_atomic_AtomicLongArray extends Java_io_Serializable;
+class Java_util_concurrent_atomic_AtomicLongFieldUpdater;
+class Java_util_concurrent_atomic_AtomicMarkableReference;
+class Java_util_concurrent_atomic_AtomicReference extends Java_io_Serializable;
+class Java_util_concurrent_atomic_AtomicReferenceArray extends Java_io_Serializable;
+class Java_util_concurrent_atomic_AtomicReferenceFieldUpdater;
+class Java_util_concurrent_atomic_AtomicStampedReference;
+
+/*------------------------------------------------------------*/
+/* class java.util.concurrent.atomic.AtomicBoolean */
+class Java_util_concurrent_atomic_AtomicBoolean extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean compareAndSet(boolean p0, boolean p1);
+	@Virtual @Overload boolean get();
+	@Virtual @Overload boolean getAndSet(boolean p0);
+	@Virtual @Overload boolean weakCompareAndSet(boolean p0, boolean p1);
+	@Virtual @Overload void lazySet(boolean p0);
+	@Virtual @Overload void set(boolean p0);
+}
+@Overload Java_util_concurrent_atomic_AtomicBoolean Java_util_concurrent_atomic_AtomicBoolean.new(boolean p0);
+@Overload Java_util_concurrent_atomic_AtomicBoolean Java_util_concurrent_atomic_AtomicBoolean.new();
+
+/* class java.util.concurrent.atomic.AtomicInteger */
+class Java_util_concurrent_atomic_AtomicInteger extends Java_lang_Number {
+	/*-- Method --*/
+	@Virtual @Overload boolean compareAndSet(int p0, int p1);
+	@Virtual @Overload boolean weakCompareAndSet(int p0, int p1);
+	@Virtual @Overload int addAndGet(int p0);
+	@Virtual @Overload int decrementAndGet();
+	@Virtual @Overload int get();
+	@Virtual @Overload int getAndAdd(int p0);
+	@Virtual @Overload int getAndDecrement();
+	@Virtual @Overload int getAndIncrement();
+	@Virtual @Overload int getAndSet(int p0);
+	@Virtual @Overload int incrementAndGet();
+	@Virtual @Overload void lazySet(int p0);
+	@Virtual @Overload void set(int p0);
+}
+@Overload Java_util_concurrent_atomic_AtomicInteger Java_util_concurrent_atomic_AtomicInteger.new(int p0);
+@Overload Java_util_concurrent_atomic_AtomicInteger Java_util_concurrent_atomic_AtomicInteger.new();
+
+/* class java.util.concurrent.atomic.AtomicIntegerArray */
+class Java_util_concurrent_atomic_AtomicIntegerArray extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean compareAndSet(int p0, int p1, int p2);
+	@Virtual @Overload boolean weakCompareAndSet(int p0, int p1, int p2);
+	@Virtual @Overload int addAndGet(int p0, int p1);
+	@Virtual @Overload int decrementAndGet(int p0);
+	@Virtual @Overload int get(int p0);
+	@Virtual @Overload int getAndAdd(int p0, int p1);
+	@Virtual @Overload int getAndDecrement(int p0);
+	@Virtual @Overload int getAndIncrement(int p0);
+	@Virtual @Overload int getAndSet(int p0, int p1);
+	@Virtual @Overload int incrementAndGet(int p0);
+	@Virtual @Overload int length();
+	@Virtual @Overload void lazySet(int p0, int p1);
+	@Virtual @Overload void set(int p0, int p1);
+}
+@Overload Java_util_concurrent_atomic_AtomicIntegerArray Java_util_concurrent_atomic_AtomicIntegerArray.new(int p0);
+@Overload Java_util_concurrent_atomic_AtomicIntegerArray Java_util_concurrent_atomic_AtomicIntegerArray.new(int[] p0);
+
+/* class java.util.concurrent.atomic.AtomicIntegerFieldUpdater */
+class Java_util_concurrent_atomic_AtomicIntegerFieldUpdater {
+	/*-- Method --*/
+	@Static @Overload Java_util_concurrent_atomic_AtomicIntegerFieldUpdater newUpdater(Class p0, String p1);
+	@Virtual @Overload boolean compareAndSet(Object p0, int p1, int p2);
+	@Virtual @Overload boolean weakCompareAndSet(Object p0, int p1, int p2);
+	@Virtual @Overload int addAndGet(Object p0, int p1);
+	@Virtual @Overload int decrementAndGet(Object p0);
+	@Virtual @Overload int get(Object p0);
+	@Virtual @Overload int getAndAdd(Object p0, int p1);
+	@Virtual @Overload int getAndDecrement(Object p0);
+	@Virtual @Overload int getAndIncrement(Object p0);
+	@Virtual @Overload int getAndSet(Object p0, int p1);
+	@Virtual @Overload int incrementAndGet(Object p0);
+	@Virtual @Overload void lazySet(Object p0, int p1);
+	@Virtual @Overload void set(Object p0, int p1);
+}
+
+/* class java.util.concurrent.atomic.AtomicLong */
+class Java_util_concurrent_atomic_AtomicLong extends Java_lang_Number {
+	/*-- Method --*/
+	@Virtual @Overload boolean compareAndSet(int p0, int p1);
+	@Virtual @Overload boolean weakCompareAndSet(int p0, int p1);
+	@Virtual @Overload int addAndGet(int p0);
+	@Virtual @Overload int decrementAndGet();
+	@Virtual @Overload int get();
+	@Virtual @Overload int getAndAdd(int p0);
+	@Virtual @Overload int getAndDecrement();
+	@Virtual @Overload int getAndIncrement();
+	@Virtual @Overload int getAndSet(int p0);
+	@Virtual @Overload int incrementAndGet();
+	@Virtual @Overload void lazySet(int p0);
+	@Virtual @Overload void set(int p0);
+}
+@Overload Java_util_concurrent_atomic_AtomicLong Java_util_concurrent_atomic_AtomicLong.new(int p0);
+@Overload Java_util_concurrent_atomic_AtomicLong Java_util_concurrent_atomic_AtomicLong.new();
+
+/* class java.util.concurrent.atomic.AtomicLongArray */
+class Java_util_concurrent_atomic_AtomicLongArray extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean compareAndSet(int p0, int p1, int p2);
+	@Virtual @Overload boolean weakCompareAndSet(int p0, int p1, int p2);
+	@Virtual @Overload int addAndGet(int p0, int p1);
+	@Virtual @Overload int decrementAndGet(int p0);
+	@Virtual @Overload int get(int p0);
+	@Virtual @Overload int getAndAdd(int p0, int p1);
+	@Virtual @Overload int getAndDecrement(int p0);
+	@Virtual @Overload int getAndIncrement(int p0);
+	@Virtual @Overload int getAndSet(int p0, int p1);
+	@Virtual @Overload int incrementAndGet(int p0);
+	@Virtual @Overload int length();
+	@Virtual @Overload void lazySet(int p0, int p1);
+	@Virtual @Overload void set(int p0, int p1);
+}
+@Overload Java_util_concurrent_atomic_AtomicLongArray Java_util_concurrent_atomic_AtomicLongArray.new(int p0);
+@Overload Java_util_concurrent_atomic_AtomicLongArray Java_util_concurrent_atomic_AtomicLongArray.new(int[] p0);
+
+/* class java.util.concurrent.atomic.AtomicLongFieldUpdater */
+class Java_util_concurrent_atomic_AtomicLongFieldUpdater {
+	/*-- Method --*/
+	@Static @Overload Java_util_concurrent_atomic_AtomicLongFieldUpdater newUpdater(Class p0, String p1);
+	@Virtual @Overload boolean compareAndSet(Object p0, int p1, int p2);
+	@Virtual @Overload boolean weakCompareAndSet(Object p0, int p1, int p2);
+	@Virtual @Overload int addAndGet(Object p0, int p1);
+	@Virtual @Overload int decrementAndGet(Object p0);
+	@Virtual @Overload int get(Object p0);
+	@Virtual @Overload int getAndAdd(Object p0, int p1);
+	@Virtual @Overload int getAndDecrement(Object p0);
+	@Virtual @Overload int getAndIncrement(Object p0);
+	@Virtual @Overload int getAndSet(Object p0, int p1);
+	@Virtual @Overload int incrementAndGet(Object p0);
+	@Virtual @Overload void lazySet(Object p0, int p1);
+	@Virtual @Overload void set(Object p0, int p1);
+}
+
+/* class java.util.concurrent.atomic.AtomicMarkableReference */
+class Java_util_concurrent_atomic_AtomicMarkableReference {
+	/*-- Method --*/
+	@Virtual @Overload Object get(boolean[] p0);
+	@Virtual @Overload Object getReference();
+	@Virtual @Overload boolean attemptMark(Object p0, boolean p1);
+	@Virtual @Overload boolean compareAndSet(Object p0, Object p1, boolean p2, boolean p3);
+	@Virtual @Overload boolean isMarked();
+	@Virtual @Overload boolean weakCompareAndSet(Object p0, Object p1, boolean p2, boolean p3);
+	@Virtual @Overload void set(Object p0, boolean p1);
+}
+Java_util_concurrent_atomic_AtomicMarkableReference Java_util_concurrent_atomic_AtomicMarkableReference.new(Object p0, boolean p1);
+
+/* class java.util.concurrent.atomic.AtomicReference */
+class Java_util_concurrent_atomic_AtomicReference extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload Object get();
+	@Virtual @Overload Object getAndSet(Object p0);
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean compareAndSet(Object p0, Object p1);
+	@Virtual @Overload boolean weakCompareAndSet(Object p0, Object p1);
+	@Virtual @Overload void lazySet(Object p0);
+	@Virtual @Overload void set(Object p0);
+}
+@Overload Java_util_concurrent_atomic_AtomicReference Java_util_concurrent_atomic_AtomicReference.new(Object p0);
+@Overload Java_util_concurrent_atomic_AtomicReference Java_util_concurrent_atomic_AtomicReference.new();
+
+/* class java.util.concurrent.atomic.AtomicReferenceArray */
+class Java_util_concurrent_atomic_AtomicReferenceArray extends Java_io_Serializable {
+	/*-- Method --*/
+	@Virtual @Overload Object get(int p0);
+	@Virtual @Overload Object getAndSet(int p0, Object p1);
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean compareAndSet(int p0, Object p1, Object p2);
+	@Virtual @Overload boolean weakCompareAndSet(int p0, Object p1, Object p2);
+	@Virtual @Overload int length();
+	@Virtual @Overload void lazySet(int p0, Object p1);
+	@Virtual @Overload void set(int p0, Object p1);
+}
+@Overload Java_util_concurrent_atomic_AtomicReferenceArray Java_util_concurrent_atomic_AtomicReferenceArray.new(int p0);
+@Overload Java_util_concurrent_atomic_AtomicReferenceArray Java_util_concurrent_atomic_AtomicReferenceArray.new(Object[] p0);
+
+/* class java.util.concurrent.atomic.AtomicReferenceFieldUpdater */
+class Java_util_concurrent_atomic_AtomicReferenceFieldUpdater {
+	/*-- Method --*/
+	@Static @Overload Java_util_concurrent_atomic_AtomicReferenceFieldUpdater newUpdater(Class p0, Class p1, String p2);
+	@Virtual @Overload Object get(Object p0);
+	@Virtual @Overload Object getAndSet(Object p0, Object p1);
+	@Virtual @Overload boolean compareAndSet(Object p0, Object p1, Object p2);
+	@Virtual @Overload boolean weakCompareAndSet(Object p0, Object p1, Object p2);
+	@Virtual @Overload void lazySet(Object p0, Object p1);
+	@Virtual @Overload void set(Object p0, Object p1);
+}
+
+/* class java.util.concurrent.atomic.AtomicStampedReference */
+class Java_util_concurrent_atomic_AtomicStampedReference {
+	/*-- Method --*/
+	@Virtual @Overload Object get(int[] p0);
+	@Virtual @Overload Object getReference();
+	@Virtual @Overload boolean attemptStamp(Object p0, int p1);
+	@Virtual @Overload boolean compareAndSet(Object p0, Object p1, int p2, int p3);
+	@Virtual @Overload boolean weakCompareAndSet(Object p0, Object p1, int p2, int p3);
+	@Virtual @Overload int getStamp();
+	@Virtual @Overload void set(Object p0, int p1);
+}
+Java_util_concurrent_atomic_AtomicStampedReference Java_util_concurrent_atomic_AtomicStampedReference.new(Object p0, int p1);
+
+/*============================================================*/
+/* java package java.util.concurrent.locks */
+
+/*------------------------------------------------------------*/
+/* unknown or another package classes .. */
+class Java_io_Serializable;
+class Java_lang_Thread;
+class Java_util_Collection;
+class Java_util_Date;
+class Java_util_concurrent_TimeUnit;
+class Java_util_concurrent_locks_AbstractQueuedLongSynchronizer_ConditionObject;
+class Java_util_concurrent_locks_AbstractQueuedSynchronizer_ConditionObject;
+
+/*------------------------------------------------------------*/
+/* this package classes .. */
+class Java_util_concurrent_locks_AbstractOwnableSynchronizer extends Java_io_Serializable;
+class Java_util_concurrent_locks_AbstractQueuedLongSynchronizer extends Java_util_concurrent_locks_AbstractOwnableSynchronizer;
+class Java_util_concurrent_locks_AbstractQueuedSynchronizer extends Java_util_concurrent_locks_AbstractOwnableSynchronizer;
+class Java_util_concurrent_locks_Condition;
+class Java_util_concurrent_locks_Lock;
+class Java_util_concurrent_locks_LockSupport;
+class Java_util_concurrent_locks_ReadWriteLock;
+class Java_util_concurrent_locks_ReentrantLock extends Java_util_concurrent_locks_Lock;
+class Java_util_concurrent_locks_ReentrantReadWriteLock extends Java_util_concurrent_locks_ReadWriteLock;
+
+/*------------------------------------------------------------*/
+/* class java.util.concurrent.locks.AbstractOwnableSynchronizer */
+class Java_util_concurrent_locks_AbstractOwnableSynchronizer extends Java_io_Serializable {
+}
+
+/* class java.util.concurrent.locks.AbstractQueuedLongSynchronizer */
+class Java_util_concurrent_locks_AbstractQueuedLongSynchronizer extends Java_util_concurrent_locks_AbstractOwnableSynchronizer {
+	/*-- Method --*/
+	@Virtual @Overload Java_lang_Thread getFirstQueuedThread();
+	@Virtual @Overload Java_util_Collection getExclusiveQueuedThreads();
+	@Virtual @Overload Java_util_Collection getQueuedThreads();
+	@Virtual @Overload Java_util_Collection getSharedQueuedThreads();
+	@Virtual @Overload Java_util_Collection getWaitingThreads(Java_util_concurrent_locks_AbstractQueuedLongSynchronizer_ConditionObject p0);
+	@Virtual @Overload boolean hasContended();
+	@Virtual @Overload boolean hasQueuedPredecessors();
+	@Virtual @Overload boolean hasQueuedThreads();
+	@Virtual @Overload boolean hasWaiters(Java_util_concurrent_locks_AbstractQueuedLongSynchronizer_ConditionObject p0);
+	@Virtual @Overload boolean isQueued(Java_lang_Thread p0);
+	@Virtual @Overload boolean owns(Java_util_concurrent_locks_AbstractQueuedLongSynchronizer_ConditionObject p0);
+	@Virtual @Overload boolean release(int p0);
+	@Virtual @Overload boolean releaseShared(int p0);
+	@Virtual @Overload boolean tryAcquireNanos(int p0, int p1);
+	@Virtual @Overload boolean tryAcquireSharedNanos(int p0, int p1);
+	@Virtual @Overload int getQueueLength();
+	@Virtual @Overload int getWaitQueueLength(Java_util_concurrent_locks_AbstractQueuedLongSynchronizer_ConditionObject p0);
+	@Virtual @Overload void acquire(int p0);
+	@Virtual @Overload void acquireInterruptibly(int p0);
+	@Virtual @Overload void acquireShared(int p0);
+	@Virtual @Overload void acquireSharedInterruptibly(int p0);
+}
+
+/* class java.util.concurrent.locks.AbstractQueuedSynchronizer */
+class Java_util_concurrent_locks_AbstractQueuedSynchronizer extends Java_util_concurrent_locks_AbstractOwnableSynchronizer {
+	/*-- Method --*/
+	@Virtual @Overload Java_lang_Thread getFirstQueuedThread();
+	@Virtual @Overload Java_util_Collection getExclusiveQueuedThreads();
+	@Virtual @Overload Java_util_Collection getQueuedThreads();
+	@Virtual @Overload Java_util_Collection getSharedQueuedThreads();
+	@Virtual @Overload Java_util_Collection getWaitingThreads(Java_util_concurrent_locks_AbstractQueuedSynchronizer_ConditionObject p0);
+	@Virtual @Overload boolean hasContended();
+	@Virtual @Overload boolean hasQueuedPredecessors();
+	@Virtual @Overload boolean hasQueuedThreads();
+	@Virtual @Overload boolean hasWaiters(Java_util_concurrent_locks_AbstractQueuedSynchronizer_ConditionObject p0);
+	@Virtual @Overload boolean isQueued(Java_lang_Thread p0);
+	@Virtual @Overload boolean owns(Java_util_concurrent_locks_AbstractQueuedSynchronizer_ConditionObject p0);
+	@Virtual @Overload boolean release(int p0);
+	@Virtual @Overload boolean releaseShared(int p0);
+	@Virtual @Overload boolean tryAcquireNanos(int p0, int p1);
+	@Virtual @Overload boolean tryAcquireSharedNanos(int p0, int p1);
+	@Virtual @Overload int getQueueLength();
+	@Virtual @Overload int getWaitQueueLength(Java_util_concurrent_locks_AbstractQueuedSynchronizer_ConditionObject p0);
+	@Virtual @Overload void acquire(int p0);
+	@Virtual @Overload void acquireInterruptibly(int p0);
+	@Virtual @Overload void acquireShared(int p0);
+	@Virtual @Overload void acquireSharedInterruptibly(int p0);
+}
+
+/* interface java.util.concurrent.locks.Condition */
+class Java_util_concurrent_locks_Condition {
+	/*-- Method --*/
+	@Virtual @Overload boolean await(int p0, Java_util_concurrent_TimeUnit p1);
+	@Virtual @Overload boolean awaitUntil(Java_util_Date p0);
+	@Virtual @Overload int awaitNanos(int p0);
+	@Virtual @Overload void await();
+	@Virtual @Overload void awaitUninterruptibly();
+	@Virtual @Overload void signal();
+	@Virtual @Overload void signalAll();
+}
+
+/* interface java.util.concurrent.locks.Lock */
+class Java_util_concurrent_locks_Lock {
+	/*-- Method --*/
+	@Virtual @Overload Java_util_concurrent_locks_Condition newCondition();
+	@Virtual @Overload boolean tryLock();
+	@Virtual @Overload boolean tryLock(int p0, Java_util_concurrent_TimeUnit p1);
+	@Virtual @Overload void lock();
+	@Virtual @Overload void lockInterruptibly();
+	@Virtual @Overload void unlock();
+}
+
+/* class java.util.concurrent.locks.LockSupport */
+class Java_util_concurrent_locks_LockSupport {
+	/*-- Method --*/
+	@Static @Overload Object getBlocker(Java_lang_Thread p0);
+	@Static @Overload void park();
+	@Static @Overload void park(Object p0);
+	@Static @Overload void parkNanos(Object p0, int p1);
+	@Static @Overload void parkNanos(int p0);
+	@Static @Overload void parkUntil(Object p0, int p1);
+	@Static @Overload void parkUntil(int p0);
+	@Static @Overload void unpark(Java_lang_Thread p0);
+}
+
+/* interface java.util.concurrent.locks.ReadWriteLock */
+class Java_util_concurrent_locks_ReadWriteLock {
+	/*-- Method --*/
+	@Virtual @Overload Java_util_concurrent_locks_Lock readLock();
+	@Virtual @Overload Java_util_concurrent_locks_Lock writeLock();
+}
+
+/* class java.util.concurrent.locks.ReentrantLock */
+class Java_util_concurrent_locks_ReentrantLock extends Java_util_concurrent_locks_Lock {
+	/*-- Method --*/
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean hasQueuedThread(Java_lang_Thread p0);
+	@Virtual @Overload boolean hasQueuedThreads();
+	@Virtual @Overload boolean hasWaiters(Java_util_concurrent_locks_Condition p0);
+	@Virtual @Overload boolean isFair();
+	@Virtual @Overload boolean isHeldByCurrentThread();
+	@Virtual @Overload boolean isLocked();
+	@Virtual @Overload int getHoldCount();
+	@Virtual @Overload int getQueueLength();
+	@Virtual @Overload int getWaitQueueLength(Java_util_concurrent_locks_Condition p0);
+}
+@Overload Java_util_concurrent_locks_ReentrantLock Java_util_concurrent_locks_ReentrantLock.new();
+@Overload Java_util_concurrent_locks_ReentrantLock Java_util_concurrent_locks_ReentrantLock.new(boolean p0);
+
+/* class java.util.concurrent.locks.ReentrantReadWriteLock */
+class Java_util_concurrent_locks_ReentrantReadWriteLock extends Java_util_concurrent_locks_ReadWriteLock {
+	/*-- Method --*/
+	@Virtual @Overload String toString();
+	@Virtual @Overload boolean hasQueuedThread(Java_lang_Thread p0);
+	@Virtual @Overload boolean hasQueuedThreads();
+	@Virtual @Overload boolean hasWaiters(Java_util_concurrent_locks_Condition p0);
+	@Virtual @Overload boolean isFair();
+	@Virtual @Overload boolean isWriteLocked();
+	@Virtual @Overload boolean isWriteLockedByCurrentThread();
+	@Virtual @Overload int getQueueLength();
+	@Virtual @Overload int getReadHoldCount();
+	@Virtual @Overload int getReadLockCount();
+	@Virtual @Overload int getWaitQueueLength(Java_util_concurrent_locks_Condition p0);
+	@Virtual @Overload int getWriteHoldCount();
+}
+@Overload Java_util_concurrent_locks_ReentrantReadWriteLock Java_util_concurrent_locks_ReentrantReadWriteLock.new();
+@Overload Java_util_concurrent_locks_ReentrantReadWriteLock Java_util_concurrent_locks_ReentrantReadWriteLock.new(boolean p0);
 
 /*============================================================*/
 /* java package javax.swing */
