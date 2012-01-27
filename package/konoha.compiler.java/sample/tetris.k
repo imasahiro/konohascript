@@ -42,20 +42,20 @@ void initMino(int type) {
 		setMinoBlock(2, 2, 2);
 		setMinoBlock(2, 3, 2);
 	} else if(type == 3) {
-		setMinoBlock(3, 1, 3);
-		setMinoBlock(3, 2, 3);
+		setMinoBlock(2, 1, 3);
 		setMinoBlock(2, 2, 3);
-		setMinoBlock(2, 3, 3);
+		setMinoBlock(1, 2, 3);
+		setMinoBlock(1, 3, 3);
 	} else if(type == 4) {
+		setMinoBlock(1, 0, 4);
 		setMinoBlock(1, 1, 4);
 		setMinoBlock(1, 2, 4);
-		setMinoBlock(1, 3, 4);
-		setMinoBlock(2, 3, 4);
+		setMinoBlock(2, 2, 4);
 	} else if(type == 5) {
+		setMinoBlock(2, 0, 5);
 		setMinoBlock(2, 1, 5);
 		setMinoBlock(2, 2, 5);
-		setMinoBlock(2, 3, 5);
-		setMinoBlock(1, 3, 5);
+		setMinoBlock(1, 2, 5);
 	} else if(type == 6) {
 		setMinoBlock(2, 1, 6);
 		setMinoBlock(2, 2, 6);

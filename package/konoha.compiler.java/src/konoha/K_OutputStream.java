@@ -5,13 +5,13 @@ import java.io.*;
 public class K_OutputStream extends K_Object {
 	
 	public StringBuilder cwb = new StringBuilder();
-	public PrintStream out = System.out;
+	public PrintStream out;
 	
 	public static K_OutputStream getCwb() {
 		return new K_OutputStream();
 	}
 	
-	public K_OutputStream _new(K_Path name, String nanika, K_Map nanikaMap) {
+	public K_OutputStream _new(K_Path name, String mode, K_Map map) {
 		try {
 			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(name.toString())));
 		} catch (FileNotFoundException e) {

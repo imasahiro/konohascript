@@ -85,6 +85,8 @@ public abstract class Inst implements Opcodes {
 					gen.invokeVirtual(K_String.class, "toIterator");
 				} else if(from.equals(gen.type_Array) && to.equals(gen.type_Iterator)) {
 					gen.invokeVirtual(K_Array.class, "toIterator");
+				} else if(from.equals(gen.type_InputStream) && to.equals(gen.type_Iterator)) {
+					gen.invokeVirtual(K_InputStream.class, "toIterator");
 				} else if(from.equals(gen.type_Date) && to.equals(gen.type_String)) {
 					gen.invokeVirtual(K_Date.class, "castString");
 				} else {
@@ -120,7 +122,7 @@ public abstract class Inst implements Opcodes {
 			Type type = parser.toType(token[3]);
 			int n1 = 0;//Integer.parseInt(token[4]); //TODO
 			int n2 = 0;//Integer.parseInt(token[5]);
-			String varName = token[6];
+			String varName = token[6].substring(1, token[6].length()-1);
 			String var = token[7];
 			// gen
 			if(varName.equals("")) {

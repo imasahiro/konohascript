@@ -15,7 +15,7 @@ public class Parser {
 	private int lineNo = -1;
 	private String line;
 	
-	public Parser(Reader r, Compiler com) throws IOException {
+	public Parser(Reader r, Compiler com) {
 		this.br = new BufferedReader(r);
 		this.com = com;
 	}

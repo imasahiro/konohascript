@@ -36,6 +36,7 @@ public class KMethod implements Opcodes {
 	public static final Type type_Path = Type.getType(konoha.K_Path.class);
 	public static final Type type_Iterator = Type.getType(konoha.K_Iterator.class);
 	public static final Type type_Regex = Type.getType(konoha.K_Regex.class);
+	public static final Type type_InputStream = Type.getType(konoha.K_InputStream.class);
 	
 	public KMethod(Compiler compiler, KClass c, int acc, String name, Type type, String self, String[] argNames, Type[] argTypes) {
 		this.compiler = compiler;

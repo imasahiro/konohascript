@@ -69,14 +69,11 @@ public class K_String extends K_Object {
 	
 	public static K_Iterator toIterator(final String self) {
 		return new K_Iterator() {
-			int index = 0;
-			
-			public boolean hasNext() {
+			private int index = 0;
+			@Override public boolean hasNext() {
 				return index < self.length();
 			}
-
-			@Override
-			public K_Object getNext() {
+			@Override public Object getNext() {
 				return K_System.boxString(get(self, index++));
 			}
 			

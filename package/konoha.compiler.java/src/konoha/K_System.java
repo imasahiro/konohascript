@@ -1,11 +1,28 @@
 package konoha;
 
+import java.io.*;
+
 public class K_System extends K_Object {
 	
-	public static K_OutputStream stdout = new K_OutputStream();
+	private static final K_OutputStream stdout = new K_OutputStream();
+	private static final K_InputStream  stdin  = new K_InputStream();
+	private static final K_OutputStream stderr = new K_OutputStream();
+	static {
+		stdout.out = System.out;
+		stdin.in = new BufferedReader(new InputStreamReader(System.in));
+		stderr.out = System.err;
+	}
 	
 	public static K_OutputStream getOut() {
 		return stdout;
+	}
+	
+	public static K_InputStream getIn() {
+		return stdin;
+	}
+	
+	public static K_OutputStream getErr() {
+		return stderr;
 	}
 	
 	public static int getTime() {
