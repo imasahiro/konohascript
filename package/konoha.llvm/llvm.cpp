@@ -2369,16 +2369,6 @@ KMETHOD Method_setFunction(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-////## void Func.setFunction(NativeFunction func);
-//KMETHOD Func_setFunction(CTX ctx, ksfp_t *sfp _RIX)
-//{
-//	kFunc *fo   = sfp[0].fo;
-//	kRawPtr *po = sfp[1].p;
-//	kMethod *mtd = fo->mtd;
-//	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
-//	RETURNvoid_();
-//}
-
 //## @Native Array<Value> Function.getArguments();
 KMETHOD Function_getArguments(CTX ctx, ksfp_t *sfp _RIX)
 {
