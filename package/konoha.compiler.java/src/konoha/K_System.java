@@ -29,38 +29,6 @@ public class K_System extends K_Object {
 		return (int)System.currentTimeMillis();
 	}
 	
-	public static K_Int boxInt(int n) {
-		return new K_Int(n);
-	}
-	
-	public static K_Float boxFloat(double n) {
-		return new K_Float(n);
-	}
-	
-	public static K_Boolean boxBoolean(boolean n) {
-		return new K_Boolean(n);
-	}
-	
-	public static K_String boxString(String s) {
-		return new K_String(s);
-	}
-	
-	public static int unboxInt(K_Int n) {
-		return n != null ? n.n : 0;
-	}
-	
-	public static double unboxFloat(K_Float n) {
-		return n != null ? n.n : 0.0;
-	}
-	
-	public static boolean unboxBoolean(K_Boolean n) {
-		return n != null ? n.b : false;
-	}
-	
-	public static String unboxString(K_String n) {
-		return n != null ? n.string : "";
-	}
-	
 	public static int castInt(String s) {
 		return Integer.parseInt(s);
 	}

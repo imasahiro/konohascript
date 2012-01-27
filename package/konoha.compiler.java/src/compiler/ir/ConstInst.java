@@ -1,7 +1,5 @@
 package compiler.ir;
 
-import konoha.*;
-
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
@@ -20,30 +18,30 @@ public class ConstInst extends Inst {
 		// gen
 		if(typeName.equals("konoha.Int")) {
 			int n = val.equals("null") ? 0 : Integer.parseInt(val);
-			gen.mv.visitLdcInsn(n);
+			gen.visitLdcInsn(n);
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.Float")) {
 			double n = val.equals("null") ? 0 : Double.parseDouble(val);
-			gen.mv.visitLdcInsn(n);
+			gen.visitLdcInsn(n);
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.Boolean")) {
 			boolean b = val.equals("true");
-			gen.mv.visitLdcInsn(b);
+			gen.visitLdcInsn(b);
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.String")) {
 			val = val.replace("\\n", "\n");
 			val = val.replace("\\t", "\t");
 			val = val.replace("\"", "");
-			gen.mv.visitLdcInsn(val);
+			gen.visitLdcInsn(val);
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.Path")) {
 			val = val.replace("\\n", "\n");
 			val = val.replace("\\t", "\t");
 			val = val.replace("\"", "");
-			gen.mv.visitTypeInsn(NEW, "konoha/K_Path");
-			gen.mv.visitInsn(DUP);
-			gen.mv.visitLdcInsn(val);
-			gen.mv.visitMethodInsn(INVOKESPECIAL, "konoha/K_Path", "<init>", "(Ljava/lang/String;)V");
+			gen.visitTypeInsn(NEW, "konoha/K_Path");
+			gen.visitInsn(DUP);
+			gen.visitLdcInsn(val);
+			gen.visitMethodInsn(INVOKESPECIAL, "konoha/K_Path", "<init>", "(Ljava/lang/String;)V");
 			gen.storeLocal(res, type);
 		} else if(typeName.equals("konoha.Array<konoha.Int>")) {
 			line = line.substring(line.indexOf("[") + 1, line.lastIndexOf("]")).replace(" ", "");
@@ -91,14 +89,14 @@ public class ConstInst extends Inst {
 			gen.pushArray(res, Type.getType(konoha.K_Array.class), vals);
 		} else if(typeName.equals("konoha.Regex")) {
 			val = val.substring(1, val.length() - 1);
-			gen.mv.visitTypeInsn(NEW, "konoha/K_Regex");
-			gen.mv.visitInsn(DUP);
-			gen.mv.visitLdcInsn(val);
-			gen.mv.visitMethodInsn(INVOKESPECIAL, "konoha/K_Regex", "<init>", "(Ljava/lang/String;)V");
+			gen.visitTypeInsn(NEW, "konoha/K_Regex");
+			gen.visitInsn(DUP);
+			gen.visitLdcInsn(val);
+			gen.visitMethodInsn(INVOKESPECIAL, "konoha/K_Regex", "<init>", "(Ljava/lang/String;)V");
 			gen.storeLocal(res, type);
 		} else {
 			parser.warning("unknown const type: " + typeName);
-			gen.mv.visitInsn(Opcodes.ACONST_NULL);
+			gen.visitInsn(Opcodes.ACONST_NULL);
 			gen.storeLocal(res, type);
 		}
 	}

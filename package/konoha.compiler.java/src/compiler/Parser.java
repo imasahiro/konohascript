@@ -90,7 +90,6 @@ public class Parser {
 						}
 					}
 				}
-				gen.end();
 				gen_exit = true;
 			} finally {
 				if(!gen_exit) {
@@ -128,7 +127,7 @@ public class Parser {
 		String[] tk = splitToken(line);
 		Type type = toType(tk[0]);
 		String name = tk[1];
-		c.createField(com, name, type);
+		c.createField(name, type);
 	}
 	
 	private KMethod parseMethod(String line) throws GenInstException {

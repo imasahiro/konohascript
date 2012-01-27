@@ -40,7 +40,7 @@ public class K_InputStream {
 				return line != null;
 			}
 			@Override public Object getNext() {
-				return K_System.boxString(line);
+				return K_String.box(line);
 			}
 		};
 	}

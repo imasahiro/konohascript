@@ -4,10 +4,11 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.tree.MethodNode;
 
 import compiler.ir.GenInstException;
 
-public class KMethod implements Opcodes {
+public class KMethod extends MethodNode implements Opcodes {
 
 	private static class Local {
 		public final int n;
@@ -18,49 +19,38 @@ public class KMethod implements Opcodes {
 		}
 	}
 	
-	public final KClass klass;
-	public final String methodName;
-	public final Type methodType;
-	public int lineNo;
-	
 	private final HashMap<Integer, Label> bb = new HashMap<Integer, Label>();
 	private final HashMap<String, Local> local = new HashMap<String, Local>();
 	private final Compiler compiler;
 	private int localCount = 0;
+	public final int argCount;
+	public int lineNo;
 	
-	public final MethodVisitor mv;
-	
-	public static final Type type_Array = Type.getType(konoha.K_Array.class);
-	public static final Type type_Date = Type.getType(konoha.K_Date.class);
-	public static final Type type_String = Type.getType(String.class);
-	public static final Type type_Path = Type.getType(konoha.K_Path.class);
-	public static final Type type_Iterator = Type.getType(konoha.K_Iterator.class);
-	public static final Type type_Regex = Type.getType(konoha.K_Regex.class);
-	public static final Type type_InputStream = Type.getType(konoha.K_InputStream.class);
-	
-	public KMethod(Compiler compiler, KClass c, int acc, String name, Type type, String self, String[] argNames, Type[] argTypes) {
+	public KMethod(Compiler compiler, KClass klass, int acc, String name, Type type, String self, String[] argNames, Type[] argTypes) {
+		super(ASM4, acc, name, type.getDescriptor(), null/*gen*/, null/*throws*/);
 		this.compiler = compiler;
-		this.mv = c.cw.visitMethod(acc, name, type.getDescriptor(), null /*gen*/, null/*throws*/);
-		this.klass = c;
-		this.methodName = name;
-		this.methodType = type;
+		this.argCount = argNames.length;
 		// arguments
 		if(self != null) {
-			newLocal(self, Type.getType("L" + c.name + ";"));
+			newLocal(self, Type.getType("L" + klass.name + ";"));
 		}
 		for(int i=0; i<argNames.length; i++) {
 			newLocal(argNames[i], argTypes[i]);
 		}
 	}
 	
-	public int getArgc() {
-		return methodType.getArgumentTypes().length;
+	public String getName() {
+		return name;
+	}
+	
+	public Type getType() {
+		return Type.getMethodType(desc);
 	}
 	
 	public void setLineNumber(int n) {
 		Label l = new Label();
-		mv.visitLabel(l);
-		mv.visitLineNumber(n, l);
+		visitLabel(l);
+		visitLineNumber(n, l);
 	}
 	
 	private Local newLocal(String name, Type type) {
@@ -108,7 +98,7 @@ public class KMethod implements Opcodes {
 	
 	public void loadLocal(String var) throws GenInstException {
 		Local l = getLocal(var);
-		mv.visitVarInsn(l.type.getOpcode(ILOAD), l.n);
+		visitVarInsn(l.type.getOpcode(ILOAD), l.n);
 	}
 	
 	public void storeLocal(String var, Type type) throws GenInstException {
@@ -119,11 +109,11 @@ public class KMethod implements Opcodes {
 		if(!l.type.equals(type)) {
 			throw new GenInstException("different local type " + var + " " + type + ", " + l.type);
 		}
-		mv.visitVarInsn(l.type.getOpcode(ISTORE), l.n);
+		visitVarInsn(l.type.getOpcode(ISTORE), l.n);
 	}
 	
 	public void setBasicBlock(int no) {
-		mv.visitLabel(getLabel(no));
+		visitLabel(getLabel(no));
 	}
 	
 	public Label getLabel(int n) {
@@ -137,55 +127,55 @@ public class KMethod implements Opcodes {
 	
 	public void box(Type type) {
 		if(type == Type.INT_TYPE) {
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxInt", "(I)Lkonoha/K_Int;");
+			visitMethodInsn(INVOKESTATIC, "konoha/K_Int", "box", "(I)Lkonoha/K_Int;");
 		} else if(type == Type.DOUBLE_TYPE) {
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxFloat", "(D)Lkonoha/K_Float;");
+			visitMethodInsn(INVOKESTATIC, "konoha/K_Float", "box", "(D)Lkonoha/K_Float;");
 		} else if(type == Type.BOOLEAN_TYPE) {
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxBoolean", "(Z)Lkonoha/K_Boolean;");
-		} else if(type.equals(type_String)) {
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "boxString", "(Ljava/lang/String;)Lkonoha/K_String;");
+			visitMethodInsn(INVOKESTATIC, "konoha/K_Boolean", "box", "(Z)Lkonoha/K_Boolean;");
+		} else if(type.equals(KType.kString)) {
+			visitMethodInsn(INVOKESTATIC, "konoha/K_String", "box", "(Ljava/lang/String;)Lkonoha/K_String;");
 		}
 	}
 	
 	public void unbox(Type type) {
 		if(type == Type.INT_TYPE) {
-			mv.visitTypeInsn(CHECKCAST, "konoha/K_Int");
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxInt", "(Lkonoha/K_Int;)I");
+			visitTypeInsn(CHECKCAST, "konoha/K_Int");
+			visitMethodInsn(INVOKESTATIC, "konoha/K_Int", "unbox", "(Lkonoha/K_Int;)I");
 		} else if(type == Type.DOUBLE_TYPE) {
-			mv.visitTypeInsn(CHECKCAST, "konoha/K_Float");
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxFloat", "(Lkonoha/K_Float;)D");
+			visitTypeInsn(CHECKCAST, "konoha/K_Float");
+			visitMethodInsn(INVOKESTATIC, "konoha/K_Float", "unbox", "(Lkonoha/K_Float;)D");
 		} else if(type == Type.BOOLEAN_TYPE) {
-			mv.visitTypeInsn(CHECKCAST, "konoha/K_Boolean");
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxBoolean", "(Lkonoha/K_Boolean;)Z");
-		} else if(type.equals(type_String)) {
-			mv.visitTypeInsn(CHECKCAST, "konoha/K_String");
-			mv.visitMethodInsn(INVOKESTATIC, "konoha/K_System", "unboxString", "(Lkonoha/K_String;)Ljava/lang/String;");
+			visitTypeInsn(CHECKCAST, "konoha/K_Boolean");
+			visitMethodInsn(INVOKESTATIC, "konoha/K_Boolean", "unbox", "(Lkonoha/K_Boolean;)Z");
+		} else if(type.equals(KType.kString)) {
+			visitTypeInsn(CHECKCAST, "konoha/K_String");
+			visitMethodInsn(INVOKESTATIC, "konoha/K_String", "unbox", "(Lkonoha/K_String;)Ljava/lang/String;");
 		} else {
-			mv.visitTypeInsn(CHECKCAST, type.getInternalName());
+			visitTypeInsn(CHECKCAST, type.getInternalName());
 		}
 	}
 	
 	public void pushArray(String res, Type type, Object[] vals) throws GenInstException {
-		mv.visitMethodInsn(INVOKESTATIC, "konoha/K_Array", "create", "()Lkonoha/K_Array;");
+		visitMethodInsn(INVOKESTATIC, "konoha/K_Array", "create", "()Lkonoha/K_Array;");
 		storeLocal(res, type);
 		loadLocal(res);
-		mv.visitLdcInsn(vals.length);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "konoha/K_Array", "newArray", "(I)Lkonoha/K_Array;");
+		visitLdcInsn(vals.length);
+		visitMethodInsn(INVOKEVIRTUAL, "konoha/K_Array", "newArray", "(I)Lkonoha/K_Array;");
 		storeLocal(res, type);
 		String mt_type = Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE, type);
 		for(int i=0; i<vals.length; i++) {
 			loadLocal(res);
-			mv.visitLdcInsn(i);
-			mv.visitLdcInsn(vals[i]);
-			mv.visitMethodInsn(INVOKEVIRTUAL, "konoha/K_Array", "set", mt_type);
+			visitLdcInsn(i);
+			visitLdcInsn(vals[i]);
+			visitMethodInsn(INVOKEVIRTUAL, "konoha/K_Array", "set", mt_type);
 		}
 	}
 	
 	public void pushClass(String res, Type type, String val) throws GenInstException {
-		mv.visitTypeInsn(NEW, "konoha/K_Class");
-		mv.visitInsn(DUP);
-		mv.visitLdcInsn(val);
-		mv.visitMethodInsn(INVOKESPECIAL, "konoha/K_Class", "<init>", "(Ljava/lang/String;)V");
+		visitTypeInsn(NEW, "konoha/K_Class");
+		visitInsn(DUP);
+		visitLdcInsn(val);
+		visitMethodInsn(INVOKESPECIAL, "konoha/K_Class", "<init>", "(Ljava/lang/String;)V");
 		storeLocal(res, type);
 		
 	}
@@ -217,7 +207,7 @@ public class KMethod implements Opcodes {
 				for(Constructor<?> con : Class.forName(cName.replace("/", ".")).getConstructors()) {
 					int n = con.getParameterTypes().length;
 					if(n == args.length - 1) {
-						mv.visitMethodInsn(INVOKESPECIAL, cName, "<init>", Type.getConstructorDescriptor(con));
+						visitMethodInsn(INVOKESPECIAL, cName, "<init>", Type.getConstructorDescriptor(con));
 						loadLocal(args[0]);
 						storeLocal(ret, retType);
 						return;
@@ -240,7 +230,7 @@ public class KMethod implements Opcodes {
 		} else {
 			KMethod mtd = compiler.getMethod(cName, mName, args);
 			if(mtd != null) {
-				return mtd.methodType;
+				return mtd.getType();
 			}
 		}
 		throw new GenInstException("method not found");
@@ -255,15 +245,15 @@ public class KMethod implements Opcodes {
 		Type type = getMtdType(cName, mName, args.length);
 		if(isVariableLengthArgMethod(cName, mName)) { // variable length argument method
 			// create object array
-			mv.visitIntInsn(SIPUSH, args.length);
-			mv.visitTypeInsn(ANEWARRAY, "konoha/K_Object");
+			visitIntInsn(SIPUSH, args.length);
+			visitTypeInsn(ANEWARRAY, "konoha/K_Object");
 			// store args
 			for(int i=0; i<args.length; i++) {
-				mv.visitInsn(DUP);
-				mv.visitIntInsn(SIPUSH, i);
+				visitInsn(DUP);
+				visitIntInsn(SIPUSH, i);
 				loadLocal(args[i]);
 				box(getLocalType(args[i]));
-				mv.visitInsn(AASTORE);
+				visitInsn(AASTORE);
 			}
 		} else {
 			Type[] argTypes = type.getArgumentTypes();
@@ -272,16 +262,16 @@ public class KMethod implements Opcodes {
 				Type ty = getLocalType(args[i]);
 				if(argTypes[i] == Type.LONG_TYPE) {
 					if(ty == Type.INT_TYPE) {
-						mv.visitInsn(I2L);
+						visitInsn(I2L);
 					} else if(ty == Type.DOUBLE_TYPE) {
-						mv.visitInsn(D2L);
+						visitInsn(D2L);
 					}
 				}
 				if(argTypes[i] == Type.FLOAT_TYPE) {
 					if(ty == Type.INT_TYPE) {
-						mv.visitInsn(I2F);
+						visitInsn(I2F);
 					} else if(ty == Type.DOUBLE_TYPE) {
-						mv.visitInsn(D2F);
+						visitInsn(D2F);
 					}
 				}
 			}
@@ -293,21 +283,21 @@ public class KMethod implements Opcodes {
 			if(cName.equals("")) {
 				// dynamic
 				//Handle h = new Handle(isStatic ? H_INVOKESTATIC : H_INVOKEVIRTUAL, m_name,  m_name, a);
-				//mv.visitInvokeDynamicInsn(m_name, a, h);
+				//visitInvokeDynamicInsn(m_name, a, h);
 				throw new GenInstException("TODO: dynamic call");
 			} else {
 				KMethod mtd = compiler.getMethod(cName, mName, args.length);
 				if(mtd == null) {
 					throw new GenInstException("method not found: " + cName + "." + mName);
 				}
-				mv.visitMethodInsn(op, cName, mName, mtd.methodType.getDescriptor());
+				visitMethodInsn(op, cName, mName, mtd.desc);
 			}
 		}
 		if(retType != Type.VOID_TYPE) {
 			if(retType == Type.LONG_TYPE) {
-				mv.visitInsn(L2I);
+				visitInsn(L2I);
 			} else if(retType == Type.FLOAT_TYPE) {
-				mv.visitInsn(F2D);
+				visitInsn(F2D);
 			}
 			storeLocal(ret, retType);
 		}
@@ -319,7 +309,7 @@ public class KMethod implements Opcodes {
 		if(field == null) {
 			throw new GenInstException("field not found: " + self + " " + index);
 		}
-		mv.visitFieldInsn(GETFIELD, className, field.name, field.type.getDescriptor());
+		visitFieldInsn(GETFIELD, className, field.name, field.type.getDescriptor());
 	}
 	
 	public void storeField(String self, String value, int index, Type type) throws GenInstException {
@@ -328,7 +318,7 @@ public class KMethod implements Opcodes {
 		if(field == null) {
 			throw new GenInstException("field not found: " + self + " " + index);
 		}
-		mv.visitFieldInsn(PUTFIELD, className, field.name, field.type.getDescriptor());
+		visitFieldInsn(PUTFIELD, className, field.name, field.type.getDescriptor());
 	}
 	
 	public void jump(int opcode, int bb) {
@@ -336,7 +326,7 @@ public class KMethod implements Opcodes {
 	}
 	
 	public void jump(int opcode, Label label) {
-		mv.visitJumpInsn(opcode, label);
+		visitJumpInsn(opcode, label);
 	}
 	
 	public void invoke(Class<?> klass, String methodName, int opcode) throws GenInstException {
@@ -344,7 +334,7 @@ public class KMethod implements Opcodes {
 			if(method.getName().equals(methodName)) {
 				String className = Type.getType(klass).getInternalName();
 				String desc = Type.getType(method).getDescriptor();
-				mv.visitMethodInsn(opcode, className, methodName, desc);
+				visitMethodInsn(opcode, className, methodName, desc);
 				return;
 			}
 		}
@@ -359,13 +349,8 @@ public class KMethod implements Opcodes {
 		invoke(klass, methodName, INVOKEVIRTUAL);
 	}
 	
-	public void end() {
-		mv.visitMaxs(0, 0);
-		mv.visitEnd();
-	}
-	
 	public void dump() {
-		System.out.println("---" + klass.name + "." + methodName + methodType.getDescriptor() + "---");
+		System.out.println("---" + name + desc + "---");
 		System.out.println("local count = " + localCount);
 		Local[] ls = new Local[localCount];
 		String[] names = new String[localCount];

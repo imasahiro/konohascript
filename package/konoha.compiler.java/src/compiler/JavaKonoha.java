@@ -47,16 +47,16 @@ public class JavaKonoha {
 				r.close();
 			}
 		} 
-		compiler.end();
 	}
 	
 	public void eval(String script) {
-		String file = "tmp.k";
+		String file = "_jkonoha_eval_tmp.k";
 		try {
 			FileWriter fw = new FileWriter(file);
 			fw.write(script);
 			fw.close();
 			compileFile(file);
+			new File(file).delete();
 			run(new String[0]);
 		} catch(IOException e) {
 			e.printStackTrace();
@@ -84,8 +84,6 @@ public class JavaKonoha {
 			Method mtd = compiler.getMainMethod();
 			mtd.invoke(null, (Object)args);
 		} catch(VerifyError e) {
-			e.printStackTrace();
-		} catch(NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch(IllegalAccessException e) {
 			e.printStackTrace();
