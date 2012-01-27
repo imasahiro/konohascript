@@ -248,7 +248,6 @@ include "lib:gluelink";
 @Native int BasicBlock.size();
 @Native boolean BasicBlock.empty();
 @Native Module Module.new(String name);
-//@Native void Module.addTypeName(String name, Type type);
 @Native Type Module.getTypeByName(String name);
 
 @Native void Module.dump();
