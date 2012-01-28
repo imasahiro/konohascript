@@ -60,7 +60,7 @@
 #include <winsock2.h>
 #endif
 
-#ifdef HAVE_LIBLOGPOOL
+#ifdef K_USING_LOGPOOL
 #include <logpool.h>
 #endif
 
@@ -1040,7 +1040,7 @@ typedef struct kcontext_t {
 	/* logging */
 	char                            trace[16];  // random
 	kuint_t                      seq;        // for logging
-#ifdef HAVE_LIBLOGPOOL
+#ifdef K_USING_LOGPOOL
 	ltrace_t *ltrace;
 #endif
 	/* signal */
@@ -1074,7 +1074,7 @@ typedef struct kcontext_t {
 /* logdata */
 
 
-#ifndef HAVE_LIBLOGPOOL
+#ifndef K_USING_LOGPOOL
 #define LOG_END       ((const char*)0L)
 #define LOGT_s        1
 #define LOG_s(K,V)    ((const char*)LOGT_s), K, V
