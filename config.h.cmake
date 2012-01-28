@@ -34,6 +34,9 @@
 /* Define to 1 if you have the `memcached' library (-lmemcached). */
 #cmakedefine HAVE_LIBMEMCACHED 1
 
+/* Define to 1 if you have the `logpool' library (-llogpool). */
+#cmakedefine HAVE_LIBLOGPOOL 1
+
 /* Define to 1 if you have the <limits.h> header file. */
 #cmakedefine HAVE_LIMITS_H 1
 

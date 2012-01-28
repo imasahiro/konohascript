@@ -102,6 +102,9 @@ static kcontext_t* new_hcontext(CTX ctx0)
 		}
 	}
 	ctx->seq = 0;
+#ifdef K_USING_LOGPOOL
+	ctx->ltrace = ltrace_open_syslog(ctx->ltrace);
+#endif
 	ctx->ctxobjNC = NULL;
 	if(ctx0 == NULL) {
 		const char *ptrace = knh_getenv(K_DEOS_TRACE);
@@ -205,6 +208,11 @@ static void CommonContext_free(CTX ctx, kcontext_t *ctxo)
 		KNH_FREE(ctx, ctx->sighandlers, sizeof(kFunc*) * K_SIGNAL_MAX);
 		ctxo->sighandlers = NULL;
 	}
+
+#ifdef K_USING_LOGPOOL
+	ltrace_close(ctxo->ltrace);
+	ctxo->ltrace = NULL;
+#endif
 }
 
 /* ------------------------------------------------------------------------ */
@@ -679,6 +687,9 @@ static void konoha_init(void)
 	static int isInit = 0;
 	if(isInit == 0) {
 		isInit = 1;
+#ifdef K_USING_LOGPOOL
+		logpool_init(LOGPOOL_DEFAULT);
+#endif
 		knh_opcode_check();
 #if defined(K_USING_THREAD) && !defined(CC_TYPE_TLS)
 		kthread_key_create((kthread_key_t*)&ctxkey);

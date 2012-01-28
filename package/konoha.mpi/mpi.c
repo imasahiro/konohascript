@@ -245,8 +245,8 @@ void knh_MPI_errhandler(MPI_Comm *comm, int *err, ...)
 		char errstr[MPI_MAX_ERROR_STRING] = {0};
 		int errlen = 0;
 		MPI_Error_string(*err, errstr, &errlen);
-		knh_ldata_t ldata[] = {LOG_s("errmsg", errstr), LOG_END};
-		KNH_NTRACE(global_ctx, "MPI_Error", K_FAILED, ldata);
+		KNH_NTRACE2(global_ctx, "MPI_Error", K_FAILED, 
+				KNH_LDATA(LOG_s("errmsg", errstr)));
 	}
 }
 

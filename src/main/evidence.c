@@ -1241,6 +1241,7 @@ void knh_assert(CTX ctx, ksfp_t *sfp, long start, kline_t uline)
 //}
 
 /* ------------------------------------------------------------------------ */
+#ifndef K_USING_LOGPOOL
 
 #define EBUFSIZ 4096
 
@@ -1486,6 +1487,7 @@ static void ntrace(CTX ctx, const char *event, int pe, const knh_ldata2_t *d)
 //
 //	}
 }
+#endif
 
 kbool_t knh_isTrace(CTX ctx, const char *event)
 {
@@ -1495,6 +1497,9 @@ kbool_t knh_isTrace(CTX ctx, const char *event)
 
 void knh_ntrace(CTX ctx, const char *event, int pe, knh_ldata_t *ldata)
 {
+#ifdef K_USING_LOGPOOL
+	KNH_TODO(__FUNCTION__);
+#else
 	switch(pe) {
 	case K_OK :
 		if(knh_isTrace(ctx, event)) {
@@ -1522,6 +1527,7 @@ void knh_ntrace(CTX ctx, const char *event, int pe, knh_ldata_t *ldata)
 		}
 		break;
 	}
+#endif
 }
 
 void knh_dtrace(CTX ctx, const char *event, int pe, kDictMap *data)

@@ -60,6 +60,10 @@
 #include <winsock2.h>
 #endif
 
+#ifdef HAVE_LIBLOGPOOL
+#include <logpool.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1036,6 +1040,9 @@ typedef struct kcontext_t {
 	/* logging */
 	char                            trace[16];  // random
 	kuint_t                      seq;        // for logging
+#ifdef HAVE_LIBLOGPOOL
+	ltrace_t *ltrace;
+#endif
 	/* signal */
 	int                             signal;
 	void                           *siginfo;
@@ -1067,6 +1074,7 @@ typedef struct kcontext_t {
 /* logdata */
 
 
+#ifndef HAVE_LIBLOGPOOL
 #define LOG_END       ((const char*)0L)
 #define LOGT_s        1
 #define LOG_s(K,V)    ((const char*)LOGT_s), K, V
@@ -1107,6 +1115,27 @@ typedef struct kcontext_t {
 	knh_nthrow(ctx, sfp, fault, ldata); \
 } while (0)
 
+#else
+#define LOG_t(K,V)   LOG_i(K, V)
+#define LOG_u(K,V)   LOG_i(K, V)
+#define LOG_msg(V)   LOG_t("msg", V)
+#define LOG_sfp      LOG_p("sfp", sfp)
+
+#define KNH_LDATA(...) __VA_ARGS__; LOG_END
+#define KNH_LDATA0     LOG_END
+#define KNH_NTRACE2(ctx, event, pe, L) do {\
+	ltrace_t *ltrace_ = ctx->ltrace;\
+	ltrace_record(ltrace_, event, L);\
+} while (0)
+
+#define KNH_NTHROW2(ctx, sfp, fault, event, pe, L) do {\
+	ltrace_t *ltrace_ = ctx->ltrace;\
+	ltrace_record(ltrace_, event, L);\
+	/*TODO*/asm volatile("int3");\
+	knh_nthrow(ctx, sfp, fault, NULL); \
+} while (0)
+
+#endif
 
 #define FLAG_TRACE_FAILED 1
 #define FLAG_TRACE_ERRNO  (1<<1)
