@@ -522,7 +522,7 @@ LABEL = "label";
     if (op.msg != "") {
         msg += op.msg + "=";
     }
-    asm.addSource("konoha.OUT += \"" + strline + msg + "\" + " + op.inst0.getVarName(asm) + ".toString() + \"\\n\");";
+    asm.addSource("document.write(\"" + strline + msg + "\" + " + op.inst0.getVarName(asm) + ".toString() + \"<br>\");");
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     String type_str = (to String)type;
