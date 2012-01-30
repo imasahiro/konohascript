@@ -26,6 +26,10 @@ public class Compiler implements Opcodes {
 		return c;
 	}
 	
+	public boolean isLibClass(String name) {
+		return !classList.containsKey(name);
+	}
+	
 	private int getFieldOffset(KClass c) {
 		int size = c.fields.size();
 		if(c.superName.equals("konoha/K_Object")) {

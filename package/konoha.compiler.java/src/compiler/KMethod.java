@@ -155,31 +155,6 @@ public class KMethod extends MethodNode implements Opcodes {
 		}
 	}
 	
-	public void pushArray(String res, Type type, Object[] vals) throws GenInstException {
-		visitMethodInsn(INVOKESTATIC, "konoha/K_Array", "create", "()Lkonoha/K_Array;");
-		storeLocal(res, type);
-		loadLocal(res);
-		visitLdcInsn(vals.length);
-		visitMethodInsn(INVOKEVIRTUAL, "konoha/K_Array", "newArray", "(I)Lkonoha/K_Array;");
-		storeLocal(res, type);
-		String mt_type = Type.getMethodDescriptor(Type.VOID_TYPE, Type.INT_TYPE, type);
-		for(int i=0; i<vals.length; i++) {
-			loadLocal(res);
-			visitLdcInsn(i);
-			visitLdcInsn(vals[i]);
-			visitMethodInsn(INVOKEVIRTUAL, "konoha/K_Array", "set", mt_type);
-		}
-	}
-	
-	public void pushClass(String res, Type type, String val) throws GenInstException {
-		visitTypeInsn(NEW, "konoha/K_Class");
-		visitInsn(DUP);
-		visitLdcInsn(val);
-		visitMethodInsn(INVOKESPECIAL, "konoha/K_Class", "<init>", "(Ljava/lang/String;)V");
-		storeLocal(res, type);
-		
-	}
-	
 	private static Class<?> toClass(String name) throws GenInstException {
 		try {
 			return Class.forName(name);
@@ -198,7 +173,7 @@ public class KMethod extends MethodNode implements Opcodes {
 	}
 	
 	public void asmCallConstructor(String cName, String[] args, Type retType, String ret) throws GenInstException {
-		if(cName.startsWith("java/") || cName.startsWith("javax/")) {
+		if(compiler.isLibClass(cName) && !cName.startsWith("konoha/")) {
 			// library constructor
 			for(int i=0; i<args.length; i++) {
 				loadLocal(args[i]);
@@ -221,7 +196,7 @@ public class KMethod extends MethodNode implements Opcodes {
 	}
 	
 	private Type getMtdType(String cName, String mName, int args) throws GenInstException {
-		if(cName.startsWith("konoha/") || cName.startsWith("java/") || cName.startsWith("javax/")) {
+		if(compiler.isLibClass(cName)) {
 			for(Method method : toClass(cName.replace("/", ".")).getMethods()) {
 				if(method.getName().equals(mName)) {
 					return Type.getType(method);
@@ -276,7 +251,7 @@ public class KMethod extends MethodNode implements Opcodes {
 				}
 			}
 		}
-		if(cName.startsWith("konoha/") || cName.startsWith("java/") || cName.startsWith("javax/")) { // library method call
+		if(compiler.isLibClass(cName)) { // library method call
 			Class<?> c = toClass(cName.replace("/", "."));
 			invoke(c, mName, op);
 		} else { // user method

@@ -4,7 +4,7 @@ import java.util.*;
 
 public class K_Array extends K_Object {
 	
-	private ArrayList<Object> data = new ArrayList<Object>();
+	private final ArrayList<Object> data = new ArrayList<Object>();
 	
 	public K_Array _new(int n) {
 		return newArray(n);

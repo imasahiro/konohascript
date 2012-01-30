@@ -114,7 +114,7 @@ void putMino(int[] m) {
 	}
 }
 
-boolean tryRotateLeft() {
+boolean tryRotateRight() {
 	int[] m = new int[MINO_W * MINO_H];
 	for(int j=0; j<MINO_H; j++) {
 		for(int i=0; i<MINO_W; i++) {
@@ -170,7 +170,7 @@ class VimBindKeyListener extends KeyListener {
 			rep = tryMove(0, 1, mino);
 		} else
 		if(n == 107) { // UP: k
-			rep = tryRotateLeft();
+			rep = tryRotateRight();
 		} else
 		if(n == 108) { // RIGHT: l
 			rep = tryMove(1, 0, mino);
