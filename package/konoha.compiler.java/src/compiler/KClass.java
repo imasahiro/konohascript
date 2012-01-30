@@ -38,11 +38,9 @@ public class KClass implements Opcodes {
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 		for(KField field : fields) {
-			System.out.println("accept_field " + name + "." + field.name);
 			field.accept(cv);
 		}
 		for(KMethod mtd : methods) {
-			System.out.println("accept_method " + name + "." + mtd.name);
 			mtd.accept(cv);
 		}
 	}

@@ -336,7 +336,7 @@ public abstract class Inst implements Opcodes {
 	}
 	public static class ReturnInst extends Inst {
 		@Override public void asm(KMethod gen, Parser parser, String[] token) throws GenInstException {
-			if(token.length >= 4) {
+			if(token.length >= 4 && gen.getType().getReturnType() != Type.VOID_TYPE) {
 				// parse
 				String val = token[3];
 				// gen

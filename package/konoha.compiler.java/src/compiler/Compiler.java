@@ -10,7 +10,7 @@ public class Compiler implements Opcodes {
 	private final HashMap<String, KClass> classList = new HashMap<String, KClass>();
 	private final ArrayList<String> initList = new ArrayList<String>();
 	private KMethod mainMethod = null;
-	private final KClass scriptClass = new KClass("Script", "konoha/K_Object");
+	final KClass scriptClass = new KClass("Script", "konoha/K_Object");
 	
 	public Compiler() {
 		// add Script class

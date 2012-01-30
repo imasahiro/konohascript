@@ -54,7 +54,6 @@ public class ConstInst extends Inst {
 				for(int i=0; i<vals.length; i++) {
 					vals[i] = Integer.parseInt(tk[i]);
 				}
-				
 			}
 			gen.pushArray(res, Type.getType(konoha.K_Array.class), vals);
 		} else if(typeName.equals("konoha.Array<konoha.Float>")) {

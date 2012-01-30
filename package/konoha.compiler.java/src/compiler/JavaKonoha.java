@@ -1,8 +1,11 @@
 package compiler;
 
 import java.io.*;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+
+import org.objectweb.asm.Type;
 
 import compiler.ir.GenInstException;
 
@@ -49,29 +52,46 @@ public class JavaKonoha {
 		} 
 	}
 	
+	public static String typeToStr(Type type) {
+		if(type == Type.INT_TYPE) {
+			return "int";
+		} else if(type == Type.DOUBLE_TYPE) {
+			return "float";
+		} else {
+			return "void";
+		}
+	}
+	
 	public void eval(String script) {
 		String file = "_jkonoha_eval_tmp.k";
 		try {
 			FileWriter fw = new FileWriter(file);
+			for(KField field : compiler.scriptClass.fields) {
+				if(field.name.equals("script0")) continue;
+				fw.write(typeToStr(field.type) + " " + field.name + ";\n");
+			}
+			for(KMethod method : compiler.scriptClass.methods) {
+				if(!method.name.equals("main")) {
+					Type t = Type.getMethodType(method.desc);
+					Type ret = t.getReturnType();
+					fw.write(typeToStr(t.getReturnType()));
+					fw.write(" " + method.name + "(");
+					int i = 0;
+					for(Type type : t.getArgumentTypes()) {
+						if(i != 0) fw.write(", ");
+						fw.write(typeToStr(type) + " p" + i);
+						i++;
+					}
+					fw.write(");\n");
+				}
+			}
 			fw.write(script);
 			fw.close();
 			compileFile(file);
-			new File(file).delete();
+			//new File(file).delete();
 			run(new String[0]);
 		} catch(IOException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	public void interactive() {
-		Scanner s = new Scanner(System.in);
-		while(true) {
-			System.out.print(">>>");
-			String line = s.nextLine();
-			if(line.equals("quit") || line.equals("exit") || line.equals("bye")) {
-				return;
-			}
-			eval(line);
 		}
 	}
 	
@@ -93,6 +113,19 @@ public class JavaKonoha {
 		}
 	}
 	
+	public static void interactive() {
+		JavaKonoha konoha = new JavaKonoha();
+		Scanner s = new Scanner(System.in);
+		while(true) {
+			System.out.print(">>>");
+			String line = s.nextLine();
+			if(line.equals("quit") || line.equals("exit") || line.equals("bye")) {
+				System.exit(0);
+			}
+			konoha.eval(line);
+		}
+	}
+	
 	public static void printHelp() {
 		System.out.println("usage: [command] [file] [args...]");
 		System.out.println("  -c  compile only");
@@ -101,8 +134,6 @@ public class JavaKonoha {
 	}
 	
 	public static void main(String args[]) throws IOException {
-		JavaKonoha konoha = new JavaKonoha();
-		
 		boolean compile_only = false;
 		String filename = null;
 		for(int i=0; i<args.length; i++) {
@@ -114,7 +145,7 @@ public class JavaKonoha {
 					printHelp();
 					return ;
 				} else if(arg.equals("-i")) {
-					konoha.interactive();
+					interactive();
 					return;
 				} else {
 					System.err.println("bad arg: " + arg);
@@ -128,7 +159,9 @@ public class JavaKonoha {
 		}
 		if(filename == null) {
 			printHelp();
+			return;
 		}
+		JavaKonoha konoha = new JavaKonoha();
 		konoha.compileFile(filename);
 		if(compile_only) {
 			konoha.writeClassFile();
