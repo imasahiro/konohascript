@@ -8,19 +8,58 @@ import org.objectweb.asm.*;
 public class Compiler implements Opcodes {
 	
 	private final HashMap<String, KClass> classList = new HashMap<String, KClass>();
-	private final ArrayList<String> initList = new ArrayList<String>();
-	private KMethod mainMethod = null;
-	final KClass scriptClass = new KClass("Script", "konoha/K_Object");
+	private ArrayList<String> initList;
+	private KMethod mainMethod;
 	
-	public Compiler() {
-		// add Script class
-		classList.put("Script", scriptClass);
-		// add Script.script0 field
-		scriptClass.createField(ACC_STATIC + ACC_PUBLIC, "script0", Type.getType("LScript;"));
+	{
+		
+		// create Script class
+		KClass script = new KClass("Script", "konoha/K_Object");
+		classList.put("Script", script);
+		script.createField(ACC_STATIC + ACC_PUBLIC, "script0", Type.getType("LScript;"));
+
+	}
+	
+	public void initScript() {
+		initList = new ArrayList<String>();
+		mainMethod = null;
+	}
+	
+	public static String typeToStr(Type type) {
+		if(type == Type.INT_TYPE) {
+			return "int";
+		} else if(type == Type.DOUBLE_TYPE) {
+			return "float";
+		} else {
+			return "void";
+		}
+	}
+	
+	public void dumpScriptDefs(PrintWriter out) {
+		KClass script = classList.get("Script");
+		if(script != null) {
+			for(KField field : script.fields) {
+				if(field.name.equals("script0")) continue;
+				out.printf("%s %s;\n", typeToStr(field.type), field.name);
+			}
+			for(KMethod method : script.methods) {
+				if(!method.name.equals("main") && !method.name.startsWith("_init")) {
+					Type t = Type.getMethodType(method.desc);
+					Type ret = t.getReturnType();
+					out.write(typeToStr(ret) + " " + method.name + "(");
+					int i = 0;
+					for(Type type : t.getArgumentTypes()) {
+						if(i != 0) out.write(", ");
+						out.write(typeToStr(type) + " p" + i);
+						i++;
+					}
+					out.write(");\n");
+				}
+			}
+		}
 	}
 	
 	public KClass createClass(String name, String superClass) {
-		//assert !classList.containsKey(name);
 		KClass c = new KClass(name, superClass);
 		classList.put(name, c);
 		return c;

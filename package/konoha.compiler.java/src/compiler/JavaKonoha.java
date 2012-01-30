@@ -14,6 +14,7 @@ public class JavaKonoha {
 	private final Compiler compiler = new Compiler();
 	
 	public void compile(Reader r) {
+		compiler.initScript();
 		Parser parser = new Parser(r, compiler);
 		try {
 			parser.compile();
@@ -52,39 +53,11 @@ public class JavaKonoha {
 		} 
 	}
 	
-	public static String typeToStr(Type type) {
-		if(type == Type.INT_TYPE) {
-			return "int";
-		} else if(type == Type.DOUBLE_TYPE) {
-			return "float";
-		} else {
-			return "void";
-		}
-	}
-	
 	public void eval(String script) {
 		String file = "_jkonoha_eval_tmp.k";
 		try {
 			FileWriter fw = new FileWriter(file);
-			for(KField field : compiler.scriptClass.fields) {
-				if(field.name.equals("script0")) continue;
-				fw.write(typeToStr(field.type) + " " + field.name + ";\n");
-			}
-			for(KMethod method : compiler.scriptClass.methods) {
-				if(!method.name.equals("main")) {
-					Type t = Type.getMethodType(method.desc);
-					Type ret = t.getReturnType();
-					fw.write(typeToStr(t.getReturnType()));
-					fw.write(" " + method.name + "(");
-					int i = 0;
-					for(Type type : t.getArgumentTypes()) {
-						if(i != 0) fw.write(", ");
-						fw.write(typeToStr(type) + " p" + i);
-						i++;
-					}
-					fw.write(");\n");
-				}
-			}
+			compiler.dumpScriptDefs(new PrintWriter(fw));
 			fw.write(script);
 			fw.close();
 			compileFile(file);
