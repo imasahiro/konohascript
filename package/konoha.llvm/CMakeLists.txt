@@ -41,8 +41,7 @@ execute_process(
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LLVM_CFLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS} -Wno-variadic-macros")
 set(KONOHA_SRC ${KONOHA_SRC} src/lang/llvm.cpp)
 string(REPLACE " " ";" v ${LLVM_JIT_LIBS})
 link_directories(${LINK_DIRECTORIES} ${LLVM_LIBDIR})

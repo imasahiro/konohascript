@@ -123,51 +123,51 @@ extern "C" {
 #define PKG_NULVAL_String (KNH_NULVAL(CLASS_String))
 #define WRAP(ptr) ((void*)ptr)
 
-static void Type_init(CTX ctx, kRawPtr *po)
+static void Type_init(CTX ctx _UNUSED_, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
-static void Type_free(CTX ctx, kRawPtr *po)
+static void Type_free(CTX ctx _UNUSED_, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		po->rawptr = NULL;
 	}
 }
-DEFAPI(void) defType(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+DEFAPI(void) defType(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
 {
 	cdef->name = "Type";
 	cdef->init = Type_init;
 	cdef->free = Type_free;
 }
 
-static void IntegerType_init(CTX ctx, kRawPtr *po)
+static void IntegerType_init(CTX ctx _UNUSED_, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
-static void IntegerType_free(CTX ctx, kRawPtr *po)
+static void IntegerType_free(CTX ctx _UNUSED_, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		po->rawptr = NULL;
 	}
 }
-DEFAPI(void) defIntegerType(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+DEFAPI(void) defIntegerType(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
 {
 	cdef->name = "IntegerType";
 	cdef->init = IntegerType_init;
 	cdef->free = IntegerType_free;
 }
 
-static void PointerType_init(CTX ctx, kRawPtr *po)
+static void PointerType_init(CTX ctx _UNUSED_, kRawPtr *po)
 {
 	po->rawptr = NULL;
 }
-static void PointerType_free(CTX ctx, kRawPtr *po)
+static void PointerType_free(CTX ctx _UNUSED_, kRawPtr *po)
 {
 	if (po->rawptr != NULL) {
 		po->rawptr = NULL;
 	}
 }
-DEFAPI(void) defPointerType(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+DEFAPI(void) defPointerType(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
 {
 	cdef->name = "PointerType";
 	cdef->init = PointerType_init;
@@ -411,17 +411,17 @@ KMETHOD IRBuilder_createRet(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## ReturnInst IRBuilder.CreateAggregateRet(Value retVals, int N);
-KMETHOD IRBuilder_createAggregateRet(CTX ctx, ksfp_t *sfp _RIX)
-{
-	LLVM_TODO("NO SUPPORT");
-	//IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
-	//Value *const retVals = konoha::object_cast<Value *const>(sfp[1].p);
-	//kint_t N = Int_to(kint_t,sfp[2]);
-	//ReturnInst *ptr = self->CreateAggregateRet(retVals, N);
-	//kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
-	//RETURN_(p);
-}
+////## ReturnInst IRBuilder.CreateAggregateRet(Value retVals, int N);
+//KMETHOD IRBuilder_createAggregateRet(CTX ctx, ksfp_t *sfp _RIX)
+//{
+//	LLVM_TODO("NO SUPPORT");
+//	//IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
+//	//Value *const retVals = konoha::object_cast<Value *const>(sfp[1].p);
+//	//kint_t N = Int_to(kint_t,sfp[2]);
+//	//ReturnInst *ptr = self->CreateAggregateRet(retVals, N);
+//	//kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+//	//RETURN_(p);
+//}
 
 //## BranchInst IRBuilder.CreateBr(BasicBlock Dest);
 KMETHOD IRBuilder_createBr(CTX ctx, ksfp_t *sfp _RIX)
@@ -1635,7 +1635,7 @@ KMETHOD IRBuilder_createPHI(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## void IRBuilder.addIncoming(Type Ty, BasicBlock bb);
-KMETHOD PHINode_addIncoming(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD PHINode_addIncoming(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	PHINode *self = konoha::object_cast<PHINode *>(sfp[0].p);
 	Value *v = konoha::object_cast<Value *>(sfp[1].p);
@@ -1839,7 +1839,7 @@ KMETHOD IRBuilder_createPtrDiff(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## void IRBuilder.SetInsertPoint(BasicBlock BB);
-KMETHOD IRBuilder_setInsertPoint(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD IRBuilder_setInsertPoint(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	IRBuilder<> *self = konoha::object_cast<IRBuilder<> *>(sfp[0].p);
 	BasicBlock * BB = konoha::object_cast<BasicBlock *>(sfp[1].p);
@@ -1911,7 +1911,7 @@ KMETHOD BasicBlock_getLastInst(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## Instruction BasicBlock.insertBefore(Instruction before, Instruction inst);
-KMETHOD BasicBlock_insertBefore(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD BasicBlock_insertBefore(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
 	Instruction *inst0 = konoha::object_cast<Instruction *>(sfp[1].p);
@@ -1921,7 +1921,7 @@ KMETHOD BasicBlock_insertBefore(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## int BasicBlock.size();
-KMETHOD BasicBlock_size(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD BasicBlock_size(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
 	int ret = self->size();
@@ -1929,7 +1929,7 @@ KMETHOD BasicBlock_size(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## boolean BasicBlock.empty();
-KMETHOD BasicBlock_empty(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD BasicBlock_empty(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
 	bool isEmpty = self->empty();
@@ -1945,14 +1945,14 @@ KMETHOD Argument_new(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-static void str_replace (std::string& str, const std::string& from, const std::string& to) {
-	std::string::size_type pos = 0;
-	while ((pos = str.find(from, pos)) != std::string::npos) {
-		str.replace( pos, from.size(), to );
-		pos++;
-	}
-}
-
+//static void str_replace (std::string& str, const std::string& from, const std::string& to) {
+//	std::string::size_type pos = 0;
+//	while ((pos = str.find(from, pos)) != std::string::npos) {
+//		str.replace( pos, from.size(), to );
+//		pos++;
+//	}
+//}
+//
 //## Module Module.new(String name);
 KMETHOD Module_new(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -1983,19 +1983,8 @@ KMETHOD Module_new(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
-//## void Module.addTypeName(String name, Type type);
-KMETHOD Module_addTypeName(CTX ctx, ksfp_t *sfp _RIX)
-{
-	KNH_P("deprecated method");
-	//Module *self = konoha::object_cast<Module *>(sfp[0].p);
-	//kString * name = sfp[1].s;
-	//Type *type = konoha::object_cast<Type *>(sfp[2].p);
-	//self->addTypeName(S_totext(name), type);
-	RETURNvoid_();
-}
-
 //## void Module.dump();
-KMETHOD Module_dump(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Module_dump(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Module *self = konoha::object_cast<Module *>(sfp[0].p);
 	(*self).dump();
@@ -2013,7 +2002,7 @@ KMETHOD Module_getTypeByName(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## void BasicBlock.dump();
-KMETHOD BasicBlock_dump(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD BasicBlock_dump(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	BasicBlock *self = konoha::object_cast<BasicBlock *>(sfp[0].p);
 	(*self).dump();
@@ -2045,7 +2034,7 @@ KMETHOD Function_create(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## @Native void Function.dump();
-KMETHOD Function_dump(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Function_dump(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Function *func = konoha::object_cast<Function *>(sfp[0].p);
 	func->dump();
@@ -2053,7 +2042,7 @@ KMETHOD Function_dump(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## @Native void Function.addFnAttr(Int attributes);
-KMETHOD Function_addFnAttr(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Function_addFnAttr(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Function *F = konoha::object_cast<Function *>(sfp[0].p);
 	Attributes N = (Attributes) sfp[1].ivalue;
@@ -2061,11 +2050,12 @@ KMETHOD Function_addFnAttr(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//## ExecutionEngine Module.createExecutionEngine();
+//## ExecutionEngine Module.createExecutionEngine(int optLevel);
 KMETHOD Module_createExecutionEngine(CTX ctx, ksfp_t *sfp _RIX)
 {
 	Module *self = konoha::object_cast<Module *>(sfp[0].p);
-	ExecutionEngine *ptr = EngineBuilder(self).setEngineKind(EngineKind::JIT).create();
+	CodeGenOpt::Level OptLevel = (CodeGenOpt::Level) sfp[1].ivalue;
+	ExecutionEngine *ptr = EngineBuilder(self).setEngineKind(EngineKind::JIT).setOptLevel(OptLevel).create();
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::object_free<ExecutionEngine>);
 	RETURN_(p);
 }
@@ -2194,7 +2184,7 @@ KMETHOD ArrayType_get(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## @Native void StructType.setBody(Array<Type> args, boolean isPacked);
-KMETHOD StructType_setBody(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD StructType_setBody(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	StructType *type  = konoha::object_cast<StructType *>(sfp[0].p);
 	kArray *args = sfp[1].a;
@@ -2206,7 +2196,7 @@ KMETHOD StructType_setBody(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## @Native boolean StructType.isOpaque();
-KMETHOD StructType_isOpaque(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD StructType_isOpaque(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	StructType *type  = konoha::object_cast<StructType *>(sfp[0].p);
 	bool ret = type->isOpaque();
@@ -2223,7 +2213,7 @@ KMETHOD ExecutionEngine_getPointerToFunction(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 //## @Native void ExecutionEngine.addGlobalMapping(GlobalVariable g, int addr);
-KMETHOD ExecutionEngine_addGlobalMapping(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD ExecutionEngine_addGlobalMapping(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	ExecutionEngine *ee = konoha::object_cast<ExecutionEngine *>(sfp[0].p);
 	GlobalVariable *g   = konoha::object_cast<GlobalVariable *>(sfp[1].p);
@@ -2257,7 +2247,7 @@ KMETHOD PassManagerBuilder_new(CTX ctx, ksfp_t *sfp _RIX)
 	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(self), PassManagerBuilder_ptr_free);
 	RETURN_(p);
 }
-KMETHOD PassManagerBuilder_populateModulePassManager(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD PassManagerBuilder_populateModulePassManager(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	PassManagerBuilder *self = konoha::object_cast<PassManagerBuilder *>(sfp[0].p);
 	PassManager *manager = konoha::object_cast<PassManager *>(sfp[1].p);
@@ -2280,7 +2270,7 @@ KMETHOD PassManager_new(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## void PassManager.run(Function func)
-KMETHOD PassManager_run(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD PassManager_run(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
 	Module *m = konoha::object_cast<Module *>(sfp[1].p);
@@ -2288,7 +2278,7 @@ KMETHOD PassManager_run(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## void PassManager.add(Pass p)
-KMETHOD PassManager_addPass(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD PassManager_addPass(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
 	Pass *pass = konoha::object_cast<Pass *>(sfp[1].p);
@@ -2296,7 +2286,7 @@ KMETHOD PassManager_addPass(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## void PassManager.add(Pass p)
-KMETHOD PassManager_addImmutablePass(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD PassManager_addImmutablePass(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
 	ImmutablePass *pass = konoha::object_cast<ImmutablePass *>(sfp[1].p);
@@ -2304,7 +2294,7 @@ KMETHOD PassManager_addImmutablePass(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## void PassManager.addFunctionPass(Pass p)
-KMETHOD PassManager_addFunctionPass(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD PassManager_addFunctionPass(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
 	FunctionPass *pass = konoha::object_cast<FunctionPass *>(sfp[1].p);
@@ -2312,7 +2302,7 @@ KMETHOD PassManager_addFunctionPass(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## void PassManager.addModulePass(Pass p)
-KMETHOD PassManager_addModulePass(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD PassManager_addModulePass(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	PassManager *self = konoha::object_cast<PassManager *>(sfp[0].p);
 	ModulePass *pass = konoha::object_cast<ModulePass *>(sfp[1].p);
@@ -2336,7 +2326,7 @@ KMETHOD FunctionPassManager_new(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 //## void FuncitonPassManager.add(Pass p)
-KMETHOD FunctionPassManager_add(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD FunctionPassManager_add(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	FunctionPassManager *self = konoha::object_cast<FunctionPassManager *>(sfp[0].p);
 	Pass *pass = konoha::object_cast<Pass *>(sfp[1].p);
@@ -2344,7 +2334,7 @@ KMETHOD FunctionPassManager_add(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## void FunctionPassManager.doInitialization()
-KMETHOD FunctionPassManager_doInitialization(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD FunctionPassManager_doInitialization(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	FunctionPassManager *self = konoha::object_cast<FunctionPassManager *>(sfp[0].p);
 	self->doInitialization();
@@ -2352,7 +2342,7 @@ KMETHOD FunctionPassManager_doInitialization(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## void FunctionPassManager.run(Function func)
-KMETHOD FunctionPassManager_run(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD FunctionPassManager_run(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	FunctionPassManager *self = konoha::object_cast<FunctionPassManager *>(sfp[0].p);
 	Function *func = konoha::object_cast<Function *>(sfp[1].p);
@@ -2374,17 +2364,8 @@ KMETHOD Method_setFunction(CTX ctx, ksfp_t *sfp _RIX)
 {
 	kMethod *mtd = (kMethod*) sfp[0].o;
 	kRawPtr *po = sfp[1].p;
-	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
-	RETURNvoid_();
-}
-
-//## void Func.setFunction(NativeFunction func);
-KMETHOD Func_setFunction(CTX ctx, ksfp_t *sfp _RIX)
-{
-	kFunc *fo   = sfp[0].fo;
-	kRawPtr *po = sfp[1].p;
-	kMethod *mtd = fo->mtd;
-	knh_Method_setFunc(ctx, mtd, (knh_Fmethod)po->rawptr);
+	union anyptr { void *p; knh_Fmethod f;} ptr = {po->rawptr};
+	knh_Method_setFunc(ctx, mtd, ptr.f);
 	RETURNvoid_();
 }
 
@@ -2404,7 +2385,7 @@ KMETHOD Function_getArguments(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(a);
 }
 //## void Value.replaceAllUsesWith(Value v);
-KMETHOD Value_replaceAllUsesWith(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Value_replaceAllUsesWith(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Value *self = konoha::object_cast<Value *>(sfp[0].p);
 	Value *v = konoha::object_cast<Value *>(sfp[1].p);
@@ -2412,7 +2393,7 @@ KMETHOD Value_replaceAllUsesWith(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## Value Value.setName(String name);
-KMETHOD Value_setName(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Value_setName(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Value *self = konoha::object_cast<Value *>(sfp[0].p);
 	kString *name = sfp[1].s;
@@ -2420,7 +2401,7 @@ KMETHOD Value_setName(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## void LoadInst.setAlignment(int align);
-KMETHOD LoadInst_setAlignment(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD LoadInst_setAlignment(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	LoadInst *self = konoha::object_cast<LoadInst *>(sfp[0].p);
 	int align = sfp[1].ivalue;
@@ -2428,7 +2409,7 @@ KMETHOD LoadInst_setAlignment(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 //## void StoreInst.setAlignment(int align);
-KMETHOD StoreInst_setAlignment(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD StoreInst_setAlignment(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	StoreInst *self = konoha::object_cast<StoreInst *>(sfp[0].p);
 	int align = sfp[1].ivalue;
@@ -2445,7 +2426,7 @@ KMETHOD Value_getType(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## void Value.dump();
-KMETHOD Value_dump(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Value_dump(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Value *self = konoha::object_cast<Value *>(sfp[0].p);
 	self->dump();
@@ -2453,7 +2434,7 @@ KMETHOD Value_dump(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## @Native void Type.dump();
-KMETHOD Type_dump(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Type_dump(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Type *type = konoha::object_cast<Type *>(sfp[0].p);
 	type->dump();
@@ -2473,7 +2454,7 @@ KMETHOD DynamicLibrary_loadLibraryPermanently(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //## @Static Int DynamicLibrary.searchForAddressOfSymbol(String fname);
-KMETHOD DynamicLibrary_searchForAddressOfSymbol(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD DynamicLibrary_searchForAddressOfSymbol(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	const char *fname = S_totext(sfp[1].s);
 	kint_t ret = 0;
@@ -3372,7 +3353,7 @@ KMETHOD LLVM_parseBitcodeFile(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 //TODO Scriptnize
-KMETHOD Instruction_setMetadata(CTX ctx, ksfp_t *sfp _RIX)
+KMETHOD Instruction_setMetadata(CTX ctx _UNUSED_, ksfp_t *sfp _RIX)
 {
 	Instruction *inst = konoha::object_cast<Instruction *>(sfp[0].p);
 	Module *m = konoha::object_cast<Module *>(sfp[1].p);
@@ -3420,7 +3401,7 @@ static knh_IntData_t IntGlobalVariable[] = {
 	{NULL, 0}
 };
 
-DEFAPI(void) defGlobalValue(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+DEFAPI(void) defGlobalValue(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
 {
 	cdef->name = "GlobalValue";
 }
@@ -3430,7 +3411,7 @@ DEFAPI(void) constGlobalValue(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi
 	kapi->loadClassIntConst(ctx, cid, IntGlobalVariable);
 }
 
-DEFAPI(void) defIntrinsic(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+DEFAPI(void) defIntrinsic(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
 {
 	cdef->name = "Intrinsic";
 }
@@ -3474,17 +3455,17 @@ static const knh_IntData_t IntAttributes[] = {
 };
 #undef C_
 
-DEFAPI(void) defAttributes(CTX ctx, kclass_t cid, kclassdef_t *cdef)
+DEFAPI(void) defAttributes(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, kclassdef_t *cdef)
 {
 	cdef->name = "Attributes";
 }
 
-DEFAPI(void) constAttributes(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
+DEFAPI(void) constAttributes(CTX ctx _UNUSED_, kclass_t cid _UNUSED_, const knh_LoaderAPI_t *kapi)
 {
 	kapi->loadClassIntConst(ctx, cid, IntAttributes);
 }
 
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx _UNUSED_, const knh_LoaderAPI_t *kapi _UNUSED_)
 {
 	InitializeNativeTarget();
 	//kapi->loadIntClassConst(ctx, CLASS_System, IntConstData);
