@@ -3040,6 +3040,9 @@ static KMETHOD InputStream_new(CTX ctx, ksfp_t *sfp _RIX)
 	if(io2 != NULL) {
 		in->io2 = io2;
 	}
+	else {
+		kObjectoNULL(ctx, in);
+	}
 	RETURN_(in);
 }
 
