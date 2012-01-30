@@ -242,6 +242,10 @@ konoha.Iterator.prototype.konohaclass = "konoha.Iterator";
 konoha.String = function(rawptr) {
     this.rawptr = rawptr;
 }
+konoha.String.prototype = new konoha.Object();
+konoha.String.prototype.get = function(num) {
+    return new konoha.String(this.rawptr[num]);
+}
 konoha.String.prototype.equals = function(str) {
     return this.rawptr == str.rawptr;
 }
@@ -295,7 +299,6 @@ konoha.String.prototype.getSize = function() {
     return this.rawptr.length;
 }
 
-konoha.String.prototype = new konoha.Object();
 konoha.String.prototype.konohaclass = "konoha.String";
 
 /* Regex */
