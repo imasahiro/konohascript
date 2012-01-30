@@ -52,6 +52,10 @@ var initJQuery = function() {
     }
 
     /* Attributes */
+    jquery.prototype.getAttr = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        return new konoha.String(jquery(this.rawptr.attr.apply(this.rawptr, args)));
+    }
     jquery.prototype.attr = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new jquery(this.rawptr.attr.apply(this.rawptr, args));

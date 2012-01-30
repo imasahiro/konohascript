@@ -323,8 +323,8 @@ konoha.Int = function(rawptr) {
 konoha.Int.prototype = new konoha.Number();
 konoha.Int.prototype.konohaclass = "konoha.Int";
 
-konoha.Int.random = function() {
-    return Math.random();
+konoha.Int.random = function(arg) {
+    return Math.floor(Math.random() * arg);
 }
 konoha.Int.format = function(i, format) {
     switch (format.rawptr) {

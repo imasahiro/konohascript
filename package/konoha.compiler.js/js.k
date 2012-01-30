@@ -382,7 +382,11 @@ LABEL = "label";
 }
 @Public @Override void K_DIV.codegen(Compiler asm) {
     String res;
-    res = declVar(asm) + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ";";
+    if (this.type == Int) {
+        res = declVar(asm) + getVarName(asm) + " = Math.floor(" + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ");";
+    } else {
+        res = declVar(asm) + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ";";
+    }
     asm.addSource(res);
 }
 @Public @Override void K_MOD.codegen(Compiler asm) {
