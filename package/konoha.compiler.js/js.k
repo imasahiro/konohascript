@@ -24,7 +24,7 @@ konoha.printOUT();
 </body>
 </html>
 """;
-TOP = "konoha_main()"
+TOP = "(event)"
 //class CompilerOpt {
 //    int      indentLevel;
 //    String   mtdName;
@@ -291,6 +291,7 @@ LABEL = "label";
             fncdef += ", ";
         }
     }
+    //fncdef += ", prog) {" + EOL;
     fncdef += ") {" + EOL;
     asm.addFunc(fncdef);
     asm.setIndentLevel(1);
@@ -332,6 +333,7 @@ LABEL = "label";
         }
         bbs[i].insts[|bbs[i].insts|-1].codegen(asm);
         if (bbs[i].insts[|bbs[i].insts|-1].class != K_RET) {
+          asm.addSource("if (konoha.terminate) { return; }");
           asm.addSource("break;");
         }
         if (needSwitch) {
@@ -512,6 +514,7 @@ LABEL = "label";
             res += ", ";
         }
     }
+    //res += ", prog);";
     res += ");";
     asm.addSource(res);
 }
@@ -615,16 +618,38 @@ LABEL = "label";
     res += "function Script" + "() {" + EOL;
     res += "}" + EOL;
     res += EOL;
-    res += "function " + TOP + " {" + EOL;
+    res += "onmessage = function " + TOP + " {" + EOL;
+    res += indent + "konoha.terminate = false;" + EOL;
+    res += indent + "var data = event.data;" + EOL;
+    //res += indent + "if (typeof options.failure !== \"function\") {" + EOL;
+    //res += indent + indent + "options.failure = false;" + EOL;
+    //res += indent + "}" + EOL;
+    //res += indent + "if (typeof options.success !== \"function\") {" + EOL;
+    //res += indent + indent + "options.success = false;" + EOL;
+    //res += indent + "}" + EOL + EOL;
     res += indent + "script = new Script();" + EOL;
     foreach (fnc in this.opt.topLevelFunctionList) {
         res += indent + getMethodName(fnc) + "(";
+        //boolean existsargs = false;
         if (fnc.getMethodClass() == Script && fnc.getName() == "") {
             res += "script";
+            //existargs = true;
         }
+        //if (existsargs) {
+        //    res += ", options.prog);" + EOL;
+        //} else {
+        //    res += "null, options.prog);" + EOL;
+        //}
         res += ");" + EOL;
     }
-    res += "}" + EOL;
+    res += indent + "postMessage(konoha.OUT);" + EOL;
+    //res += indent + "if (konoha.terminate && options.failure) {" + EOL;
+    //res += indent + indent + "options.failure();" + EOL;
+    //res += indent + "}" + EOL;
+    //res += indent + "if (!konoha.terminate && options.success) {" + EOL;
+    //res += indent + indent + "options.success(konoha.OUT);" + EOL;
+    //res += indent + "}" + EOL;
+    res += "};" + EOL;
     return res;
 }
 @Public String Compiler.createClassDefinition(Class c, String cname) {

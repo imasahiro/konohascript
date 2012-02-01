@@ -3,8 +3,8 @@ PROGRAM=`basename $0`
 
 
 export JS_USE_OBFUSCATE=true
-export JS_GEN_HTML=true
-#export JS_GEN_HTML=false
+#export JS_GEN_HTML=true
+export JS_GEN_HTML=false
 
 if  test $1 = "--test" ; then 
     export JS_GEN_HTML=false
