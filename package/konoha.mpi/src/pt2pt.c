@@ -3,7 +3,7 @@
 #endif
 
 /* ------------------------------------------------------------------------ */
-//## method int MPIComm.send(MPIData sdata, int count, int dest, int tag);
+//## method boolean MPIComm.send(MPIData sdata, int count, int dest, int tag);
 
 KMETHOD MPIComm_send(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -13,7 +13,15 @@ KMETHOD MPIComm_send(CTX ctx, ksfp_t *sfp _RIX)
 	int dest_rank = Int_to(int, sfp[3]);
 	int tag = Int_to(int, sfp[4]);
 	MPID_CCHK(sdata, count);
-	RETURNi_(MPI_Send(MPID_ADDR(sdata), count, MPID_TYPE(sdata), dest_rank, tag, MPIC_COMM(comm)));
+	double _begin = MPI_Wtime();
+	int ret = MPI_Send(MPID_ADDR(sdata), count, MPID_TYPE(sdata), dest_rank, tag, MPIC_COMM(comm));
+	double _finish = MPI_Wtime();
+	double _duration = _finish - _begin;
+	KNH_NTRACE2(ctx, "MPI_Send", K_NOTICE,
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+						  LOG_i("myrank", MPIC_RANK(comm)), LOG_i("count", count), LOG_i("datatype", (int)MPID_TYPE(sdata)),
+						  LOG_i("dest_rank", dest_rank), LOG_i("tag", tag)));
+	RETURNi_(ret);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -44,7 +52,15 @@ KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 	int inc = 0;
 	knh_MPIData_expand(ctx, rdata, &count, &inc);
 	knh_MPIData_incSize(rdata, inc);
-	RETURNi_(MPI_Recv(MPID_ADDR(rdata), count, MPID_TYPE(rdata), src_rank, tag, MPIC_COMM(comm), &stat));
+	double _begin = MPI_Wtime();
+	int ret = MPI_Recv(MPID_ADDR(rdata), count, MPID_TYPE(rdata), src_rank, tag, MPIC_COMM(comm), &stat);
+	double _finish = MPI_Wtime();
+	double _duration = _finish - _begin;
+	KNH_NTRACE2(ctx, "MPI_Recv", K_NOTICE,
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+						  LOG_i("myrank", MPIC_RANK(comm)), LOG_i("count", count), LOG_i("datatype", (int)MPID_TYPE(rdata)),
+						  LOG_i("src_rank", src_rank), LOG_i("tag", tag)));
+	RETURNi_(ret);
 }
 
 /* ------------------------------------------------------------------------ */
