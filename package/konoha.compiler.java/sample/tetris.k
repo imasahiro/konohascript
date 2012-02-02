@@ -58,8 +58,8 @@ void initMino(int type) {
 		setMinoBlock(1, 2, 5);
 	} else if(type == 6) {
 		setMinoBlock(2, 1, 6);
-		setMinoBlock(2, 2, 6);
 		setMinoBlock(1, 2, 6);
+		setMinoBlock(2, 2, 6);
 		setMinoBlock(3, 2, 6);
 	} else if(type == 7) {
 		setMinoBlock(1, 0, 7);

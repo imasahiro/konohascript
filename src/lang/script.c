@@ -572,10 +572,10 @@ static void SCRIPT_eval(CTX ctx, kStmtExpr *stmtORIG, int isCompileOnly)
 	{
 		knh_Method_asm(ctx, mtd, stmt, typingMethod2);
 		if (ctx->share->compilerAPI != NULL) {
-		  void *compilerAPI = ctx->share->compilerAPI;
-		  ctx->wshare->compilerAPI = NULL;
-		  knh_Method_asm(ctx, mtd, stmt, typingMethod2);
-		  ctx->wshare->compilerAPI = compilerAPI;
+			void *compilerAPI = ctx->share->compilerAPI;
+			ctx->wshare->compilerAPI = NULL;
+			knh_Method_asm(ctx, mtd, stmt, typingMethod2);
+			ctx->wshare->compilerAPI = compilerAPI;
 		}
 	}
 	if(STT_(stmt) == STT_ERR) {

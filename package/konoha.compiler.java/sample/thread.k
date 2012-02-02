@@ -10,7 +10,7 @@ class A extends Runnable {
 		_id = id;
 	}
 
-	@Overload @Override void run() {
+	@Override void run() {
 		for(int i=0; i<5; i++) {
 			Thread.sleep(int.random(1000));
 			OUT << "id= " + id + " count = " + i << EOL;

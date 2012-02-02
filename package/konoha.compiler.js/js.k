@@ -30,7 +30,7 @@ TOP = "konoha_main()"
 //    String   mtdName;
 //    String[] source;
 //    String[] unexpectedMethods;
-//    Method[] topLevelFunctionList;
+//    String[] topLevelFunctionList;
 //    String   obfuscatedClassName;
 //    Map<String, String> varNameMap;
 //    Map<String, String> methodNameMap;
@@ -39,7 +39,7 @@ TOP = "konoha_main()"
 System.addClassField(CompilerOpt, String  , "mtdName");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "unexpectedMethods");
-System.addClassField(CompilerOpt, Method[], "topLevelFunctionList");
+System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 System.addClassField(CompilerOpt, Map<String, String>, "varNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
@@ -226,6 +226,15 @@ LABEL = "label";
     if (isKonohaClass(mtd.getMethodClass()) && mtd.getMethodClass() != Script) {
         return mtd.getName();
     }
+    if (((to String)mtd.getMethodClass()).endsWith("Script") && mtd.getName() == "") {
+        int i = 1, j = |this.opt.topLevelFunctionList|;
+        int l = 'z' - 'a';
+        while (j > l) {
+            i++;
+            j /= (l+1);
+        }
+        return "_" + obfuscateString(i, |this.opt.topLevelFunctionList|, 'a', false);
+    }
     String s = mtd.toString();
     if (!s in? opt.methodNameMap) {
         setMethodName(mtd);
@@ -269,13 +278,13 @@ LABEL = "label";
     } else if (isStatic == 1 || ((to String)asm.mtd.getMethodClass()).endsWith("Script")) {
         if (asm.mtd.getName() == "") {
             int size = |asm.opt.topLevelFunctionList|;
-            asm.opt.topLevelFunctionList.add(asm.mtd);
+            asm.opt.topLevelFunctionList.add(asm.opt.obfuscatedMethodName);
             fncdef += "function " + asm.opt.obfuscatedMethodName + "(";
             //fncdef += "function Script" + size + "(";
             asm.opt.mtdName = asm.opt.obfuscatedMethodName;
         } else if (asm.mtd.getName() == "main") {
             fncdef += "function " + asm.opt.obfuscatedMethodName + "(";
-            asm.opt.topLevelFunctionList.add(asm.mtd);
+            asm.opt.topLevelFunctionList.add(asm.opt.obfuscatedMethodName);
             asm.opt.mtdName = asm.opt.obfuscatedMethodName;
         } else {
             fncdef += "function " + asm.opt.obfuscatedMethodName + "(";
@@ -373,7 +382,11 @@ LABEL = "label";
 }
 @Public @Override void K_DIV.codegen(Compiler asm) {
     String res;
-    res = declVar(asm) + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ";";
+    if (this.type == Int) {
+        res = declVar(asm) + getVarName(asm) + " = Math.floor(" + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ");";
+    } else {
+        res = declVar(asm) + getVarName(asm) + " = " + op.inst0.getVarName(asm) + " / " + op.inst1.getVarName(asm) + ";";
+    }
     asm.addSource(res);
 }
 @Public @Override void K_MOD.codegen(Compiler asm) {
@@ -522,7 +535,7 @@ LABEL = "label";
     if (op.msg != "") {
         msg += op.msg + "=";
     }
-    asm.addSource("document.write(\"" + strline + msg + "\" + " + op.inst0.getVarName(asm) + ".toString() + \"<br>\");");
+    asm.addSource("konoha.OUT += \"" + strline + msg + "\" + " + op.inst0.getVarName(asm) + ".toString() + \"\\n\";");
 }
 @Public @Override void K_TR.codegen(Compiler asm) {
     String type_str = (to String)type;
@@ -617,11 +630,9 @@ LABEL = "label";
     res += EOL;
     res += "function " + TOP + " {" + EOL;
     res += indent + "script = new Script();" + EOL;
-    foreach (fnc in this.opt.topLevelFunctionList) {
-        res += indent + getMethodName(fnc) + "(";
-        if (fnc.getMethodClass() == Script && fnc.getName() == "") {
-            res += "script";
-        }
+    foreach (fname in this.opt.topLevelFunctionList) {
+        res += indent + fname + "(";
+        res += "script";
         res += ");" + EOL;
     }
     res += "}" + EOL;
