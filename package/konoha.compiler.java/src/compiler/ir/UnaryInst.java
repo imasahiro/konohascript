@@ -12,9 +12,9 @@ public class UnaryInst extends Inst {
 			String res = token[0];
 			String var = token[4];
 			// gen
-			gen.mv.visitInsn(ICONST_1);
+			gen.visitInsn(ICONST_1);
 			gen.loadLocal(var);
-			gen.mv.visitInsn(ISUB);
+			gen.visitInsn(ISUB);
 			gen.storeLocal(res, Type.BOOLEAN_TYPE);
 		}
 	}

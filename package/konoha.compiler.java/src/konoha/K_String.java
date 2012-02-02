@@ -2,7 +2,7 @@ package konoha;
 
 public class K_String extends K_Object {
 	
-	public final String string;
+	private final String string;
 	
 	public K_String(String s) {
 		this.string = s;
@@ -17,6 +17,14 @@ public class K_String extends K_Object {
 	
 	@Override public String toString() {
 		return string;
+	}
+	
+	public static K_String box(String s) {
+		return new K_String(s);
+	}
+	
+	public static String unbox(K_String n) {
+		return n != null ? n.string : "";
 	}
 	
 	public static K_Array split(String self, K_Regex r) {
@@ -69,15 +77,12 @@ public class K_String extends K_Object {
 	
 	public static K_Iterator toIterator(final String self) {
 		return new K_Iterator() {
-			int index = 0;
-			
-			public boolean hasNext() {
+			private int index = 0;
+			@Override public boolean hasNext() {
 				return index < self.length();
 			}
-
-			@Override
-			public K_Object getNext() {
-				return K_System.boxString(get(self, index++));
+			@Override public Object getNext() {
+				return box(get(self, index++));
 			}
 			
 		};
