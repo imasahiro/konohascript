@@ -18,7 +18,7 @@ class JQuery {
               //int      index(Element elemtnt);
 
     /* Attributes */
-    @Overload JQuery   attr(String name);
+              String   getAttr(String name);
     @Overload JQuery   attr(Map<String, dynamic> properties);
     @Overload JQuery   attr(String key, dynamic value);
               JQuery   removeAttr(String name);
