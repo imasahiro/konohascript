@@ -570,10 +570,13 @@ static void SCRIPT_eval(CTX ctx, kStmtExpr *stmtORIG, int isCompileOnly)
 	KNH_SETv(ctx, lsfp[0].o, stmt);
 	// CompilerAPI
 	{
-		void *compilerAPI = ctx->share->compilerAPI;
-		ctx->wshare->compilerAPI = NULL;
 		knh_Method_asm(ctx, mtd, stmt, typingMethod2);
-		ctx->wshare->compilerAPI = compilerAPI;
+		if (ctx->share->compilerAPI != NULL) {
+			void *compilerAPI = ctx->share->compilerAPI;
+			ctx->wshare->compilerAPI = NULL;
+			knh_Method_asm(ctx, mtd, stmt, typingMethod2);
+			ctx->wshare->compilerAPI = compilerAPI;
+		}
 	}
 	if(STT_(stmt) == STT_ERR) {
 		if(stmt != stmtORIG) {
