@@ -4,6 +4,7 @@ import konoha.*;
 import org.objectweb.asm.*;
 
 import compiler.KMethod;
+import compiler.KType;
 import compiler.Parser;
 
 public abstract class Inst implements Opcodes {
@@ -39,18 +40,18 @@ public abstract class Inst implements Opcodes {
 			Label l1 = new Label();
 			Label l2 = new Label();
 			gen.loadLocal(cond);
-			gen.mv.visitLdcInsn(0);
+			gen.visitLdcInsn(0);
 			gen.jump(IF_ICMPEQ, l1);
 			// then
 			gen.loadLocal(p1);
 			gen.storeLocal(res, type);
 			gen.jump(GOTO, l2);
 			// else
-			gen.mv.visitLabel(l1);
+			gen.visitLabel(l1);
 			gen.loadLocal(p2);
 			gen.storeLocal(res, type);
 			// merge
-			gen.mv.visitLabel(l2);
+			gen.visitLabel(l2);
 		}
 	}
 	public static class CastInst extends Inst {
@@ -64,13 +65,13 @@ public abstract class Inst implements Opcodes {
 			gen.loadLocal(obj);
 			if(from == Type.INT_TYPE) {
 				if(to == Type.DOUBLE_TYPE) {
-					gen.mv.visitInsn(I2D);
+					gen.visitInsn(I2D);
 				} else {
 					throw new GenInstException("cast error " + from + " to " + to);
 				}
 			} else if(from == Type.DOUBLE_TYPE) {
 				if(to == Type.INT_TYPE) {
-					gen.mv.visitInsn(D2I);
+					gen.visitInsn(D2I);
 				} else {
 					throw new GenInstException("cast error " + from + " to " + to);
 				}
@@ -79,13 +80,15 @@ public abstract class Inst implements Opcodes {
 					gen.invokeStatic(K_System.class, "castInt");
 				} else if(to == Type.DOUBLE_TYPE) {
 					gen.invokeStatic(K_System.class, "castFloat");
-				} else if(from.equals(gen.type_String) && to.equals(gen.type_Path)) {
+				} else if(from.equals(KType.kString) && to.equals(KType.kPath)) {
 					gen.invokeStatic(K_String.class, "castPath");
-				} else if(from.equals(gen.type_String) && to.equals(gen.type_Iterator)) {
+				} else if(from.equals(KType.kString) && to.equals(KType.kIterator)) {
 					gen.invokeVirtual(K_String.class, "toIterator");
-				} else if(from.equals(gen.type_Array) && to.equals(gen.type_Iterator)) {
+				} else if(from.equals(KType.kArray) && to.equals(KType.kIterator)) {
 					gen.invokeVirtual(K_Array.class, "toIterator");
-				} else if(from.equals(gen.type_Date) && to.equals(gen.type_String)) {
+				} else if(from.equals(KType.kInputStream) && to.equals(KType.kIterator)) {
+					gen.invokeVirtual(K_InputStream.class, "toIterator");
+				} else if(from.equals(KType.kDate) && to.equals(KType.kString)) {
 					gen.invokeVirtual(K_Date.class, "castString");
 				} else {
 					throw new GenInstException("cast error " + from + " to " + to);
@@ -120,16 +123,16 @@ public abstract class Inst implements Opcodes {
 			Type type = parser.toType(token[3]);
 			int n1 = 0;//Integer.parseInt(token[4]); //TODO
 			int n2 = 0;//Integer.parseInt(token[5]);
-			String varName = token[6];
+			String varName = token[6].substring(1, token[6].length()-1);
 			String var = token[7];
 			// gen
 			if(varName.equals("")) {
-				gen.mv.visitInsn(ACONST_NULL);
+				gen.visitInsn(ACONST_NULL);
 			} else {
-				gen.mv.visitLdcInsn(varName);
+				gen.visitLdcInsn(varName);
 			}
-			gen.mv.visitLdcInsn(n1);
-			gen.mv.visitLdcInsn(n2);
+			gen.visitLdcInsn(n1);
+			gen.visitLdcInsn(n2);
 			gen.loadLocal(var);
 			gen.box(type);
 			gen.invokeStatic(K_System.class, "print");
@@ -155,10 +158,10 @@ public abstract class Inst implements Opcodes {
 				Type type = parser.toType(token[3]);
 				// gen
 				if(type.equals(Type.getType("LScript;"))) {
-					gen.mv.visitFieldInsn(GETSTATIC,
+					gen.visitFieldInsn(GETSTATIC,
 							"Script", "script0", type.getDescriptor());
 				} else {
-					gen.mv.visitInsn(ACONST_NULL);
+					gen.visitInsn(ACONST_NULL);
 				}
 				gen.storeLocal(res, type);
 			}
@@ -221,12 +224,12 @@ public abstract class Inst implements Opcodes {
 			String res = token[0];
 			String className = parser.toClassName(token[3]);
 			// gen
-			gen.mv.visitTypeInsn(NEW, className);
+			gen.visitTypeInsn(NEW, className);
 			gen.storeLocal(res, Type.getType("L" + className + ";"));
 			// call constructor
-			if(!className.startsWith("java/")) {
+			if(!className.startsWith("java/") && !className.startsWith("javax/")) {
 				gen.loadLocal(res);
-				gen.mv.visitMethodInsn(INVOKESPECIAL, className, "<init>", "()V");
+				gen.visitMethodInsn(INVOKESPECIAL, className, "<init>", "()V");
 			}
 		}
 	}
@@ -333,15 +336,15 @@ public abstract class Inst implements Opcodes {
 	}
 	public static class ReturnInst extends Inst {
 		@Override public void asm(KMethod gen, Parser parser, String[] token) throws GenInstException {
-			if(token.length >= 4) {
+			if(token.length >= 4 && gen.getType().getReturnType() != Type.VOID_TYPE) {
 				// parse
 				String val = token[3];
 				// gen
 				Type type = gen.getLocalType(val);
 				gen.loadLocal(val);
-				gen.mv.visitInsn(type.getOpcode(IRETURN));
+				gen.visitInsn(type.getOpcode(IRETURN));
 			} else {
-				gen.mv.visitInsn(RETURN);
+				gen.visitInsn(RETURN);
 			}
 		}
 	}

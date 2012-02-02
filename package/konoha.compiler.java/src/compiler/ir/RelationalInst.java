@@ -23,26 +23,26 @@ public abstract class RelationalInst extends Inst {
 		gen.loadLocal(p1);
 		gen.loadLocal(p2);
 		if(type == Type.INT_TYPE) {
-			gen.mv.visitJumpInsn(getOpcode(), l1);
+			gen.visitJumpInsn(getOpcode(), l1);
 		} else if(type == Type.DOUBLE_TYPE) {
 			// p1 < p2 --> -1
 			// p1 > p2 -->  1
 			// p1 == p2 --> 0
-			gen.mv.visitInsn(DCMPG);
+			gen.visitInsn(DCMPG);
 			gen.jump(getOpcodeZero(), l1);
 		} else {
 			throw new GenInstException("type error");
 		}
 		// else block: push false
-		gen.mv.visitInsn(ICONST_0);
+		gen.visitInsn(ICONST_0);
 		gen.storeLocal(res, Type.BOOLEAN_TYPE);
 		gen.jump(GOTO, l2);
 		// then block: push true
-		gen.mv.visitLabel(l1);
-		gen.mv.visitInsn(ICONST_1);
+		gen.visitLabel(l1);
+		gen.visitInsn(ICONST_1);
 		gen.storeLocal(res, Type.BOOLEAN_TYPE);
 		// merge block
-		gen.mv.visitLabel(l2);
+		gen.visitLabel(l2);
 	}
 
 	public static class EqInst extends RelationalInst {

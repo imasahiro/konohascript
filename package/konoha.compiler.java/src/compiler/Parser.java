@@ -15,7 +15,7 @@ public class Parser {
 	private int lineNo = -1;
 	private String line;
 	
-	public Parser(Reader r, Compiler com) throws IOException {
+	public Parser(Reader r, Compiler com) {
 		this.br = new BufferedReader(r);
 		this.com = com;
 	}
@@ -90,7 +90,6 @@ public class Parser {
 						}
 					}
 				}
-				gen.end();
 				gen_exit = true;
 			} finally {
 				if(!gen_exit) {
@@ -101,14 +100,15 @@ public class Parser {
 	}
 	
 	private static final Pattern splitPattern = Pattern.compile("[ \t]*(\".*?[^\\\\]\"|[^ ]+)");
+	private final ArrayList<String> tokenBuff = new ArrayList<String>();
 	
 	private String[] splitToken(String line) {
-		ArrayList<String> tk = new ArrayList<String>();
+		tokenBuff.clear();
 		Matcher m = splitPattern.matcher(line);
 		while(m.find()) {
-			tk.add(m.group().trim());
+			tokenBuff.add(m.group().trim());
 		}
-		return tk.toArray(new String[0]);
+		return tokenBuff.toArray(new String[tokenBuff.size()]);
 	}
 	
 	private KClass parseClass(String line) throws GenInstException {
@@ -127,7 +127,7 @@ public class Parser {
 		String[] tk = splitToken(line);
 		Type type = toType(tk[0]);
 		String name = tk[1];
-		c.createField(com, name, type);
+		c.createField(name, type);
 	}
 	
 	private KMethod parseMethod(String line) throws GenInstException {
@@ -182,12 +182,13 @@ public class Parser {
 		if(n != -1) {
 			name = name.substring(0, n);
 		}
-		if(name.startsWith("konoha.")) {
+		if(name.startsWith("konoha.") || name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("org.")) {
 			if(name.startsWith("konoha.compiler.java")) {
-				name = name.substring(16);
+				name = name.substring(21);
+				name = "j" + name.substring(1).replace("_", ".");
 			} else if(name.equals("konoha.math.Math")) {
 				return "java/lang/Math";
-			} else if(name.startsWith("konoha")) {
+			} else if(name.startsWith("konoha.")) {
 				n = name.lastIndexOf('.');
 				name = name.substring(0, n + 1) + "K_" + name.substring(n + 1);
 			}
@@ -198,9 +199,6 @@ public class Parser {
 			}
 		} else {
 			name = name.substring(name.indexOf('.') + 1);
-			if(name.startsWith("Java_")) {
-				name = "j" + name.substring(1).replace("_", ".");
-			}
 		}
 		return name.replace(".", "/");
 	}
