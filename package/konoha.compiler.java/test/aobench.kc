@@ -1,0 +1,1280 @@
+class aobench.Vec extends konoha.Object
+{
+	konoha.Float x
+	konoha.Float y
+	konoha.Float z
+}
+
+class aobench.Sphere extends konoha.Object
+{
+	aobench.Vec center
+	konoha.Float radius
+}
+
+class aobench.RayIntersection extends konoha.Object
+{
+	aobench.Vec rayPosition
+	aobench.Vec rayDirection
+	aobench.Vec hitPosition
+	aobench.Vec normal
+	konoha.Float distance
+	konoha.Boolean hit
+}
+
+class aobench.Plane extends konoha.Object
+{
+	aobench.Vec position
+	aobench.Vec normal
+}
+
+def aobench.Vec Vec.new vec0_0 ( konoha.Float fval1_0 konoha.Float fval2_0 konoha.Float fval3_0 ) {
+BasicBlock0:
+	_ = setfield aobench.Vec vec0_0 0 fval1_0
+	_ = setfield aobench.Vec vec0_0 1 fval2_0
+	_ = setfield aobench.Vec vec0_0 2 fval3_0
+	_ = return vec0_0
+}
+
+def konoha.Float Script.dot ( aobench.Vec vec1_0 aobench.Vec vec2_0 ) {
+BasicBlock0:
+	fval6_0 = getfield konoha.Float vec1_0 0
+	fval7_0 = getfield konoha.Float vec2_0 0
+	fval5_0 = mul konoha.Float fval6_0 fval7_0
+	fval7_1 = getfield konoha.Float vec1_0 1
+	fval8_0 = getfield konoha.Float vec2_0 1
+	fval6_1 = mul konoha.Float fval7_1 fval8_0
+	fval4_0 = add konoha.Float fval5_0 fval6_1
+	fval6_2 = getfield konoha.Float vec1_0 2
+	fval7_2 = getfield konoha.Float vec2_0 2
+	fval5_1 = mul konoha.Float fval6_2 fval7_2
+	fval3_0 = add konoha.Float fval4_0 fval5_1
+	_ = return fval3_0
+}
+
+def null Script.cross ( aobench.Vec vec1_0 aobench.Vec vec2_0 aobench.Vec vec3_0 ) {
+BasicBlock0:
+	fval8_0 = getfield konoha.Float vec1_0 1
+	fval9_0 = getfield konoha.Float vec2_0 2
+	fval7_0 = mul konoha.Float fval8_0 fval9_0
+	fval9_1 = getfield konoha.Float vec1_0 2
+	fval10_0 = getfield konoha.Float vec2_0 1
+	fval8_1 = mul konoha.Float fval9_1 fval10_0
+	fval6_0 = sub konoha.Float fval7_0 fval8_1
+	_ = setfield aobench.Vec vec3_0 0 fval6_0
+	fval8_2 = getfield konoha.Float vec1_0 2
+	fval9_2 = getfield konoha.Float vec2_0 0
+	fval7_1 = mul konoha.Float fval8_2 fval9_2
+	fval9_3 = getfield konoha.Float vec1_0 0
+	fval10_1 = getfield konoha.Float vec2_0 2
+	fval8_3 = mul konoha.Float fval9_3 fval10_1
+	fval6_1 = sub konoha.Float fval7_1 fval8_3
+	_ = setfield aobench.Vec vec3_0 1 fval6_1
+	fval8_4 = getfield konoha.Float vec1_0 0
+	fval9_4 = getfield konoha.Float vec2_0 1
+	fval7_2 = mul konoha.Float fval8_4 fval9_4
+	fval9_5 = getfield konoha.Float vec1_0 1
+	fval10_2 = getfield konoha.Float vec2_0 0
+	fval8_5 = mul konoha.Float fval9_5 fval10_2
+	fval6_2 = sub konoha.Float fval7_2 fval8_5
+	_ = setfield aobench.Vec vec3_0 2 fval6_2
+	_ = return 
+}
+
+def null Script.normalize ( aobench.Vec vec1_0 ) {
+BasicBlock0:
+	fval2_0 = call konoha.Float aobench.Script.dot ( vec1_0 vec1_0 ) @static
+	fval3_0 = call konoha.Float konoha.math.Math.sqrt ( fval2_0 ) @static
+	fval6_0 = const konoha.Float 0.00000000010000000000
+	bval4_0 = gt konoha.Boolean fval3_0 fval6_0
+	_ = cond Boolean bval4_0 bb1 bb2 @if
+
+BasicBlock1:
+	fval7_0 = getfield konoha.Float vec1_0 0
+	fval6_1 = div konoha.Float fval7_0 fval3_0
+	_ = setfield aobench.Vec vec1_0 0 fval6_1
+	fval7_1 = getfield konoha.Float vec1_0 1
+	fval6_2 = div konoha.Float fval7_1 fval3_0
+	_ = setfield aobench.Vec vec1_0 1 fval6_2
+	fval7_2 = getfield konoha.Float vec1_0 2
+	fval6_3 = div konoha.Float fval7_2 fval3_0
+	_ = setfield aobench.Vec vec1_0 2 fval6_3
+	_ = jmp bb3 @merge
+
+BasicBlock2:
+	_ = jmp bb3 @merge
+
+BasicBlock3:
+	_ = return 
+}
+
+def aobench.Sphere Sphere.new sphere0_0 ( konoha.Float fval1_0 konoha.Float fval2_0 konoha.Float fval3_0 konoha.Float fval4_0 ) {
+BasicBlock0:
+	vec9_0 = new aobench.Vec 
+	vec5_0 = call aobench.Vec aobench.Vec.new ( vec9_0 fval1_0 fval2_0 fval3_0 ) @nonstatic
+	_ = setfield aobench.Sphere sphere0_0 0 vec5_0
+	_ = setfield aobench.Sphere sphere0_0 1 fval4_0
+	_ = return sphere0_0
+}
+
+def null Script.interSectsSphere ( aobench.Sphere sphere1_0 aobench.RayIntersection rayintersection2_0 ) {
+BasicBlock0:
+	vec7_0 = new aobench.Vec 
+	vec10_0 = getfield aobench.Vec rayintersection2_0 0
+	fval9_0 = getfield konoha.Float vec10_0 0
+	vec11_0 = getfield aobench.Vec sphere1_0 0
+	fval10_0 = getfield konoha.Float vec11_0 0
+	fval8_0 = sub konoha.Float fval9_0 fval10_0
+	vec11_1 = getfield aobench.Vec rayintersection2_0 0
+	fval10_1 = getfield konoha.Float vec11_1 1
+	vec12_0 = getfield aobench.Vec sphere1_0 0
+	fval11_0 = getfield konoha.Float vec12_0 1
+	fval9_1 = sub konoha.Float fval10_1 fval11_0
+	vec12_1 = getfield aobench.Vec rayintersection2_0 0
+	fval11_1 = getfield konoha.Float vec12_1 2
+	vec13_0 = getfield aobench.Vec sphere1_0 0
+	fval12_0 = getfield konoha.Float vec13_0 2
+	fval10_2 = sub konoha.Float fval11_1 fval12_0
+	vec3_0 = call aobench.Vec aobench.Vec.new ( vec7_0 fval8_0 fval9_1 fval10_2 ) @nonstatic
+	vec10_0 = getfield aobench.Vec rayintersection2_0 1
+	fval4_0 = call konoha.Float aobench.Script.dot ( vec3_0 vec10_0 ) @static
+	fval6_0 = call konoha.Float aobench.Script.dot ( vec3_0 vec3_0 ) @static
+	fval8_1 = getfield konoha.Float sphere1_0 1
+	fval9_2 = getfield konoha.Float sphere1_0 1
+	fval7_0 = mul konoha.Float fval8_1 fval9_2
+	fval5_0 = sub konoha.Float fval6_0 fval7_0
+	fval7_1 = mul konoha.Float fval4_0 fval4_0
+	fval6_1 = sub konoha.Float fval7_1 fval5_0
+	fval9_3 = const konoha.Float 0.00000000000000000000
+	bval7_0 = gt konoha.Boolean fval6_1 fval9_3
+	_ = cond Boolean bval7_0 bb1 bb2 @if
+
+BasicBlock1:
+	fval10_0 = const konoha.Float 0
+	fval8_2 = sub konoha.Float fval10_0 fval4_0
+	fval9_4 = call konoha.Float konoha.math.Math.sqrt ( fval6_1 ) @static
+	fval7_0 = sub konoha.Float fval8_2 fval9_4
+	bval8_0 = const konoha.Boolean true
+	bval8_1 = const konoha.Boolean false
+	fval10_1 = const konoha.Float 0.00000000000000000000
+	bval8_2 = gt konoha.Boolean fval7_0 fval10_1
+	bval8_4 = mov konoha.Boolean bval8_1 @nonssa
+	_ = cond Boolean bval8_2 bb5 bb4
+
+BasicBlock2:
+	_ = jmp bb3 @merge
+
+BasicBlock3:
+	_ = return 
+
+BasicBlock4:
+	bval8_4 = phi [[bval8_0, bb6], [bval8_1, bb5], [bval8_1, bb1]]
+	_ = cond Boolean bval8_4 bb7 bb8 @if
+
+BasicBlock5:
+	fval10_2 = getfield konoha.Float rayintersection2_0 4
+	bval8_3 = lt konoha.Boolean fval7_0 fval10_2
+	bval8_4 = mov konoha.Boolean bval8_1 @nonssa
+	_ = cond Boolean bval8_3 bb6 bb4
+
+BasicBlock6:
+	bval8_4 = mov konoha.Boolean bval8_0 @nonssa
+	_ = jmp bb4 @merge
+
+BasicBlock7:
+	_ = setfield aobench.RayIntersection rayintersection2_0 4 fval7_0
+	bval10_0 = const konoha.Boolean true
+	_ = setfield aobench.RayIntersection rayintersection2_0 5 bval10_0
+	vec9_0 = getfield aobench.Vec rayintersection2_0 2
+	vec12_0 = getfield aobench.Vec rayintersection2_0 0
+	fval11_2 = getfield konoha.Float vec12_0 0
+	vec14_0 = getfield aobench.Vec rayintersection2_0 1
+	fval13_0 = getfield konoha.Float vec14_0 0
+	fval12_0 = mul konoha.Float fval13_0 fval7_0
+	fval10_0 = add konoha.Float fval11_2 fval12_0
+	_ = setfield aobench.Vec vec9_0 0 fval10_0
+	vec9_1 = getfield aobench.Vec rayintersection2_0 2
+	vec12_0 = getfield aobench.Vec rayintersection2_0 0
+	fval11_3 = getfield konoha.Float vec12_0 1
+	vec14_1 = getfield aobench.Vec rayintersection2_0 1
+	fval13_1 = getfield konoha.Float vec14_1 1
+	fval12_0 = mul konoha.Float fval13_1 fval7_0
+	fval10_1 = add konoha.Float fval11_3 fval12_0
+	_ = setfield aobench.Vec vec9_1 1 fval10_1
+	vec9_2 = getfield aobench.Vec rayintersection2_0 2
+	vec12_0 = getfield aobench.Vec rayintersection2_0 0
+	fval11_4 = getfield konoha.Float vec12_0 2
+	vec14_2 = getfield aobench.Vec rayintersection2_0 1
+	fval13_2 = getfield konoha.Float vec14_2 2
+	fval12_0 = mul konoha.Float fval13_2 fval7_0
+	fval10_2 = add konoha.Float fval11_4 fval12_0
+	_ = setfield aobench.Vec vec9_2 2 fval10_2
+	vec9_3 = getfield aobench.Vec rayintersection2_0 3
+	vec12_0 = getfield aobench.Vec rayintersection2_0 2
+	fval11_5 = getfield konoha.Float vec12_0 0
+	vec13_0 = getfield aobench.Vec sphere1_0 0
+	fval12_0 = getfield konoha.Float vec13_0 0
+	fval10_3 = sub konoha.Float fval11_5 fval12_0
+	_ = setfield aobench.Vec vec9_3 0 fval10_3
+	vec9_4 = getfield aobench.Vec rayintersection2_0 3
+	vec12_0 = getfield aobench.Vec rayintersection2_0 2
+	fval11_6 = getfield konoha.Float vec12_0 1
+	vec13_1 = getfield aobench.Vec sphere1_0 0
+	fval12_0 = getfield konoha.Float vec13_1 1
+	fval10_4 = sub konoha.Float fval11_6 fval12_0
+	_ = setfield aobench.Vec vec9_4 1 fval10_4
+	vec9_5 = getfield aobench.Vec rayintersection2_0 3
+	vec12_0 = getfield aobench.Vec rayintersection2_0 2
+	fval11_7 = getfield konoha.Float vec12_0 2
+	vec13_2 = getfield aobench.Vec sphere1_0 0
+	fval12_0 = getfield konoha.Float vec13_2 2
+	fval10_5 = sub konoha.Float fval11_7 fval12_0
+	_ = setfield aobench.Vec vec9_5 2 fval10_5
+	vec13_3 = getfield aobench.Vec rayintersection2_0 3
+	_ = call null aobench.Script.normalize ( vec13_3 ) @static
+	_ = jmp bb9 @merge
+
+BasicBlock8:
+	_ = jmp bb9 @merge
+
+BasicBlock9:
+	_ = jmp bb3 @merge
+}
+
+def null Script. ( konoha.compiler.Script script0_0 ) {
+BasicBlock0:
+	aval3_0 = const konoha.Array<aobench.Sphere> null
+	_ = setfield konoha.compiler.Script script0_0 0 aval3_0
+	_ = return 
+}
+
+def null Script. ( konoha.compiler.Script script0_0 ) {
+BasicBlock0:
+	plane3_0 = const aobench.Plane null
+	_ = setfield konoha.compiler.Script script0_0 1 plane3_0
+	_ = return 
+}
+
+def null Script.interSectsPlane ( aobench.Plane plane1_0 aobench.RayIntersection rayintersection2_0 ) {
+BasicBlock0:
+	fval4_0 = const konoha.Float -1.00000000000000000000
+	vec10_0 = getfield aobench.Vec plane1_0 0
+	vec11_0 = getfield aobench.Vec plane1_0 1
+	fval5_0 = call konoha.Float aobench.Script.dot ( vec10_0 vec11_0 ) @static
+	fval3_0 = mul konoha.Float fval4_0 fval5_0
+	vec9_0 = getfield aobench.Vec rayintersection2_0 1
+	vec10_1 = getfield aobench.Vec plane1_0 1
+	fval4_1 = call konoha.Float aobench.Script.dot ( vec9_0 vec10_1 ) @static
+	bval5_0 = const konoha.Boolean true
+	bval5_1 = const konoha.Boolean false
+	fval7_0 = const konoha.Float 0.00000000000000010000
+	bval5_2 = gt konoha.Boolean fval4_1 fval7_0
+	bval5_3 = mov konoha.Boolean bval5_0 @nonssa
+	_ = cond Boolean bval5_2 bb1 bb2
+
+BasicBlock1:
+	bval5_3 = phi [[bval5_1, bb3], [bval5_0, bb2], [bval5_0, bb0]]
+	_ = cond Boolean bval5_3 bb4 bb5 @if
+
+BasicBlock2:
+	fval8_0 = const konoha.Float -0.00000000000000001000
+	bval6_0 = lt konoha.Boolean fval4_1 fval8_0
+	bval5_3 = mov konoha.Boolean bval5_0 @nonssa
+	_ = cond Boolean bval6_0 bb1 bb3
+
+BasicBlock3:
+	bval5_3 = mov konoha.Boolean bval5_1 @nonssa
+	_ = jmp bb1 @merge
+
+BasicBlock4:
+	fval7_1 = const konoha.Float -1.00000000000000000000
+	vec14_0 = getfield aobench.Vec rayintersection2_0 0
+	vec15_0 = getfield aobench.Vec plane1_0 1
+	fval9_0 = call konoha.Float aobench.Script.dot ( vec14_0 vec15_0 ) @static
+	fval8_1 = add konoha.Float fval9_0 fval3_0
+	fval6_0 = mul konoha.Float fval7_1 fval8_1
+	fval5_0 = div konoha.Float fval6_0 fval4_1
+	bval6_0 = const konoha.Boolean true
+	bval6_1 = const konoha.Boolean false
+	fval8_2 = const konoha.Float 0.00000000000000000000
+	bval6_2 = gt konoha.Boolean fval5_0 fval8_2
+	bval6_4 = mov konoha.Boolean bval6_1 @nonssa
+	_ = cond Boolean bval6_2 bb8 bb7
+
+BasicBlock5:
+	_ = jmp bb6 @merge
+
+BasicBlock6:
+	_ = return 
+
+BasicBlock7:
+	bval6_4 = phi [[bval6_0, bb9], [bval6_1, bb8], [bval6_1, bb4]]
+	_ = cond Boolean bval6_4 bb10 bb11 @if
+
+BasicBlock8:
+	fval8_3 = getfield konoha.Float rayintersection2_0 4
+	bval6_3 = lt konoha.Boolean fval5_0 fval8_3
+	bval6_4 = mov konoha.Boolean bval6_1 @nonssa
+	_ = cond Boolean bval6_3 bb9 bb7
+
+BasicBlock9:
+	bval6_4 = mov konoha.Boolean bval6_0 @nonssa
+	_ = jmp bb7 @merge
+
+BasicBlock10:
+	_ = setfield aobench.RayIntersection rayintersection2_0 4 fval5_0
+	bval8_0 = const konoha.Boolean true
+	_ = setfield aobench.RayIntersection rayintersection2_0 5 bval8_0
+	vec7_0 = getfield aobench.Vec rayintersection2_0 2
+	vec10_2 = getfield aobench.Vec rayintersection2_0 0
+	fval9_1 = getfield konoha.Float vec10_2 0
+	vec12_0 = getfield aobench.Vec rayintersection2_0 1
+	fval11_0 = getfield konoha.Float vec12_0 0
+	fval10_0 = mul konoha.Float fval11_0 fval5_0
+	fval8_0 = add konoha.Float fval9_1 fval10_0
+	_ = setfield aobench.Vec vec7_0 0 fval8_0
+	vec7_1 = getfield aobench.Vec rayintersection2_0 2
+	vec10_0 = getfield aobench.Vec rayintersection2_0 0
+	fval9_2 = getfield konoha.Float vec10_0 1
+	vec12_1 = getfield aobench.Vec rayintersection2_0 1
+	fval11_1 = getfield konoha.Float vec12_1 1
+	fval10_0 = mul konoha.Float fval11_1 fval5_0
+	fval8_1 = add konoha.Float fval9_2 fval10_0
+	_ = setfield aobench.Vec vec7_1 1 fval8_1
+	vec7_2 = getfield aobench.Vec rayintersection2_0 2
+	vec10_0 = getfield aobench.Vec rayintersection2_0 0
+	fval9_3 = getfield konoha.Float vec10_0 2
+	vec12_2 = getfield aobench.Vec rayintersection2_0 1
+	fval11_2 = getfield konoha.Float vec12_2 2
+	fval10_0 = mul konoha.Float fval11_2 fval5_0
+	fval8_2 = add konoha.Float fval9_3 fval10_0
+	_ = setfield aobench.Vec vec7_2 2 fval8_2
+	vec7_3 = getfield aobench.Vec rayintersection2_0 3
+	vec9_0 = getfield aobench.Vec plane1_0 1
+	fval8_3 = getfield konoha.Float vec9_0 0
+	_ = setfield aobench.Vec vec7_3 0 fval8_3
+	vec7_4 = getfield aobench.Vec rayintersection2_0 3
+	vec9_1 = getfield aobench.Vec plane1_0 1
+	fval8_4 = getfield konoha.Float vec9_1 1
+	_ = setfield aobench.Vec vec7_4 1 fval8_4
+	vec7_5 = getfield aobench.Vec rayintersection2_0 3
+	vec9_2 = getfield aobench.Vec plane1_0 1
+	fval8_5 = getfield konoha.Float vec9_2 2
+	_ = setfield aobench.Vec vec7_5 2 fval8_5
+	_ = jmp bb12 @merge
+
+BasicBlock11:
+	_ = jmp bb12 @merge
+
+BasicBlock12:
+	_ = jmp bb6 @merge
+}
+
+def null Script.getOrthoBasis ( aobench.Vec vec1_0 konoha.Array<aobench.Vec> aval2_0 ) {
+BasicBlock0:
+	vec10_0 = new aobench.Vec 
+	fval11_0 = const konoha.Float 0.00000000000000000000
+	fval12_0 = const konoha.Float 0.00000000000000000000
+	fval13_0 = const konoha.Float 0.00000000000000000000
+	vec6_0 = call aobench.Vec aobench.Vec.new ( vec10_0 fval11_0 fval12_0 fval13_0 ) @nonstatic
+	ival4_0 = const konoha.Int 0
+	_ = setidx aobench.Vec aval2_0 vec6_0 ival4_0
+	vec10_1 = new aobench.Vec 
+	fval11_1 = const konoha.Float 0.00000000000000000000
+	fval12_1 = const konoha.Float 0.00000000000000000000
+	fval13_1 = const konoha.Float 0.00000000000000000000
+	vec6_1 = call aobench.Vec aobench.Vec.new ( vec10_1 fval11_1 fval12_1 fval13_1 ) @nonstatic
+	ival4_1 = const konoha.Int 1
+	_ = setidx aobench.Vec aval2_0 vec6_1 ival4_1
+	vec10_2 = new aobench.Vec 
+	fval11_2 = const konoha.Float 0.00000000000000000000
+	fval12_2 = const konoha.Float 0.00000000000000000000
+	fval13_2 = const konoha.Float 0.00000000000000000000
+	vec6_2 = call aobench.Vec aobench.Vec.new ( vec10_2 fval11_2 fval12_2 fval13_2 ) @nonstatic
+	ival4_2 = const konoha.Int 2
+	_ = setidx aobench.Vec aval2_0 vec6_2 ival4_2
+	ival4_3 = const konoha.Int 0
+	vec3_3 = getidx aobench.Vec aval2_0 ival4_3
+	ival5_0 = const konoha.Int 1
+	vec4_0 = getidx aobench.Vec aval2_0 ival5_0
+	ival6_0 = const konoha.Int 2
+	vec5_0 = getidx aobench.Vec aval2_0 ival6_0
+	fval8_0 = getfield konoha.Float vec1_0 0
+	_ = setfield aobench.Vec vec5_0 0 fval8_0
+	fval8_1 = getfield konoha.Float vec1_0 1
+	_ = setfield aobench.Vec vec5_0 1 fval8_1
+	fval8_2 = getfield konoha.Float vec1_0 2
+	_ = setfield aobench.Vec vec5_0 2 fval8_2
+	bval6_0 = const konoha.Boolean true
+	bval6_1 = const konoha.Boolean false
+	fval7_0 = getfield konoha.Float vec1_0 0
+	fval8_3 = const konoha.Float 0.59999999999999997780
+	bval6_2 = lt konoha.Boolean fval7_0 fval8_3
+	bval6_4 = mov konoha.Boolean bval6_1 @nonssa
+	_ = cond Boolean bval6_2 bb2 bb1
+
+BasicBlock1:
+	bval6_4 = phi [[bval6_0, bb3], [bval6_1, bb2], [bval6_1, bb0]]
+	_ = cond Boolean bval6_4 bb4 bb5 @if
+
+BasicBlock2:
+	fval7_1 = getfield konoha.Float vec1_0 0
+	fval8_4 = const konoha.Float -0.59999999999999997780
+	bval6_3 = gt konoha.Boolean fval7_1 fval8_4
+	bval6_4 = mov konoha.Boolean bval6_1 @nonssa
+	_ = cond Boolean bval6_3 bb3 bb1
+
+BasicBlock3:
+	bval6_4 = mov konoha.Boolean bval6_0 @nonssa
+	_ = jmp bb1 @merge
+
+BasicBlock4:
+	fval8_5 = const konoha.Float 1.00000000000000000000
+	_ = setfield aobench.Vec vec4_0 0 fval8_5
+	_ = jmp bb6 @merge
+
+BasicBlock5:
+	bval6_5 = const konoha.Boolean true
+	bval6_6 = const konoha.Boolean false
+	fval7_2 = getfield konoha.Float vec1_0 1
+	fval8_6 = const konoha.Float 0.59999999999999997780
+	bval6_7 = lt konoha.Boolean fval7_2 fval8_6
+	bval6_9 = mov konoha.Boolean bval6_6 @nonssa
+	_ = cond Boolean bval6_7 bb8 bb7
+
+BasicBlock6:
+	_ = call null aobench.Script.cross ( vec4_0 vec5_0 vec3_3 ) @static
+	_ = call null aobench.Script.normalize ( vec3_3 ) @static
+	_ = call null aobench.Script.cross ( vec5_0 vec3_3 vec4_0 ) @static
+	_ = call null aobench.Script.normalize ( vec4_0 ) @static
+	_ = return 
+
+BasicBlock7:
+	bval6_9 = phi [[bval6_5, bb9], [bval6_6, bb8], [bval6_6, bb5]]
+	_ = cond Boolean bval6_9 bb10 bb11 @if
+
+BasicBlock8:
+	fval7_3 = getfield konoha.Float vec1_0 1
+	fval8_7 = const konoha.Float -0.59999999999999997780
+	bval6_8 = gt konoha.Boolean fval7_3 fval8_7
+	bval6_9 = mov konoha.Boolean bval6_6 @nonssa
+	_ = cond Boolean bval6_8 bb9 bb7
+
+BasicBlock9:
+	bval6_9 = mov konoha.Boolean bval6_5 @nonssa
+	_ = jmp bb7 @merge
+
+BasicBlock10:
+	fval8_8 = const konoha.Float 1.00000000000000000000
+	_ = setfield aobench.Vec vec4_0 1 fval8_8
+	_ = jmp bb12 @merge
+
+BasicBlock11:
+	bval6_10 = const konoha.Boolean true
+	bval6_11 = const konoha.Boolean false
+	fval7_4 = getfield konoha.Float vec1_0 2
+	fval8_9 = const konoha.Float 0.59999999999999997780
+	bval6_12 = lt konoha.Boolean fval7_4 fval8_9
+	bval6_14 = mov konoha.Boolean bval6_11 @nonssa
+	_ = cond Boolean bval6_12 bb14 bb13
+
+BasicBlock12:
+	_ = jmp bb6 @merge
+
+BasicBlock13:
+	bval6_14 = phi [[bval6_10, bb15], [bval6_11, bb14], [bval6_11, bb11]]
+	_ = cond Boolean bval6_14 bb16 bb17 @if
+
+BasicBlock14:
+	fval7_5 = getfield konoha.Float vec1_0 2
+	fval8_10 = const konoha.Float -0.59999999999999997780
+	bval6_13 = gt konoha.Boolean fval7_5 fval8_10
+	bval6_14 = mov konoha.Boolean bval6_11 @nonssa
+	_ = cond Boolean bval6_13 bb15 bb13
+
+BasicBlock15:
+	bval6_14 = mov konoha.Boolean bval6_10 @nonssa
+	_ = jmp bb13 @merge
+
+BasicBlock16:
+	fval8_11 = const konoha.Float 1.00000000000000000000
+	_ = setfield aobench.Vec vec4_0 2 fval8_11
+	_ = jmp bb18 @merge
+
+BasicBlock17:
+	fval8_12 = const konoha.Float 1.00000000000000000000
+	_ = setfield aobench.Vec vec4_0 0 fval8_12
+	_ = jmp bb18 @merge
+
+BasicBlock18:
+	_ = jmp bb12 @merge
+}
+
+def null Script.getAmbientOcclusion ( aobench.RayIntersection rayintersection1_0 aobench.Vec vec2_0 ) {
+BasicBlock0:
+	script0_0 = bnul konoha.compiler.Script 
+	ival3_0 = const konoha.Int 0
+	ival4_0 = const konoha.Int 0
+	ival5_0 = const konoha.Int 8
+	ival6_0 = const konoha.Int 8
+	fval7_0 = const konoha.Float 0.00010000000000000000
+	rayintersection8_0 = new aobench.RayIntersection 
+	vec15_0 = new aobench.Vec 
+	vec18_0 = getfield aobench.Vec rayintersection1_0 2
+	fval17_0 = getfield konoha.Float vec18_0 0
+	vec21_0 = getfield aobench.Vec rayintersection1_0 3
+	fval20_0 = getfield konoha.Float vec21_0 0
+	fval18_0 = mul konoha.Float fval7_0 fval20_0
+	fval16_0 = add konoha.Float fval17_0 fval18_0
+	vec19_0 = getfield aobench.Vec rayintersection1_0 2
+	fval18_1 = getfield konoha.Float vec19_0 1
+	vec22_0 = getfield aobench.Vec rayintersection1_0 3
+	fval21_0 = getfield konoha.Float vec22_0 1
+	fval19_0 = mul konoha.Float fval7_0 fval21_0
+	fval17_1 = add konoha.Float fval18_1 fval19_0
+	vec20_0 = getfield aobench.Vec rayintersection1_0 2
+	fval19_1 = getfield konoha.Float vec20_0 2
+	vec23_0 = getfield aobench.Vec rayintersection1_0 3
+	fval22_0 = getfield konoha.Float vec23_0 2
+	fval20_0 = mul konoha.Float fval7_0 fval22_0
+	fval18_2 = add konoha.Float fval19_1 fval20_0
+	vec11_0 = call aobench.Vec aobench.Vec.new ( vec15_0 fval16_0 fval17_1 fval18_2 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection8_0 0 vec11_0
+	vec15_1 = new aobench.Vec 
+	fval16_1 = const konoha.Float 0.00000000000000000000
+	fval17_2 = const konoha.Float 0.00000000000000000000
+	fval18_3 = const konoha.Float 0.00000000000000000000
+	vec11_1 = call aobench.Vec aobench.Vec.new ( vec15_1 fval16_1 fval17_2 fval18_3 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection8_0 1 vec11_1
+	vec15_2 = new aobench.Vec 
+	fval16_2 = const konoha.Float 0.00000000000000000000
+	fval17_3 = const konoha.Float 0.00000000000000000000
+	fval18_4 = const konoha.Float 0.00000000000000000000
+	vec11_2 = call aobench.Vec aobench.Vec.new ( vec15_2 fval16_2 fval17_3 fval18_4 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection8_0 2 vec11_2
+	vec15_3 = new aobench.Vec 
+	fval16_3 = const konoha.Float 0.00000000000000000000
+	fval17_4 = const konoha.Float 0.00000000000000000000
+	fval18_5 = const konoha.Float 0.00000000000000000000
+	vec11_3 = call aobench.Vec aobench.Vec.new ( vec15_3 fval16_3 fval17_4 fval18_5 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection8_0 3 vec11_3
+	aval13_0 = new konoha.Array<aobench.Vec> 
+	ival14_0 = const konoha.Int 3
+	aval9_0 = call konoha.Array<aobench.Vec> konoha.Array<dynamic>.new:ARRAY ( aval13_0 ival14_0 ) @nonstatic
+	vec15_4 = getfield aobench.Vec rayintersection1_0 3
+	_ = call null aobench.Script.getOrthoBasis ( vec15_4 aval9_0 ) @static
+	ival10_0 = const konoha.Int 0
+	ival4_1 = const konoha.Int 0
+	script0_1 = mov konoha.compiler.Script script0_0 @nonssa
+	rayintersection1_1 = mov aobench.RayIntersection rayintersection1_0 @nonssa
+	vec2_1 = mov aobench.Vec vec2_0 @nonssa
+	ival3_1 = mov konoha.Int ival3_0 @nonssa
+	ival4_2 = mov konoha.Int ival4_1 @nonssa
+	ival5_1 = mov konoha.Int ival5_0 @nonssa
+	ival6_1 = mov konoha.Int ival6_0 @nonssa
+	fval7_1 = mov konoha.Float fval7_0 @nonssa
+	rayintersection8_1 = mov aobench.RayIntersection rayintersection8_0 @nonssa
+	aval9_1 = mov konoha.Array<aobench.Vec> aval9_0 @nonssa
+	ival10_1 = mov konoha.Int ival10_0 @nonssa
+	_ = jmp bb1 @for
+
+BasicBlock1:loopcond
+	script0_1 = phi [[script0_0, bb0], [script0_2, bb3]]
+	rayintersection1_1 = phi [[rayintersection1_0, bb0], [rayintersection1_2, bb3]]
+	vec2_1 = phi [[vec2_0, bb0], [vec2_2, bb3]]
+	ival3_1 = phi [[ival3_0, bb0], [ival3_3, bb3]]
+	ival4_2 = phi [[ival4_1, bb0], [ival11_1, bb3]]
+	ival5_1 = phi [[ival5_0, bb0], [ival5_2, bb3]]
+	ival6_1 = phi [[ival6_0, bb0], [ival6_2, bb3]]
+	fval7_1 = phi [[fval7_0, bb0], [fval7_2, bb3]]
+	rayintersection8_1 = phi [[rayintersection8_0, bb0], [rayintersection8_2, bb3]]
+	aval9_1 = phi [[aval9_0, bb0], [aval9_2, bb3]]
+	ival10_1 = phi [[ival10_0, bb0], [ival10_2, bb3]]
+	bval12_0 = lt konoha.Boolean ival4_2 ival5_1
+	_ = cond Boolean bval12_0 bb2 bb4
+
+BasicBlock2:loopbody
+	ival3_2 = const konoha.Int 0
+	script0_2 = mov konoha.compiler.Script script0_1 @nonssa
+	rayintersection1_2 = mov aobench.RayIntersection rayintersection1_1 @nonssa
+	vec2_2 = mov aobench.Vec vec2_1 @nonssa
+	ival3_3 = mov konoha.Int ival3_2 @nonssa
+	ival4_3 = mov konoha.Int ival4_2 @nonssa
+	ival5_2 = mov konoha.Int ival5_1 @nonssa
+	ival6_2 = mov konoha.Int ival6_1 @nonssa
+	fval7_2 = mov konoha.Float fval7_1 @nonssa
+	rayintersection8_2 = mov aobench.RayIntersection rayintersection8_1 @nonssa
+	aval9_2 = mov konoha.Array<aobench.Vec> aval9_1 @nonssa
+	ival10_2 = mov konoha.Int ival10_1 @nonssa
+	_ = jmp bb5 @for
+
+BasicBlock3:
+	ival13_1 = const konoha.Int 1
+	ival11_1 = add konoha.Int ival4_3 ival13_1
+	script0_1 = mov konoha.compiler.Script script0_2 @nonssa
+	rayintersection1_1 = mov aobench.RayIntersection rayintersection1_2 @nonssa
+	vec2_1 = mov aobench.Vec vec2_2 @nonssa
+	ival3_1 = mov konoha.Int ival3_3 @nonssa
+	ival4_2 = mov konoha.Int ival11_1 @nonssa
+	ival5_1 = mov konoha.Int ival5_2 @nonssa
+	ival6_1 = mov konoha.Int ival6_2 @nonssa
+	fval7_1 = mov konoha.Float fval7_2 @nonssa
+	rayintersection8_1 = mov aobench.RayIntersection rayintersection8_2 @nonssa
+	aval9_1 = mov konoha.Array<aobench.Vec> aval9_2 @nonssa
+	ival10_1 = mov konoha.Int ival10_2 @nonssa
+	_ = jmp bb1
+
+BasicBlock4:
+	ival13_2 = mul konoha.Int ival5_1 ival6_1
+	ival12_0 = sub konoha.Int ival13_2 ival10_1
+	fval12_0 = cast konoha.Float ival12_0
+	ival13_3 = mul konoha.Int ival5_1 ival6_1
+	fval13_0 = cast konoha.Float ival13_3
+	fval11_0 = div konoha.Float fval12_0 fval13_0
+	_ = setfield aobench.Vec vec2_1 0 fval11_0
+	_ = setfield aobench.Vec vec2_1 1 fval11_0
+	_ = setfield aobench.Vec vec2_1 2 fval11_0
+	_ = return 
+
+BasicBlock5:loopcond
+	script0_2 = mov konoha.compiler.Script script0_1
+	rayintersection1_2 = mov aobench.RayIntersection rayintersection1_1
+	vec2_2 = mov aobench.Vec vec2_1
+	ival3_3 = phi [[ival3_2, bb2], [ival11_0, bb7]]
+	ival4_3 = mov konoha.Int ival4_2
+	ival5_2 = mov konoha.Int ival5_1
+	ival6_2 = mov konoha.Int ival6_1
+	fval7_2 = mov konoha.Float fval7_1
+	rayintersection8_2 = mov aobench.RayIntersection rayintersection8_1
+	aval9_2 = mov konoha.Array<aobench.Vec> aval9_1
+	ival10_2 = phi [[ival10_1, bb2], [ival16_1, bb7]]
+	bval12_1 = lt konoha.Boolean ival3_3 ival6_2
+	_ = cond Boolean bval12_1 bb6 bb8
+
+BasicBlock6:loopbody
+	fval16_4 = call konoha.Float konoha.Float.random ( ) @static
+	fval11_0 = call konoha.Float konoha.math.Math.sqrt ( fval16_4 ) @static
+	fval13_0 = const konoha.Float 6.28318530717958623200
+	fval14_0 = call konoha.Float konoha.Float.random ( ) @static
+	fval12_0 = mul konoha.Float fval13_0 fval14_0
+	fval14_1 = call konoha.Float konoha.math.Math.cos ( fval12_0 ) @static
+	fval13_1 = mul konoha.Float fval14_1 fval11_0
+	fval15_0 = call konoha.Float konoha.math.Math.sin ( fval12_0 ) @static
+	fval14_2 = mul konoha.Float fval15_0 fval11_0
+	fval21_1 = const konoha.Float 1.00000000000000000000
+	fval22_1 = mul konoha.Float fval11_0 fval11_0
+	fval20_1 = sub konoha.Float fval21_1 fval22_1
+	fval15_1 = call konoha.Float konoha.math.Math.sqrt ( fval20_1 ) @static
+	vec17_0 = getfield aobench.Vec rayintersection8_2 1
+	ival24_0 = const konoha.Int 0
+	vec23_1 = getidx aobench.Vec aval9_2 ival24_0
+	fval22_2 = getfield konoha.Float vec23_1 0
+	fval20_2 = mul konoha.Float fval13_1 fval22_2
+	ival25_0 = const konoha.Int 1
+	vec24_0 = getidx aobench.Vec aval9_2 ival25_0
+	fval23_0 = getfield konoha.Float vec24_0 0
+	fval21_2 = mul konoha.Float fval14_2 fval23_0
+	fval19_2 = add konoha.Float fval20_2 fval21_2
+	ival24_0 = const konoha.Int 2
+	vec23_0 = getidx aobench.Vec aval9_2 ival24_0
+	fval22_3 = getfield konoha.Float vec23_0 0
+	fval20_3 = mul konoha.Float fval15_1 fval22_3
+	fval18_6 = add konoha.Float fval19_2 fval20_3
+	_ = setfield aobench.Vec vec17_0 0 fval18_6
+	vec17_1 = getfield aobench.Vec rayintersection8_2 1
+	ival24_1 = const konoha.Int 0
+	vec23_1 = getidx aobench.Vec aval9_2 ival24_1
+	fval22_4 = getfield konoha.Float vec23_1 1
+	fval20_4 = mul konoha.Float fval13_1 fval22_4
+	ival25_1 = const konoha.Int 1
+	vec24_0 = getidx aobench.Vec aval9_2 ival25_1
+	fval23_0 = getfield konoha.Float vec24_0 1
+	fval21_3 = mul konoha.Float fval14_2 fval23_0
+	fval19_3 = add konoha.Float fval20_4 fval21_3
+	ival24_0 = const konoha.Int 2
+	vec23_0 = getidx aobench.Vec aval9_2 ival24_0
+	fval22_5 = getfield konoha.Float vec23_0 1
+	fval20_5 = mul konoha.Float fval15_1 fval22_5
+	fval18_7 = add konoha.Float fval19_3 fval20_5
+	_ = setfield aobench.Vec vec17_1 1 fval18_7
+	vec17_2 = getfield aobench.Vec rayintersection8_2 1
+	ival24_1 = const konoha.Int 0
+	vec23_1 = getidx aobench.Vec aval9_2 ival24_1
+	fval22_6 = getfield konoha.Float vec23_1 2
+	fval20_6 = mul konoha.Float fval13_1 fval22_6
+	ival25_2 = const konoha.Int 1
+	vec24_0 = getidx aobench.Vec aval9_2 ival25_2
+	fval23_0 = getfield konoha.Float vec24_0 2
+	fval21_4 = mul konoha.Float fval14_2 fval23_0
+	fval19_4 = add konoha.Float fval20_6 fval21_4
+	ival24_0 = const konoha.Int 2
+	vec23_0 = getidx aobench.Vec aval9_2 ival24_0
+	fval22_7 = getfield konoha.Float vec23_0 2
+	fval20_7 = mul konoha.Float fval15_1 fval22_7
+	fval18_8 = add konoha.Float fval19_4 fval20_7
+	_ = setfield aobench.Vec vec17_2 2 fval18_8
+	fval18_9 = const konoha.Float 100000000000.00000000000000000000
+	_ = setfield aobench.RayIntersection rayintersection8_2 4 fval18_9
+	bval18_0 = const konoha.Boolean false
+	_ = setfield aobench.RayIntersection rayintersection8_2 5 bval18_0
+	aval22_0 = getfield konoha.Array<aobench.Sphere> script0_2 0
+	ival22_0 = const konoha.Int 0
+	sphere21_0 = getidx aobench.Sphere aval22_0 ival22_0
+	_ = call null aobench.Script.interSectsSphere ( sphere21_0 rayintersection8_2 ) @static
+	aval22_0 = getfield konoha.Array<aobench.Sphere> script0_2 0
+	ival22_0 = const konoha.Int 1
+	sphere21_1 = getidx aobench.Sphere aval22_0 ival22_0
+	_ = call null aobench.Script.interSectsSphere ( sphere21_1 rayintersection8_2 ) @static
+	aval22_0 = getfield konoha.Array<aobench.Sphere> script0_2 0
+	ival22_0 = const konoha.Int 2
+	sphere21_2 = getidx aobench.Sphere aval22_0 ival22_0
+	_ = call null aobench.Script.interSectsSphere ( sphere21_2 rayintersection8_2 ) @static
+	plane21_0 = getfield aobench.Plane script0_2 1
+	_ = call null aobench.Script.interSectsPlane ( plane21_0 rayintersection8_2 ) @static
+	bval16_0 = getfield konoha.Boolean rayintersection8_2 5
+	_ = cond Boolean bval16_0 bb9 bb10 @if
+
+BasicBlock7:
+	ival13_0 = const konoha.Int 1
+	ival11_0 = add konoha.Int ival3_3 ival13_0
+	ival3_3 = mov konoha.Int ival11_0 @nonssa
+	ival10_2 = mov konoha.Int ival16_1 @nonssa
+	_ = jmp bb5
+
+BasicBlock8:
+	_ = jmp bb3 @forcont
+
+BasicBlock9:
+	ival18_0 = const konoha.Int 1
+	ival16_0 = add konoha.Int ival10_2 ival18_0
+	ival16_1 = mov konoha.Int ival16_0 @nonssa
+	_ = jmp bb11 @merge
+
+BasicBlock10:
+	ival16_1 = mov konoha.Int ival10_2 @nonssa
+	_ = jmp bb11 @merge
+
+BasicBlock11:
+	ival16_1 = phi [[ival16_0, bb9], [ival10_2, bb10]]
+	_ = jmp bb7 @forcont
+}
+
+def konoha.Int Script.clamp ( konoha.Float fval1_0 ) {
+BasicBlock0:
+	fval4_0 = const konoha.Float 255.50000000000000000000
+	fval2_0 = mul konoha.Float fval1_0 fval4_0
+	ival2_0 = cast konoha.Int fval2_0
+	ival5_0 = const konoha.Int 255
+	bval3_0 = gt konoha.Boolean ival2_0 ival5_0
+	_ = cond Boolean bval3_0 bb1 bb2 @if
+
+BasicBlock1:
+	ival2_1 = const konoha.Int 255
+	ival2_4 = mov konoha.Int ival2_1 @nonssa
+	_ = jmp bb3 @merge
+
+BasicBlock2:
+	ival5_1 = const konoha.Int 0
+	bval3_1 = lt konoha.Boolean ival2_0 ival5_1
+	_ = cond Boolean bval3_1 bb4 bb5 @if
+
+BasicBlock3:
+	ival2_4 = phi [[ival2_1, bb1], [ival2_3, bb6]]
+	_ = return ival2_4
+
+BasicBlock4:
+	ival2_2 = const konoha.Int 0
+	ival2_3 = mov konoha.Int ival2_2 @nonssa
+	_ = jmp bb6 @merge
+
+BasicBlock5:
+	ival2_3 = mov konoha.Int ival2_0 @nonssa
+	_ = jmp bb6 @merge
+
+BasicBlock6:
+	ival2_3 = phi [[ival2_2, bb4], [ival2_0, bb5]]
+	ival2_4 = mov konoha.Int ival2_3 @nonssa
+	_ = jmp bb3 @merge
+}
+
+def null Script.render ( konoha.Array<konoha.Int> aval1_0 konoha.Int ival2_0 konoha.Int ival3_0 konoha.Int ival4_0 ) {
+BasicBlock0:
+	script0_0 = bnul konoha.compiler.Script 
+	aval9_0 = new konoha.Array<konoha.Float> 
+	ival11_0 = mul konoha.Int ival2_0 ival3_0
+	ival12_0 = const konoha.Int 3
+	ival10_0 = mul konoha.Int ival11_0 ival12_0
+	aval5_0 = call konoha.Array<konoha.Float> konoha.Array<dynamic>.new:ARRAY ( aval9_0 ival10_0 ) @nonstatic
+	rayintersection6_0 = new aobench.RayIntersection 
+	ival7_0 = const konoha.Int 0
+	ival8_0 = const konoha.Int 0
+	ival9_0 = const konoha.Int 0
+	ival10_1 = const konoha.Int 0
+	vec17_0 = new aobench.Vec 
+	fval18_0 = const konoha.Float 0.00000000000000000000
+	fval19_0 = const konoha.Float 0.00000000000000000000
+	fval20_0 = const konoha.Float 0.00000000000000000000
+	vec13_0 = call aobench.Vec aobench.Vec.new ( vec17_0 fval18_0 fval19_0 fval20_0 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection6_0 0 vec13_0
+	vec17_1 = new aobench.Vec 
+	fval18_1 = const konoha.Float 0.00000000000000000000
+	fval19_1 = const konoha.Float 0.00000000000000000000
+	fval20_1 = const konoha.Float 0.00000000000000000000
+	vec13_1 = call aobench.Vec aobench.Vec.new ( vec17_1 fval18_1 fval19_1 fval20_1 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection6_0 1 vec13_1
+	vec17_2 = new aobench.Vec 
+	fval18_2 = const konoha.Float 0.00000000000000000000
+	fval19_2 = const konoha.Float 0.00000000000000000000
+	fval20_2 = const konoha.Float 0.00000000000000000000
+	vec13_2 = call aobench.Vec aobench.Vec.new ( vec17_2 fval18_2 fval19_2 fval20_2 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection6_0 2 vec13_2
+	vec17_3 = new aobench.Vec 
+	fval18_3 = const konoha.Float 0.00000000000000000000
+	fval19_3 = const konoha.Float 0.00000000000000000000
+	fval20_3 = const konoha.Float 0.00000000000000000000
+	vec13_3 = call aobench.Vec aobench.Vec.new ( vec17_3 fval18_3 fval19_3 fval20_3 ) @nonstatic
+	_ = setfield aobench.RayIntersection rayintersection6_0 3 vec13_3
+	ival7_1 = const konoha.Int 0
+	script0_1 = mov konoha.compiler.Script script0_0 @nonssa
+	aval1_1 = mov konoha.Array<konoha.Int> aval1_0 @nonssa
+	ival2_1 = mov konoha.Int ival2_0 @nonssa
+	ival3_1 = mov konoha.Int ival3_0 @nonssa
+	ival4_1 = mov konoha.Int ival4_0 @nonssa
+	aval5_1 = mov konoha.Array<konoha.Float> aval5_0 @nonssa
+	rayintersection6_1 = mov aobench.RayIntersection rayintersection6_0 @nonssa
+	ival7_2 = mov konoha.Int ival7_1 @nonssa
+	ival8_1 = mov konoha.Int ival8_0 @nonssa
+	ival9_1 = mov konoha.Int ival9_0 @nonssa
+	ival10_2 = mov konoha.Int ival10_1 @nonssa
+	_ = jmp bb1 @for
+
+BasicBlock1:loopcond
+	script0_1 = phi [[script0_0, bb0], [script0_2, bb3]]
+	aval1_1 = phi [[aval1_0, bb0], [aval1_2, bb3]]
+	ival2_1 = phi [[ival2_0, bb0], [ival2_2, bb3]]
+	ival3_1 = phi [[ival3_0, bb0], [ival3_2, bb3]]
+	ival4_1 = phi [[ival4_0, bb0], [ival4_2, bb3]]
+	aval5_1 = phi [[aval5_0, bb0], [aval5_2, bb3]]
+	rayintersection6_1 = phi [[rayintersection6_0, bb0], [rayintersection6_2, bb3]]
+	ival7_2 = phi [[ival7_1, bb0], [ival11_4, bb3]]
+	ival8_1 = phi [[ival8_0, bb0], [ival8_3, bb3]]
+	ival9_1 = phi [[ival9_0, bb0], [ival9_2, bb3]]
+	ival10_2 = phi [[ival10_1, bb0], [ival10_3, bb3]]
+	bval12_0 = lt konoha.Boolean ival7_2 ival3_1
+	_ = cond Boolean bval12_0 bb2 bb4
+
+BasicBlock2:loopbody
+	ival8_2 = const konoha.Int 0
+	script0_2 = mov konoha.compiler.Script script0_1 @nonssa
+	aval1_2 = mov konoha.Array<konoha.Int> aval1_1 @nonssa
+	ival2_2 = mov konoha.Int ival2_1 @nonssa
+	ival3_2 = mov konoha.Int ival3_1 @nonssa
+	ival4_2 = mov konoha.Int ival4_1 @nonssa
+	aval5_2 = mov konoha.Array<konoha.Float> aval5_1 @nonssa
+	rayintersection6_2 = mov aobench.RayIntersection rayintersection6_1 @nonssa
+	ival7_3 = mov konoha.Int ival7_2 @nonssa
+	ival8_3 = mov konoha.Int ival8_2 @nonssa
+	ival9_2 = mov konoha.Int ival9_1 @nonssa
+	ival10_3 = mov konoha.Int ival10_2 @nonssa
+	_ = jmp bb5 @for
+
+BasicBlock3:
+	ival13_4 = const konoha.Int 1
+	ival11_4 = add konoha.Int ival7_3 ival13_4
+	script0_1 = mov konoha.compiler.Script script0_2 @nonssa
+	aval1_1 = mov konoha.Array<konoha.Int> aval1_2 @nonssa
+	ival2_1 = mov konoha.Int ival2_2 @nonssa
+	ival3_1 = mov konoha.Int ival3_2 @nonssa
+	ival4_1 = mov konoha.Int ival4_2 @nonssa
+	aval5_1 = mov konoha.Array<konoha.Float> aval5_2 @nonssa
+	rayintersection6_1 = mov aobench.RayIntersection rayintersection6_2 @nonssa
+	ival7_2 = mov konoha.Int ival11_4 @nonssa
+	ival8_1 = mov konoha.Int ival8_3 @nonssa
+	ival9_1 = mov konoha.Int ival9_2 @nonssa
+	ival10_2 = mov konoha.Int ival10_3 @nonssa
+	_ = jmp bb1
+
+BasicBlock4:
+	_ = return 
+
+BasicBlock5:loopcond
+	script0_2 = phi [[script0_1, bb2], [script0_3, bb7]]
+	aval1_2 = phi [[aval1_1, bb2], [aval1_3, bb7]]
+	ival2_2 = phi [[ival2_1, bb2], [ival2_3, bb7]]
+	ival3_2 = phi [[ival3_1, bb2], [ival3_3, bb7]]
+	ival4_2 = phi [[ival4_1, bb2], [ival4_3, bb7]]
+	aval5_2 = phi [[aval5_1, bb2], [aval5_3, bb7]]
+	rayintersection6_2 = phi [[rayintersection6_1, bb2], [rayintersection6_3, bb7]]
+	ival7_3 = phi [[ival7_2, bb2], [ival7_4, bb7]]
+	ival8_3 = phi [[ival8_2, bb2], [ival11_3, bb7]]
+	ival9_2 = phi [[ival9_1, bb2], [ival9_4, bb7]]
+	ival10_3 = phi [[ival10_2, bb2], [ival10_4, bb7]]
+	bval12_1 = lt konoha.Boolean ival8_3 ival2_2
+	_ = cond Boolean bval12_1 bb6 bb8
+
+BasicBlock6:loopbody
+	ival9_3 = const konoha.Int 0
+	script0_3 = mov konoha.compiler.Script script0_2 @nonssa
+	aval1_3 = mov konoha.Array<konoha.Int> aval1_2 @nonssa
+	ival2_3 = mov konoha.Int ival2_2 @nonssa
+	ival3_3 = mov konoha.Int ival3_2 @nonssa
+	ival4_3 = mov konoha.Int ival4_2 @nonssa
+	aval5_3 = mov konoha.Array<konoha.Float> aval5_2 @nonssa
+	rayintersection6_3 = mov aobench.RayIntersection rayintersection6_2 @nonssa
+	ival7_4 = mov konoha.Int ival7_3 @nonssa
+	ival8_4 = mov konoha.Int ival8_3 @nonssa
+	ival9_4 = mov konoha.Int ival9_3 @nonssa
+	ival10_4 = mov konoha.Int ival10_3 @nonssa
+	_ = jmp bb9 @for
+
+BasicBlock7:
+	ival13_3 = const konoha.Int 1
+	ival11_3 = add konoha.Int ival8_4 ival13_3
+	script0_2 = mov konoha.compiler.Script script0_3 @nonssa
+	aval1_2 = mov konoha.Array<konoha.Int> aval1_3 @nonssa
+	ival2_2 = mov konoha.Int ival2_3 @nonssa
+	ival3_2 = mov konoha.Int ival3_3 @nonssa
+	ival4_2 = mov konoha.Int ival4_3 @nonssa
+	aval5_2 = mov konoha.Array<konoha.Float> aval5_3 @nonssa
+	rayintersection6_2 = mov aobench.RayIntersection rayintersection6_3 @nonssa
+	ival7_3 = mov konoha.Int ival7_4 @nonssa
+	ival8_3 = mov konoha.Int ival11_3 @nonssa
+	ival9_2 = mov konoha.Int ival9_4 @nonssa
+	ival10_3 = mov konoha.Int ival10_4 @nonssa
+	_ = jmp bb5
+
+BasicBlock8:
+	_ = jmp bb3 @forcont
+
+BasicBlock9:loopcond
+	script0_3 = phi [[script0_2, bb6], [script0_4, bb11]]
+	aval1_3 = phi [[aval1_2, bb6], [aval1_4, bb11]]
+	ival2_3 = phi [[ival2_2, bb6], [ival2_4, bb11]]
+	ival3_3 = phi [[ival3_2, bb6], [ival3_4, bb11]]
+	ival4_3 = phi [[ival4_2, bb6], [ival4_4, bb11]]
+	aval5_3 = phi [[aval5_2, bb6], [aval5_4, bb11]]
+	rayintersection6_3 = phi [[rayintersection6_2, bb6], [rayintersection6_4, bb11]]
+	ival7_4 = phi [[ival7_3, bb6], [ival7_5, bb11]]
+	ival8_4 = phi [[ival8_3, bb6], [ival8_5, bb11]]
+	ival9_4 = phi [[ival9_3, bb6], [ival11_1, bb11]]
+	ival10_4 = phi [[ival10_3, bb6], [ival10_6, bb11]]
+	bval12_2 = lt konoha.Boolean ival9_4 ival4_3
+	_ = cond Boolean bval12_2 bb10 bb12
+
+BasicBlock10:loopbody
+	ival10_5 = const konoha.Int 0
+	script0_4 = mov konoha.compiler.Script script0_3 @nonssa
+	aval1_4 = mov konoha.Array<konoha.Int> aval1_3 @nonssa
+	ival2_4 = mov konoha.Int ival2_3 @nonssa
+	ival3_4 = mov konoha.Int ival3_3 @nonssa
+	ival4_4 = mov konoha.Int ival4_3 @nonssa
+	aval5_4 = mov konoha.Array<konoha.Float> aval5_3 @nonssa
+	rayintersection6_4 = mov aobench.RayIntersection rayintersection6_3 @nonssa
+	ival7_5 = mov konoha.Int ival7_4 @nonssa
+	ival8_5 = mov konoha.Int ival8_4 @nonssa
+	ival9_5 = mov konoha.Int ival9_4 @nonssa
+	ival10_6 = mov konoha.Int ival10_5 @nonssa
+	_ = jmp bb13 @for
+
+BasicBlock11:
+	ival13_1 = const konoha.Int 1
+	ival11_1 = add konoha.Int ival9_5 ival13_1
+	script0_3 = mov konoha.compiler.Script script0_4 @nonssa
+	aval1_3 = mov konoha.Array<konoha.Int> aval1_4 @nonssa
+	ival2_3 = mov konoha.Int ival2_4 @nonssa
+	ival3_3 = mov konoha.Int ival3_4 @nonssa
+	ival4_3 = mov konoha.Int ival4_4 @nonssa
+	aval5_3 = mov konoha.Array<konoha.Float> aval5_4 @nonssa
+	rayintersection6_3 = mov aobench.RayIntersection rayintersection6_4 @nonssa
+	ival7_4 = mov konoha.Int ival7_5 @nonssa
+	ival8_4 = mov konoha.Int ival8_5 @nonssa
+	ival9_4 = mov konoha.Int ival11_1 @nonssa
+	ival10_4 = mov konoha.Int ival10_6 @nonssa
+	_ = jmp bb9
+
+BasicBlock12:
+	ival12_1 = const konoha.Int 3
+	ival14_1 = mul konoha.Int ival7_4 ival2_3
+	ival13_2 = add konoha.Int ival14_1 ival8_4
+	ival11_2 = mul konoha.Int ival12_1 ival13_2
+	ival12_2 = mul konoha.Int ival4_3 ival4_3
+	fval17_0 = getidx konoha.Float aval5_3 ival11_2
+	fval18_12 = cast konoha.Float ival12_2
+	fval16_4 = div konoha.Float fval17_0 fval18_12
+	_ = setidx konoha.Float aval5_3 fval16_4 ival11_2
+	ival21_2 = const konoha.Int 1
+	ival19_2 = add konoha.Int ival11_2 ival21_2
+	fval17_1 = getidx konoha.Float aval5_3 ival19_2
+	fval18_13 = cast konoha.Float ival12_2
+	fval16_5 = div konoha.Float fval17_1 fval18_13
+	ival17_0 = const konoha.Int 1
+	ival15_3 = add konoha.Int ival11_2 ival17_0
+	_ = setidx konoha.Float aval5_3 fval16_5 ival15_3
+	ival21_3 = const konoha.Int 2
+	ival19_3 = add konoha.Int ival11_2 ival21_3
+	fval17_0 = getidx konoha.Float aval5_3 ival19_3
+	fval18_14 = cast konoha.Float ival12_2
+	fval16_6 = div konoha.Float fval17_0 fval18_14
+	ival17_0 = const konoha.Int 2
+	ival15_4 = add konoha.Int ival11_2 ival17_0
+	_ = setidx konoha.Float aval5_3 fval16_6 ival15_4
+	fval21_0 = getidx konoha.Float aval5_3 ival11_2
+	ival16_0 = call konoha.Int aobench.Script.clamp ( fval21_0 ) @static
+	_ = setidx konoha.Int aval1_3 ival16_0 ival11_2
+	ival25_0 = const konoha.Int 1
+	ival23_0 = add konoha.Int ival11_2 ival25_0
+	fval21_1 = getidx konoha.Float aval5_3 ival23_0
+	ival16_1 = call konoha.Int aobench.Script.clamp ( fval21_1 ) @static
+	ival17_1 = const konoha.Int 1
+	ival15_5 = add konoha.Int ival11_2 ival17_1
+	_ = setidx konoha.Int aval1_3 ival16_1 ival15_5
+	ival25_1 = const konoha.Int 2
+	ival23_1 = add konoha.Int ival11_2 ival25_1
+	fval21_2 = getidx konoha.Float aval5_3 ival23_1
+	ival16_2 = call konoha.Int aobench.Script.clamp ( fval21_2 ) @static
+	ival17_2 = const konoha.Int 2
+	ival15_6 = add konoha.Int ival11_2 ival17_2
+	_ = setidx konoha.Int aval1_3 ival16_2 ival15_6
+	_ = jmp bb7 @forcont
+
+BasicBlock13:loopcond
+	script0_4 = mov konoha.compiler.Script script0_3
+	aval1_4 = mov konoha.Array<konoha.Int> aval1_3
+	ival2_4 = mov konoha.Int ival2_3
+	ival3_4 = mov konoha.Int ival3_3
+	ival4_4 = mov konoha.Int ival4_3
+	aval5_4 = mov konoha.Array<konoha.Float> aval5_3
+	rayintersection6_4 = mov aobench.RayIntersection rayintersection6_3
+	ival7_5 = mov konoha.Int ival7_4
+	ival8_5 = mov konoha.Int ival8_4
+	ival9_5 = mov konoha.Int ival9_4
+	ival10_6 = phi [[ival10_5, bb10], [ival11_0, bb15]]
+	bval12_3 = lt konoha.Boolean ival10_6 ival4_4
+	_ = cond Boolean bval12_3 bb14 bb16
+
+BasicBlock14:loopbody
+	vec12_0 = getfield aobench.Vec rayintersection6_4 1
+	fval16_0 = cast konoha.Float ival8_5
+	fval18_4 = cast konoha.Float ival10_6
+	fval19_4 = cast konoha.Float ival4_4
+	fval17_0 = div konoha.Float fval18_4 fval19_4
+	fval15_0 = add konoha.Float fval16_0 fval17_0
+	fval17_1 = cast konoha.Float ival2_4
+	fval18_5 = const konoha.Float 2.00000000000000000000
+	fval16_1 = div konoha.Float fval17_1 fval18_5
+	fval14_0 = sub konoha.Float fval15_0 fval16_1
+	fval16_2 = cast konoha.Float ival2_4
+	fval17_2 = const konoha.Float 2.00000000000000000000
+	fval15_1 = div konoha.Float fval16_2 fval17_2
+	fval13_0 = div konoha.Float fval14_0 fval15_1
+	_ = setfield aobench.Vec vec12_0 0 fval13_0
+	vec12_1 = getfield aobench.Vec rayintersection6_4 1
+	fval17_3 = cast konoha.Float ival7_5
+	fval19_5 = cast konoha.Float ival9_5
+	fval20_4 = cast konoha.Float ival4_4
+	fval18_6 = div konoha.Float fval19_5 fval20_4
+	fval16_3 = add konoha.Float fval17_3 fval18_6
+	fval18_7 = cast konoha.Float ival3_4
+	fval19_6 = const konoha.Float 2.00000000000000000000
+	fval17_4 = div konoha.Float fval18_7 fval19_6
+	fval15_2 = sub konoha.Float fval16_3 fval17_4
+	fval16_4 = const konoha.Float 0
+	fval14_1 = sub konoha.Float fval16_4 fval15_2
+	fval16_5 = cast konoha.Float ival3_4
+	fval17_5 = const konoha.Float 2.00000000000000000000
+	fval15_3 = div konoha.Float fval16_5 fval17_5
+	fval13_1 = div konoha.Float fval14_1 fval15_3
+	_ = setfield aobench.Vec vec12_1 1 fval13_1
+	vec12_2 = getfield aobench.Vec rayintersection6_4 1
+	fval13_2 = const konoha.Float -1.00000000000000000000
+	_ = setfield aobench.Vec vec12_2 2 fval13_2
+	fval13_3 = const konoha.Float 1000000000.00000000000000000000
+	_ = setfield aobench.RayIntersection rayintersection6_4 4 fval13_3
+	bval13_0 = const konoha.Boolean false
+	_ = setfield aobench.RayIntersection rayintersection6_4 5 bval13_0
+	vec16_0 = getfield aobench.Vec rayintersection6_4 1
+	_ = call null aobench.Script.normalize ( vec16_0 ) @static
+	aval17_0 = getfield konoha.Array<aobench.Sphere> script0_4 0
+	ival17_0 = const konoha.Int 0
+	sphere16_0 = getidx aobench.Sphere aval17_0 ival17_0
+	_ = call null aobench.Script.interSectsSphere ( sphere16_0 rayintersection6_4 ) @static
+	aval17_0 = getfield konoha.Array<aobench.Sphere> script0_4 0
+	ival17_0 = const konoha.Int 1
+	sphere16_1 = getidx aobench.Sphere aval17_0 ival17_0
+	_ = call null aobench.Script.interSectsSphere ( sphere16_1 rayintersection6_4 ) @static
+	aval17_0 = getfield konoha.Array<aobench.Sphere> script0_4 0
+	ival17_0 = const konoha.Int 2
+	sphere16_2 = getidx aobench.Sphere aval17_0 ival17_0
+	_ = call null aobench.Script.interSectsSphere ( sphere16_2 rayintersection6_4 ) @static
+	plane16_0 = getfield aobench.Plane script0_4 1
+	_ = call null aobench.Script.interSectsPlane ( plane16_0 rayintersection6_4 ) @static
+	bval11_0 = getfield konoha.Boolean rayintersection6_4 5
+	_ = cond Boolean bval11_0 bb17 bb18 @if
+
+BasicBlock15:
+	ival13_0 = const konoha.Int 1
+	ival11_0 = add konoha.Int ival10_6 ival13_0
+	ival10_6 = mov konoha.Int ival11_0 @nonssa
+	_ = jmp bb13
+
+BasicBlock16:
+	_ = jmp bb11 @forcont
+
+BasicBlock17:
+	vec15_0 = new aobench.Vec 
+	fval16_0 = const konoha.Float 0.00000000000000000000
+	fval17_0 = const konoha.Float 0.00000000000000000000
+	fval18_8 = const konoha.Float 0.00000000000000000000
+	vec11_0 = call aobench.Vec aobench.Vec.new ( vec15_0 fval16_0 fval17_0 fval18_8 ) @nonstatic
+	_ = call null aobench.Script.getAmbientOcclusion ( rayintersection6_4 vec11_0 ) @static
+	ival13_0 = const konoha.Int 3
+	ival15_0 = mul konoha.Int ival7_5 ival2_4
+	ival14_0 = add konoha.Int ival15_0 ival8_5
+	ival12_0 = mul konoha.Int ival13_0 ival14_0
+	fval17_1 = getidx konoha.Float aval5_4 ival12_0
+	fval18_9 = getfield konoha.Float vec11_0 0
+	fval16_1 = add konoha.Float fval17_1 fval18_9
+	_ = setidx konoha.Float aval5_4 fval16_1 ival12_0
+	ival21_0 = const konoha.Int 1
+	ival19_0 = add konoha.Int ival12_0 ival21_0
+	fval17_2 = getidx konoha.Float aval5_4 ival19_0
+	fval18_10 = getfield konoha.Float vec11_0 1
+	fval16_2 = add konoha.Float fval17_2 fval18_10
+	ival17_0 = const konoha.Int 1
+	ival15_1 = add konoha.Int ival12_0 ival17_0
+	_ = setidx konoha.Float aval5_4 fval16_2 ival15_1
+	ival21_1 = const konoha.Int 2
+	ival19_1 = add konoha.Int ival12_0 ival21_1
+	fval17_0 = getidx konoha.Float aval5_4 ival19_1
+	fval18_11 = getfield konoha.Float vec11_0 2
+	fval16_3 = add konoha.Float fval17_0 fval18_11
+	ival17_0 = const konoha.Int 2
+	ival15_2 = add konoha.Int ival12_0 ival17_0
+	_ = setidx konoha.Float aval5_4 fval16_3 ival15_2
+	_ = jmp bb19 @merge
+
+BasicBlock18:
+	_ = jmp bb19 @merge
+
+BasicBlock19:
+	_ = jmp bb15 @forcont
+}
+
+def null Script.setUpScene (  ) {
+BasicBlock0:
+	script0_0 = bnul konoha.compiler.Script 
+	aval5_0 = getfield konoha.Array<aobench.Sphere> script0_0 0
+	sphere10_0 = new aobench.Sphere 
+	fval11_0 = const konoha.Float -2.00000000000000000000
+	fval12_0 = const konoha.Float 0.00000000000000000000
+	fval13_0 = const konoha.Float -3.50000000000000000000
+	fval14_0 = const konoha.Float 0.50000000000000000000
+	sphere6_0 = call aobench.Sphere aobench.Sphere.new ( sphere10_0 fval11_0 fval12_0 fval13_0 fval14_0 ) @nonstatic
+	_ = call null konoha.Array<dynamic>.add ( aval5_0 sphere6_0 ) @nonstatic
+	aval5_1 = getfield konoha.Array<aobench.Sphere> script0_0 0
+	sphere10_1 = new aobench.Sphere 
+	fval11_1 = const konoha.Float -0.50000000000000000000
+	fval12_1 = const konoha.Float 0.00000000000000000000
+	fval13_1 = const konoha.Float -3.00000000000000000000
+	fval14_1 = const konoha.Float 0.50000000000000000000
+	sphere6_1 = call aobench.Sphere aobench.Sphere.new ( sphere10_1 fval11_1 fval12_1 fval13_1 fval14_1 ) @nonstatic
+	_ = call null konoha.Array<dynamic>.add ( aval5_1 sphere6_1 ) @nonstatic
+	aval5_2 = getfield konoha.Array<aobench.Sphere> script0_0 0
+	sphere10_2 = new aobench.Sphere 
+	fval11_2 = const konoha.Float 1.00000000000000000000
+	fval12_2 = const konoha.Float 0.00000000000000000000
+	fval13_2 = const konoha.Float -2.20000000000000017764
+	fval14_2 = const konoha.Float 0.50000000000000000000
+	sphere6_2 = call aobench.Sphere aobench.Sphere.new ( sphere10_2 fval11_2 fval12_2 fval13_2 fval14_2 ) @nonstatic
+	_ = call null konoha.Array<dynamic>.add ( aval5_2 sphere6_2 ) @nonstatic
+	plane2_0 = getfield aobench.Plane script0_0 1
+	vec7_0 = new aobench.Vec 
+	fval8_0 = const konoha.Float 0.00000000000000000000
+	fval9_0 = const konoha.Float -0.50000000000000000000
+	fval10_0 = const konoha.Float 0.00000000000000000000
+	vec3_0 = call aobench.Vec aobench.Vec.new ( vec7_0 fval8_0 fval9_0 fval10_0 ) @nonstatic
+	_ = setfield aobench.Plane plane2_0 0 vec3_0
+	plane2_1 = getfield aobench.Plane script0_0 1
+	vec7_1 = new aobench.Vec 
+	fval8_1 = const konoha.Float 0.00000000000000000000
+	fval9_1 = const konoha.Float 1.00000000000000000000
+	fval10_1 = const konoha.Float 0.00000000000000000000
+	vec3_1 = call aobench.Vec aobench.Vec.new ( vec7_1 fval8_1 fval9_1 fval10_1 ) @nonstatic
+	_ = setfield aobench.Plane plane2_1 1 vec3_1
+	_ = return 
+}
+
+def null Script.run (  ) {
+BasicBlock0:
+	aval5_0 = new konoha.Array<konoha.Int> 
+	ival6_0 = const konoha.Int 196608
+	aval1_0 = call konoha.Array<konoha.Int> konoha.Array<dynamic>.new:ARRAY ( aval5_0 ival6_0 ) @nonstatic
+	ival2_0 = const konoha.Int 0
+	_ = call null aobench.Script.setUpScene ( ) @static
+	ival9_0 = const konoha.Int 256
+	ival10_0 = const konoha.Int 256
+	ival11_0 = const konoha.Int 2
+	_ = call null aobench.Script.render ( aval1_0 ival9_0 ival10_0 ival11_0 ) @static
+	ous7_0 = new konoha.OutputStream 
+	path8_0 = const konoha.Path ao.ppm
+	str9_0 = const konoha.String ""
+	map10_0 = const konoha.Map<konoha.String,dynamic> {} []
+	ous3_0 = call konoha.OutputStream konoha.OutputStream.new ( ous7_0 path8_0 str9_0 map10_0 ) @nonstatic
+	str9_1 = const konoha.String "P6"
+	_ = call null konoha.OutputStream.send ( ous3_0 str9_1 ) @nonstatic
+	str9_2 = const konoha.String "\n"
+	_ = call null konoha.OutputStream.send ( ous3_0 str9_2 ) @nonstatic
+	ival9_0 = const konoha.Int 256
+	_ = call null konoha.Int.%s ( ous3_0 ival9_0 ) @nonstatic
+	str9_0 = const konoha.String " "
+	_ = call null konoha.OutputStream.send ( ous3_0 str9_0 ) @nonstatic
+	ival9_0 = const konoha.Int 256
+	_ = call null konoha.Int.%s ( ous3_0 ival9_0 ) @nonstatic
+	str9_0 = const konoha.String "\n"
+	_ = call null konoha.OutputStream.send ( ous3_0 str9_0 ) @nonstatic
+	str9_1 = const konoha.String "255"
+	_ = call null konoha.OutputStream.send ( ous3_0 str9_1 ) @nonstatic
+	str9_2 = const konoha.String "\n"
+	_ = call null konoha.OutputStream.send ( ous3_0 str9_2 ) @nonstatic
+	ival2_1 = const konoha.Int 0
+	aval1_1 = mov konoha.Array<konoha.Int> aval1_0 @nonssa
+	ival2_2 = mov konoha.Int ival2_1 @nonssa
+	ous3_1 = mov konoha.OutputStream ous3_0 @nonssa
+	_ = jmp bb1 @for
+
+BasicBlock1:loopcond
+	aval1_1 = mov konoha.Array<konoha.Int> aval1_0
+	ival2_2 = phi [[ival2_1, bb0], [ival4_0, bb3]]
+	ous3_1 = mov konoha.OutputStream ous3_0
+	ival7_0 = call konoha.Int konoha.Array<dynamic>.getSize ( aval1_1 ) @nonstatic
+	bval5_0 = lt konoha.Boolean ival2_2 ival7_0
+	_ = cond Boolean bval5_0 bb2 bb4
+
+BasicBlock2:loopbody
+	ival9_0 = getidx konoha.Int aval1_1 ival2_2
+	_ = call null konoha.OutputStream.putByte ( ous3_1 ival9_0 ) @nonstatic
+	_ = jmp bb3 @forcont
+
+BasicBlock3:
+	ival6_1 = const konoha.Int 1
+	ival4_0 = add konoha.Int ival2_2 ival6_1
+	ival2_2 = mov konoha.Int ival4_0 @nonssa
+	_ = jmp bb1
+
+BasicBlock4:
+	_ = call null konoha.OutputStream.close ( ous3_1 ) @nonstatic
+	_ = return 
+}
+
+def null Script.main ( konoha.Array<konoha.String> aval1_0 ) {
+BasicBlock0:
+	script0_0 = bnul konoha.compiler.Script 
+	aval6_0 = new konoha.Array<aobench.Sphere> 
+	ival7_0 = const konoha.Int 0
+	aval2_0 = call konoha.Array<aobench.Sphere> konoha.Array<dynamic>.new:ARRAY ( aval6_0 ival7_0 ) @nonstatic
+	_ = setfield konoha.compiler.Script script0_0 0 aval2_0
+	plane2_0 = new aobench.Plane 
+	_ = setfield konoha.compiler.Script script0_0 1 plane2_0
+	_ = call null aobench.Script.run ( ) @static
+	_ = return 
+}
+

@@ -321,7 +321,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     } else {
         this.opt.m = new Module("konoha");
     }
-    this.opt.ee = opt.m.createExecutionEngine();
+    this.opt.ee = opt.m.createExecutionEngine(2);
     this.opt.fpm = null;
     constructKonohaTypes();
     this.opt.intTy    = Type.getInt64Ty();
@@ -482,6 +482,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     if (config.opt_lazycompilation) {
         if (mtd.getName() != "" && mtd.toString().endsWith("Script.main") == false) {
             this.opt.compilation_queue.add(kfunc);
+            mtd.setLazycompile();
             return;
         }
     }
@@ -704,6 +705,14 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     opt.ktype["stringTy"]    = stringTy;
     opt.ktype["stringPtrTy"] = stringPtrTy;
 
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(Type.getInt8PtrTy()); /* text */
+    fields.add(int64Ty);   /* len */
+    Type bytesTy = StructType.create(fields, "kBytes", false);
+    Type bytesPtrTy = PointerType.get(bytesTy);
+    opt.ktype["bytesTy"]    = bytesTy;
+    opt.ktype["bytesPtrTy"] = bytesPtrTy;
 
     fields = [];
     fields.add(hObjectTy);
@@ -765,7 +774,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     /* 22 */fields.add(inputStreamPtrTy);
     /* 23 */fields.add(outputStreamPtrTy);
     /* 24 */fields.add(outputStreamPtrTy);
-    fields.add(PointerType.get(StructType.create(null, "kBytes", false)));
+    fields.add(PointerType.get(bytesTy));
     fields.add(outputStreamPtrTy);
     fields.add(PointerType.get(StructType.create(null, "kGamma", false)));
     fields.add(PointerType.get(StructType.create(null, "kMap", false)));
@@ -1480,6 +1489,25 @@ BuilderFunc=Func<Value, Value=>Value>;
             setLLVMValue(asm, v);
             return;
         }
+    } else if (op.mtd.getName() == "set") {
+        if (op.mtd.getMethodClass() == Bytes) {
+            IRBuilder builder = asm.opt.builder;
+            Value v = args[0].getLLVMValue(asm);/* BytesPtr */
+            Value arg1 = args[1].getLLVMValue(asm);/* size_t */
+            Value arg2 = args[2].getLLVMValue(asm);/* uchar_t */
+            Type  t = asm.opt.ktype["bytesPtrTy"];
+
+            v = builder.createBitCast(v, t);
+            arg2 = builder.createTrunc(arg2, Type.getInt8Ty());
+
+            /* ptr->buf */
+            v = builder.createStructGEP(v, 1);
+            v = builder.createLoad(v);
+            v = builder.createInBoundsGEP1(v, arg1);
+            v = builder.createStore(arg2, v);
+            setLLVMValue(asm, v);
+            return;
+        }
     }
     Value vsfp = asm.getsfp();
     if (op.ftype != FUNC_FASTCALL) {
@@ -1667,6 +1695,16 @@ Type get_atype(Compiler asm, Class type) {
     setLLVMValue(asm, v);
 }
 
+@Public boolean Class.can_opt_field_access() {
+    if (this.isSMALLOBJECT() == false)
+        return false;
+    if (this.isFinal() == false)
+        return false;
+    if (this.getSuper() != Object)
+        return false;
+    return true;
+}
+
 Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
     Value v = null;
     IRBuilder builder = asm.opt.builder;
@@ -1693,11 +1731,10 @@ Value get_field_ptr(Compiler asm, K_Inst inst0, int offset) {
     if (v == null) {
         v = inst0.getLLVMValue(asm);
         v = builder.createBitCast(v, type);
-        //FIXME class A{}; class B exntends A {int x;}; A.x
-        //if (userType == true && inst0.type.isSMALLOBJECT()) {
-        //    Value field = builder.createStructGEP(v, offset+2);
-        //    return field;
-        //}
+        if (userType == true && inst0.type.can_opt_field_access()) {
+            Value field = builder.createStructGEP(v, offset+2);
+            return field;
+        }
         v = builder.createStructGEP(v, 1);
         v = builder.createLoad(v);
         if (config.opt_field_access) {

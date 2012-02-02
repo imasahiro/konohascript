@@ -1,0 +1,70 @@
+def null Script.main (  ) {
+BasicBlock0:
+	str1_0 = const konoha.String "abcdec aa"
+	ous6_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	regex12_0 = const konoha.Regex /c/
+	aval7_0 = call konoha.Array<konoha.String> konoha.String.split ( str1_0 regex12_0 ) @nonstatic
+	_ = call null konoha.OutputStream.println ( ous6_0 aval7_0 ) @nonstatic
+	ous6_1 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str12_0 = const konoha.String "abc"
+	bval7_0 = call konoha.Boolean konoha.String.startsWith ( str1_0 str12_0 ) @nonstatic
+	obj7_0 = box konoha.Object bval7_0
+	_ = call null konoha.OutputStream.println ( ous6_1 obj7_0 ) @nonstatic
+	ous6_2 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str12_1 = const konoha.String "abc"
+	bval7_0 = call konoha.Boolean konoha.String.endsWith ( str1_0 str12_1 ) @nonstatic
+	obj7_0 = box konoha.Object bval7_0
+	_ = call null konoha.OutputStream.println ( ous6_2 obj7_0 ) @nonstatic
+	ous6_3 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str12_2 = const konoha.String "cd"
+	ival7_0 = call konoha.Int konoha.String.indexOf ( str1_0 str12_2 ) @nonstatic
+	obj7_0 = box konoha.Object ival7_0
+	_ = call null konoha.OutputStream.println ( ous6_3 obj7_0 ) @nonstatic
+	ous6_4 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival7_0 = call konoha.Int konoha.String.getSize ( str1_0 ) @nonstatic
+	obj7_0 = box konoha.Object ival7_0
+	_ = call null konoha.OutputStream.println ( ous6_4 obj7_0 ) @nonstatic
+	ous6_5 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival12_0 = const konoha.Int 1
+	ival13_0 = const konoha.Int 2
+	str7_0 = call konoha.String konoha.String.substring ( str1_0 ival12_0 ival13_0 ) @nonstatic
+	_ = call null konoha.OutputStream.println ( ous6_5 str7_0 ) @nonstatic
+	regex12_0 = const konoha.Regex /c/
+	aval7_0 = call konoha.Array<konoha.String> konoha.String.split ( str1_0 regex12_0 ) @nonstatic
+	ival7_0 = const konoha.Int 0
+	str6_0 = getidx konoha.String aval7_0 ival7_0
+	str7_0 = const konoha.String "ab"
+	bval2_0 = call konoha.Boolean konoha.Object.== ( str6_0 str7_0 ) @nonstatic
+	_ = cond Boolean bval2_0 bb1 bb2 @if
+
+BasicBlock1:
+	ous6_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str7_1 = const konoha.String "OK"
+	_ = call null konoha.OutputStream.println ( ous6_0 str7_1 ) @nonstatic
+	_ = jmp bb3 @merge
+
+BasicBlock2:
+	_ = jmp bb3 @merge
+
+BasicBlock3:
+	ous6_1 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival12_0 = const konoha.Int 4
+	str7_2 = call konoha.String konoha.String.get ( str1_0 ival12_0 ) @nonstatic
+	_ = call null konoha.OutputStream.println ( ous6_1 str7_2 ) @nonstatic
+	ous6_2 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	regex12_0 = const konoha.Regex /a/
+	str13_0 = const konoha.String "-"
+	str7_3 = call konoha.String konoha.String.replace ( str1_0 regex12_0 str13_0 ) @nonstatic
+	_ = call null konoha.OutputStream.println ( ous6_2 str7_3 ) @nonstatic
+	ous6_3 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	str12_0 = const konoha.String "a"
+	str7_4 = call konoha.String konoha.String.- ( str1_0 str12_0 ) @nonstatic
+	_ = call null konoha.OutputStream.println ( ous6_3 str7_4 ) @nonstatic
+	str1_1 = const konoha.String "123"
+	ous6_4 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	ival7_0 = cast konoha.Int str1_1
+	obj7_0 = box konoha.Object ival7_0
+	_ = call null konoha.OutputStream.println ( ous6_4 obj7_0 ) @nonstatic
+	_ = return 
+}
+

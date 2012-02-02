@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for name in test/*.k
+do
+	echo konohac ${name}
+	konohac ${name} > ${name}c
+done
+

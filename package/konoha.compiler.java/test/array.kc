@@ -1,0 +1,34 @@
+def null Script.main ( konoha.Array<konoha.String> aval1_0 ) {
+BasicBlock0:
+	aval2_0 = bnul konoha.Array<konoha.Int> 
+	aval7_0 = new konoha.Array<konoha.Int> 
+	ival8_0 = const konoha.Int 0
+	aval3_0 = call konoha.Array<konoha.Int> konoha.Array<dynamic>.new:ARRAY ( aval7_0 ival8_0 ) @nonstatic
+	ival8_1 = const konoha.Int 5
+	ival9_0 = const konoha.Int 9
+	ival10_0 = const konoha.Int 2
+	ival11_0 = const konoha.Int 4
+	ival12_0 = const konoha.Int 1
+	ival13_0 = const konoha.Int 2
+	ival14_0 = const konoha.Int 5
+	ival15_0 = const konoha.Int 4
+	ival16_0 = const konoha.Int 3
+	_ = call null konoha.Array<dynamic>.add ( aval3_0 ival8_1 ival9_0 ival10_0 ival11_0 ival12_0 ival13_0 ival14_0 ival15_0 ival16_0 ) @nonstatic
+	ous7_0 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	_ = call null konoha.OutputStream.println ( ous7_0 aval3_0 ) @nonstatic
+	_ = call null konoha.Array<dynamic>.reverse ( aval3_0 ) @nonstatic
+	ous7_1 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	_ = call null konoha.OutputStream.println ( ous7_1 aval3_0 ) @nonstatic
+	_ = call null konoha.Array<dynamic>.shuffle ( aval3_0 ) @nonstatic
+	ous7_2 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	_ = call null konoha.OutputStream.println ( ous7_2 aval3_0 ) @nonstatic
+	ival8_2 = const konoha.Int 5
+	_ = call null konoha.Array<dynamic>.remove ( aval3_0 ival8_2 ) @nonstatic
+	ous7_3 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	_ = call null konoha.OutputStream.println ( ous7_3 aval3_0 ) @nonstatic
+	_ = call null konoha.Array<dynamic>.clear ( aval3_0 ) @nonstatic
+	ous7_4 = call konoha.OutputStream konoha.System.getOut ( ) @static
+	_ = call null konoha.OutputStream.println ( ous7_4 aval3_0 ) @nonstatic
+	_ = return 
+}
+
