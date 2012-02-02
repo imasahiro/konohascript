@@ -14,7 +14,7 @@ execute_process(
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 
-if("${LLVM_VERSION}" MATCHES "3.0")
+if("${LLVM_VERSION}" MATCHES "3.")
 execute_process(
 		COMMAND ${LLVM_CONFIG} --cppflags
 		OUTPUT_VARIABLE LLVM_CFLAGS
@@ -41,8 +41,7 @@ execute_process(
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LLVM_CFLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS} -Wno-variadic-macros")
 set(KONOHA_SRC ${KONOHA_SRC} src/lang/llvm.cpp)
 string(REPLACE " " ";" v ${LLVM_JIT_LIBS})
 link_directories(${LINK_DIRECTORIES} ${LLVM_LIBDIR})
@@ -66,6 +65,6 @@ target_link_libraries(${PACKAGE_NAME} konoha ${ExtraLibs})
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
-endif("${LLVM_VERSION}" MATCHES "3.0")
+endif()
 endif(LLVM_CONFIG)
 

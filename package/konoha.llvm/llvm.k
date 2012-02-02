@@ -101,7 +101,7 @@ include "lib:gluelink";
 @Native IRBuilder IRBuilder.new(BasicBlock bb);
 @Native ReturnInst IRBuilder.createRetVoid();
 @Native ReturnInst IRBuilder.createRet(Value v);
-@Native ReturnInst IRBuilder.createAggregateRet(Value retVals, int n);
+//@Native ReturnInst IRBuilder.createAggregateRet(Value retVals, int n);
 @Native BranchInst IRBuilder.createBr(BasicBlock dest);
 @Native BranchInst IRBuilder.createCondBr(Value cond, BasicBlock trueBB, BasicBlock falseBB);
 @Native SwitchInst IRBuilder.createSwitch(Value v, BasicBlock dest);
@@ -248,12 +248,11 @@ include "lib:gluelink";
 @Native int BasicBlock.size();
 @Native boolean BasicBlock.empty();
 @Native Module Module.new(String name);
-//@Native void Module.addTypeName(String name, Type type);
 @Native Type Module.getTypeByName(String name);
 
 @Native void Module.dump();
 @Native Function Module.getOrInsertFunction(String name, FunctionType fnTy);
-@Native ExecutionEngine Module.createExecutionEngine();
+@Native ExecutionEngine Module.createExecutionEngine(int optLevel);
 @Native @Static BasicBlock BasicBlock.create(Function parent, String name);
 @Native @Static FunctionType FunctionType.get(Type retTy, Array<Type> args, boolean b);
 @Native @Static ArrayType ArrayType.get(Type t, int elemSize);
@@ -294,7 +293,6 @@ include "lib:gluelink";
 @Native void StoreInst.setAlignment(Int align);
 
 @Native @Public void Method.setFunction(NativeFunction nf);
-@Native @Public void Func.setFunction(NativeFunction nf);
 
 @Static @Native Constant ConstantInt.get(Type type, int v);
 @Static @Native Constant ConstantFP.get(Type type, float v);
