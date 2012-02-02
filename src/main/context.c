@@ -208,11 +208,6 @@ static void CommonContext_free(CTX ctx, kcontext_t *ctxo)
 		KNH_FREE(ctx, ctx->sighandlers, sizeof(kFunc*) * K_SIGNAL_MAX);
 		ctxo->sighandlers = NULL;
 	}
-
-#ifdef K_USING_LOGPOOL
-	ltrace_close(ctxo->ltrace);
-	ctxo->ltrace = NULL;
-#endif
 }
 
 /* ------------------------------------------------------------------------ */
@@ -654,10 +649,18 @@ void knh_Context_free(CTX ctx, kcontext_t* ctxo)
 			}
 		}
 		share_free(ctx, (kshare_t*)ctxo->share);
+#ifdef K_USING_LOGPOOL
+	ltrace_close(ctxo->ltrace);
+	ctxo->ltrace = NULL;
+#endif
 		knh_bzero((void*)ctxo, sizeof(kcontext_t));
 		free((void*)ctxo);
 	}
 	else {
+#ifdef K_USING_LOGPOOL
+	ltrace_close(ctxo->ltrace);
+	ctxo->ltrace = NULL;
+#endif
 		kmemlocal_free(ctx);
 		knh_bzero((void*)ctxo, sizeof(kcontext_t));
 		KNH_FREE(ctx, (void*)ctxo, sizeof(kcontext_t));
