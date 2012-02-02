@@ -321,7 +321,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     } else {
         this.opt.m = new Module("konoha");
     }
-    this.opt.ee = opt.m.createExecutionEngine();
+    this.opt.ee = opt.m.createExecutionEngine(2);
     this.opt.fpm = null;
     constructKonohaTypes();
     this.opt.intTy    = Type.getInt64Ty();
@@ -705,6 +705,14 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     opt.ktype["stringTy"]    = stringTy;
     opt.ktype["stringPtrTy"] = stringPtrTy;
 
+    fields = [];
+    fields.add(hObjectTy);
+    fields.add(Type.getInt8PtrTy()); /* text */
+    fields.add(int64Ty);   /* len */
+    Type bytesTy = StructType.create(fields, "kBytes", false);
+    Type bytesPtrTy = PointerType.get(bytesTy);
+    opt.ktype["bytesTy"]    = bytesTy;
+    opt.ktype["bytesPtrTy"] = bytesPtrTy;
 
     fields = [];
     fields.add(hObjectTy);
@@ -766,7 +774,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     /* 22 */fields.add(inputStreamPtrTy);
     /* 23 */fields.add(outputStreamPtrTy);
     /* 24 */fields.add(outputStreamPtrTy);
-    fields.add(PointerType.get(StructType.create(null, "kBytes", false)));
+    fields.add(PointerType.get(bytesTy));
     fields.add(outputStreamPtrTy);
     fields.add(PointerType.get(StructType.create(null, "kGamma", false)));
     fields.add(PointerType.get(StructType.create(null, "kMap", false)));
@@ -1478,6 +1486,25 @@ BuilderFunc=Func<Value, Value=>Value>;
             v = builder.createBitCast(v, t);
             v = builder.createStructGEP(v, 2);
             v = builder.createLoad(v);
+            setLLVMValue(asm, v);
+            return;
+        }
+    } else if (op.mtd.getName() == "set") {
+        if (op.mtd.getMethodClass() == Bytes) {
+            IRBuilder builder = asm.opt.builder;
+            Value v = args[0].getLLVMValue(asm);/* BytesPtr */
+            Value arg1 = args[1].getLLVMValue(asm);/* size_t */
+            Value arg2 = args[2].getLLVMValue(asm);/* uchar_t */
+            Type  t = asm.opt.ktype["bytesPtrTy"];
+
+            v = builder.createBitCast(v, t);
+            arg2 = builder.createTrunc(arg2, Type.getInt8Ty());
+
+            /* ptr->buf */
+            v = builder.createStructGEP(v, 1);
+            v = builder.createLoad(v);
+            v = builder.createInBoundsGEP1(v, arg1);
+            v = builder.createStore(arg2, v);
             setLLVMValue(asm, v);
             return;
         }

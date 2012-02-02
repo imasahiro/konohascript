@@ -257,7 +257,7 @@ class K_Inst {
             }
         }
     }
-    String getName() {
+    @Overload String getName() {
         String res = "";
         String str_type = "";
         Class type = kvalue.type;
@@ -980,7 +980,7 @@ class K_CALL extends K_Inst {
             } else {
                 ret = getName();
             }
-            String type  = getTypeName(kvalue.type);
+            String type = getTypeName(kvalue.type);
             res += ret + " = call " + type + " " + op.fname + " ( ";
         }
         for (int i = 0; i < |args|; i++) {
@@ -1176,7 +1176,7 @@ class K_CONST extends K_Inst {
         } else if (value.class == Float) {
             Float f = value;
             return f.format("%.20f");
-        }else if(value.class == Array<dynamic>) {
+        } else if(value.class == Array<dynamic>) {
             Array a = value;
             String res = "[";
             for(int i=0; i<|a|; i++) {
@@ -1206,6 +1206,9 @@ class K_CONST extends K_Inst {
             }
             res += "]";
             return res;
+        } else if (value.class == Method) {
+            Method m = (to Method)value;
+            return m.getMethodClass() + "." + m.getName();
         } else if (value == null && value.class.isUnboxType()) {
             return "0";
         } else {
@@ -2359,6 +2362,12 @@ void Compiler.asmCALL_sub(int espidx, Class rtype, Method mtd, boolean flag, int
         if (flag) {
             isStatic = 1;
         }
+
+        /* @Hidden Func.() */
+        if (mtd.getMethodClass() == Func && mtd.getName() == "") {
+            rtype = kfunc.getKInst(thisidx).type.getP1();
+        }
+
         Array<K_Inst> args = [];
         for (int i = isStatic; i <= argc; i++) {
             K_Inst arg = kfunc.getKInst(thisidx + i);
