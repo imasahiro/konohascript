@@ -2586,7 +2586,7 @@ static void _PRINTh(CTX ctx, ksfp_t *sfp, kOutputStream *w, struct klr_P_t *op)
 		knh_putc(ctx, w, ' ');
 	}
 	if(IS_bString(op->msg)) {
-		if((op->msg)->str.len > 0) {
+		if(S_size(op->msg) > 0) {
 			knh_write_utf8(ctx, w, S_tobytes(op->msg), !String_isASCII(op->msg));
 		}
 	}

@@ -837,8 +837,8 @@ static void String_init(CTX ctx, kRawPtr *o)
 {
 	kString *s = (kString*)o;
 	s->str.text = "";
-	s->str.len = 0;
-	s->hashCode = 0;
+	s->str.len = build_length(0, MASK_EXTERNAL);
+	//s->hashCode = 0;
 	String_setTextSgm(s, 1);
 }
 
