@@ -100,7 +100,7 @@ static void opt_p(CTX ctx, int mode, const char *optstr)
 void knh_loadScriptPackageList(CTX ctx, const char *pkglist)
 {
 	if(pkglist != NULL) {
-		kbytes_t t = {{pkglist}, knh_strlen(pkglist)};
+		kbytes_t t = {knh_strlen(pkglist), {pkglist}};
 		char buf[256];
 		size_t i = 0;
 		int isExists = 0;
@@ -425,7 +425,7 @@ void knh_dumpKeyword(CTX ctx, kOutputStream *w);
 
 static kstatus_t shell_command(CTX ctx, const char *cmd)
 {
-	kbytes_t t = {{cmd}, knh_strlen(cmd)};
+	kbytes_t t = {knh_strlen(cmd), {cmd}};
 	if(B_equals(t, "quit") || B_equals(t, "exit") || B_equals(t, "bye")) {
 		return K_BREAK;
 	}

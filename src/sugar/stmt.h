@@ -84,7 +84,7 @@ typedef struct flagop_t {
 static kflag_t Stmt_flag(CTX ctx, kStmt *stmt, flagop_t *fop, kflag_t flag)
 {
 	while(fop->key != NULL) {
-		kbytes_t n = {{fop->key}, fop->keysize};
+		kbytes_t n = {fop->keysize, {fop->key}};
 		kObject *op = knh_DictMap_getNULL(ctx, stmt->clauseDictMap, n);
 		if(op != NULL) flag |= fop->flag;
 	}

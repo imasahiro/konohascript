@@ -43,7 +43,7 @@ void knh_buff_addpath(CTX ctx, kBytes *ba, size_t pos, int needsSEP, kbytes_t t)
 {
 	size_t i;
 	if(needsSEP) {
-		kbytes_t b = {{ba->bu.text}, pos};
+		kbytes_t b = {pos, {ba->bu.text}};
 		if(!(b.len > 0 && b.buf[b.len-1] == '/')) {
 			knh_Bytes_putc(ctx, ba, '/');
 		}
@@ -58,7 +58,7 @@ void knh_buff_addospath(CTX ctx, kBytes *ba, size_t pos, int needsSEP, kbytes_t 
 {
 	size_t i;
 	if(needsSEP) {
-		kbytes_t b = {{ba->bu.text}, pos};
+		kbytes_t b = {pos, {ba->bu.text}};
 		if(!(b.len > 0 && b.buf[b.len-1] == K_SEP)) {
 			knh_Bytes_putc(ctx, ba, K_SEP);
 		}
@@ -1110,7 +1110,7 @@ void knh_write_ffmt(CTX ctx, kOutputStream *w, const char *fmt, kfloat_t n)
 void knh_write_flag(CTX ctx, kOutputStream *w, kflag_t flag)
 {
 	kchar_t ubuf[8];
-	kbytes_t t = {{(const char*)ubuf}, 1};
+	kbytes_t t = {1, {(const char*)ubuf}};
 	kintptr_t i;
 	kflag_t f = 1 << 15;
 	for(i = 0; i < 16; i++) {

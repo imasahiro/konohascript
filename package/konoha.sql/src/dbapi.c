@@ -240,14 +240,14 @@ KMETHOD ResultSet_get(CTX ctx, ksfp_t *sfp _RIX)
 			KNH_SETv(ctx, sfp[_rix].o, new_Float_(ctx, CLASS_Float, 0.0));
 			RETURNf_((*((kfloat_t*)p)));
 		case knh_ResultSet_CTYPE__text : {
-			kbytes_t t = {{BA_totext(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
+			kbytes_t t = {DP(o)->column[n].len, {BA_totext(DP(o)->databuf) + DP(o)->column[n].start}};
 			v = UPCAST(new_S(t.text, t.len));
 			break;
 		}
 		case knh_ResultSet_CTYPE__bytes :
 			{
 				kBytes *ba = new_Bytes(ctx, BA_totext(DP(o)->databuf) + DP(o)->column[n].start, DP(o)->column[n].len);
-				kbytes_t t = {{BA_totext(DP(o)->databuf) + DP(o)->column[n].start}, DP(o)->column[n].len};
+				kbytes_t t = {DP(o)->column[n].len, {BA_totext(DP(o)->databuf) + DP(o)->column[n].start}};
 				knh_Bytes_write(ctx, ba, t);
 				v = UPCAST(ba);
 			}

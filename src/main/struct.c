@@ -3111,10 +3111,7 @@ static void knh_setDefaultValues(CTX ctx)
 		knh_setClassDefaultValue(ctx, CLASS_Float, fo, NULL);
 	}
 	{
-		kString *so = new_H(String);
-		so->str.text = "";
-		so->str.len = 0;
-		so->hashCode = 0;
+		kString *so = (kString *) StringBase_new(ctx, "", 0, 0);
 		String_setASCII(so, 1);
 		String_setTextSgm(so, 1);
 		Object_setNullObject(so, 1);

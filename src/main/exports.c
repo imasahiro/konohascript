@@ -45,7 +45,7 @@ static void loadData(CTX ctx, kNameSpace *ns, const char *dname, Object *value)
 		knh_DictMap_set_(ctx, ctx->share->props, n, value);
 	}
 	else {
-		kbytes_t n = {{dname}, knh_strlen(dname)};
+		kbytes_t n = {knh_strlen(dname), {dname}};
 		kindex_t loc = knh_bytes_rindex(n, '.');
 		kString *name = new_T(dname + (loc+1));
 		kclass_t cid = CLASS_Tdynamic;

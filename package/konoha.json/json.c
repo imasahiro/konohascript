@@ -575,7 +575,7 @@ static void json_float(CTX ctx, void *pkp, kfloat_t f)
 
 static void json_string(CTX ctx, void *pkp, const char *str, size_t len)
 {
-	kbytes_t t = {{str}, len};
+	kbytes_t t = {len, {str}};
 	knh_putc(ctx, W(pkp), '"');
 	knh_write(ctx, W(pkp), t);
 	knh_putc(ctx, W(pkp), '"');
@@ -583,7 +583,7 @@ static void json_string(CTX ctx, void *pkp, const char *str, size_t len)
 
 static void json_raw(CTX ctx, void *pkp, const char *str, size_t len)
 {
-	kbytes_t t = {{str}, len};
+	kbytes_t t = {len, {str}};
 	knh_putc(ctx, W(pkp), '"');
 	knh_write(ctx, W(pkp), t);
 	knh_putc(ctx, W(pkp), '"');

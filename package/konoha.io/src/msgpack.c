@@ -47,7 +47,7 @@ static void *msgpack_init(CTX ctx, kpackAPI_t *pk)
 static void msgpack_flushfree(CTX ctx, kpackAPI_t *pk)
 {
 	msgpack_sbuffer *sbuffer = pk->sbuffer;
-	kbytes_t t = {{sbuffer->data}, sbuffer->size};
+	kbytes_t t = {sbuffer->size, {sbuffer->data}};
 	knh_OutputStream_write(ctx, pk->w, t);
 	knh_OutputStream_flush(ctx, pk->w); /* TODO need flush? */
 	msgpack_sbuffer_free(pk->sbuffer);

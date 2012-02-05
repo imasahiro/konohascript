@@ -214,7 +214,7 @@ static size_t addBlock(CTX ctx, tenv_t *tenv, size_t pos, int lpos)
 
 static kString *getAliasNULL(CTX ctx, tenv_t *tenv, const char *s, size_t len)
 {
-	kbytes_t t = {{s}, len};
+	kbytes_t t = {len, {s}};
 	kLang *lang = tenv->lang;
 	while(lang != NULL) {
 		if(DP(lang)->tokenRulesNULL != NULL) {

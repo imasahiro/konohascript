@@ -154,7 +154,7 @@ kbool_t knh_ResultSet_next(CTX ctx, kResultSet *o)
 			return 1;
 		}
 		else {
-			kbytes_t t = {{""}, 0};
+			kbytes_t t = {0, {""}};
 			DP(o)->qcurfree(DP(o)->qcur);
 			DP(o)->qcur = NULL;
 			DP(o)->qcurfree = knh_getQueryDSPI(ctx, t)->qcurfree;
@@ -166,7 +166,7 @@ kbool_t knh_ResultSet_next(CTX ctx, kResultSet *o)
 void knh_ResultSet_close(CTX ctx, kResultSet *o)
 {
 	if(DP(o)->qcur != NULL) {
-		kbytes_t t = {{""}, 0};
+		kbytes_t t = {0, {""}};
 		DP(o)->qcurfree(DP(o)->qcur);
 		DP(o)->qcur = NULL;
 		DP(o)->qcurfree = knh_getQueryDSPI(ctx, t)->qcurfree;
@@ -261,7 +261,7 @@ void knh_ResultSet_initData(CTX ctx, kResultSet *rs)
 KMETHOD ResultSet_setInt(CTX ctx, kResultSet *rs, size_t n, kint_t value)
 {
 	KNH_ASSERT(n < DP(rs)->column_size);
-	kbytes_t t = {{(const char*)(&value)}, sizeof(kint_t)};
+	kbytes_t t = {sizeof(kint_t), {(const char*)(&value)}};
 	DP(rs)->column[n].ctype = knh_ResultSet_CTYPE__integer;
 	DP(rs)->column[n].start = BA_size(DP(rs)->databuf);
 	DP(rs)->column[n].len = sizeof(kint_t);
@@ -273,7 +273,7 @@ KMETHOD ResultSet_setInt(CTX ctx, kResultSet *rs, size_t n, kint_t value)
 KMETHOD ResultSet_setFloat(CTX ctx, kResultSet *rs, size_t n, kfloat_t value)
 {
 	KNH_ASSERT(n < DP(rs)->column_size);
-	kbytes_t t = {{(const char*)(&value)}, sizeof(kfloat_t)};
+	kbytes_t t = {sizeof(kfloat_t), {(const char*)(&value)}};
 	DP(rs)->column[n].ctype = knh_ResultSet_CTYPE__float;
 	DP(rs)->column[n].start = BA_size(DP(rs)->databuf);
 	DP(rs)->column[n].len = sizeof(kfloat_t);
@@ -386,7 +386,7 @@ kString* knh_ResultSet_getString(CTX ctx, kResultSet *o, size_t n)
 	case knh_ResultSet_CTYPE__float :
 		return new_String__float(ctx, (kfloat_t)(*((kfloat_t*)p)));
 	case knh_ResultSet_CTYPE__text : {
-		kbytes_t t = {{p}, DP(o)->column[n].len};
+		kbytes_t t = {DP(o)->column[n].len, {p}};
 		return new_S(t.text, t.len);
 		}
 	case knh_ResultSet_CTYPE__null :

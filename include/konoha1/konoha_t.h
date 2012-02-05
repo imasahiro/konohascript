@@ -248,13 +248,13 @@ typedef const char              kascii_t;
 typedef const unsigned char     kutext_t;
 
 typedef struct {
+	size_t       len;
 	union {
 		const char *text;
 		const unsigned char *utext;
 		char *buf;
 		kchar_t *ubuf;
 	};
-	size_t       len;
 } kbytes_t;
 
 #define ismulti(c)             (((kchar_t)c)>127)

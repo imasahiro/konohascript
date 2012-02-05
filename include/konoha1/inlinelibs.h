@@ -130,13 +130,13 @@ static inline kbytes_t knh_bytes_rnext(kbytes_t v, int ch)
 
 static inline kbytes_t knh_bytes_first(kbytes_t t, kintptr_t loc)
 {
-	kbytes_t t2 = {{t.text}, loc};
+	kbytes_t t2 = {loc, {t.text}};
 	return t2;
 }
 
 static inline kbytes_t knh_bytes_last(kbytes_t t, kintptr_t loc)
 {
-	kbytes_t t2 = {{t.text + loc}, t.len - loc};
+	kbytes_t t2 = {t.len - loc, {t.text + loc}};
 	return t2;
 }
 

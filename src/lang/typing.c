@@ -1339,7 +1339,7 @@ static kTerm *FMTCALL_typing(CTX ctx, kStmtExpr *stmt)
 				if(!isalnum(ch)) break;
 			}
 			DBG_P("nm last t[%d]=%c", i-1, t.utext[-1]);
-			kbytes_t name = {{t.text + s + 1}, i - (s + 1)};
+			kbytes_t name = {i - (s + 1), {t.text + s + 1}};
 			kTerm *tkN = new_(Term);
 			tkN->tt = isupper(t.text[0]) ? TT_UNAME : TT_NAME;
 			tkN->uline = uline;
@@ -1352,8 +1352,8 @@ static kTerm *FMTCALL_typing(CTX ctx, kStmtExpr *stmt)
 				int ch = t.utext[i];
 				DBG_P("t[%d]=%c", i, ch);
 				if(ch == '{') {
-					kbytes_t mt = {{t.text + s}, i - s};
-					kbytes_t expr = {{t.text + (i+1)}, t.len - (i+1)};
+					kbytes_t mt = {i - s, {t.text + s}};
+					kbytes_t expr = {t.len - (i+1), {t.text + (i+1)}};
 					kindex_t loc = knh_bytes_index(expr, '}');
 					if(loc == -1) {
 						WarningIllegalFormatting(ctx, expr.text - 1);

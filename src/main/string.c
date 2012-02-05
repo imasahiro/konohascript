@@ -629,6 +629,7 @@ char *String_getReference(StringBase *s)
 		case MASK_ROPE:
 			return RopeString_flatten((RopeString*)s)->text;
 	}
+	assert(0);
 	return NULL;
 }
 
@@ -757,7 +758,7 @@ static kbool_t strconv(CTX ctx, knh_conv_t *iconvp, const char *text, size_t len
 	char buffer[4096], *ibuf = (char*)text;
 	size_t ilen = len, rsize = 0;//, ilen_prev = ilen;
 	knh_iconv_t cd = (knh_iconv_t)iconvp;
-	kbytes_t bbuf = {{(const char*)buffer}, 0};
+	kbytes_t bbuf = {0, {(const char*)buffer}};
 	while(ilen > 0) {
 		char *obuf = buffer;
 		size_t olen = sizeof(buffer);
@@ -895,7 +896,7 @@ static int strregex_regexec(CTX ctx, kregex_t *reg, const char *str, size_t nmat
 		p[e].rm_name.len = 0;
 		e++;
 	}
-	DBG_ASSERT(e < nmatch);
+	DBG_ASSERT(e <= nmatch);
 	p[e].rm_so = -1;
 	p[e].rm_eo = -1;
 	p[e].rm_name.ubuf = NULL;

@@ -442,7 +442,7 @@ void knh_System_initPath(CTX ctx)
 {
 	CWB_t cwbbuf, *cwb = CWB_open(ctx, &cwbbuf);
 	kDictMap *sysprops = ctx->share->props;
-	kbytes_t home = {{NULL}, 0}, user = {{NULL}, 0};
+	kbytes_t home = {0, {NULL}}, user = {0, {NULL}};
 
 	// current working directory
 	knh_buff_addospath(ctx, cwb->ba, cwb->pos, 0, STEXT("."));

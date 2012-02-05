@@ -123,7 +123,7 @@ static kbool_t tolowercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len
 {
 	size_t i, s = BA_size(tobuf);
 	knh_Bytes_write2(ctx, tobuf, text, len);
-	kbytes_t tt = {{tobuf->bu.text + s}, BA_size(tobuf) - s};
+	kbytes_t tt = {BA_size(tobuf) - s, {tobuf->bu.text + s}};
 	for(i = 0; i < tt.len; i++) {
 		int ch = tt.utext[i];
 		if('A' <= ch && ch <= 'Z') {
@@ -137,7 +137,7 @@ static kbool_t touppercase(CTX ctx, knh_conv_t *cv, const char *text, size_t len
 {
 	size_t i, s = BA_size(tobuf);
 	knh_Bytes_write2(ctx, tobuf, text, len);
-	kbytes_t tt = {{tobuf->bu.text + s}, BA_size(tobuf) - s};
+	kbytes_t tt = {BA_size(tobuf) - s, {tobuf->bu.text + s}};
 	for(i = 0; i < tt.len; i++) {
 		int ch = tt.utext[i];
 		if('a' <= ch && ch <= 'z') {

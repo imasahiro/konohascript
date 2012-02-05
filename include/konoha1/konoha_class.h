@@ -440,6 +440,7 @@ typedef struct kArray kArray;
 
 struct kArray {
 	kObjectHeader h;
+	size_t size;
 	union {
 		kunbox_t                 *nlist;
 		kint_t                   *ilist;
@@ -455,7 +456,6 @@ struct kArray {
 		struct kTerm          **terms;
 		struct kStmtExpr      **stmts;
 	};
-	size_t size;
 	const kdim_t *dim;
 	const knh_ArrayAPI_t *api;
 };

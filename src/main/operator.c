@@ -884,7 +884,7 @@ static KMETHOD String_lastIndexOf(CTX ctx, ksfp_t *sfp _RIX)
 	if(delim.len == 0) loc--;
 	for(; loc >= 0; loc--) {
 		if(base.utext[loc] == delim.utext[0]) {
-			kbytes_t sub = {{base.text + loc}, delim.len};
+			kbytes_t sub = {delim.len, {base.text + loc}};
 			if(knh_bytes_strcmp(sub, delim) == 0) break;
 		}
 	}
@@ -998,7 +998,7 @@ static KMETHOD String_search(CTX ctx, ksfp_t *sfp _RIX)
 		if(res == 0) {
 			loc = pmatch[0].rm_so;
 			if (loc != -1 && !String_isASCII(sfp[0].s)) {
-				kbytes_t base = {{str}, loc};
+				kbytes_t base = {loc, {str}};
 				loc = knh_bytes_mlen(base);
 			}
 		}
@@ -1035,7 +1035,7 @@ static KMETHOD String_match(CTX ctx, ksfp_t *sfp _RIX)
 			for(p = pmatch, i = 0; i < nmatch; p++, i++) {
 				if (p->rm_so == -1) break;
 				//DBG_P("[%d], rm_so=%d, rm_eo=%d", i, p->rm_so, p->rm_eo);
-				kbytes_t sub = {{str + (p->rm_so)}, ((p->rm_eo) - (p->rm_so))};
+				kbytes_t sub = {((p->rm_eo) - (p->rm_so)), {str + (p->rm_so)}};
 				knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, sub.text, sub.len, _SUB(s0)));
 			}
 			if(isGlobalOption) {
@@ -1113,7 +1113,7 @@ static KMETHOD String_split(CTX ctx, ksfp_t *sfp _RIX)
 				if (res == 0) {
 					size_t len = pmatch[0].rm_eo;
 					if (len > 0) {
-						kbytes_t sub = {{str},  pmatch[0].rm_so};
+						kbytes_t sub = {pmatch[0].rm_so, {str}};
 						knh_Array_add(ctx, a, new_String2(ctx, CLASS_String, sub.text, sub.len, _SUB(s0)));
 						str += len;
 						continue;
@@ -1143,7 +1143,7 @@ static KMETHOD String_extract(CTX ctx, ksfp_t *sfp _RIX)
 	KNH_SETv(ctx, sfp[2].o, m); WCTX(ctx)->esp = sfp+3; //FIXME
 	if (IS_NOTNULL(re) && S_size(re->pattern) > 0) {
 		size_t nmatch = re->spi->regnmatchsize(ctx, re->reg);  //
-		const char *str = s->str.text;
+		const char *str = S_totext(s);
 		kregmatch_t p[nmatch + 1];
 		regmatch_init(p, sizeof(p)/sizeof(kregmatch_t));
 		int res = re->spi->regexec(ctx, re->reg, str, nmatch, p, re->eflags);
@@ -3332,7 +3332,7 @@ void knh_DataMap_log(CTX ctx, kDictMap *conf, ktype_t type, const char *key)
 
 kbool_t knh_DataMap_check(CTX ctx, kDictMap *conf, ktype_t type, const char *key, const char *key2)
 {
-	kbytes_t t = {{key}, knh_strlen(key)};
+	kbytes_t t = {knh_strlen(key), {key}};
 	kObject *v = knh_DictMap_getNULL(ctx, conf, t);
 	if(v == NULL) {
 		if(key2 != NULL) {
@@ -3353,7 +3353,7 @@ kbool_t knh_DataMap_check(CTX ctx, kDictMap *conf, ktype_t type, const char *key
 
 kString *knh_DataMap_getString(CTX ctx, kDictMap *conf, const char *key, const char *key2, kString *def)
 {
-	kbytes_t t = {{key}, knh_strlen(key)};
+	kbytes_t t = {knh_strlen(key), {key}};
 	kString *v = (kString*)knh_DictMap_getNULL(ctx, conf, t);
 	if(v == NULL) {
 		if(key2 != NULL) {
@@ -3639,7 +3639,7 @@ static KMETHOD System_exec(CTX ctx, ksfp_t *sfp _RIX)
 		while(1) {
 			size_t size = fread(buf, 1, sizeof(buf), fp);
 			if(size > 0) {
-				kbytes_t t = {{buf}, size};
+				kbytes_t t = {size, {buf}};
 				knh_Bytes_write(ctx, cwb->ba, t);
 			}
 			else {

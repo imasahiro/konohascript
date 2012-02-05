@@ -97,12 +97,12 @@ static int SQLITE3_qnext(CTX ctx, kqcur_t *qcur, struct kResultSet *rs)
 					break;
 				}
 				case SQLITE_TEXT: {
-					kbytes_t t = {{(const char*)sqlite3_column_text(stmt,i)}, sqlite3_column_bytes(stmt, i)};
+					kbytes_t t = {sqlite3_column_bytes(stmt, i), {(const char*)sqlite3_column_text(stmt,i)}};
 					ResultSet_setText(ctx, rs, i, t);
 					break;
 				}
 				case SQLITE_BLOB: {
-					kbytes_t t = {{(const char*)sqlite3_column_blob(stmt,i)}, sqlite3_column_bytes(stmt, i)};
+					kbytes_t t = {sqlite3_column_bytes(stmt, i), {(const char*)sqlite3_column_blob(stmt,i)}};
 					ResultSet_setBlob(ctx, rs, i, t);
 					break;
 				}
