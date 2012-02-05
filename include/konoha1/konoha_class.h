@@ -188,6 +188,7 @@ struct kString {
 	kObjectHeader h;
 	kbytes_t str;
 	khashcode_t hashCode;
+	char tmp[sizeof(void*)*8 - sizeof(kObjectHeader) - sizeof(kbytes_t) - sizeof(khashcode_t)];
 };
 
 #define new_T(t)            new_String2(ctx, CLASS_String, t, knh_strlen(t), SPOL_TEXT|SPOL_ASCII|SPOL_POOLALWAYS)
