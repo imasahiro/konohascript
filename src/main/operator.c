@@ -844,6 +844,17 @@ static KMETHOD String_concat(CTX ctx, ksfp_t *sfp _RIX)
 }
 
 /* ------------------------------------------------------------------------ */
+//## @Const method String String.concat2(String value);
+
+static KMETHOD String_concat2(CTX ctx, ksfp_t *sfp _RIX)
+{
+	StringBase *s0 = (StringBase *) sfp[0].s;
+	StringBase *s1 = (StringBase *) sfp[1].s;
+	RETURN_((kString*) StringBase_concat(ctx, s0, s1));
+}
+
+
+/* ------------------------------------------------------------------------ */
 //## @Const method Int String.indexOf(String s);
 
 static KMETHOD String_indexOf(CTX ctx, ksfp_t *sfp _RIX)

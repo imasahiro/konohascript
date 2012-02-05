@@ -842,6 +842,7 @@ static void String_init(CTX ctx, kRawPtr *o)
 	String_setTextSgm(s, 1);
 }
 
+void StringBase_delete(CTX ctx, StringBase *base);
 static void String_free(CTX ctx, kRawPtr *o)
 {
 	kString *s = (kString*)o;
@@ -850,9 +851,7 @@ static void String_free(CTX ctx, kRawPtr *o)
 		knh_PtrMap_rmS(ctx, O_cTBL(o)->constPoolMapNULL, s);
 	}
 #endif
-	if(!String_isTextSgm(s)) {
-		KNH_FREE(ctx, s->str.ubuf, KNH_SIZE(S_size(s) + 1));
-	}
+	StringBase_delete(ctx, (StringBase*) s);
 }
 
 static int String_compareTo(kRawPtr *o, kRawPtr *o2)
@@ -896,8 +895,9 @@ static void String_wdata(CTX ctx, kRawPtr *o, void *pkr, const knh_PackSPI_t *pa
 	packspi->pack_string(ctx, pkr, S_totext(s), S_size(s));
 }
 
+void String_reftrace(CTX ctx, kRawPtr *o FTRARG);
 static const kclassdef_t StringDef = {
-	String_init, DEFAULT_initcopy, DEFAULT_reftrace, String_free,
+	String_init, DEFAULT_initcopy, String_reftrace, String_free,
 	DEFAULT_checkin, DEFAULT_checkout, String_compareTo, String_p,
 	String_getkey, String_hashCode, DEFAULT_0, DEFAULT_1,
 	DEFAULT_findTypeMapNULL, String_wdata, DEFAULT_2, DEFAULT_3,

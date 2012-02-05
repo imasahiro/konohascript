@@ -194,13 +194,111 @@ struct kString {
 #define new_S(T, L)         new_String2(ctx, CLASS_String, T, L, SPOL_ASCII|SPOL_POOLALWAYS)
 #define new_String_()
 
-#define S_tobytep(s)          (&(s)->str)
-#define S_tobytes(s)          ((s)->str)
-#define S_totext(s)           ((s)->str.text)
-#define S_size(s)             ((s)->str.len)
+//#define S_tobytep(s)          (&(s)->str)
+//#define S_tobytes(s)          ((s)->str)
+//#define S_totext(s)           ((s)->str.text)
+//#define S_size(s)             ((s)->str.len)
 #define S_equals(s, b)        knh_bytes_equals(S_tobytes(s), b)
 #define S_startsWith(s, b)    knh_bytes_startsWith_(S_tobytes(s), b)
 #define S_endsWith(s, b)      knh_bytes_endsWith_(S_tobytes(s), b)
+
+#define S_tobytep(s)          (&S_tobytes(s))
+#define S_tobytes(s)          (_S_tobytes(s))
+#define S_totext(s)           (String_getReference((StringBase*)s))
+#define S_size(s)             (S_len((StringBase*)s))
+
+#define SIZE_INLINE_TEXT (64 - (sizeof(StringBase)))
+/*
+ * Liner 001 // default
+ * Exter 011 // no-free
+ * Liner 010 // no-free
+ * Rope  100 // rope
+ */
+#define LEN_MASK_FLAG (3)
+#define MASK_FLAG     ((uint32_t)(1 << LEN_MASK_FLAG))
+#define MASK_ROPE     ((uint32_t)(1 << 2))
+#define MASK_LINER    ((uint32_t)(1 << 0))
+#define MASK_NOFREE   ((uint32_t)(1 << 1))
+#define MASK_INLINE   (MASK_NOFREE)
+#define MASK_EXTERNAL (MASK_LINER | MASK_NOFREE)
+
+typedef struct StringBase {
+	kObjectHeader h;
+	size_t length_and_flag;
+} StringBase;
+
+typedef struct LinerString {
+	StringBase base;
+	char *text;
+} LinerString;
+
+typedef struct ExternalString {
+	struct StringBase base;
+	char *text;
+} ExternalString;
+
+typedef struct RopeString {
+	struct StringBase base;
+	struct StringBase *left;
+	struct StringBase *right;
+} RopeString;
+
+typedef struct InlineString {
+	struct StringBase base;
+	char inline_text[SIZE_INLINE_TEXT];
+} InlineString;
+
+static inline size_t build_length(size_t len, uint32_t flag)
+{
+	return len << LEN_MASK_FLAG | flag;
+}
+
+static inline size_t string_get_length(size_t l)
+{
+	return (l >> LEN_MASK_FLAG);
+}
+
+static inline uint32_t string_get_flag(size_t l)
+{
+	return (MASK_FLAG-1) & l;
+}
+
+static inline size_t S_len(StringBase *s)
+{
+	return string_get_length(s->length_and_flag);
+}
+
+static inline uint32_t S_flag(StringBase *s)
+{
+	uint32_t flag = string_get_flag(s->length_and_flag);
+	assert(flag <= MASK_ROPE);
+	return flag;
+}
+
+static inline int StringBase_isRope(StringBase *s)
+{
+	return S_flag(s) == MASK_ROPE;
+}
+
+static inline int StringBase_isLiner(StringBase *s)
+{
+	return S_flag(s) == MASK_LINER;
+}
+
+char *String_getReference(StringBase *s);
+StringBase *StringBase_new(CTX ctx, const char *text, size_t len, int policy);
+
+static inline kbytes_t _S_tobytes(kString *str)
+{
+	kbytes_t b;
+	StringBase *s  = (StringBase *) str;
+	b.text = String_getReference(s);
+	b.len  = S_len(s);
+	return b;
+}
+
+StringBase *StringBase_concat(CTX ctx, StringBase *left, StringBase *right);
+int String_equal(CTX ctx, StringBase *self, StringBase *arg1);
 
 /* ------------------------------------------------------------------------ */
 //## class Bytes Object;

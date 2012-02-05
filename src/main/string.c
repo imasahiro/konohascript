@@ -128,33 +128,6 @@ int knh_bytes_parsefloat(kbytes_t t, kfloat_t *value)
 //	return index;
 //}
 
-//kindex_t knh_bytes_indexOf_new(kbytes_t *base, kbytes_t *sub)
-//{
-//	const char *const str0 = base->text;
-//	const char *const str1 = sub->text;
-//	kindex_t len  = sub->len;
-//	kindex_t loop = base->len - len;
-//	kindex_t index = -1;
-//	if (loop >= 0) {
-//		kindex_t i;
-//		const char *s0 = str0, *s1 = str1;
-//		const char *const s0end = s0 + loop;
-//		while(s0 <= s0end) {
-//			for (i = 0; i < len; i++) {
-//				if (s0[i] != s1[i]) {
-//					goto L_END;
-//				}
-//			}
-//			if (i == len) {
-//				return s0 - str0;
-//			}
-//			L_END:
-//			s0++;
-//		}
-//	}
-//	return index;
-//}
-
 int knh_bytes_strcmp(kbytes_t v1, kbytes_t v2)
 {
 	int len, res1, res;
@@ -402,18 +375,20 @@ static void knh_String_checkASCII(kString *o)
 
 #ifdef K_USING_STRINGPOOL
 
-#define CHECK_CONST(ctx, V, S, L) \
-	if(ct->constPoolMapNULL != NULL) {     \
-		V = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, S, L); \
-		if(V != NULL) {           \
-			return V;             \
-		}                         \
-	}                             \
+#define CHECK_CONST(ctx, V, S, L) do {\
+	if(ct->constPoolMapNULL != NULL) {\
+		V = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, S, L);\
+		if(V != NULL) {\
+			return V;\
+		}\
+	}\
+} while (0)
 
-#define SET_CONST(ctx, V) \
-	if(ct->constPoolMapNULL != NULL) {     \
-		knh_PtrMap_addS(ctx, ct->constPoolMapNULL, V); \
-	}                             \
+#define SET_CONST(ctx, V) do {\
+	if(ct->constPoolMapNULL != NULL) {\
+		knh_PtrMap_addS(ctx, ct->constPoolMapNULL, V);\
+	}\
+} while (0)
 
 #else
 
@@ -437,6 +412,285 @@ static kbool_t checkStringPooling(const char *text, size_t len)
 }
 
 
+//kString* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, int policy)
+//{
+//	const knh_ClassTBL_t *ct = ClassTBL(cid);
+//	int isPooling = 0;
+//#ifdef K_USING_STRINGPOOL
+//	if(!TFLAG_is(int, policy, SPOL_POOLNEVER) && ct->constPoolMapNULL != NULL) {
+//		kString *s = knh_PtrMap_getS(ctx, ct->constPoolMapNULL, text, len);
+//		if(s != NULL) return s;
+//		isPooling = 1;
+//	}
+//#endif
+//	kString *s = (kString*)new_hObject_(ctx, ct);
+//	if(TFLAG_is(int, policy, SPOL_TEXT)) {
+//		s->str.text = text;
+//		s->str.len = len;
+//		s->hashCode = 0;
+//		String_setTextSgm(s, 1);
+//	}
+//	else if(len + 1 < sizeof(void*) * 2) {
+//		s->str.ubuf = (kchar_t*)(&(s->hashCode));
+//		s->str.len = len;
+//		knh_memcpy(s->str.ubuf, text, len);
+//		s->str.ubuf[len] = '\0';
+//		String_setTextSgm(s, 1);
+//	}
+//	else {
+//		s->str.len = len;
+//		s->str.ubuf = (kchar_t*)KNH_MALLOC(ctx, KNH_SIZE(len+1));
+//		knh_memcpy(s->str.ubuf, text, len);
+//		s->str.ubuf[len] = '\0';
+//		s->hashCode = 0;
+//	}
+//	if(TFLAG_is(int, policy, SPOL_ASCII)) {
+//		String_setASCII(s, 1);
+//	}
+//	else if(TFLAG_is(int, policy, SPOL_UTF8)) {
+//		String_setASCII(s, 0);
+//	}
+//	else {
+//		knh_String_checkASCII(s);
+//	}
+//	if(isPooling) {
+//		if(!TFLAG_is(int, policy, SPOL_POOLALWAYS)) {
+//			if(!checkStringPooling(s->str.text, s->str.len)) {
+//				return s; // not pooling
+//			}
+//		}
+//		if(knh_PtrMap_size(ct->constPoolMapNULL) < K_USING_STRINGPOOL_MAXSIZ) {
+//			knh_PtrMap_addS(ctx, ct->constPoolMapNULL, s);
+//			String_setPooled(s, 1);
+//		}
+//	}
+//	return s;
+//}
+//
+//KNHAPI2(kString*) new_String(CTX ctx, const char *str)
+//{
+//	if(str == NULL) {
+//		return KNH_TNULL(String);
+//	}
+//	else if(str[0] == 0) {
+//		return TS_EMPTY;
+//	}
+//	else {
+//		return new_String2(ctx, CLASS_String, str, knh_strlen(str), 0);
+//	}
+//}
+
+/* RopeString */
+#define CHECK_MALLOCED_SIZE()
+#define CHECK_MALLOCED_INC_SIZE(n)
+#define CHECK_MALLOCED_DEC_SIZE(n)
+
+static inline void do_bzero(void *ptr, size_t size)
+{
+	memset(ptr, 0, size);
+}
+
+static inline void *do_malloc(size_t size)
+{
+	void *ptr = malloc(size);
+	CHECK_MALLOCED_INC_SIZE(size);
+	return ptr;
+}
+
+static inline void do_free(void *ptr, size_t size)
+{
+	CHECK_MALLOCED_DEC_SIZE(size);
+	free(ptr);
+}
+
+static StringBase *create_string(CTX ctx)
+{
+	return (StringBase *) new_hObject_(ctx, ClassTBL(CLASS_String));
+}
+
+static void delete_string(CTX ctx, StringBase *base)
+{
+}
+
+static StringBase *InlineString_new(CTX ctx, StringBase *base,
+		const char *text, size_t len)
+{
+	size_t i;
+	InlineString *s = (InlineString *) base;
+	s->base.length_and_flag = build_length(len, MASK_INLINE);
+	for (i = 0; i < len; ++i) {
+		s->inline_text[i] = text[i];
+	}
+	s->inline_text[len] = '\0';
+	String_setTextSgm((kString*)s, 1);
+	return base;
+}
+
+static StringBase *ExternalString_new(CTX ctx, StringBase *base,
+		const char *text, size_t len)
+{
+	ExternalString *s = (ExternalString *) base;
+	s->base.length_and_flag = build_length(len, MASK_EXTERNAL);
+	s->text = (char *) text;
+	String_setTextSgm((kString*)s, 1);
+	return base;
+}
+
+static StringBase *LinerString_new(CTX ctx, StringBase *base,
+		const char *text, size_t len)
+{
+	LinerString *s = (LinerString *) base;
+	s->base.length_and_flag = build_length(len, MASK_LINER);
+	s->text = (char *) do_malloc(len+1);
+	knh_memcpy(s->text, text, len);
+	s->text[len] = '\0';
+	return base;
+}
+
+static StringBase *RopeString_new(CTX ctx, StringBase *left,
+		StringBase *right, size_t len)
+{
+	RopeString *s = (RopeString *) create_string(ctx);
+	s->base.length_and_flag = build_length(len, MASK_ROPE);
+	s->left  = left;
+	s->right = right;
+	String_setTextSgm((kString*)s, 1);
+	return (StringBase *) s;
+}
+
+static LinerString *RopeString_toLinerString(RopeString *o, char *text, size_t len)
+{
+	LinerString *s = (LinerString *) o;
+	s->base.length_and_flag = build_length(len, MASK_LINER);
+	s->text = text;
+	return s;
+}
+
+StringBase *StringBase_new(CTX ctx, const char *text, size_t len, int policy)
+{
+	StringBase *s = (StringBase *) create_string(ctx);
+	if (len < SIZE_INLINE_TEXT)
+		return InlineString_new(ctx, s, text, len);
+	if(TFLAG_is(int, policy, SPOL_TEXT))
+		return ExternalString_new(ctx, s, text, len);
+	return LinerString_new(ctx, s, text, len);
+}
+
+void StringBase_delete(CTX ctx, StringBase *base)
+{
+	if (StringBase_isLiner(base)) {
+		do_free(((LinerString *)base)->text, S_len(base));
+	}
+	delete_string(ctx, base);
+}
+
+static void write_text(StringBase *base, char *dest, int size)
+{
+	RopeString *str;
+	size_t len;
+	while (1) {
+		switch (S_flag(base)) {
+			case MASK_LINER:
+			case MASK_EXTERNAL:
+				memcpy(dest, ((LinerString *) base)->text, size);
+				return;
+			case MASK_INLINE:
+				memcpy(dest, ((InlineString *) base)->inline_text, size);
+				return;
+			case MASK_ROPE:
+				str = (RopeString *) base;
+				len = S_len(str->left);
+				write_text(str->left, dest, len);
+				base = str->right;
+				dest += len;
+				break;
+		}
+	}
+}
+
+static LinerString *RopeString_flatten(RopeString *rope)
+{
+	size_t length = S_len((StringBase *) rope);
+	char *dest = (char *) do_malloc(length);
+	size_t len = S_len(rope->left);
+	write_text(rope->left,  dest, len);
+	write_text(rope->right, dest+len, length - len);
+	return RopeString_toLinerString(rope, dest, length);
+}
+
+char *String_getReference(StringBase *s)
+{
+	switch (S_flag(s)) {
+		case MASK_LINER:
+		case MASK_EXTERNAL:
+			return ((LinerString*)s)->text;
+		case MASK_INLINE:
+			return ((InlineString*)s)->inline_text;
+		case MASK_ROPE:
+			return RopeString_flatten((RopeString*)s)->text;
+	}
+	return NULL;
+}
+
+static kObject **StringBase_reftrace(CTX ctx, StringBase *s FTRARG)
+{
+	while (1) {
+		if (unlikely(!StringBase_isRope(s)))
+			break;
+		RopeString *rope = (RopeString *) s;
+		tail_ = StringBase_reftrace(ctx, rope->left FTRDATA);
+		KNH_ADDREF(ctx, rope->right);
+		s = rope->right;
+	}
+	KNH_SIZEREF(ctx);
+	return tail_;
+}
+
+void String_reftrace(CTX ctx, kRawPtr *o FTRARG)
+{
+	StringBase_reftrace(ctx, (StringBase *) o FTRDATA);
+}
+
+StringBase *StringBase_concat(CTX ctx, StringBase *left, StringBase *right)
+{
+	size_t llen, rlen, length;
+
+	llen = S_len(left);
+	if (llen == 0)
+		return right;
+
+	rlen = S_len(right);
+	if (rlen == 0)
+		return left;
+
+	length = llen + rlen;
+	if (length < SIZE_INLINE_TEXT) {
+		InlineString *ret = (InlineString *) create_string(ctx);
+		char *s0 = String_getReference(left);
+		char *s1 = String_getReference(right);
+		ret->base.length_and_flag = build_length(length, MASK_INLINE);
+		memcpy(ret->inline_text, s0, llen);
+		memcpy(ret->inline_text + llen, s1, rlen);
+		ret->inline_text[length] = '\0';
+		return (StringBase *) ret;
+	}
+	return RopeString_new(ctx, left, right, length);
+}
+
+int String_equal(CTX ctx, StringBase *self, StringBase *arg1)
+{
+	size_t len0 = S_len(self);
+	size_t len1 = S_len(arg1);
+	size_t len;
+	char *s0, *s1;
+	if (len0 != len1)
+		return 0;
+	len = (len0 < len1)? len0 : len1;
+	s0 = String_getReference(self);
+	s1 = String_getReference(arg1);
+	return strncmp(s0, s1, len) == 0;
+}
+
 kString* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, int policy)
 {
 	const knh_ClassTBL_t *ct = ClassTBL(cid);
@@ -448,27 +702,7 @@ kString* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, int po
 		isPooling = 1;
 	}
 #endif
-	kString *s = (kString*)new_hObject_(ctx, ct);
-	if(TFLAG_is(int, policy, SPOL_TEXT)) {
-		s->str.text = text;
-		s->str.len = len;
-		s->hashCode = 0;
-		String_setTextSgm(s, 1);
-	}
-	else if(len + 1 < sizeof(void*) * 2) {
-		s->str.ubuf = (kchar_t*)(&(s->hashCode));
-		s->str.len = len;
-		knh_memcpy(s->str.ubuf, text, len);
-		s->str.ubuf[len] = '\0';
-		String_setTextSgm(s, 1);
-	}
-	else {
-		s->str.len = len;
-		s->str.ubuf = (kchar_t*)KNH_MALLOC(ctx, KNH_SIZE(len+1));
-		knh_memcpy(s->str.ubuf, text, len);
-		s->str.ubuf[len] = '\0';
-		s->hashCode = 0;
-	}
+	kString *s = (kString *) StringBase_new(ctx, text, len, policy);
 	if(TFLAG_is(int, policy, SPOL_ASCII)) {
 		String_setASCII(s, 1);
 	}
@@ -480,7 +714,7 @@ kString* new_String2(CTX ctx, kclass_t cid, const char *text, size_t len, int po
 	}
 	if(isPooling) {
 		if(!TFLAG_is(int, policy, SPOL_POOLALWAYS)) {
-			if(!checkStringPooling(s->str.text, s->str.len)) {
+			if(!checkStringPooling(String_getReference((StringBase*)s), S_size(s))) {
 				return s; // not pooling
 			}
 		}
