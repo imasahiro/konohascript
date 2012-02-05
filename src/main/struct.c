@@ -2671,6 +2671,34 @@ static void Term_reftrace(CTX ctx, kRawPtr *o FTRARG)
 	KNH_SIZEREF(ctx);
 }
 
+static void knh_write_quote_(CTX ctx, kOutputStream *w, char ch, kString *s)
+{
+	kbytes_t t = S_tobytes(s);
+	int hasUTF8 = !(String_isASCII(s));
+	knh_write_quote(ctx, w, ch, t, hasUTF8);
+}
+
+static void knh_write_regex_(CTX ctx, kOutputStream *w, char ch, kString *s)
+{
+	kRegex *re = (kRegex *) s;
+	kbytes_t t = S_tobytes(re->pattern);
+	int hasUTF8 = !(String_isASCII(re->pattern));
+	knh_write_quote(ctx, w, ch, t, hasUTF8);
+}
+
+static void knh_write_utf8_(CTX ctx, kOutputStream *w, kString *s)
+{
+	int hasUTF8 = !(String_isASCII(s));
+	kbytes_t t = S_tobytes(s);
+	knh_write_utf8(ctx, w, t, hasUTF8);
+}
+
+static void knh_write_(CTX ctx, kOutputStream *w, kString *s)
+{
+	kbytes_t t = S_tobytes(s);
+	knh_write(ctx, w, t);
+}
+
 const char* TT__(kterm_t tt);
 
 static void Term_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
@@ -2700,31 +2728,29 @@ static void Term_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 		}
 	}
 	else {
-		kbytes_t t = S_tobytes(tk->text);
-		int hasUTF8 = !(String_isASCII(tk->text));
 		switch(tt) {
-		case TT_NUM: knh_write(ctx, w, t); break;
-		case TT_STR:  knh_write_quote(ctx, w, '"', t, hasUTF8); break;
-		case TT_TSTR: knh_write_quote(ctx, w, '\'', t, hasUTF8); break;
-		case TT_ESTR: knh_write_quote(ctx, w, '`', t, hasUTF8); break;
-		case TT_REGEX: knh_write_quote(ctx, w, '/', t, hasUTF8); break;
+		case TT_NUM:   knh_write_(ctx, w, tk->text); break;
+		case TT_STR:   knh_write_quote_(ctx, w, '"',  tk->text); break;
+		case TT_TSTR:  knh_write_quote_(ctx, w, '\'', tk->text); break;
+		case TT_ESTR:  knh_write_quote_(ctx, w, '`',  tk->text); break;
+		case TT_REGEX: knh_write_regex_(ctx, w, '/',  tk->text); break;
 //		case TT_DOC:
-		case TT_METAN: knh_putc(ctx, w, '@'); knh_write(ctx, w, t); break;
-		case TT_PROPN: knh_putc(ctx, w, '$'); knh_write(ctx, w, t); break;
+		case TT_METAN: knh_putc(ctx, w, '@'); knh_write_(ctx, w, tk->text); break;
+		case TT_PROPN: knh_putc(ctx, w, '$'); knh_write_(ctx, w, tk->text); break;
 		case TT_URN: case TT_TLINK:
-			knh_write_utf8(ctx, w, t, hasUTF8); break;
+			knh_write_utf8_(ctx, w, tk->text); break;
 		case TT_NAME: case TT_UNAME:
 			if(Term_isDOT(tk)) knh_putc(ctx, w, '.');
 			if(Term_isGetter(tk)) knh_write(ctx, w, STEXT("get_"));
 			else if(Term_isSetter(tk)) knh_write(ctx, w, STEXT("set_"));
 			else if(Term_isISBOOL(tk)) knh_write(ctx, w, STEXT("is_"));
-			knh_write(ctx, w, t); //break;
+			knh_write_(ctx, w, tk->text); //break;
 			if(Term_isExceptionType(tk)) {
 				knh_write(ctx, w, STEXT("!!"));
 			}
 			break;
 		case TT_FUNCNAME: case TT_UFUNCNAME:
-			knh_write(ctx, w, t); break;
+			knh_write_(ctx, w, tk->text); break;
 		case TT_PTYPE: {
 			kArray *a = tk->list;
 			size_t i;
@@ -2766,7 +2792,7 @@ static void Term_p(CTX ctx, kOutputStream *w, kRawPtr *o, int level)
 				break;
 			}
 		case TT_ERR:
-			knh_write(ctx, w, t); break;
+			knh_write_(ctx, w, tk->text); break;
 		default:
 			fprintf(stderr, "DEFINE %s in Term_stmt", TT__(tt));
 		}
