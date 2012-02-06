@@ -1385,7 +1385,7 @@ static void Iterator_init(CTX ctx, kRawPtr *o)
 	itr->b = b;
 #endif
 	itr->fnext_1  =  Fitrnext_single;
-	KNH_INITv(b->source, KNH_NULL);
+	KNH_INITv(b->source, KNH_NULVAL(O_p1(o)));
 	b->mtdNULL  =  NULL;
 	b->m.nptr   =  NULL;
 	b->m.index  = 0;
