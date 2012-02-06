@@ -5,26 +5,68 @@ import java.util.*;
 import konoha.*;
 import org.objectweb.asm.*;
 
-public class Compiler extends ClassLoader implements Opcodes {
+public class Compiler implements Opcodes {
 	
 	private final HashMap<String, KClass> classList = new HashMap<String, KClass>();
-	private final ArrayList<String> initList = new ArrayList<String>();
-	private KMethod mainMethod = null;
+	private ArrayList<String> initList;
+	private KMethod mainMethod;
 	
-	public Compiler() {
-		// add Script class
-		KClass c = new KClass("Script", "konoha/K_Object");
-		classList.put("Script", c);
-		// add Script.script0 field
-		int acc = ACC_STATIC + ACC_PUBLIC;
-		c.cw.visitField(acc, "script0", "LScript;", null/*generics*/, null/*value*/);
+	{
+		
+		// create Script class
+		KClass script = new KClass("Script", "konoha/K_Object");
+		classList.put("Script", script);
+		script.createField(ACC_STATIC + ACC_PUBLIC, "script0", Type.getType("LScript;"));
+
+	}
+	
+	public void initScript() {
+		initList = new ArrayList<String>();
+		mainMethod = null;
+	}
+	
+	public static String typeToStr(Type type) {
+		if(type == Type.INT_TYPE) {
+			return "int";
+		} else if(type == Type.DOUBLE_TYPE) {
+			return "float";
+		} else {
+			return "void";
+		}
+	}
+	
+	public void dumpScriptDefs(PrintWriter out) {
+		KClass script = classList.get("Script");
+		if(script != null) {
+			for(KField field : script.fields) {
+				if(field.name.equals("script0")) continue;
+				out.printf("%s %s;\n", typeToStr(field.type), field.name);
+			}
+			for(KMethod method : script.methods) {
+				if(!method.name.equals("main") && !method.name.startsWith("_init")) {
+					Type t = Type.getMethodType(method.desc);
+					Type ret = t.getReturnType();
+					out.write(typeToStr(ret) + " " + method.name + "(");
+					int i = 0;
+					for(Type type : t.getArgumentTypes()) {
+						if(i != 0) out.write(", ");
+						out.write(typeToStr(type) + " p" + i);
+						i++;
+					}
+					out.write(");\n");
+				}
+			}
+		}
 	}
 	
 	public KClass createClass(String name, String superClass) {
-		assert !classList.containsKey(name);
 		KClass c = new KClass(name, superClass);
 		classList.put(name, c);
 		return c;
+	}
+	
+	public boolean isLibClass(String name) {
+		return !classList.containsKey(name);
 	}
 	
 	private int getFieldOffset(KClass c) {
@@ -40,22 +82,21 @@ public class Compiler extends ClassLoader implements Opcodes {
 		return classList.get(name);
 	}
 	
-	public KMethod getMethod(String className, String methodName, int argc) {
-		KClass c = classList.get(className);
-		return c.getMethod(methodName, argc);
+	public KMethod getMethod(String cName, String mName, int argc) {
+		KClass c = classList.get(cName);
+		return c.getMethod(mName, argc);
 	}
 	
-	public KField getField(String className, Type type, int id) {
-		KClass c = classList.get(className);
-		if(className.equals("Script")) {
+	public KField getField(String cName, Type type, int id) {
+		KClass c = classList.get(cName);
+		if(cName.equals("Script")) {
+			id++;
 			while(c.fields.size() <= id) c.fields.add(null);
 			KField f = c.fields.get(id);
 			if(f == null) {
 				String name = "field_" + id;
-				f = new KField(name, type);
+				f = new KField(ACC_PUBLIC, name, type);
 				c.fields.set(id, f);
-				int access = ACC_PUBLIC;
-				c.cw.visitField(access, name, type.getDescriptor(), null/*generics*/, null/*value*/);
 			}
 			return f;
 		}
@@ -74,10 +115,10 @@ public class Compiler extends ClassLoader implements Opcodes {
 		}
 	}
 	
-	public void end() {
+	public void genJavaMainMethod(ClassVisitor cw) {
 		// create main method
 		int acc = ACC_PUBLIC + ACC_STATIC;
-		MethodVisitor mv = classList.get("Script").cw.visitMethod(acc, "main", "([Ljava/lang/String;)V", null, null);
+		MethodVisitor mv = cw.visitMethod(acc, "main", "([Ljava/lang/String;)V", null, null);
 		int n = 1;
 		// create Script Object
 		mv.visitTypeInsn(NEW, "Script");
@@ -93,11 +134,11 @@ public class Compiler extends ClassLoader implements Opcodes {
 		}
 		// call main method
 		if(mainMethod != null) {
-			if(mainMethod.getArgc() == 1) {
+			if(mainMethod.argCount == 1) {
 				mv.visitVarInsn(ALOAD, 0);
 				mv.visitMethodInsn(INVOKESTATIC, "compiler/Compiler", "createArgs", "([Ljava/lang/String;)Lkonoha/K_Array;");//TODO
 			}
-			mv.visitMethodInsn(INVOKESTATIC, "Script", "main", mainMethod.methodType.getDescriptor());
+			mv.visitMethodInsn(INVOKESTATIC, "Script", "main", mainMethod.desc);
 		} else {
 			System.err.println("(Warning) main method not found!");
 		}
@@ -115,49 +156,66 @@ public class Compiler extends ClassLoader implements Opcodes {
 		return a;
 	}
 	
-	private void defineClass(KClass c, HashMap<String, Class<?>> map) {
-		if(!c.superName.equals("konoha/K_Object")) {
-			defineClass(classList.get(c.superName), map);
-		}
-		if(!map.containsKey(c.name)) {
-			byte[] code = c.cw.toByteArray();
-			Class<?> cl = defineClass(c.name, code, 0, code.length);
-			map.put(c.name, cl);
-		}
-	}
-	
 	public void addTopLevelMethod(String name) {
 		initList.add(name);
 	}
 	
 	public void setMainMethod(KMethod mtd) {
-		Type[] argTypes = mtd.methodType.getArgumentTypes();
+		Type[] argTypes = mtd.getType().getArgumentTypes();
 		if(argTypes.length == 1 && argTypes[0].equals(Type.getType(K_Array.class))) {
 			mainMethod = mtd;
 		} else if(argTypes.length == 0) {
 			mainMethod = mtd;
 		} else {
-			System.err.println("main method arguments error: " + mtd.methodType);
+			System.err.println("main method arguments error: " + mtd.desc);
 		}
 	}
 	
-	public java.lang.reflect.Method getMainMethod() throws NoSuchMethodException {
-		HashMap<String, Class<?>> map = new HashMap<String, Class<?>>();
-		for(KClass k : classList.values()) {
-			defineClass(k, map);
+	public byte[] genBytecode(String name) {
+		KClass klass = classList.get(name);
+		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+		klass.accept(cw);
+		if(name.equals("Script")) {
+			genJavaMainMethod(cw);
 		}
-		return map.get("Script").getMethod("main", String[].class);
+		return cw.toByteArray();
 	}
-
+	
+	private class KLoader extends ClassLoader {
+		private final HashSet<String> set = new HashSet<String>();
+		public void define(KClass c) {
+			KClass superClass = classList.get(c.superName);
+			if(superClass != null) {
+				define(superClass);
+			}
+			if(!set.contains(c.name)) {
+				byte[] code = genBytecode(c.name);
+				defineClass(c.name, code, 0, code.length);
+				set.add(c.name);
+			}
+		}
+	}
+	
+	public java.lang.reflect.Method getMainMethod() {
+		KLoader loader = new KLoader();
+		for(KClass k : classList.values()) {
+			loader.define(k);
+		}
+		try {
+			return loader.loadClass("Script").getMethod("main", String[].class);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public void writeClassFile() throws IOException {
 		for(String name : classList.keySet()) {
-			ClassWriter cw = classList.get(name).cw;
-			byte[] code = cw.toByteArray();
 			String file = name + ".class";
 			FileOutputStream fos = null;
 			try {
 				fos = new FileOutputStream(file);
-				fos.write(code);
+				fos.write(genBytecode(name));
 			} finally {
 				if(fos != null) fos.close();
 			}

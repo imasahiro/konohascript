@@ -215,9 +215,15 @@ DEFAPI(void) constMPIComm(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 	}
 }
 
+static knh_IntData_t MPIDataConstInt[] = {
+	{"CHAR", (kint_t)MPI_CHAR},
+	{"LONG", (kint_t)MPI_LONG},
+	{"DOUBLE", (kint_t)MPI_DOUBLE}
+};
+
 DEFAPI(void) constMPIData(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 {
-	;
+	kapi->loadClassIntConst(ctx, cid, MPIDataConstInt);
 }
 
 DEFAPI(void) constMPIRequest(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)

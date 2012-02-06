@@ -18,7 +18,7 @@ public abstract class BinaryInst extends Inst {
 		// gen
 		gen.loadLocal(p1);
 		gen.loadLocal(p2);
-		gen.mv.visitInsn(type.getOpcode(getOpcode()));
+		gen.visitInsn(type.getOpcode(getOpcode()));
 		gen.storeLocal(res, type);
 	}
 	
