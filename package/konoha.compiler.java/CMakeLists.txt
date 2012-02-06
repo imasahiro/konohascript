@@ -4,19 +4,19 @@ set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 #add_subdirectory(java.awt)
 #add_subdirectory(java.awt.event)
 
+find_package(Java)
+find_program(ANT_BIN NAMES ant DOC "ant")
+if(NOT ANT_BIN)
+  message(STATUS "'compiler.java': Ant is not found.")
+endif(NOT ANT_BIN)
+
+if(ANT_BIN)
 project(compiler.java)
 set(PACKAGE_SCRIPT_CODE java.k)
-
-find_package(Java REQUIRED)
 set(PACKAGE_NAME ${PROJECT_NAME})
 set(PACKAGE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 set(PACKAGE_STRING ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
 set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
-
-find_program(ANT_BIN NAMES ant DOC "ant")
-if(NOT ANT_BIN)
-    message(FATAL_ERROR "Error. ant is not found")
-endif(NOT ANT_BIN)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build.xml.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/build.xml)
@@ -35,3 +35,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/jkonoha DESTINATION bin
         OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
         WORLD_READ WORLD_EXECUTE)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+endif(ANT_BIN)
