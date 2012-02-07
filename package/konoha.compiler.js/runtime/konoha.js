@@ -11,6 +11,14 @@ var konoha = function() {
         }
     }
 }
+
+var document = function() {
+	this._body = "<html><head></head><body></body></html>";
+	this.getElementsByTagName = function(tagname) {
+		return null;
+	};
+}
+
 konoha = new konoha();
 konoha.Object = function(rawptr) {
     this.rawptr = rawptr;

@@ -342,7 +342,7 @@ LABEL = "label";
         }
         bbs[i].insts[|bbs[i].insts|-1].codegen(asm);
         if (bbs[i].insts[|bbs[i].insts|-1].class != K_RET) {
-          asm.addSource("if (konoha.terminate) { return; }");
+          //asm.addSource("if (konoha.terminate) { return; }");
           asm.addSource("break;");
         }
         if (needSwitch) {
@@ -632,8 +632,9 @@ LABEL = "label";
     res += "}" + EOL;
     res += EOL;
     res += "onmessage = function " + TOP + " {" + EOL;
-    res += indent + "konoha.terminate = false;" + EOL;
-    res += indent + "var data = event.data;" + EOL;
+    //res += indent + "konoha.terminate = false;" + EOL;
+    res += indent + "var json = JSON.parse(event.data);" + EOL;
+	res += indent + "if (json.type == 'start') {" + EOL;
     //res += indent + "if (typeof options.failure !== \"function\") {" + EOL;
     //res += indent + indent + "options.failure = false;" + EOL;
     //res += indent + "}" + EOL;
@@ -646,7 +647,12 @@ LABEL = "label";
         res += "script";
         res += ");" + EOL;
     }
-    res += indent + "postMessage(konoha.OUT);" + EOL;
+    //res += indent + indent + "throw JSON.stringify({doc: document});" + EOL;
+    res += indent + "postMessage(JSON.stringify({" + EOL;
+    res += indent + indent + "'out': konoha.OUT," + EOL;
+    res += indent + indent + "'err': konoha.ERR," + EOL;
+    res += indent + indent + "'document': document" + EOL;
+    res += indent + "}));" + EOL;
     //res += indent + "if (konoha.terminate && options.failure) {" + EOL;
     //res += indent + indent + "options.failure();" + EOL;
     //res += indent + "}" + EOL;
