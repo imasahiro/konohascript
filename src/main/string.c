@@ -592,10 +592,10 @@ static void write_text(StringBase *base, char *dest, int size)
 		switch (S_flag(base)) {
 			case MASK_LINER:
 			case MASK_EXTERNAL:
-				memcpy(dest, ((LinerString *) base)->text, size);
+				memcpy(dest, ((LinerString *) base)->text, S_len(base));
 				return;
 			case MASK_INLINE:
-				memcpy(dest, ((InlineString *) base)->inline_text, size);
+				memcpy(dest, ((InlineString *) base)->inline_text, S_len(base));
 				return;
 			case MASK_ROPE:
 				str = (RopeString *) base;
