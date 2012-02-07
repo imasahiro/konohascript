@@ -249,7 +249,7 @@ DEF_BM( 64);DEF_BM(128);DEF_BM(256);
 #define BITMAP_L2_SIZE(N) (CEIL(((float)SEGMENT_SIZE)/KlassBlockSize(N)/BITS/BITS/BITS))
 
 static const size_t SegmentBitMapCount[] = {
-	0,0,0,0,
+	0,0,0,0,0,
 	BITMAP_L0_SIZE(5 ),
 	BITMAP_L0_SIZE(6 ),
 	BITMAP_L0_SIZE(7 ),
