@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
-if(USE_COMPILER_PKG)
 add_subdirectory(js.dom)
 add_subdirectory(js.jquery)
 project(compiler.js)
@@ -27,6 +26,8 @@ add_test(NAME "transpile_aobench_canvas.k"    COMMAND ${js} ${opt} "${DIR}/aoben
 add_test(NAME "jslint_aobench_canvas.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/aobench_canvas.js")
 add_test(NAME "transpile_jquery.k"    COMMAND ${js} ${opt} "${DIR}/jquery.k" "${DIR}/jquery.js")
 add_test(NAME "jslint_jquery.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/jquery.js")
+add_test(NAME "transpile_memory.k"    COMMAND ${js} ${opt} "${DIR}/memory.k" "${DIR}/memory.js")
+add_test(NAME "jslint_memory.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/memory.js")
 
 
 endif(LIB_V8_DIR)
@@ -40,5 +41,3 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/konoha2js DESTINATION bin
         PERMISSIONS 
         OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
         WORLD_READ WORLD_EXECUTE)
-
-endif(USE_COMPILER_PKG)

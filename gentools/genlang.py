@@ -303,7 +303,7 @@ double  Float
 boolean Boolean
 string  String
 def     function
-ArrayList Array
+#ArrayList Array
 Integer Int
 
 TRUE    true

@@ -4,7 +4,7 @@ import java.util.*;
 
 public class K_Array extends K_Object {
 	
-	private ArrayList<K_Object> data = new ArrayList<K_Object>();
+	private final ArrayList<Object> data = new ArrayList<Object>();
 	
 	public K_Array _new(int n) {
 		return newArray(n);
@@ -17,28 +17,28 @@ public class K_Array extends K_Object {
 		return this;
 	}
 	
-	public K_Array newList(K_Object[] obj) {
+	public K_Array newList(Object[] obj) {
 		data.addAll(Arrays.asList(obj));
 		return this;
 	}
 	
-	public K_Object get(int i) {
+	public Object get(int i) {
 		return data.get(i);
 	}
 	
-	public void set(int i, K_Object n) {
+	public void set(int i, Object n) {
 		data.set(i, n);
 	}
 	
-	public void add1(K_Object a) {
+	public void add1(Object a) {
 		data.add(a);
 	}
 	
-	public void add(K_Object[] a) {
+	public void add(Object[] a) {
 		data.addAll(Arrays.asList(a));
 	}
 	
-	public void send(K_Object[] a) {
+	public void send(Object[] a) {
 		data.addAll(Arrays.asList(a));
 	}
 	
@@ -70,7 +70,7 @@ public class K_Array extends K_Object {
 				return index < data.size();
 			}
 			
-			public K_Object getNext() {
+			public Object getNext() {
 				return data.get(index++);
 			}
 		};

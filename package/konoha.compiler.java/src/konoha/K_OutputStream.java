@@ -5,13 +5,13 @@ import java.io.*;
 public class K_OutputStream extends K_Object {
 	
 	public StringBuilder cwb = new StringBuilder();
-	public PrintStream out = System.out;
+	public PrintStream out;
 	
 	public static K_OutputStream getCwb() {
 		return new K_OutputStream();
 	}
 	
-	public K_OutputStream _new(K_Path name, String nanika, K_Map nanikaMap) {
+	public K_OutputStream _new(K_Path name, String mode, K_Map map) {
 		try {
 			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(name.toString())));
 		} catch (FileNotFoundException e) {
@@ -20,8 +20,28 @@ public class K_OutputStream extends K_Object {
 		return this;
 	}
 	
+	public void print(Object o) {
+		out.print(o);
+	}
+
 	public void println(Object o) {
 		out.println(o);
+	}
+
+	public void putByte(int n) {
+		out.write(n);
+	}
+	
+	public void write(K_Bytes bytes, int offset, int length) {
+		out.write(bytes.data, offset, length);
+	}
+	
+	public void flush() {
+		out.flush();
+	}
+	
+	public void close() {
+		out.close();
 	}
 	
 	public void send(String s) {
@@ -43,22 +63,6 @@ public class K_OutputStream extends K_Object {
 	
 	public void sendBoolean(boolean n) {
 		cwb.append(n);
-	}
-	
-	public void putByte(int n) {
-		out.write(n);
-	}
-	
-	public void write(K_Bytes bytes, int offset, int length) {
-		out.write(bytes.data, offset, length);
-	}
-	
-	public void flush() {
-		out.flush();
-	}
-	
-	public void close() {
-		out.close();
 	}
 	
 	public String toStr() {

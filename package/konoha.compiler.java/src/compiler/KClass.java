@@ -7,7 +7,7 @@ public class KClass implements Opcodes {
 	
 	public final String name;
 	public final String superName;
-	public final ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+	public final String[] interfaceNames;
 	public final ArrayList<KField> fields = new ArrayList<KField>();
 	public final ArrayList<KMethod> methods = new ArrayList<KMethod>();
 	
@@ -21,22 +21,37 @@ public class KClass implements Opcodes {
 					superName = "konoha/K_Object";
 				}
 			} catch(ClassNotFoundException e) {}
-
 		}
 		this.name = name;
 		this.superName = superName;
-		cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, name, null/*generics*/, superName, interfaceNames);
+		this.interfaceNames = interfaceNames;
+	}
+	
+	public void accept(ClassVisitor cv) {
+		cv.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, name, null/*generics*/, superName, interfaceNames);
 		// constructor
 		int acc = Opcodes.ACC_PUBLIC;
-		MethodVisitor mv = cw.visitMethod(acc, "<init>", "()V", null/*generics*/, null/*throws*/);
+		MethodVisitor mv = cv.visitMethod(acc, "<init>", "()V", null/*generics*/, null/*throws*/);
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
 		mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superName, "<init>", "()V");
 		mv.visitInsn(Opcodes.RETURN);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
+		for(KField field : fields) {
+			field.accept(cv);
+		}
+		for(KMethod mtd : methods) {
+			mtd.accept(cv);
+		}
 	}
 	
-	public KMethod createMethod(Compiler com, String name, String thisObj, Type ret, Type[] argTypes, String[] argNames) {
+	public KMethod createMethod(Compiler com, String name, String thisObj, Type ret, Type[] argTypes, String[] argNames) {		
+		for(int i=0; i<methods.size(); i++) {
+			if(methods.get(i).name.equals(name)) {
+				methods.remove(i);
+				i--;
+			}
+		}
 		int acc = ACC_PUBLIC;
 		if(thisObj == null) {
 			acc |= ACC_STATIC;
@@ -47,14 +62,17 @@ public class KClass implements Opcodes {
 		return m;
 	}
 	
-	public void createField(Compiler com, String name, Type type) {
-		fields.add(new KField(name, type));
-		cw.visitField(Opcodes.ACC_PUBLIC, name, type.getDescriptor(), null/*generics*/, null/*value*/);
+	public void createField(int acc, String name, Type type) {
+		fields.add(new KField(acc, name, type));
+	}
+	
+	public void createField(String name, Type type) {
+		createField(Opcodes.ACC_PUBLIC, name, type);
 	}
 	
 	public KMethod getMethod(String name, int args) {
 		for(KMethod mtd : methods) {
-			if(mtd.methodName.equals(name) && mtd.getArgc() == args) {
+			if(mtd.getName().equals(name) && mtd.argCount == args) {
 				return mtd;
 			}
 		}

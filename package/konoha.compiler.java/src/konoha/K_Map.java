@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class K_Map extends K_Object {
 	
-	public HashMap<String, K_Object> map = new HashMap<String, K_Object>();
+	public HashMap<String, Object> map = new HashMap<String, Object>();
 	
 	public K_Map _new(int n) {
 		return this;
@@ -14,11 +14,11 @@ public class K_Map extends K_Object {
 		return this;
 	}
 	
-	public void set(String key, K_Object value) {
+	public void set(String key, Object value) {
 		map.put(key, value);
 	}
 	
-	public K_Object get(String key) {
+	public Object get(String key) {
 		return map.get(key);
 	}
 	

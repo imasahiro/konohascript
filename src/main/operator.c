@@ -951,7 +951,7 @@ static size_t knh_regex_matched(kregmatch_t* r, size_t maxmatch)
 #define _CHARSIZE(len) (len==1 ? _ASCII : _UTF8)
 
 
-static kArray *kStringoCharArray(CTX ctx, kString *bs, int istrim)
+static kArray *kString2CharArray(CTX ctx, kString *bs, int istrim)
 {
 	kbytes_t base = S_tobytes(bs);
 	size_t i, n = base.len;
@@ -1112,11 +1112,11 @@ static KMETHOD String_split(CTX ctx, ksfp_t *sfp _RIX)
 				break;
 			}
 		} else { // for 0-length patterh
-			a = kStringoCharArray(ctx, new_String(ctx, str), 0);
+			a = kString2CharArray(ctx, new_String(ctx, str), 0);
 		}
 	}
 	else {
-		a = kStringoCharArray(ctx, s0, 0);
+		a = kString2CharArray(ctx, s0, 0);
 	}
 	RETURN_(a);
 }
@@ -3039,6 +3039,9 @@ static KMETHOD InputStream_new(CTX ctx, ksfp_t *sfp _RIX)
 	kio_t *io2 = pth->dpi->io2openNULL(ctx, pth, mode, knh_toDictMap(ctx, sfp[3].m, 0/*isCreation*/));
 	if(io2 != NULL) {
 		in->io2 = io2;
+	}
+	else {
+		kObjectoNULL(ctx, in);
 	}
 	RETURN_(in);
 }
