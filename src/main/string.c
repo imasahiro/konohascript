@@ -503,14 +503,23 @@ static inline void do_free(void *ptr, size_t size)
 	free(ptr);
 }
 
-static StringBase *create_string(CTX ctx)
+static inline uint32_t S_flag(StringBase *s)
 {
-	return (StringBase *) new_hObject_(ctx, ClassTBL(CLASS_String));
+	uint32_t flag = string_get_flag(s->length_and_flag);
+	assert(flag <= MASK_ROPE);
+	return flag;
 }
 
-static void delete_string(CTX ctx, StringBase *base)
+static inline int StringBase_isRope(StringBase *s)
 {
+	return S_flag(s) == MASK_ROPE;
 }
+
+static inline int StringBase_isLiner(StringBase *s)
+{
+	return S_flag(s) == MASK_LINER;
+}
+
 
 static StringBase *InlineString_new(CTX ctx, StringBase *base,
 		const char *text, size_t len)
@@ -550,7 +559,7 @@ static StringBase *LinerString_new(CTX ctx, StringBase *base,
 static StringBase *RopeString_new(CTX ctx, StringBase *left,
 		StringBase *right, size_t len)
 {
-	RopeString *s = (RopeString *) create_string(ctx);
+	RopeString *s = (RopeString *) new_hObject_(ctx, ClassTBL(CLASS_String));
 	s->base.length_and_flag = build_length(len, MASK_ROPE);
 	s->left  = left;
 	s->right = right;
@@ -568,7 +577,7 @@ static LinerString *RopeString_toLinerString(RopeString *o, char *text, size_t l
 
 StringBase *StringBase_new(CTX ctx, const char *text, size_t len, int policy)
 {
-	StringBase *s = (StringBase *) create_string(ctx);
+	StringBase *s = (StringBase *) new_hObject_(ctx, ClassTBL(CLASS_String));
 	if (len < SIZE_INLINE_TEXT)
 		return InlineString_new(ctx, s, text, len);
 	if(TFLAG_is(int, policy, SPOL_TEXT))
@@ -581,7 +590,6 @@ void StringBase_delete(CTX ctx, StringBase *base)
 	if (StringBase_isLiner(base)) {
 		do_free(((LinerString *)base)->text, S_len(base));
 	}
-	delete_string(ctx, base);
 }
 
 static void write_text(StringBase *base, char *dest, int size)
@@ -636,22 +644,23 @@ char *String_getReference(StringBase *s)
 static kObject **StringBase_reftrace(CTX ctx, StringBase *s FTRARG)
 {
 	while (1) {
-		if (unlikely(!StringBase_isRope(s)))
+		if (likely(!StringBase_isRope(s)))
 			break;
 		RopeString *rope = (RopeString *) s;
 		tail_ = StringBase_reftrace(ctx, rope->left FTRDATA);
 		KNH_ADDREF(ctx, rope->right);
 		s = rope->right;
 	}
-	KNH_SIZEREF(ctx);
 	return tail_;
 }
 
 void String_reftrace(CTX ctx, kRawPtr *o FTRARG)
 {
-	StringBase_reftrace(ctx, (StringBase *) o FTRDATA);
+	tail_ = StringBase_reftrace(ctx, (StringBase *) o FTRDATA);
+	KNH_SIZEREF(ctx);
 }
 
+/* ------------------------------------------------------------------------ */
 StringBase *StringBase_concat(CTX ctx, StringBase *left, StringBase *right)
 {
 	size_t llen, rlen, length;
@@ -666,7 +675,7 @@ StringBase *StringBase_concat(CTX ctx, StringBase *left, StringBase *right)
 
 	length = llen + rlen;
 	if (length < SIZE_INLINE_TEXT) {
-		InlineString *ret = (InlineString *) create_string(ctx);
+		InlineString *ret = (InlineString *) new_hObject_(ctx, ClassTBL(CLASS_String));
 		char *s0 = String_getReference(left);
 		char *s1 = String_getReference(right);
 		ret->base.length_and_flag = build_length(length, MASK_INLINE);

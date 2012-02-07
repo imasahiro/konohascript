@@ -842,7 +842,6 @@ static void String_init(CTX ctx, kRawPtr *o)
 	String_setTextSgm(s, 1);
 }
 
-void StringBase_delete(CTX ctx, StringBase *base);
 static void String_free(CTX ctx, kRawPtr *o)
 {
 	kString *s = (kString*)o;

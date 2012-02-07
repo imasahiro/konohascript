@@ -269,25 +269,7 @@ static inline size_t S_len(StringBase *s)
 	return string_get_length(s->length_and_flag);
 }
 
-static inline uint32_t S_flag(StringBase *s)
-{
-	uint32_t flag = string_get_flag(s->length_and_flag);
-	assert(flag <= MASK_ROPE);
-	return flag;
-}
-
-static inline int StringBase_isRope(StringBase *s)
-{
-	return S_flag(s) == MASK_ROPE;
-}
-
-static inline int StringBase_isLiner(StringBase *s)
-{
-	return S_flag(s) == MASK_LINER;
-}
-
 char *String_getReference(StringBase *s);
-StringBase *StringBase_new(CTX ctx, const char *text, size_t len, int policy);
 
 static inline kbytes_t _S_tobytes(kString *str)
 {
@@ -297,9 +279,6 @@ static inline kbytes_t _S_tobytes(kString *str)
 	b.len  = S_len(s);
 	return b;
 }
-
-StringBase *StringBase_concat(CTX ctx, StringBase *left, StringBase *right);
-int String_equal(CTX ctx, StringBase *self, StringBase *arg1);
 
 /* ------------------------------------------------------------------------ */
 //## class Bytes Object;
