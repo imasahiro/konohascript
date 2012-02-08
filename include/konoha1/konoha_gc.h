@@ -89,6 +89,7 @@ void *TRACE_realloc(CTX ctx, void *p, size_t os, size_t ns, size_t wsize K_TRACE
 kbool_t knh_isObject(CTX ctx, kObject *o);
 void kmemshare_init(CTX ctx);
 void kmemshare_free(CTX ctx);
+void kmemshare_gc_destroy(CTX ctx);
 void kmemlocal_init(CTX ctx);
 void kmemlocal_free(CTX ctx);
 void *knh_xmalloc(CTX ctx, size_t size);

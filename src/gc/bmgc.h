@@ -249,7 +249,7 @@ DEF_BM( 64);DEF_BM(128);DEF_BM(256);
 #define BITMAP_L2_SIZE(N) (CEIL(((float)SEGMENT_SIZE)/KlassBlockSize(N)/BITS/BITS/BITS))
 
 static const size_t SegmentBitMapCount[] = {
-	0,0,0,0,
+	0,0,0,0,0,
 	BITMAP_L0_SIZE(5 ),
 	BITMAP_L0_SIZE(6 ),
 	BITMAP_L0_SIZE(7 ),
@@ -774,11 +774,16 @@ void kmemshare_init(CTX ctx)
 }
 
 static void xmem_freeall(CTX ctx);
+
+void kmemshare_gc_destroy(CTX ctx)
+{
+	BMGC_exit(ctx, GCDATA(ctx));
+	((kcontext_t*)ctx)->memlocal->gcHeapMng = NULL;
+}
+
 void kmemshare_free(CTX ctx)
 {
 	xmem_freeall(ctx);
-	BMGC_exit(ctx, GCDATA(ctx));
-	((kcontext_t*)ctx)->memlocal->gcHeapMng = NULL;
 	freeArena(ctx, ctx->memshare);
 	knh_mutex_free(ctx, ctx->memshare->memlock);
 	do_free(ctx->memshare, sizeof(kmemshare_t));
