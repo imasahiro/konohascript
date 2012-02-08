@@ -31,6 +31,8 @@ TOP = "konoha_main()"
 //    String[] source;
 //    String[] unexpectedMethods;
 //    String[] topLevelFunctionList;
+//    String[] protoFunc;
+//    String[] errors;
 //    String   obfuscatedClassName;
 //    Map<String, String> varNameMap;
 //    Map<String, String> methodNameMap;
@@ -40,6 +42,7 @@ System.addClassField(CompilerOpt, String  , "mtdName");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "unexpectedMethods");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
+System.addClassField(CompilerOpt, String[], "protoFunc");
 System.addClassField(CompilerOpt, Map<String, String>, "varNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
@@ -48,6 +51,8 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
     this.source = [];
     this.unexpectedMethods = ["isNull"];
     this.topLevelFunctionList = [];
+    this.protoFunc = [];
+    this.errors = [];
     this.varNameMap = {};
     this.methodNameMap = {};
     this.classNameMap = {};
@@ -221,6 +226,9 @@ LABEL = "label";
         j /= (l+1);
     }
     opt.methodNameMap.set(mtd.toString(), obfuscateString(i, mtdId, 'a', false));
+}
+@Public boolean Compiler.isDecl(Method mtd) {
+    return !(mtd.toString() in? this.opt.methodNameMap);
 }
 @Public String Compiler.getMethodName(Method mtd) {
     if (isKonohaClass(mtd.getMethodClass()) && mtd.getMethodClass() != Script) {
@@ -512,6 +520,9 @@ LABEL = "label";
     } else if (thisclass != "Script") {
         res += uscore(thisclass) + ".";
     }
+    if (!asm.isDecl(op.mtd)) {
+        asm.opt.protoFunc.add(asm.getMethodName(op.mtd));
+    }
     if (asm.getMethodName(op.mtd) == "new") {
         res += "_new";
     } else {
@@ -527,6 +538,12 @@ LABEL = "label";
     }
     res += ");";
     asm.addSource(res);
+}
+@Public @Override void K_ERR.codegen(Compiler asm) {
+    asm.opt.errors.add(op.msg);
+    String s = "throw(\"Script!!: " + op.msg + "\");";
+    asm.addSource(s);
+    return;
 }
 @Public @Override void K_PRINT.codegen(Compiler asm) {
     int line = (op.opline&((1<<32)-1)<<32)>>32;
@@ -629,6 +646,9 @@ LABEL = "label";
     res += "}" + EOL;
     res += EOL;
     res += "function " + TOP + " {" + EOL;
+    for (int i = 0; i < this.opt.errors.size; i++) {
+        res += indent + "konoha.ERR += " + this.opt.errors[i] + ";" + EOL;
+    }
     res += indent + "script = new Script();" + EOL;
     foreach (fname in this.opt.topLevelFunctionList) {
         res += indent + fname + "(";
@@ -668,6 +688,9 @@ LABEL = "label";
     }
     if ((config.gen_html) == true) {
         ous << header << EOL + EOL;
+    }
+    foreach (String fname in this.opt.protoFunc) {
+        ous << "function " + fname + "(){};" << EOL;
     }
     foreach (K_Class kc in this.declareclass) {
         String cname = class2str((to String)kc.c);
