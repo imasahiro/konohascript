@@ -774,11 +774,16 @@ void kmemshare_init(CTX ctx)
 }
 
 static void xmem_freeall(CTX ctx);
+
+void kmemshare_gc_destroy(CTX ctx)
+{
+	BMGC_exit(ctx, GCDATA(ctx));
+	((kcontext_t*)ctx)->memlocal->gcHeapMng = NULL;
+}
+
 void kmemshare_free(CTX ctx)
 {
 	xmem_freeall(ctx);
-	BMGC_exit(ctx, GCDATA(ctx));
-	((kcontext_t*)ctx)->memlocal->gcHeapMng = NULL;
 	freeArena(ctx, ctx->memshare);
 	knh_mutex_free(ctx, ctx->memshare->memlock);
 	do_free(ctx->memshare, sizeof(kmemshare_t));

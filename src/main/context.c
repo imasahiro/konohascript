@@ -571,7 +571,7 @@ static void share_free(CTX ctx, kshare_t *share)
 			ct->constPoolMapNULL = NULL;
 		}
 	}
-	kmemshare_free(ctx);
+	kmemshare_gc_destroy(ctx);
 	/* freeing cdef */
 	for(i = 0; i < share->sizeClassTBL; i++) {
 		knh_ClassTBL_t *ct = varClassTBL(i);
@@ -593,11 +593,13 @@ static void share_free(CTX ctx, kshare_t *share)
 	KNH_FREE(ctx, (void*)share->ClassTBL, sizeof(knh_ClassTBL_t*)*(share->capacityClassTBL));
 	share->ClassTBL = NULL;
 
+	knh_mutex_free(ctx, share->syslock);
+	kmemlocal_free(ctx);
+	kmemshare_free(ctx);
 	if(ctx->stat->usedMemorySize != 0) {
 		GC_LOG("memory leaking size=%ldbytes", (long)ctx->stat->usedMemorySize);
 	}
-	kmemlocal_free(ctx);
-	knh_mutex_free(ctx, share->syslock);
+
 	knh_bzero(share, sizeof(kshare_t) + sizeof(kstatinfo_t) + sizeof(knh_ServiceSPI_t));
 	free(share);
 }
