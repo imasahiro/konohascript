@@ -991,6 +991,23 @@ class K_CALL extends K_Inst {
         return res;
     }
 }
+class K_ERRop extends K_Opcode {
+    String msg;
+    K_ERRop(String msg) {
+        this.msg = msg;
+    }
+}
+class K_ERR extends K_Inst {
+    K_ERRop op;
+    K_ERR(K_ERRop op) {
+        this.op = op;
+    }
+    @Override String dump() {
+        String res = "\t_ = err " +op.msg;
+        return res;
+    }
+}
+
 class K_PRINTop extends K_Opcode {
     int sfpidx;
     int opline;
@@ -2332,8 +2349,14 @@ void Compiler.asmASSERT(Stmt stmt, Stmt cond) {
     print cond;
 }
 void Compiler.asmERR(Stmt stmt, Token tkERR) {
-    print "err";
-    print tkERR;
+    if (DEBUG) {
+        print "err";
+        print tkERR;
+    }
+    int espidx = stmt.getESPIDX();
+    String s = "" + tkERR.getD();
+    K_ERR err = new K_ERR(new K_ERRop(s));
+    kfunc.curBB.insts.add(err);
 }
 
 void Compiler.asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
