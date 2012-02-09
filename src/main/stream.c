@@ -1510,7 +1510,7 @@ static KMETHOD InputStream_read(CTX ctx, ksfp_t *sfp _RIX)
 		io2_readAll(ctx, (sfp[0].in)->io2, ba);
 	}
 	else {
-		size_t len = Int_to2(size_t, sfp[3], ba->dim->capacity);
+		size_t len = Int_to2(size_t, sfp[2], ba->dim->capacity);
 		if(!(len < ba->dim->capacity)) {
 			THROW_OutOfRange(ctx, sfp, len, ba->dim->capacity);
 		}

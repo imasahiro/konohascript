@@ -1,28 +1,90 @@
-#!/bin/sh
+#!/bin/bash
+
 PROGRAM=`basename $0`
 
+while getopts i:jo:t: OPT
+do
+    case $OPT in
+        "b" ) FLG_B="TRUE" ;;
+        "i" ) FLG_I="TRUE" ; VALUE_I="$OPTARG" ;;
+        "j" ) FLG_J="TRUE" ;;
+        "o" ) FLG_O="TRUE" ; VALUE_O="$OPTARG" ;;
+        "t" ) FLG_T="TRUE" ; VALUE_T="$OPTARG" ;;
+          * ) OPT_ERROR=1; break;;
+    esac
+done
 
-export JS_USE_OBFUSCATE=true
-export JS_GEN_HTML=true
-#export JS_GEN_HTML=false
-
-if  test $1 = "--test" ; then 
-    export JS_GEN_HTML=false
-    INPUT=$2
-    OUTPUT=$3
-    `which konohac` --emit-js $INPUT > $OUTPUT
+# set imput file
+if [ "$FLG_I" = "TRUE" ]; then
+    INPUT=$VALUE_I
 else
-    NUM_EXPECTED_ARGS=1
-    if [ $# -lt $NUM_EXPECTED_ARGS ]; then
-    	echo "example: $PROGRAM source.k target.js"
-    	exit 1;
-    fi
+    OPT_ERROR=1
+fi
 
-    INPUT=$1
-    OUTPUT=$2
-    if [ $# -lt 2 ]; then
-        `which konohac` --emit-js $INPUT
+if [ $OPT_ERROR ]; then
+    echo "Usage: $PROGRAM [-j] [-i input_file] [-o output_file] [-t gentype]" 1>&2
+    exit 1
+fi
+
+# set html include option
+if [ "$FLG_J" = "TRUE" ]; then
+    export JS_GEN_HTML=false
+else
+    export JS_GEN_HTML=true
+fi
+
+# set output file
+if [ "$FLG_O" = "TRUE" ]; then
+    OUTPUT=$VALUE_O
+fi
+
+# set obfuscate option
+if [ "$FLG_B" = "TRUE" ]; then
+    export JS_USE_OBFUSCATE=true
+else
+    export JS_USE_OBFUSCATE=false
+fi
+
+# set gen type
+if [ "$FLG_T" = "TRUE" ]; then
+    if [ "$VALUE_T" = "worker" ]; then
+        export JS_USE_WORKER=true
     else
-        `which konohac` --emit-js $INPUT > $OUTPUT
+        export JS_USE_WORKER=false
     fi
 fi
+
+if [ "$FLG_I" = "TRUE" ]; then
+    if [ "$FLG_O" = "TRUE" ]; then
+        `which konohac` --emit-js $INPUT > $OUTPUT
+    else
+        `which konohac` --emit-js $INPUT
+    fi
+fi
+
+#if test $1 = "--test" ; then
+#    export JS_GEN_HTML=false
+#    INPUT=$2
+#    OUTPUT=$3
+#    `which konohac` --emit-js $INPUT > $OUTPUT
+#else
+#    if test $1 = "--gen-html" ; then
+#        export JS_GEN_HTML=true
+#        INPUT=$2
+#        OUTPUT=$3
+#    else
+#        export JS_GEN_HTML=false
+#        INPUT=$1
+#        OUTPUT=$2
+#    fi
+#    NUM_EXPECTED_ARGS=1
+#    if [ $# -lt $NUM_EXPECTED_ARGS ]; then
+#        echo "example: $PROGRAM source.k target.js"
+#        exit 1;
+#    fi
+#    if [ $# -lt 2 ]; then
+#        `which konohac` --emit-js $INPUT
+#    else
+#        `which konohac` --emit-js $INPUT > $OUTPUT
+#    fi
+#fi

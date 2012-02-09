@@ -24,7 +24,11 @@ konoha.printOUT();
 </body>
 </html>
 """;
-TOP = "konoha_main()"
+if ($env.JS_USE_WORKER == "true") {
+    TOP = "(event)"
+} else {
+    TOP = "konoha_main()"
+}
 //class CompilerOpt {
 //    int      indentLevel;
 //    String   mtdName;
@@ -645,7 +649,13 @@ LABEL = "label";
     res += "function Script" + "() {" + EOL;
     res += "}" + EOL;
     res += EOL;
-    res += "function " + TOP + " {" + EOL;
+    if ($env.JS_USE_WORKER == "true") {
+        res += "onmessage = function " + TOP + " {" + EOL;
+        res += indent + "var json = JSON.parse(event.data);" + EOL;
+    } else {
+        res += "function " + TOP + " {" + EOL;
+    }
+    //res += indent + "if (json.type == 'start') {" + EOL;
     for (int i = 0; i < this.opt.errors.size; i++) {
         res += indent + "konoha.ERR += " + this.opt.errors[i] + ";" + EOL;
     }
@@ -655,7 +665,16 @@ LABEL = "label";
         res += "script";
         res += ");" + EOL;
     }
-    res += "}" + EOL;
+    if ($env.JS_USE_WORKER == "true") {
+        res += indent + "postMessage(JSON.stringify({" + EOL;
+        res += indent + indent + "'out': konoha.OUT," + EOL;
+        res += indent + indent + "'err': konoha.ERR," + EOL;
+        res += indent + indent + "'document': document" + EOL;
+        res += indent + "}));" + EOL;
+        res += "};" + EOL;
+    } else {
+        res += "}" + EOL;
+    }
     return res;
 }
 @Public String Compiler.createClassDefinition(Class c, String cname) {
