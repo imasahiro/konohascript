@@ -166,7 +166,8 @@ JSConfig config = new JSConfig();
     }
     return opt.classNameMap[s];
 }
-@Public String Compiler.class2str(String s) {
+@Public String Compiler.class2str(Class c) {
+    String s = (to String)c;
     if (s.endsWith("Script")) {
         return "Script";
     }
@@ -183,6 +184,9 @@ JSConfig config = new JSConfig();
         return "konoha.Func";
     }
     String[] ary = s.split(".");
+    if (c.isPublic() && !isKonohaClass(c)) {
+        return ary[|ary|-1];
+    }
     if (|ary| >= 2 && isKonohaClass(s)) {
         String res = "";
         for (int i = 0; i < |ary|; i++) {
@@ -197,8 +201,8 @@ JSConfig config = new JSConfig();
     }
 }
 
-@Public String Compiler.mtdclass2str(String s) {
-    return class2str(s[0 to s.lastIndexOf(".")-1]);
+@Public String Compiler.mtdclass2str(Method m) {
+    return class2str(m.getMethodClass());
 }
 String getTypeName (Class type) {
     String res = (to String) type;
@@ -236,6 +240,15 @@ LABEL = "label";
 }
 @Public String Compiler.getMethodName(Method mtd) {
     if (isKonohaClass(mtd.getMethodClass()) && mtd.getMethodClass() != Script) {
+        return mtd.getName();
+    }
+    if (mtd.isPublic() && !isKonohaClass(mtd.getMethodClass()) && mtd.getName() != "main" && mtd.getName() != "") {
+        if (mtd.getName() == "new") {
+            return "_new";
+        }
+        if (!mtd.toString() in? opt.methodNameMap) {
+            setMethodName(mtd);
+        }
         return mtd.getName();
     }
     if (((to String)mtd.getMethodClass()).endsWith("Script") && mtd.getName() == "") {
@@ -281,7 +294,7 @@ LABEL = "label";
 @Public void K_Function.codegen(Compiler asm) {
     boolean flagPrototype = false;
     asm.opt.obfuscatedMethodName = asm.getMethodName(asm.mtd);
-    asm.opt.obfuscatedClassName = asm.class2str((to String)asm.mtd.getMethodClass());
+    asm.opt.obfuscatedClassName = asm.class2str(asm.mtd.getMethodClass());
     String fncdef = "";
     String thisclass = asm.opt.obfuscatedClassName;
     if (isKonohaClass(asm.mtd.getMethodClass())) {
@@ -518,7 +531,7 @@ LABEL = "label";
     if (op.mtd.getReturnType() != Void) {
         res = declVar(asm) + getVarName(asm) + " = ";
     }
-    String thisclass = asm.mtdclass2str(op.mtd.toString());
+    String thisclass = asm.mtdclass2str(op.mtd);
     if (flag) {
         res += args[0].getVarName(asm) + ".";
     } else if (thisclass != "Script") {
@@ -581,7 +594,7 @@ LABEL = "label";
     }
 }
 @Public @Override void K_NEW.codegen(Compiler asm) {
-    String name = asm.class2str((to String)type);
+    String name = asm.class2str(type);
     asm.addSource(declVar(asm) + getVarName(asm) + " = new " + uscore(name) + "();");
 }
 @Public @Override void K_GETIDX.codegen(Compiler asm) {
@@ -596,7 +609,7 @@ LABEL = "label";
     } else if (op.const_table[op.table_idx].class == Class) {
         asm.addSource(declVar(asm) + getVarName(asm) + " = new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");");
     } else {
-        asm.addSource(declVar(asm) + getVarName(asm) + " = new " + asm.class2str((to String)op.const_table[op.table_idx].class) + "(" + quote(op.const_table[op.table_idx]) + ");");
+        asm.addSource(declVar(asm) + getVarName(asm) + " = new " + asm.class2str(op.const_table[op.table_idx].class) + "(" + quote(op.const_table[op.table_idx]) + ");");
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
@@ -680,7 +693,7 @@ LABEL = "label";
 @Public String Compiler.createClassDefinition(Class c, String cname) {
     String res = "";
     if (c.getSuper() != Object) {
-        String supcname = class2str((to String)c.getSuper());
+        String supcname = class2str(c.getSuper());
         res += uscore(cname) + ".prototype = new " + uscore(supcname) + "()" + EOL;
     }
     res += "function " + uscore(cname) + "() {" + EOL;
@@ -712,7 +725,7 @@ LABEL = "label";
         ous << "function " + fname + "(){}" << EOL;
     }
     foreach (K_Class kc in this.declareclass) {
-        String cname = class2str((to String)kc.c);
+        String cname = class2str(kc.c);
         ous << createClassDefinition(kc.c, cname) << EOL;
     }
     foreach (str in this.opt.source) {
