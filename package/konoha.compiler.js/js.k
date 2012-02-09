@@ -184,9 +184,10 @@ JSConfig config = new JSConfig();
         return "konoha.Func";
     }
     String[] ary = s.split(".");
-    if (c.isPublic() && !isKonohaClass(c)) {
-        return ary[|ary|-1];
-    }
+    /* TODO class obfuscation */
+    //if (c.isPublic() && !isKonohaClass(c)) {
+    //    return ary[|ary|-1];
+    //}
     if (|ary| >= 2 && isKonohaClass(s)) {
         String res = "";
         for (int i = 0; i < |ary|; i++) {
@@ -236,21 +237,22 @@ LABEL = "label";
     opt.methodNameMap.set(mtd.toString(), obfuscateString(i, mtdId, 'a', false));
 }
 @Public boolean Compiler.isDecl(Method mtd) {
-    return !(mtd.toString() in? this.opt.methodNameMap.keys());
+    return (mtd.toString() in? this.opt.methodNameMap.keys());
 }
 @Public String Compiler.getMethodName(Method mtd) {
     if (isKonohaClass(mtd.getMethodClass()) && mtd.getMethodClass() != Script) {
         return mtd.getName();
     }
-    if (mtd.isPublic() && !isKonohaClass(mtd.getMethodClass()) && mtd.getName() != "main" && mtd.getName() != "") {
-        if (mtd.getName() == "new") {
-            return "_new";
-        }
-        if (!mtd.toString() in? opt.methodNameMap) {
-            setMethodName(mtd);
-        }
-        return mtd.getName();
-    }
+    /* TODO method obfuscation */
+    //if (mtd.isPublic() && !isKonohaClass(mtd.getMethodClass()) && mtd.getName() != "main" && mtd.getName() != "") {
+    //    if (mtd.getName() == "new") {
+    //        return "_new";
+    //    }
+    //    if (!mtd.toString() in? opt.methodNameMap) {
+    //        setMethodName(mtd);
+    //    }
+    //    return mtd.getName();
+    //}
     if (((to String)mtd.getMethodClass()).endsWith("Script") && mtd.getName() == "") {
         int i = 1, j = |this.opt.topLevelFunctionList|;
         int l = 'z' - 'a';
@@ -537,7 +539,7 @@ LABEL = "label";
     } else if (thisclass != "Script") {
         res += uscore(thisclass) + ".";
     }
-    if (!asm.isDecl(op.mtd)) {
+    if (!asm.isDecl(op.mtd) && !isKonohaClass(op.mtd.getMethodClass())) {
         asm.opt.protoFunc.add(asm.getMethodName(op.mtd));
     }
     if (asm.getMethodName(op.mtd) == "new") {
