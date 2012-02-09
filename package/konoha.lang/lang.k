@@ -76,6 +76,7 @@ String : (Class c) {
 @Public @Native @Const String Method.getSourceCode();
 @Public @Native String Method.toString();
 @Public @Native String Method.getName();
+@Public @Native boolean Method.isPublic();
 @Public @Native boolean Method.isStatic();
 @Public @Native boolean Method.isFinal();
 @Public @Native int Method.indexOfGetterField();

@@ -83,7 +83,14 @@ TYPEMAP Class_Int(CTX ctx, ksfp_t *sfp _RIX)
 	kClass *c = sfp[1].c;
 	RETURNi_(c->cid);
 }
-
+#undef Method_isPublic
+#define Method_isPublic_(o)  (!TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Private))
+//## boolean Method.isPublic();
+KMETHOD Method_isPublic(CTX ctx, ksfp_t *sfp _RIX) {
+    kMethod *mtd = sfp[0].mtd;
+    kbool_t b = Method_isPublic_(mtd);
+    RETURNb_(b);
+}
 #undef Method_isStatic
 #define Method_isStatic_(o) (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
 //## boolean Method.isStatic();
