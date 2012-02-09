@@ -232,7 +232,7 @@ LABEL = "label";
     opt.methodNameMap.set(mtd.toString(), obfuscateString(i, mtdId, 'a', false));
 }
 @Public boolean Compiler.isDecl(Method mtd) {
-    return !(mtd.toString() in? this.opt.methodNameMap);
+    return !(mtd.toString() in? this.opt.methodNameMap.keys());
 }
 @Public String Compiler.getMethodName(Method mtd) {
     if (isKonohaClass(mtd.getMethodClass()) && mtd.getMethodClass() != Script) {
@@ -709,7 +709,7 @@ LABEL = "label";
         ous << header << EOL + EOL;
     }
     foreach (String fname in this.opt.protoFunc) {
-        ous << "function " + fname + "(){};" << EOL;
+        ous << "function " + fname + "(){}" << EOL;
     }
     foreach (K_Class kc in this.declareclass) {
         String cname = class2str((to String)kc.c);
