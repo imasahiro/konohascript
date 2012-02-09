@@ -33,6 +33,7 @@
 #include <llvm/Transforms/IPO/PassManagerBuilder.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Utils/UnifyFunctionExitNodes.h>
+#include <llvm/Transforms/Vectorize.h>
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Analysis/Passes.h>
 #include <llvm/Analysis/DomPrinter.h>
@@ -3307,6 +3308,14 @@ KMETHOD LLVM_createVerifierPass(CTX ctx, ksfp_t *sfp _RIX)
 	RETURN_(p);
 }
 
+//## BasicBlockPass LLVM.createBBVectorizePass();
+KMETHOD LLVM_createBBVectorizePass(CTX ctx, ksfp_t *sfp _RIX)
+{
+	BasicBlockPass *ptr = createBBVectorizePass();
+	kRawPtr *p = new_ReturnCppObject(ctx, sfp, WRAP(ptr), konoha::default_free);
+	RETURN_(p);
+}
+
 //FunctionType Intrinsic::getType(int id, Type[] args);
 KMETHOD Intrinsic_getType(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -3421,7 +3430,7 @@ DEFAPI(void) constIntrinsic(CTX ctx, kclass_t cid, const knh_LoaderAPI_t *kapi)
 	kapi->loadClassIntConst(ctx, cid, IntIntrinsic);
 }
 
-#define C_(S) {#S , S}
+#define C_(S) {#S , S ## _i}
 using namespace llvm::Attribute;
 static const knh_IntData_t IntAttributes[] = {
 	C_(None),

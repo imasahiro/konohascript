@@ -64,6 +64,7 @@ include "lib:gluelink";
 @RawPtr class ModulePass extends Pass;
 @RawPtr class FunctionPass extends Pass;
 @RawPtr class LoopPass extends Pass;
+@RawPtr class BasicBlockPass extends Pass;
 @RawPtr class LibCallInfo;
 @Rawptr class ImmutablePass extends Pass;
 @Rawptr class TargetData extends ImmutablePass;
@@ -406,6 +407,7 @@ include "lib:gluelink";
 @Static @Native ImmutablePass LLVM.createTypeBasedAliasAnalysisPass();
 @Static @Native ImmutablePass LLVM.createBasicAliasAnalysisPass();
 @Static @Native FunctionPass LLVM.createVerifierPass();
+@Static @Native BasicBlockPass LLVM.createBBVectorizePass();
 
 @Static @Native FunctionType Intrinsic.getType(int id, Type[] args);
 @Static @Native Function     Intrinsic.getDeclaration(Module m, int id, Type[] args);

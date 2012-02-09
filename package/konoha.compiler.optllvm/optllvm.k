@@ -549,6 +549,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
                 mpm.add(LLVM.createLoopIdiomPass());
                 mpm.add(LLVM.createLoopDeletionPass());
                 mpm.add(LLVM.createLoopUnrollPass());
+                mpm.add(LLVM.createBBVectorizePass());
             }
             if (config.opt_safepoint) {
                 mpm.add(LLVM.createSafepointPass());
