@@ -12,7 +12,7 @@ var konoha = function() {
     }
 }
 
-var document = function() {
+var htmldocument = function() {
 	this._body = "<html><head></head><body></body></html>";
 	this.getElementsByTagName = function(tagname) {
 		return null;

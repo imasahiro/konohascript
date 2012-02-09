@@ -669,7 +669,7 @@ LABEL = "label";
         res += indent + "postMessage(JSON.stringify({" + EOL;
         res += indent + indent + "'out': konoha.OUT," + EOL;
         res += indent + indent + "'err': konoha.ERR," + EOL;
-        res += indent + indent + "'document': document" + EOL;
+        res += indent + indent + "'document': htmldocument" + EOL;
         res += indent + "}));" + EOL;
         res += "};" + EOL;
     } else {
