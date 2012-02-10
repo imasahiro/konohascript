@@ -37,6 +37,7 @@ if ($env.JS_USE_WORKER == "true") {
 //    String[] topLevelFunctionList;
 //    String[] protoFunc;
 //    String[] errors;
+//    String[] useFuncList;
 //    String   obfuscatedClassName;
 //    Map<String, String> varNameMap;
 //    Map<String, String> methodNameMap;
@@ -47,6 +48,7 @@ System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "unexpectedMethods");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
 System.addClassField(CompilerOpt, String[], "protoFunc");
+System.addClassField(CompilerOpt, String[], "useFuncList");
 System.addClassField(CompilerOpt, Map<String, String>, "varNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
@@ -60,6 +62,11 @@ System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
     this.varNameMap = {};
     this.methodNameMap = {};
     this.classNameMap = {};
+
+    this.useFuncList = ((to String)$env.JS_USE_FUNC_LIST).split(",");
+    foreach(String str in this.useFuncList) {
+        str = str.trim();
+    }
 }
 class JSConfig {
     boolean use_obfuscate;
@@ -160,7 +167,7 @@ JSConfig config = new JSConfig();
     }
     opt.classNameMap[s] = obfuscateString(i, classIdx, 'A', false);
 }
-@Public String Compiler.getUserClassName(String s) {
+@Public String Compiler.getUserClassName(String s, boolean getOnly) {
     if (opt.classNameMap[s] == null) {
         setUserClassName(s);
     }
@@ -240,19 +247,10 @@ LABEL = "label";
     return (mtd.toString() in? this.opt.methodNameMap.keys());
 }
 @Public String Compiler.getMethodName(Method mtd) {
+    String s = mtd.toString();
     if (isKonohaClass(mtd.getMethodClass()) && mtd.getMethodClass() != Script) {
         return mtd.getName();
     }
-    /* TODO method obfuscation */
-    //if (mtd.isPublic() && !isKonohaClass(mtd.getMethodClass()) && mtd.getName() != "main" && mtd.getName() != "") {
-    //    if (mtd.getName() == "new") {
-    //        return "_new";
-    //    }
-    //    if (!mtd.toString() in? opt.methodNameMap) {
-    //        setMethodName(mtd);
-    //    }
-    //    return mtd.getName();
-    //}
     if (((to String)mtd.getMethodClass()).endsWith("Script") && mtd.getName() == "") {
         int i = 1, j = |this.opt.topLevelFunctionList|;
         int l = 'z' - 'a';
@@ -262,7 +260,6 @@ LABEL = "label";
         }
         return "_" + obfuscateString(i, |this.opt.topLevelFunctionList|, 'a', false);
     }
-    String s = mtd.toString();
     if (!s in? opt.methodNameMap) {
         setMethodName(mtd);
     }
@@ -684,11 +681,31 @@ LABEL = "label";
         res += indent + "postMessage(JSON.stringify({" + EOL;
         res += indent + indent + "'out': konoha.OUT," + EOL;
         res += indent + indent + "'err': konoha.ERR," + EOL;
-        res += indent + indent + "'document': htmldocument" + EOL;
+        res += indent + indent + "'document': document" + EOL;
         res += indent + "}));" + EOL;
         res += "};" + EOL;
     } else {
         res += "}" + EOL;
+    }
+    return res;
+}
+@Public String Compiler.createSymbol() {
+    String indent = "    ";
+    String res = "";
+    foreach (String symbol in this.opt.useFuncList) {
+        String m = "";
+        String c = "";
+        foreach (String n in this.opt.methodNameMap.keys()) {
+            if (n.endsWith(symbol)) {
+                m = this.opt.methodNameMap[n];
+                if (symbol.indexOf(".") != -1) {
+                    c = getUserClassName(symbol.split(".")[0]);
+                }
+                res += "function " + symbol + "() {" + EOL;
+                res += indent + "return " + c + ((c == "") ? "" : ".") + m + "();" + EOL;
+                res += "}" + EOL;
+            }
+        }
     }
     return res;
 }
@@ -734,6 +751,7 @@ LABEL = "label";
         ous << str << EOL;
     }
     ous << createMain() << EOL;
+    ous << createSymbol() << EOL;
     if ((config.gen_html) == true) {
         ous << footer;
     }

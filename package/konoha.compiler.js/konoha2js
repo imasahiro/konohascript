@@ -2,7 +2,7 @@
 
 PROGRAM=`basename $0`
 
-while getopts i:jo:t: OPT
+while getopts i:jo:t:u: OPT
 do
     case $OPT in
         "b" ) FLG_B="TRUE" ;;
@@ -10,6 +10,7 @@ do
         "j" ) FLG_J="TRUE" ;;
         "o" ) FLG_O="TRUE" ; VALUE_O="$OPTARG" ;;
         "t" ) FLG_T="TRUE" ; VALUE_T="$OPTARG" ;;
+        "u" ) FLG_U="TRUE" ; VALUE_U="$OPTARG" ;;
           * ) OPT_ERROR=1; break;;
     esac
 done
@@ -22,7 +23,7 @@ else
 fi
 
 if [ $OPT_ERROR ]; then
-    echo "Usage: $PROGRAM [-j] [-i input_file] [-o output_file] [-t gentype]" 1>&2
+    echo "Usage: $PROGRAM [-j] [-i input_file] [-o output_file] [-t gentype] [-u use_func_list]" 1>&2
     exit 1
 fi
 
@@ -52,6 +53,11 @@ if [ "$FLG_T" = "TRUE" ]; then
     else
         export JS_USE_WORKER=false
     fi
+fi
+
+# set unobfuscate functions
+if [ "$FLG_U" = "TRUE" ]; then
+    export JS_USE_FUNC_LIST="$VALUE_U"
 fi
 
 if [ "$FLG_I" = "TRUE" ]; then
