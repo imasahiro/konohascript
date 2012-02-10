@@ -44,7 +44,7 @@ world.bcast((MPIData)nd, 0, 0);
 n = nd[0];
 
 world.barrier();
-t1 = getMPIWtime();
+t1 = MPI.getWtime();
 
 /* check for quit signal */
 
@@ -64,7 +64,7 @@ pi = new float[1];
 world.reduce((MPIData)mypi, (MPIData)pi, 1, MPIOp.SUM, 0);
 
 world.barrier();
-t2 = getMPIWtime();
+t2 = MPI.getWtime();
 t0 =  t2 - t1;
 t_w = new float[1];
 world.reduce((MPIData)t0, (MPIData)t_w, 1, MPIOp.MAX, 0);

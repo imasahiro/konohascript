@@ -1,6 +1,4 @@
-#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
-#endif
 
 /* ------------------------------------------------------------------------ */
 //## method MPIOp MPIOp.new(MPIOpFunc opfunc, Boolean commutable);
@@ -11,9 +9,7 @@ static kMPIData* new_MPIData_Bytes(CTX ctx, void *vec, int vlen)
 	knh_memcpy(ba->bu.buf, vec, vlen);
 	BA_size(ba) = vlen;
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
-	data->ba = ba;
-	MPID_TYPE(data) = MPI_CHAR;
-	MPID_DCID(data) = CLASS_Bytes;
+	MPID_INIT(data, ba, MPI_CHAR, CLASS_Bytes, O_cid(ba));
 	return data;
 }
 
@@ -23,9 +19,7 @@ static kMPIData* new_MPIData_ArrayInt(CTX ctx, void *vec, int vlen)
 	knh_memcpy(a->ilist, vec, sizeof(kint_t) * vlen);
 	knh_Array_size(a) = vlen;
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
-	data->a = a;
-	MPID_TYPE(data) = MPI_LONG;
-	MPID_DCID(data) = CLASS_Array;
+	MPID_INIT(data, a, MPI_LONG, CLASS_Array, O_cid(a));
 	return data;
 }
 
@@ -35,17 +29,14 @@ static kMPIData* new_MPIData_ArrayFloat(CTX ctx, void *vec, int vlen)
 	knh_memcpy(a->flist, vec, sizeof(kfloat_t) * vlen);
 	knh_Array_size(a) = vlen;
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
-	data->a = a;
-	MPID_TYPE(data) = MPI_DOUBLE;
-	MPID_DCID(data) = CLASS_Array;
+	MPID_INIT(data, a, MPI_DOUBLE, CLASS_Array, O_cid(a));
 	return data;
 }
-
 
 void knh_reduce(kFunc *fo, void *ivec, void *iovec, int *len, MPI_Datatype *dtype)
 {
 	kMPIData* (*new_func)(CTX ctx, void *vec, int vlen);
-	size_t rsize;
+	size_t rsize = 0;
 	int vlen = *len;
 	CLOSURE_start(2);
 	if (*dtype == MPI_CHAR) {
@@ -60,16 +51,17 @@ void knh_reduce(kFunc *fo, void *ivec, void *iovec, int *len, MPI_Datatype *dtyp
 		new_func = new_MPIData_ArrayFloat;
 		rsize = sizeof(kfloat_t) * vlen;
 	}
+	if (rsize > 0) {
+		kMPIData *o1 = new_func(lctx, ivec, vlen);
+		kMPIData *o2 = new_func(lctx, iovec, vlen);
+		lsfp[1].o = (Object*)o1;
+		lsfp[2].o = (Object*)o2;
+		CLOSURE_call(fo);
+		knh_memcpy(iovec, MPID_ADDR(o2), rsize);
+	}
 	else {
 		KNH_NTHROW2(lctx, lsfp, "Script!!", "MPI_Reduce failed", K_FAILED, KNH_LDATA(LOG_i("unsupported datatype", *dtype)));
-		CLOSURE_end(return);
 	}
-	kMPIData *o1 = new_func(lctx, ivec, vlen);
-	kMPIData *o2 = new_func(lctx, iovec, vlen);
-	lsfp[1].o = (Object*)o1;
-	lsfp[2].o = (Object*)o2;
-	CLOSURE_call(fo);
-	knh_memcpy(iovec, MPID_ADDR(o2), rsize);
 	CLOSURE_end(return);
 }
 
