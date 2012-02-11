@@ -380,7 +380,7 @@ KMETHOD MPIData_get(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD MPIData_set(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPID(data, sfp[0].o);
-	MPID_WCHK(data); // NTHROW except types of Array or Bytes
+	MPID_CHK_WRITABLE(data);
 	if (MPID_CID(data) == CLASS_Array) {
 		kArray *a = data->a;
 		size_t idx = knh_array_index(ctx, sfp, Int_to(kint_t, sfp[1]), knh_Array_size(a));

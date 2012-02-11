@@ -93,12 +93,27 @@ typedef struct {
 		MPID_DCID(d) = (dcid); \
 	}
 
-#define MPID_WCHK(d) \
-	{\
-		if (knh_MPIData_getCapacity(d) == -1) {\
+#define MPID_CHK_WRITABLE(d) \
+	{ \
+		if (knh_MPIData_getCapacity(d) == -1) { \
 			KNH_NTHROW2(ctx, sfp, "Script!!", "MPIData unwritable", K_FAILED, \
-					KNH_LDATA(LOG_p("unwritable data", d)));\
-		}\
+					KNH_LDATA(LOG_p("unwritable data", d))); \
+		} \
+	}
+
+#define MPID_CHK_COUNT(d, c) \
+	{ \
+		int psize = MPID_SIZE(d) - MPID_POFS(d); \
+		if (psize < 0) { \
+			KNH_NTHROW2(ctx, sfp, "Script!!", "MPIData size is less than zero (suppose invalid offset)", K_FAILED, \
+						KNH_LDATA(LOG_i("whole size", MPID_SIZE(d)), LOG_i("offset", MPID_POFS(d)))); \
+		} else if (c > psize) { \
+			KNH_NTHROW2(ctx, sfp, "Script!!", "MPIData count over", K_FAILED, \
+						KNH_LDATA(LOG_i("data count", psize), LOG_i("param count", c))); \
+		} else if (c <= 0) { \
+			KNH_NOTE("assigned count <= 0: use whole count of MPIData (count = %d)", psize); \
+			c = psize; \
+		} \
 	}
 
 #define NTHROW_CAST_MPID(ctx, sfp, data) \
@@ -107,12 +122,6 @@ typedef struct {
 		LOG_s("content class", SAFECLASS__(ctx, MPID_CID(data))), \
 		LOG_s("internal class", SAFECLASS__(ctx, MPID_DCID(data))) \
 	));
-
-#define MPID_CCHK(d, c) \
-	{\
-		int psize = MPID_SIZE(d) - MPID_POFS(d);\
-		if (c > psize || c <= 0) c = psize;\
-	}
 
 #define MPID(v, o) kMPIData *v = ((kMPIData*)o)
 

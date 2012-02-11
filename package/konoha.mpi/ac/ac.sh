@@ -5,12 +5,17 @@ PKGDIR="."
 echo ... start $PKGDIR/ac/${0##*/} ...
 
 if [ ! -e $PKGDIR/ac/${0##*/} ]; then
-    echo "!!! PKGDIR is incorrect"
+    echo "... Please run @ package/konoha.mpi dir"
+    exit 0
+fi
+
+if [ ! -e `which mpirun` ]; then
+    echo "!!!  mpirun binary not found"
     exit 0
 fi
 
 if [ ! -e `which mpikonoha` ]; then
-    echo "!!!  MPI binary file doesn't exist"
+    echo "!!!  mpikonoha binary not found"
     exit 0
 fi
 

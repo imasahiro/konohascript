@@ -10,7 +10,7 @@ KMETHOD MPIComm_send(CTX ctx, ksfp_t *sfp _RIX)
 	int count = Int_to(int, sfp[2]);
 	int dest_rank = Int_to(int, sfp[3]);
 	int tag = Int_to(int, sfp[4]);
-	MPID_CCHK(sdata, count);
+	MPID_CHK_COUNT(sdata, count);
 	double _begin = MPI_Wtime();
 	int ret = MPI_Send(MPID_ADDR(sdata), count, MPID_TYPE(sdata), dest_rank, tag, MPIC_COMM(comm));
 	double _finish = MPI_Wtime();
@@ -33,7 +33,7 @@ KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 	int src_rank = Int_to(int, sfp[3]);
 	int tag = Int_to(int, sfp[4]);
 	MPI_Status stat;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
 	double _begin = MPI_Wtime();
 	if (MPI_Probe(src_rank, tag, MPIC_COMM(comm), &stat) == MPI_SUCCESS) {
 		int rcount = 0;
@@ -76,8 +76,8 @@ KMETHOD MPIComm_sendrecv(CTX ctx, ksfp_t *sfp _RIX)
 	int rcount = Int_to(int, sfp[6]);
 	int src_rank = Int_to(int, sfp[7]);
 	int rtag = Int_to(int, sfp[8]);
-	MPID_CCHK(sdata, scount);
-	MPID_WCHK(rdata);
+	MPID_CHK_COUNT(sdata, scount);
+	MPID_CHK_WRITABLE(rdata);
 	double _begin = MPI_Wtime();
 	MPI_Status stat;
 	{
@@ -116,7 +116,7 @@ KMETHOD MPIComm_iSend(CTX ctx, ksfp_t *sfp _RIX)
 	int tag = Int_to(int, sfp[4]);
 	MPIR(req, new_O(MPIRequest, O_cid(sfp[5].o)));
 	MPIR_DATA(req) = sdata;
-	MPID_CCHK(sdata, count);
+	MPID_CHK_COUNT(sdata, count);
 	double _begin = MPI_Wtime();
 	MPI_Isend(MPID_ADDR(sdata), count, MPID_TYPE(sdata), dest_rank, tag, MPIC_COMM(comm), &MPIR_REQ(req));
 	double _finish = MPI_Wtime();
@@ -142,7 +142,7 @@ KMETHOD MPIComm_iRecv(CTX ctx, ksfp_t *sfp _RIX)
 	MPIR_DATA(req) = rdata;
 	int flag = 0;
 	MPI_Status stat;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
 	double _begin = MPI_Wtime();
 	MPI_Iprobe(src_rank, tag, MPIC_COMM(comm), &flag, &stat);
 	if (flag) {
@@ -153,7 +153,8 @@ KMETHOD MPIComm_iRecv(CTX ctx, ksfp_t *sfp _RIX)
 			count = rcount;
 		}
 	} else if (count > 0) {
-		KNH_NOTE("MPI_Iprobe failed: cancel confirming number of count");
+		KNH_NTRACE2(ctx, "MPI_Irecv: [warning] Iprobe failed (skip count checking)", K_NOTICE,
+					KNH_LDATA(LOG_i("count", count)));
 	} else {
 		KNH_NTHROW2(ctx, sfp, "Script!!", "MPI_Irecv: number of count is zero", K_FAILED, KNH_LDATA0);
 	}
