@@ -84,7 +84,9 @@ static kMethod* knh_loadMethodNULL(CTX ctx, ksfp_t *sfp, kbytes_t clsnm, kbytes_
 
 static kMPIData* knh_MPIData_serialize(CTX ctx, ksfp_t *sfp, kObject* target)
 {
+#ifdef KNH_MPI_PROFILE
 	double _begin = MPI_Wtime();
+#endif
 	const char *objtype = NULL;
 	MPID(data, new_O(MPIData, knh_getcid(ctx, B("konoha.mpi.MPIData"))));
 	{
@@ -111,11 +113,13 @@ static kMPIData* knh_MPIData_serialize(CTX ctx, ksfp_t *sfp, kObject* target)
 		}
 		MPID_INIT(data, ba, MPI_CHAR, CLASS_Bytes, O_cid(target));
 	}
+#ifdef KNH_MPI_PROFILE
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPIData_serialize", K_NOTICE,
 				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
 						  LOG_s("objtype", objtype), LOG_i("size", MPID_SIZE(data))));
+#endif
 	return data;
 }
 

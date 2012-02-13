@@ -41,8 +41,11 @@ int main(int argc, const char *argv[])
 	konoha_t konoha = konoha_open();
 	int _world_rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &_world_rank);
+#ifdef KNH_MPI_PROFILE
 	double _begin = MPI_Wtime();
+#endif
 	konoha_main(konoha, argc, argv);
+#ifdef KNH_MPI_PROFILE
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	{
@@ -50,6 +53,7 @@ int main(int argc, const char *argv[])
 		KNH_NTRACE2(ctx, "konoha_main(MPI)", K_NOTICE,
 					KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration), LOG_i("myrank", _world_rank)));
 	}
+#endif
 	konoha_close(konoha);
 	MPI_Finalize();
 	return 0;
