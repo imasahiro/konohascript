@@ -26,6 +26,8 @@ add_test(NAME "transpile_aobench_canvas.k"    COMMAND ${js} ${opt} "${DIR}/aoben
 add_test(NAME "jslint_aobench_canvas.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/aobench_canvas.js")
 add_test(NAME "transpile_jquery.k"    COMMAND ${js} ${opt} "${DIR}/jquery.k" "${DIR}/jquery.js")
 add_test(NAME "jslint_jquery.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/jquery.js")
+add_test(NAME "transpile_memory.k"    COMMAND ${js} ${opt} "${DIR}/memory.k" "${DIR}/memory.js")
+add_test(NAME "jslint_memory.k"    COMMAND ${jslint} ${jslint_opt} "${DIR}/memory.js")
 
 
 endif(LIB_V8_DIR)
