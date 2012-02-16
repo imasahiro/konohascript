@@ -107,7 +107,6 @@ static void emit(Function &F, Module *m, BasicBlock *BB, int espshift) {
 extern "C" void compiler_checkSafePoint(CTX ctx, int espshift)
 {
     if (ctx->safepoint != 0) {
-        asm volatile("int3");
         ((kcontext_t*)ctx)->esp = ctx->esp + espshift;
         knh_checkSafePoint(ctx, ctx->esp, __FILE__, __LINE__);
     }

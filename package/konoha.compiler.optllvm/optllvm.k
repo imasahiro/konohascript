@@ -511,7 +511,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 
         if (mtd.getName() == "") {
         }
-        else if (mtd.toString().endsWith("Script.main")) {
+        else if (mtd.toString().endsWith("Script.main") || $script.force_compile == "true") {
             //print this.const_table;
             this.compiled_methods = {};
             PassManager mpm = new PassManager();
