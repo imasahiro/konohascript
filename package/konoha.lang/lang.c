@@ -62,6 +62,12 @@ KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
 	RETURN_(new_Type(ctx, cid));
 }
 
+//@Public @Native boolean Class.isPublic();
+KMETHOD Class_isPublic(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kclass_t cid = c->cTBL->cid;
+	RETURNb_(class_isPublic(cid));
+}
 //@Public @Native boolean Class.isFinal();
 KMETHOD Class_isFinal(CTX ctx, ksfp_t *sfp _RIX) {
 	kClass *c = sfp[0].c;
@@ -83,7 +89,14 @@ TYPEMAP Class_Int(CTX ctx, ksfp_t *sfp _RIX)
 	kClass *c = sfp[1].c;
 	RETURNi_(c->cid);
 }
-
+#undef Method_isPublic
+#define Method_isPublic_(o)  (!TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Private))
+//## boolean Method.isPublic();
+KMETHOD Method_isPublic(CTX ctx, ksfp_t *sfp _RIX) {
+    kMethod *mtd = sfp[0].mtd;
+    kbool_t b = Method_isPublic_(mtd);
+    RETURNb_(b);
+}
 #undef Method_isStatic
 #define Method_isStatic_(o) (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
 //## boolean Method.isStatic();
