@@ -25,7 +25,7 @@ set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 # ---> check if MPI_LIBRARIES already defined (it means module is loaded before)
 # ----> use -DMPI_BASE_DIR=/path/to/mpibase for specifying target lib.
 if(NOT MPI_LIBRARIES)
-    find_package(MPI REQUIRED)
+    find_package(MPI)
 endif(NOT MPI_LIBRARIES)
 
 if(MPI_LIBRARIES)
