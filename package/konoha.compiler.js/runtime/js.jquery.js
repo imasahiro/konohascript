@@ -221,10 +221,13 @@ var initJQuery = function() {
     }
 
     /* CSS */
+    jquery.prototype.getcss = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
+    }
     jquery.prototype.css = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.css(args[0], args[1]);
-        //return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
+        return new jquery(this.rawptr.css.apply(this.rawptr, args));
     }
     jquery.prototype.offset = function() {
         return new js.Offset(this.rawptr.offset());
