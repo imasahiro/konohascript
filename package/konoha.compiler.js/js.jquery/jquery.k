@@ -233,3 +233,4 @@ class JQuery {
 @Overload JQuery JQuery.new (String html);
 @Overload JQuery JQuery.new (Element  element);
 @Overload JQuery JQuery.new (NodeList elements);
+@Overload JQuery JQuery.new (Window elements);

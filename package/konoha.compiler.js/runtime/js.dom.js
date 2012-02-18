@@ -297,6 +297,13 @@ js.dom.Img = function(rawptr) {
     this.konohaclass = "js.dom.Img";
 }
 js.dom.Img.prototype = new js.dom.Element();
+js.dom.Window = function(rawptr) {
+    if (rawptr != null) {
+        this.rawptr = rawptr;
+    } else {
+        this.rawptr = window;
+    }
+}
 js.dom.Document = function(rawptr) {
     if (rawptr != null) {
         this.rawptr = rawptr;

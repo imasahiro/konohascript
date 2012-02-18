@@ -105,6 +105,9 @@ class Canvas extends Element{
     CanvasContext getContext(String contextId);
 }
 class Event;
+class Window {
+
+}
 class Document{
     Attr creaetAttribute(String name);
     Element createElement(String tagName);
