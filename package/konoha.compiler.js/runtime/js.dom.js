@@ -185,8 +185,8 @@ js.dom.Element.prototype = new js.dom.Node();
 js.dom.Context = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CanvasContext";
-    this.arc = function(x, y, startAngle, endAngle, anticlockwise) {
-        this.rawptr.arc(x, y, startAngle, endAngle, anticlockwise);
+    this.arc = function(x, y, radius, startAngle, endAngle, anticlockwise) {
+        this.rawptr.arc(x, y, radius, startAngle, endAngle, anticlockwise);
     }
     this.actTo = function(x1, y1, x2, y2, radius) {
         this.rawptr.actTo(x1, y1, x2, y2, radius);
