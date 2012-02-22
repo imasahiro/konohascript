@@ -4,6 +4,22 @@ class Offset {
     int getLeft();
 }
 Offset Offset.new(int top, int left);
+class JEvent {
+    String type();
+    Element target();
+    Element relatedTarget();
+    Element currentTarget();
+    int pageX();
+    int pageY();
+    int timeStamp();
+    void preventDefault();
+    boolean isDefaultPrevented();
+    void stopPropagation();
+    boolean isPropagationStopped();
+    void stopImmediatePropagation();
+    boolean isImmediatePropagationStopped();
+}
+@Overload JEvent JEvent.new (String expression);
 class JQuery {
     /* Core */
               //JQyery (callback)

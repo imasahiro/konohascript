@@ -489,3 +489,6 @@ var initJQuery = function() {
     return jquery;
 }
 js.jquery.JQuery = new initJQuery();
+js.jquery.JEvent = new function() {
+
+}();

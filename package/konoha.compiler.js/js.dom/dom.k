@@ -64,7 +64,7 @@ class ImageData;
 class Gradient;
 class CanvasContext {
     // void addColorStop();
-    void arc(float x, float y, float radius, float startAngle, float endAndle, float anticlockwise);
+    void arc(float x, float y, float radius, float startAngle, float endAndle, boolean anticlockwise);
     void actTo(float x1, float y1, float x2, float y2, float radius);
     void beginPath();
     void bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y);
