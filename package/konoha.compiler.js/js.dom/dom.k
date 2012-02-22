@@ -1,3 +1,5 @@
+@Public int System.setTimeout(int ms, Method callback);
+@Public int System.setInterval(Method callback, int ms);
 class NodeList;
 class NamedNodeMap;
 class Document;
@@ -105,9 +107,6 @@ class Canvas extends Element{
     CanvasContext getContext(String contextId);
 }
 class Event;
-class Window {
-
-}
 class Document{
     Attr creaetAttribute(String name);
     Element createElement(String tagName);

@@ -1,3 +1,16 @@
+/* @Public System */
+var initPublicMethods = function() {
+    var sys = konoha.System;
+    sys.setTimeout = function(i, callback) {
+        return setTimeout(i, callback.rawptr);
+    }
+    sys.setInterval = function(callback, i) {
+        console.log(i);
+        console.log(callback);
+        return setInterval(callback.rawptr, i);
+    }
+};
+initPublicMethods();
 /* Document */
 js.dom = function() {
 }
@@ -182,7 +195,7 @@ js.dom.Element = function(rawptr) {
     }
 }
 js.dom.Element.prototype = new js.dom.Node();
-js.dom.Context = function(rawptr) {
+js.dom.CanvasContext = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CanvasContext";
     this.arc = function(x, y, radius, startAngle, endAngle, anticlockwise) {
@@ -282,12 +295,12 @@ js.dom.Context = function(rawptr) {
         this.rawptr.fillStyle = style.rawptr;
     }
 }
-js.dom.Context.prototype = new konoha.Object();
+js.dom.CanvasContext.prototype = new konoha.Object();
 js.dom.Canvas = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Canvas";
     this.getContext = function(str) {
-        return new js.dom.Context(this.rawptr.getContext(str.rawptr));
+        return new js.dom.CanvasContext(this.rawptr.getContext(str.rawptr));
     }
 }
 js.dom.Canvas.prototype = new js.dom.Element();
@@ -324,7 +337,7 @@ js.dom.Document = function(rawptr) {
     }
     this.getElementById = function(elementId) {
         var obj = this.rawptr.getElementById(elementId.rawptr);
-        switch (obj.nodeName) {
+        switch (obj && obj.nodeName) {
             case 'CANVAS':
                 return new js.dom.Canvas(obj);
             case 'IMG':

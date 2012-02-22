@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROGRAM=`basename $0`
-export JS_USE_INDENT=false
+export JS_USE_INDENT=true
 
 while getopts i:jo:t:u: OPT
 do

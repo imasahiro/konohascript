@@ -12,8 +12,11 @@ String[] colors;
     divClicked1.css("background-color", "white");
     divClicked2.css("background-color", "white");
 }
-@Public void Element.onclick() {
+@Public void Element.onclick(JEvent e) {
+    print e.pageX();
+    print e.pageY();
     JQuery j = new JQuery(this);
+    print j;
     int i = (to Int)j.getAttr("val");
     if (i == numClicked) {
         return;
