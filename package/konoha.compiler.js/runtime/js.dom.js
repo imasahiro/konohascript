@@ -198,6 +198,12 @@ js.dom.Element.prototype = new js.dom.Node();
 js.dom.CanvasContext = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CanvasContext";
+    this.setGlobalCompositeOperation = function(op) {
+        this.rawptr.globalCompositeOperation = op.rawptr;
+    }
+    this.getGlobalCompositeOperation = function(op) {
+        return new konoha.String(this.rawptr.globalCompositeOperation);
+    }
     this.arc = function(x, y, radius, startAngle, endAngle, anticlockwise) {
         this.rawptr.arc(x, y, radius, startAngle, endAngle, anticlockwise);
     }

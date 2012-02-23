@@ -66,6 +66,8 @@ class ImageData;
 class Gradient;
 class CanvasContext {
     // void addColorStop();
+    void setGlobalCompositeOperation(String op);
+    String getGlobalCompositeOperation();
     void arc(float x, float y, float radius, float startAngle, float endAndle, boolean anticlockwise);
     void actTo(float x1, float y1, float x2, float y2, float radius);
     void beginPath();
