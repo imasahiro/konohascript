@@ -1920,14 +1920,14 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
         print "", stmtCond.toToken();
         print stmtCond;
     }
-    int size = stmt.getESPIDX();
+    int espidx = stmt.getESPIDX();
 
-    asm(stmtCond, stmtCond.toToken(), stmt.getESPIDX());
+    asm(stmtCond, stmtCond.toToken(), espidx+1);
 
     Array<K_Inst> regTableThen = cloneRegTable();
     Array<K_Inst> regTableElse = cloneRegTable();
 
-    K_Inst inst = kfunc.getKInst(stmt.getESPIDX());
+    K_Inst inst = kfunc.getKInst(espidx+1);
     int bbssize = kfunc.bbs.size;
     K_BasicBlock bbThen = new K_BasicBlock(bbssize);
     K_BasicBlock bbElse = new K_BasicBlock(bbssize + 1);
@@ -1963,7 +1963,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     kfunc.curBB = bb;
     Array<K_Inst> regTableMerge = [];
     if (!bbThen.hasReturn && !bbThen.hasBrBreakBlock && !bbThen.hasBrContinueBlock && !bbElse.hasReturn && !bbElse.hasBrContinueBlock && !bbElse.hasBrBreakBlock) {
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < espidx; i++) {
             if (regTableThen[i] != regTableElse[i] && regTableThen[i] != null &&
                     regTableElse[i] != null /*&& regTableThen[i].type.isUnboxType()*/) {
                 K_PHI phi = new K_PHI(i);
