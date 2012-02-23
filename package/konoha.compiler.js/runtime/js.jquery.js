@@ -282,10 +282,6 @@ var initJQuery = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.unbind.apply(this.rawptr, args);
     }
-    jquery.prototype.unbind = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.unbind.apply(this.rawptr, args);
-    }
     jquery.prototype.hover = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         this.rawptr.hover.apply(this.rawptr, args);
@@ -402,6 +398,7 @@ var initJQuery = function() {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
                     });
         }
+
     }
     jquery.prototype.mousedown = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));

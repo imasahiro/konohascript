@@ -1,8 +1,11 @@
 @Public int System.setTimeout(int ms, Method callback);
 @Public int System.setInterval(Method callback, int ms);
+@Public void System.clearInterval(int id);
 class NodeList;
 class NamedNodeMap;
 class Document;
+class Window {
+}
 class Node {
     String getNodeName();
     String getNodeValue();

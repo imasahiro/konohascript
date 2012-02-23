@@ -261,6 +261,10 @@ konoha.Array.prototype.add = function(v) {
     this.capacity++;
     this.rawptr.push(v);
 }
+konoha.Array.prototype.clear = function() {
+    this.capacity = 0;
+    this.rawptr = [];
+}
 konoha.Array.prototype.remove = function(n) {
     if (n >= 0 && n < this.capacity) {
         this.rawptr.spice(n, n+1);

@@ -9,6 +9,9 @@ var initPublicMethods = function() {
         console.log(callback);
         return setInterval(callback.rawptr, i);
     }
+    sys.clearInterval = function(id) {
+        clearInterval(id);
+    }
 };
 initPublicMethods();
 /* Document */
