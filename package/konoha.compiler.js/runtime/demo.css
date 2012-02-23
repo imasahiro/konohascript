@@ -1,0 +1,56 @@
+body{
+  background-color: #FFFFFF;
+  color: #000000;
+  margin :0px;
+  text-align: center;
+}
+
+h1{
+  font: bold 2em serif;
+  color: #CCCCCC;
+  letter-spacing: 0.4em;
+  margin: 40px;
+  padding: 0px;
+  border-bottom: double 3px #CCCCCC;
+}
+
+img.mini{
+  margin:20px;
+  cursor: pointer;
+}
+
+div.haikei{
+  width:100%;                      /*横幅（100%）*/
+  height:100%;                     /*高さ（100%）*/
+  position:absolute;               /*絶対位置でレイヤー化*/
+  top:0px; left:0px;               /*位置指定（上0px、左0px）*/
+  z-index: 1;                      /*重なり順（1番目）*/
+  background-color:#000000;        /*背景色（黒色）*/
+  display: none;                   /*表示（非表示）*/
+}
+
+canvas.big{
+  position:absolute;               /*絶対位置でレイヤー化*/
+  top:0px; left:0px;               /*位置指定（上0px、左0px）*/
+  z-index: 2;                      /*重なり順（2番目）*/
+  border: solid 10px #FFFFFF;      /*枠線（実線、10ピクセル、白色）*/
+  display: none;                   /*表示（非表示）*/
+}
+
+p.cl{
+  height: 30px;                    /*高さ（30ピクセル）*/
+  position:absolute;               /*絶対位置でレイヤー化*/
+  top:0px; left:0px;               /*位置指定（上0px、左0px）*/
+  z-index: 3;                      /*重なり順（3番目）*/
+  font: bold 12pt sans-serif;      /*フォント（太字、12pt、ゴシック）*/
+  text-align: right;               /*文字揃え（右揃え）*/
+  background-color:#FFFFFF;        /*背景色（白色）*/
+  padding: 10px;                   /*内部余白（10ピクセル）*/
+  margin: 0px;                     /*外部余白（0ピクセル）*/
+  cursor: pointer;                 /*カーソル形状（ポインタ）*/
+  display: none;                   /*表示（非表示）*/
+}
+
+canvas{
+    background-color:#000; border: 1px solid #999; 
+}
