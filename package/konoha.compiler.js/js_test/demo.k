@@ -1,8 +1,11 @@
-using konoha.math.*;
-using konoha.lang.*;
+using konoha.math.*; using konoha.lang.*;
 using js.dom.*;
 using js.jquery.*;
 void initCanvas();
+@Public void Element.draw();
+@Public boolean Element.onMouseDown(JEvent e);
+@Public void Element.onMouseMove(JEvent e);
+@Public boolean Element.onMouseUp(JEvent e);
 class Mover {
     String color;
     float x;
@@ -18,7 +21,7 @@ class Mover {
         this.vY = Math.sin(i) * Float.random() * 34;
     }
 }
-class ParticleContext {
+class SimpleParticleContext {
     int canvasW;
     int canvasH;
     int timerId;
@@ -34,51 +37,182 @@ class ParticleContext {
     int prevMouseX;
     int prevMouseY;
     boolean mouseDown;
-    ParticleContext() {
+    SimpleParticleContext() {
     }
-    void init() {
+    @Virtual void init() {
         this.canvasW = 900;
         this.canvasH = 600;
         this.numMovers = 800;
         this.friction = 0.98;
         this.movers = [];
     }
+    @Virtual void setup() {
+        new JQuery("#mainCanvas").attr("width", canvasW+"");
+        new JQuery("#mainCanvas").attr("height", canvasH+"");
+        ctx = canvas.getContext("2d");
+        movers.clear();
+        for (int i = 0; i < numMovers; i++) {
+            movers.add(new Mover(i, canvasW, canvasH));
+        }
+        mouseX = canvasW * 0.5;
+        prevMouseX = mouseX;
+        mouseY = canvasH * 0.5;
+        prevMouseY = mouseY;
+        new JQuery("canvas").mousemove(method:Element.onMouseMove);
+        new JQuery("#mainCanvas").mousedown(method:Element.onMouseDown);
+        new JQuery("#mainCanvas").mouseup(method:Element.onMouseUp);
+    }
+    void initCanvas() {
+        canvas = (Canvas)(new Document().getElementById("mainCanvas"));
+        setup();
+    }
+
+    @Virtual void play() {
+        new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
+        new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
+        initCanvas();
+        new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
+        int w = new JQuery(new Window()).width();
+        int h = new JQuery(new Window()).height();
+        int imgW = new JQuery("#mainCanvas").width();
+        int imgH = new JQuery("#mainCanvas").height();
+        int imgLeft = (w-imgW-10*2)/2;
+        int imgTop = (h-imgH-10*2-50)/2;
+        new JQuery("#mainCanvas").css("left", imgLeft+"px").css("top", imgTop+"px");
+        int left = imgLeft + canvasW / 10 * 9;
+        new JQuery("#close").css("left", left+"px").css("top", (imgTop+imgH+10*2)+"px");
+        left = imgLeft;
+        new JQuery("#demo1").css("left", left+"px").css("top", (imgTop+imgH+10*2)+"px");
+        left = imgLeft + canvasW / 10;
+        new JQuery("#demo2").css("left", left+"px").css("top", (imgTop+imgH+10*2)+"px");
+        left = imgLeft + canvasW / 10 * 2;
+        new JQuery("#demo3").css("left", left+"px").css("top", (imgTop+imgH+10*2)+"px");
+        int width = canvasW / 10;
+        new JQuery("#close").width(width + 20);
+        new JQuery("#demo1").width(width);
+        new JQuery("#demo2").width(width);
+        new JQuery("#demo3").width(width);
+        new JQuery("#mainCanvas , #close").fadeIn(500);
+        new JQuery("#demo1").fadeIn(500);
+        new JQuery("#demo2").fadeIn(500);
+        new JQuery("#demo3").fadeIn(500);
+        ctx.setGlobalCompositeOperation("source-over");
+        ctx.setFillStyle("rgba(8,8,12,.65)");
+        ctx.fillRect(0, 0, canvasW, canvasH);
+        ctx.setFillStyle("#ffffff");
+        ctx.setFont("20pt Arial");
+        ctx.fillText("JavaScript Demo Page", 300, canvasH/2);
+        ctx.setGlobalCompositeOperation("lighter");
+    }
+}
+SimpleParticleContext pc_global;
+
+SimpleParticleContext spc = new SimpleParticleContext();
+spc.init();
+
+class ParticleContextNoMouseEvent extends SimpleParticleContext{
+    ParticleContextNoMouseEvent() {
+    }
+    @Override void init() {
+        this.canvasW = 900;
+        this.canvasH = 600;
+        this.numMovers = 800;
+        this.friction = 1.00;
+        this.movers = [];
+    }
+    void play() {
+        new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
+        new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
+        initCanvas();
+        new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
+        int w = new JQuery(new Window()).width();
+        int h = new JQuery(new Window()).height();
+        int imgW = new JQuery("#mainCanvas").width();
+        int imgH = new JQuery("#mainCanvas").height();
+        int imgLeft = (w-imgW-10*2)/2;
+        int imgTop = (h-imgH-10*2-50)/2;
+        new JQuery("#mainCanvas").css("left", imgLeft+"px").css("top", imgTop+"px");
+        new JQuery("#mainCanvas").fadeIn(500);
+        timerId = System.setInterval(method:Element.draw, 33);
+    }
+}
+ParticleContextNoMouseEvent pcnme = new ParticleContextNoMouseEvent();
+pcnme.init();
+
+
+class ParticleContext extends SimpleParticleContext{
+    ParticleContext() {
+    }
+    @Override void init() {
+        this.canvasW = 900;
+        this.canvasH = 600;
+        this.numMovers = 800;
+        this.friction = 0.98;
+        this.movers = [];
+    }
+    void play() {
+        new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
+        new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
+        initCanvas();
+        new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
+        int w = new JQuery(new Window()).width();
+        int h = new JQuery(new Window()).height();
+        int imgW = new JQuery("#mainCanvas").width();
+        int imgH = new JQuery("#mainCanvas").height();
+        int imgLeft = (w-imgW-10*2)/2;
+        int imgTop = (h-imgH-10*2-50)/2;
+        new JQuery("#mainCanvas").css("left", imgLeft+"px").css("top", imgTop+"px");
+        new JQuery("#mainCanvas").fadeIn(500);
+        timerId = System.setInterval(method:Element.draw, 33);
+    }
 }
 ParticleContext pc = new ParticleContext();
 pc.init();
 
-void play() {
-    initCanvas();
-    new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
-    int w = new JQuery(new Window()).width();
-    int h = new JQuery(new Window()).height();
-    int imgW = new JQuery("#mainCanvas").width();
-    int imgH = new JQuery("#mainCanvas").height();
-    int imgLeft = (w-imgW-10*2)/2;
-    int imgTop = (h-imgH-10*2-50)/2;
-    new JQuery("#mainCanvas").css("left", imgLeft+"px").css("top", imgTop+"px");
-    new JQuery("#close").css("left", imgLeft+"px").css("top", (imgTop+imgH+10*2)+"px");
-    new JQuery("#close").width(imgW);
-    new JQuery("#mainCanvas , #close").fadeIn(500);
+void clearIntervalAll() {
+    System.clearInterval(pc.timerId);
+    System.clearInterval(spc.timerId);
+    System.clearInterval(pcnme.timerId);
 }
+void clearDemo() {
+    new JQuery("#mainCanvas").remove();
+}
+
 @Public void Element.click1() {
     int h = new JQuery(new Window()).height();;
     new JQuery("#back").height(h);
     new JQuery("#back").css("opacity", "0.7").fadeIn(200);
-    String fname = "b_" + new JQuery(this).getattr("src");
-    new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
-    new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
-    //new JQuery("#mainCanvas").load(method:Element.play);
-    play();
+    pc_global = spc;
+    spc.play();
 }
 @Public void Element.click2() {
-    System.clearInterval(pc.timerId);
+    clearIntervalAll();
+    clearDemo();
     new JQuery("body").unbind();
     new JQuery("#mainCanvas").unbind();
-    new JQuery("#mainCanvas").remove();
     new JQuery("#back , #close").css("display", "none");
+    new JQuery("#demo1").css("display", "none");
+    new JQuery("#demo2").css("display", "none");
+    new JQuery("#demo3").css("display", "none");
 }
-
+@Public void Element.click3() {
+    clearIntervalAll();
+    clearDemo();
+    pc_global = pc;
+    pc.play();
+}
+@Public void Element.click4() {
+    clearIntervalAll();
+    clearDemo();
+    pc_global = spc;
+    spc.play();
+}
+@Public void Element.click5() {
+    clearIntervalAll();
+    clearDemo();
+    pc_global = pcnme;
+    pcnme.play();
+}
 
 @Public void Element.onMouseMove(JEvent e) {
     Offset ca = new JQuery("#mainCanvas").offset();
@@ -95,57 +229,39 @@ void play() {
     pc.mouseDown = false;
     return false;
 }
-void setup() {
-    //canvasH = new JQuery("body").innerHeight();
-    //canvasW = new JQuery("outer").innerWidth();
 
-    new JQuery("#mainCanvas").attr("width", pc.canvasW+"");
-    new JQuery("#mainCanvas").attr("height", pc.canvasH+"");
-    pc.ctx = pc.canvas.getContext("2d");
-    pc.movers.clear();
-    for (int i = 0; i < pc.numMovers; i++) {
-        pc.movers.add(new Mover(i, pc.canvasW, pc.canvasH));
-    }
-    pc.mouseX = pc.canvasW * 0.5;
-    pc.prevMouseX = pc.mouseX;
-    pc.mouseY = pc.canvasH * 0.5;
-    pc.prevMouseY = pc.mouseY;
-    new JQuery("canvas").mousemove(method:Element.onMouseMove);
-    new JQuery("#mainCanvas").mousedown(method:Element.onMouseDown);
-    new JQuery("#mainCanvas").mouseup(method:Element.onMouseUp);
-}
 
 @Public void Element.draw() {
-    int canvasW = pc.canvasW;
-    int canvasH = pc.canvasH;
-    CanvasContext ctx = pc.ctx;
+    int canvasW = pc_global.canvasW;
+    int canvasH = pc_global.canvasH;
+    CanvasContext ctx = pc_global.ctx;
     ctx.setGlobalCompositeOperation("source-over");
     ctx.setFillStyle("rgba(8,8,12,.65)");
     ctx.fillRect(0, 0, canvasW, canvasH);
     ctx.setGlobalCompositeOperation("lighter");
-    pc.mouseVX = pc.mouseX - pc.prevMouseX;
-    pc.mouseVY = pc.mouseY - pc.prevMouseY;
-    pc.prevMouseX = pc.mouseX;
-    pc.prevMouseY = pc.mouseY;
+    pc_global.mouseVX = pc_global.mouseX - pc_global.prevMouseX;
+    pc_global.mouseVY = pc_global.mouseY - pc_global.prevMouseY;
+    pc_global.prevMouseX = pc_global.mouseX;
+    pc_global.prevMouseY = pc_global.mouseY;
 
     float toDist = canvasW * 0.86;
     float stirDist = canvasW * 0.125;
     float blowDist = canvasW * 0.5;
-    for (int i = 0; i < pc.numMovers; i++) {
-        Mover m = pc.movers[i];
+    for (int i = 0; i < pc_global.numMovers; i++) {
+        Mover m = pc_global.movers[i];
         float x = m.x;
         float y = m.y;
         float vX = m.vX;
         float vY = m.vY;
-        float dX = x - pc.mouseX;
-        float dY = y - pc.mouseY;
+        float dX = x - pc_global.mouseX;
+        float dY = y - pc_global.mouseY;
         float d = Math.sqrt(dX * dX + dY * dY);
         if (d == 0) {
             d = 0.001;
         }
         dX = dX / d;
         dY = dY / d;
-        if (pc.mouseDown && d < blowDist) {
+        if (pc_global.mouseDown && d < blowDist) {
             float blowAcc = (1 - (d / blowDist)) * 14;
             vX = vX + (dX * blowAcc + 0.5 - Float.random());
             vY = vY + (dY * blowAcc + 0.5 - Float.random());
@@ -159,12 +275,12 @@ void setup() {
 
         if (d < stirDist) {
             float mAcc = (1 - (d / stirDist)) * canvasW * 0.00026;
-            vX = vX + pc.mouseVX * mAcc;
-            vY = vY + pc.mouseVY * mAcc;
+            vX = vX + pc_global.mouseVX * mAcc;
+            vY = vY + pc_global.mouseVY * mAcc;
         }
 
-        vX = vX * pc.friction;
-        vY = vY * pc.friction;
+        vX = vX * pc_global.friction;
+        vY = vY * pc_global.friction;
 
         float avgVX = Math.fabs(vX);
         float avgVY = Math.fabs(vY);
@@ -217,14 +333,12 @@ void setup() {
         ctx.fill();
     }
 }
-void initCanvas() {
-    pc.canvas = (Canvas)(new Document().getElementById("mainCanvas"));
-    setup();
-    pc.timerId = System.setInterval(method:Element.draw, 33);
-}
 void main() {
     int y = 0;
     new JQuery("#back").css("top", y+"px");
     new JQuery(".mini").click(method:Element.click1);
     new JQuery("#close").click(method:Element.click2);
+    new JQuery("#demo1").click(method:Element.click4);
+    new JQuery("#demo2").click(method:Element.click5);
+    new JQuery("#demo3").click(method:Element.click3);
 }

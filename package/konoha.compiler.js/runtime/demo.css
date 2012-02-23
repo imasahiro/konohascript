@@ -38,14 +38,14 @@ canvas.big{
 }
 
 p.cl{
-  height: 30px;                    /*高さ（30ピクセル）*/
+  height: 40px;                    /*高さ（30ピクセル）*/
   position:absolute;               /*絶対位置でレイヤー化*/
   top:0px; left:0px;               /*位置指定（上0px、左0px）*/
   z-index: 3;                      /*重なり順（3番目）*/
   font: bold 12pt sans-serif;      /*フォント（太字、12pt、ゴシック）*/
-  text-align: right;               /*文字揃え（右揃え）*/
+  text-align: center;               /*文字揃え（右揃え）*/
   background-color:#FFFFFF;        /*背景色（白色）*/
-  padding: 10px;                   /*内部余白（10ピクセル）*/
+  padding: 0px;                   /*内部余白（10ピクセル）*/
   margin: 0px;                     /*外部余白（0ピクセル）*/
   cursor: pointer;                 /*カーソル形状（ポインタ）*/
   display: none;                   /*表示（非表示）*/

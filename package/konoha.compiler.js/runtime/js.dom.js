@@ -201,6 +201,12 @@ js.dom.Element.prototype = new js.dom.Node();
 js.dom.CanvasContext = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CanvasContext";
+    this.setFont = function(font) {
+        this.rawptr.font = font.rawptr;
+    }
+    this.getFont = function() {
+        return new konoha.String(this.rawptr.font);
+    }
     this.setGlobalCompositeOperation = function(op) {
         this.rawptr.globalCompositeOperation = op.rawptr;
     }
