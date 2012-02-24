@@ -122,7 +122,7 @@ class JQuery {
 
     /* CSS */
 
-              String  getcss(String name);
+              String  getCss(String name);
     @Overload JQuery  css(Map<String, dynamic> properties);
     @Overload JQuery  css(String name, dynamic value);
               Offset  offset();

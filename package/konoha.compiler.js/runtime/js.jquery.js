@@ -218,7 +218,7 @@ var initJQuery = function() {
     }
 
     /* CSS */
-    jquery.prototype.getcss = function() {
+    jquery.prototype.getCss = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
     }

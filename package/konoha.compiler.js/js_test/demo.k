@@ -184,6 +184,11 @@ void clearDemo() {
     new JQuery("#back").css("opacity", "0.7").fadeIn(200);
     pc_global = spc;
     spc.play();
+    new JQuery("#whiteback").css("top", new JQuery("#mainCanvas").getCss("top"))
+        .css("left", new JQuery("#mainCanvas").getCss("left"));
+    new JQuery("#whiteback").height(new JQuery("#mainCanvas").height());
+    new JQuery("#whiteback").css("display", "block")
+        .css("width", new JQuery("#mainCanvas").width());;
 }
 @Public void Element.click2() {
     clearIntervalAll();
@@ -191,6 +196,7 @@ void clearDemo() {
     new JQuery("body").unbind();
     new JQuery("#mainCanvas").unbind();
     new JQuery("#back , #close").css("display", "none");
+    new JQuery("#whiteback").css("display", "none");
     new JQuery("#demo1").css("display", "none");
     new JQuery("#demo2").css("display", "none");
     new JQuery("#demo3").css("display", "none");

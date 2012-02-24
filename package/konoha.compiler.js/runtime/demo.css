@@ -37,6 +37,14 @@ canvas.big{
   display: none;                   /*表示（非表示）*/
 }
 
+div.shirohaikei{
+  position:absolute;               /*絶対位置でレイヤー化*/
+  z-index: 2;                      /*重なり順（2番目）*/
+  border: solid 10px #FFFFFF;      /*枠線（実線、10ピクセル、白色）*/
+  display: none;                   /*表示（非表示）*/
+  background-color: #FFFFFF;
+}
+
 p.cl{
   height: 40px;                    /*高さ（30ピクセル）*/
   position:absolute;               /*絶対位置でレイヤー化*/
