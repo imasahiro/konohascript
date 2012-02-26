@@ -260,244 +260,244 @@ var initJQuery = function() {
     /* Events */
     jquery.prototype.ready = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.ready.apply(this.rawptr, args);
+        return new jquery(this.rawptr.ready.apply(this.rawptr, args));
     }
     jquery.prototype.bind = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.bind.apply(this.rawptr, args);
+        return new jquery(this.rawptr.bind.apply(this.rawptr, args));
     }
     jquery.prototype.one = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.one.apply(this.rawptr, args);
+        return new jquery(this.rawptr.one.apply(this.rawptr, args));
     }
     jquery.prototype.trigger = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.trigger.apply(this.rawptr, args);
+        return new jquery(this.rawptr.trigger.apply(this.rawptr, args));
     }
     jquery.prototype.triggerHandler = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.triggerHandler.apply(this.rawptr, args);
+        return new jquery(this.rawptr.triggerHandler.apply(this.rawptr, args));
     }
     jquery.prototype.unbind = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.unbind.apply(this.rawptr, args);
+        return new jquery(this.rawptr.unbind.apply(this.rawptr, args));
     }
     jquery.prototype.hover = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.hover.apply(this.rawptr, args);
+        return new jquery(this.rawptr.hover.apply(this.rawptr, args));
     }
     jquery.prototype.toggleEvent = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         args = verifyArgs(args[0]);
-        this.rawptr.toggle.apply(this.rawptr, args);
+        return new jquery(this.rawptr.toggle.apply(this.rawptr, args));
     }
     jquery.prototype.live = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.live.apply(this.rawptr, args);
+        return new jquery(this.rawptr.live.apply(this.rawptr, args));
     }
     jquery.prototype.die = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.die.apply(this.rawptr, args);
+        return new jquery(this.rawptr.die.apply(this.rawptr, args));
     }
     jquery.prototype.blur = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.blur.apply(this.rawptr, args);
+            return new jquery(this.rawptr.blur.apply(this.rawptr, args));
         } else {
-            this.rawptr.blur(function(e) {
+            return new jquery(this.rawptr.blur(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.change = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.change.apply(this.rawptr, args);
+            return new jquery(this.rawptr.change.apply(this.rawptr, args));
         } else {
-            this.rawptr.change(function(e) {
+            return new jquery(this.rawptr.change(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.click = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.click.apply(this.rawptr, args);
+            return new jquery(this.rawptr.click.apply(this.rawptr, args));
         } else {
-            this.rawptr.click(function(e) {
+            return new jquery(this.rawptr.click(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.dblclick = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.dblclick.apply(this.rawptr, args);
+            return new jquery(this.rawptr.dblclick.apply(this.rawptr, args));
         } else {
-            this.rawptr.dblclick(function(e) {
+            return new jquery(this.rawptr.dblclick(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.error = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.error.apply(this.rawptr, args);
+            return new jquery(this.rawptr.error.apply(this.rawptr, args));
         } else {
-            this.rawptr.error(function(e) {
+            return new jquery(this.rawptr.error(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.focus = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.focus.apply(this.rawptr, args);
+            return new jquery(this.rawptr.focus.apply(this.rawptr, args));
         } else {
-            this.rawptr.focus(function(e) {
+            return new jquery(this.rawptr.focus(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.keydown = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.keydown.apply(this.rawptr, args);
+            return new jquery(this.rawptr.keydown.apply(this.rawptr, args));
         } else {
-            this.rawptr.keydown(function(e) {
+            return new jquery(this.rawptr.keydown(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.keypress = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.keypress.apply(this.rawptr, args);
+            return new jquery(this.rawptr.keypress.apply(this.rawptr, args));
         } else {
-            this.rawptr.keypress(function(e) {
+            return new jquery(this.rawptr.keypress(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.keyup = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.keyup.apply(this.rawptr, args);
+            return new jquery(this.rawptr.keyup.apply(this.rawptr, args));
         } else {
-            this.rawptr.keyup(function(e) {
+            return new jquery(this.rawptr.keyup(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.load = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.load.apply(this.rawptr, args);
+            return new jquery(this.rawptr.load.apply(this.rawptr, args));
         } else {
-            this.rawptr.load(function(e) {
+            return new jquery(this.rawptr.load(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
 
     }
     jquery.prototype.mousedown = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.mousedown.apply(this.rawptr, args);
+            return new jquery(this.rawptr.mousedown.apply(this.rawptr, args));
         } else {
-            this.rawptr.mousedown(function(e) {
+            return new jquery(this.rawptr.mousedown(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.mousemove = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.mousemove.apply(this.rawptr, args);
+            return new jquery(this.rawptr.mousemove.apply(this.rawptr, args));
         } else {
-            this.rawptr.mousemove(function(e) {
+            return new jquery(this.rawptr.mousemove(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.mouseout = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.mouseout.apply(this.rawptr, args);
+            return new jquery(this.rawptr.mouseout.apply(this.rawptr, args));
         } else {
-            this.rawptr.mouseout(function(e) {
+            return new jquery(this.rawptr.mouseout(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.mouseover = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.mouseover.apply(this.rawptr, args);
+            return new jquery(this.rawptr.mouseover.apply(this.rawptr, args));
         } else {
-            this.rawptr.mouseover(function(e) {
+            return new jquery(this.rawptr.mouseover(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.mouseup = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.mouseup.apply(this.rawptr, args);
+            return new jquery(this.rawptr.mouseup.apply(this.rawptr, args));
         } else {
-            this.rawptr.mouseup(function(e) {
+            return new jquery(this.rawptr.mouseup(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.resize = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.resize.apply(this.rawptr, args);
+            return new jquery(this.rawptr.resize.apply(this.rawptr, args));
         } else {
-            this.rawptr.resize(function(e) {
+            return new jquery(this.rawptr.resize(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.scroll = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.scroll.apply(this.rawptr, args);
+            return new jquery(this.rawptr.scroll.apply(this.rawptr, args));
         } else {
-            this.rawptr.scroll(function(e) {
+            return new jquery(this.rawptr.scroll(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.select = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.select.apply(this.rawptr, args);
+            return new jquery(this.rawptr.select.apply(this.rawptr, args));
         } else {
-            this.rawptr.select(function(e) {
+            return new jquery(this.rawptr.select(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.submit = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.submit.apply(this.rawptr, args);
+            return new jquery(this.rawptr.submit.apply(this.rawptr, args));
         } else {
-            this.rawptr.select(function(e) {
+            return new jquery(this.rawptr.select(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     jquery.prototype.unload = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         if (args.length == 0) {
-            this.rawptr.unload.apply(this.rawptr, args);
+            return new jquery(this.rawptr.unload.apply(this.rawptr, args));
         } else {
-            this.rawptr.unload(function(e) {
+            return new jquery(this.rawptr.unload(function(e) {
                     args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
-                    });
+                    }));
         }
     }
     /* Effects */

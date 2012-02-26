@@ -69,7 +69,7 @@ class SimpleParticleContext {
     }
 
     @Virtual void play() {
-        new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
+        new JQuery("body").append(new JQuery("<canvas class='big' id='mainCanvas'>"));
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
         new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
@@ -126,7 +126,7 @@ class OneParticleContext extends SimpleParticleContext{
         this.movers.add(new Mover(Int.random(100), canvasW, canvasH));
     }
     void play() {
-        new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
+        new JQuery("body").append(new JQuery("<canvas class='big' id='mainCanvas'>"));
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
         new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
@@ -168,7 +168,7 @@ class ParticleContextNoMouseEvent extends SimpleParticleContext{
         prevMouseY = mouseY;
     }
     void play() {
-        new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
+        new JQuery("body").append(new JQuery("<canvas class='big' id='mainCanvas'>"));
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
         new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
@@ -197,7 +197,7 @@ class ParticleContext extends SimpleParticleContext{
         this.movers = [];
     }
     void play() {
-        new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
+        new JQuery("body").append(new JQuery("<canvas class='big' id='mainCanvas'>"));
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
         new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
