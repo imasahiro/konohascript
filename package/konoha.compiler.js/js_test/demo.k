@@ -254,7 +254,7 @@ void clearDemo() {
     new JQuery("#back").css("opacity", "0.7").fadeIn(200);
     gctx.curpc = gctx.spc;
     gctx.spc.play();
-    int height = new JQuery("#mainCanvas").height() + new JQuery("p.cl").height();
+    int height = new JQuery("#mainCanvas").height() + new JQuery("p.cl").height() + 3;
     new JQuery("#whiteback").css("top", new JQuery("#mainCanvas").getCss("top"))
         .css("left", new JQuery("#mainCanvas").getCss("left"));
     new JQuery("#whiteback").height(height);
