@@ -503,39 +503,39 @@ var initJQuery = function() {
     /* Effects */
     jquery.prototype.show = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.show.apply(this.rawptr, args);
+        return new jquery(this.rawptr.show.apply(this.rawptr, args));
     }
     jquery.prototype.hide = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.hide.apply(this.rawptr, args);
+        return new jquery(this.rawptr.hide.apply(this.rawptr, args));
     }
     jquery.prototype.toggle = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.toggle.apply(this.rawptr, args);
+        return new jquery(this.rawptr.toggle.apply(this.rawptr, args));
     }
     jquery.prototype.slideDown = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.slideDown.apply(this.rawptr, args);
+        return new jquery(this.rawptr.slideDown.apply(this.rawptr, args));
     }
     jquery.prototype.slideUp = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.slideUp.apply(this.rawptr, args);
+        return new jquery(this.rawptr.slideUp.apply(this.rawptr, args));
     }
     jquery.prototype.slideToggle = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.slideToggle.apply(this.rawptr, args);
+        return new jquery(this.rawptr.slideToggle.apply(this.rawptr, args));
     }
     jquery.prototype.fadeIn = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.fadeIn.apply(this.rawptr, args);
+        return new jquery(this.rawptr.fadeIn.apply(this.rawptr, args));
     }
     jquery.prototype.fadeOut = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.fadeOut.apply(this.rawptr, args);
+        return new jquery(this.rawptr.fadeOut.apply(this.rawptr, args));
     }
     jquery.prototype.fadeTo = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.fadeTo.apply(this.rawptr, args);
+        return new jquery(this.rawptr.fadeTo.apply(this.rawptr, args));
     }
     jquery.prototype._new = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
