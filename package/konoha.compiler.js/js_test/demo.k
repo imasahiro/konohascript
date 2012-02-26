@@ -72,7 +72,8 @@ class SimpleParticleContext {
         new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
-        new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
+        new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
+        //new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
         int w = new JQuery(new Window()).width();
         int h = new JQuery(new Window()).height();
         int imgW = new JQuery("#mainCanvas").width();
@@ -128,7 +129,8 @@ class OneParticleContext extends SimpleParticleContext{
         new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
-        new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
+        new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
+        //new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
         int w = new JQuery(new Window()).width();
         int h = new JQuery(new Window()).height();
         int imgW = new JQuery("#mainCanvas").width();
@@ -169,7 +171,8 @@ class ParticleContextNoMouseEvent extends SimpleParticleContext{
         new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
-        new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
+        new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
+        //new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
         int w = new JQuery(new Window()).width();
         int h = new JQuery(new Window()).height();
         int imgW = new JQuery("#mainCanvas").width();
@@ -197,7 +200,8 @@ class ParticleContext extends SimpleParticleContext{
         new JQuery("body").append("<canvas class='big' id='mainCanvas'>");
         new JQuery("#mainCanvas").css("visibility", "hidden").css("display", "block");
         initCanvas();
-        new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
+        new JQuery("#mainCanvas")/*.css("display", "none")*/.css("visibility", "visible");
+        //new JQuery("#mainCanvas").css("display", "none").css("visibility", "visible");
         int w = new JQuery(new Window()).width();
         int h = new JQuery(new Window()).height();
         int imgW = new JQuery("#mainCanvas").width();
