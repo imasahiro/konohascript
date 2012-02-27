@@ -1,6 +1,4 @@
-#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
-#endif
 
 /* ------------------------------------------------------------------------ */
 //## method Int MPIComm.getRank();
@@ -39,19 +37,26 @@ KMETHOD MPIComm_create(CTX ctx, ksfp_t *sfp _RIX)
 	MPIC(comm, sfp[0].o);
 	kArray *ids = sfp[1].a;
 	MPIC(newc, new_O(MPIComm, O_cid(sfp[0].o)));
+	int maxprocs = MPIC_SIZE(comm);
 	int len = knh_Array_size(ids);
 	if (len > 0) {
-		int i, ranks[len];
+		int i, ranks[len], r_max = 0;
 		for (i = 0; i < len; i++) {
 			kint_t r = (kint_t)knh_Array_n(ids, i);
 			ranks[i] = (int)r;
+			if (r_max < r) r_max = r;
 		}
-		MPI_Comm_group(MPIC_COMM(comm), &base);
-		MPI_Group_incl(base, len, ranks, &newg);
-		MPI_Comm_create(MPIC_COMM(comm), newg, &MPIC_COMM(newc));
-		MPI_Comm_rank(MPIC_COMM(newc), &MPIC_RANK(newc));
-		MPI_Comm_size(MPIC_COMM(newc), &MPIC_SIZE(newc));
-		MPIC_PROC(newc) = strdup(MPIC_PROC(comm)); // to be free
+		if (r_max < maxprocs) {
+			MPI_Comm_group(MPIC_COMM(comm), &base);
+			MPI_Group_incl(base, len, ranks, &newg);
+			MPI_Comm_create(MPIC_COMM(comm), newg, &MPIC_COMM(newc));
+			MPIC_INITV(newc, MPIC_COMM(newc));
+			MPIC_PROC(newc) = strdup(MPIC_PROC(comm)); // to be free
+			MPI_Group_free(&newg);
+		}
+		else {
+			KNH_NTHROW2(ctx, sfp, "Script!!", "invalid rank assigned", K_FAILED, KNH_LDATA0);
+		}
 	}
 	RETURN_(newc);
 }

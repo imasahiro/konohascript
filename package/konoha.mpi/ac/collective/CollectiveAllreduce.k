@@ -4,7 +4,7 @@ world = MPIComm.WORLD;
 rank = world.rank;
 
 if (world.size != 3) exit();
-if (rank != 0) disableLog();
+if (rank != 0) MPI.preventLog();
 
 /* ------------------------------------------------------------------------ */
 

@@ -1,9 +1,5 @@
-#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
 #include <konoha1/konohalang.h>
-#else
-#include "../../konoha1/konohalang.h"
-#endif
 
 #define ArrayMNFunc(X) {MN_##X , __Array_##X}
 
@@ -270,11 +266,9 @@ static void knh_MPI_Array_p(CTX ctx, kOutputStream *out, kRawPtr *o, int level)
 
 void knh_MPI_initArrayPrintFunc(CTX ctx)
 {
-#ifdef K_USING_MACOSX_
 	const knh_ClassTBL_t* tbl = ClassTBL(CLASS_Array);
 	kclassdef_t *ArrayDef = (kclassdef_t*)tbl->cdef;
-	ArrayDef->p = knh_MPI_Array_p;
-#endif
+	//ArrayDef->p = knh_MPI_Array_p; // const if original : modified @ mpikonoha
 }
 
 /* ------------------------------------------------------------------------ */

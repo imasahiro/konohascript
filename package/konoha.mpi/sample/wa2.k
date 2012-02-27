@@ -10,7 +10,7 @@ OUT.println("myid:"+"%d"(myid)+", dsendbuf="+"%4.2f"(dsendbuf[0]));
 drecvbuf = new float[1];
 
 world.barrier();
-t0 = getMPIWtime();
+t0 = MPI.getWtime();
 
 /* binary-tree communication: log_2(nprocs) */
 {
@@ -32,7 +32,7 @@ t0 = getMPIWtime();
 }
 
 world.barrier();
-t1 = getMPIWtime();
+t1 = MPI.getWtime();
 t2 = t1 - t0;
 t_w = new float[1];
 

@@ -1,9 +1,9 @@
 using konoha.mpi.*;
 using konoha.math.*;
 
-N = (|$script.argv| > 0) ? (int)$script.argv[0] : 256;
-DEBUG = 1
-EPS =    1.0e-18
+N =     480;
+DEBUG = 1;
+EPS =   1.0e-18;
 
 MPIComm world;
 int     myid, numprocs;
@@ -15,8 +15,8 @@ void main(String[] args) {
     double  t0, t1, t2;
     double  dc_inv, d_mflops;
 
-    int     ierr;
     int     i, j;
+    int     iflag; int[] iflag_t = [1];
     int     j_start, j_end;
     int     np;
 
@@ -25,10 +25,9 @@ void main(String[] args) {
     numprocs = world.getSize();
     np   = N/numprocs;
 
-    a = new double[np, N];
-    b = new double[N, np];
-    c = new double[np, N];
-
+    double[] a = new double[np, N];
+    double[] b = new double[N, np];
+    double[] c = new double[np, N];
 
     /* matrix generation --------------------------*/
     if (DEBUG == 1) {
@@ -51,15 +50,15 @@ void main(String[] args) {
 
     /* Start of mat-vec routine ----------------------------*/
     world.barrier();
-    t1 = getMPIWtime();
+    t1 = MPI.getWtime();
 
     myMatMat(c, a, b, N);
 
     world.barrier();
-    t2 = getMPIWtime();
+    t2 = MPI.getWtime();
     t0 =  t2 - t1;
     t_w = new float[1];
-    world.reduce((MPIData)[t0], (MPIData)t_w, 1, MPIOp.MAX, 0);
+    world.reduce((MPIData)t0, (MPIData)t_w, 1, MPIOp.MAX, 0);
     /* End of mat-vec routine --------------------------- */
 
     if (myid == 0) {
@@ -85,9 +84,7 @@ void main(String[] args) {
             }
         }
         /* ------------------------------------- */
-
-        iflag_t = [1];
-        world.reduce((MPIData)[iflag], (MPIData)iflag_t, 1, MPIOp.SUM, 0);
+        world.reduce((MPIData)iflag, (MPIData)iflag_t, 1, MPIOp.SUM, 0);
         if (myid == 0) {
             if (iflag_t[0] == 0) OUT.println(" OK! ");
         }
@@ -132,8 +129,8 @@ void myMatMat(double[] c, double[] a, double[] b, int n)
             /* copy B_T to B*/
             for (i = 0; i < n; i++) {
                 for (j = 0; j < np; j++) {
-                    bidx = i * np + j;
                     //b[i, j] = b_t[i, j];
+                    bidx = i * np + j;
                     b[bidx] = b_t[bidx];
                 }
             }

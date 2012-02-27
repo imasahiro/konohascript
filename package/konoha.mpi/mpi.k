@@ -1,12 +1,16 @@
 include "lib:gluelink";
 
+@Native class MPIComm;
+@Native class MPIData;
+@Native class MPIRequest;
+@Native class MPIOp;
+@Native @Singleton class MPI;
 
 /* ------------------------------------------------------------------------ */
-/* System API */
+/* General API */
 
-@Public void  System.disableLog();  // for ac
-@Public Float System.getMPIWtime(); // for MPI_Wtime
-
+@Native @Static void   MPI.preventLog();  // for ac
+@Native @Static Float  MPI.getWtime();    // for MPI_Wtime
 
 /* ------------------------------------------------------------------------ */
 /* Array Extra API */
@@ -22,15 +26,13 @@ include "lib:gluelink";
 /* ------------------------------------------------------------------------ */
 /* MPI-1 Basic API */
 
-@Native class MPIComm;
 @Native int     MPIComm.getRank();
 @Native int     MPIComm.getSize();
 @Native String  MPIComm.getProcessorName();
 @Native int     MPIComm.barrier();
 @Native MPIComm MPIComm.create(int[] ranks);
 
-@Native class MPIData;
-@Native MPIData MPIData.new (byte[] data, Class c);
+@Native MPIData MPIData.new(Class c);
 @Native MPIData : (int i);
 @Native MPIData : (int[] ia);
 @Native MPIData : (float f);
@@ -39,18 +41,18 @@ include "lib:gluelink";
 @Native int[]   : (MPIData md);
 @Native float[] : (MPIData md);
 @Native byte[]  : (MPIData md);
-@Native Class   MPIData.getContentClass();
+@Native int     MPIData.getDataType();
+@Native Class   MPIData.getDataClass();
 @Native int     MPIData.getSize();
+@Native dynamic MPIData.get(int n);
+@Native void    MPIData.set(int n, dynamic d);
 @Native MPIData MPIData.opADD(int offset);
 
-@Native class MPIRequest;
 @Native boolean MPIRequest.test();
 @Native boolean MPIRequest.wait();
 @Native boolean MPIRequest.cancel();
 
-@Native class MPIOp;
 @Native MPIOp MPIOp.new(Func<MPIData,MPIData> func, Boolean commutable);
-
 
 /* ------------------------------------------------------------------------ */
 /* Point-to-Point Communication API */
@@ -72,25 +74,17 @@ include "lib:gluelink";
 @Native boolean MPIComm.allGather(MPIData sdata, int scount, MPIData rdata, int rcount);
 @Native boolean MPIComm.allToAll(MPIData sdata, int scount, MPIData rdata, int rcount);
 @Native boolean MPIComm.reduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op, int root_rank);
+@Native boolean MPIComm.scan(MPIData sdata, MPIData rdata, int rcount, MPIOp op);
 @Native boolean MPIComm.allReduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op);
-
-
-/* ------------------------------------------------------------------------ */
-/* MPITask Construction */
-
-//@Native void MPIComm.addTask(Path taskpath);
-//@Native @Static MPIComm MPIComm.getTaskComm();
+@Native boolean MPIComm.reduceScatter(MPIData sdata, MPIData rdata, int[] rcounts, MPIOp op);
 
 /* ======================================================================== */
-/* Utility Functions */
+/* Functions depends on another package */
 
-using konoha.io.*;
+using konoha.io.*; // import Bytes.readMsgPack, Bytes.writeMsgPack
+using konoha.json.*; // import Bytes.readJson, Bytes.writeJson
 
-MPIData : (Object o) {
-    byte[] bt = new byte[0];
-    bt.writeMsgPack(o);
-    return new MPIData(bt, o.class);
-}
-dynamic MPIData.decode(Class c) {
-    return ((byte[])this).readMsgPack(0, 0, c);
-}
+@Native MPIData : (Object o);
+@Native Tvar MPIData.decode(Class _);
+
+// EOF

@@ -1,6 +1,4 @@
-#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
-#endif
 
 /* ------------------------------------------------------------------------ */
 //## method boolean MPIComm.bcast(MPIData data, int count, int root_rank);
@@ -18,20 +16,18 @@ KMETHOD MPIComm_bcast(CTX ctx, ksfp_t *sfp _RIX)
 			count = MPID_SIZE(data);
 			MPI_Bcast(&count, 1, MPI_INT, root_rank, MPIC_COMM(comm)); /* bcast for buffer_length */
 		}
-		MPI_Bcast(MPID_ADDR(data), count, MPID_TYPE(data), root_rank, MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Bcast(MPID_ADDR(data), count, MPID_TYPE(data), root_rank, MPIC_COMM(comm));
 	} else {
-		MPID_WCHK(data);
+		MPID_CHK_WRITABLE(data);
 		if (count == 0) {
 			MPI_Bcast(&count, 1, MPI_INT, root_rank, MPIC_COMM(comm)); /* bcast for buffer_length */
 		}
 		int inc = 0;
 		knh_MPIData_expand(ctx, data, &count, &inc);
 		knh_MPIData_incSize(data, inc);
-		MPI_Bcast(MPID_ADDR(data), count, MPID_TYPE(data), root_rank, MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Bcast(MPID_ADDR(data), count, MPID_TYPE(data), root_rank, MPIC_COMM(comm));
 	}
-	RETURNb_(ret);
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -46,7 +42,7 @@ KMETHOD MPIComm_scatter(CTX ctx, ksfp_t *sfp _RIX)
 	int rcount = Int_to(int, sfp[4]);
 	int root_rank = Int_to(int, sfp[5]);
 	int ret = 0;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
 	// if scount > size, must cut down the number and bcast it
 	if (scount == 0) {
 		if (MPIC_RANK(comm) == root_rank) {
@@ -60,9 +56,8 @@ KMETHOD MPIComm_scatter(CTX ctx, ksfp_t *sfp _RIX)
 	int inc = 0;
 	knh_MPIData_expand(ctx, rdata, &rcount, &inc);
 	knh_MPIData_incSize(rdata, inc);
-	MPI_Scatter(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
-	ret = 1;
-	RETURNb_(ret);
+	ret = MPI_Scatter(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -80,21 +75,19 @@ KMETHOD MPIComm_gather(CTX ctx, ksfp_t *sfp _RIX)
 	if (scount > 0) {
 		// if scount > size, must cut down the number and bcast it
 		if (MPIC_RANK(comm) == root_rank) {
-			MPID_WCHK(rdata);
+			MPID_CHK_WRITABLE(rdata);
 			int inc, rrcount = rcount * MPIC_SIZE(comm);
 			knh_MPIData_expand(ctx, rdata,  &rrcount, &inc);
 			knh_MPIData_incSize(rdata, inc);
-			MPI_Gather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
-					   MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
-			ret = 1;
+			ret = MPI_Gather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
+							 MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
 		} else {
-			MPI_Gather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), NULL, 0, 0, root_rank, MPIC_COMM(comm));
-			ret = 1;
+			ret = MPI_Gather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), NULL, 0, 0, root_rank, MPIC_COMM(comm));
 		}
 	} else {
 		scount = MPID_SIZE(sdata);
 		if (MPIC_RANK(comm) == root_rank) {
-			MPID_WCHK(rdata);
+			MPID_CHK_WRITABLE(rdata);
 			int rcounts[MPIC_SIZE(comm)];
 			int rdispls[MPIC_SIZE(comm)];
 			MPI_Gather(&scount, 1, MPI_INT, rcounts, 1, MPI_INT, root_rank, MPIC_COMM(comm));
@@ -113,21 +106,19 @@ KMETHOD MPIComm_gather(CTX ctx, ksfp_t *sfp _RIX)
 					rdispls[i] = 0;
 				}
 			}
-			MPI_Gatherv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
-						MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
-			ret = 1;
+			ret = MPI_Gatherv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
+							  MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
 		}
 		else {
 			MPI_Gather(&scount, 1, MPI_INT, NULL, 0, MPI_INT, root_rank, MPIC_COMM(comm));
-			MPI_Gatherv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), NULL, NULL, NULL, 0, root_rank, MPIC_COMM(comm));
-			ret = 1;
+			ret = MPI_Gatherv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), NULL, NULL, NULL, 0, root_rank, MPIC_COMM(comm));
 		}
 	}
-	RETURNb_(ret);
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
-//## method Int MPIComm.allGather(MPIData sdata, int scount, MPIData rdata, int rcount);
+//## method boolean MPIComm.allGather(MPIData sdata, int scount, MPIData rdata, int rcount);
 
 KMETHOD MPIComm_allGather(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -137,14 +128,13 @@ KMETHOD MPIComm_allGather(CTX ctx, ksfp_t *sfp _RIX)
 	MPID(rdata, sfp[3].o);
 	int rcount = Int_to(int, sfp[4]);
 	int ret = 0;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
 	if (scount > 0) {
 		// if scount > size, must cut down the number and bcast it
 		int inc, rrcount = rcount * MPIC_SIZE(comm);
 		knh_MPIData_expand(ctx, rdata, &rrcount, &inc);
 		knh_MPIData_incSize(rdata, inc);
-		MPI_Allgather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Allgather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIC_COMM(comm));
 	} else {
 		int rcounts[MPIC_SIZE(comm)];
 		int rdispls[MPIC_SIZE(comm)];
@@ -159,14 +149,13 @@ KMETHOD MPIComm_allGather(CTX ctx, ksfp_t *sfp _RIX)
 		int inc = 0;
 		knh_MPIData_expand(ctx, rdata, &rsum, &inc);
 		knh_MPIData_incSize(rdata, inc);
-		MPI_Allgatherv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Allgatherv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), MPIC_COMM(comm));
 	}
-	RETURNb_(ret);
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
-//## method Int MPIComm.allToAll(MPIData sdata, int scount, MPIData rdata, int rcount);
+//## method boolean MPIComm.allToAll(MPIData sdata, int scount, MPIData rdata, int rcount);
 
 KMETHOD MPIComm_allToAll(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -176,14 +165,14 @@ KMETHOD MPIComm_allToAll(CTX ctx, ksfp_t *sfp _RIX)
 	MPID(rdata, sfp[3].o);
 	int rcount = Int_to(int, sfp[4]);
 	int ret = 0;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
 	if (scount > 0) {
 		// if scount > size, must cut down the number and bcast it
 		int inc, rrcount = scount * MPIC_SIZE(comm);
 		knh_MPIData_expand(ctx, rdata, &rrcount, &inc);
 		knh_MPIData_incSize(rdata, inc);
-		MPI_Alltoall(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Alltoall(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
+						   MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIC_COMM(comm));
 	} else {
 		scount = MPID_SIZE(sdata);
 		size_t size = MPIC_SIZE(comm);
@@ -206,14 +195,14 @@ KMETHOD MPIComm_allToAll(CTX ctx, ksfp_t *sfp _RIX)
 		int inc = 0;
 		knh_MPIData_expand(ctx, rdata, &rsum, &inc);
 		knh_MPIData_incSize(rdata, inc);
-		MPI_Alltoallv(MPID_ADDR(sdata), scounts, sdispls, MPID_TYPE(sdata), MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Alltoallv(MPID_ADDR(sdata), scounts, sdispls, MPID_TYPE(sdata),
+							MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), MPIC_COMM(comm));
 	}
-	RETURNb_(ret);
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
-//## method Int MPIComm.reduce(MPIData sdata, MPIData rdata, int count, MPIOp op, int root_rank);
+//## method boolean MPIComm.reduce(MPIData sdata, MPIData rdata, int count, MPIOp op, int root_rank);
 
 KMETHOD MPIComm_reduce(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -229,21 +218,42 @@ KMETHOD MPIComm_reduce(CTX ctx, ksfp_t *sfp _RIX)
 		MPI_Allreduce(&size, &count, 1, MPI_INT, MPI_MIN, MPIC_COMM(comm)); /* get mininum data cont */
 	}
 	if (MPIC_RANK(comm) == root_rank) {
-		MPID_WCHK(rdata);
+		MPID_CHK_WRITABLE(rdata);
 		int inc = 0;
 		knh_MPIData_expand(ctx, rdata, &count, &inc);
 		knh_MPIData_incSize(rdata, inc);
-		MPI_Reduce(MPID_ADDR(sdata), MPID_ADDR(rdata), count, MPID_TYPE(sdata), MPIO_OP(op), root_rank, MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Reduce(MPID_ADDR(sdata), MPID_ADDR(rdata), count, MPID_TYPE(sdata), MPIO_OP(op), root_rank, MPIC_COMM(comm));
 	} else {
-		MPI_Reduce(MPID_ADDR(sdata), NULL, count, MPID_TYPE(sdata), MPIO_OP(op), root_rank, MPIC_COMM(comm));
-		ret = 1;
+		ret = MPI_Reduce(MPID_ADDR(sdata), NULL, count, MPID_TYPE(sdata), MPIO_OP(op), root_rank, MPIC_COMM(comm));
 	}
-	RETURNb_(ret);
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
-//## method Int MPIComm.allReduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op);
+//## method boolean MPIComm.scan(MPIData sdata, MPIData rdata, int rcount, MPIOp op);
+
+KMETHOD MPIComm_scan(CTX ctx, ksfp_t *sfp _RIX)
+{
+	MPIC(comm, sfp[0].o);
+	MPID(sdata, sfp[1].o);
+	MPID(rdata, sfp[2].o);
+	int rcount = Int_to(int, sfp[3]);
+	MPIO(op, sfp[4].o);
+	int ret = 0;
+	MPID_CHK_WRITABLE(rdata);
+	if (rcount == 0) {
+		int size = MPID_SIZE(sdata);
+		MPI_Allreduce(&size, &rcount, 1, MPI_INT, MPI_MIN, MPIC_COMM(comm)); /* get mininum data cont */
+	}
+	int inc;
+	knh_MPIData_expand(ctx, rdata, &rcount, &inc);
+	knh_MPIData_incSize(rdata, inc);
+	ret = MPI_Scan(MPID_ADDR(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIO_OP(op), MPIC_COMM(comm));
+	RETURNb_(ret == MPI_SUCCESS);
+}
+
+/* ------------------------------------------------------------------------ */
+//## method boolean MPIComm.allReduce(MPIData sdata, MPIData rdata, int rcount, MPIOp op);
 
 KMETHOD MPIComm_allReduce(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -253,7 +263,7 @@ KMETHOD MPIComm_allReduce(CTX ctx, ksfp_t *sfp _RIX)
 	int rcount = Int_to(int, sfp[3]);
 	MPIO(op, sfp[4].o);
 	int ret = 0;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
 	if (rcount == 0) {
 		int size = MPID_SIZE(sdata);
 		MPI_Allreduce(&size, &rcount, 1, MPI_INT, MPI_MIN, MPIC_COMM(comm)); /* get mininum data cont */
@@ -261,7 +271,49 @@ KMETHOD MPIComm_allReduce(CTX ctx, ksfp_t *sfp _RIX)
 	int inc;
 	knh_MPIData_expand(ctx, rdata, &rcount, &inc);
 	knh_MPIData_incSize(rdata, inc);
-	MPI_Allreduce(MPID_ADDR(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIO_OP(op), MPIC_COMM(comm));
-	ret = 1;
-	RETURNb_(ret);
+	ret = MPI_Allreduce(MPID_ADDR(sdata), MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIO_OP(op), MPIC_COMM(comm));
+	RETURNb_(ret == MPI_SUCCESS);
+}
+
+/* ------------------------------------------------------------------------ */
+//## method boolean MPIComm.reduceScatter(MPIData sdata, MPIData rdata, int[] rcounts, MPIOp op);
+
+KMETHOD MPIComm_reduceScatter(CTX ctx, ksfp_t *sfp _RIX)
+{
+	MPIC(comm, sfp[0].o);
+	MPID(sdata, sfp[1].o);
+	MPID(rdata, sfp[2].o);
+	kArray *rcs = sfp[3].a;
+	MPIO(op, sfp[4].o);
+	int ret = 0;
+	size_t rsize = knh_Array_size(rcs);
+	size_t csize = MPIC_SIZE(comm);
+	int i, rcount, rsum, rcounts[csize];
+	if (rsize == csize) {
+		for (i = 0, rsum = 0; i < rsize; i++) {
+			int rc_n = (int)((kint_t)knh_Array_n(rcs, i));
+			rsum += rc_n;
+			rcounts[i] = rc_n;
+		}
+		if (rsum > MPID_SIZE(sdata)) {
+			KNH_NTHROW2(ctx, sfp, "Script!!", "MPIComm.reduceScatter: sdata < rcounts", K_FAILED,
+						KNH_LDATA(LOG_i("size of sdata", MPID_SIZE(sdata)), LOG_i("sum of rcount", rsum)));
+		}
+	} else if(rsize == 0) {
+		size_t dsize = MPID_SIZE(sdata);
+		int d = (dsize / csize) + 1;
+		int m = dsize % csize;
+		for (i = 0; i < m; rcounts[i++] = d) ;
+		for (d--; i < csize; rcounts[i++] = d) ;
+	} else {
+		KNH_NTHROW2(ctx, sfp, "Script!!", "MPIComm.reduceScatter: |comm| < |rcounts|", K_FAILED,
+					KNH_LDATA(LOG_i("size of comm", MPIC_SIZE(comm)), LOG_i("size of rcount", rsize)));
+	}
+	MPID_CHK_WRITABLE(rdata);
+	rcount = rcounts[MPIC_RANK(comm)];
+	int inc;
+	knh_MPIData_expand(ctx, rdata, &rcount, &inc);
+	knh_MPIData_incSize(rdata, inc);
+	ret = MPI_Reduce_scatter(MPID_ADDR(sdata), MPID_ADDR(rdata), &rcounts[0], MPID_TYPE(sdata), MPIO_OP(op), MPIC_COMM(comm));
+	RETURNb_(ret == MPI_SUCCESS);
 }

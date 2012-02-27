@@ -25,32 +25,32 @@ void main (String[] args)
     OUT.println("Hello from "+myproc+" of "+nprocs);
     world.barrier();
 
-/* Timer accuracy test */
+    /* Timer accuracy test */
 
-    t0 = getMPIWtime();
-    t1 = getMPIWtime();
+    t0 = MPI.getWtime();
+    t1 = MPI.getWtime();
 
-    while (t1 == t0) t1 = getMPIWtime();
+    while (t1 == t0) t1 = MPI.getWtime();
 
     if (myproc == 0)
         OUT.println("Timer accuracy of ~"+((t1 - t0) * 1000000)+" usecs\n");
 
-/* Communications between nodes 
- *   - Blocking sends and recvs
- *   - No guarantee of prepost, so might pass through comm buffer
- */
+    /* Communications between nodes 
+     *   - Blocking sends and recvs
+     *   - No guarantee of prepost, so might pass through comm buffer
+     */
 
     world.barrier();
     for (size = 8; size <= 1048576; size *= 2) {
-        a = new float[size/8];
-        b = new float[size/8];
+        a = new int[size/8];
+        b = new int[size/8];
         for (i = 0; i < size / 8; i++) {
-            a[i] = (float) i;
+            a[i] = (int)i;
         }
         last = size / 8 - 1;
 
         world.barrier();
-        t0 = getMPIWtime();
+        t0 = MPI.getWtime();
         if (myproc == 0) {
 
             world.send((MPIData)a, size/8, other_proc);
@@ -59,18 +59,18 @@ void main (String[] args)
         } else {
 
             world.recv((MPIData)b, size/8, other_proc);
-            b[0] += 1.0;
+            b[0] += 1;
             if (last != 0)
-                b[last] += 1.0;
+                b[last] += 1;
 
             world.send((MPIData)b, size/8, other_proc);
 
         }
-        t1 = getMPIWtime();
+        t1 = MPI.getWtime();
         time = 1.e6 * (t1 - t0);
         world.barrier();
 
-        if ((b[0] != 1.0 || b[last] != last + 1)) {
+        if ((b[0] != 1 || b[last] != last + 1)) {
             OUT.println("ERROR - b[0] = "+b[0]+" b["+last+"] = "+b[last]);
             exit (1);
         }
@@ -86,24 +86,24 @@ void main (String[] args)
         }
     }
 
-/* Async communications
- *   - Prepost receives to guarantee bypassing the comm buffer
- */
+    /* Async communications
+     *   - Prepost receives to guarantee bypassing the comm buffer
+     */
 
     world.barrier();
     if (myproc == 0) OUT.println("\n  Asynchronous ping-pong\n");
 
     for (size = 8; size <= 1048576; size *= 2) {
-        a = new float[size/8];
-        b = new float[size/8];
+        a = new int[size/8];
+        b = new int[size/8];
         for (i = 0; i < size / 8; i++) {
-            a[i] = (float) i;
+            a[i] = (int)i;
         }
         last = size / 8 - 1;
 
         request = world.iRecv((MPIData)b, size/8, other_proc);
         world.barrier();
-        t0 = getMPIWtime();
+        t0 = MPI.getWtime();
 
         if (myproc == 0) {
 
@@ -114,19 +114,19 @@ void main (String[] args)
 
             request.wait();
 
-            b[0] += 1.0;
+            b[0] += 1;
             if (last != 0)
-                b[last] += 1.0;
+                b[last] += 1;
 
             world.send((MPIData)b, size/8, other_proc);
         }
 
-        t1 = getMPIWtime();
+        t1 = MPI.getWtime();
 
         time = 1.e6 * (t1 - t0);
         world.barrier();
 
-        if ((b[0] != 1.0 || b[last] != last + 1))
+        if ((b[0] != 1 || b[last] != last + 1))
             OUT.println("ERROR - b[0] = "+b[0]+" b["+last+"] = "+b[last]);
 
         for (i = 1; i < last - 1; i++)
@@ -141,16 +141,16 @@ void main (String[] args)
         }
     }
 
-/* Bidirectional communications
- *   - Prepost receives to guarantee bypassing the comm buffer
- */
+    /* Bidirectional communications
+     *   - Prepost receives to guarantee bypassing the comm buffer
+     */
 
     world.barrier();
     if (myproc == 0) OUT.println("\n  Bi-directional asynchronous ping-pong\n");
 
     for (size = 8; size <= 1048576; size *= 2) {
-        a = new float[size/8];
-        b = new float[size/8];
+        a = new int[size/8];
+        b = new int[size/8];
         for (i = 0; i < size / 8; i++) {
             a[i] = (float) i;
         }
@@ -161,7 +161,7 @@ void main (String[] args)
 
         world.barrier();
 
-        t0 = getMPIWtime();
+        t0 = MPI.getWtime();
 
         world.send((MPIData)a, size/8, other_proc);
         request_b.wait();
@@ -173,11 +173,11 @@ void main (String[] args)
         world.send((MPIData)b, size/8, other_proc);
         request_a.wait();
 
-        t1 = getMPIWtime();
+        t1 = MPI.getWtime();
         time = 1.e6 * (t1 - t0);
         world.barrier();
 
-        if ((a[0] != 1.0 || a[last] != last + 1))
+        if ((a[0] != 1 || a[last] != last + 1))
             OUT.println("ERROR - a[0] = "+a[0]+" a["+last+"] = "+a[last]);
         for (i = 1; i < last - 1; i++)
             if (a[i] != (double) i)

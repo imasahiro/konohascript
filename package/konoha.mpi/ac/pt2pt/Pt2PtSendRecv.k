@@ -4,8 +4,9 @@ world = MPIComm.WORLD;
 rank = world.rank;
 
 if (world.size != 2) exit();
-if (rank == 0) disableLog();
+if (rank == 0) MPI.preventLog();
 
+/* ------------------------------------------------------------------------ */
 
 bdata = new byte[0];
 if (rank == 0) {
@@ -21,6 +22,8 @@ if (rank == 0) {
     }
 }
 
+/* ------------------------------------------------------------------------ */
+
 idata = new int[0];
 if (rank == 0) {
     world.sendRecv((MPIData)[1, 2, 3], 3, 1, 0, (MPIData)idata, 3, 1, 0);
@@ -34,6 +37,8 @@ if (rank == 0) {
         assert (idata == [1, 2, 3, 4, 5, 6]);
     }
 }
+
+/* ------------------------------------------------------------------------ */
 
 fdata = new float[0];
 if (rank == 0) {

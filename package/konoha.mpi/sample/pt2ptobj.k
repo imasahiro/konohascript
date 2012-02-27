@@ -6,14 +6,15 @@ size = world.getSize();
 
 if (size != 2) exit(0);
 
-class Person(String name, int age);
+class Person(String name, String sex);
+Person p;
 
 if (rank == 0) {
-    MPIData md = (MPIData)new Person("uh", 25);
-    world.send(md, -1, 1);
+    p = new Person("John Doe", "male");
+    world.send((MPIData)p, 0, 1);
 } else {
-    MPIData md = (MPIData)new byte[0];
-    world.recv(md, -1, 0);
-    p = md.decode(Person);
-    print p, p.class;
+    MPIData md = new MPIData(Person);
+    world.recv(md, 0, 0);
+    p = md.decode();
 }
+print rank, p;

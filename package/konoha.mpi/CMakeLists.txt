@@ -25,14 +25,13 @@ set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 # ---> check if MPI_LIBRARIES already defined (it means module is loaded before)
 # ----> use -DMPI_BASE_DIR=/path/to/mpibase for specifying target lib.
 if(NOT MPI_LIBRARIES)
-    find_package(MPI REQUIRED)
-    set(CMAKE_COMPILE_FLAGS ${CMAKE_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
-    set(CMAKE_LINK_FLAGS    ${CMAKE_LINK_FLAGS}    ${MPI_LINK_FLAGS})
+    find_package(MPI)
 endif(NOT MPI_LIBRARIES)
 
 if(MPI_LIBRARIES)
-
     set(MessageLibs ${MessageLibs} mpi PARENT_SCOPE)
+    set(CMAKE_COMPILE_FLAGS ${CMAKE_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
+    set(CMAKE_LINK_FLAGS    ${CMAKE_LINK_FLAGS}    ${MPI_LINK_FLAGS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${KONOHA_INCLUDE_DIRS} ${MPI_INCLUDE_PATH})
 
     # -- install mpikonoha binary

@@ -1,9 +1,7 @@
-#ifndef _KNH_ON_T2K
 #include "../konoha_mpi.h"
-#endif
 
 /* ------------------------------------------------------------------------ */
-//## method boolean MPIComm.send(MPIData sdata, int count, int dest, int tag);
+//## method boolean MPIComm.send(MPIData sdata, int count, int dest_rank, int tag);
 
 KMETHOD MPIComm_send(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -12,20 +10,24 @@ KMETHOD MPIComm_send(CTX ctx, ksfp_t *sfp _RIX)
 	int count = Int_to(int, sfp[2]);
 	int dest_rank = Int_to(int, sfp[3]);
 	int tag = Int_to(int, sfp[4]);
-	MPID_CCHK(sdata, count);
+	MPID_CHK_COUNT(sdata, count);
+#ifdef KNH_MPI_PROFILE
 	double _begin = MPI_Wtime();
+#endif
 	int ret = MPI_Send(MPID_ADDR(sdata), count, MPID_TYPE(sdata), dest_rank, tag, MPIC_COMM(comm));
+#ifdef KNH_MPI_PROFILE
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Send", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("myrank", MPIC_RANK(comm)), LOG_i("count", count), LOG_i("datatype", (int)MPID_TYPE(sdata)),
-						  LOG_i("dest_rank", dest_rank), LOG_i("tag", tag)));
-	RETURNi_(ret);
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish),
+						  LOG_f("duration", _duration), LOG_i("myrank", MPIC_RANK(comm)),
+						  LOG_i("count", count), LOG_p("datatype", MPID_TYPE(sdata)), LOG_i("dest_rank", dest_rank), LOG_i("tag", tag)));
+#endif
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
-//## method int MPIComm.recv(MPIData rdata, int count, int src_rank, int tag);
+//## method boolean MPIComm.recv(MPIData rdata, int count, int src_rank, int tag);
 
 KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -35,7 +37,10 @@ KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 	int src_rank = Int_to(int, sfp[3]);
 	int tag = Int_to(int, sfp[4]);
 	MPI_Status stat;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
+#ifdef KNH_MPI_PROFILE
+	double _begin = MPI_Wtime();
+#endif
 	if (MPI_Probe(src_rank, tag, MPIC_COMM(comm), &stat) == MPI_SUCCESS) {
 		int rcount = 0;
 		MPI_Get_count(&stat, MPID_TYPE(rdata), &rcount);
@@ -45,26 +50,30 @@ KMETHOD MPIComm_recv(CTX ctx, ksfp_t *sfp _RIX)
 			KNH_NOTE("requested: %d > recieved %d", count, rcount);
 			count = rcount;
 		}
+		tag = MPIS_TAG(stat);
 	} else {
 		KNH_NTHROW2(ctx, sfp, "Script!!", "MPI_Probe failed", K_FAILED, KNH_LDATA(LOG_i("source rank", src_rank), LOG_i("message tag", tag)));
-		count = 0;
 	}
 	int inc = 0;
 	knh_MPIData_expand(ctx, rdata, &count, &inc);
 	knh_MPIData_incSize(rdata, inc);
-	double _begin = MPI_Wtime();
+#ifdef KNH_MPI_PROFILE
+	double _ready = MPI_Wtime();
+#endif
 	int ret = MPI_Recv(MPID_ADDR(rdata), count, MPID_TYPE(rdata), src_rank, tag, MPIC_COMM(comm), &stat);
+#ifdef KNH_MPI_PROFILE
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Recv", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("myrank", MPIC_RANK(comm)), LOG_i("count", count), LOG_i("datatype", (int)MPID_TYPE(rdata)),
-						  LOG_i("src_rank", src_rank), LOG_i("tag", tag)));
-	RETURNi_(ret);
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("ready", _ready), LOG_f("finish", _finish),
+						  LOG_f("duration", _duration), LOG_i("myrank", MPIC_RANK(comm)),
+						  LOG_i("count", count), LOG_p("datatype", MPID_TYPE(rdata)), LOG_i("src_rank", src_rank), LOG_i("tag", tag)));
+#endif
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
-//## method int MPIComm.sendrecv(MPIData sdata, int scount, int dest_rank, int stag, MPIData rdata, int rcount, int src_rank,  int rtag);
+//## method boolean MPIComm.sendrecv(MPIData sdata, int scount, int dest_rank, int stag, MPIData rdata, int rcount, int src_rank,  int rtag);
 
 KMETHOD MPIComm_sendrecv(CTX ctx, ksfp_t *sfp _RIX)
 {
@@ -77,22 +86,38 @@ KMETHOD MPIComm_sendrecv(CTX ctx, ksfp_t *sfp _RIX)
 	int rcount = Int_to(int, sfp[6]);
 	int src_rank = Int_to(int, sfp[7]);
 	int rtag = Int_to(int, sfp[8]);
-	MPID_CCHK(sdata, scount);
-	MPID_WCHK(rdata);
+	MPID_CHK_COUNT(sdata, scount);
+	MPID_CHK_WRITABLE(rdata);
+#ifdef KNH_MPI_PROFILE
+	double _begin = MPI_Wtime();
+#endif
 	MPI_Status stat;
 	{
 		int rrcount = 0;
 		MPI_Sendrecv(&scount, 1, MPI_INT, dest_rank, stag, &rrcount, 1, MPI_INT, src_rank, rtag, MPIC_COMM(comm), &stat);
 		if (rcount > rrcount) {
-			KNH_NOTE("requested: %d > recieved %d", rcount, rrcount);
+			KNH_NOTE("assigned count is greater than recieved (%d > %d): use recieved count", rcount, rrcount);
 			rcount = rrcount;
 		}
 	}
 	int inc = 0;
 	knh_MPIData_expand(ctx, rdata, &rcount, &inc);
 	knh_MPIData_incSize(rdata, inc);
-	RETURNi_(MPI_Sendrecv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), dest_rank, stag,
-						  MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), src_rank, rtag, MPIC_COMM(comm), &stat));
+#ifdef KNH_MPI_PROFILE
+	double _ready = MPI_Wtime();
+#endif
+	int ret = MPI_Sendrecv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), dest_rank, stag,
+						   MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), src_rank, rtag, MPIC_COMM(comm), &stat);
+#ifdef KNH_MPI_PROFILE
+	double _finish = MPI_Wtime();
+	double _duration = _finish - _begin;
+	KNH_NTRACE2(ctx, "MPI_Sendrecv", K_NOTICE,
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("ready", _ready), LOG_f("finish", _finish),
+						  LOG_f("duration", _duration), LOG_i("myrank", MPIC_RANK(comm)),
+						  LOG_i("scount", scount), LOG_p("sdatatype", MPID_TYPE(sdata)), LOG_i("dest_rank", dest_rank), LOG_i("stag", stag),
+						  LOG_i("rcount", rcount), LOG_p("rdatatype", MPID_TYPE(rdata)), LOG_i("src_rank", src_rank), LOG_i("rtag", rtag)));
+#endif
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -107,8 +132,19 @@ KMETHOD MPIComm_iSend(CTX ctx, ksfp_t *sfp _RIX)
 	int tag = Int_to(int, sfp[4]);
 	MPIR(req, new_O(MPIRequest, O_cid(sfp[5].o)));
 	MPIR_DATA(req) = sdata;
-	MPID_CCHK(sdata, count);
-	MPI_Isend(MPID_ADDR(sdata), count, MPID_TYPE(sdata), dest_rank, tag, MPIC_COMM(comm), MPIR_REQ(req));
+	MPID_CHK_COUNT(sdata, count);
+#ifdef KNH_MPI_PROFILE
+	double _begin = MPI_Wtime();
+#endif
+	MPI_Isend(MPID_ADDR(sdata), count, MPID_TYPE(sdata), dest_rank, tag, MPIC_COMM(comm), &MPIR_REQ(req));
+#ifdef KNH_MPI_PROFILE
+	double _finish = MPI_Wtime();
+	double _duration = _finish - _begin;
+	KNH_NTRACE2(ctx, "MPI_Isend", K_NOTICE,
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish),
+						  LOG_f("duration", _duration), LOG_i("myrank", MPIC_RANK(comm)),
+						  LOG_i("scount", count), LOG_p("sdatatype", MPID_TYPE(sdata)), LOG_i("dest_rank", dest_rank), LOG_i("stag", tag)));
+#endif
 	RETURN_(req);
 }
 
@@ -126,7 +162,10 @@ KMETHOD MPIComm_iRecv(CTX ctx, ksfp_t *sfp _RIX)
 	MPIR_DATA(req) = rdata;
 	int flag = 0;
 	MPI_Status stat;
-	MPID_WCHK(rdata);
+	MPID_CHK_WRITABLE(rdata);
+#ifdef KNH_MPI_PROFILE
+	double _begin = MPI_Wtime();
+#endif
 	MPI_Iprobe(src_rank, tag, MPIC_COMM(comm), &flag, &stat);
 	if (flag) {
 		int rcount = 0;
@@ -135,13 +174,27 @@ KMETHOD MPIComm_iRecv(CTX ctx, ksfp_t *sfp _RIX)
 			KNH_NOTE("requested: %d > recieved %d", count, rcount);
 			count = rcount;
 		}
+	} else if (count > 0) {
+		KNH_NTRACE2(ctx, "MPI_Irecv: [warning] Iprobe failed (skip count checking)", K_NOTICE,
+					KNH_LDATA(LOG_i("count", count)));
 	} else {
-		// TODO: cancel MPI_Irecv if no message recieved
+		KNH_NTHROW2(ctx, sfp, "Script!!", "MPI_Irecv: number of count is zero", K_FAILED, KNH_LDATA0);
 	}
 	int inc = 0;
 	knh_MPIData_expand(ctx, rdata, &count, &inc);
 	MPIR_INC(req) = inc;
-	MPI_Irecv(MPID_ADDR(rdata), count, MPID_TYPE(rdata), src_rank, tag, MPIC_COMM(comm), MPIR_REQ(req));
+#ifdef KNH_MPI_PROFILE
+	double _ready = MPI_Wtime();
+#endif
+	MPI_Irecv(MPID_ADDR(rdata), count, MPID_TYPE(rdata), src_rank, tag, MPIC_COMM(comm), &MPIR_REQ(req));
+#ifdef KNH_MPI_PROFILE
+	double _finish = MPI_Wtime();
+	double _duration = _finish - _begin;
+	KNH_NTRACE2(ctx, "MPI_Irecv", K_NOTICE,
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("ready", _ready), LOG_f("finish", _finish),
+						  LOG_f("duration", _duration), LOG_i("myrank", MPIC_RANK(comm)),
+						  LOG_i("count", count), LOG_p("datatype", MPID_TYPE(rdata)), LOG_i("src_rank", src_rank), LOG_i("tag", tag)));
+#endif
 	RETURN_(req);
 }
 
@@ -153,7 +206,7 @@ KMETHOD MPIRequest_test(CTX ctx, ksfp_t *sfp _RIX)
 	MPIR(req, sfp[0].o);
 	MPI_Status stat;
 	int flag, ret = 0;
-	MPI_Test(MPIR_REQ(req), &flag, &stat);
+	MPI_Test(&MPIR_REQ(req), &flag, &stat);
 	if (flag) {
 		int count = 0;
 		MPI_Get_count(&stat, MPIR_TYPE(req), &count);
@@ -173,17 +226,25 @@ KMETHOD MPIRequest_wait(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIR(req, sfp[0].o);
 	MPI_Status stat;
-	int ret = 0;
-	if (MPI_Wait(MPIR_REQ(req), &stat) == MPI_SUCCESS) {
-		int count = 0;
-		MPI_Get_count(&stat, MPIR_TYPE(req), &count);
-		if (count >= 0 && MPIR_INC(req) > 0) {
-			knh_MPIData_incSize(MPIR_DATA(req), count);
-			MPIR_INC(req) = 0;
-		}
-		ret = 1;
+#ifdef KNH_MPI_PROFILE
+	double _begin = MPI_Wtime();
+#endif
+	int ret = MPI_Wait(&MPIR_REQ(req), &stat);
+	int count = -1;
+	MPI_Get_count(&stat, MPIR_TYPE(req), &count);
+	if (count >= 0 && MPIR_INC(req) > 0) {
+		knh_MPIData_incSize(MPIR_DATA(req), count);
+		MPIR_INC(req) = 0;
 	}
-	RETURNb_(ret);
+#ifdef KNH_MPI_PROFILE
+	double _finish = MPI_Wtime();
+	double _duration = _finish - _begin;
+	KNH_NTRACE2(ctx, "MPI_Wait", K_NOTICE,
+				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+						  LOG_i("count", count), LOG_p("datatype", MPIR_TYPE(req)),
+						  LOG_i("src_rank", MPIS_SRC(stat)), LOG_i("tag", MPIS_TAG(stat))));
+#endif
+	RETURNb_(ret == MPI_SUCCESS);
 }
 
 /* ------------------------------------------------------------------------ */
@@ -192,5 +253,5 @@ KMETHOD MPIRequest_wait(CTX ctx, ksfp_t *sfp _RIX)
 KMETHOD MPIRequest_cancel(CTX ctx, ksfp_t *sfp _RIX)
 {
 	MPIR(req, sfp[0].o);
-	RETURNb_(MPI_Cancel(MPIR_REQ(req)) == MPI_SUCCESS ? 1 : 0);
+	RETURNb_(MPI_Cancel(&MPIR_REQ(req)) == MPI_SUCCESS ? 1 : 0);
 }
