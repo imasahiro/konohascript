@@ -3,6 +3,7 @@ set(CMAKE_BUILD_TYPE ${KONOHA_BUILD_TYPE})
 
 add_subdirectory(js.dom)
 add_subdirectory(js.jquery)
+add_subdirectory(js.math)
 project(compiler.js)
 set(PACKAGE_SCRIPT_CODE js.k)
 

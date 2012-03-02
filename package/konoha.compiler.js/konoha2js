@@ -10,6 +10,7 @@ do
         "i" ) FLG_I="TRUE" ; VALUE_I="$OPTARG" ;;
         "j" ) FLG_J="TRUE" ;;
         "o" ) FLG_O="TRUE" ; VALUE_O="$OPTARG" ;;
+        "r" ) FLG_R="TRUE" ;;
         "t" ) FLG_T="TRUE" ; VALUE_T="$OPTARG" ;;
         "u" ) FLG_U="TRUE" ; VALUE_U="$OPTARG" ;;
           * ) OPT_ERROR=1; break;;
@@ -38,6 +39,13 @@ fi
 # set output file
 if [ "$FLG_O" = "TRUE" ]; then
     OUTPUT=$VALUE_O
+fi
+
+# set konohascript runtime include option
+if [ "$FLG_R" = "TRUE" ]; then
+    export JS_INCLUDE_RUNTIME=true
+else
+    export JS_INCLUDE_RUNTIME=false
 fi
 
 # set obfuscate option
