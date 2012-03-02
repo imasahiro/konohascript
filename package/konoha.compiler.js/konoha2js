@@ -63,9 +63,9 @@ fi
 
 if [ "$FLG_I" = "TRUE" ]; then
     if [ "$FLG_O" = "TRUE" ]; then
-        `which konohac` --emit-js $INPUT > $OUTPUT
+        "`which konohac` --emit-js $INPUT > $OUTPUT"
     else
-        `which konohac` --emit-js $INPUT
+        "`which konohac` --emit-js $INPUT"
     fi
 fi
 
