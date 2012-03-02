@@ -6,6 +6,8 @@ add_subdirectory(js.jquery)
 add_subdirectory(js.math)
 project(compiler.js)
 set(PACKAGE_SCRIPT_CODE js.k)
+set(PACKAGE_RUNTIME_DIR runtime)
+set(PACKAGE_RUNTIME_CODE runtime/konoha.js runtime/js.js runtime/js.dom.js runtime/js.jquery.js runtime/js.math.js)
 
 if(LIB_V8_DIR)
 LINK_DIRECTORIES(${LIB_V8_DIR})
@@ -39,6 +41,7 @@ set(PACKAGE_STRING ${CMAKE_PROJECT_NAME}-${PACKAGE_VERSION})
 set(KONOHA_PACKAGE_DIR konoha/package/${KONOHA_VERSION}/konoha.${PROJECT_NAME})
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_RUNTIME_CODE} DESTINATION ${KONOHA_PACKAGE_DIR}/${PACKAGE_RUNTIME_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/konoha2js DESTINATION bin
         PERMISSIONS 
         OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE

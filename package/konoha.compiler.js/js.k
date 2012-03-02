@@ -1,7 +1,19 @@
 String indent;
 String space;
 String eol;
-String header = """
+RUNTIME_DIR=$konoha.package.path + "/konoha.compiler.js/runtime";
+String header = "";
+if ($env.JS_INCLUDE_RUNTIME == "true") {
+    header = """
+<html>
+<head>
+<title>sample</title>
+</head>
+<script type="text/javascript">
+<!--
+""";
+} else {
+    header = """
 <html>
 <head>
 <title>sample</title>
@@ -11,9 +23,12 @@ String header = """
 <script type="text/javascript" language="javascript" src="./js.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.dom.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.jquery.js" > </script>
+<script type='text/javascript' src='jquery-1.7.1.min.js'></script>
+<script type="text/javascript" language="javascript" src="./js.math.js" > </script>
 <script type="text/javascript">
 <!--
 """;
+}
 String footer = """
 // -->
 </script>
@@ -35,6 +50,7 @@ if ($env.JS_USE_WORKER == "true") {
 //class CompilerOpt {
 //    int      indentLevel;
 //    String   mtdName;
+//    String[] packages;
 //    String[] source;
 //    String[] unexpectedMethods;
 //    String[] topLevelFunctionList;
@@ -46,7 +62,9 @@ if ($env.JS_USE_WORKER == "true") {
 //    Map<String, String> methodNameMap;
 //    Map<String, String> classNameMap;
 //}
+System.addClassField(CompilerOpt, int     , "indentLevel");
 System.addClassField(CompilerOpt, String  , "mtdName");
+System.addClassField(CompilerOpt, String[], "packages");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "unexpectedMethods");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
@@ -57,6 +75,7 @@ System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Public void CompilerOpt.init() {
     this.indentLevel = 0;
+    this.packages = ["konoha", "js", "js.dom", "js.jquery", "js.math"];
     this.source = [];
     this.unexpectedMethods = ["isNull"];
     this.topLevelFunctionList = [];
@@ -748,7 +767,16 @@ LABEL = "label";
         ous = OUT;
     }
     if ((config.gen_html) == true) {
-        ous << header << EOL + eol;
+        ous << header << eol;
+    }
+    if ($env.JS_INCLUDE_RUNTIME == "true") {
+        foreach (String pkgname in this.opt.packages) {
+            InputStream in = new InputStream(RUNTIME_DIR + "/" + pkgname + ".js");
+            String tmp = "";
+            while ((tmp = in.readLine()) != null) {
+                ous << tmp << eol;
+            }
+        }
     }
     foreach (String fname in this.opt.protoFunc) {
         ous << "function " + fname + "(){}" << eol;

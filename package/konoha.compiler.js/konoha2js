@@ -3,7 +3,7 @@
 PROGRAM=`basename $0`
 export JS_USE_INDENT=true
 
-while getopts i:jo:t:u: OPT
+while getopts i:jo:rt:u: OPT
 do
     case $OPT in
         "b" ) FLG_B="TRUE" ;;
@@ -25,7 +25,7 @@ else
 fi
 
 if [ $OPT_ERROR ]; then
-    echo "Usage: $PROGRAM [-j] [-i input_file] [-o output_file] [-t gentype] [-u use_func_list]" 1>&2
+    echo "Usage: $PROGRAM [-j] [-r] [-i input_file] [-o output_file] [-t gentype] [-u use_func_list]" 1>&2
     exit 1
 fi
 
@@ -71,9 +71,10 @@ fi
 
 if [ "$FLG_I" = "TRUE" ]; then
     if [ "$FLG_O" = "TRUE" ]; then
-        "`which konohac` --emit-js $INPUT > $OUTPUT"
+        /usr/local/bin/konohac --emit-js $INPUT > $OUTPUT
     else
-        "`which konohac` --emit-js $INPUT"
+#`/usr/bin/which konohac` --emit-js $INPUT
+        /usr/local/bin/konohac --emit-js $INPUT
     fi
 fi
 
