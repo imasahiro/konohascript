@@ -1193,7 +1193,7 @@ class K_CONST extends K_Inst {
         } else if (value.class == Float) {
             Float f = value;
             return f.format("%.20f");
-        } else if(value.class == Array<dynamic>) {
+        } else if(((to String)value.class).startsWith("konoha.Array")) {
             Array a = value;
             String res = "[";
             for(int i=0; i<|a|; i++) {
@@ -1207,7 +1207,7 @@ class K_CONST extends K_Inst {
             }
             res += "]";
             return res;
-        } else if(value.class == Map<String, dynamic>) {
+        } else if(((to String)value.class).startsWith("konoha.Map")) {
             Map m = value;
             String[] keys = m.keys();
             String res = "{";
