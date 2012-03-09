@@ -699,7 +699,7 @@ LABEL = "label";
     }
     //res += indent + "if (json.type == 'start') {" + eol;
     for (int i = 0; i < this.opt.errors.size; i++) {
-        res += indent + "konoha.ERR += " + this.opt.errors[i] + ";" + eol;
+        res += indent + "konoha.ERR += \"" + this.opt.errors[i] + "\";" + eol;
     }
     res += indent + "script = new Script();" + eol;
     foreach (fname in this.opt.topLevelFunctionList) {
@@ -778,6 +778,7 @@ LABEL = "label";
             }
         }
     }
+	ous << "'checkpoint'" << eol;
     foreach (String fname in this.opt.protoFunc) {
         ous << "function " + fname + "(){}" << eol;
     }
@@ -789,7 +790,7 @@ LABEL = "label";
         ous << str << eol;
     }
     ous << createMain() << eol;
-    ous << createSymbol() << eol;
+    ous << createSymbol();
     if ((config.gen_html) == true) {
         ous << EOL << footer;
     }
