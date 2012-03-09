@@ -1,6 +1,8 @@
 var konoha = function() {
     this.OUT = "";
     this.ERR = "";
+	this.THROWN = false;
+	this.THROWNMSG = "";
     this.printOUT = function() {
         if (this.OUT == "") return;
         var strings = this.OUT.split("\n");

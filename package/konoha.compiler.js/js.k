@@ -579,6 +579,7 @@ LABEL = "label";
 }
 @Public @Override void K_ERR.codegen(Compiler asm) {
     asm.opt.errors.add(op.msg);
+	asm.addSource("konoha.THROWN = true;");
     String s = "throw(\"Script!!: " + op.msg + "\");";
     asm.addSource(s);
     return;
@@ -600,7 +601,7 @@ LABEL = "label";
             break;
         case "bnul":
             if (type_str.endsWith("Script")) {
-                asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "script;");
+                asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "konoha.script;");
             }
             break;
         case "cwb":
@@ -701,10 +702,10 @@ LABEL = "label";
     for (int i = 0; i < this.opt.errors.size; i++) {
         res += indent + "konoha.ERR += \"" + this.opt.errors[i] + "\";" + eol;
     }
-    res += indent + "script = new Script();" + eol;
+    res += indent + "konoha.script = new Script();" + eol;
     foreach (fname in this.opt.topLevelFunctionList) {
         res += indent + fname + "(";
-        res += "script";
+        res += "konoha.script";
         res += ");" + eol;
     }
     if ($env.JS_USE_WORKER == "true") {
