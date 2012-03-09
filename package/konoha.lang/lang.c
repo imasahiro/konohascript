@@ -1168,6 +1168,7 @@ extern knh_IntData_t _FuncData[];
 static const knh_IntData_t MethodInt[] = {
 	{"MN_get", MN_get},
 	{"MN_set", MN_set},
+	{"MN_new", MN_new},
 	{"MN_getSize", MN_getSize},
 	{NULL, 0}
 };

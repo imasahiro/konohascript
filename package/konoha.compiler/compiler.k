@@ -2756,7 +2756,7 @@ void Compiler.asmNEW(Stmt stmt, int espidx, Class c, Method mtd) {
     }
     int thisidx = espidx + K_CALLDELTA;
     addSafePoint(espidx);
-    if (stmt.getStmtSize() == 2 && mtd.getMethodClass() == Object && mtd.getName() == "new") {
+    if (stmt.getStmtSize() == 2 && mtd.getMethodClass() == Object && mtd.getMn() == Method.MN_new) {
         K_Value vb = kfunc.getKValue(espidx, c);
         K_Inst inst = new K_NEW(vb, new K_NEWop(espidx-thisidx, c, Stmt.NEW), kfunc.curBB);
         kfunc.curBB.insts.add(inst);
