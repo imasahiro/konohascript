@@ -132,9 +132,9 @@ void board_dturn(int[] b, int x, int y, int dx, int dy, int color) {
 	p = counter_party(color);
 	while(board_is(b, x, y, p)) {
 		b[x,y] = color;
-		x = x + dx; y = y + dy;
 		JQuery jquery = new JQuery("#" + (x + "") + (y + ""));
 		jquery.css("background-color", cssColor(color));
+		x = x + dx; y = y + dy;
 	}
 }
 
@@ -247,7 +247,11 @@ boolean play_game(int[] b, String name, int color) {
 	int x = (Int)jquery.getAttr("x");
 	int y = (Int)jquery.getAttr("y");
 	if (board_count(ctx.b, x, y, ctx.myColor) > 0) {
+		JQuery jquery = new JQuery("#" + (x + "") + (y + ""));
+		jquery.css("background-color", cssColor(ctx.currentColor));
 		board_put(ctx.b, x, y, ctx.myColor);
+		ctx.currentColor = counter_party(ctx.currentColor);
+		ctx.myColor = counter_party(ctx.myColor);
 	}
 }
 void board_init(int[] b) {

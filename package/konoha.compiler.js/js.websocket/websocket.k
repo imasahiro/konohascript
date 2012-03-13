@@ -5,4 +5,5 @@ class WebSocket {
 	void setOnClose(Method m);
 	void send(String msg);
 }
-WebSocket WebSocket.new(String host);
+@Overload WebSocket WebSocket.new(String host);
+@Overload WebSocket WebSocket.new(String host, String protocol);

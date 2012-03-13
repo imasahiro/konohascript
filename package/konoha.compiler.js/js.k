@@ -514,8 +514,12 @@ LABEL = "label";
         asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "Math" + ".floor(" + op.inst0.getVarName(asm) + ");");
     } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
         asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + "konoha.Iterator" + "(" + op.inst0.getVarName(asm) + ");");
-    } else {
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + op.inst0.getVarName(asm) + ";");
+    } else if (op.scid == String && op.tcid == Float){
+		asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "parseFloat(" + op.inst0.getVarName(asm) + ".rawptr);");
+	} else if (op.scid == String && op.tcid == Int) {
+		asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "parseInt(" + op.inst0.getVarName(asm) + ".rawptr, 10);");
+	} else {
+		asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + op.inst0.getVarName(asm) + ";");
     }
 }
 @Public @Override void K_JMP.codegen(Compiler asm) {
