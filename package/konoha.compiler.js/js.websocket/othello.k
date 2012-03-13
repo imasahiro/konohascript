@@ -29,6 +29,7 @@ using js.dom.*;
 using js.jquery.*;
 using js.websocket.*;
 
+/* N must less than 10 */
 N = 8;
 
 SPACE = 0;
@@ -38,10 +39,14 @@ class Context {
 	int[] b = null;
 	int myColor;
 	int currentColor;
+	boolean start;
+	WebSocket ws;
 	void init() {
 		b = new int[N, N];
 		myColor = WHITE;
 		currentColor = WHITE;
+		start = false;
+		ws = new WebSocket("ws://localhost:8080/", "othello-protocol");
 	}
 }
 Context ctx = new Context();
@@ -167,82 +172,8 @@ int board_place(int[] b, int color) {
 	}
 	return p;
 }
-
-Point random(int[] b, int color) {
-	int x, y;
-	while(true) {
-		x = Int.random(N);
-		y = Int.random(N);
-		if(board_count(b, x, y, color) > 0) {
-			break;
-		}
-	}
-	return new Point(x, y);
-}
-
-Point eager(int[] b, int color) {
-	int x, y, max = 0, mx, my;
-	for(x = 0; x < N; x++) {
-		for(y = 0; y < N; y++) {
-			c = board_count(b, x, y, color);
-			if(c > max) {
-				max = c;
-				mx = x; my = y;
-			}
-		}
-	}
-	return new Point(mx, my);
-}
-
-Point minimum(int[] b, int color) {
-	int x, y, min = Int.MAX, mx, my;
-	for(x = 0; x < N; x++) {
-		for(y = 0; y < N; y++) {
-			c = board_count(b, x, y, color);
-			if(c > 0 && c < min) {
-				min = c;
-				mx = x; my = y;
-			}
-		}
-	}
-	return new Point(mx, my);
-}
-
-Point human(int[] b, int color) {
-	//String prompt = " - Where are you going to place " + stone(color) + "? x, y ";
-	//String line = System.readLine(prompt);
-	//if(line != null) {
-	//	t = line.match($/(\d)\D(\d)/);
-	//	//print line, t, |t|;
-	//	if(|t| == 3) {
-	//		x = (int)t[1]; y = (int)t[2];
-	//		print line, x, y;
-	//		if(board_count(b, x, y, color) > 0) {
-	//			return new Point(x, y);
-	//		}
-	//	}
-	//	return random(b, color);
-	//}
-	//else {
-	//	System.exit(0);  // Ctrl-D
-	//}
-}
-
-//player = random;
-
-boolean play_game(int[] b, String name, int color) {
-	//if(board_place(b, color) > 0) {
-	//	p = human(b, color);
-	//	if (p.x == -1 && p.y == -1) return false;
-	//	board_put(b, p.x, p.y, color);
-	//	OUT <<< name <<< " put " <<< p.x <<< ", " <<< p.y <<< EOL;
-	//	return true;
-	//}
-	//OUT <<< name <<< " couldn't put anywhere!!" <<< EOL;
-	//return false;
-}
 @Public void Element.onclick(JEvent e) {
-	if (ctx.myColor != ctx.currentColor) return;
+	if (ctx.myColor != ctx.currentColor || (ctx.start == false)) return;
 	JQuery jquery = new JQuery(this);
 	int x = (Int)jquery.getAttr("x");
 	int y = (Int)jquery.getAttr("y");
@@ -251,7 +182,7 @@ boolean play_game(int[] b, String name, int color) {
 		jquery.css("background-color", cssColor(ctx.currentColor));
 		board_put(ctx.b, x, y, ctx.myColor);
 		ctx.currentColor = counter_party(ctx.currentColor);
-		ctx.myColor = counter_party(ctx.myColor);
+		ctx.ws.send((ctx.myColor-1) + ":" + x + ", " + y);
 	}
 }
 void board_init(int[] b) {
@@ -283,33 +214,27 @@ void board_init(int[] b) {
 		}
 	}
 }
-void start_game(String pn1, String pn2) {
-	boolean isPlaying = true;
-	board_init(ctx.b);
-	//board_print(b, pn1, pn2);
-	//while(isPlaying) {
-	//	isPlaying = false;
-	//	if (myColor == BLACK) {
-	//		if(play_game(b, pn1, BLACK)) {
-	//			board_print(b, pn1, pn2);
-	//			isPlaying = true;
-	//		}
-	//	} else {
-	//		// TODO websocket
-	//	}
-	//	if (myColor == WHITE) {
-	//		if(play_game(b, pn2, WHITE)) {
-	//			board_print(b, pn1, pn2);
-	//			isPlaying = true;
-	//		}
-	//	} else {
-	//		// TODO websocket
-	//	}
-	//}
-	//OUT <<< "** Results **" <<< EOL;
-	//board_print(b, pn1, pn2);
+@Public void Element.onMessage(MessageEvent e) {
+	String data = e.getData();
+	if (data.startsWith("id")) {
+		/* message = "id:0 | id:1" */
+		ctx.myColor = ((int)e.getData()[3]) + 1;
+	} else if (data.equals("start")) {
+		ctx.start = true;
+	} else if (data.equals("end")) {
+		ctx.start = false;
+	} else {
+		/* message = "x, y" (x, y > 10)*/
+		int x = (Int)data[0];
+		int y = (Int)data[3];
+		JQuery jquery = new JQuery("#" + (x + "") + (y + ""));
+		jquery.css("background-color", cssColor(ctx.currentColor));
+		board_put(ctx.b, x, y, ctx.currentColor);
+		ctx.currentColor = counter_party(ctx.currentColor);
+	}
 }
-
-//start_game("Black", random, "White", random);
-//start_game("eager", eager, "minimum", minimum);
+void start_game(String pn1, String pn2) {
+	board_init(ctx.b);
+	ctx.ws.setOnMessage(method:Element.onMessage);
+}
 start_game("enemy", "you");

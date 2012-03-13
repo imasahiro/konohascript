@@ -34,19 +34,22 @@ wsServer.on('request', function(request) {
     }
 
     var connection = request.accept('othello-protocol', request.origin);
-	connection.sendUTF(connections.length + "");
+	connection.sendUTF("id:" + connections.length);
 	connections.push(connection);
     console.log((new Date()) + ' Connection accepted.');
     connection.on('message', function(message) {
-        if (message.type === 'utf8') {
-            console.log('Received Message: ' + message.utf8Data);
-            connections[0].sendUTF(message.utf8Data);
-			if (connections[1]) {
-				connections[1].sendUTF(message.utf8Data);
-			}
-        }
+		/* message = "[01]:x, y" */
+		var num = parseInt(message.utf8Data.slice(0, 1));
+        console.log('Received Message: ' + message.utf8Data);
+        connections[1 - num].sendUTF(message.utf8Data.slice(2));
     });
     connection.on('close', function(reasonCode, description) {
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+		connections[0].sendUTF("end");
+		connections[1].sendUTF("end");
     });
+	if (connections.length == 2) {
+		connections[0].sendUTF("start");
+		connections[1].sendUTF("start");
+	}
 });
