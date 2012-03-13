@@ -1,3 +1,6 @@
+class MessageEvent {
+	String getData();
+}
 class WebSocket {
 	void setOnOpen(Method m);
 	void setOnMessage(Method m);
