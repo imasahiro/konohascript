@@ -19,12 +19,12 @@ if ($env.JS_INCLUDE_RUNTIME == "true") {
 <title>sample</title>
 </head>
 <script type="text/javascript" language="javascript" src="./konoha.js" > </script>
-<script type="text/javascript" language="javascript" src="./konoha.math.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.dom.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.jquery.js" > </script>
 <script type='text/javascript' src='jquery-1.7.1.min.js'></script>
 <script type="text/javascript" language="javascript" src="./js.math.js" > </script>
+<script type="text/javascript" language="javascript" src="/js.websocket.js" > </script>
 <script type="text/javascript">
 <!--
 """;
@@ -75,7 +75,7 @@ System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Public void CompilerOpt.init() {
     this.indentLevel = 0;
-    this.packages = ["konoha", "js", "js.dom", "js.jquery", "js.math"];
+    this.packages = ["konoha", "js", "js.dom", "js.jquery", "js.math", "js.websocket"];
     this.source = [];
     this.unexpectedMethods = ["isNull"];
     this.topLevelFunctionList = [];
