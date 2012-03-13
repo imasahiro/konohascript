@@ -71,9 +71,11 @@ fi
 
 if [ "$FLG_I" = "TRUE" ]; then
     if [ "$FLG_O" = "TRUE" ]; then
+#/usr/bin/gdb --arg /usr/local/bin/konohac --emit-js $INPUT > $OUTPUT
         /usr/local/bin/konohac --emit-js $INPUT > $OUTPUT
     else
 #`/usr/bin/which konohac` --emit-js $INPUT
+#/usr/bin/gdb --arg /usr/local/bin/konohac --emit-js $INPUT
         /usr/local/bin/konohac --emit-js $INPUT
     fi
 fi

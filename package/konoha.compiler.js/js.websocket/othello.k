@@ -24,27 +24,75 @@
  *
  ****************************************************************************/
  
+using konoha.lang.*;
+using js.dom.*;
+using js.jquery.*;
+using js.websocket.*;
+
 N = 8;
 
 SPACE = 0;
 WHITE = 1;
 BLACK = 2;
-Place = Tuple<int,int>
-
+int myColor = WHITE;
+class Point {
+	int x;
+	int y;
+	Point(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+}
+String stone(int n) {
+	if (n == SPACE) {
+		return " .  ";
+	} else if (n == WHITE) {
+		return "( ) ";
+	}
+	return "(@) ";
+}
+//Array<String> stone = null;
 void board_init(int[] b) {
+	//stone = [];
+	//stone.add(" .  ");
+	//stone.add("( ) ");
+	//stone.add("(@) ");
+
 	int i, j;
 	for(i = 0; i < N; i++) {
 		for(j = 0; j < N; j++) {
-			b[i,j] = 0;
+			b[i,j] = SPACE;
 		}
 	}
 	b[N/2-1,N/2-1] = WHITE;
 	b[N/2, N/2] = WHITE;
 	b[N/2-1,N/2] = BLACK;
 	b[N/2,N/2-1] = BLACK;
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			JQuery jquery = new JQuery("<div></div>");
+			jquery.attr("x", i + "");
+			jquery.attr("y", j + "");
+			if (b[i, j] == SPACE) {
+				jquery.css("background-color", "#888888");
+			}
+			if (b[i, j] == BLACK) {
+				jquery.css("background-color", "black");
+			}
+			if (b[i, j] == WHITE) {
+				jquery.css("background-color", "white");
+			}
+			jquery.css("position", "absolute");
+			jquery.css("width", "40px");
+			jquery.css("height", "40px");
+			jquery.css("border", "4px solid green");
+			jquery.css("top", 50 * (int)(i) + 5 + "");
+			jquery.css("left", 50 * j + 5 + "");
+			new JQuery("body").append(jquery);
+		}
+	}
 }
 
-stone = [" .  ", "( ) ", "(@) "];
 
 void board_print(int[] b, String p1, String p2) {
 	int x, y, wc = 0, bc = 0;
@@ -56,15 +104,15 @@ void board_print(int[] b, String p1, String p2) {
 	for(y = 0; y < N; y++) {
 		OUT <<< "[" <<< y <<< "] ";
 		for(x = 0; x < N; x++) {
-			OUT <<< stone[b[x,y]];
+			OUT <<< stone(b[x,y]);
 			if(b[x,y] == WHITE) wc++;
 			if(b[x,y] == BLACK) bc++;
 		}
 		OUT <<< EOL;
 	}
 	OUT <<< "Sum: " <<< (wc + bc) <<< "  ";
-	OUT <<< p1 <<< ":" <<< stone[BLACK] <<< " " <<< bc <<< "  ";
-	OUT <<< p2 <<< ":" <<< stone[WHITE] <<< " " <<<wc <<< EOL;
+	OUT <<< p1 <<< ":" <<< stone(BLACK) <<< " " <<< bc <<< "  ";
+	OUT <<< p2 <<< ":" <<< stone(WHITE) <<< " " <<<wc <<< EOL;
 }
 
 int counter_party(int color) {
@@ -141,7 +189,7 @@ int board_place(int[] b, int color) {
 	return p;
 }
 
-function random(int[] b, int color) {
+Point random(int[] b, int color) {
 	int x, y;
 	while(true) {
 		x = Int.random(N);
@@ -150,10 +198,10 @@ function random(int[] b, int color) {
 			break;
 		}
 	}
-	return (x, y);
+	return new Point(x, y);
 }
 
-function eager(int[] b, int color) {
+Point eager(int[] b, int color) {
 	int x, y, max = 0, mx, my;
 	for(x = 0; x < N; x++) {
 		for(y = 0; y < N; y++) {
@@ -164,10 +212,10 @@ function eager(int[] b, int color) {
 			}
 		}
 	}
-	return (mx, my);
+	return new Point(mx, my);
 }
 
-function minimum(int[] b, int color) {
+Point minimum(int[] b, int color) {
 	int x, y, min = Int.MAX, mx, my;
 	for(x = 0; x < N; x++) {
 		for(y = 0; y < N; y++) {
@@ -178,11 +226,11 @@ function minimum(int[] b, int color) {
 			}
 		}
 	}
-	return (mx, my);
+	return new Point(mx, my);
 }
 
-function human(int[] b, int color) {
-	String prompt = " - Where are you going to place " + stone[color] + "? x, y ";
+Point human(int[] b, int color) {
+	String prompt = " - Where are you going to place " + stone(color) + "? x, y ";
 	String line = System.readLine(prompt);
 	if(line != null) {
 		t = line.match($/(\d)\D(\d)/);
@@ -191,44 +239,52 @@ function human(int[] b, int color) {
 			x = (int)t[1]; y = (int)t[2];
 			print line, x, y;
 			if(board_count(b, x, y, color) > 0) {
-				return (x, y);
+				return new Point(x, y);
 			}
 		}
-		return random(b, color);
+		//return random(b, color);
 	}
-	else {
-		System.exit(0);  // Ctrl-D
-	}
+	//else {
+	//	System.exit(0);  // Ctrl-D
+	//}
 }
 
 //player = random;
-Player = typeof(random);
 
-boolean play_game(int[] b, String name, Player f, int color) {
+boolean play_game(int[] b, String name, int color) {
 	if(board_place(b, color) > 0) {
-		p = f(b, color);
-		board_put(b, p[0], p[1], color);
-		OUT <<< name <<< " put " <<< p[0] <<< ", " <<< p[1] <<< EOL;
+		p = human(b, color);
+		if (p.x == -1 && p.y == -1) return false;
+		board_put(b, p.x, p.y, color);
+		OUT <<< name <<< " put " <<< p.x <<< ", " <<< p.y <<< EOL;
 		return true;
 	}
 	OUT <<< name <<< " couldn't put anywhere!!" <<< EOL;
 	return false;
 }
 
-void start_game(String pn1, Player f1, String pn2, Player f2) {
+void start_game(String pn1, String pn2) {
 	boolean isPlaying = true;
 	int[] b = new int[N, N];
 	board_init(b);
 	board_print(b, pn1, pn2);
 	while(isPlaying) {
 		isPlaying = false;
-		if(play_game(b, pn1, f1, BLACK)) {
-			board_print(b, pn1, pn2);
-			isPlaying = true;
+		if (myColor == BLACK) {
+			if(play_game(b, pn1, BLACK)) {
+				board_print(b, pn1, pn2);
+				isPlaying = true;
+			}
+		} else {
+			// TODO websocket
 		}
-		if(play_game(b, pn2, f2, WHITE)) {
-			board_print(b, pn1, pn2);
-			isPlaying = true;
+		if (myColor == WHITE) {
+			if(play_game(b, pn2, WHITE)) {
+				board_print(b, pn1, pn2);
+				isPlaying = true;
+			}
+		} else {
+			// TODO websocket
 		}
 	}
 	OUT <<< "** Results **" <<< EOL;
@@ -237,4 +293,4 @@ void start_game(String pn1, Player f1, String pn2, Player f2) {
 
 //start_game("Black", random, "White", random);
 //start_game("eager", eager, "minimum", minimum);
-start_game("computer", eager, "you", human);
+start_game("enemy", "you");
