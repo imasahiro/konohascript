@@ -34,7 +34,18 @@ N = 8;
 SPACE = 0;
 WHITE = 1;
 BLACK = 2;
-int myColor = WHITE;
+class Context {
+	int[] b = null;
+	int myColor;
+	int currentColor;
+	void init() {
+		b = new int[N, N];
+		myColor = WHITE;
+		currentColor = WHITE;
+	}
+}
+Context ctx = new Context();
+ctx.init();
 class Point {
 	int x;
 	int y;
@@ -42,6 +53,15 @@ class Point {
 		this.x = x;
 		this.y = y;
 	}
+}
+String cssColor(int m) {
+	if (m == 0) {
+		return "#888888";
+	} 
+	if (m == 1) {
+		return "white";
+	}
+	return "black";
 }
 String stone(int n) {
 	if (n == SPACE) {
@@ -51,49 +71,6 @@ String stone(int n) {
 	}
 	return "(@) ";
 }
-//Array<String> stone = null;
-void board_init(int[] b) {
-	//stone = [];
-	//stone.add(" .  ");
-	//stone.add("( ) ");
-	//stone.add("(@) ");
-
-	int i, j;
-	for(i = 0; i < N; i++) {
-		for(j = 0; j < N; j++) {
-			b[i,j] = SPACE;
-		}
-	}
-	b[N/2-1,N/2-1] = WHITE;
-	b[N/2, N/2] = WHITE;
-	b[N/2-1,N/2] = BLACK;
-	b[N/2,N/2-1] = BLACK;
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			JQuery jquery = new JQuery("<div></div>");
-			jquery.attr("x", i + "");
-			jquery.attr("y", j + "");
-			if (b[i, j] == SPACE) {
-				jquery.css("background-color", "#888888");
-			}
-			if (b[i, j] == BLACK) {
-				jquery.css("background-color", "black");
-			}
-			if (b[i, j] == WHITE) {
-				jquery.css("background-color", "white");
-			}
-			jquery.css("position", "absolute");
-			jquery.css("width", "40px");
-			jquery.css("height", "40px");
-			jquery.css("border", "4px solid green");
-			jquery.css("top", 50 * (int)(i) + 5 + "");
-			jquery.css("left", 50 * j + 5 + "");
-			new JQuery("body").append(jquery);
-		}
-	}
-}
-
-
 void board_print(int[] b, String p1, String p2) {
 	int x, y, wc = 0, bc = 0;
 	OUT <<< "    ";
@@ -156,6 +133,8 @@ void board_dturn(int[] b, int x, int y, int dx, int dy, int color) {
 	while(board_is(b, x, y, p)) {
 		b[x,y] = color;
 		x = x + dx; y = y + dy;
+		JQuery jquery = new JQuery("#" + (x + "") + (y + ""));
+		jquery.css("background-color", cssColor(color));
 	}
 }
 
@@ -230,20 +209,20 @@ Point minimum(int[] b, int color) {
 }
 
 Point human(int[] b, int color) {
-	String prompt = " - Where are you going to place " + stone(color) + "? x, y ";
-	String line = System.readLine(prompt);
-	if(line != null) {
-		t = line.match($/(\d)\D(\d)/);
-		//print line, t, |t|;
-		if(|t| == 3) {
-			x = (int)t[1]; y = (int)t[2];
-			print line, x, y;
-			if(board_count(b, x, y, color) > 0) {
-				return new Point(x, y);
-			}
-		}
-		//return random(b, color);
-	}
+	//String prompt = " - Where are you going to place " + stone(color) + "? x, y ";
+	//String line = System.readLine(prompt);
+	//if(line != null) {
+	//	t = line.match($/(\d)\D(\d)/);
+	//	//print line, t, |t|;
+	//	if(|t| == 3) {
+	//		x = (int)t[1]; y = (int)t[2];
+	//		print line, x, y;
+	//		if(board_count(b, x, y, color) > 0) {
+	//			return new Point(x, y);
+	//		}
+	//	}
+	//	return random(b, color);
+	//}
 	//else {
 	//	System.exit(0);  // Ctrl-D
 	//}
@@ -252,43 +231,79 @@ Point human(int[] b, int color) {
 //player = random;
 
 boolean play_game(int[] b, String name, int color) {
-	if(board_place(b, color) > 0) {
-		p = human(b, color);
-		if (p.x == -1 && p.y == -1) return false;
-		board_put(b, p.x, p.y, color);
-		OUT <<< name <<< " put " <<< p.x <<< ", " <<< p.y <<< EOL;
-		return true;
-	}
-	OUT <<< name <<< " couldn't put anywhere!!" <<< EOL;
-	return false;
+	//if(board_place(b, color) > 0) {
+	//	p = human(b, color);
+	//	if (p.x == -1 && p.y == -1) return false;
+	//	board_put(b, p.x, p.y, color);
+	//	OUT <<< name <<< " put " <<< p.x <<< ", " <<< p.y <<< EOL;
+	//	return true;
+	//}
+	//OUT <<< name <<< " couldn't put anywhere!!" <<< EOL;
+	//return false;
 }
-
+@Public void Element.onclick(JEvent e) {
+	if (ctx.myColor != ctx.currentColor) return;
+	JQuery jquery = new JQuery(this);
+	int x = (Int)jquery.getAttr("x");
+	int y = (Int)jquery.getAttr("y");
+	if (board_count(ctx.b, x, y, ctx.myColor) > 0) {
+		board_put(ctx.b, x, y, ctx.myColor);
+	}
+}
+void board_init(int[] b) {
+	int i, j;
+	for(i = 0; i < N; i++) {
+		for(j = 0; j < N; j++) {
+			b[i,j] = SPACE;
+		}
+	}
+	b[N/2-1,N/2-1] = WHITE;
+	b[N/2, N/2] = WHITE;
+	b[N/2-1,N/2] = BLACK;
+	b[N/2,N/2-1] = BLACK;
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			JQuery jquery = new JQuery("<div></div>");
+			jquery.attr("x", j + "");
+			jquery.attr("y", i + "");
+			jquery.attr("id", (j + "") + (i + ""));
+			jquery.css("background-color", cssColor(b[i, j]));
+			jquery.css("position", "absolute");
+			jquery.css("width", "40px");
+			jquery.css("height", "40px");
+			jquery.css("border", "4px solid green");
+			jquery.css("top", 50 * (int)(i) + 5 + "");
+			jquery.css("left", 50 * j + 5 + "");
+			jquery.click(method:Element.onclick);
+			new JQuery("body").append(jquery);
+		}
+	}
+}
 void start_game(String pn1, String pn2) {
 	boolean isPlaying = true;
-	int[] b = new int[N, N];
-	board_init(b);
-	board_print(b, pn1, pn2);
-	while(isPlaying) {
-		isPlaying = false;
-		if (myColor == BLACK) {
-			if(play_game(b, pn1, BLACK)) {
-				board_print(b, pn1, pn2);
-				isPlaying = true;
-			}
-		} else {
-			// TODO websocket
-		}
-		if (myColor == WHITE) {
-			if(play_game(b, pn2, WHITE)) {
-				board_print(b, pn1, pn2);
-				isPlaying = true;
-			}
-		} else {
-			// TODO websocket
-		}
-	}
-	OUT <<< "** Results **" <<< EOL;
-	board_print(b, pn1, pn2);
+	board_init(ctx.b);
+	//board_print(b, pn1, pn2);
+	//while(isPlaying) {
+	//	isPlaying = false;
+	//	if (myColor == BLACK) {
+	//		if(play_game(b, pn1, BLACK)) {
+	//			board_print(b, pn1, pn2);
+	//			isPlaying = true;
+	//		}
+	//	} else {
+	//		// TODO websocket
+	//	}
+	//	if (myColor == WHITE) {
+	//		if(play_game(b, pn2, WHITE)) {
+	//			board_print(b, pn1, pn2);
+	//			isPlaying = true;
+	//		}
+	//	} else {
+	//		// TODO websocket
+	//	}
+	//}
+	//OUT <<< "** Results **" <<< EOL;
+	//board_print(b, pn1, pn2);
 }
 
 //start_game("Black", random, "White", random);
