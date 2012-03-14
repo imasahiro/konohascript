@@ -74,7 +74,32 @@ KMETHOD Class_isFinal(CTX ctx, ksfp_t *sfp _RIX) {
 	kclass_t cid = c->cTBL->cid;
 	RETURNb_(class_isFinal(cid));
 }
-
+//@Public @Native String[] Class.getConstNames();
+KMETHOD Class_getConstNames(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kDictMap *tcmap = c->cTBL->constDictCaseMapNULL;
+	kArray *res = new_Array(ctx, CLASS_String, 0);
+	if (tcmap) {
+		size_t i, size = knh_Map_size(tcmap);
+		for (i = 0; i < size; i++) {
+			knh_Array_add(ctx, res, knh_DictMap_keyAt(tcmap, i));
+		}
+	}
+	RETURN_(res);
+}
+//@Public @Native Object[] Class.getConstValues();
+KMETHOD Class_getConstValues(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kDictMap *tcmap = c->cTBL->constDictCaseMapNULL;
+	kArray *res = new_Array(ctx, CLASS_Object, 0);
+	if (tcmap) {
+		size_t i, size = knh_Map_size(tcmap);
+		for (i = 0; i < size; i++) {
+			knh_Array_add(ctx, res, knh_DictMap_valueAt(tcmap, i));
+		}
+	}
+	RETURN_(res);
+}
 
 //## Class Class.getBaseClass();
 KMETHOD Class_getBaseClass(CTX ctx, ksfp_t *sfp _RIX) {
