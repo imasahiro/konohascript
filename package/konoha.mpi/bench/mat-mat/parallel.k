@@ -103,8 +103,6 @@ void myMatMat(double[] c, double[] a, double[] b, int n)
 
     dest = (myid == 0) ? (numprocs-1) : (myid-1);
     src  = (myid == numprocs-1) ?   0 : (myid+1);
-    i_start = myid * np;
-    i_end = i_start + np;
     for (l = 0; l < numprocs; l++) {
         /* np x np */
         jstart = np * ((myid+l)%numprocs);

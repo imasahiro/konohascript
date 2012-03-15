@@ -34,8 +34,8 @@ KMETHOD MPIComm_bcast(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Bcast", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("count", count), LOG_p("datatype", MPID_TYPE(data)), LOG_i("root_rank", root_rank)));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("count", count), LOG_i("datatype", MPID_TYPE(data)), LOG_i("root_rank", root_rank), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -74,10 +74,10 @@ KMETHOD MPIComm_scatter(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Scatter", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("scount", scount), LOG_p("sdatatype", MPID_TYPE(sdata)),
-						  LOG_i("rcount", rcount), LOG_p("rdatatype", MPID_TYPE(rdata)),
-						  LOG_i("root_rank", root_rank)));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("scount", scount), LOG_i("sdatatype", MPID_TYPE(sdata)),
+				LOG_i("rcount", rcount), LOG_i("rdatatype", MPID_TYPE(rdata)),
+				LOG_i("root_rank", root_rank), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -105,7 +105,7 @@ KMETHOD MPIComm_gather(CTX ctx, ksfp_t *sfp _RIX)
 			knh_MPIData_expand(ctx, rdata,  &rrcount, &inc);
 			knh_MPIData_incSize(rdata, inc);
 			ret = MPI_Gather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
-							 MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
+					MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
 		} else {
 			ret = MPI_Gather(MPID_ADDR(sdata), scount, MPID_TYPE(sdata), NULL, 0, 0, root_rank, MPIC_COMM(comm));
 		}
@@ -132,7 +132,7 @@ KMETHOD MPIComm_gather(CTX ctx, ksfp_t *sfp _RIX)
 				}
 			}
 			ret = MPI_Gatherv(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
-							  MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
+					MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), root_rank, MPIC_COMM(comm));
 		}
 		else {
 			MPI_Gather(&scount, 1, MPI_INT, NULL, 0, MPI_INT, root_rank, MPIC_COMM(comm));
@@ -143,10 +143,10 @@ KMETHOD MPIComm_gather(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Gather", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("scount", scount), LOG_p("sdatatype", MPID_TYPE(sdata)),
-						  LOG_i("rcount", rcount), LOG_p("rdatatype", MPID_TYPE(rdata)),
-						  LOG_i("root_rank", root_rank)));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("scount", scount), LOG_i("sdatatype", MPID_TYPE(sdata)),
+				LOG_i("rcount", rcount), LOG_i("rdatatype", MPID_TYPE(rdata)),
+				LOG_i("root_rank", root_rank), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -192,9 +192,9 @@ KMETHOD MPIComm_allGather(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Allgather", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("scount", scount), LOG_p("sdatatype", MPID_TYPE(sdata)),
-						  LOG_i("rcount", rcount), LOG_p("rdatatype", MPID_TYPE(rdata))));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("scount", scount), LOG_i("sdatatype", MPID_TYPE(sdata)),
+				LOG_i("rcount", rcount), LOG_i("rdatatype", MPID_TYPE(rdata)), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -220,7 +220,7 @@ KMETHOD MPIComm_allToAll(CTX ctx, ksfp_t *sfp _RIX)
 		knh_MPIData_expand(ctx, rdata, &rrcount, &inc);
 		knh_MPIData_incSize(rdata, inc);
 		ret = MPI_Alltoall(MPID_ADDR(sdata), scount, MPID_TYPE(sdata),
-						   MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIC_COMM(comm));
+				MPID_ADDR(rdata), rcount, MPID_TYPE(rdata), MPIC_COMM(comm));
 	} else {
 		scount = MPID_SIZE(sdata);
 		size_t size = MPIC_SIZE(comm);
@@ -244,15 +244,15 @@ KMETHOD MPIComm_allToAll(CTX ctx, ksfp_t *sfp _RIX)
 		knh_MPIData_expand(ctx, rdata, &rsum, &inc);
 		knh_MPIData_incSize(rdata, inc);
 		ret = MPI_Alltoallv(MPID_ADDR(sdata), scounts, sdispls, MPID_TYPE(sdata),
-							MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), MPIC_COMM(comm));
+				MPID_ADDR(rdata), rcounts, rdispls, MPID_TYPE(rdata), MPIC_COMM(comm));
 	}
 #ifdef KNH_MPI_PROFILE
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Alltoall", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("scount", scount), LOG_p("sdatatype", MPID_TYPE(sdata)),
-						  LOG_i("rcount", rcount), LOG_p("rdatatype", MPID_TYPE(rdata))));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("scount", scount), LOG_i("sdatatype", MPID_TYPE(sdata)),
+				LOG_i("rcount", rcount), LOG_i("rdatatype", MPID_TYPE(rdata)), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -289,8 +289,9 @@ KMETHOD MPIComm_reduce(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Reduce", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("count", count), LOG_p("datatype", MPID_TYPE(sdata)), LOG_i("root_rank", root_rank)));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish),
+				LOG_f("duration", _duration), LOG_i("count", count), LOG_i("datatype", MPID_TYPE(sdata)),
+				LOG_i("root_rank", root_rank), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -322,8 +323,8 @@ KMETHOD MPIComm_scan(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Scan", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("count", rcount), LOG_p("datatype", MPID_TYPE(sdata))));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("count", rcount), LOG_i("datatype", MPID_TYPE(sdata)), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -355,8 +356,8 @@ KMETHOD MPIComm_allReduce(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Allreduce", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("count", rcount), LOG_p("datatype", MPID_TYPE(sdata))));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("count", rcount), LOG_i("datatype", MPID_TYPE(sdata)), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
@@ -386,7 +387,7 @@ KMETHOD MPIComm_reduceScatter(CTX ctx, ksfp_t *sfp _RIX)
 		}
 		if (rsum > MPID_SIZE(sdata)) {
 			KNH_NTHROW2(ctx, sfp, "Script!!", "MPIComm.reduceScatter: sdata < rcounts", K_FAILED,
-						KNH_LDATA(LOG_i("size of sdata", MPID_SIZE(sdata)), LOG_i("sum of rcount", rsum)));
+					KNH_LDATA(LOG_i("size of sdata", MPID_SIZE(sdata)), LOG_i("sum of rcount", rsum)));
 		}
 	} else if(rsize == 0) {
 		size_t dsize = MPID_SIZE(sdata);
@@ -396,7 +397,7 @@ KMETHOD MPIComm_reduceScatter(CTX ctx, ksfp_t *sfp _RIX)
 		for (d--; i < csize; rcounts[i++] = d) ;
 	} else {
 		KNH_NTHROW2(ctx, sfp, "Script!!", "MPIComm.reduceScatter: |comm| < |rcounts|", K_FAILED,
-					KNH_LDATA(LOG_i("size of comm", MPIC_SIZE(comm)), LOG_i("size of rcount", rsize)));
+				KNH_LDATA(LOG_i("size of comm", MPIC_SIZE(comm)), LOG_i("size of rcount", rsize)));
 	}
 	MPID_CHK_WRITABLE(rdata);
 	rcount = rcounts[MPIC_RANK(comm)];
@@ -408,8 +409,8 @@ KMETHOD MPIComm_reduceScatter(CTX ctx, ksfp_t *sfp _RIX)
 	double _finish = MPI_Wtime();
 	double _duration = _finish - _begin;
 	KNH_NTRACE2(ctx, "MPI_Reduce_scatter", K_NOTICE,
-				KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
-						  LOG_i("rcount", rcount), LOG_p("datatype", MPID_TYPE(sdata))));
+			KNH_LDATA(LOG_f("begin", _begin), LOG_f("finish", _finish), LOG_f("duration", _duration),
+				LOG_i("rcount", rcount), LOG_i("datatype", MPID_TYPE(sdata)), LOG_END));
 #endif
 	RETURNb_(ret == MPI_SUCCESS);
 }
