@@ -1554,7 +1554,8 @@ Array<K_Inst> Compiler.cloneTable(Array<K_PHI> phis) {
 }
 Array<K_PHI> Compiler.regTableToPHI(int espidx, K_BasicBlock bb) {
     Array<K_PHI> res = [];
-    for (int i = 0; i < espidx; i++) {
+	int max = (espidx > |kfunc.register_table|) ? |kfunc.register_table| : espidx;
+    for (int i = 0; i < max; i++) {
         if (kfunc.register_table[i] == null) {
             res.add(null);
         } else {
@@ -1567,7 +1568,8 @@ Array<K_PHI> Compiler.regTableToPHI(int espidx, K_BasicBlock bb) {
     return res;
 }
 void Compiler.createPhiArrayBackEdge(Array<K_PHI> phis, Array<K_Inst> regTableCont, K_BasicBlock bb, int espidx) {
-    for (int i = 0; i < espidx; i++) {
+	int max = (espidx > |phis|) ? |phis| : espidx;
+    for (int i = 0; i < max; i++) {
         if (phis[i] != null /*&& regTableCont[i].type.isUnboxType()*/) {
             boolean flag = true;
             if (regTableCont[i].getName() != phis[i].getName()) {
