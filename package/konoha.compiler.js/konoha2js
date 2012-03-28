@@ -3,10 +3,11 @@
 PROGRAM=`basename $0`
 export JS_USE_INDENT=true
 
-while getopts i:jo:rt:u: OPT
+while getopts ci:jo:rt:u: OPT
 do
     case $OPT in
         "b" ) FLG_B="TRUE" ;;
+        "c" ) FLG_C="TRUE" ;;
         "i" ) FLG_I="TRUE" ; VALUE_I="$OPTARG" ;;
         "j" ) FLG_J="TRUE" ;;
         "o" ) FLG_O="TRUE" ; VALUE_O="$OPTARG" ;;
@@ -53,6 +54,13 @@ if [ "$FLG_B" = "TRUE" ]; then
     export JS_USE_OBFUSCATE=true
 else
     export JS_USE_OBFUSCATE=false
+fi
+
+# set compile error output option
+if [ "$FLG_C" = "TRUE" ]; then
+    export JS_ERROR_OUTPUT=true
+else
+    export JS_ERROR_OUTPUT=false
 fi
 
 # set gen type

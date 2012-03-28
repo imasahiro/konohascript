@@ -771,33 +771,49 @@ LABEL = "label";
     } else {
         ous = OUT;
     }
-    if ((config.gen_html) == true) {
-        ous << header << eol;
-    }
-    if ($env.JS_INCLUDE_RUNTIME == "true") {
-        foreach (String pkgname in this.opt.packages) {
-            InputStream in = new InputStream(RUNTIME_DIR + "/" + pkgname + ".js");
-            String tmp = "";
-            while ((tmp = in.readLine()) != null) {
-                ous << tmp << eol;
+    if ($env.JS_ERROR_OUTPUT == "true") {
+        /* return json object
+           that contains some information
+           of compile error message */
+        ous << "{\"error\": ";
+        ous << (|opt.errors| > 0) ? "true, " : "false, ";
+        ous << "\"stderr\": [";
+        for (int i = 0; i < this.opt.errors.size; i++) {
+            ous << "\"" + this.opt.errors[i] + "\"";
+            if (i != this.opt.errors.size-1) {
+                ous << ", ";
             }
         }
-    }
-	ous << "'checkpoint'" << eol;
-    foreach (String fname in this.opt.protoFunc) {
-        ous << "function " + fname + "(){}" << eol;
-    }
-    foreach (K_Class kc in this.declareclass) {
-        String cname = class2str(kc.c);
-        ous << createClassDefinition(kc.c, cname) << eol;
-    }
-    foreach (str in this.opt.source) {
-        ous << str << eol;
-    }
-    ous << createMain() << eol;
-    ous << createSymbol();
-    if ((config.gen_html) == true) {
-        ous << EOL << footer;
+		ous << "]}";
+    } else {
+        if ((config.gen_html) == true) {
+            ous << header << eol;
+        }
+        if ($env.JS_INCLUDE_RUNTIME == "true") {
+            foreach (String pkgname in this.opt.packages) {
+                InputStream in = new InputStream(RUNTIME_DIR + "/" + pkgname + ".js");
+                String tmp = "";
+                while ((tmp = in.readLine()) != null) {
+                    ous << tmp << eol;
+                }
+            }
+        }
+        ous << "'checkpoint'" << eol;
+        foreach (String fname in this.opt.protoFunc) {
+            ous << "function " + fname + "(){}" << eol;
+        }
+        foreach (K_Class kc in this.declareclass) {
+            String cname = class2str(kc.c);
+            ous << createClassDefinition(kc.c, cname) << eol;
+        }
+        foreach (str in this.opt.source) {
+            ous << str << eol;
+        }
+        ous << createMain() << eol;
+        ous << createSymbol();
+        if ((config.gen_html) == true) {
+            ous << EOL << footer;
+        }
     }
     ous.close();
 }
