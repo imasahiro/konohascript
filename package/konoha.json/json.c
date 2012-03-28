@@ -212,8 +212,8 @@ static json_object *json_object_knh_to_json(CTX ctx, kObject *o, kunbox_t n)
 	switch (cid) {
 	case CLASS_Boolean:
 	{
-		kbool_t b = (kbool_t) n;
-		val = json_object_new_boolean(!(b));
+		kbool_t b = ((kBoolean*)o)->n.bvalue;
+		val = json_object_new_boolean(b);
 		break;
 	}
 	case CLASS_Float:
