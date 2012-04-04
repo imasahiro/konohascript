@@ -19,8 +19,19 @@ execute_process(
 string(REPLACE "-I" "" HAVE_MYSQL_H ${MYSQL_INCLUDE_DIR})
 
 if(HAVE_MYSQL_H)
+	add_definitions(-DK_USING_PKG_MYSQL)
+	set(MessageLibs ${MessageLibs} mysql PARENT_SCOPE)
+endif(HAVE_MYSQL_H)
 
-set(MessageLibs ${MessageLibs} mysql PARENT_SCOPE)
+endif(MYSQL_CONFIG)
+
+find_library(HAVE_LIBSQLITE3 sqlite3)
+
+if(HAVE_LIBSQLITE3)
+	add_definitions(-DK_USING_PKG_SQLITE3)
+endif(HAVE_LIBSQLITE3)
+
+if(HAVE_MYSQL_H OR HAVE_LIBSQLITE3)
 
 set(PACKAGE_SCRIPT_CODE sql.k)
 set(PACKAGE_SOURCE_CODE
@@ -45,11 +56,10 @@ add_definitions(-D_SETUP)
 
 add_library(${PACKAGE_NAME} SHARED ${PACKAGE_SOURCE_CODE})
 set_target_properties(${PACKAGE_NAME} PROPERTIES PREFIX "")
-target_link_libraries(${PACKAGE_NAME} konoha ${HAVE_LIBMYSQL})
+target_link_libraries(${PACKAGE_NAME} konoha ${HAVE_LIBMYSQL} ${HAVE_LIBSQLITE3})
 
 install(TARGETS ${PACKAGE_NAME} DESTINATION ${KONOHA_PACKAGE_DIR})
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${PACKAGE_SCRIPT_CODE} DESTINATION ${KONOHA_PACKAGE_DIR})
 
-endif(HAVE_MYSQL_H)
-endif(MYSQL_CONFIG)
+endif(HAVE_MYSQL_H OR HAVE_LIBSQLITE3)
 

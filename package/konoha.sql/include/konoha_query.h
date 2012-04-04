@@ -41,9 +41,6 @@ extern "C" {
 #include <konoha1.h>
 #include <konoha1/inlinelibs.h>
 
-//#define K_USING_PKG_MYSQL
-#define K_USING_PKG_SQLITE3
-
 /* ======================================================================== */
 /* [struct] */
 /* ------------------------------------------------------------------------ */
