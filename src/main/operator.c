@@ -625,7 +625,7 @@ static TYPEMAP Date_String(CTX ctx, ksfp_t *sfp _RIX)
 	char buf[80];
 	knh_snprintf(buf, sizeof(buf), "%04d-%02d-%02dT%02d:%02d:%02d%+02d:%02d",
 		(int)(dt->dt.year), (int)(dt->dt.month), (int)dt->dt.day,
-		(int)(dt->dt.hour), (int)(dt->dt.min), (int)dt->dt.sec, (int)(dt->dt.gmtoff / 60), (int)(dt->dt.gmtoff % 60));
+		(int)(dt->dt.hour), (int)(dt->dt.min), (int)dt->dt.sec, (int)(dt->dt.gmtoff % 60), (int)(dt->dt.gmtoff / 60));
 	RETURN_(new_String(ctx, buf));
 }
 
