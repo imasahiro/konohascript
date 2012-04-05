@@ -1,4 +1,4 @@
-var konoha = function() {
+function konoha() {
     this.OUT = "";
     this.ERR = "";
 	this.THROWN = false;
@@ -14,7 +14,7 @@ var konoha = function() {
     }
 }
 
-var document = function() {
+document || function document() {
 	this._body = "<html><head></head><body></body></html>";
 	this.getElementsByTagName = function(tagname) {
 		return null;
