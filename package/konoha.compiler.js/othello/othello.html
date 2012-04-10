@@ -1,0 +1,1503 @@
+<html>
+<head>
+<title>sample</title>
+</head>
+<script type="text/javascript" language="javascript" src="./konoha.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.dom.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.jquery.js" > </script>
+<script type='text/javascript' src='jquery-1.7.1.min.js'></script>
+<script type="text/javascript" language="javascript" src="./js.math.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.websocket.js" > </script>
+<script type="text/javascript">
+<!--
+
+'checkpoint'
+function A() {
+    this.$a = null;
+    this.$b = 0;
+    this.$c = 0;
+    this.$d = 0;
+    this.$e = null;
+}
+
+function B() {
+    this.$a = 0;
+    this.$b = 0;
+}
+
+A.prototype.a = function () {
+    var $a = this;
+    var $b = new konoha.Array();
+    var $c = 8;
+    var $d = 8;
+    var $e = $b.new_ARRAY($c, $d);
+    $a.$a = $e;
+    var $f = 1;
+    $a.$b = $f;
+    var $g = 1;
+    $a.$c = $g;
+    var $h = false;
+    $a.$d = $h;
+    var $i = new js.websocket.WebSocket();
+    var $j = new konoha.String("ws://localhost:8080/");
+    var $k = new konoha.String("othello-protocol");
+    var $l = $i._new($j, $k);
+    $a.$e = $l;
+    return;
+};
+
+function _a($a) {
+    var $b = new A({b: null, myColor: 0, currentColor: 0, start: false, ws: null});
+    $a.$a = $b;
+    return;
+}
+
+function _b($a) {
+    var $b = $a.$a;
+    $b.a();
+    return;
+}
+
+B.prototype.a = function ($a, $b) {
+    var $c = this;
+    $c.$a = $a;
+    $c.$b = $b;
+    return $c;
+};
+
+function a($a) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $b = 0;
+            var $c = $a == $b;
+            if ($c) {
+                label = 1;
+            } else {
+                label = 2;
+            }
+            break;
+        case 1:
+            var $d = new konoha.String("#888888");
+            return $d;
+        case 2:
+            label = 3;
+            break;
+        case 3:
+            var $e = 1;
+            var $f = $a == $e;
+            if ($f) {
+                label = 4;
+            } else {
+                label = 5;
+            }
+            break;
+        case 4:
+            var $g = new konoha.String("white");
+            return $g;
+        case 5:
+            label = 6;
+            break;
+        case 6:
+            var $h = new konoha.String("black");
+            return $h;
+        }
+    }
+}
+
+function b($a) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $b = 0;
+            var $c = $a == $b;
+            if ($c) {
+                label = 1;
+            } else {
+                label = 2;
+            }
+            break;
+        case 1:
+            var $d = new konoha.String(" .  ");
+            return $d;
+        case 2:
+            var $e = 1;
+            var $f = $a == $e;
+            if ($f) {
+                label = 4;
+            } else {
+                label = 5;
+            }
+            break;
+        case 3:
+            var $g = new konoha.String("(@) ");
+            return $g;
+        case 4:
+            var $h = new konoha.String("( ) ");
+            return $h;
+        case 5:
+            label = 6;
+            break;
+        case 6:
+            label = 3;
+            break;
+        }
+    }
+}
+
+function c($a, $b, $c) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $d = 0;
+            var $e = 0;
+            var $f = 0;
+            var $g = 0;
+            var $h = konoha.System.getOut();
+            var $i = new konoha.String("    ");
+            $h.send($i);
+            var $j = 0;
+            var $k = $a;
+            var $l = $b;
+            var $m = $c;
+            var $n = $j;
+            var $o = $e;
+            var $p = $f;
+            var $q = $g;
+            label = 1;
+            break;
+        case 1:
+            $k = $a;
+            $l = $b;
+            $m = $c;
+            $o = $e;
+            $p = $f;
+            $q = $g;
+            var $r = 8;
+            var $s = $n < $r;
+            if ($s) {
+                label = 2;
+            } else {
+                label = 4;
+            }
+            break;
+        case 2:
+            var $t = konoha.System.getOut();
+            var $u = new konoha.String("[");
+            $t.send($u);
+            $t.send($n);
+            var $v = new konoha.String("] ");
+            $t.send($v);
+            label = 3;
+            break;
+        case 3:
+            var $w = 1;
+            var $x = $n + $w;
+            $n = $x;
+            label = 1;
+            break;
+        case 4:
+            var $y = konoha.System.getOut();
+            var $z = new konoha.String("\n");
+            $y.send($z);
+            var $ba = 0;
+            var $bb = $k;
+            var $bc = $l;
+            var $bd = $m;
+            var $be = $n;
+            var $bf = $ba;
+            var $bg = $p;
+            var $bh = $q;
+            label = 5;
+            break;
+        case 5:
+            var $bi = 8;
+            var $bj = $bf < $bi;
+            if ($bj) {
+                label = 6;
+            } else {
+                label = 8;
+            }
+            break;
+        case 6:
+            var $bk = konoha.System.getOut();
+            var $bl = new konoha.String("[");
+            $bk.send($bl);
+            $bk.send($bf);
+            var $bm = new konoha.String("] ");
+            $bk.send($bm);
+            var $bn = 0;
+            var $bo = $bb;
+            var $bp = $bc;
+            var $bq = $bd;
+            var $br = $bn;
+            var $bs = $bf;
+            var $bt = $bg;
+            var $bu = $bh;
+            label = 9;
+            break;
+        case 7:
+            var $bv = 1;
+            $x = $bs + $bv;
+            $bb = $bo;
+            $bc = $bp;
+            $bd = $bq;
+            $be = $br;
+            $bf = $x;
+            $bg = $bt;
+            $bh = $bu;
+            label = 5;
+            break;
+        case 8:
+            var $bw = konoha.System.getOut();
+            var $bx = new konoha.String("Sum: ");
+            $bw.send($bx);
+            var $by = $bg + $bh;
+            $bw.send($by);
+            $i = new konoha.String("  ");
+            $bw.send($i);
+            var $bz = konoha.System.getOut();
+            $bz.send($bc);
+            $u = new konoha.String(":");
+            $bz.send($u);
+            var $ca = 2;
+            $v = b($ca);
+            $bz.send($v);
+            $z = new konoha.String(" ");
+            $bz.send($z);
+            $bz.send($bh);
+            $bl = new konoha.String("  ");
+            $bz.send($bl);
+            var $cb = konoha.System.getOut();
+            $cb.send($bd);
+            $bm = new konoha.String(":");
+            $cb.send($bm);
+            var $cc = 1;
+            var $cd = b($cc);
+            $cb.send($cd);
+            var $ce = new konoha.String(" ");
+            $cb.send($ce);
+            $cb.send($bg);
+            $bx = new konoha.String("\n");
+            $cb.send($bx);
+            return;
+        case 9:
+            $bo = $bb;
+            $bp = $bc;
+            $bq = $bd;
+            $bs = $bf;
+            var $cf = 8;
+            var $cg = $br < $cf;
+            if ($cg) {
+                label = 10;
+            } else {
+                label = 12;
+            }
+            break;
+        case 10:
+            var $ch = konoha.System.getOut();
+            var $ci = $bo.get2($br, $bs);
+            $cd = b($ci);
+            $ch.send($cd);
+            var $cj = $bo.get2($br, $bs);
+            var $ck = 1;
+            var $cl = $cj == $ck;
+            if ($cl) {
+                label = 13;
+            } else {
+                label = 14;
+            }
+            break;
+        case 11:
+            var $cm = 1;
+            var $cn = $br + $cm;
+            $br = $cn;
+            $bt = $co;
+            $bu = $cp;
+            label = 9;
+            break;
+        case 12:
+            var $cq = konoha.System.getOut();
+            $ce = new konoha.String("\n");
+            $cq.send($ce);
+            label = 7;
+            break;
+        case 13:
+            var $cr = 1;
+            $x = $bt + $cr;
+            $co = $x;
+            label = 15;
+            break;
+        case 14:
+            $co = $bt;
+            label = 15;
+            break;
+        case 15:
+            var $cs = $bo.get2($br, $bs);
+            var $ct = 2;
+            var $cu = $cs == $ct;
+            if ($cu) {
+                label = 16;
+            } else {
+                label = 17;
+            }
+            break;
+        case 16:
+            var $cv = 1;
+            var $cw = $bu + $cv;
+            $cp = $cw;
+            label = 18;
+            break;
+        case 17:
+            $cp = $bu;
+            label = 18;
+            break;
+        case 18:
+            label = 11;
+            break;
+        }
+    }
+}
+
+function d($a) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $b = 1;
+            var $c = $a == $b;
+            if ($c) {
+                label = 1;
+            } else {
+                label = 2;
+            }
+            break;
+        case 1:
+            var $d = 2;
+            return $d;
+        case 2:
+            label = 3;
+            break;
+        case 3:
+            var $e = 1;
+            return $e;
+        }
+    }
+}
+
+function e($a, $b, $c, $d) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $e = true;
+            var $f = false;
+            var $g = 0;
+            var $h = $g <= $b;
+            var $i = $f;
+            if ($h) {
+                label = 2;
+            } else {
+                label = 1;
+            }
+            break;
+        case 1:
+            if ($i) {
+                label = 6;
+            } else {
+                label = 7;
+            }
+            break;
+        case 2:
+            var $j = 8;
+            var $k = $b < $j;
+            $i = $f;
+            if ($k) {
+                label = 3;
+            } else {
+                label = 1;
+            }
+            break;
+        case 3:
+            var $l = 0;
+            var $m = $l <= $c;
+            $i = $f;
+            if ($m) {
+                label = 4;
+            } else {
+                label = 1;
+            }
+            break;
+        case 4:
+            var $n = 8;
+            var $o = $c < $n;
+            $i = $f;
+            if ($o) {
+                label = 5;
+            } else {
+                label = 1;
+            }
+            break;
+        case 5:
+            $i = $e;
+            label = 1;
+            break;
+        case 6:
+            var $p = $a.get2($b, $c);
+            var $q = $p == $d;
+            return $q;
+        case 7:
+            label = 8;
+            break;
+        case 8:
+            var $r = 0;
+            $e = $d == $r;
+            if ($e) {
+                label = 9;
+            } else {
+                label = 10;
+            }
+            break;
+        case 9:
+            var $s = true;
+            return $s;
+        case 10:
+            label = 11;
+            break;
+        case 11:
+            var $t = false;
+            return $t;
+        }
+    }
+}
+
+function f($a, $b, $c, $d, $e, $f) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $g = 1;
+            var $h = $a;
+            var $i = $b;
+            var $j = $c;
+            var $k = $d;
+            var $l = $e;
+            var $m = $f;
+            var $n = $g;
+            label = 1;
+            break;
+        case 1:
+            $h = $a;
+            $k = $d;
+            $l = $e;
+            $m = $f;
+            var $o = true;
+            if ($o) {
+                label = 2;
+            } else {
+                label = 3;
+            }
+            break;
+        case 2:
+            var $p = e($h, $i, $j, $m);
+            if ($p) {
+                label = 4;
+            } else {
+                label = 5;
+            }
+            break;
+        case 3:
+            var $q = 0;
+            return $q;
+        case 4:
+            return $n;
+        case 5:
+            label = 6;
+            break;
+        case 6:
+            var $r = 0;
+            var $s = e($h, $i, $j, $r);
+            if ($s) {
+                label = 7;
+            } else {
+                label = 8;
+            }
+            break;
+        case 7:
+            label = 3;
+            break;
+        case 8:
+            label = 9;
+            break;
+        case 9:
+            var $t = $i + $k;
+            var $u = $j + $l;
+            var $v = 1;
+            var $w = $n + $v;
+            $i = $t;
+            $j = $u;
+            $n = $w;
+            label = 1;
+            break;
+        }
+    }
+}
+
+function g($a, $b, $c, $d) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $e = 0;
+            var $f = 0;
+            var $g = 0;
+            var $h = d($d);
+            var $i = $a.get2($b, $c);
+            var $j = 0;
+            var $k = $i != $j;
+            if ($k) {
+                label = 1;
+            } else {
+                label = 2;
+            }
+            break;
+        case 1:
+            var $l = 0;
+            return $l;
+        case 2:
+            label = 3;
+            break;
+        case 3:
+            var $m = -1;
+            var $n = $a;
+            var $o = $b;
+            var $p = $c;
+            var $q = $d;
+            var $r = $m;
+            var $s = $f;
+            var $t = $g;
+            var $u = $h;
+            label = 4;
+            break;
+        case 4:
+            var $v = 2;
+            var $w = $r < $v;
+            if ($w) {
+                label = 5;
+            } else {
+                label = 7;
+            }
+            break;
+        case 5:
+            var $x = -1;
+            var $y = $n;
+            var $z = $o;
+            var $ba = $p;
+            var $bb = $q;
+            var $bc = $r;
+            var $bd = $x;
+            var $be = $t;
+            var $bf = $u;
+            label = 8;
+            break;
+        case 6:
+            var $bg = 1;
+            var $bh = $bc + $bg;
+            $n = $y;
+            $o = $z;
+            $p = $ba;
+            $q = $bb;
+            $r = $bh;
+            $s = $bd;
+            $t = $be;
+            $u = $bf;
+            label = 4;
+            break;
+        case 7:
+            return $t;
+        case 8:
+            $y = $n;
+            $z = $o;
+            $ba = $p;
+            $bb = $q;
+            $bc = $r;
+            $bf = $u;
+            var $bi = 2;
+            var $bj = $bd < $bi;
+            if ($bj) {
+                label = 9;
+            } else {
+                label = 11;
+            }
+            break;
+        case 9:
+            var $bk = $z + $bc;
+            var $bl = $ba + $bd;
+            var $bm = e($y, $bk, $bl, $bf);
+            if ($bm) {
+                label = 12;
+            } else {
+                label = 13;
+            }
+            break;
+        case 10:
+            var $bn = 1;
+            var $bo = $bd + $bn;
+            $bd = $bo;
+            $be = $bp;
+            label = 8;
+            break;
+        case 11:
+            label = 6;
+            break;
+        case 12:
+            var $bq = $z + $bc;
+            var $br = $ba + $bd;
+            var $bs = f($y, $bq, $br, $bc, $bd, $bb);
+            var $bt = $be + $bs;
+            $bp = $bt;
+            label = 14;
+            break;
+        case 13:
+            $bp = $be;
+            label = 14;
+            break;
+        case 14:
+            label = 10;
+            break;
+        }
+    }
+}
+
+function h($a, $b, $c, $d, $e, $f) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $g = 0;
+            var $h = d($f);
+            var $i = $a;
+            var $j = $b;
+            var $k = $c;
+            var $l = $d;
+            var $m = $e;
+            var $n = $f;
+            var $o = $h;
+            label = 1;
+            break;
+        case 1:
+            $i = $a;
+            $l = $d;
+            $m = $e;
+            $n = $f;
+            $o = $h;
+            var $p = e($i, $j, $k, $o);
+            if ($p) {
+                label = 2;
+            } else {
+                label = 3;
+            }
+            break;
+        case 2:
+            var $q = $i.set2($j, $k, $n);
+            var $r = new js.jquery.JQuery();
+            var $s = new konoha.OutputStream(true);
+            var $t = new konoha.OutputStream(true);
+            var $u = new konoha.String("#");
+            $t.send($u);
+            var $v = new konoha.OutputStream(true);
+            $v.send($j);
+            var $w = new konoha.String("");
+            $v.send($w);
+            $u = $v.tostr();
+            $t.send($u);
+            var $x = $t.tostr();
+            $s.send($x);
+            var $y = new konoha.OutputStream(true);
+            $y.send($k);
+            var $z = new konoha.String("");
+            $y.send($z);
+            $x = $y.tostr();
+            $s.send($x);
+            var $ba = $s.tostr();
+            var $bb = $r._new($ba);
+            var $bc = new konoha.String("background-color");
+            var $bd = a($n);
+            var $be = $bb.css($bc, $bd);
+            var $bf = $j + $l;
+            var $bg = $k + $m;
+            $j = $bf;
+            $k = $bg;
+            label = 1;
+            break;
+        case 3:
+            return;
+        }
+    }
+}
+
+function i($a, $b, $c, $d) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $e = 0;
+            var $f = 0;
+            var $g = 0;
+            var $h = d($d);
+            var $i = g($a, $b, $c, $d);
+            var $j = 0;
+            var $k = $i > $j;
+            if ($k) {
+                label = 1;
+            } else {
+                label = 2;
+            }
+            break;
+        case 1:
+            var $l = -1;
+            var $m = $a;
+            var $n = $b;
+            var $o = $c;
+            var $p = $d;
+            var $q = $l;
+            var $r = $f;
+            var $s = $g;
+            var $t = $h;
+            label = 4;
+            break;
+        case 2:
+            label = 3;
+            break;
+        case 3:
+            var $u = false;
+            return $u;
+        case 4:
+            var $v = 2;
+            var $w = $q < $v;
+            if ($w) {
+                label = 5;
+            } else {
+                label = 7;
+            }
+            break;
+        case 5:
+            var $x = -1;
+            var $y = $m;
+            var $z = $n;
+            var $ba = $o;
+            var $bb = $p;
+            var $bc = $q;
+            var $bd = $x;
+            var $be = $s;
+            var $bf = $t;
+            label = 8;
+            break;
+        case 6:
+            var $bg = 1;
+            var $bh = $bc + $bg;
+            $m = $y;
+            $n = $z;
+            $o = $ba;
+            $p = $bb;
+            $q = $bh;
+            $r = $bd;
+            $s = $be;
+            $t = $bf;
+            label = 4;
+            break;
+        case 7:
+            var $bi = $m.set2($n, $o, $p);
+            var $bj = true;
+            return $bj;
+        case 8:
+            $y = $m;
+            $z = $n;
+            $ba = $o;
+            $bb = $p;
+            $bc = $q;
+            $be = $s;
+            $bf = $t;
+            var $bk = 2;
+            var $bl = $bd < $bk;
+            if ($bl) {
+                label = 9;
+            } else {
+                label = 11;
+            }
+            break;
+        case 9:
+            var $bm = $z + $bc;
+            var $bn = $ba + $bd;
+            var $bo = true;
+            var $bp = false;
+            var $bq = e($y, $bm, $bn, $bf);
+            var $br = $bp;
+            if ($bq) {
+                label = 13;
+            } else {
+                label = 12;
+            }
+            break;
+        case 10:
+            $i = 1;
+            var $bs = $bd + $i;
+            $bd = $bs;
+            label = 8;
+            break;
+        case 11:
+            label = 6;
+            break;
+        case 12:
+            if ($br) {
+                label = 15;
+            } else {
+                label = 16;
+            }
+            break;
+        case 13:
+            var $bt = f($y, $bm, $bn, $bc, $bd, $bb);
+            var $bu = 0;
+            var $bv = $bt > $bu;
+            $br = $bp;
+            if ($bv) {
+                label = 14;
+            } else {
+                label = 12;
+            }
+            break;
+        case 14:
+            $br = $bo;
+            label = 12;
+            break;
+        case 15:
+            h($y, $bm, $bn, $bc, $bd, $bb);
+            label = 17;
+            break;
+        case 16:
+            label = 17;
+            break;
+        case 17:
+            label = 10;
+            break;
+        }
+    }
+}
+
+function j($a, $b) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $c = 0;
+            var $d = 0;
+            var $e = 0;
+            var $f = 0;
+            var $g = 0;
+            var $h = $a;
+            var $i = $b;
+            var $j = $g;
+            var $k = $d;
+            var $l = $e;
+            var $m = $f;
+            label = 1;
+            break;
+        case 1:
+            var $n = 8;
+            var $o = $j < $n;
+            if ($o) {
+                label = 2;
+            } else {
+                label = 4;
+            }
+            break;
+        case 2:
+            var $p = 0;
+            var $q = $h;
+            var $r = $i;
+            var $s = $j;
+            var $t = $p;
+            var $u = $l;
+            var $v = $m;
+            label = 5;
+            break;
+        case 3:
+            var $w = 1;
+            var $x = $s + $w;
+            $h = $q;
+            $i = $r;
+            $j = $x;
+            $k = $t;
+            $l = $u;
+            $m = $v;
+            label = 1;
+            break;
+        case 4:
+            return $m;
+        case 5:
+            $q = $h;
+            $r = $i;
+            $s = $j;
+            var $y = 8;
+            var $z = $t < $y;
+            if ($z) {
+                label = 6;
+            } else {
+                label = 8;
+            }
+            break;
+        case 6:
+            var $ba = g($q, $s, $t, $r);
+            var $bb = 0;
+            var $bc = $ba > $bb;
+            if ($bc) {
+                label = 9;
+            } else {
+                label = 10;
+            }
+            break;
+        case 7:
+            var $bd = 1;
+            var $be = $t + $bd;
+            $t = $be;
+            $u = $ba;
+            $v = $bf;
+            label = 5;
+            break;
+        case 8:
+            label = 3;
+            break;
+        case 9:
+            var $bg = 1;
+            var $bh = $v + $bg;
+            $bf = $bh;
+            label = 11;
+            break;
+        case 10:
+            $bf = $v;
+            label = 11;
+            break;
+        case 11:
+            label = 7;
+            break;
+        }
+    }
+}
+
+js.dom.Element.onclick = function ($a) {
+    var $b = this;
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $c = konoha.script;
+            var $d = true;
+            var $e = false;
+            var $f = $c.$a;
+            var $g = $f.$b;
+            var $h = $c.$a;
+            var $i = $h.$c;
+            var $j = $g != $i;
+            var $k = $d;
+            if ($j) {
+                label = 1;
+            } else {
+                label = 2;
+            }
+            break;
+        case 1:
+            if ($k) {
+                label = 4;
+            } else {
+                label = 5;
+            }
+            break;
+        case 2:
+            var $l = $c.$a;
+            var $m = $l.$d;
+            var $n =! $m;
+            $k = $d;
+            if ($n) {
+                label = 1;
+            } else {
+                label = 3;
+            }
+            break;
+        case 3:
+            $k = $e;
+            label = 1;
+            break;
+        case 4:
+            return;
+        case 5:
+            label = 6;
+            break;
+        case 6:
+            var $o = new js.jquery.JQuery();
+            var $p = $o._new($b);
+            var $q = new konoha.String("x");
+            var $r = $p.getAttr($q);
+            var $s = parseInt($r.rawptr, 10);
+            var $t = new konoha.String("y");
+            var $u = $p.getAttr($t);
+            $g = parseInt($u.rawptr, 10);
+            var $v = $c.$a;
+            var $w = $v.$a;
+            var $x = $c.$a;
+            var $y = $x.$b;
+            var $z = g($w, $s, $g, $y);
+            var $ba = 0;
+            var $bb = $z > $ba;
+            if ($bb) {
+                label = 7;
+            } else {
+                label = 8;
+            }
+            break;
+        case 7:
+            var $bc = new js.jquery.JQuery();
+            var $bd = new konoha.OutputStream(true);
+            var $be = new konoha.OutputStream(true);
+            var $bf = new konoha.String("#");
+            $be.send($bf);
+            var $bg = new konoha.OutputStream(true);
+            $bg.send($s);
+            var $bh = new konoha.String("");
+            $bg.send($bh);
+            $bf = $bg.tostr();
+            $be.send($bf);
+            var $bi = $be.tostr();
+            $bd.send($bi);
+            var $bj = new konoha.OutputStream(true);
+            $bj.send($g);
+            var $bk = new konoha.String("");
+            $bj.send($bk);
+            $bi = $bj.tostr();
+            $bd.send($bi);
+            var $bl = $bd.tostr();
+            var $bm = $bc._new($bl);
+            var $bn = new konoha.String("background-color");
+            var $bo = $c.$a;
+            var $bp = $bo.$c;
+            var $bq = a($bp);
+            $o = $bm.css($bn, $bq);
+            var $br = $c.$a;
+            var $bs = $br.$a;
+            var $bt = $c.$a;
+            var $bu = $bt.$b;
+            $bb = i($bs, $s, $g, $bu);
+            var $bv = $c.$a;
+            var $bw = $c.$a;
+            var $bx = $bw.$c;
+            var $by = d($bx);
+            $bv.$c = $by;
+            var $bz = $c.$a;
+            var $ca = $bz.$e;
+            var $cb = new konoha.OutputStream(true);
+            var $cc = new konoha.OutputStream(true);
+            var $cd = new konoha.OutputStream(true);
+            var $ce = new konoha.OutputStream(true);
+            var $cf = $c.$a;
+            var $cg = $cf.$b;
+            var $ch = 1;
+            var $ci = $cg - $ch;
+            $ce.send($ci);
+            var $cj = new konoha.String(":");
+            $ce.send($cj);
+            var $ck = $ce.tostr();
+            $cd.send($ck);
+            $cd.send($s);
+            var $cl = $cd.tostr();
+            $cc.send($cl);
+            var $cm = new konoha.String(", ");
+            $cc.send($cm);
+            var $cn = $cc.tostr();
+            $cb.send($cn);
+            $cb.send($g);
+            $bn = $cb.tostr();
+            $ca.send($bn);
+            label = 9;
+            break;
+        case 8:
+            label = 9;
+            break;
+        case 9:
+            return;
+        }
+    }
+};
+
+function k($a) {
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $b = 0;
+            var $c = 0;
+            var $d = 0;
+            var $e = $a;
+            var $f = $d;
+            var $g = $c;
+            label = 1;
+            break;
+        case 1:
+            var $h = 8;
+            var $i = $f < $h;
+            if ($i) {
+                label = 2;
+            } else {
+                label = 4;
+            }
+            break;
+        case 2:
+            var $j = 0;
+            var $k = $e;
+            var $l = $f;
+            var $m = $j;
+            label = 5;
+            break;
+        case 3:
+            var $n = 1;
+            var $o = $l + $n;
+            $e = $k;
+            $f = $o;
+            $g = $m;
+            label = 1;
+            break;
+        case 4:
+            var $p = 3;
+            var $q = 3;
+            var $r = 1;
+            var $s = $e.set2($p, $q, $r);
+            var $t = 4;
+            var $u = 4;
+            var $v = 1;
+            var $w = $e.set2($t, $u, $v);
+            var $x = 3;
+            var $y = 4;
+            var $z = 2;
+            var $ba = $e.set2($x, $y, $z);
+            var $bb = 4;
+            var $bc = 3;
+            var $bd = 2;
+            var $be = $e.set2($bb, $bc, $bd);
+            var $bf = 0;
+            var $bg = $e;
+            var $bh = $bf;
+            var $bi = $g;
+            label = 9;
+            break;
+        case 5:
+            $k = $e;
+            $l = $f;
+            var $bj = 8;
+            var $bk = $m < $bj;
+            if ($bk) {
+                label = 6;
+            } else {
+                label = 8;
+            }
+            break;
+        case 6:
+            var $bl = 0;
+            var $bm = $k.set2($l, $m, $bl);
+            label = 7;
+            break;
+        case 7:
+            var $bn = 1;
+            var $bo = $m + $bn;
+            $m = $bo;
+            label = 5;
+            break;
+        case 8:
+            label = 3;
+            break;
+        case 9:
+            var $bp = 8;
+            var $bq = $bh < $bp;
+            if ($bq) {
+                label = 10;
+            } else {
+                label = 12;
+            }
+            break;
+        case 10:
+            var $br = 0;
+            var $bs = $bg;
+            var $bt = $bh;
+            var $bu = $br;
+            label = 13;
+            break;
+        case 11:
+            var $bv = 1;
+            $bo = $bt + $bv;
+            $bg = $bs;
+            $bh = $bo;
+            $bi = $bu;
+            label = 9;
+            break;
+        case 12:
+            return;
+        case 13:
+            $bs = $bg;
+            $bt = $bh;
+            var $bw = 8;
+            var $bx = $bu < $bw;
+            if ($bx) {
+                label = 14;
+            } else {
+                label = 16;
+            }
+            break;
+        case 14:
+            var $by = new js.jquery.JQuery();
+            var $bz = new konoha.String("<div></div>");
+            var $ca = $by._new($bz);
+            var $cb = new konoha.String("x");
+            var $cc = new konoha.OutputStream(true);
+            $cc.send($bu);
+            var $cd = new konoha.String("");
+            $cc.send($cd);
+            var $ce = $cc.tostr();
+            var $cf = $ca.attr($cb, $ce);
+            var $cg = new konoha.String("y");
+            var $ch = new konoha.OutputStream(true);
+            $ch.send($bt);
+            var $ci = new konoha.String("");
+            $ch.send($ci);
+            $ce = $ch.tostr();
+            var $cj = $ca.attr($cg, $ce);
+            var $ck = new konoha.String("id");
+            var $cl = new konoha.OutputStream(true);
+            var $cm = new konoha.OutputStream(true);
+            $cm.send($bu);
+            var $cn = new konoha.String("");
+            $cm.send($cn);
+            $cd = $cm.tostr();
+            $cl.send($cd);
+            var $co = new konoha.OutputStream(true);
+            $co.send($bt);
+            var $cp = new konoha.String("");
+            $co.send($cp);
+            $cd = $co.tostr();
+            $cl.send($cd);
+            $ce = $cl.tostr();
+            var $cq = $ca.attr($ck, $ce);
+            var $cr = new konoha.String("background-color");
+            var $cs = $bs.get2($bt, $bu);
+            var $ct = a($cs);
+            var $cu = $ca.css($cr, $ct);
+            var $cv = new konoha.String("position");
+            var $cw = new konoha.String("absolute");
+            var $cx = $ca.css($cv, $cw);
+            var $cy = new konoha.String("width");
+            var $cz = new konoha.String("40px");
+            var $da = $ca.css($cy, $cz);
+            var $db = new konoha.String("height");
+            var $dc = new konoha.String("40px");
+            var $dd = $ca.css($db, $dc);
+            var $de = new konoha.String("border");
+            var $df = new konoha.String("4px solid green");
+            var $dg = $ca.css($de, $df);
+            var $dh = new konoha.String("top");
+            var $di = new konoha.OutputStream(true);
+            var $dj = 50;
+            var $dk = $dj * $bt;
+            var $dl = 5;
+            var $dm = $dk + $dl;
+            $di.send($dm);
+            $cd = new konoha.String("");
+            $di.send($cd);
+            $ce = $di.tostr();
+            var $dn = $ca.css($dh, $ce);
+            var $do = new konoha.String("left");
+            var $dp = new konoha.OutputStream(true);
+            var $dq = 50;
+            var $dr = $dq * $bu;
+            var $ds = 5;
+            $cs = $dr + $ds;
+            $dp.send($cs);
+            $cd = new konoha.String("");
+            $dp.send($cd);
+            $ce = $dp.tostr();
+            var $dt = $ca.css($do, $ce);
+            var $du = new konoha.Method(js.dom.Element.onclick);
+            var $dv = $ca.click($du);
+            var $dw = new js.jquery.JQuery();
+            var $dx = new konoha.String("body");
+            var $dy = $dw._new($dx);
+            var $dz = $dy.append($ca);
+            label = 15;
+            break;
+        case 15:
+            var $ea = 1;
+            $bm = $bu + $ea;
+            $bu = $bm;
+            label = 13;
+            break;
+        case 16:
+            label = 11;
+            break;
+        }
+    }
+}
+
+js.dom.Element.onMessage = function ($a) {
+    var $b = this;
+    var label = 0;
+    while (true) {
+        switch (label) {
+        case 0:
+            var $c = konoha.script;
+            var $d = $a.getData();
+            var $e = new konoha.String("id");
+            var $f = $d.startsWith($e);
+            if ($f) {
+                label = 1;
+            } else {
+                label = 2;
+            }
+            break;
+        case 1:
+            var $g = $c.$a;
+            var $h = $a.getData();
+            var $i = 3;
+            var $j = $h.get($i);
+            var $k = parseInt($j.rawptr, 10);
+            var $l = 1;
+            var $m = $k + $l;
+            $g.$b = $m;
+            label = 3;
+            break;
+        case 2:
+            var $n = new konoha.String("start");
+            $f = $d.equals($n);
+            if ($f) {
+                label = 4;
+            } else {
+                label = 5;
+            }
+            break;
+        case 3:
+            return;
+        case 4:
+            $g = $c.$a;
+            var $o = true;
+            $g.$d = $o;
+            label = 6;
+            break;
+        case 5:
+            var $p = new konoha.String("end");
+            $f = $d.equals($p);
+            if ($f) {
+                label = 7;
+            } else {
+                label = 8;
+            }
+            break;
+        case 6:
+            label = 3;
+            break;
+        case 7:
+            $g = $c.$a;
+            var $q = false;
+            $g.$d = $q;
+            label = 9;
+            break;
+        case 8:
+            var $r = 0;
+            var $s = $d.get($r);
+            var $t = parseInt($s.rawptr, 10);
+            var $u = 3;
+            var $v = $d.get($u);
+            var $w = parseInt($v.rawptr, 10);
+            var $x = new js.jquery.JQuery();
+            var $y = new konoha.OutputStream(true);
+            var $z = new konoha.OutputStream(true);
+            var $ba = new konoha.String("#");
+            $z.send($ba);
+            var $bb = new konoha.OutputStream(true);
+            $bb.send($t);
+            var $bc = new konoha.String("");
+            $bb.send($bc);
+            $ba = $bb.tostr();
+            $z.send($ba);
+            var $bd = $z.tostr();
+            $y.send($bd);
+            var $be = new konoha.OutputStream(true);
+            $be.send($w);
+            var $bf = new konoha.String("");
+            $be.send($bf);
+            $bd = $be.tostr();
+            $y.send($bd);
+            $h = $y.tostr();
+            var $bg = $x._new($h);
+            var $bh = new konoha.String("background-color");
+            var $bi = $c.$a;
+            var $bj = $bi.$c;
+            var $bk = a($bj);
+            var $bl = $bg.css($bh, $bk);
+            var $bm = $c.$a;
+            var $bn = $bm.$a;
+            var $bo = $c.$a;
+            var $bp = $bo.$c;
+            var $bq = i($bn, $t, $w, $bp);
+            var $br = $c.$a;
+            var $bs = $c.$a;
+            var $bt = $bs.$c;
+            var $bu = d($bt);
+            $br.$c = $bu;
+            label = 9;
+            break;
+        case 9:
+            label = 6;
+            break;
+        }
+    }
+};
+
+function l($a, $b) {
+    var $c = konoha.script;
+    var $d = $c.$a;
+    var $e = $d.$a;
+    k($e);
+    var $f = $c.$a;
+    var $g = $f.$e;
+    var $h = new konoha.Method(js.dom.Element.onMessage);
+    $g.setOnMessage($h);
+    return;
+}
+
+function _c($a) {
+    var $b = new konoha.String("enemy");
+    var $c = new konoha.String("you");
+    l($b, $c);
+    return;
+}
+
+function Script() {
+}
+
+function konoha_main() {
+    konoha.script = new Script();
+    _a(konoha.script);
+    _b(konoha.script);
+    _c(konoha.script);
+}
+
+
+// -->
+</script>
+<body onload="">
+<script type="text/javascript">
+<!--
+konoha_main();
+konoha.printOUT();
+// -->
+</script>
+</body>
+</html>
