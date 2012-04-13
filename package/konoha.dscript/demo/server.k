@@ -8,14 +8,14 @@ using konoha.memcached.*;
 HOST="192.168.0.201";
 PORT=11211;
 
-DEBUG=false;
+DEBUG=true;
 
-@Public String InputStream.readAll(int length) {
-	InputStream ins = this;
-	b = new Bytes(length);
-	ins.read(b, 0, length);
-	return b.decode(null);
-}
+//@Public String InputStream.readAll(int length) {
+//	InputStream ins = this;
+//	b = new Bytes(length);
+//	ins.read(b, 0, length);
+//	return b.decode(null);
+//}
 
 String join(String[] args, String d) {
 	String line = "";

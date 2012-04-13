@@ -213,23 +213,8 @@ const knh_QueryDSPI_t DB__mysql = {
 	MYSQL_qopen, MYSQL_query, MYSQL_qclose, MYSQL_qnext, MYSQL_qfree
 };
 
-
-/* ------------------------------------------------------------------------ */
-/* [DEFAPI] */
-
-//#endif /* MYSQL ifdef */
-
-#ifdef _SETUP
-
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
-{
-	RETURN_PKGINFO("konoha.sql");
-}
-
-#endif
-
-
 #endif /* K_USING_PKG_MYSQL */
+
 #ifdef __cplusplus 
 }
 #endif

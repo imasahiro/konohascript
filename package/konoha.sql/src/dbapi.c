@@ -27,7 +27,10 @@
 
 /* ************************************************************************ */
 
-#include"../include/konoha_query.h"
+#include "../include/konoha_query.h"
+#ifdef K_USING_PKG_MYSQL
+#include <mysql.h>
+#endif
 
 /* ************************************************************************ */
 
@@ -89,16 +92,16 @@ KMETHOD Connection_close(CTX ctx, ksfp_t *sfp _RIX)
 	RETURNvoid_();
 }
 
-//#ifdef K_USING_PKG_MYSQL
+#ifdef K_USING_PKG_MYSQL
 /* ------------------------------------------------------------------------ */
 //## method Int Connection.getInsertId();
 
-//KMETHOD Connection_getInsertId(CTX ctx, ksfp_t *sfp _RIX)
-//{
-//	kConnection *c = (kConnection*)sfp[0].o;
-//	RETURNi_((kuint_t)mysql_insert_id((MYSQL*)c->conn));
-//}
-//#endif
+KMETHOD Connection_getInsertId(CTX ctx, ksfp_t *sfp _RIX)
+{
+	kConnection *c = (kConnection*)sfp[0].o;
+	RETURNi_((kuint_t)mysql_insert_id((MYSQL*)c->conn));
+}
+#endif
 
 /* ------------------------------------------------------------------------ */
 //## method Int ResultSet.getSize();
@@ -233,12 +236,18 @@ KMETHOD ResultSet_get(CTX ctx, ksfp_t *sfp _RIX)
 		kResultSet *o = (kResultSet*)sfp[0].o;
 		const char *p = BA_totext(DP(o)->databuf) + DP(o)->column[n].start;
 		switch(DP(o)->column[n].ctype) {
-		case knh_ResultSet_CTYPE__integer :
-			KNH_SETv(ctx, sfp[_rix].o, new_Int_(ctx, CLASS_Int, 0));
+		case knh_ResultSet_CTYPE__integer : {
+			kint_t val;
+			knh_memcpy(&val, p, sizeof(kint_t));
+			KNH_SETv(ctx, sfp[_rix].o, new_Int_(ctx, CLASS_Int, val));
 			RETURNi_((*((kint_t*)p)));
-		case knh_ResultSet_CTYPE__float :
-			KNH_SETv(ctx, sfp[_rix].o, new_Float_(ctx, CLASS_Float, 0.0));
+		}
+		case knh_ResultSet_CTYPE__float : {
+			kfloat_t val;
+			knh_memcpy(&val, p, sizeof(kfloat_t));
+			KNH_SETv(ctx, sfp[_rix].o, new_Float_(ctx, CLASS_Float, val));
 			RETURNf_((*((kfloat_t*)p)));
+		}
 		case knh_ResultSet_CTYPE__text : {
 			kbytes_t t = {DP(o)->column[n].len, {BA_totext(DP(o)->databuf) + DP(o)->column[n].start}};
 			v = UPCAST(new_S(t.text, t.len));

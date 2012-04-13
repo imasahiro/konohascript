@@ -39,7 +39,8 @@ extern "C" {
 
 #ifdef K_USING_PKG_MYSQL
 extern knh_QueryDSPI_t DB__mysql;
-#elif defined(K_USING_PKG_SQLITE3)
+#endif
+#ifdef K_USING_PKG_SQLITE3
 extern knh_QueryDSPI_t DB__sqlite3;
 #endif
 //#define USE_cwb_open      1
@@ -117,16 +118,32 @@ knh_QueryDSPI_t *knh_getQueryDSPI(CTX ctx, kbytes_t path)
 void knh_Connection_open(CTX ctx, kConnection *c, kString *urn)
 {
 	kbytes_t u = S_tobytes(urn);
-	KNH_SETv(ctx, (c)->urn, urn);
+	if (knh_bytes_index(u, ':') >= 0) {
+		// link exists
+		if (!strncmp(u.text, "mysql", 5)) {
 #ifdef K_USING_PKG_MYSQL
-	(c)->dspi = &DB__mysql;
-#elif defined(K_USING_PKG_SQLITE3)
-	(c)->dspi = &DB__sqlite3;
+			(c)->dspi = &DB__mysql;
 #else
-	(c)->dspi = &NOP_DSPI;
+			(c)->dspi = &NOP_DSPI;
 #endif
+		}
+		else {
+#ifdef K_USING_PKG_SQLITE3
+			(c)->dspi = &DB__sqlite3;
+#else
+			(c)->dspi = &NOP_DSPI;
+#endif
+		}
+	}
+	else {
+#ifdef K_USING_PKG_SQLITE3
+		(c)->dspi = &DB__sqlite3;
+#else
+		(c)->dspi = &NOP_DSPI;
+#endif
+	}
+	KNH_SETv(ctx, (c)->urn, urn);
 	(c)->conn = (c)->dspi->qopen(ctx, u);
-	KNH_INITv((c)->urn, urn);
 }
 
 kConnection* new_Connection(CTX ctx, kString *urn)
@@ -460,6 +477,19 @@ DEFAPI(void) defResultSet(CTX ctx, kclass_t cid, kclassdef_t *cdef)
 	cdef->free = ResultSet_free;
 	cdef->c_struct_size = sizeof(kResultSet);
 }
+
+/* ------------------------------------------------------------------------ */
+/* [DEFAPI] */
+
+#ifdef _SETUP
+
+DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
+{
+	RETURN_PKGINFO("konoha.sql");
+}
+
+#endif
+
 #ifdef __cplusplus
 }
 #endif

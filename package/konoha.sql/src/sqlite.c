@@ -175,17 +175,6 @@ const knh_QueryDSPI_t DB__sqlite3 = {
 	SQLITE3_qopen, SQLITE3_query, SQLITE3_qclose, SQLITE3_qnext, SQLITE3_qfree
 };
 
-/* ------------------------------------------------------------------------ */
-/* [DEFAPI] */
-
-#ifdef _SETUP
-
-DEFAPI(const knh_PackageDef_t*) init(CTX ctx, const knh_LoaderAPI_t *kapi)
-{
-	RETURN_PKGINFO("konoha.sql");
-}
-
-#endif
 #endif /* K_USING_PKG_SQLITE3 */
 
 #ifdef __cplusplus
