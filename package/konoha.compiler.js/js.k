@@ -253,7 +253,7 @@ String escape(String str) {
 String myquote(dynamic value) {
     if(value.class == String) {
         String s = value;
-        return  "\"" + escape(s) + "\"";
+        return  "new konoha.String(\"" + escape(s) + "\")";
     } else if (value.class == Float) {
         Float f = value;
         return f.format("%.20f");
@@ -263,10 +263,10 @@ String myquote(dynamic value) {
         String res = "[";
         for(int i=0; i<size; i++) {
             if(i != 0) res += ", ";
-            res += value[i];
+            res += myquote(value[i]);
         }
         res += "]";
-        return res;
+        return "new konoha.Array(" + res + ")";
     } else if(((to String)value.class).startsWith("konoha.Map")) {
         Map m = value;
         String[] keys = m.keys();
@@ -282,7 +282,7 @@ String myquote(dynamic value) {
             res += m[keys[i]].class;
         }
         res += "]";
-        return res;
+        return  "new konoha.Map(" + res + ")";
     } else if (value.class == Method) {
         Method m = (to Method)value;
         return m.getMethodClass() + "." + m.getName();
@@ -679,15 +679,15 @@ LABEL = "label";
     asm.addSource(op.inst0.getVarName(asm) + ".set(" + op.inst1.getVarName(asm) + "," + space + op.inst2.getVarName(asm) + ");");
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
-    if (op.const_table[op.table_idx].class == Int || op.const_table[op.table_idx].class == Float || op.const_table[op.table_idx].class == Boolean) {
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + myquote(op.const_table[op.table_idx]) + ";");
-    } else if (op.const_table[op.table_idx].class == Class) {
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + uscore("konoha.String") + "(" + myquote(op.const_table[op.table_idx]) + ");");
-    } else {
-		Object o = op.const_table[op.table_idx];
-		Class c =  op.const_table[op.table_idx].class;
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + asm.class2str(op.const_table[op.table_idx].class) + "(" + myquote(o)/*quote(op.const_table[op.table_idx])*/ + ");");
-    }
+    //if (op.const_table[op.table_idx].class == Int || op.const_table[op.table_idx].class == Float || op.const_table[op.table_idx].class == Boolean) {
+    //    asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + myquote(op.const_table[op.table_idx]) + ";");
+    //} else if (op.const_table[op.table_idx].class == Class) {
+    //    asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + uscore("konoha.String") + "(" + myquote(op.const_table[op.table_idx]) + ");");
+    //} else {
+	Object o = op.const_table[op.table_idx];
+	Class c =  op.const_table[op.table_idx].class;
+	asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + myquote(o) + ";");
+    //}
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
     asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + op.inst0.getVarName(asm) + "." + obfuscateString(op.bn, 'a', true) + ";");
