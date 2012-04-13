@@ -1,19 +1,34 @@
 String indent;
 String space;
 String eol;
-String header = """
+RUNTIME_DIR=$konoha.package.path + "/konoha.compiler.js/runtime";
+String header = "";
+if ($env.JS_INCLUDE_RUNTIME == "true") {
+    header = """
+<html>
+<head>
+<title>sample</title>
+</head>
+<script type="text/javascript">
+<!--
+""";
+} else {
+    header = """
 <html>
 <head>
 <title>sample</title>
 </head>
 <script type="text/javascript" language="javascript" src="./konoha.js" > </script>
-<script type="text/javascript" language="javascript" src="./konoha.math.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.dom.js" > </script>
 <script type="text/javascript" language="javascript" src="./js.jquery.js" > </script>
+<script type='text/javascript' src='jquery-1.7.1.min.js'></script>
+<script type="text/javascript" language="javascript" src="./js.math.js" > </script>
+<script type="text/javascript" language="javascript" src="./js.websocket.js" > </script>
 <script type="text/javascript">
 <!--
 """;
+}
 String footer = """
 // -->
 </script>
@@ -35,6 +50,7 @@ if ($env.JS_USE_WORKER == "true") {
 //class CompilerOpt {
 //    int      indentLevel;
 //    String   mtdName;
+//    String[] packages;
 //    String[] source;
 //    String[] unexpectedMethods;
 //    String[] topLevelFunctionList;
@@ -46,7 +62,9 @@ if ($env.JS_USE_WORKER == "true") {
 //    Map<String, String> methodNameMap;
 //    Map<String, String> classNameMap;
 //}
+System.addClassField(CompilerOpt, int     , "indentLevel");
 System.addClassField(CompilerOpt, String  , "mtdName");
+System.addClassField(CompilerOpt, String[], "packages");
 System.addClassField(CompilerOpt, String[], "source");
 System.addClassField(CompilerOpt, String[], "unexpectedMethods");
 System.addClassField(CompilerOpt, String[], "topLevelFunctionList");
@@ -57,6 +75,7 @@ System.addClassField(CompilerOpt, Map<String, String>, "methodNameMap");
 System.addClassField(CompilerOpt, Map<String, String>, "classNameMap");
 @Public void CompilerOpt.init() {
     this.indentLevel = 0;
+    this.packages = ["konoha", "js", "js.dom", "js.jquery", "js.math", "js.websocket"];
     this.source = [];
     this.unexpectedMethods = ["isNull"];
     this.topLevelFunctionList = [];
@@ -223,6 +242,55 @@ String uscore(String in) {
     //return "__" + in + "__";
     //return "konoha." + in;
     return in;
+}
+
+String escape(String str) {
+	str = str.replace("\t", "\\t");
+	str = str.replace("\n", "\\n");
+	return str;
+}
+
+String myquote(dynamic value) {
+    if(value.class == String) {
+        String s = value;
+        return  "\"" + escape(s) + "\"";
+    } else if (value.class == Float) {
+        Float f = value;
+        return f.format("%.20f");
+    } else if(((to String)value.class).startsWith("konoha.Array")) {
+        int i = value.get(0);
+        int size = value.size;
+        String res = "[";
+        for(int i=0; i<size; i++) {
+            if(i != 0) res += ", ";
+            res += value[i];
+        }
+        res += "]";
+        return res;
+    } else if(((to String)value.class).startsWith("konoha.Map")) {
+        Map m = value;
+        String[] keys = m.keys();
+        String res = "{";
+        for(int i=0; i<|keys|; i++) {
+            if(i != 0) res += ", ";
+            dynamic o = m[keys[i]];
+            res += myquote(keys[i]) + ": " + myquote(o);
+        }
+        res += "} [";
+        for(int i=0; i<|keys|; i++) {
+            if(i != 0) res += " ";
+            res += m[keys[i]].class;
+        }
+        res += "]";
+        return res;
+    } else if (value.class == Method) {
+        Method m = (to Method)value;
+        return m.getMethodClass() + "." + m.getName();
+    } else if (value == null && value.class.isUnboxType()) {
+        return "0";
+    } else {
+        return "" + value;
+    }
 }
 LABEL = "label";
 @Public void Compiler.setMethodName(Method mtd) {
@@ -495,8 +563,12 @@ LABEL = "label";
         asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "Math" + ".floor(" + op.inst0.getVarName(asm) + ");");
     } else if (tcid_str.indexOf("konoha.Iterator") == 0) {
         asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + "konoha.Iterator" + "(" + op.inst0.getVarName(asm) + ");");
-    } else {
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + op.inst0.getVarName(asm) + ";");
+    } else if (op.scid == String && op.tcid == Float){
+		asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "parseFloat(" + op.inst0.getVarName(asm) + ".rawptr);");
+	} else if (op.scid == String && op.tcid == Int) {
+		asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "parseInt(" + op.inst0.getVarName(asm) + ".rawptr, 10);");
+	} else {
+		asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + op.inst0.getVarName(asm) + ";");
     }
 }
 @Public @Override void K_JMP.codegen(Compiler asm) {
@@ -560,13 +632,14 @@ LABEL = "label";
 }
 @Public @Override void K_ERR.codegen(Compiler asm) {
     asm.opt.errors.add(op.msg);
+	asm.addSource("konoha.THROWN = true;");
     String s = "throw(\"Script!!: " + op.msg + "\");";
     asm.addSource(s);
     return;
 }
 @Public @Override void K_PRINT.codegen(Compiler asm) {
     int line = (op.opline&((1<<32)-1)<<32)>>32;
-    String strline = "(" + asm.opt.mtdName + ":" + line + ")" + space;
+    String strline = space;
     String msg = "";
     if (op.msg != "") {
         msg += op.msg + "=";
@@ -581,7 +654,7 @@ LABEL = "label";
             break;
         case "bnul":
             if (type_str.endsWith("Script")) {
-                asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "script;");
+                asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "konoha.script;");
             }
             break;
         case "cwb":
@@ -607,11 +680,13 @@ LABEL = "label";
 }
 @Public @Override void K_CONST.codegen(Compiler asm) {
     if (op.const_table[op.table_idx].class == Int || op.const_table[op.table_idx].class == Float || op.const_table[op.table_idx].class == Boolean) {
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + quote(op.const_table[op.table_idx]) + ";");
+        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + myquote(op.const_table[op.table_idx]) + ";");
     } else if (op.const_table[op.table_idx].class == Class) {
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + uscore("konoha.String") + "(" + quote(op.const_table[op.table_idx]) + ");");
+        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + uscore("konoha.String") + "(" + myquote(op.const_table[op.table_idx]) + ");");
     } else {
-        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + asm.class2str(op.const_table[op.table_idx].class) + "(" + quote(op.const_table[op.table_idx]) + ");");
+		Object o = op.const_table[op.table_idx];
+		Class c =  op.const_table[op.table_idx].class;
+        asm.addSource(declVar(asm) + getVarName(asm) + space + "=" + space + "new " + asm.class2str(op.const_table[op.table_idx].class) + "(" + myquote(o)/*quote(op.const_table[op.table_idx])*/ + ");");
     }
 }
 @Public @Override void K_GetField.codegen (Compiler asm) {
@@ -680,12 +755,12 @@ LABEL = "label";
     }
     //res += indent + "if (json.type == 'start') {" + eol;
     for (int i = 0; i < this.opt.errors.size; i++) {
-        res += indent + "konoha.ERR += " + this.opt.errors[i] + ";" + eol;
+        res += indent + "konoha.ERR += \"" + this.opt.errors[i] + "\";" + eol;
     }
-    res += indent + "script = new Script();" + eol;
+    res += indent + "konoha.script = new Script();" + eol;
     foreach (fname in this.opt.topLevelFunctionList) {
         res += indent + fname + "(";
-        res += "script";
+        res += "konoha.script";
         res += ");" + eol;
     }
     if ($env.JS_USE_WORKER == "true") {
@@ -747,23 +822,49 @@ LABEL = "label";
     } else {
         ous = OUT;
     }
-    if ((config.gen_html) == true) {
-        ous << header << EOL + eol;
-    }
-    foreach (String fname in this.opt.protoFunc) {
-        ous << "function " + fname + "(){}" << eol;
-    }
-    foreach (K_Class kc in this.declareclass) {
-        String cname = class2str(kc.c);
-        ous << createClassDefinition(kc.c, cname) << eol;
-    }
-    foreach (str in this.opt.source) {
-        ous << str << eol;
-    }
-    ous << createMain() << eol;
-    ous << createSymbol() << eol;
-    if ((config.gen_html) == true) {
-        ous << EOL << footer;
+    if ($env.JS_ERROR_OUTPUT == "true") {
+        /* return json object
+           that contains some information
+           of compile error message */
+        ous << "{\"error\": ";
+        ous << (|opt.errors| > 0) ? "true, " : "false, ";
+        ous << "\"stderr\": [";
+        for (int i = 0; i < this.opt.errors.size; i++) {
+            ous << "\"" + this.opt.errors[i] + "\"";
+            if (i != this.opt.errors.size-1) {
+                ous << ", ";
+            }
+        }
+		ous << "]}";
+    } else {
+        if ((config.gen_html) == true) {
+            ous << header << eol;
+        }
+        if ($env.JS_INCLUDE_RUNTIME == "true") {
+            foreach (String pkgname in this.opt.packages) {
+                InputStream in = new InputStream(RUNTIME_DIR + "/" + pkgname + ".js");
+                String tmp = "";
+                while ((tmp = in.readLine()) != null) {
+                    ous << tmp << eol;
+                }
+            }
+        }
+        ous << "'checkpoint'" << eol;
+        foreach (String fname in this.opt.protoFunc) {
+            ous << "function " + fname + "(){}" << eol;
+        }
+        foreach (K_Class kc in this.declareclass) {
+            String cname = class2str(kc.c);
+            ous << createClassDefinition(kc.c, cname) << eol;
+        }
+        foreach (str in this.opt.source) {
+            ous << str << eol;
+        }
+        ous << createMain() << eol;
+        ous << createSymbol();
+        if ((config.gen_html) == true) {
+            ous << EOL << footer;
+        }
     }
     ous.close();
 }
