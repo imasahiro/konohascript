@@ -65,7 +65,10 @@ String : (Class c) {
 @Public @Native Class Class.getP1();
 @Public @Native Class Class.getSuper();
 @Public @Native Class Class.getBaseClass();
+@Public @Native boolean Class.isPublic();
 @Public @Native boolean Class.isFinal();
+@Public @Native String[] Class.getConstNames();
+@Public @Native Object[] Class.getConstValues();
 
 @Public @Native Method Method.opLINK(String path, NameSpace _);
 @Public @Native Method[] Class.getMethods(NameSpace _);
@@ -76,6 +79,7 @@ String : (Class c) {
 @Public @Native @Const String Method.getSourceCode();
 @Public @Native String Method.toString();
 @Public @Native String Method.getName();
+@Public @Native boolean Method.isPublic();
 @Public @Native boolean Method.isStatic();
 @Public @Native boolean Method.isFinal();
 @Public @Native int Method.indexOfGetterField();

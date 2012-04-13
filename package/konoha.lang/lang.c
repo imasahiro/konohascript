@@ -62,13 +62,44 @@ KMETHOD Class_getSuper(CTX ctx, ksfp_t *sfp _RIX) {
 	RETURN_(new_Type(ctx, cid));
 }
 
+//@Public @Native boolean Class.isPublic();
+KMETHOD Class_isPublic(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kclass_t cid = c->cTBL->cid;
+	RETURNb_(class_isPublic(cid));
+}
 //@Public @Native boolean Class.isFinal();
 KMETHOD Class_isFinal(CTX ctx, ksfp_t *sfp _RIX) {
 	kClass *c = sfp[0].c;
 	kclass_t cid = c->cTBL->cid;
 	RETURNb_(class_isFinal(cid));
 }
-
+//@Public @Native String[] Class.getConstNames();
+KMETHOD Class_getConstNames(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kDictMap *tcmap = c->cTBL->constDictCaseMapNULL;
+	kArray *res = new_Array(ctx, CLASS_String, 0);
+	if (tcmap) {
+		size_t i, size = knh_Map_size(tcmap);
+		for (i = 0; i < size; i++) {
+			knh_Array_add(ctx, res, knh_DictMap_keyAt(tcmap, i));
+		}
+	}
+	RETURN_(res);
+}
+//@Public @Native Object[] Class.getConstValues();
+KMETHOD Class_getConstValues(CTX ctx, ksfp_t *sfp _RIX) {
+	kClass *c = sfp[0].c;
+	kDictMap *tcmap = c->cTBL->constDictCaseMapNULL;
+	kArray *res = new_Array(ctx, CLASS_Object, 0);
+	if (tcmap) {
+		size_t i, size = knh_Map_size(tcmap);
+		for (i = 0; i < size; i++) {
+			knh_Array_add(ctx, res, knh_DictMap_valueAt(tcmap, i));
+		}
+	}
+	RETURN_(res);
+}
 
 //## Class Class.getBaseClass();
 KMETHOD Class_getBaseClass(CTX ctx, ksfp_t *sfp _RIX) {
@@ -83,7 +114,14 @@ TYPEMAP Class_Int(CTX ctx, ksfp_t *sfp _RIX)
 	kClass *c = sfp[1].c;
 	RETURNi_(c->cid);
 }
-
+#undef Method_isPublic
+#define Method_isPublic_(o)  (!TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Private))
+//## boolean Method.isPublic();
+KMETHOD Method_isPublic(CTX ctx, ksfp_t *sfp _RIX) {
+    kMethod *mtd = sfp[0].mtd;
+    kbool_t b = Method_isPublic_(mtd);
+    RETURNb_(b);
+}
 #undef Method_isStatic
 #define Method_isStatic_(o) (TFLAG_is(kflag_t,DP(o)->flag,FLAG_Method_Static))
 //## boolean Method.isStatic();
@@ -1155,6 +1193,7 @@ extern knh_IntData_t _FuncData[];
 static const knh_IntData_t MethodInt[] = {
 	{"MN_get", MN_get},
 	{"MN_set", MN_set},
+	{"MN_new", MN_new},
 	{"MN_getSize", MN_getSize},
 	{NULL, 0}
 };

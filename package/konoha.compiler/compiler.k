@@ -991,6 +991,23 @@ class K_CALL extends K_Inst {
         return res;
     }
 }
+class K_ERRop extends K_Opcode {
+    String msg;
+    K_ERRop(String msg) {
+        this.msg = msg;
+    }
+}
+class K_ERR extends K_Inst {
+    K_ERRop op;
+    K_ERR(K_ERRop op) {
+        this.op = op;
+    }
+    @Override String dump() {
+        String res = "\t_ = err " +op.msg;
+        return res;
+    }
+}
+
 class K_PRINTop extends K_Opcode {
     int sfpidx;
     int opline;
@@ -1176,7 +1193,7 @@ class K_CONST extends K_Inst {
         } else if (value.class == Float) {
             Float f = value;
             return f.format("%.20f");
-        } else if(value.class == Array<dynamic>) {
+        } else if(((to String)value.class).startsWith("konoha.Array")) {
             Array a = value;
             String res = "[";
             for(int i=0; i<|a|; i++) {
@@ -1190,7 +1207,7 @@ class K_CONST extends K_Inst {
             }
             res += "]";
             return res;
-        } else if(value.class == Map<String, dynamic>) {
+        } else if(((to String)value.class).startsWith("konoha.Map")) {
             Map m = value;
             String[] keys = m.keys();
             String res = "{";
@@ -1537,7 +1554,8 @@ Array<K_Inst> Compiler.cloneTable(Array<K_PHI> phis) {
 }
 Array<K_PHI> Compiler.regTableToPHI(int espidx, K_BasicBlock bb) {
     Array<K_PHI> res = [];
-    for (int i = 0; i < espidx; i++) {
+	int max = (espidx > |kfunc.register_table|) ? |kfunc.register_table| : espidx;
+    for (int i = 0; i < max; i++) {
         if (kfunc.register_table[i] == null) {
             res.add(null);
         } else {
@@ -1550,7 +1568,8 @@ Array<K_PHI> Compiler.regTableToPHI(int espidx, K_BasicBlock bb) {
     return res;
 }
 void Compiler.createPhiArrayBackEdge(Array<K_PHI> phis, Array<K_Inst> regTableCont, K_BasicBlock bb, int espidx) {
-    for (int i = 0; i < espidx; i++) {
+	int max = (espidx > |phis|) ? |phis| : espidx;
+    for (int i = 0; i < max; i++) {
         if (phis[i] != null /*&& regTableCont[i].type.isUnboxType()*/) {
             boolean flag = true;
             if (regTableCont[i].getName() != phis[i].getName()) {
@@ -1903,14 +1922,14 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
         print "", stmtCond.toToken();
         print stmtCond;
     }
-    int size = stmt.getESPIDX();
+    int espidx = stmt.getESPIDX();
 
-    asm(stmtCond, stmtCond.toToken(), stmt.getESPIDX());
+    asm(stmtCond, stmtCond.toToken(), espidx+1);
 
     Array<K_Inst> regTableThen = cloneRegTable();
     Array<K_Inst> regTableElse = cloneRegTable();
 
-    K_Inst inst = kfunc.getKInst(stmt.getESPIDX());
+    K_Inst inst = kfunc.getKInst(espidx+1);
     int bbssize = kfunc.bbs.size;
     K_BasicBlock bbThen = new K_BasicBlock(bbssize);
     K_BasicBlock bbElse = new K_BasicBlock(bbssize + 1);
@@ -1946,7 +1965,7 @@ void Compiler.asmIF(Stmt stmt, Stmt stmtCond, Stmt stmtThen, Stmt stmtElse) {
     kfunc.curBB = bb;
     Array<K_Inst> regTableMerge = [];
     if (!bbThen.hasReturn && !bbThen.hasBrBreakBlock && !bbThen.hasBrContinueBlock && !bbElse.hasReturn && !bbElse.hasBrContinueBlock && !bbElse.hasBrBreakBlock) {
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < espidx; i++) {
             if (regTableThen[i] != regTableElse[i] && regTableThen[i] != null &&
                     regTableElse[i] != null /*&& regTableThen[i].type.isUnboxType()*/) {
                 K_PHI phi = new K_PHI(i);
@@ -2332,8 +2351,14 @@ void Compiler.asmASSERT(Stmt stmt, Stmt cond) {
     print cond;
 }
 void Compiler.asmERR(Stmt stmt, Token tkERR) {
-    print "err";
-    print tkERR;
+    if (DEBUG) {
+        print "err";
+        print tkERR;
+    }
+    int espidx = stmt.getESPIDX();
+    String s = "" + tkERR.getD();
+    K_ERR err = new K_ERR(new K_ERRop(s));
+    kfunc.curBB.insts.add(err);
 }
 
 void Compiler.asmLETEXPR(Stmt stmt, int espidx, Token tkL, Stmt expr) {
@@ -2733,7 +2758,7 @@ void Compiler.asmNEW(Stmt stmt, int espidx, Class c, Method mtd) {
     }
     int thisidx = espidx + K_CALLDELTA;
     addSafePoint(espidx);
-    if (stmt.getStmtSize() == 2 && mtd.getMethodClass() == Object && mtd.getName() == "new") {
+    if (stmt.getStmtSize() == 2 && mtd.getMethodClass() == Object && mtd.getMn() == Method.MN_new) {
         K_Value vb = kfunc.getKValue(espidx, c);
         K_Inst inst = new K_NEW(vb, new K_NEWop(espidx-thisidx, c, Stmt.NEW), kfunc.curBB);
         kfunc.curBB.insts.add(inst);

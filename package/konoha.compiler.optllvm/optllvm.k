@@ -511,7 +511,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 
         if (mtd.getName() == "") {
         }
-        else if (mtd.toString().endsWith("Script.main")) {
+        else if (mtd.toString().endsWith("Script.main") || $script.force_compile == "true") {
             //print this.const_table;
             this.compiled_methods = {};
             PassManager mpm = new PassManager();
@@ -549,6 +549,7 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
                 mpm.add(LLVM.createLoopIdiomPass());
                 mpm.add(LLVM.createLoopDeletionPass());
                 mpm.add(LLVM.createLoopUnrollPass());
+                mpm.add(LLVM.createBBVectorizePass());
             }
             if (config.opt_safepoint) {
                 mpm.add(LLVM.createSafepointPass());
@@ -667,15 +668,15 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 
     fields = [];
     fields.add(hObjectTy);
-    fields.add(int8PtrTy);
     fields.add(int64Ty);
+    fields.add(int8PtrTy);
     Type listTy = StructType.create(fields, "Abstract_List", false);
     opt.ktype["Abstract.ListPtrTy"] = PointerType.get(listTy);
 
     fields = [];
     fields.add(hObjectTy);
+    fields.add(int64Ty);/*length*/
     fields.add(objectPtrPtrTy);
-    fields.add(int64Ty);
     fields.add(int8PtrTy);
     fields.add(int8PtrTy);
     Type arrayTy = StructType.create(fields, "Array", false);
@@ -685,12 +686,14 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
     if (config.opt_array_access) {
         fields = [];
         fields.add(hObjectTy);
+        fields.add(int64Ty);/*length*/
         fields.add(Type.getInt64PtrTy());
         Type iArrayPtrTy = PointerType.get(StructType.create(fields, "IArray", false));
         opt.ktype["iArrayPtrTy"] = iArrayPtrTy;
 
         fields = [];
         fields.add(hObjectTy);
+        fields.add(int64Ty);/*length*/
         fields.add(Type.getDoublePtrTy());
         Type fArrayPtrTy = PointerType.get(StructType.create(fields, "FArray", false));
         opt.ktype["fArrayPtrTy"] = fArrayPtrTy;
@@ -698,8 +701,8 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 
     fields = [];
     fields.add(hObjectTy);
-    fields.add(Type.getInt1PtrTy()); /* text */
     fields.add(int64Ty);   /* len */
+    fields.add(Type.getInt1PtrTy()); /* text */
     Type stringTy = StructType.create(fields, "String", false);
     Type stringPtrTy = PointerType.get(stringTy);
     opt.ktype["stringTy"]    = stringTy;
@@ -707,8 +710,8 @@ System.addClassField(CompilerOpt, K_Function[],         "compilation_queue");
 
     fields = [];
     fields.add(hObjectTy);
-    fields.add(Type.getInt8PtrTy()); /* text */
     fields.add(int64Ty);   /* len */
+    fields.add(Type.getInt8PtrTy()); /* text */
     Type bytesTy = StructType.create(fields, "kBytes", false);
     Type bytesPtrTy = PointerType.get(bytesTy);
     opt.ktype["bytesTy"]    = bytesTy;
@@ -1478,17 +1481,19 @@ BuilderFunc=Func<Value, Value=>Value>;
         setLLVMValue(asm, v);
         return;
     } else if (op.mtd.getName() == "getSize") {
-        if (op.mtd.getMethodClass() == Array ||
-                op.mtd.getMethodClass() == String ||
-                op.mtd.getMethodClass() == Bytes) {
-            Value v = args[0].getLLVMValue(asm);
-            Type  t = asm.opt.ktype["Abstract.ListPtrTy"];
-            v = builder.createBitCast(v, t);
-            v = builder.createStructGEP(v, 2);
-            v = builder.createLoad(v);
-            setLLVMValue(asm, v);
-            return;
-        }
+        //if (op.mtd.getMethodClass() == Array ||
+        //        op.mtd.getMethodClass() == Bytes) {
+        //    Value v = args[0].getLLVMValue(asm);
+        //    Type  t = asm.opt.ktype["Abstract.ListPtrTy"];
+        //    v = builder.createBitCast(v, t);
+        //    v = builder.createStructGEP(v, 1);
+        //    v = builder.createLoad(v);
+        //    setLLVMValue(asm, v);
+        //    return;
+        //}
+        //if (op.mtd.getMethodClass() == String) {
+        //    //TODO
+        //}
     } else if (op.mtd.getName() == "set") {
         if (op.mtd.getMethodClass() == Bytes) {
             IRBuilder builder = asm.opt.builder;
@@ -1501,7 +1506,7 @@ BuilderFunc=Func<Value, Value=>Value>;
             arg2 = builder.createTrunc(arg2, Type.getInt8Ty());
 
             /* ptr->buf */
-            v = builder.createStructGEP(v, 1);
+            v = builder.createStructGEP(v, 2);
             v = builder.createLoad(v);
             v = builder.createInBoundsGEP1(v, arg1);
             v = builder.createStore(arg2, v);
@@ -1653,7 +1658,7 @@ Type get_atype(Compiler asm, Class type) {
     Value v = op.inst0.getLLVMValue(asm);
     Type aType = get_atype(asm, type);
     v = builder.createBitCast(v, aType);
-    v = builder.createStructGEP(v, 1);
+    v = builder.createStructGEP(v, 2);
     v = builder.createLoad(v);
     if (config.opt_array_access == false) {
         v = builder.createBitCast(v, PointerType.get(asm.opt.intTy));
@@ -1668,7 +1673,7 @@ Type get_atype(Compiler asm, Class type) {
     Value v = op.inst0.getLLVMValue(asm);
     Type aType = get_atype(asm, type);
     v = builder.createBitCast(v, aType);
-    v = builder.createStructGEP(v, 1);
+    v = builder.createStructGEP(v, 2);
     v = builder.createLoad(v);
     if (!config.opt_array_access) {
         v = builder.createBitCast(v, PointerType.get(asm.opt.intTy));
