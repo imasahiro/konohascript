@@ -21,3 +21,6 @@ konoha.math.Math.floor = function(f) {
 konoha.math.Math.abs = function(f) {
     return Math.abs(f);
 }
+konoha.math.Math.fabs = function(f) {
+    return Math.abs(f);
+}

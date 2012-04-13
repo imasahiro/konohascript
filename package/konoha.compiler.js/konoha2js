@@ -1,15 +1,17 @@
 #!/bin/bash
 
 PROGRAM=`basename $0`
-export JS_USE_INDENT=false
+export JS_USE_INDENT=true
 
-while getopts i:jo:t:u: OPT
+while getopts ci:jo:rt:u: OPT
 do
     case $OPT in
         "b" ) FLG_B="TRUE" ;;
+        "c" ) FLG_C="TRUE" ;;
         "i" ) FLG_I="TRUE" ; VALUE_I="$OPTARG" ;;
         "j" ) FLG_J="TRUE" ;;
         "o" ) FLG_O="TRUE" ; VALUE_O="$OPTARG" ;;
+        "r" ) FLG_R="TRUE" ;;
         "t" ) FLG_T="TRUE" ; VALUE_T="$OPTARG" ;;
         "u" ) FLG_U="TRUE" ; VALUE_U="$OPTARG" ;;
           * ) OPT_ERROR=1; break;;
@@ -24,7 +26,7 @@ else
 fi
 
 if [ $OPT_ERROR ]; then
-    echo "Usage: $PROGRAM [-j] [-i input_file] [-o output_file] [-t gentype] [-u use_func_list]" 1>&2
+    echo "Usage: $PROGRAM [-j] [-r] [-i input_file] [-o output_file] [-t gentype] [-u use_func_list]" 1>&2
     exit 1
 fi
 
@@ -40,11 +42,25 @@ if [ "$FLG_O" = "TRUE" ]; then
     OUTPUT=$VALUE_O
 fi
 
+# set konohascript runtime include option
+if [ "$FLG_R" = "TRUE" ]; then
+    export JS_INCLUDE_RUNTIME=true
+else
+    export JS_INCLUDE_RUNTIME=false
+fi
+
 # set obfuscate option
 if [ "$FLG_B" = "TRUE" ]; then
     export JS_USE_OBFUSCATE=true
 else
     export JS_USE_OBFUSCATE=false
+fi
+
+# set compile error output option
+if [ "$FLG_C" = "TRUE" ]; then
+    export JS_ERROR_OUTPUT=true
+else
+    export JS_ERROR_OUTPUT=false
 fi
 
 # set gen type
@@ -63,9 +79,12 @@ fi
 
 if [ "$FLG_I" = "TRUE" ]; then
     if [ "$FLG_O" = "TRUE" ]; then
-        `which konohac` --emit-js $INPUT > $OUTPUT
+#/usr/bin/gdb --arg /usr/local/bin/konohac --emit-js $INPUT > $OUTPUT
+        /usr/local/bin/konohac --emit-js $INPUT > $OUTPUT
     else
-        `which konohac` --emit-js $INPUT
+#`/usr/bin/which konohac` --emit-js $INPUT
+#/usr/bin/gdb --arg /usr/local/bin/konohac --emit-js $INPUT
+        /usr/local/bin/konohac --emit-js $INPUT
     fi
 fi
 

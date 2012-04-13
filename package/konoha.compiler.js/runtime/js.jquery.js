@@ -1,13 +1,9 @@
-document.write("<script type='text/javascript' src='jquery-1.7.1.min.js'></script>");
 js.Offset = function(rawptr) {
     this.rawptr = rawptr;
 }
 js.Offset.prototype = new konoha.Object();
-js.Offset.prototype.new = function(top, left) {
-    this.rawptr = {
-     top: top,
-     left: left
-    };
+js.Offset.prototype._new = function(rawptr) {
+    this.rawptr = rawptr;
 }
 js.Offset.prototype.getTop = function() {
     return this.rawptr.top;
@@ -221,7 +217,7 @@ var initJQuery = function() {
     }
 
     /* CSS */
-    jquery.prototype.getcss = function() {
+    jquery.prototype.getCss = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         return new konoha.String(this.rawptr.css.apply(this.rawptr, args));
     }
@@ -263,217 +259,282 @@ var initJQuery = function() {
     /* Events */
     jquery.prototype.ready = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.ready.apply(this.rawptr, args);
+        return new jquery(this.rawptr.ready.apply(this.rawptr, args));
     }
     jquery.prototype.bind = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.bind.apply(this.rawptr, args);
+        return new jquery(this.rawptr.bind.apply(this.rawptr, args));
     }
     jquery.prototype.one = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.one.apply(this.rawptr, args);
+        return new jquery(this.rawptr.one.apply(this.rawptr, args));
     }
     jquery.prototype.trigger = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.trigger.apply(this.rawptr, args);
+        return new jquery(this.rawptr.trigger.apply(this.rawptr, args));
     }
     jquery.prototype.triggerHandler = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.triggerHandler.apply(this.rawptr, args);
+        return new jquery(this.rawptr.triggerHandler.apply(this.rawptr, args));
     }
     jquery.prototype.unbind = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.unbind.apply(this.rawptr, args);
-    }
-    jquery.prototype.unbind = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.unbind.apply(this.rawptr, args);
+        return new jquery(this.rawptr.unbind.apply(this.rawptr, args));
     }
     jquery.prototype.hover = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.hover.apply(this.rawptr, args);
+        return new jquery(this.rawptr.hover.apply(this.rawptr, args));
     }
     jquery.prototype.toggleEvent = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
         args = verifyArgs(args[0]);
-        this.rawptr.toggle.apply(this.rawptr, args);
+        return new jquery(this.rawptr.toggle.apply(this.rawptr, args));
     }
     jquery.prototype.live = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.live.apply(this.rawptr, args);
+        return new jquery(this.rawptr.live.apply(this.rawptr, args));
     }
     jquery.prototype.die = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.die.apply(this.rawptr, args);
-    }
-    jquery.prototype.die = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.die.apply(this.rawptr, args);
-    }
-    jquery.prototype.die = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.die.apply(this.rawptr, args);
+        return new jquery(this.rawptr.die.apply(this.rawptr, args));
     }
     jquery.prototype.blur = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.blur.apply(this.rawptr, args);
-    }
-    jquery.prototype.blur = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.blur.apply(this.rawptr, args);
-    }
-    jquery.prototype.change = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.change.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.blur.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.blur(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.change = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.change.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.change.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.change(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.click = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.click.apply(this.rawptr, args);
-    }
-    jquery.prototype.click = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.click.apply(this.rawptr, args);
-    }
-    jquery.prototype.dblclick = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.dblclick.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.click.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.click(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.dblclick = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.dblclick.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.dblclick.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.dblclick(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.error = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.error.apply(this.rawptr, args);
-    }
-    jquery.prototype.error = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.error.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.error.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.error(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.focus = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.focus.apply(this.rawptr, args);
-    }
-    jquery.prototype.fucus = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.fucus.apply(this.rawptr, args);
-    }
-    jquery.prototype.keydown = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.keydown.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.focus.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.focus(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.keydown = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.keydown.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.keydown.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.keydown(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.keypress = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.keypress.apply(this.rawptr, args);
-    }
-    jquery.prototype.keypress = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.keypress.apply(this.rawptr, args);
-    }
-    jquery.prototype.keyup = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.keyup.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.keypress.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.keypress(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.keyup = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.keyup.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.keyup.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.keyup(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.load = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.load.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.load.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.load(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
+
     }
     jquery.prototype.mousedown = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.mousedown.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.mousedown.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.mousedown(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.mousemove = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.mousemove.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.mousemove.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.mousemove(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.mouseout = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.mouseout.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.mouseout.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.mouseout(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.mouseover = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.mouseover.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.mouseover.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.mouseover(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.mouseup = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.mouseup.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.mouseup.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.mouseup(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.resize = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.resize.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.resize.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.resize(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.scroll = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.scroll.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.scroll.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.scroll(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.select = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.select.apply(this.rawptr, args);
-    }
-    jquery.prototype.select = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.select.apply(this.rawptr, args);
-    }
-    jquery.prototype.submit = function() {
-        var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.submit.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.select.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.select(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     jquery.prototype.submit = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.submit.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.submit.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.select(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
-    jquery.prototype.upload = function() {
+    jquery.prototype.unload = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.upload.apply(this.rawptr, args);
+        if (args.length == 0) {
+            return new jquery(this.rawptr.unload.apply(this.rawptr, args));
+        } else {
+            return new jquery(this.rawptr.unload(function(e) {
+                    args[0].apply(new js.dom.Element(this), [new js.jquery.JEvent(e)]);
+                    }));
+        }
     }
     /* Effects */
     jquery.prototype.show = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.show.apply(this.rawptr, args);
+        return new jquery(this.rawptr.show.apply(this.rawptr, args));
     }
     jquery.prototype.hide = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.hide.apply(this.rawptr, args);
+        return new jquery(this.rawptr.hide.apply(this.rawptr, args));
     }
     jquery.prototype.toggle = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.toggle.apply(this.rawptr, args);
+        return new jquery(this.rawptr.toggle.apply(this.rawptr, args));
     }
     jquery.prototype.slideDown = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.slideDown.apply(this.rawptr, args);
+        return new jquery(this.rawptr.slideDown.apply(this.rawptr, args));
     }
     jquery.prototype.slideUp = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.slideUp.apply(this.rawptr, args);
+        return new jquery(this.rawptr.slideUp.apply(this.rawptr, args));
     }
     jquery.prototype.slideToggle = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.slideToggle.apply(this.rawptr, args);
+        return new jquery(this.rawptr.slideToggle.apply(this.rawptr, args));
     }
     jquery.prototype.fadeIn = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.fadeIn.apply(this.rawptr, args);
+        return new jquery(this.rawptr.fadeIn.apply(this.rawptr, args));
     }
     jquery.prototype.fadeOut = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.fadeOut.apply(this.rawptr, args);
+        return new jquery(this.rawptr.fadeOut.apply(this.rawptr, args));
     }
     jquery.prototype.fadeTo = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
-        this.rawptr.fadeTo.apply(this.rawptr, args);
+        return new jquery(this.rawptr.fadeTo.apply(this.rawptr, args));
     }
     jquery.prototype._new = function() {
         var args = verifyArgs(Array.prototype.slice.call(arguments));
@@ -489,3 +550,61 @@ var initJQuery = function() {
     return jquery;
 }
 js.jquery.JQuery = new initJQuery();
+js.jquery.JEvent = new function() {
+    var jevent = function(rawptr) {
+        this.rawptr = rawptr;
+    }
+    jevent.prototype = new konoha.Object();
+    jevent.konohaclass = "js.jquery.JEvent";
+    jevent.prototype.type = function() {
+        return new konoha.String(this.rawptr.type);
+    }
+    jevent.prototype.target = function() {
+        return new konoha.dom.Element(this.rawptr.target);
+    }
+    jevent.prototype.relatedTarget = function() {
+        return new konoha.dom.Element(this.rawptr.relatedTarget);
+    }
+    jevent.prototype.currentTarget = function() {
+        return new konoha.dom.Element(this.rawptr.currentTarget);
+    }
+    jevent.prototype.pageX = function() {
+        return this.rawptr.pageX;
+    }
+    jevent.prototype.pageY = function() {
+        return this.rawptr.pageY;
+    }
+    jevent.prototype.timeStamp = function() {
+        return this.rawptr.timeStamp;
+    }
+    jevent.prototype.preventDefault = function() {
+        return new jevent(this.rawptr.preventDefault());
+    }
+    jevent.prototype.isDefaultPrevented = function() {
+        return this.rawptr.isDefaultPrevented();
+    }
+    jevent.prototype.stopPropagation = function() {
+        return new jevent(this.rawptr.stopPropagation());
+    }
+    jevent.prototype.isPropagationStopped = function() {
+        return this.rawptr.isPropagationStopped();
+    }
+    jevent.prototype.stopImmediatePropagation = function() {
+        return new jevent(this.rawptr.stopImmediatePropagation());
+    }
+    jevent.prototype.isImmediatePropagationStopped = function() {
+        return this.rawptr.isImmediatePropagationStopped();
+    }
+    jevent.prototype._new = function() {
+        var args = verifyArgs(Array.prototype.slice.call(arguments));
+        if (arguments.length == 1) {
+            this.rawptr = new $(args[0]);
+        } else if (arguments.length == 2) {
+            this.rawptr = new $(args[0], args[1]);
+        } else {
+            throw ("Script !!");
+        }
+        return this;
+    }
+    return jevent;
+}();

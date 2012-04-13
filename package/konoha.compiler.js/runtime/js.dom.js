@@ -1,3 +1,19 @@
+/* @Public System */
+var initPublicMethods = function() {
+    var sys = konoha.System;
+    sys.setTimeout = function(i, callback) {
+        return setTimeout(i, callback.rawptr);
+    }
+    sys.setInterval = function(callback, i) {
+        console.log(i);
+        console.log(callback);
+        return setInterval(callback.rawptr, i);
+    }
+    sys.clearInterval = function(id) {
+        clearInterval(id);
+    }
+};
+initPublicMethods();
 /* Document */
 js.dom = function() {
 }
@@ -182,11 +198,23 @@ js.dom.Element = function(rawptr) {
     }
 }
 js.dom.Element.prototype = new js.dom.Node();
-js.dom.Context = function(rawptr) {
+js.dom.CanvasContext = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.CanvasContext";
-    this.arc = function(x, y, startAngle, endAngle, anticlockwise) {
-        this.rawptr.arc(x, y, startAngle, endAngle, anticlockwise);
+    this.setFont = function(font) {
+        this.rawptr.font = font.rawptr;
+    }
+    this.getFont = function() {
+        return new konoha.String(this.rawptr.font);
+    }
+    this.setGlobalCompositeOperation = function(op) {
+        this.rawptr.globalCompositeOperation = op.rawptr;
+    }
+    this.getGlobalCompositeOperation = function(op) {
+        return new konoha.String(this.rawptr.globalCompositeOperation);
+    }
+    this.arc = function(x, y, radius, startAngle, endAngle, anticlockwise) {
+        this.rawptr.arc(x, y, radius, startAngle, endAngle, anticlockwise);
     }
     this.actTo = function(x1, y1, x2, y2, radius) {
         this.rawptr.actTo(x1, y1, x2, y2, radius);
@@ -282,12 +310,12 @@ js.dom.Context = function(rawptr) {
         this.rawptr.fillStyle = style.rawptr;
     }
 }
-js.dom.Context.prototype = new konoha.Object();
+js.dom.CanvasContext.prototype = new konoha.Object();
 js.dom.Canvas = function(rawptr) {
     this.rawptr = rawptr;
     this.konohaclass = "js.dom.Canvas";
     this.getContext = function(str) {
-        return new js.dom.Context(this.rawptr.getContext(str.rawptr));
+        return new js.dom.CanvasContext(this.rawptr.getContext(str.rawptr));
     }
 }
 js.dom.Canvas.prototype = new js.dom.Element();
@@ -297,6 +325,13 @@ js.dom.Img = function(rawptr) {
     this.konohaclass = "js.dom.Img";
 }
 js.dom.Img.prototype = new js.dom.Element();
+js.dom.Window = function(rawptr) {
+    if (rawptr != null) {
+        this.rawptr = rawptr;
+    } else {
+        this.rawptr = window;
+    }
+}
 js.dom.Document = function(rawptr) {
     if (rawptr != null) {
         this.rawptr = rawptr;
@@ -317,7 +352,7 @@ js.dom.Document = function(rawptr) {
     }
     this.getElementById = function(elementId) {
         var obj = this.rawptr.getElementById(elementId.rawptr);
-        switch (obj.nodeName) {
+        switch (obj && obj.nodeName) {
             case 'CANVAS':
                 return new js.dom.Canvas(obj);
             case 'IMG':
