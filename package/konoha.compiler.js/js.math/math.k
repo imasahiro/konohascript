@@ -1,5 +1,3 @@
-include "lib:gluelink";
-
 @Singleton @Native class Math;
 
 @Native @FastCall int Math.abs(int x);
